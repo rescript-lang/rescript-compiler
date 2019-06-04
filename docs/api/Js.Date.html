@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js.Promise.html"><link rel="next" href="Js.Dict.html">
+                 <title> Js.Date </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
+<li><a href="Belt_Float.html">Belt_Float</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_Int.html">Belt_Int</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Js.Promise.html" title="Js.Promise">Previous</a>
+&nbsp;<a class="up" href="Js.html" title="Js">Up</a>
+&nbsp;<a class="post" href="Js.Dict.html" title="Js.Dict">Next</a>
+</div>
+<h1>Module <a href="type_Js.Date.html">Js.Date</a></h1>
+
+<pre><span class="keyword">module</span> Date: <code class="type"><a href="Js_date.html">Js_date</a></code></pre><hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+
+
+<pre><span id="VALvalueOf"><span class="keyword">val</span> valueOf</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><br>
+returns the primitive value of this date, equivalent to getTime<br>
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">unit -> <a href="Js_date.html#TYPEt">t</a></code></pre><br>
+returns a date representing the current time<br>
+
+<pre><span id="VALfromFloat"><span class="keyword">val</span> fromFloat</span> : <code class="type">float -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromString"><span class="keyword">val</span> fromString</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeWithYM"><span class="keyword">val</span> makeWithYM</span> : <code class="type">year:float -> month:float -> unit -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeWithYMD"><span class="keyword">val</span> makeWithYMD</span> : <code class="type">year:float -> month:float -> date:float -> unit -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeWithYMDH"><span class="keyword">val</span> makeWithYMDH</span> : <code class="type">year:float -> month:float -> date:float -> hours:float -> unit -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeWithYMDHM"><span class="keyword">val</span> makeWithYMDHM</span> : <code class="type">year:float -><br>       month:float -><br>       date:float -> hours:float -> minutes:float -> unit -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeWithYMDHMS"><span class="keyword">val</span> makeWithYMDHMS</span> : <code class="type">year:float -><br>       month:float -><br>       date:float -><br>       hours:float -> minutes:float -> seconds:float -> unit -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALutcWithYM"><span class="keyword">val</span> utcWithYM</span> : <code class="type">year:float -> month:float -> unit -> float</code></pre>
+<pre><span id="VALutcWithYMD"><span class="keyword">val</span> utcWithYMD</span> : <code class="type">year:float -> month:float -> date:float -> unit -> float</code></pre>
+<pre><span id="VALutcWithYMDH"><span class="keyword">val</span> utcWithYMDH</span> : <code class="type">year:float -> month:float -> date:float -> hours:float -> unit -> float</code></pre>
+<pre><span id="VALutcWithYMDHM"><span class="keyword">val</span> utcWithYMDHM</span> : <code class="type">year:float -><br>       month:float -> date:float -> hours:float -> minutes:float -> unit -> float</code></pre>
+<pre><span id="VALutcWithYMDHMS"><span class="keyword">val</span> utcWithYMDHMS</span> : <code class="type">year:float -><br>       month:float -><br>       date:float -> hours:float -> minutes:float -> seconds:float -> unit -> float</code></pre>
+<pre><span id="VALnow"><span class="keyword">val</span> now</span> : <code class="type">unit -> float</code></pre><br>
+returns the number of milliseconds since Unix epoch<br>
+
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALparseAsFloat"><span class="keyword">val</span> parseAsFloat</span> : <code class="type">string -> float</code></pre><br>
+returns NaN if passed invalid date string<br>
+
+<pre><span id="VALgetDate"><span class="keyword">val</span> getDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetDay"><span class="keyword">val</span> getDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    return the day of the month (1-31)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetFullYear"><span class="keyword">val</span> getFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    returns the day of the week (0-6)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetHours"><span class="keyword">val</span> getHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetMilliseconds"><span class="keyword">val</span> getMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetMinutes"><span class="keyword">val</span> getMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetMonth"><span class="keyword">val</span> getMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetSeconds"><span class="keyword">val</span> getSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    returns the month (0-11)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetTime"><span class="keyword">val</span> getTime</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetTimezoneOffset"><span class="keyword">val</span> getTimezoneOffset</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    returns the number of milliseconds since Unix epoch<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetUTCDate"><span class="keyword">val</span> getUTCDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCDay"><span class="keyword">val</span> getUTCDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    return the day of the month (1-31)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetUTCFullYear"><span class="keyword">val</span> getUTCFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    returns the day of the week (0-6)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetUTCHours"><span class="keyword">val</span> getUTCHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCMilliseconds"><span class="keyword">val</span> getUTCMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCMinutes"><span class="keyword">val</span> getUTCMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCMonth"><span class="keyword">val</span> getUTCMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCSeconds"><span class="keyword">val</span> getUTCSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    returns the month (0-11)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetYear"><span class="keyword">val</span> getYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALsetDate"><span class="keyword">val</span> setDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetFullYear"><span class="keyword">val</span> setFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetFullYearM"><span class="keyword">val</span> setFullYearM</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> year:float -> month:float -> unit -> float</code></pre>
+<pre><span id="VALsetFullYearMD"><span class="keyword">val</span> setFullYearMD</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> year:float -> month:float -> date:float -> unit -> float</code></pre>
+<pre><span id="VALsetHours"><span class="keyword">val</span> setHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetHoursM"><span class="keyword">val</span> setHoursM</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> hours:float -> minutes:float -> unit -> float</code></pre>
+<pre><span id="VALsetHoursMS"><span class="keyword">val</span> setHoursMS</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> hours:float -> minutes:float -> seconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetHoursMSMs"><span class="keyword">val</span> setHoursMSMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -><br>       hours:float -><br>       minutes:float -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetMilliseconds"><span class="keyword">val</span> setMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetMinutes"><span class="keyword">val</span> setMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetMinutesS"><span class="keyword">val</span> setMinutesS</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> minutes:float -> seconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetMinutesSMs"><span class="keyword">val</span> setMinutesSMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -><br>       minutes:float -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetMonth"><span class="keyword">val</span> setMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetMonthD"><span class="keyword">val</span> setMonthD</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> month:float -> date:float -> unit -> float</code></pre>
+<pre><span id="VALsetSeconds"><span class="keyword">val</span> setSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetSecondsMs"><span class="keyword">val</span> setSecondsMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetTime"><span class="keyword">val</span> setTime</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCDate"><span class="keyword">val</span> setUTCDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCFullYear"><span class="keyword">val</span> setUTCFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCFullYearM"><span class="keyword">val</span> setUTCFullYearM</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> year:float -> month:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCFullYearMD"><span class="keyword">val</span> setUTCFullYearMD</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> year:float -> month:float -> date:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCHours"><span class="keyword">val</span> setUTCHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCHoursM"><span class="keyword">val</span> setUTCHoursM</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> hours:float -> minutes:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCHoursMS"><span class="keyword">val</span> setUTCHoursMS</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> hours:float -> minutes:float -> seconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCHoursMSMs"><span class="keyword">val</span> setUTCHoursMSMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -><br>       hours:float -><br>       minutes:float -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCMilliseconds"><span class="keyword">val</span> setUTCMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCMinutes"><span class="keyword">val</span> setUTCMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCMinutesS"><span class="keyword">val</span> setUTCMinutesS</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> minutes:float -> seconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCMinutesSMs"><span class="keyword">val</span> setUTCMinutesSMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -><br>       minutes:float -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCMonth"><span class="keyword">val</span> setUTCMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCMonthD"><span class="keyword">val</span> setUTCMonthD</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> month:float -> date:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCSeconds"><span class="keyword">val</span> setUTCSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetUTCSecondsMs"><span class="keyword">val</span> setUTCSecondsMs</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> seconds:float -> milliseconds:float -> unit -> float</code></pre>
+<pre><span id="VALsetUTCTime"><span class="keyword">val</span> setUTCTime</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALsetYear"><span class="keyword">val</span> setYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
+<pre><span id="VALtoDateString"><span class="keyword">val</span> toDateString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoGMTString"><span class="keyword">val</span> toGMTString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoISOString"><span class="keyword">val</span> toISOString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoJSON"><span class="keyword">val</span> toJSON</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoJSONUnsafe"><span class="keyword">val</span> toJSONUnsafe</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoLocaleDateString"><span class="keyword">val</span> toLocaleDateString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoLocaleString"><span class="keyword">val</span> toLocaleString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoLocaleTimeString"><span class="keyword">val</span> toLocaleTimeString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoString"><span class="keyword">val</span> toString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoTimeString"><span class="keyword">val</span> toTimeString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoUTCString"><span class="keyword">val</span> toUTCString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre></body></html>

@@ -1,0 +1,51 @@
+<html><head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title> Js_json </title></head> 
+               <body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;_&nbsp;kind&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">String</span>&nbsp;:&nbsp;<span class="constructor">Js_string</span>.t&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Number</span>&nbsp;:&nbsp;float&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Object</span>&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="constructor">Js_dict</span>.t&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Array</span>&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;array&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Boolean</span>&nbsp;:&nbsp;bool&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Null</span>&nbsp;:&nbsp;<span class="constructor">Js_types</span>.null_val&nbsp;<span class="constructor">Js_json</span>.kind<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;tagged_t&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">JSONFalse</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONTrue</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONNull</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONString</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONNumber</span>&nbsp;<span class="keyword">of</span>&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONObject</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="constructor">Js_dict</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">JSONArray</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;array<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;classify&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.tagged_t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="constructor">Js_json</span>.kind&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeString&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_string</span>.t&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeNumber&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeObject&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="constructor">Js_dict</span>.t&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeArray&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;array&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeBoolean&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decodeNull&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null</span>.t&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;null&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;string&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;number&nbsp;:&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;boolean&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;object_&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="constructor">Js_dict</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;array&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;stringArray&nbsp;:&nbsp;string&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;numberArray&nbsp;:&nbsp;float&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;booleanArray&nbsp;:&nbsp;bool&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;objectArray&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="constructor">Js_dict</span>.t&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;parseExn&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_json</span>.t&nbsp;=&nbsp;<span class="string">"parse"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;stringify&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">"stringify"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;stringifyWithSpace&nbsp;:&nbsp;<span class="constructor">Js_json</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">"stringify"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;stringifyAny&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">"stringify"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+<span class="keyword">end</span></code></body></html>

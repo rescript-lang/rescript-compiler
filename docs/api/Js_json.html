@@ -1,0 +1,509 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_int.html"><link rel="next" href="Js_list.html">
+                 <title> Js_json </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
+<li><a href="Belt_Float.html">Belt_Float</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_Int.html">Belt_Int</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Js_int.html" title="Js_int">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Js_list.html" title="Js_list">Next</a>
+</div>
+<h1>Module <a href="type_Js_json.html">Js_json</a></h1>
+
+<pre><span class="keyword">module</span> Js_json: <code class="code">sig</code> <a href="Js_json.html">..</a> <code class="code">end</code></pre><div class="info module top">
+                    <div class="not-examples">
+                    Efficient JSON encoding using JavaScript API<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON">MDN</a><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    The JSON data structure<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<div class="type-declaration">
+<pre><code><span id="TYPEkind"><span class="keyword">type</span> <code class="type">'_</code> kind</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.String"><span class="constructor">String</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_string.html#TYPEt">Js_string.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Number"><span class="constructor">Number</span></span></td><td><span class="keyword">:</span></td><td><code class="type">float <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Object"><span class="constructor">Object</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Array"><span class="constructor">Array</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> array <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Boolean"><span class="constructor">Boolean</span></span></td><td><span class="keyword">:</span></td><td><code class="type">bool <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Null"><span class="constructor">Null</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEnull_val">Js_types.null_val</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+
+</tr></table>
+
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    Underlying type of a JSON value<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<div class="type-declaration">
+<pre><code><span id="TYPEtagged_t"><span class="keyword">type</span> <code class="type"></code>tagged_t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONFalse"><span class="constructor">JSONFalse</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONTrue"><span class="constructor">JSONTrue</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONNull"><span class="constructor">JSONNull</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONString"><span class="constructor">JSONString</span></span></td><td><span class="keyword">of</span></td><td><code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONNumber"><span class="constructor">JSONNumber</span></span></td><td><span class="keyword">of</span></td><td><code class="type">float</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONObject"><span class="constructor">JSONObject</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONArray"><span class="constructor">JSONArray</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> array</code></code></td>
+
+</tr></table>
+
+</div>
+
+
+<pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEtagged_t">tagged_t</a></code></pre>
+<pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_json.html#TYPEkind">kind</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">test v kind</code> returns true if <code class="code">v</code> is of <code class="code">kind</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeString"><span class="keyword">val</span> decodeString</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">Js_string.t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeString json</code> returns <code class="code">Some s</code> if <code class="code">json</code> is a string, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeNumber"><span class="keyword">val</span> decodeNumber</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> float option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeNumber json</code> returns <code class="code">Some n</code> if <code class="code">json</code> is a number, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeObject"><span class="keyword">val</span> decodeObject</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeObject json</code> returns <code class="code">Some o</code> if <code class="code">json</code> is an object, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeArray"><span class="keyword">val</span> decodeArray</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEt">t</a> array option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeArray json</code> returns <code class="code">Some a</code> if <code class="code">json</code> is an array, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeBoolean"><span class="keyword">val</span> decodeBoolean</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> bool option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeBoolean json</code> returns <code class="code">Some b</code> if <code class="code">json</code> is a boolean, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeNull"><span class="keyword">val</span> decodeNull</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> 'a <a href="Js_null.html#TYPEt">Js_null.t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">decodeNull json</code> returns <code class="code">Some null</code> if <code class="code">json</code> is a null, <code class="code">None</code>
+    otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">null</code> is the singleton null JSON value<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALstring"><span class="keyword">val</span> string</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">string s</code> makes a JSON string of the <code class="code">string</code> <code class="code">s</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALnumber"><span class="keyword">val</span> number</span> : <code class="type">float -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">number n</code> makes a JSON number of the <code class="code">float</code> <code class="code">n</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALboolean"><span class="keyword">val</span> boolean</span> : <code class="type">bool -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">bool</code> <code class="code">b</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALobject_"><span class="keyword">val</span> object_</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">object_ dict</code> makes a JSON objet of the <code class="code">Js.Dict.t</code> <code class="code">dict</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALarray"><span class="keyword">val</span> array</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALstringArray"><span class="keyword">val</span> stringArray</span> : <code class="type">string array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">stringArray a</code> makes a JSON array of the <code class="code">string array</code> <code class="code">a</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALnumberArray"><span class="keyword">val</span> numberArray</span> : <code class="type">float array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">numberArray a</code> makes a JSON array of the <code class="code">float array</code> <code class="code">a</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALbooleanArray"><span class="keyword">val</span> booleanArray</span> : <code class="type">bool array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">booleanArray</code> makes a JSON array of the <code class="code">bool array</code> <code class="code">a</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALobjectArray"><span class="keyword">val</span> objectArray</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">objectArray a</code> makes a JSON array of the <code class="code">JsDict.t array</code> <code class="code">a</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALparseExn"><span class="keyword">val</span> parseExn</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">parseExn s</code> parses the string <code class="code">s</code> into a JSON data structure
+<p>
+
+<b>Returns</b> a JSON data structure<br>
+<div class="tag"> <b>Raises</b> <code>SyntaxError</code> if given string is not a valid JSON. Note <code class="code">SyntaxError</code> is a JavaScript exception.<br>
+ </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* parse a simple JSON string *)
+
+let json =
+  try
+    Js.Json.parseExn {| "foo" |}
+  with
+  | _ -&gt; failwith "Error parsing JSON string"
+in
+match Js.Json.classify json with
+| Js.Json.JSONString value -&gt; Js.log value
+| _ -&gt; failwith "Expected a string"
+</code></pre>  </pre><pre class="example"> <pre class="codepre"><code class="code">(* parse a complex JSON string *)
+
+let getIds s =
+  let json =
+    try
+      Js.Json.parseExn s
+    with
+    | _ -&gt; failwith "Error parsing JSON string"
+  in
+  match Js.Json.classify json with
+  | Js.Json.JSONObject value -&gt;
+    (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
+    begin match Js.Dict.get value "ids" with
+    | Some ids -&gt;
+      begin match Js.Json.classify ids with
+      | Js.Json.JSONArray ids -&gt;
+        (* In this branch compiler infer ids : Js.Json.t array *)
+        ids
+      | _ -&gt; failwith "Expected an array"
+      end
+    | None -&gt; failwith "Expected an `ids` property"
+    end
+  | _ -&gt; failwith "Expected an object"
+
+(* prints `1, 2, 3` *)
+let _ =
+  Js.log @@ getIds {| { "ids" : [1, 2, 3 ] } |}
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALstringify"><span class="keyword">val</span> stringify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">stringify json</code> formats the JSON data structure as a string
+<p>
+
+<b>Returns</b> the string representation of a given JSON data structure<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Creates and stringifies a simple JS object *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALstringifyWithSpace"><span class="keyword">val</span> stringifyWithSpace</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> int -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">stringify json</code> formats the JSON data structure as a string
+<p>
+
+<b>Returns</b> the string representation of a given JSON data structure<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Creates and stringifies a simple JS object with spacing *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 2
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALstringifyAny"><span class="keyword">val</span> stringifyAny</span> : <code class="type">'a -> string option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">stringifyAny value</code> formats any <code class="code">value</code> into a JSON string<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* prints `["foo", "bar"]` *)
+Js.log @@ Js.Json.stringify [| "foo"; "bar" |]
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  </body></html>
