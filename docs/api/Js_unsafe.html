@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_undefined.html"><link rel="next" href="Js_vector.html">
+                 <title> Js_unsafe </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Js_undefined.html" title="Js_undefined">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Js_vector.html" title="Js_vector">Next</a>
+</div>
+<h1>Module <a href="type_Js_unsafe.html">Js_unsafe</a></h1>
+
+<pre><span class="keyword">module</span> Js_unsafe: <code class="code">sig</code> <a href="Js_unsafe.html">..</a> <code class="code">end</code></pre><div class="info module top">
+                    <div class="not-examples">
+                     
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
+
+<pre><span id="VAL(!)"><span class="keyword">val</span> (!)</span> : <code class="type">'a <a href="Js.html#TYPEt">Js.t</a> -> 'a</code></pre>
+<pre><span id="VALdebugger"><span class="keyword">val</span> debugger</span> : <code class="type">unit -> unit</code></pre>
+<pre><span id="VALraw_expr"><span class="keyword">val</span> raw_expr</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraw_stmt"><span class="keyword">val</span> raw_stmt</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraw_function"><span class="keyword">val</span> raw_function</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALunsafe_downgrade"><span class="keyword">val</span> unsafe_downgrade</span> : <code class="type">'a <a href="Js.html#TYPEt">Js.t</a> -> 'a</code></pre>
+<pre><span id="VALfn_mk0"><span class="keyword">val</span> fn_mk0</span> : <code class="type">(unit -> 'a0) -> (unit -> 'a0 [@bs])</code></pre>
+<pre><span id="VALfn_mk1"><span class="keyword">val</span> fn_mk1</span> : <code class="type">('a0 -> 'a1) -> ('a0 -> 'a1 [@bs])</code></pre>
+<pre><span id="VALfn_mk2"><span class="keyword">val</span> fn_mk2</span> : <code class="type">('a0 -> 'a1 -> 'a2) -> ('a0 -> 'a1 -> 'a2 [@bs])</code></pre>
+<pre><span id="VALfn_mk3"><span class="keyword">val</span> fn_mk3</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3) -> ('a0 -> 'a1 -> 'a2 -> 'a3 [@bs])</code></pre>
+<pre><span id="VALfn_mk4"><span class="keyword">val</span> fn_mk4</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs])</code></pre>
+<pre><span id="VALfn_mk5"><span class="keyword">val</span> fn_mk5</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5) -><br>       ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs])</code></pre>
+<pre><span id="VALfn_mk6"><span class="keyword">val</span> fn_mk6</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -><br>       ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs])</code></pre>
+<pre><span id="VALfn_mk7"><span class="keyword">val</span> fn_mk7</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -><br>       ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs])</code></pre>
+<pre><span id="VALfn_mk8"><span class="keyword">val</span> fn_mk8</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) -><br>       ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@bs])</code></pre>
+<pre><span id="VALfn_mk9"><span class="keyword">val</span> fn_mk9</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) -><br>       ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@bs])</code></pre>
+<pre><span id="VALfn_method1"><span class="keyword">val</span> fn_method1</span> : <code class="type">('obj -> 'a0) -> ('obj -> 'a0 [@bs.this])</code></pre>
+<pre><span id="VALfn_method2"><span class="keyword">val</span> fn_method2</span> : <code class="type">('obj -> 'a0 -> 'a1) -> ('obj -> 'a0 -> 'a1 [@bs.this])</code></pre>
+<pre><span id="VALfn_method3"><span class="keyword">val</span> fn_method3</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2) -> ('obj -> 'a0 -> 'a1 -> 'a2 [@bs.this])</code></pre>
+<pre><span id="VALfn_method4"><span class="keyword">val</span> fn_method4</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 [@bs.this])</code></pre>
+<pre><span id="VALfn_method5"><span class="keyword">val</span> fn_method5</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs.this])</code></pre>
+<pre><span id="VALfn_method6"><span class="keyword">val</span> fn_method6</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs.this])</code></pre>
+<pre><span id="VALfn_method7"><span class="keyword">val</span> fn_method7</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs.this])</code></pre>
+<pre><span id="VALfn_method8"><span class="keyword">val</span> fn_method8</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs.this])</code></pre>
+<pre><span id="VALfn_method9"><span class="keyword">val</span> fn_method9</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8<br>       [@bs.this])</code></pre>
+<pre><span id="VALfn_method10"><span class="keyword">val</span> fn_method10</span> : <code class="type">('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) -><br>       ('obj -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9<br>       [@bs.this])</code></pre>
+<pre><span id="VALfn_run0"><span class="keyword">val</span> fn_run0</span> : <code class="type">(unit -> 'a0 [@bs]) -> 'a0</code></pre>
+<pre><span id="VALfn_run1"><span class="keyword">val</span> fn_run1</span> : <code class="type">('a0 -> 'a1 [@bs]) -> 'a0 -> 'a1</code></pre>
+<pre><span id="VALfn_run2"><span class="keyword">val</span> fn_run2</span> : <code class="type">('a0 -> 'a1 -> 'a2 [@bs]) -> 'a0 -> 'a1 -> 'a2</code></pre>
+<pre><span id="VALfn_run3"><span class="keyword">val</span> fn_run3</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 [@bs]) -> 'a0 -> 'a1 -> 'a2 -> 'a3</code></pre>
+<pre><span id="VALfn_run4"><span class="keyword">val</span> fn_run4</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs]) -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4</code></pre>
+<pre><span id="VALfn_run5"><span class="keyword">val</span> fn_run5</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5</code></pre>
+<pre><span id="VALfn_run6"><span class="keyword">val</span> fn_run6</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6</code></pre>
+<pre><span id="VALfn_run7"><span class="keyword">val</span> fn_run7</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7</code></pre>
+<pre><span id="VALfn_run8"><span class="keyword">val</span> fn_run8</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@bs]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8</code></pre>
+<pre><span id="VALfn_run9"><span class="keyword">val</span> fn_run9</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@bs]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9</code></pre>
+<pre><span id="VALmethod_run0"><span class="keyword">val</span> method_run0</span> : <code class="type">(unit -> 'a0 [@bs.meth]) -> 'a0</code></pre>
+<pre><span id="VALmethod_run1"><span class="keyword">val</span> method_run1</span> : <code class="type">('a0 -> 'a1 [@bs.meth]) -> 'a0 -> 'a1</code></pre>
+<pre><span id="VALmethod_run2"><span class="keyword">val</span> method_run2</span> : <code class="type">('a0 -> 'a1 -> 'a2 [@bs.meth]) -> 'a0 -> 'a1 -> 'a2</code></pre>
+<pre><span id="VALmethod_run3"><span class="keyword">val</span> method_run3</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 [@bs.meth]) -> 'a0 -> 'a1 -> 'a2 -> 'a3</code></pre>
+<pre><span id="VALmethod_run4"><span class="keyword">val</span> method_run4</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4</code></pre>
+<pre><span id="VALmethod_run5"><span class="keyword">val</span> method_run5</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5</code></pre>
+<pre><span id="VALmethod_run6"><span class="keyword">val</span> method_run6</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6</code></pre>
+<pre><span id="VALmethod_run7"><span class="keyword">val</span> method_run7</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7</code></pre>
+<pre><span id="VALmethod_run8"><span class="keyword">val</span> method_run8</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8</code></pre>
+<pre><span id="VALmethod_run9"><span class="keyword">val</span> method_run9</span> : <code class="type">('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9<br>       [@bs.meth]) -><br>       'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9</code></pre></body></html>

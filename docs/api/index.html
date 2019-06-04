@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title>  </title></head> 
+               <body class="index top">
+<h1></h1>
+
+                    <div class="not-examples">
+                    <ul class="indexlist">
+<li><a href="index_types.html">Index of types</a></li>
+<li><a href="index_extensions.html">Index of extensions</a></li>
+<li><a href="index_values.html">Index of values</a></li>
+<li><a href="index_modules.html">Index of modules</a></li>
+<li><a href="index_module_types.html">Index of module types</a></li>
+</ul>
+
+<p>
+
+<h1 id="1_LibrariesshippedwithBuckleScript">Libraries shipped with BuckleScript</h1>
+<p>
+
+BuckleScript is mostly a compiler, but it does ship some libraries for users' convenience
+<p>
+
+<h2 id="2_4libraries">4 libraries</h2>
+<p>
+
+<a href="Js.html"><code class="code">Js</code></a> 
+<p>
+
+This library are mostly <i>bindings</i> to JS, it should work with both NodeJS and Browser.
+It is strongly recommended to use qualified name instead of flatten module name. 
+For example
+<pre class="codepre"><code class="code">    [| 1; 2 ; 3 |] 
+    |&gt; Js.Array.map (fun x -&gt; x + 1 )
+    |&gt; Js.log 
+</code></pre>
+<p>
+
+<a href="Belt.html"><code class="code">Belt</code></a>
+<p>
+
+The BuckleScript standard library (<b>beta</b>).
+<p>
+
+BuckleScript also ships the vanilla OCaml standard library.<br>
+<div class="tag"> <b>See also</b> <a href="https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html">OCaml standard library
+<p>
+
+<a href="Node.html"><code class="code">Node</code></a>
+<p>
+
+This library contains bindings to NodeJS, it is still work in progress, use it with care, 
+and we may break API backward compatiblity in the future.
+<p>
+
+<a href="Dom.html"><code class="code">Dom</code></a>
+<p>
+
+This library are for DOM API, currently it only defines some 
+types for diferent packages to talk to each other</a><br>
+ </div> 
+                    </div>
+                    
+                    
+                  </body>
+</html>

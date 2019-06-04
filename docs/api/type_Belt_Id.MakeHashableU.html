@@ -1,0 +1,23 @@
+<html><head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title> Belt_Id.MakeHashableU </title></head> 
+               <body>
+<code class="code"><span class="keyword">functor</span><br>
+&nbsp;&nbsp;(<span class="constructor">M</span>&nbsp;:&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;hash&nbsp;:&nbsp;(<span class="constructor">Belt_Id</span>.<span class="constructor">MakeHashableU</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;[@bs])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;eq&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Belt_Id</span>.<span class="constructor">MakeHashableU</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Belt_Id</span>.<span class="constructor">MakeHashableU</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span>)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;identity<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=&nbsp;<span class="constructor">M</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;hash&nbsp;:&nbsp;(t,&nbsp;identity)&nbsp;hash<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;eq&nbsp;:&nbsp;(t,&nbsp;identity)&nbsp;eq<br>
+&nbsp;&nbsp;<span class="keyword">end</span></code></body></html>

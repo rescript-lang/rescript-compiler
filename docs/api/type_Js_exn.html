@@ -1,0 +1,27 @@
+<html><head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title> Js_exn </title></head> 
+               <body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;exn&nbsp;+=&nbsp;<span class="keyword">private</span>&nbsp;<span class="constructor">Error</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Js_exn</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;asJsExn&nbsp;:&nbsp;exn&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;option&nbsp;=&nbsp;<span class="string">"caml_as_js_exn"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;stack&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;message&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;name&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;fileName&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;isCamlExceptionOrOpenVariant&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"caml_is_extension"</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseEvalError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseRangeError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseReferenceError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseSyntaxError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseTypeError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseUriError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+<span class="keyword">end</span></code></body></html>
