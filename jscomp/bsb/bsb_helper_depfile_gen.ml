@@ -124,27 +124,29 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
-
-  output_file buf input_file namespace ; 
-  Buffer.add_string buf lhs_suffix; 
-  Buffer.add_string buf dep_lit ; 
-  Ext_option.iter namespace (fun ns -> 
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
-    ); (* TODO: moved into static files*)
-  Ext_array.iter dependent_module_set begin fun dependent_module ->
-    match Bsb_db_io.find_opt  db 0 dependent_module with
-    | Some module_info -> 
-      handle_module_info module_info input_file namespace rhs_suffix buf
-    | None  -> 
-      if not (Bsb_dir_index.is_lib_dir index) then      
-        Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
-          (fun module_info -> 
-             handle_module_info module_info input_file namespace rhs_suffix buf)
+  (* TODO: move namespace upper, it is better to resolve ealier *)
+  if Ext_array.is_empty dependent_module_set && namespace = None then ()
+  else begin 
+    output_file buf input_file namespace ; 
+    Buffer.add_string buf lhs_suffix; 
+    Buffer.add_string buf dep_lit ; 
+    Ext_option.iter namespace (fun ns -> 
+        Buffer.add_string buf ns;
+        Buffer.add_string buf Literals.suffix_cmi;
+      ); (* TODO: moved into static files*)
+    Ext_array.iter dependent_module_set begin fun dependent_module ->
+      match Bsb_db_io.find_opt  db 0 dependent_module with
+      | Some module_info -> 
+        handle_module_info module_info input_file namespace rhs_suffix buf
+      | None  -> 
+        if not (Bsb_dir_index.is_lib_dir index) then      
+          Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
+            (fun module_info -> 
+               handle_module_info module_info input_file namespace rhs_suffix buf)
+    end
+    ;
+    Buffer.add_char buf '\n'
   end
-  ;
-  Buffer.add_char buf '\n'
-  
 
 
 (** Note since dependent file is [mli], it only depends on 
@@ -157,27 +159,29 @@ let oc_intf
     (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
-  output_file buf input_file namespace ; 
-  Buffer.add_string buf Literals.suffix_cmi ; 
-  Buffer.add_string buf dep_lit;
-  Ext_option.iter namespace (fun ns -> 
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
-    ); (* moved upwards *)
-  Ext_array.iter dependent_module_set begin fun dependent_module ->
-    match Bsb_db_io.find_opt db 0 dependent_module with 
-    | Some module_info -> 
-      let source = module_info.name_sans_extension in 
-      if source <> input_file then oc_cmi buf namespace source             
-    | None -> 
-      if not (Bsb_dir_index.is_lib_dir index)  then 
-        Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
-          ( fun module_info -> 
-              let source = module_info.name_sans_extension in 
-              if source <> input_file then  oc_cmi buf namespace source)
-  end;
-  Buffer.add_char buf '\n'
-
+  if Ext_array.is_empty dependent_module_set && namespace = None then ()  
+  else begin 
+    output_file buf input_file namespace ;   
+    Buffer.add_string buf Literals.suffix_cmi ; 
+    Buffer.add_string buf dep_lit;
+    Ext_option.iter namespace (fun ns -> 
+        Buffer.add_string buf ns;
+        Buffer.add_string buf Literals.suffix_cmi;
+      ); (* moved upwards *)
+    Ext_array.iter dependent_module_set begin fun dependent_module ->
+      match Bsb_db_io.find_opt db 0 dependent_module with 
+      | Some module_info -> 
+        let source = module_info.name_sans_extension in 
+        if source <> input_file then oc_cmi buf namespace source             
+      | None -> 
+        if not (Bsb_dir_index.is_lib_dir index)  then 
+          Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
+            ( fun module_info -> 
+                let source = module_info.name_sans_extension in 
+                if source <> input_file then  oc_cmi buf namespace source)
+    end;
+    Buffer.add_char buf '\n'
+  end
 
 let emit_d mlast 
   (index : Bsb_dir_index.t) 
@@ -188,32 +192,27 @@ let emit_d mlast
   in 
   let set_a = read_deps mlast in 
   let buf = Buffer.create 128 in 
-  (* let ()  = Buffer.add_string buf ninja_dyndep_version in  *)
   let input_file = Filename.chop_extension mlast in 
   let filename = input_file ^ Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
-  if not (Ext_array.is_empty set_a) then
-    oc_impl 
-      set_a 
+  oc_impl 
+    set_a 
+    input_file 
+    index 
+    data
+    namespace
+    buf 
+    lhs_suffix 
+    rhs_suffix ;      
+  if has_intf <> "" then begin
+    oc_intf 
+      (read_deps has_intf)
       input_file 
       index 
-      data
-      namespace
-      buf 
-      lhs_suffix 
-      rhs_suffix ;      
-  if has_intf <> "" then begin
-    let set_b = read_deps has_intf in 
-    if not (Ext_array.is_empty set_b) then
-      (* resulting an error : xx not mentioned in its dyndep file*)
-      oc_intf 
-        set_b
-        input_file 
-        index 
-        data 
-        namespace 
-        buf        
+      data 
+      namespace 
+      buf        
   end;          
   write_file filename buf 
 
