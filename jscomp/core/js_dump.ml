@@ -107,19 +107,19 @@ let pp_block_record f =
   pp_block_dot f ;
   P.string f L.block_record
 
-let pp_block_local_module f =   
+let dbg_local_module f =   
   pp_block_dot f;
   P.string f L.block_local_module
 
-let pp_block_poly_var f =   
+let dbg_poly_var f =   
   pp_block_dot f;
   P.string f L.block_poly_var
 
-let pp_block_simple_variant f =   
+let dbg_simple_variant f =   
   pp_block_dot f ;
   P.string f L.block_simple_variant
 
-let pp_block_variant f =   
+let dbg_variant f =   
   pp_block_dot f ; 
   P.string f L.block_variant
 
@@ -875,24 +875,24 @@ and expression_desc cxt (level:int) f x : cxt  =
                  (Ext_list.map el drop_comment) ]
           )
       | Blk_module (Some labels) ->         
-        pp_block_local_module f;
+        dbg_local_module f;
         P.paren_group f 1 (fun _ -> arguments cxt f 
               [E.array Immutable
                  (Ext_list.map labels E.str);
                E.array mutable_flag
                  (Ext_list.map el drop_comment)])
       | Blk_variant name ->  
-        pp_block_poly_var f;
+        dbg_poly_var f;
         P.paren_group f 1 (fun _ -> arguments cxt f [ 
             E.str name;
             E.array mutable_flag el])        
       | Blk_constructor(name,number) when number = 1 && Js_block_runtime.tag_is_zero tag 
         -> (* has to be debug mode *)          
-        pp_block_simple_variant f ;
+        dbg_simple_variant f ;
         P.paren_group f 1 (fun _ -> arguments cxt f 
               [E.str name; E.array mutable_flag el])             
       | Blk_constructor(name,number) when is_debug ->
-        pp_block_variant f ; 
+        dbg_variant f ; 
         P.paren_group f 1 (fun _ -> arguments cxt f 
                               [ E.str name; tag ; E.array mutable_flag el])
 #if OCAML_VERSION =~ ">4.03.0" then                               
