@@ -205,7 +205,7 @@ external cacheSymbol : string -> symbol = "for"
 external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a = 
   "defineProperty"  [@@bs.scope "Object"] [@@bs.val]
 
-
+let __ = Block.__
 (* It won't affect [Object.keys] using [Object.defineProperty*)
 let record  meta xs =
   setupOnce ();

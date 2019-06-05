@@ -24,6 +24,7 @@
 
 type obj = Caml_obj_extern.t
 
+val __ : int -> obj -> obj
 val record : 'a -> obj -> obj
 
 val variant : 'a -> int ->  obj -> obj

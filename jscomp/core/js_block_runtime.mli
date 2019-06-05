@@ -25,10 +25,15 @@
 val tag_is_zero : 
   J.expression -> bool
 
-val needBlockRuntime:
+val needChromeRuntime:
   J.expression -> 
   J.tag_info -> 
-  bool
+  bool 
+  
+val needBlockRuntime: 
+  J.expression -> 
+  J.tag_info -> 
+  bool 
 
 val check_additional_id :
   J.expression -> Ident.t option  
