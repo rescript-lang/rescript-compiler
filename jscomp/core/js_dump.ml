@@ -95,32 +95,40 @@ module Curry_gen = struct
     P.string f (Printf.sprintf "%d" len)
 end 
 
-let pp_block_dot f = 
+let block_dot f = 
   P.string f Js_runtime_modules.block;
   P.string f L.dot 
 
 let pp_block_create f =   
-  pp_block_dot f ;
+  block_dot f ;
   P.string f L.caml_block_create
 
-let pp_block_record f =   
-  pp_block_dot f ;
+let dbg_block_dot f =   
+  P.string f Js_runtime_modules.caml_chrome_block;
+  P.string f L.dot 
+
+let dbg_block_create f =   
+  dbg_block_dot f ;
+  P.string f L.caml_block_create
+
+let dbg_record f =   
+  dbg_block_dot f ;
   P.string f L.block_record
 
-let pp_block_local_module f =   
-  pp_block_dot f;
+let dbg_local_module f =   
+  dbg_block_dot f;
   P.string f L.block_local_module
 
-let pp_block_poly_var f =   
-  pp_block_dot f;
+let dbg_poly_var f =   
+  dbg_block_dot f;
   P.string f L.block_poly_var
 
-let pp_block_simple_variant f =   
-  pp_block_dot f ;
+let dbg_simple_variant f =   
+  dbg_block_dot f ;
   P.string f L.block_simple_variant
 
-let pp_block_variant f =   
-  pp_block_dot f ; 
+let dbg_variant f =   
+  dbg_block_dot f ; 
   P.string f L.block_variant
 
 
@@ -860,56 +868,62 @@ and expression_desc cxt (level:int) f x : cxt  =
        as an array, note exception or open variant it is outer-most is 
        simply an array
     *)
-    let needBlockRuntime = Js_block_runtime.needBlockRuntime tag tag_info in 
-    let is_debug = !Js_config.debug in 
-    if not needBlockRuntime then 
-      expression_desc cxt level f  (Array (el, mutable_flag))
-    else (  
-      match tag_info with 
-      | Blk_record labels ->
-        pp_block_record f ;
-        P.paren_group f 1 (fun _ -> arguments cxt f 
-              [E.array Immutable
-                 (Ext_array.to_list_f E.str labels);
-               E.array mutable_flag 
-                 (Ext_list.map el drop_comment) ]
-          )
-      | Blk_module (Some labels) ->         
-        pp_block_local_module f;
-        P.paren_group f 1 (fun _ -> arguments cxt f 
-              [E.array Immutable
-                 (Ext_list.map labels E.str);
-               E.array mutable_flag
-                 (Ext_list.map el drop_comment)])
-      | Blk_variant name ->  
-        pp_block_poly_var f;
-        P.paren_group f 1 (fun _ -> arguments cxt f [ 
-            E.str name;
-            E.array mutable_flag el])        
-      | Blk_constructor(name,number) when number = 1 && Js_block_runtime.tag_is_zero tag 
-        -> (* has to be debug mode *)          
-        pp_block_simple_variant f ;
-        P.paren_group f 1 (fun _ -> arguments cxt f 
-              [E.str name; E.array mutable_flag el])             
-      | Blk_constructor(name,number) when is_debug ->
-        pp_block_variant f ; 
-        P.paren_group f 1 (fun _ -> arguments cxt f 
-                              [ E.str name; tag ; E.array mutable_flag el])
-#if OCAML_VERSION =~ ">4.03.0" then                               
-      | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
-#end
-      | Blk_constructor _                        
-      | Blk_tuple
-      | Blk_array
-#if OCAML_VERSION =~ ">4.03.0" then     
-      | Blk_record_ext _
-#end      
-      | Blk_extension_slot
-      | Blk_na
-      | Blk_module None ->           
-        pp_block_create f;
-        P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
+    if not !Js_config.debug then begin 
+      if not (Js_block_runtime.needBlockRuntime tag tag_info) then 
+        expression_desc cxt level f  (Array (el, mutable_flag))
+      else  
+        begin
+          pp_block_create f;
+          P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
+        end  
+    end 
+      else
+        if not (Js_block_runtime.needChromeRuntime tag tag_info) then 
+          expression_desc cxt level f  (Array (el, mutable_flag))
+        else 
+      (  
+        match tag_info with 
+        | Blk_record labels ->
+          dbg_record f ;
+          P.paren_group f 1 (fun _ -> arguments cxt f 
+                                [E.array Immutable
+                                   (Ext_array.to_list_f E.str labels);
+                                 E.array mutable_flag 
+                                   (Ext_list.map el drop_comment) ]
+                            )
+        | Blk_module (Some labels) ->         
+          dbg_local_module f;
+          P.paren_group f 1 (fun _ -> arguments cxt f 
+                                [E.array Immutable
+                                   (Ext_list.map labels E.str);
+                                 E.array mutable_flag
+                                   (Ext_list.map el drop_comment)])
+        | Blk_variant name ->  
+          dbg_poly_var f;
+          P.paren_group f 1 (fun _ -> arguments cxt f [ 
+              E.str name;
+              E.array mutable_flag el])        
+        | Blk_constructor(name,number) 
 
+          -> (* has to be debug mode *)          
+          (if number = 1 && Js_block_runtime.tag_is_zero tag then          
+             dbg_simple_variant f 
+           else dbg_variant f) ;
+          P.paren_group f 1 (fun _ -> arguments cxt f 
+                                [E.str name; E.array mutable_flag el])             
+#if OCAML_VERSION =~ ">4.03.0" then                               
+        | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
+#end
+        | Blk_tuple
+        | Blk_array
+#if OCAML_VERSION =~ ">4.03.0" then     
+        | Blk_record_ext _
+#end      
+        | Blk_extension_slot
+        | Blk_na
+        | Blk_module None ->           
+          dbg_block_create f;
+          P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
     )
 
   | Caml_block_tag e ->

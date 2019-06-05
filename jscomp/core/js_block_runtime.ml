@@ -28,7 +28,7 @@ let tag_is_zero (tag : J.expression) =
   | Number (Int {i = 0l; _}) -> true 
   | _ -> false;;
 
- let needBlockRuntimeInDebugMode 
+ let needChromeRuntime 
   (tag : J.expression)
   (tag_info : J.tag_info) = 
   match tag_info with 
@@ -48,7 +48,7 @@ let tag_is_zero (tag : J.expression) =
   | Blk_extension_slot -> false 
   | Blk_na  ->  not (tag_is_zero tag )
 
-let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) = 
+let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) = 
   match  tag_info with 
   | Blk_variant _ 
   | Blk_module _
@@ -69,15 +69,6 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
 #end  
   | Blk_extension_slot -> false 
     (* converted to [Pcreate_extension] in the beginning*)
- 
-
-(* Used to decide whether we should add [require('block')]*)
-let needBlockRuntime tag info = 
-  if !Js_config.debug then 
-    needBlockRuntimeInDebugMode tag info
-  else needBlockRuntimeInReleaseMode tag info  
-
-
 
 let option_id =   
   Ident.create_persistent Js_runtime_modules.option
@@ -85,6 +76,8 @@ let curry_id =
   Ident.create_persistent Js_runtime_modules.curry
 let block_id = 
   Ident.create_persistent Js_runtime_modules.block
+let caml_chrome_id = 
+  Ident.create_persistent Js_runtime_modules.caml_chrome_block
 
 let check_additional_id (x : J.expression) =
   match x.expression_desc with
@@ -92,8 +85,18 @@ let check_additional_id (x : J.expression) =
     Some option_id  
   | Call(_, _, {arity = NA}) ->  
     Some curry_id
-  | Caml_block(_,_,tag,tag_info) when 
-    needBlockRuntime tag tag_info -> 
-    Some block_id
+  | Caml_block(_,_,tag,tag_info) 
+    -> 
+    if not !Js_config.debug then
+      if needBlockRuntime tag tag_info then 
+        Some block_id
+      else None   
+    else
+    if needChromeRuntime tag tag_info then 
+      (* This may depends on two modules, so in the runtime
+        we let chrome depends on block
+      *)
+      Some caml_chrome_id
+    else None
   | _ -> 
     None
