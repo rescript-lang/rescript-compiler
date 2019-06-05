@@ -269,13 +269,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     Ast_util.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
-    if !Js_config.debug then 
-      let open Ast_helper in 
-      Str.eval ~loc (Ast_compatible.app1 ~loc 
-                       (Exp.ident ~loc {txt = setupChromeDebugger;loc} )
-                       (Ast_literal.val_unit ~loc ())
-                    )
-    else Ast_structure.dummy_item loc
+    Ast_structure.dummy_item loc
   | Pstr_type (
 #if OCAML_VERSION =~ ">4.03.0" then
           _rf, 
