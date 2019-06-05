@@ -1,10 +1,7 @@
 'use strict';
 
 var Format = require("../../lib/js/format.js");
-var Belt_Debug = require("../../lib/js/belt_Debug.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-
-Belt_Debug.setupChromeDebugger(/* () */0);
 
 var v = /* record */[
   /* a */3,
