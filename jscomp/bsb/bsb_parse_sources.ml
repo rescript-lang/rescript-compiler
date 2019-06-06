@@ -333,7 +333,7 @@ let rec
             fun name -> Str.string_match re name 0 
           | Some (Str {str = s}) , _::_ -> 
             let re = Str.regexp s in   
-            fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+            fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
         cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 

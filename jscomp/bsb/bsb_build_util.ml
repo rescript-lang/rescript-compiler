@@ -176,8 +176,13 @@ type package_context = {
 let pp_packages_rev ppf lst = 
   Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
-let rec walk_all_deps_aux visited paths top dir cb =
-  let bsconfig_json =  (dir // Literals.bsconfig_json) in
+let rec walk_all_deps_aux 
+  (visited : string String_hashtbl.t) 
+  (paths : string list) 
+  (top : bool) 
+  (dir : string) 
+  (cb : package_context -> unit) =
+  let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
@@ -187,11 +192,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
     let package_stacks = cur_package_name :: paths in 
-    let () = 
-      Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
-        package_stacks 
-    in 
-    if List.mem cur_package_name paths then
+    Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
+      package_stacks ;    
+    if Ext_list.mem_string paths cur_package_name  then
       begin
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
@@ -200,46 +203,27 @@ let rec walk_all_deps_aux visited paths top dir cb =
       Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
     else 
-      begin 
+      let explore_deps (deps : string) =   
         map
         |?
-        (Bsb_build_schemas.bs_dependencies,
+        (deps,
          `Arr (fun (new_packages : Ext_json_types.t array) ->             
              Ext_array.iter new_packages(fun js ->
-                 begin match js with
-                   | Str {str = new_package} ->
-                     let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir 
-                        (Bsb_pkg_types.string_as_package   new_package) in 
-                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                   | _ -> 
-                     Bsb_exception.errorf ~loc 
-                       "%s expect an array"
-                       Bsb_build_schemas.bs_dependencies
-                 end
+                 match js with
+                 | Str {str = new_package} ->
+                   let package_dir = 
+                     Bsb_pkg.resolve_bs_package ~cwd:dir 
+                       (Bsb_pkg_types.string_as_package   new_package) in 
+                   walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                 | _ -> 
+                   Bsb_exception.errorf ~loc 
+                     "%s expect an array"
+                     deps
                )))
-        |> ignore ;
-        if top then begin
-          map
-          |?
-          (Bsb_build_schemas.bs_dev_dependencies,
-           `Arr (fun (new_packages : Ext_json_types.t array) ->               
-               Ext_array.iter new_packages (fun (js : Ext_json_types.t) ->
-                   match js with
-                   | Str {str = new_package} ->
-                     let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir 
-                        (Bsb_pkg_types.string_as_package new_package) in 
-                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                   | _ -> 
-                     Bsb_exception.errorf ~loc 
-                       "%s expect an array"
-                       Bsb_build_schemas.bs_dev_dependencies
-
-                 )))
-          |> ignore ;
-        end
-        ;
+        |> ignore in
+      begin 
+        explore_deps Bsb_build_schemas.bs_dependencies;          
+        if top then explore_deps Bsb_build_schemas.bs_dependencies;
         cb {top ; cwd = dir};
         String_hashtbl.add visited cur_package_name dir;
       end

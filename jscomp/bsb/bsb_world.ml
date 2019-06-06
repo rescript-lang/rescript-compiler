@@ -28,14 +28,9 @@ let (//) = Ext_path.combine
 (** TODO: create the animation effect 
     logging installed files
 *)
-let install_targets cwd (config : Bsb_config_types.t option) =
-  
+let install_targets cwd (config : Bsb_config_types.t option) =  
   let install ~destdir file = 
-    if Bsb_file.install_if_exists ~destdir file  then 
-      begin 
-        ()
-
-      end
+     Bsb_file.install_if_exists ~destdir file  |> ignore
   in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
@@ -52,21 +47,19 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
 
   in   
-  match config with 
-  | None -> ()
-  | Some {files_to_install; namespace; package_name} -> 
-    let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-    begin
-      Bsb_log.info "@{<info>Installing started@}@.";
-      begin match namespace with 
-        | None -> ()
-        | Some x -> 
-          install_filename_sans_extension destdir None  x
-      end;
-      String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
-      Bsb_log.info "@{<info>Installing finished@} @.";
-    end
+  Ext_option.iter config (fun {files_to_install; namespace; package_name} -> 
+      let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+      if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+      begin
+        Bsb_log.info "@{<info>Installing started@}@.";
+        begin match namespace with 
+          | None -> ()
+          | Some x -> 
+            install_filename_sans_extension destdir None  x
+        end;
+        String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+        Bsb_log.info "@{<info>Installing finished@} @.";
+      end)
 
 
 
@@ -74,32 +67,31 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
-               ~generate_watch_metadata:false
-               ~override_package_specs:(Some deps) 
-               ~forced:true
-               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           let command = 
+  Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
+      if not top then
+        begin 
+          let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
+              ~generate_watch_metadata:false
+              ~override_package_specs:(Some deps) 
+              ~forced:true
+              cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+          let command = 
             {Bsb_unix.cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
-             } in     
-           let eid =
-             Bsb_unix.run_command_execv
-             command in 
-           if eid <> 0 then   
+             cwd = cwd // Bsb_config.lib_bs;
+             args  = [|vendor_ninja|]
+            } in     
+          let eid =
+            Bsb_unix.run_command_execv
+              command in 
+          if eid <> 0 then   
             Bsb_unix.command_fatal_error command eid;
-           (* When ninja is not regenerated, ninja will still do the build, 
-              still need reinstall check
-              Note that we can check if ninja print "no work to do", 
-              then don't need reinstall more
-           *)
-           install_targets cwd config_opt;
-         end
+          (* When ninja is not regenerated, ninja will still do the build, 
+             still need reinstall check
+             Note that we can check if ninja print "no work to do", 
+             then don't need reinstall more
+          *)
+          install_targets cwd config_opt;
+        end
     )
 
 
@@ -113,5 +105,5 @@ let make_world_deps cwd (config : Bsb_config_types.t option) =
          it wants
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
+    | Some config -> config.package_specs in
   build_bs_deps cwd deps
