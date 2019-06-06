@@ -2133,6 +2133,11 @@ val fold_left:
 
 val singleton_exn:     
     'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2840,6 +2845,10 @@ let rec fold_left2 l1 l2 accu f =
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
 
 end
 module Map_gen
@@ -6863,8 +6872,13 @@ type package_context = {
 let pp_packages_rev ppf lst = 
   Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
-let rec walk_all_deps_aux visited paths top dir cb =
-  let bsconfig_json =  (dir // Literals.bsconfig_json) in
+let rec walk_all_deps_aux 
+  (visited : string String_hashtbl.t) 
+  (paths : string list) 
+  (top : bool) 
+  (dir : string) 
+  (cb : package_context -> unit) =
+  let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
@@ -6874,11 +6888,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
     let package_stacks = cur_package_name :: paths in 
-    let () = 
-      Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
-        package_stacks 
-    in 
-    if List.mem cur_package_name paths then
+    Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
+      package_stacks ;    
+    if Ext_list.mem_string paths cur_package_name  then
       begin
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
@@ -6887,46 +6899,27 @@ let rec walk_all_deps_aux visited paths top dir cb =
       Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
     else 
-      begin 
+      let explore_deps (deps : string) =   
         map
         |?
-        (Bsb_build_schemas.bs_dependencies,
+        (deps,
          `Arr (fun (new_packages : Ext_json_types.t array) ->             
              Ext_array.iter new_packages(fun js ->
-                 begin match js with
-                   | Str {str = new_package} ->
-                     let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir 
-                        (Bsb_pkg_types.string_as_package   new_package) in 
-                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                   | _ -> 
-                     Bsb_exception.errorf ~loc 
-                       "%s expect an array"
-                       Bsb_build_schemas.bs_dependencies
-                 end
+                 match js with
+                 | Str {str = new_package} ->
+                   let package_dir = 
+                     Bsb_pkg.resolve_bs_package ~cwd:dir 
+                       (Bsb_pkg_types.string_as_package   new_package) in 
+                   walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                 | _ -> 
+                   Bsb_exception.errorf ~loc 
+                     "%s expect an array"
+                     deps
                )))
-        |> ignore ;
-        if top then begin
-          map
-          |?
-          (Bsb_build_schemas.bs_dev_dependencies,
-           `Arr (fun (new_packages : Ext_json_types.t array) ->               
-               Ext_array.iter new_packages (fun (js : Ext_json_types.t) ->
-                   match js with
-                   | Str {str = new_package} ->
-                     let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir 
-                        (Bsb_pkg_types.string_as_package new_package) in 
-                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                   | _ -> 
-                     Bsb_exception.errorf ~loc 
-                       "%s expect an array"
-                       Bsb_build_schemas.bs_dev_dependencies
-
-                 )))
-          |> ignore ;
-        end
-        ;
+        |> ignore in
+      begin 
+        explore_deps Bsb_build_schemas.bs_dependencies;          
+        if top then explore_deps Bsb_build_schemas.bs_dependencies;
         cb {top ; cwd = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
@@ -10017,7 +10010,7 @@ let rec
             fun name -> Str.string_match re name 0 
           | Some (Str {str = s}) , _::_ -> 
             let re = Str.regexp s in   
-            fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+            fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
         cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
@@ -14115,7 +14108,7 @@ let (//) = Ext_path.combine
 *)
 let regenerate_ninja 
     ~not_dev 
-    ~override_package_specs
+    ~(override_package_specs : Bsb_package_specs.t option)
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
@@ -14124,41 +14117,38 @@ let regenerate_ninja
     Bsb_ninja_check.check 
       ~cwd  
       ~forced ~file:output_deps in
-  let () = 
-    Bsb_log.info
-      "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result in 
-  begin match check_result  with 
-    | Good ->
-      None  (* Fast path, no need regenerate ninja *)
-    | Bsb_forced 
-    | Bsb_bsc_version_mismatch 
-    | Bsb_file_not_exist 
-    | Bsb_source_directory_changed  
-    | Other _ -> 
-      if check_result = Bsb_bsc_version_mismatch then begin 
-        Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
-        Bsb_clean.clean_self bsc_dir cwd; 
-      end ; 
-      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
-      let config = 
-        Bsb_config_parse.interpret_json 
-          ~override_package_specs
-          ~bsc_dir
-          ~generate_watch_metadata
-          ~not_dev
-          cwd in 
-      begin 
-        Bsb_merlin_gen.merlin_file_gen ~cwd
-          (bsc_dir // bsppx_exe) config;       
-        Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~not_dev config ;         
-        (* PR2184: we still need record empty dir 
-            since it may add files in the future *)  
-        Bsb_ninja_check.record ~cwd ~file:output_deps 
-        (Literals.bsconfig_json::config.globbed_dirs) ;
-        Some config 
-      end 
-  end
+  Bsb_log.info
+    "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
+  match check_result  with 
+  | Good ->
+    None  (* Fast path, no need regenerate ninja *)
+  | Bsb_forced 
+  | Bsb_bsc_version_mismatch 
+  | Bsb_file_not_exist 
+  | Bsb_source_directory_changed  
+  | Other _ -> 
+    if check_result = Bsb_bsc_version_mismatch then begin 
+      Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
+      Bsb_clean.clean_self bsc_dir cwd; 
+    end ; 
+    Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+    let config = 
+      Bsb_config_parse.interpret_json 
+        ~override_package_specs
+        ~bsc_dir
+        ~generate_watch_metadata
+        ~not_dev
+        cwd in 
+    Bsb_merlin_gen.merlin_file_gen ~cwd
+      (bsc_dir // bsppx_exe) config;       
+    Bsb_ninja_gen.output_ninja_and_namespace_map 
+      ~cwd ~bsc_dir ~not_dev config ;         
+    (* PR2184: we still need record empty dir 
+        since it may add files in the future *)  
+    Bsb_ninja_check.record ~cwd ~file:output_deps 
+      (Literals.bsconfig_json::config.globbed_dirs) ;
+    Some config 
+
 
 
 end
@@ -17151,14 +17141,9 @@ let (//) = Ext_path.combine
 (** TODO: create the animation effect 
     logging installed files
 *)
-let install_targets cwd (config : Bsb_config_types.t option) =
-  
+let install_targets cwd (config : Bsb_config_types.t option) =  
   let install ~destdir file = 
-    if Bsb_file.install_if_exists ~destdir file  then 
-      begin 
-        ()
-
-      end
+     Bsb_file.install_if_exists ~destdir file  |> ignore
   in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
@@ -17175,21 +17160,19 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
 
   in   
-  match config with 
-  | None -> ()
-  | Some {files_to_install; namespace; package_name} -> 
-    let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-    begin
-      Bsb_log.info "@{<info>Installing started@}@.";
-      begin match namespace with 
-        | None -> ()
-        | Some x -> 
-          install_filename_sans_extension destdir None  x
-      end;
-      String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
-      Bsb_log.info "@{<info>Installing finished@} @.";
-    end
+  Ext_option.iter config (fun {files_to_install; namespace; package_name} -> 
+      let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+      if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+      begin
+        Bsb_log.info "@{<info>Installing started@}@.";
+        begin match namespace with 
+          | None -> ()
+          | Some x -> 
+            install_filename_sans_extension destdir None  x
+        end;
+        String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+        Bsb_log.info "@{<info>Installing finished@} @.";
+      end)
 
 
 
@@ -17197,32 +17180,31 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
-               ~generate_watch_metadata:false
-               ~override_package_specs:(Some deps) 
-               ~forced:true
-               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           let command = 
+  Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
+      if not top then
+        begin 
+          let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
+              ~generate_watch_metadata:false
+              ~override_package_specs:(Some deps) 
+              ~forced:true
+              cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+          let command = 
             {Bsb_unix.cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
-             } in     
-           let eid =
-             Bsb_unix.run_command_execv
-             command in 
-           if eid <> 0 then   
+             cwd = cwd // Bsb_config.lib_bs;
+             args  = [|vendor_ninja|]
+            } in     
+          let eid =
+            Bsb_unix.run_command_execv
+              command in 
+          if eid <> 0 then   
             Bsb_unix.command_fatal_error command eid;
-           (* When ninja is not regenerated, ninja will still do the build, 
-              still need reinstall check
-              Note that we can check if ninja print "no work to do", 
-              then don't need reinstall more
-           *)
-           install_targets cwd config_opt;
-         end
+          (* When ninja is not regenerated, ninja will still do the build, 
+             still need reinstall check
+             Note that we can check if ninja print "no work to do", 
+             then don't need reinstall more
+          *)
+          install_targets cwd config_opt;
+        end
     )
 
 
@@ -17236,7 +17218,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) =
          it wants
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
+    | Some config -> config.package_specs in
   build_bs_deps cwd deps
 end
 module Bsb_main : sig 
@@ -17341,16 +17323,16 @@ let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote vendor_ninja in 
-    exec_command_then_exit @@ 
-    (if ninja_args_len = 0 then      
-       Ext_string.inter3
-         path_ninja "-C" Bsb_config.lib_bs
-     else   
-       let args = 
-         Array.append 
-           [| path_ninja ; "-C"; Bsb_config.lib_bs|]
-           ninja_args in 
-       Ext_string.concat_array Ext_string.single_space args)
+    exec_command_then_exit 
+      (if ninja_args_len = 0 then      
+         Ext_string.inter3
+           path_ninja "-C" Bsb_config.lib_bs
+       else   
+         let args = 
+           Array.append 
+             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             ninja_args in 
+         Ext_string.concat_array Ext_string.single_space args)
   else
     let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
     let args = 
