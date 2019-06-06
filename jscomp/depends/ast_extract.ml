@@ -241,7 +241,7 @@ let collect_from_main
         Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                 Ext_string.ends_with source_file ".mli" )
-            && (* not_excluded source_file *) (not (List.mem source_file excludes))
+            && (* not_excluded source_file *) (not (Ext_list.mem_string excludes source_file ))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) )

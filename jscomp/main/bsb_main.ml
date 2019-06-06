@@ -94,16 +94,16 @@ let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote vendor_ninja in 
-    exec_command_then_exit @@ 
-    (if ninja_args_len = 0 then      
-       Ext_string.inter3
-         path_ninja "-C" Bsb_config.lib_bs
-     else   
-       let args = 
-         Array.append 
-           [| path_ninja ; "-C"; Bsb_config.lib_bs|]
-           ninja_args in 
-       Ext_string.concat_array Ext_string.single_space args)
+    exec_command_then_exit 
+      (if ninja_args_len = 0 then      
+         Ext_string.inter3
+           path_ninja "-C" Bsb_config.lib_bs
+       else   
+         let args = 
+           Array.append 
+             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             ninja_args in 
+         Ext_string.concat_array Ext_string.single_space args)
   else
     let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
     let args = 

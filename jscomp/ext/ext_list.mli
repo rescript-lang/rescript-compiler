@@ -359,3 +359,8 @@ val fold_left:
 
 val singleton_exn:     
     'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool

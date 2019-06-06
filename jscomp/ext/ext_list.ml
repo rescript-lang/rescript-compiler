@@ -703,3 +703,7 @@ let rec fold_left2 l1 l2 accu f =
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
