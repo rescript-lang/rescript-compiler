@@ -132,7 +132,7 @@ let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 
-let watch_exit () =
+let program_exit () =
   exit 0
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
@@ -142,15 +142,12 @@ let () =
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-      begin
-        let _config_opt =  
-          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
-            ~generate_watch_metadata:true
-            ~forced:false 
-            cwd bsc_dir 
-        in 
-        ninja_command_exit  vendor_ninja [||] 
-      end
+      Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
+        ~generate_watch_metadata:true
+        ~forced:false 
+        cwd bsc_dir |> ignore;
+      ninja_command_exit  vendor_ninja [||] 
+
     | argv -> 
       begin
         match Ext_array.find_and_split argv Ext_string.equal separator with
@@ -164,37 +161,35 @@ let () =
             | None -> 
               (* [-make-world] should never be combined with [-package-specs] *)
               let make_world = !make_world in 
-              begin match make_world, !force_regenerate with
-                | false, false -> 
-                  (* [regenerate_ninja] is not triggered in this case
-                     There are several cases we wish ninja will not be triggered.
-                     [bsb -clean-world]
-                     [bsb -regen ]
-                  *)
-                  if !watch_mode then begin
-                    watch_exit ()
-                  end 
-                | make_world, force_regenerate ->
-                  let config_opt = 
-                    Bsb_ninja_regen.regenerate_ninja 
-                      ~generate_watch_metadata:true 
-                      ~override_package_specs:None 
-                      ~not_dev:false 
-                      ~forced:force_regenerate cwd bsc_dir  in
-                  if make_world then begin
-                    Bsb_world.make_world_deps cwd config_opt
-                  end;
-                  if !watch_mode then begin
-                    watch_exit ()
-                    (* ninja is not triggered in this case
-                       There are several cases we wish ninja will not be triggered.
-                       [bsb -clean-world]
-                       [bsb -regen ]
-                    *)
-                  end else if make_world then begin
-                    ninja_command_exit  vendor_ninja [||] 
-                  end
-              end;
+              let force_regenerate = !force_regenerate in  
+              if not make_world && not force_regenerate then
+                (* [regenerate_ninja] is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
+                (if !watch_mode then 
+                    program_exit ()) (* bsb -verbose hit here *)
+              else
+                (let config_opt = 
+                   Bsb_ninja_regen.regenerate_ninja 
+                     ~generate_watch_metadata:true 
+                     ~override_package_specs:None 
+                     ~not_dev:false 
+                     ~forced:force_regenerate cwd bsc_dir  in
+                 if make_world then begin
+                   Bsb_world.make_world_deps cwd config_opt
+                 end;
+                 if !watch_mode then begin
+                   program_exit ()
+                   (* ninja is not triggered in this case
+                      There are several cases we wish ninja will not be triggered.
+                      [bsb -clean-world]
+                      [bsb -regen ]
+                   *)
+                 end else if make_world then begin
+                   ninja_command_exit  vendor_ninja [||] 
+                 end)
           end
         | `Split (bsb_args,ninja_args)
           -> (* -make-world all dependencies fall into this category *)
@@ -208,7 +203,7 @@ let () =
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps cwd config_opt ;
-            if !watch_mode then watch_exit ()
+            if !watch_mode then program_exit ()
             else ninja_command_exit  vendor_ninja ninja_args 
           end
       end
