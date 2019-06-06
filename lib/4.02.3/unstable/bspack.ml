@@ -6055,6 +6055,11 @@ val fold_left:
 
 val singleton_exn:     
     'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6762,6 +6767,10 @@ let rec fold_left2 l1 l2 accu f =
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
 
 end
 module Ext_sys : sig 
@@ -9562,7 +9571,7 @@ let collect_from_main
         Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                 Ext_string.ends_with source_file ".mli" )
-            && (* not_excluded source_file *) (not (List.mem source_file excludes))
+            && (* not_excluded source_file *) (not (Ext_list.mem_string excludes source_file ))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) )
