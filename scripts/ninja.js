@@ -129,8 +129,8 @@ function writeFile(name, content) {
  * @param {string} name
  * @param {string} content
  */
-function writeFileSync(name,content){
-  return fs.writeFileSync(name,content,'ascii')
+function writeFileSync(name, content) {
+  return fs.writeFileSync(name, content, "ascii");
 }
 /**
  *
@@ -1393,12 +1393,12 @@ include body.ninja
 `
     );
   }
+  preprocessorNinjaSync();
   nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
   testNinja();
   othersNinja();
-  
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
@@ -1456,33 +1456,15 @@ ocamlmklib = ocamlmklib
 }
 
 /**
- * Built cppo.exe refmt.exe etc for dev purpose
+ * @returns {string}
  */
-function preprocessorNinja(){
-
+function getPreprocessorFileName() {
+  return useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
 }
 /**
- * Note don't run `ninja -t clean -g`
- * Since it will remove generated ml file which has
- * an effect on depfile
+ * Built cppo.exe refmt.exe etc for dev purpose
  */
-function nativeNinja() {
-  var ninjaOutput = useEnv ? "compilerEnv.ninja" : "compiler.ninja";
-  var sourceDirs = [
-    "stubs",
-    "ext",
-    "common",
-    "syntax",
-    "depends",
-    "core",
-    "super_errors",
-    "outcome_printer",
-    "bsb",
-    "ounit",
-    "ounit_tests",
-    "main"
-  ];
-  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
+function preprocessorNinjaSync() {
   var refmtMainPath = version6() ? "../lib/4.06.1" : "../lib/4.02.3";
   var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
@@ -1530,9 +1512,39 @@ build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
 
 `;
-  var cppoNinjaFile = useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
+  var cppoNinjaFile = getPreprocessorFileName();
+  writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
+  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
+    cwd: jscompDir,
+    stdio: [0, 1, 2],
+    encoding: "utf8"
+  });
+}
+/**
+ * Note don't run `ninja -t clean -g`
+ * Since it will remove generated ml file which has
+ * an effect on depfile
+ */
+function nativeNinja() {
+  var ninjaOutput = useEnv ? "compilerEnv.ninja" : "compiler.ninja";
+  var sourceDirs = [
+    "stubs",
+    "ext",
+    "common",
+    "syntax",
+    "depends",
+    "core",
+    "super_errors",
+    "outcome_printer",
+    "bsb",
+    "ounit",
+    "ounit_tests",
+    "main"
+  ];
+  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
+
   var templateNative = `
-subninja ${cppoNinjaFile}
+subninja ${getPreprocessorFileName()}
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1610,13 +1622,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
       libs.push({ name, libs: [] });
     }
   });
-  writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
 
-  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
-    cwd: jscompDir,
-    stdio: [0, 1, 2],
-    encoding: "utf8"
-  });
   /**
    * @type{string[]}
    */
