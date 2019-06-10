@@ -123,6 +123,15 @@ var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`;
 function writeFile(name, content) {
   fs.writeFile(name, content, "ascii", throwIfError);
 }
+
+/**
+ *
+ * @param {string} name
+ * @param {string} content
+ */
+function writeFileSync(name, content) {
+  return fs.writeFileSync(name, content, "ascii");
+}
 /**
  *
  * @param {NodeJS.ErrnoException} err
@@ -1335,32 +1344,6 @@ function sortFilesByDeps(domain, dependency_graph) {
   return result;
 }
 
-var emptyCount = 2;
-if (require.main === module) {
-  if (process.argv.includes("-env")) {
-    useEnv = true;
-    emptyCount++;
-  }
-  if (process.argv.includes("-check")) {
-    checkEffect();
-  }
-  if (process.argv.length === emptyCount) {
-    updateDev();
-    updateRelease();
-  } else {
-    var dev = process.argv.includes("-dev");
-    var release = process.argv.includes("-release");
-    var all = process.argv.includes("-all");
-    if (all) {
-      updateDev();
-      updateRelease();
-    } else if (dev) {
-      updateDev();
-    } else if (release) {
-      updateRelease();
-    }
-  }
-}
 function updateRelease() {
   if (!useEnv) {
     runtimeNinja(false);
@@ -1410,11 +1393,12 @@ include body.ninja
 `
     );
   }
+  preprocessorNinjaSync();
+  nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
   testNinja();
   othersNinja();
-  nativeNinja();
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
@@ -1470,28 +1454,17 @@ ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
 `;
 }
+
 /**
- * Note don't run `ninja -t clean -g`
- * Since it will remove generated ml file which has
- * an effect on depfile
+ * @returns {string}
  */
-function nativeNinja() {
-  var ninjaOutput = useEnv ? "compilerEnv.ninja" : "compiler.ninja";
-  var sourceDirs = [
-    "stubs",
-    "ext",
-    "common",
-    "syntax",
-    "depends",
-    "core",
-    "super_errors",
-    "outcome_printer",
-    "bsb",
-    "ounit",
-    "ounit_tests",
-    "main"
-  ];
-  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
+function getPreprocessorFileName() {
+  return useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
+}
+/**
+ * Built cppo.exe refmt.exe etc for dev purpose
+ */
+function preprocessorNinjaSync() {
   var refmtMainPath = version6() ? "../lib/4.06.1" : "../lib/4.02.3";
   var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
@@ -1534,10 +1507,44 @@ ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
   ["reactjs_jsx_ppx_v2.ml", "reactjs_jsx_ppx.cppo.ml", "REACT_JS_JSX_V2"]
 ])}
+build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+    libs = ocamlcommon.cmxa
+    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
+
 `;
-  var cppoNinjaFile = useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
+  var cppoNinjaFile = getPreprocessorFileName();
+  writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
+  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
+    cwd: jscompDir,
+    stdio: [0, 1, 2],
+    encoding: "utf8"
+  });
+}
+/**
+ * Note don't run `ninja -t clean -g`
+ * Since it will remove generated ml file which has
+ * an effect on depfile
+ */
+function nativeNinja() {
+  var ninjaOutput = useEnv ? "compilerEnv.ninja" : "compiler.ninja";
+  var sourceDirs = [
+    "stubs",
+    "ext",
+    "common",
+    "syntax",
+    "depends",
+    "core",
+    "super_errors",
+    "outcome_printer",
+    "bsb",
+    "ounit",
+    "ounit_tests",
+    "main"
+  ];
+  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
+
   var templateNative = `
-subninja ${cppoNinjaFile}
+subninja ${getPreprocessorFileName()}
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1579,9 +1586,6 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
-    libs = ocamlcommon.cmxa
-    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
@@ -1619,32 +1623,21 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     }
   });
 
-  fs.writeFile(
-    path.join(jscompDir, cppoNinjaFile),
-    cppoNative,
-    "ascii",
-    function(err) {
-      if (err !== null) {
-        throw err;
-      }
-      cp.execSync(`ninja -f ${cppoNinjaFile}`, {
-        cwd: jscompDir,
-        stdio: [0, 1, 2],
-        encoding: "utf8"
-      });
-      /**
-       * @type{string[]}
-       */
-      var files = [];
-      for (let dir of sourceDirs) {
-        files = files.concat(test(dir));
-      }
+  /**
+   * @type{string[]}
+   */
+  var files = [];
+  for (let dir of sourceDirs) {
+    files = files.concat(test(dir));
+  }
 
-      var out = cp.execSync(
-        `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
-        { cwd: jscompDir, encoding: "ascii" }
-      );
-
+  cp.exec(
+    `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
+    { cwd: jscompDir, encoding: "ascii" },
+    function(error, out) {
+      if(error !== null){
+        throw error
+      }
       /**
        * @type {Map<string,Set<string>>}
        */
@@ -1703,3 +1696,33 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     }
   );
 }
+
+function main() {
+  var emptyCount = 2;
+  if (require.main === module) {
+    if (process.argv.includes("-env")) {
+      useEnv = true;
+      emptyCount++;
+    }
+    if (process.argv.includes("-check")) {
+      checkEffect();
+    }
+    if (process.argv.length === emptyCount) {
+      updateDev();
+      updateRelease();
+    } else {
+      var dev = process.argv.includes("-dev");
+      var release = process.argv.includes("-release");
+      var all = process.argv.includes("-all");
+      if (all) {
+        updateDev();
+        updateRelease();
+      } else if (dev) {
+        updateDev();
+      } else if (release) {
+        updateRelease();
+      }
+    }
+  }
+}
+main();
