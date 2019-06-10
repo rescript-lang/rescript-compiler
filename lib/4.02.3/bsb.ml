@@ -12235,7 +12235,7 @@ let merlin_file_gen ~cwd
        (match reason_react_jsx with 
         | None -> built_in_ppx
         | Some opt ->
-          Printf.sprintf "'%s -bs-jsx %d'" built_in_ppx
+          Printf.sprintf "\"%s -bs-jsx %d\"" built_in_ppx
             (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
        )
       );
