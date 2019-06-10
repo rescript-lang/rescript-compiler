@@ -123,6 +123,15 @@ var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`;
 function writeFile(name, content) {
   fs.writeFile(name, content, "ascii", throwIfError);
 }
+
+/**
+ *
+ * @param {string} name
+ * @param {string} content
+ */
+function writeFileSync(name,content){
+  return fs.writeFileSync(name,content,'ascii')
+}
 /**
  *
  * @param {NodeJS.ErrnoException} err
@@ -1384,11 +1393,12 @@ include body.ninja
 `
     );
   }
+  nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
   testNinja();
   othersNinja();
-  nativeNinja();
+  
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
@@ -1443,6 +1453,13 @@ ocamlopt = ocamlopt.opt
 ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
 `;
+}
+
+/**
+ * Built cppo.exe refmt.exe etc for dev purpose
+ */
+function preprocessorNinja(){
+
 }
 /**
  * Note don't run `ninja -t clean -g`
@@ -1508,6 +1525,10 @@ ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
   ["reactjs_jsx_ppx_v2.ml", "reactjs_jsx_ppx.cppo.ml", "REACT_JS_JSX_V2"]
 ])}
+build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+    libs = ocamlcommon.cmxa
+    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
+
 `;
   var cppoNinjaFile = useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
   var templateNative = `
@@ -1553,9 +1574,6 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
-    libs = ocamlcommon.cmxa
-    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
@@ -1592,89 +1610,80 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
       libs.push({ name, libs: [] });
     }
   });
+  writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
 
-  fs.writeFile(
-    path.join(jscompDir, cppoNinjaFile),
-    cppoNative,
-    "ascii",
-    function(err) {
-      if (err !== null) {
-        throw err;
-      }
-      cp.execSync(`ninja -f ${cppoNinjaFile}`, {
-        cwd: jscompDir,
-        stdio: [0, 1, 2],
-        encoding: "utf8"
-      });
-      /**
-       * @type{string[]}
-       */
-      var files = [];
-      for (let dir of sourceDirs) {
-        files = files.concat(test(dir));
-      }
+  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
+    cwd: jscompDir,
+    stdio: [0, 1, 2],
+    encoding: "utf8"
+  });
+  /**
+   * @type{string[]}
+   */
+  var files = [];
+  for (let dir of sourceDirs) {
+    files = files.concat(test(dir));
+  }
 
-      var out = cp.execSync(
-        `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
-        { cwd: jscompDir, encoding: "ascii" }
-      );
+  var out = cp.execSync(
+    `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
+    { cwd: jscompDir, encoding: "ascii" }
+  );
 
-      /**
-       * @type {Map<string,Set<string>>}
-       */
-      var map = new Map();
+  /**
+   * @type {Map<string,Set<string>>}
+   */
+  var map = new Map();
 
-      var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
-      pairs.forEach(pair => {
-        var deps;
-        var key = pair[0];
-        if (pair[1] !== undefined && (deps = pair[1].trim())) {
-          deps = deps.split(" ");
-          map.set(key, new Set(deps));
-        }
-        if (key.endsWith("cmx")) {
-          libs.forEach(x => {
-            if (key.startsWith(x.name)) {
-              x.libs.push(key);
-            }
-          });
-        }
-      });
-
-      // not ocamldep output
-      // when no mli exists no deps for cmi otherwise add cmi
-      var stmts = pairs.map(pair => {
-        if (pair[0]) {
-          var target = pair[0];
-          var y = path.parse(target);
-          /**
-           * @type {Set<string>}
-           */
-          var deps = map.get(target) || new Set();
-          if (y.ext === ".cmx") {
-            var intf = path.join(y.dir, y.name + ".cmi");
-            var ml = path.join(y.dir, y.name + ".ml");
-            return `build ${
-              deps.has(intf) ? target : [target, intf].join(" ")
-            } : optc ${ml} | ${setSortedToString(deps)}`;
-          } else {
-            // === 'cmi'
-            var mli = path.join(y.dir, y.name + ".mli");
-            return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`;
-          }
-        }
-      });
-      libs.forEach(x => {
-        var output = sortFilesByDeps(x.libs, map);
-        var name = x.name;
-        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
-      });
-
-      writeFile(
-        path.join(jscompDir, ninjaOutput),
-        templateNative + stmts.join("\n") + "\n"
-      );
+  var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
+  pairs.forEach(pair => {
+    var deps;
+    var key = pair[0];
+    if (pair[1] !== undefined && (deps = pair[1].trim())) {
+      deps = deps.split(" ");
+      map.set(key, new Set(deps));
     }
+    if (key.endsWith("cmx")) {
+      libs.forEach(x => {
+        if (key.startsWith(x.name)) {
+          x.libs.push(key);
+        }
+      });
+    }
+  });
+
+  // not ocamldep output
+  // when no mli exists no deps for cmi otherwise add cmi
+  var stmts = pairs.map(pair => {
+    if (pair[0]) {
+      var target = pair[0];
+      var y = path.parse(target);
+      /**
+       * @type {Set<string>}
+       */
+      var deps = map.get(target) || new Set();
+      if (y.ext === ".cmx") {
+        var intf = path.join(y.dir, y.name + ".cmi");
+        var ml = path.join(y.dir, y.name + ".ml");
+        return `build ${
+          deps.has(intf) ? target : [target, intf].join(" ")
+        } : optc ${ml} | ${setSortedToString(deps)}`;
+      } else {
+        // === 'cmi'
+        var mli = path.join(y.dir, y.name + ".mli");
+        return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`;
+      }
+    }
+  });
+  libs.forEach(x => {
+    var output = sortFilesByDeps(x.libs, map);
+    var name = x.name;
+    stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
+  });
+
+  writeFile(
+    path.join(jscompDir, ninjaOutput),
+    templateNative + stmts.join("\n") + "\n"
   );
 }
 
