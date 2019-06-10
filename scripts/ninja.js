@@ -1335,35 +1335,6 @@ function sortFilesByDeps(domain, dependency_graph) {
   return result;
 }
 
-function main() {
-  var emptyCount = 2;
-  if (require.main === module) {
-    if (process.argv.includes("-env")) {
-      useEnv = true;
-      emptyCount++;
-    }
-    if (process.argv.includes("-check")) {
-      checkEffect();
-    }
-    if (process.argv.length === emptyCount) {
-      updateDev();
-      updateRelease();
-    } else {
-      var dev = process.argv.includes("-dev");
-      var release = process.argv.includes("-release");
-      var all = process.argv.includes("-all");
-      if (all) {
-        updateDev();
-        updateRelease();
-      } else if (dev) {
-        updateDev();
-      } else if (release) {
-        updateRelease();
-      }
-    }
-  }
-}
-
 function updateRelease() {
   if (!useEnv) {
     runtimeNinja(false);
@@ -1707,4 +1678,32 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
   );
 }
 
-main()
+function main() {
+  var emptyCount = 2;
+  if (require.main === module) {
+    if (process.argv.includes("-env")) {
+      useEnv = true;
+      emptyCount++;
+    }
+    if (process.argv.includes("-check")) {
+      checkEffect();
+    }
+    if (process.argv.length === emptyCount) {
+      updateDev();
+      updateRelease();
+    } else {
+      var dev = process.argv.includes("-dev");
+      var release = process.argv.includes("-release");
+      var all = process.argv.includes("-all");
+      if (all) {
+        updateDev();
+        updateRelease();
+      } else if (dev) {
+        updateDev();
+      } else if (release) {
+        updateRelease();
+      }
+    }
+  }
+}
+main();
