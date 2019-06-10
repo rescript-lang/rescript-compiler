@@ -1631,65 +1631,69 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     files = files.concat(test(dir));
   }
 
-  var out = cp.execSync(
+  cp.exec(
     `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
-    { cwd: jscompDir, encoding: "ascii" }
-  );
+    { cwd: jscompDir, encoding: "ascii" },
+    function(error, out) {
+      if(error !== null){
+        throw error
+      }
+      /**
+       * @type {Map<string,Set<string>>}
+       */
+      var map = new Map();
 
-  /**
-   * @type {Map<string,Set<string>>}
-   */
-  var map = new Map();
-
-  var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
-  pairs.forEach(pair => {
-    var deps;
-    var key = pair[0];
-    if (pair[1] !== undefined && (deps = pair[1].trim())) {
-      deps = deps.split(" ");
-      map.set(key, new Set(deps));
-    }
-    if (key.endsWith("cmx")) {
-      libs.forEach(x => {
-        if (key.startsWith(x.name)) {
-          x.libs.push(key);
+      var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
+      pairs.forEach(pair => {
+        var deps;
+        var key = pair[0];
+        if (pair[1] !== undefined && (deps = pair[1].trim())) {
+          deps = deps.split(" ");
+          map.set(key, new Set(deps));
+        }
+        if (key.endsWith("cmx")) {
+          libs.forEach(x => {
+            if (key.startsWith(x.name)) {
+              x.libs.push(key);
+            }
+          });
         }
       });
-    }
-  });
 
-  // not ocamldep output
-  // when no mli exists no deps for cmi otherwise add cmi
-  var stmts = pairs.map(pair => {
-    if (pair[0]) {
-      var target = pair[0];
-      var y = path.parse(target);
-      /**
-       * @type {Set<string>}
-       */
-      var deps = map.get(target) || new Set();
-      if (y.ext === ".cmx") {
-        var intf = path.join(y.dir, y.name + ".cmi");
-        var ml = path.join(y.dir, y.name + ".ml");
-        return `build ${
-          deps.has(intf) ? target : [target, intf].join(" ")
-        } : optc ${ml} | ${setSortedToString(deps)}`;
-      } else {
-        // === 'cmi'
-        var mli = path.join(y.dir, y.name + ".mli");
-        return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`;
-      }
-    }
-  });
-  libs.forEach(x => {
-    var output = sortFilesByDeps(x.libs, map);
-    var name = x.name;
-    stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
-  });
+      // not ocamldep output
+      // when no mli exists no deps for cmi otherwise add cmi
+      var stmts = pairs.map(pair => {
+        if (pair[0]) {
+          var target = pair[0];
+          var y = path.parse(target);
+          /**
+           * @type {Set<string>}
+           */
+          var deps = map.get(target) || new Set();
+          if (y.ext === ".cmx") {
+            var intf = path.join(y.dir, y.name + ".cmi");
+            var ml = path.join(y.dir, y.name + ".ml");
+            return `build ${
+              deps.has(intf) ? target : [target, intf].join(" ")
+            } : optc ${ml} | ${setSortedToString(deps)}`;
+          } else {
+            // === 'cmi'
+            var mli = path.join(y.dir, y.name + ".mli");
+            return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`;
+          }
+        }
+      });
+      libs.forEach(x => {
+        var output = sortFilesByDeps(x.libs, map);
+        var name = x.name;
+        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
+      });
 
-  writeFile(
-    path.join(jscompDir, ninjaOutput),
-    templateNative + stmts.join("\n") + "\n"
+      writeFile(
+        path.join(jscompDir, ninjaOutput),
+        templateNative + stmts.join("\n") + "\n"
+      );
+    }
   );
 }
 
