@@ -11200,6 +11200,7 @@ type refmt =
 type gentype_config = {
   path : string (* resolved *)
 }
+type command = string
 type t = 
   {
     package_name : string ; 
@@ -11229,7 +11230,7 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
-    generators : string String_map.t ; 
+    generators : command String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option
@@ -12939,22 +12940,26 @@ module Bsb_ninja_rule : sig
 
 
 
-
+(** The complexity comes from the fact that we allow custom rules which could
+  conflict with our custom built-in rules
+*)
 type t  
+
 
 val get_name : t  -> out_channel -> string
 
+(***********************************************************)
+(** A list of existing rules *)
 val build_ast_and_module_sets : t
 (** TODO: Implement it on top of pp_flags *)
 val build_ast_and_module_sets_from_re : t 
 val build_ast_and_module_sets_from_rei : t 
+
+
 (** platform dependent, on Win32,
   invoking cmd.exe
  *)
 val copy_resources : t
-
-
-
 (** Rules below all need restat *)
 val build_bin_deps : t 
 val build_cmj_js : t
@@ -12962,17 +12967,19 @@ val build_cmj_cmi_js : t
 val build_cmi : t
 val build_package : t 
 
+(***********************************************************)
+
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
     1. respect custom rules with the same name, then we need adjust our built-in 
     rules dynamically in case the conflict.
     2. respect our built-in rules, then we only need re-load custom rules for each bsconfig.json
 *)
 
-
+type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val reset : string String_map.t -> t String_map.t
+val make_custom_rules : command String_map.t -> t String_map.t
 
 end = struct
 #1 "bsb_ninja_rule.ml"
@@ -13068,29 +13075,29 @@ let define
     since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
     "build_ast_and_module_sets"
 
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags}  -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
     "build_ast_and_module_sets_from_rei"
 
-let copy_resources =
-  let name = "copy_resource" in
-  if Ext_sys.is_windows_or_cygwin then
-    define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
-      name
-  else
-    define
-      ~command:"cp ${in} ${out}"
-      name
+let copy_resources =    
+  define 
+    ~command:(
+      if Ext_sys.is_windows_or_cygwin then
+        "cmd.exe /C copy /Y $in $out > null" 
+      else "cp $in $out"
+    )
+    "copy_resource" 
+
 
       
 let build_bin_deps =
@@ -13115,8 +13122,7 @@ let build_bin_deps =
 (* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
-    ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -13124,30 +13130,29 @@ let build_cmj_js =
 
 let build_cmj_cmi_js =
   define
-    ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
-    ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let build_package = 
   define
-    ~command:"${bsc} -w -49 -no-alias-deps -bs-cmi-only -c ${in}"
+    ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
     ~restat:()
     "build_package"
 
 (* a snapshot of rule_names environment*)
 let built_in_rule_names = !rule_names 
 let built_in_rule_id = !rule_id
+type command = string
 
-let reset (custom_rules : string String_map.t) = 
+let make_custom_rules (custom_rules : command String_map.t) = 
   rule_id := built_in_rule_id;
   rule_names := built_in_rule_names;
   build_ast_and_module_sets.used <- false ;
@@ -13567,7 +13572,7 @@ let emit_impl_build
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
-  let implicit_deps = (if has_checked_ppx then [ "${ppx_checked_files}" ] else []) in     
+  let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
@@ -13821,7 +13826,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_ninja_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
