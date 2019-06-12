@@ -30,7 +30,7 @@ let bsc_flags =
   ] 
 
 
-let refmt_flags = ["--print"; "binary"]
+let g_re_flag = ["--print"; "binary"]
 
 let refmt_v3 = "refmt.exe"
 let refmt_none = "refmt.exe"

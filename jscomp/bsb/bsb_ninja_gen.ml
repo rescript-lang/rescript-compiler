@@ -52,7 +52,7 @@ let output_ninja_and_namespace_map
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
-      refmt_flags;
+      g_re_flag;
       js_post_build_cmd;
       package_specs;
       bs_file_groups;
@@ -74,7 +74,7 @@ let output_ninja_and_namespace_map
       String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
   in
-  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
+  let g_re_flag = String.concat Ext_string.single_space g_re_flag in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
     Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
@@ -128,7 +128,7 @@ let output_ninja_and_namespace_map
               bsc_dir // Bsb_default.refmt_v3
             | Refmt_custom x -> x );
           Bsb_ninja_global_vars.g_react, g_react_flag; 
-          Bsb_ninja_global_vars.refmt_flags, refmt_flags;
+          Bsb_ninja_global_vars.g_re_flag, g_re_flag;
         |] oc 
   in   
   let () = 

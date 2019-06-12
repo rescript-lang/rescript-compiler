@@ -132,7 +132,7 @@ let interpret_json
 
   let g_react : Bsb_config_types.g_react option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
-  let refmt_flags = ref Bsb_default.refmt_flags in
+  let g_re_flag = ref Bsb_default.g_re_flag in
   let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -340,7 +340,7 @@ let interpret_json
                   Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
               | _ -> acc ) ))
-    |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
+    |? (Bsb_build_schemas.g_re_flag, `Arr (fun s -> g_re_flag := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
@@ -398,7 +398,7 @@ let interpret_json
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
-          refmt_flags = !refmt_flags ;
+          g_re_flag = !g_re_flag ;
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
             (match override_package_specs with 

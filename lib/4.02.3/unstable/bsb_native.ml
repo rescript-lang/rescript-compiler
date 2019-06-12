@@ -98,7 +98,7 @@ let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
-let refmt_flags = "refmt-flags"
+let g_re_flag = "refmt-flags"
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
@@ -11221,7 +11221,7 @@ type t =
       [.merlin]
     *)
     refmt : refmt;
-    refmt_flags : string list;
+    g_re_flag : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     globbed_dirs : string list;
@@ -11267,7 +11267,7 @@ module Bsb_default : sig
 
 val bsc_flags : string list 
 
-val refmt_flags : string list  
+val g_re_flag : string list  
 
 val refmt_v3 : string
 
@@ -11309,7 +11309,7 @@ let bsc_flags =
   ] 
 
 
-let refmt_flags = ["--print"; "binary"]
+let g_re_flag = ["--print"; "binary"]
 
 let refmt_v3 = "refmt.exe"
 let refmt_none = "refmt.exe"
@@ -11782,7 +11782,7 @@ let interpret_json
 
   let g_react : Bsb_config_types.g_react option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
-  let refmt_flags = ref Bsb_default.refmt_flags in
+  let g_re_flag = ref Bsb_default.g_re_flag in
   let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -11990,7 +11990,7 @@ let interpret_json
                   Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
               | _ -> acc ) ))
-    |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
+    |? (Bsb_build_schemas.g_re_flag, `Arr (fun s -> g_re_flag := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
@@ -12048,7 +12048,7 @@ let interpret_json
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
-          refmt_flags = !refmt_flags ;
+          g_re_flag = !g_re_flag ;
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
             (match override_package_specs with 
@@ -12901,7 +12901,7 @@ let refmt = "refmt"
 
 let g_react = "g_react"
 
-let refmt_flags = "refmt_flags"
+let g_re_flag = "g_re_flag"
 
 let postbuild = "postbuild"
 
@@ -13081,12 +13081,12 @@ let build_ast_and_module_sets =
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $g_react  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $g_react $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
     "build_ast_and_module_sets_from_rei"
 
 let copy_resources =    
@@ -13813,7 +13813,7 @@ let output_ninja_and_namespace_map
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
-      refmt_flags;
+      g_re_flag;
       js_post_build_cmd;
       package_specs;
       bs_file_groups;
@@ -13835,7 +13835,7 @@ let output_ninja_and_namespace_map
       String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
   in
-  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
+  let g_re_flag = String.concat Ext_string.single_space g_re_flag in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
     Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
@@ -13889,7 +13889,7 @@ let output_ninja_and_namespace_map
               bsc_dir // Bsb_default.refmt_v3
             | Refmt_custom x -> x );
           Bsb_ninja_global_vars.g_react, g_react_flag; 
-          Bsb_ninja_global_vars.refmt_flags, refmt_flags;
+          Bsb_ninja_global_vars.g_re_flag, g_re_flag;
         |] oc 
   in   
   let () = 

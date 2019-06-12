@@ -26,7 +26,7 @@
 
 val bsc_flags : string list 
 
-val refmt_flags : string list  
+val g_re_flag : string list  
 
 val refmt_v3 : string
 

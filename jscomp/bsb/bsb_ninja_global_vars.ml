@@ -44,7 +44,7 @@ let refmt = "refmt"
 
 let g_react = "g_react"
 
-let refmt_flags = "refmt_flags"
+let g_re_flag = "g_re_flag"
 
 let postbuild = "postbuild"
 

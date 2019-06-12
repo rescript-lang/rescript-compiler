@@ -68,7 +68,7 @@ type t =
       [.merlin]
     *)
     refmt : refmt;
-    refmt_flags : string list;
+    g_re_flag : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     globbed_dirs : string list;
