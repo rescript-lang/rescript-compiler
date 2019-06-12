@@ -129,8 +129,8 @@ let compile  ~filename (output_prefix : string) env _sigs
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
 #if undefined BS_RELEASE_BUILD then     
-    export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn ~__POS__ "export: %s/%d"  id.name id.stamp) ;
+    Ext_list.iter export_idents 
+      (fun id -> Ext_log.dwarn ~__POS__ "export idents: %s/%d"  id.name id.stamp) ;
 #end      
     Lam_compile_env.reset () ;
   in 
@@ -232,10 +232,12 @@ let compile  ~filename (output_prefix : string) env _sigs
 #end    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
+  let meta_exports = meta.exports in 
+  let export_set = Ident_set.of_list meta_exports in 
   let js : J.program = 
       { J.name = filename ; 
-        exports = meta.exports ; 
-        export_set = Ident_set.of_list meta.exports; 
+        exports = meta_exports ; 
+        export_set; 
         block = body}
   in
   js 

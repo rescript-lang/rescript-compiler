@@ -97,7 +97,7 @@ let count_collects () =
   end
 
 
-let get_stats program
+let get_stats (program : J.program) : J.variable_declaration Ident_hashtbl.t
   =  ((count_collects ()) #program program) #get_stats
 
 
@@ -135,27 +135,24 @@ let get_stats program
     (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
     while it is still called 
 *)
-let subst name export_set stats  = 
+let subst name (export_set : Ident_set.t) stats  = 
   object (self)
     inherit Js_map.map as super
     method! statement st = 
-      match st with 
-      | {statement_desc =
-           Variable 
-             {value = _ ;
-              ident_info = {used_stats = Dead_pure}
-             } 
-        ; comment = _}
+      match st.statement_desc with 
+      | Variable 
+          {value = _ ;
+           ident_info = {used_stats = Dead_pure}
+          } 
+
         ->
         S.block []
-      | {statement_desc = 
-           Variable { ident_info = {used_stats = Dead_non_pure} ;
-                      value = Some v  ; _ } 
-        ; _}
+      | Variable { ident_info = {used_stats = Dead_non_pure} ;
+                   value = Some v  ; _ }        
         -> S.exp v
       | _ -> super#statement st 
     method! variable_declaration 
-        ({ident; value ; property  ; ident_info }  as v)
+        ({ident; value = _ ; property = _ ; ident_info = _}  as v)
       =  
       (* TODO: replacement is a bit shaky, the problem is the lambda we stored is
          not consistent after we did some subsititution, and the dead code removal

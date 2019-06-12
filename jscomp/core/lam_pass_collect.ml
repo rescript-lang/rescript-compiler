@@ -108,7 +108,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
           so -- it would still iterate internally
       *)
 
-      List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
+      Ext_list.iter params (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) ;
       let arity = Lam_arity_analysis.get_arity meta lam in       
       annotate meta rec_flag ident  arity lam; 
       collect body
@@ -170,8 +170,8 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 let count_alias_globals 
     env 
     filename
-    export_idents
-    export_sets 
+    (export_idents : Ident.t list)
+    (export_sets  : Ident_set.t)
     (lam : Lam.t) : Lam_stats.t =
   let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 

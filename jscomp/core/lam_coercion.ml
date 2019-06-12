@@ -200,7 +200,7 @@ let rec flatten
 *)
 let coerce_and_group_big_lambda
     (meta : Lam_stats.t)
-    lam =
+    lam : t * Lam_stats.t =
   match flatten [] lam with
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input
     ->
@@ -212,6 +212,7 @@ let coerce_and_group_big_lambda
         exports = coerced_input.export_list}
   | _ ->
     (* This could happen see #2474*)
+    (* #3595 *)
     {
       export_list = [];
       export_set = Ident_set.empty;
