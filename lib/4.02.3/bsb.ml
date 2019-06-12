@@ -11187,7 +11187,7 @@ type dependencies = dependency list
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
 
-type reason_react_jsx = 
+type g_react = 
   | Jsx_v2
   | Jsx_v3
   (* string option  *)
@@ -11228,7 +11228,7 @@ type t =
     bs_file_groups : Bsb_file_groups.file_groups;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
-    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
+    g_react : g_react option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
     generators : command String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
@@ -11780,7 +11780,7 @@ let interpret_json
 
   : Bsb_config_types.t =
 
-  let reason_react_jsx : Bsb_config_types.reason_react_jsx option ref = ref None in 
+  let g_react : Bsb_config_types.g_react option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
@@ -11927,9 +11927,9 @@ let interpret_json
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
-              reason_react_jsx := Some Jsx_v2
+              g_react := Some Jsx_v2
             | "3" -> 
-              reason_react_jsx := Some Jsx_v3
+              g_react := Some Jsx_v3
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end        
         | Some x -> Bsb_exception.config_error x 
@@ -12059,7 +12059,7 @@ let interpret_json
           files_to_install = String_hash_set.create 96;
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
-          reason_react_jsx = !reason_react_jsx ;  
+          g_react = !g_react ;  
           entries = !entries;
           generators = !generators ; 
           cut_generators = !cut_generators
@@ -12216,7 +12216,7 @@ let merlin_file_gen ~cwd
       bsc_flags; 
       built_in_dependency;
       external_includes; 
-      reason_react_jsx ; 
+      g_react ; 
       namespace;
       package_name;
       warning; 
@@ -12233,7 +12233,7 @@ let merlin_file_gen ~cwd
     );  
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
-       (match reason_react_jsx with 
+       (match g_react with 
         | None -> built_in_ppx
         | Some opt ->
           Printf.sprintf "\"%s -bs-jsx %d\"" built_in_ppx
@@ -12899,7 +12899,7 @@ let bs_package_dev_includes = "bs_package_dev_includes"
 
 let refmt = "refmt"
 
-let reason_react_jsx = "reason_react_jsx"
+let g_react = "g_react"
 
 let refmt_flags = "refmt_flags"
 
@@ -13081,12 +13081,12 @@ let build_ast_and_module_sets =
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+    ~command:"$bsc -pp \"$refmt $refmt_flags\" $g_react  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+    ~command:"$bsc -pp \"$refmt $refmt_flags\" $g_react $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
     "build_ast_and_module_sets_from_rei"
 
 let copy_resources =    
@@ -13819,7 +13819,7 @@ let output_ninja_and_namespace_map
       bs_file_groups;
       files_to_install;
       built_in_dependency;
-      reason_react_jsx;
+      g_react;
       generators ;
       namespace ; 
       warning;
@@ -13872,8 +13872,8 @@ let output_ninja_and_namespace_map
   in
   let output_reason_config () =   
     if !has_reason_files then 
-      let reason_react_jsx_flag = 
-        match reason_react_jsx with 
+      let g_react_flag = 
+        match g_react with 
         | None -> Ext_string.empty          
         | Some v ->           
           Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
@@ -13888,7 +13888,7 @@ let output_ninja_and_namespace_map
             | Refmt_v3 -> 
               bsc_dir // Bsb_default.refmt_v3
             | Refmt_custom x -> x );
-          Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
+          Bsb_ninja_global_vars.g_react, g_react_flag; 
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
         |] oc 
   in   

@@ -112,7 +112,7 @@ let merlin_file_gen ~cwd
       bsc_flags; 
       built_in_dependency;
       external_includes; 
-      reason_react_jsx ; 
+      g_react ; 
       namespace;
       package_name;
       warning; 
@@ -129,7 +129,7 @@ let merlin_file_gen ~cwd
     );  
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
-       (match reason_react_jsx with 
+       (match g_react with 
         | None -> built_in_ppx
         | Some opt ->
           Printf.sprintf "\"%s -bs-jsx %d\"" built_in_ppx

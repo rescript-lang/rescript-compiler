@@ -58,7 +58,7 @@ let output_ninja_and_namespace_map
       bs_file_groups;
       files_to_install;
       built_in_dependency;
-      reason_react_jsx;
+      g_react;
       generators ;
       namespace ; 
       warning;
@@ -111,8 +111,8 @@ let output_ninja_and_namespace_map
   in
   let output_reason_config () =   
     if !has_reason_files then 
-      let reason_react_jsx_flag = 
-        match reason_react_jsx with 
+      let g_react_flag = 
+        match g_react with 
         | None -> Ext_string.empty          
         | Some v ->           
           Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
@@ -127,7 +127,7 @@ let output_ninja_and_namespace_map
             | Refmt_v3 -> 
               bsc_dir // Bsb_default.refmt_v3
             | Refmt_custom x -> x );
-          Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
+          Bsb_ninja_global_vars.g_react, g_react_flag; 
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
         |] oc 
   in   

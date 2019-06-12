@@ -130,7 +130,7 @@ let interpret_json
 
   : Bsb_config_types.t =
 
-  let reason_react_jsx : Bsb_config_types.reason_react_jsx option ref = ref None in 
+  let g_react : Bsb_config_types.g_react option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
@@ -277,9 +277,9 @@ let interpret_json
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
-              reason_react_jsx := Some Jsx_v2
+              g_react := Some Jsx_v2
             | "3" -> 
-              reason_react_jsx := Some Jsx_v3
+              g_react := Some Jsx_v3
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end        
         | Some x -> Bsb_exception.config_error x 
@@ -409,7 +409,7 @@ let interpret_json
           files_to_install = String_hash_set.create 96;
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
-          reason_react_jsx = !reason_react_jsx ;  
+          g_react = !g_react ;  
           entries = !entries;
           generators = !generators ; 
           cut_generators = !cut_generators

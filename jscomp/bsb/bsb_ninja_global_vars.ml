@@ -42,7 +42,7 @@ let bs_package_dev_includes = "bs_package_dev_includes"
 
 let refmt = "refmt"
 
-let reason_react_jsx = "reason_react_jsx"
+let g_react = "g_react"
 
 let refmt_flags = "refmt_flags"
 
