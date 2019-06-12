@@ -76,7 +76,7 @@ let output_ninja_and_namespace_map
   in
   let g_re_flag = String.concat Ext_string.single_space g_re_flag in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
-  let bs_package_includes = 
+  let g_pkg_include = 
     Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
       (fun x  -> x.package_install_path) 
   in
@@ -162,7 +162,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
         Bsb_ninja_global_vars.g_ppx_flag, g_ppx_flag;
-        Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
+        Bsb_ninja_global_vars.g_pkg_include, g_pkg_include;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)

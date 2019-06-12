@@ -69,7 +69,7 @@ let make_common_shadows
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [{
-         key = Bsb_ninja_global_vars.bs_package_includes; 
+         key = Bsb_ninja_global_vars.g_pkg_include; 
          op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
        }
         ;
