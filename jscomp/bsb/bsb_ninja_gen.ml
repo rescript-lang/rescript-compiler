@@ -182,9 +182,9 @@ let output_ninja_and_namespace_map
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
 
   in 
-  let emit_bsc_lib_includes source_dirs = 
+  let emit_g_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
-      Bsb_build_schemas.bsc_lib_includes 
+      Bsb_build_schemas.g_lib_includes 
       (Bsb_build_util.include_dirs @@ 
        (all_includes 
           (if namespace = None then source_dirs 
@@ -237,7 +237,7 @@ let output_ninja_and_namespace_map
 
   output_reason_config ();
   Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs;
+  emit_g_lib_includes bsc_lib_dirs;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc

@@ -62,7 +62,7 @@ let export_all = "all"
 let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
+let g_lib_includes = "g_lib_includes"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"

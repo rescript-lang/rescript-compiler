@@ -128,7 +128,7 @@ let export_all = "all"
 let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
+let g_lib_includes = "g_lib_includes"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
@@ -7570,10 +7570,10 @@ let get_current_number_of_dev_groups =
 
 (** bsb generate pre-defined variables [bsc_group_i_includes]
   for each rule, there is variable [bsc_extra_excludes]
-  [bsc_extra_includes] are for app test etc
+  [g_extra_includes] are for app test etc
   it will be like
   {[
-    bsc_extra_includes = ${bsc_group_1_includes}
+    g_extra_includes = ${bsc_group_1_includes}
   ]}
   where [bsc_group_1_includes] will be pre-calcuated
 *)
@@ -13119,10 +13119,10 @@ let build_bin_deps =
 (* below are rules not local any more *)
 (**************************************)
 
-(* [bsc_lib_includes] are fixed for libs *)
+(* [g_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $g_lib_includes $g_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -13130,13 +13130,13 @@ let build_cmj_js =
 
 let build_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $g_lib_includes $g_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $g_lib_includes $g_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13525,7 +13525,7 @@ let make_common_shadows
          op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
        }
         ;
-        { key = "bsc_extra_includes";
+        { key = "g_extra_includes";
           op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
         }
        ]
@@ -13943,9 +13943,9 @@ let output_ninja_and_namespace_map
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
 
   in 
-  let emit_bsc_lib_includes source_dirs = 
+  let emit_g_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
-      Bsb_build_schemas.bsc_lib_includes 
+      Bsb_build_schemas.g_lib_includes 
       (Bsb_build_util.include_dirs @@ 
        (all_includes 
           (if namespace = None then source_dirs 
@@ -13998,7 +13998,7 @@ let output_ninja_and_namespace_map
 
   output_reason_config ();
   Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs;
+  emit_g_lib_includes bsc_lib_dirs;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc

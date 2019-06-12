@@ -73,7 +73,7 @@ let make_common_shadows
          op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
        }
         ;
-        { key = "bsc_extra_includes";
+        { key = "g_extra_includes";
           op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
         }
        ]
