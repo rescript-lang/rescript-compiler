@@ -212,15 +212,17 @@ let coerce_and_group_big_lambda
         exports = coerced_input.export_list}
   | _ ->
     (* This could happen see #2474*)
-    (* #3595 *)
+    (* #3595 
+    TODO: FIXME later
+    *)
     {
-      export_list = [];
-      export_set = Ident_set.empty;
+      export_list = meta.exports;
+      export_set = meta.export_idents;
       export_map = Ident_map.empty ;
       (** not used in code generation, mostly used
           for store some information in cmj files *)
       groups = [Nop lam] ;
       (* all code to be compiled later = original code + rebound coercions *)
     }
-    , { meta with export_idents = Ident_set.empty ; exports= []}
+    , meta
 
