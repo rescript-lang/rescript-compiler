@@ -55,7 +55,7 @@ let count_collects () =
     (* collect all def sites *)
     val defined_idents : J.variable_declaration Ident_hashtbl.t = Ident_hashtbl.create 83
 
-    val mutable export_set  : Ident_set.t = Ident_set.empty
+    val mutable my_export_set  : Ident_set.t = Ident_set.empty
     val mutable name : string = ""
 
     method add_use id = 
@@ -63,7 +63,7 @@ let count_collects () =
       | None -> Ident_hashtbl.add stats id (ref 1)
       | Some v -> incr v 
     method! program x = 
-      export_set <- x.export_set ; 
+      my_export_set <- x.export_set ; 
       name <- x.name;
       super#program x
     method! variable_declaration 
@@ -78,7 +78,7 @@ let count_collects () =
     method! ident id = self#add_use id; self
     method get_stats = 
       Ident_hashtbl.iter defined_idents (fun ident v  -> 
-          if Ident_set.mem export_set ident then 
+          if Ident_set.mem my_export_set ident then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
             let pure = 
