@@ -134,7 +134,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
               ignore (print_if ppf Clflags.dump_rawlambda Printlambda.lambda lambda);
               try
                 Lam_compile_main.lambda_as_module
-                  finalenv current_signature 
+                  finalenv  
                   sourcefile  outputprefix lambda  with
               | e -> 
                 (* Save to a file instead so that it will not scare user *)

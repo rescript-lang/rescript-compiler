@@ -122,7 +122,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
                           ~output_prefix:"" (* does not matter here *)
                           NodeJS
                           (Lam_compile_main.compile ~filename:"" ""
-                             !finalenv !types_signature lam)
+                             !finalenv  lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in
       Js.Unsafe.(obj [| "js_code", inject @@ Js.string v |]) )

@@ -122,7 +122,9 @@ let no_side_effects (rest : Lam_group.t list) : string option =
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
-let compile  ~filename (output_prefix : string) env _sigs 
+let compile  
+    ~filename (output_prefix : string) 
+    (env : Env.t) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
@@ -292,12 +294,11 @@ let (//) = Filename.concat
 
 let lambda_as_module 
     finalenv 
-    (current_signature : Types.signature)
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   let lambda_output = 
-    compile ~filename output_prefix finalenv current_signature lam in
+    compile ~filename output_prefix finalenv lam in
   let basename =  
     Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
       (Filename.basename
