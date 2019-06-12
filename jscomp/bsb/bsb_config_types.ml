@@ -47,6 +47,7 @@ type refmt =
 type gentype_config = {
   path : string (* resolved *)
 }
+type command = string
 type t = 
   {
     package_name : string ; 
@@ -76,7 +77,7 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
-    generators : string String_map.t ; 
+    generators : command String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option

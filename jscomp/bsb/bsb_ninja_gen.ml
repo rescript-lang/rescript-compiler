@@ -65,7 +65,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_ninja_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
