@@ -27,10 +27,10 @@ Build quoted commandline arguments for bsc.exe for the given ppx flags
 
 Use:
 {[
-ppx_flags [ppxs]
+g_ppx_flag [ppxs]
 ]}
 *)
-val ppx_flags : string list -> string
+val g_ppx_flag : string list -> string
 
 val pp_flag : string  -> string
 

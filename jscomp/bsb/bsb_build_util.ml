@@ -30,7 +30,7 @@ let (//) = Ext_path.combine
 
 
 (*TODO: optimize *)
-let ppx_flags xs =
+let g_ppx_flag xs =
   flag_concat "-ppx"
     (Ext_list.map xs Filename.quote)
 

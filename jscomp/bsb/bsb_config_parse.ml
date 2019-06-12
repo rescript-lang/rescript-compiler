@@ -311,13 +311,13 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
-    |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
+    |? (Bsb_build_schemas.g_ppx_flag, `Arr (fun s -> 
         let args = get_list_string s in 
         let a,b = Ext_list.map_split_opt  args (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else 
               let file, checked = 
-                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
+                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.g_ppx_flag p 
               in 
               let some_file = Some file in 
               some_file, if checked then some_file else None

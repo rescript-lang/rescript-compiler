@@ -69,7 +69,7 @@ let output_ninja_and_namespace_map
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
+  let g_ppx_flag = Bsb_build_util.g_ppx_flag ppx_files in
   let bsc_flags =  
       String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
@@ -161,7 +161,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+        Bsb_ninja_global_vars.g_ppx_flag, g_ppx_flag;
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 

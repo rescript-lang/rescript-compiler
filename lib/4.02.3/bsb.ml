@@ -94,7 +94,7 @@ let version = "version"
 let name = "name"
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
+let g_ppx_flag = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
@@ -6617,10 +6617,10 @@ Build quoted commandline arguments for bsc.exe for the given ppx flags
 
 Use:
 {[
-ppx_flags [ppxs]
+g_ppx_flag [ppxs]
 ]}
 *)
-val ppx_flags : string list -> string
+val g_ppx_flag : string list -> string
 
 val pp_flag : string  -> string
 
@@ -6726,7 +6726,7 @@ let (//) = Ext_path.combine
 
 
 (*TODO: optimize *)
-let ppx_flags xs =
+let g_ppx_flag xs =
   flag_concat "-ppx"
     (Ext_list.map xs Filename.quote)
 
@@ -11961,13 +11961,13 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
-    |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
+    |? (Bsb_build_schemas.g_ppx_flag, `Arr (fun s -> 
         let args = get_list_string s in 
         let a,b = Ext_list.map_split_opt  args (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else 
               let file, checked = 
-                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
+                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.g_ppx_flag p 
               in 
               let some_file = Some file in 
               some_file, if checked then some_file else None
@@ -12890,7 +12890,7 @@ let bsdep = "bsdep"
 
 let bsc_flags = "bsc_flags"
 
-let ppx_flags = "ppx_flags"
+let g_ppx_flag = "g_ppx_flag"
 let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
 let bs_package_includes = "bs_package_includes"
@@ -13075,18 +13075,18 @@ let define
     since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+    ~command:"$bsc  $pp_flags $g_ppx_flag $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
     "build_ast_and_module_sets"
 
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react  $g_ppx_flag $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react $g_ppx_flag $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
     "build_ast_and_module_sets_from_rei"
 
 let copy_resources =    
@@ -13830,7 +13830,7 @@ let output_ninja_and_namespace_map
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
+  let g_ppx_flag = Bsb_build_util.g_ppx_flag ppx_files in
   let bsc_flags =  
       String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
@@ -13922,7 +13922,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+        Bsb_ninja_global_vars.g_ppx_flag, g_ppx_flag;
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 

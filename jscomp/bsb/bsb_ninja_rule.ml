@@ -90,18 +90,18 @@ let define
     since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+    ~command:"$bsc  $pp_flags $g_ppx_flag $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
     "build_ast_and_module_sets"
 
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react  $g_ppx_flag $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+    ~command:"$bsc -pp \"$refmt $g_re_flag\" $g_react $g_ppx_flag $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
     "build_ast_and_module_sets_from_rei"
 
 let copy_resources =    
