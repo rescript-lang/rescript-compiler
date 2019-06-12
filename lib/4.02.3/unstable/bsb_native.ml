@@ -13122,7 +13122,7 @@ let build_bin_deps =
 (* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -13130,13 +13130,13 @@ let build_cmj_js =
 
 let build_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-builtin-ppx-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13572,7 +13572,7 @@ let emit_impl_build
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
-  let implicit_deps = (if has_checked_ppx then [ "${ppx_checked_files}" ] else []) in     
+  let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast

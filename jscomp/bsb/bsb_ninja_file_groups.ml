@@ -120,7 +120,7 @@ let emit_impl_build
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
-  let implicit_deps = (if has_checked_ppx then [ "${ppx_checked_files}" ] else []) in     
+  let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
