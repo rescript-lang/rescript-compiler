@@ -12962,9 +12962,14 @@ val build_ast_and_module_sets_from_rei : t
 val copy_resources : t
 (** Rules below all need restat *)
 val build_bin_deps : t 
+
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
+
+val re_cmj_js : t 
+val re_cmj_cmi_js : t 
+val re_cmi : t 
 val build_package : t 
 
 (***********************************************************)
@@ -13127,6 +13132,13 @@ let build_cmj_js =
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
+let re_cmj_js =
+  define
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~dyndep:"$in_e.d"
+    ~restat:() (* Always restat when having mli *)
+    "re_cmj_only"
+
 
 let build_cmj_cmi_js =
   define
@@ -13135,6 +13147,14 @@ let build_cmj_cmi_js =
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
+let re_cmj_cmi_js =
+  define
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~dyndep:"$in_e.d" 
+    ~restat:() (* may not need it in the future *)
+    "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+
+    
 let build_cmi =
   define
     ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
@@ -13142,6 +13162,13 @@ let build_cmi =
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
+let re_cmi =
+  define
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~dyndep:"$in_e.d"
+    ~restat:()
+    "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+    
 let build_package = 
   define
     ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
@@ -13165,6 +13192,11 @@ let make_custom_rules (custom_rules : command String_map.t) =
   build_cmj_js.used <- false;
   build_cmj_cmi_js.used <- false ;
   build_cmi.used <- false ;
+
+  re_cmj_cmi_js.used <- false;
+  re_cmj_js.used <- false;
+  re_cmi.used <- false;
+  
   build_package.used <- false;    
   String_map.mapi custom_rules begin fun name command -> 
     define ~command name
@@ -13505,14 +13537,13 @@ let handle_generators oc
     )
 
 
-let make_common_shadows 
-    is_re
+let make_common_shadows     
     package_specs 
     dirname 
     dir_index 
   : Bsb_ninja_util.shadow list 
   =
-  let shadows : Bsb_ninja_util.shadow list = 
+  
     { key = Bsb_ninja_global_vars.bs_package_flags;
       op = 
         Append
@@ -13531,12 +13562,7 @@ let make_common_shadows
         }
        ]
     )   
-  in 
-  if is_re then 
-    { key = Bsb_ninja_global_vars.bsc_flags; 
-      op = AppendList ["-bs-re-out"; "-bs-super-errors"]
-    } :: shadows
-  else shadows
+  
 
 
 let emit_impl_build
@@ -13570,7 +13596,7 @@ let emit_impl_build
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
   let common_shadows = 
-    make_common_shadows is_re package_specs
+    make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
   let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
@@ -13601,7 +13627,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:Bsb_ninja_rule.build_cmi
+      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.build_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -13626,8 +13652,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], []
-    else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi]
+      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.build_cmj_cmi_js), [output_cmi], []
+    else  
+      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.build_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

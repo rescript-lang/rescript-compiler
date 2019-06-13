@@ -142,6 +142,13 @@ let build_cmj_js =
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
+let re_cmj_js =
+  define
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~dyndep:"$in_e.d"
+    ~restat:() (* Always restat when having mli *)
+    "re_cmj_only"
+
 
 let build_cmj_cmi_js =
   define
@@ -150,6 +157,14 @@ let build_cmj_cmi_js =
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
+let re_cmj_cmi_js =
+  define
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~dyndep:"$in_e.d" 
+    ~restat:() (* may not need it in the future *)
+    "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+
+    
 let build_cmi =
   define
     ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
@@ -157,6 +172,13 @@ let build_cmi =
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
+let re_cmi =
+  define
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~dyndep:"$in_e.d"
+    ~restat:()
+    "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+    
 let build_package = 
   define
     ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
@@ -180,6 +202,11 @@ let make_custom_rules (custom_rules : command String_map.t) =
   build_cmj_js.used <- false;
   build_cmj_cmi_js.used <- false ;
   build_cmi.used <- false ;
+
+  re_cmj_cmi_js.used <- false;
+  re_cmj_js.used <- false;
+  re_cmi.used <- false;
+  
   build_package.used <- false;    
   String_map.mapi custom_rules begin fun name command -> 
     define ~command name

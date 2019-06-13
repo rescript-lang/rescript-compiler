@@ -52,14 +52,13 @@ let handle_generators oc
     )
 
 
-let make_common_shadows 
-    is_re
+let make_common_shadows     
     package_specs 
     dirname 
     dir_index 
   : Bsb_ninja_util.shadow list 
   =
-  let shadows : Bsb_ninja_util.shadow list = 
+  
     { key = Bsb_ninja_global_vars.bs_package_flags;
       op = 
         Append
@@ -78,12 +77,7 @@ let make_common_shadows
         }
        ]
     )   
-  in 
-  if is_re then 
-    { key = Bsb_ninja_global_vars.bsc_flags; 
-      op = AppendList ["-bs-re-out"; "-bs-super-errors"]
-    } :: shadows
-  else shadows
+  
 
 
 let emit_impl_build
@@ -117,7 +111,7 @@ let emit_impl_build
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
   let common_shadows = 
-    make_common_shadows is_re package_specs
+    make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
   let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
@@ -148,7 +142,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:Bsb_ninja_rule.build_cmi
+      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.build_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -173,8 +167,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], []
-    else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi]
+      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.build_cmj_cmi_js), [output_cmi], []
+    else  
+      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.build_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
