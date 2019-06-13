@@ -86,14 +86,14 @@ let output_ninja_and_namespace_map
          (fun x -> x.package_install_path) )
   in  
   let has_reason_files = ref false in 
-  let bs_package_flags , g_ns_flg = 
+  let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
       Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
     | Some s -> 
       Ext_string.inter4 
         "-bs-package-name" package_name 
-        "-bs-package-map" s
+        "-bs-ns" s
       ,
       Ext_string.inter2 "-ns" s  
   in  
@@ -156,7 +156,7 @@ let output_ninja_and_namespace_map
 
     Bsb_ninja_util.output_kvs
       [|
-        Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
+        Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;

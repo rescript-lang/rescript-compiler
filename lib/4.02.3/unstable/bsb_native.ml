@@ -12873,7 +12873,7 @@ module Bsb_ninja_global_vars
 
 
  
-let bs_package_flags = "bs_package_flags"
+let g_pkg_flg = "g_pkg_flg"
 
 let bsc = "bsc" 
 
@@ -13119,14 +13119,14 @@ let build_bin_deps =
 (* [g_lib_incls] are fixed for libs *)
 let ml_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
 let re_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "re_cmj_only"
@@ -13134,14 +13134,14 @@ let re_cmj_js =
 
 let ml_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
 let re_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -13149,14 +13149,14 @@ let re_cmj_cmi_js =
     
 let ml_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $g_pkg_flg -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let re_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $g_pkg_flg -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13536,7 +13536,7 @@ let make_common_shadows
   : Bsb_ninja_util.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.bs_package_flags;
+    { key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
@@ -13867,14 +13867,14 @@ let output_ninja_and_namespace_map
          (fun x -> x.package_install_path) )
   in  
   let has_reason_files = ref false in 
-  let bs_package_flags , g_ns_flg = 
+  let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
       Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
     | Some s -> 
       Ext_string.inter4 
         "-bs-package-name" package_name 
-        "-bs-package-map" s
+        "-bs-ns" s
       ,
       Ext_string.inter2 "-ns" s  
   in  
@@ -13937,7 +13937,7 @@ let output_ninja_and_namespace_map
 
     Bsb_ninja_util.output_kvs
       [|
-        Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
+        Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;

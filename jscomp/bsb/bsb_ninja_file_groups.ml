@@ -59,7 +59,7 @@ let make_common_shadows
   : Bsb_ninja_util.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.bs_package_flags;
+    { key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
