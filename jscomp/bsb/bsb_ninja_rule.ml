@@ -135,7 +135,7 @@ let build_bin_deps =
 (**************************************)
 
 (* [bsc_lib_includes] are fixed for libs *)
-let build_cmj_js =
+let ml_cmj_js =
   define
     ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
@@ -150,7 +150,7 @@ let re_cmj_js =
     "re_cmj_only"
 
 
-let build_cmj_cmi_js =
+let ml_cmj_cmi_js =
   define
     ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
@@ -165,7 +165,7 @@ let re_cmj_cmi_js =
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
     
-let build_cmi =
+let ml_cmi =
   define
     ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
@@ -199,14 +199,14 @@ let make_custom_rules (custom_rules : command String_map.t) =
   build_bin_deps.used <- false;
   copy_resources.used <- false ;
 
-  build_cmj_js.used <- false;
-  build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false ;
+  ml_cmj_js.used <- false;
+  ml_cmj_cmi_js.used <- false ;
+  ml_cmi.used <- false ;
 
   re_cmj_cmi_js.used <- false;
   re_cmj_js.used <- false;
   re_cmi.used <- false;
-  
+
   build_package.used <- false;    
   String_map.mapi custom_rules begin fun name command -> 
     define ~command name

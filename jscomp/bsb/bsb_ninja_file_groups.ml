@@ -142,7 +142,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.build_cmi)
+      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.ml_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -167,9 +167,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.build_cmj_cmi_js), [output_cmi], []
+      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.ml_cmj_cmi_js), [output_cmi], []
     else  
-      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.build_cmj_js), []  , [output_cmi]
+      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.ml_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

@@ -12963,9 +12963,9 @@ val copy_resources : t
 (** Rules below all need restat *)
 val build_bin_deps : t 
 
-val build_cmj_js : t
-val build_cmj_cmi_js : t 
-val build_cmi : t
+val ml_cmj_js : t
+val ml_cmj_cmi_js : t 
+val ml_cmi : t
 
 val re_cmj_js : t 
 val re_cmj_cmi_js : t 
@@ -13125,7 +13125,7 @@ let build_bin_deps =
 (**************************************)
 
 (* [bsc_lib_includes] are fixed for libs *)
-let build_cmj_js =
+let ml_cmj_js =
   define
     ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
@@ -13140,7 +13140,7 @@ let re_cmj_js =
     "re_cmj_only"
 
 
-let build_cmj_cmi_js =
+let ml_cmj_cmi_js =
   define
     ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
@@ -13155,7 +13155,7 @@ let re_cmj_cmi_js =
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
     
-let build_cmi =
+let ml_cmi =
   define
     ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
@@ -13189,14 +13189,14 @@ let make_custom_rules (custom_rules : command String_map.t) =
   build_bin_deps.used <- false;
   copy_resources.used <- false ;
 
-  build_cmj_js.used <- false;
-  build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false ;
+  ml_cmj_js.used <- false;
+  ml_cmj_cmi_js.used <- false ;
+  ml_cmi.used <- false ;
 
   re_cmj_cmi_js.used <- false;
   re_cmj_js.used <- false;
   re_cmi.used <- false;
-  
+
   build_package.used <- false;    
   String_map.mapi custom_rules begin fun name command -> 
     define ~command name
@@ -13627,7 +13627,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.build_cmi)
+      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.ml_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -13652,9 +13652,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.build_cmj_cmi_js), [output_cmi], []
+      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.ml_cmj_cmi_js), [output_cmi], []
     else  
-      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.build_cmj_js), []  , [output_cmi]
+      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.ml_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

@@ -47,9 +47,9 @@ val copy_resources : t
 (** Rules below all need restat *)
 val build_bin_deps : t 
 
-val build_cmj_js : t
-val build_cmj_cmi_js : t 
-val build_cmi : t
+val ml_cmj_js : t
+val ml_cmj_cmi_js : t 
+val ml_cmi : t
 
 val re_cmj_js : t 
 val re_cmj_cmi_js : t 
