@@ -13125,7 +13125,7 @@ let build_cmj_js =
     ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
-    "build_cmj_only"
+    "ml_cmj_only"
     
 
 let build_cmj_cmi_js =
@@ -13133,13 +13133,14 @@ let build_cmj_cmi_js =
     ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
-    "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+    "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+
 let build_cmi =
   define
     ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
-    "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+    "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let build_package = 
   define
