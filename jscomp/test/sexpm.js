@@ -17,19 +17,19 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
   try {
     var x = Curry._1(f, ic);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return x;
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return /* `Error */[
             106380200,
             Printexc.to_string(e)
@@ -318,12 +318,12 @@ function to_file_seq(filename, seq) {
   try {
     var x = Curry._1(f, oc);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
     return x;
   }
   catch (e){
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
     throw e;
   }
 }

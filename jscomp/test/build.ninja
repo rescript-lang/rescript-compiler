@@ -187,6 +187,7 @@ build test/ext_string_test.cmi test/ext_string_test.cmj : cc test/ext_string_tes
 build test/ext_sys_test.cmj : cc test/ext_sys_test.ml | test/ext_sys_test.cmi $stdlib
 build test/ext_sys_test.cmi : cc test/ext_sys_test.mli | $stdlib
 build test/extensible_variant_test.cmi test/extensible_variant_test.cmj : cc test/extensible_variant_test.ml | test/mt.cmj $stdlib
+build test/external_polyfill_test.cmi test/external_polyfill_test.cmj : cc test/external_polyfill_test.ml | test/mt.cmj $stdlib
 build test/external_ppx.cmi test/external_ppx.cmj : cc test/external_ppx.ml | $stdlib
 build test/fail_comp.cmi test/fail_comp.cmj : cc test/fail_comp.ml | $stdlib
 build test/ffi_arity_test.cmi test/ffi_arity_test.cmj : cc test/ffi_arity_test.ml | test/mt.cmj $stdlib

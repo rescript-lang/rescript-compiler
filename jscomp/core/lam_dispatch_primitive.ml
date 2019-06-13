@@ -895,7 +895,7 @@ let translate loc (prim_name : string)
     | "caml_ml_set_binary_mode"    
     | _ -> 
       Bs_warnings.warn_missing_primitive loc prim_name  ;
-      E.not_implemented prim_name
+      E.resolve_and_apply prim_name args
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
         TODO: we might provoide a hook for user to provide polyfill.

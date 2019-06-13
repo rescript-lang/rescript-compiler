@@ -16,7 +16,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var dbg = /* record */[/* contents */true];
@@ -53,7 +53,7 @@ function bufferize(f) {
 }
 
 var match = bufferize((function (param) {
-        return Caml_missing_polyfill.not_implemented("caml_ml_input_char");
+        return Caml_external_polyfill.resolve("caml_ml_input_char")(inch[0]);
       }));
 
 var ungetch = match[1];
@@ -1849,7 +1849,7 @@ function main(param) {
       top(/* () */0);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);
-      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+      return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
   }
 }
 

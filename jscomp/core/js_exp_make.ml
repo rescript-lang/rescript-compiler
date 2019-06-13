@@ -1282,11 +1282,17 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
 
 
 
-let not_implemented ?comment (s : string) : t =  
-  runtime_call
-    Js_runtime_modules.missing_polyfill
-    "not_implemented" 
-    [str s]
+(** TODO: in the future add a flag
+  to set globalThis
+*)       
+let resolve_and_apply 
+    ?comment (s : string) (args : t list) : t =  
+  call ~info:Js_call_info.builtin_runtime_call
+    (runtime_call
+       Js_runtime_modules.external_polyfill
+       "resolve" 
+       [str s ]
+    ) args 
 
 
 

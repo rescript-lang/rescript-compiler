@@ -31,7 +31,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var standard_library_default = "/Users/chenglou/Github/bucklescript/vendor/ocaml/lib/ocaml";
@@ -726,7 +726,7 @@ function find_in_path(path, name) {
       var param = _param;
       if (param) {
         var fullname = Filename.concat(param[0], name);
-        if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+        if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
           return fullname;
         } else {
           _param = param[1];
@@ -736,7 +736,7 @@ function find_in_path(path, name) {
         throw Caml_builtin_exceptions.not_found;
       }
     };
-  } else if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+  } else if (Caml_external_polyfill.resolve("caml_sys_file_exists")(name)) {
     return name;
   } else {
     throw Caml_builtin_exceptions.not_found;
@@ -764,7 +764,7 @@ function find_in_path_rel(path, name) {
     var param = _param;
     if (param) {
       var fullname = simplify(Filename.concat(param[0], name));
-      if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+      if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
         return fullname;
       } else {
         _param = param[1];
@@ -785,9 +785,9 @@ function find_in_path_uncap(path, name) {
       var dir = param[0];
       var fullname = Filename.concat(dir, name);
       var ufullname = Filename.concat(dir, uname);
-      if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+      if (Caml_external_polyfill.resolve("caml_sys_file_exists")(ufullname)) {
         return ufullname;
-      } else if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+      } else if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
         return fullname;
       } else {
         _param = param[1];
@@ -801,7 +801,7 @@ function find_in_path_uncap(path, name) {
 
 function remove_file(filename) {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_sys_remove");
+    return Caml_external_polyfill.resolve("caml_sys_remove")(filename);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -2987,7 +2987,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
-  Caml_missing_polyfill.not_implemented("caml_terminfo_backup");
+  Caml_external_polyfill.resolve("caml_terminfo_backup")(lines);
   var bol = false;
   Pervasives.print_string("# ");
   for(var pos = 0 ,pos_finish = (lb[/* lex_buffer_len */2] - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
@@ -3000,21 +3000,21 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
             return pos === loc[/* loc_start */0][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+      Caml_external_polyfill.resolve("caml_terminfo_standout")(true);
     }
     if (List.exists((function(pos){
           return function (loc) {
             return pos === loc[/* loc_end */1][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+      Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
     }
     var c = Caml_bytes.get(lb[/* lex_buffer */1], pos + pos0 | 0);
     Pervasives.print_char(c);
     bol = c === /* "\n" */10;
   }
-  Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
-  Caml_missing_polyfill.not_implemented("caml_terminfo_resume");
+  Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
+  Caml_external_polyfill.resolve("caml_terminfo_resume")(num_loc_lines[0]);
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
@@ -3168,7 +3168,7 @@ function highlight_locations(ppf, locs) {
           return false;
         }
       } else {
-        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup");
+        status[0] = Caml_external_polyfill.resolve("caml_terminfo_setup")(Pervasives.stdout);
         continue ;
       }
     } else {
