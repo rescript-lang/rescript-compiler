@@ -128,7 +128,7 @@ let export_all = "all"
 let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
+let g_lib_incls = "g_lib_incls"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
@@ -13116,17 +13116,17 @@ let build_bin_deps =
 (* below are rules not local any more *)
 (**************************************)
 
-(* [bsc_lib_includes] are fixed for libs *)
+(* [g_lib_incls] are fixed for libs *)
 let ml_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
 let re_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "re_cmj_only"
@@ -13134,14 +13134,14 @@ let re_cmj_js =
 
 let ml_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
 let re_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -13149,14 +13149,14 @@ let re_cmj_cmi_js =
     
 let ml_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let re_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13966,7 +13966,7 @@ let output_ninja_and_namespace_map
   in 
   let emit_bsc_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
-      Bsb_build_schemas.bsc_lib_includes 
+      Bsb_build_schemas.g_lib_incls 
       (Bsb_build_util.include_dirs 
          (all_includes 
             (if namespace = None then source_dirs 

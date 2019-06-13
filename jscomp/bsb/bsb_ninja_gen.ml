@@ -185,7 +185,7 @@ let output_ninja_and_namespace_map
   in 
   let emit_bsc_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
-      Bsb_build_schemas.bsc_lib_includes 
+      Bsb_build_schemas.g_lib_incls 
       (Bsb_build_util.include_dirs 
          (all_includes 
             (if namespace = None then source_dirs 
