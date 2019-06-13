@@ -12893,7 +12893,7 @@ let bsc_flags = "bsc_flags"
 let ppx_flags = "ppx_flags"
 let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
-let bs_package_includes = "bs_package_includes"
+let g_pkg_incls = "g_pkg_incls"
 
 let bs_package_dev_includes = "bs_package_dev_includes"
 
@@ -13127,14 +13127,14 @@ let build_bin_deps =
 (* [bsc_lib_includes] are fixed for libs *)
 let ml_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
 let re_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "re_cmj_only"
@@ -13142,14 +13142,14 @@ let re_cmj_js =
 
 let ml_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
 let re_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -13157,14 +13157,14 @@ let re_cmj_cmi_js =
     
 let ml_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let re_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $bs_package_includes $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $bsc_lib_includes $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13553,7 +13553,7 @@ let make_common_shadows
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [{
-         key = Bsb_ninja_global_vars.bs_package_includes; 
+         key = Bsb_ninja_global_vars.g_pkg_incls; 
          op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
        }
         ;
@@ -13865,7 +13865,7 @@ let output_ninja_and_namespace_map
   in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
-  let bs_package_includes = 
+  let g_pkg_incls = 
     Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
       (fun x  -> x.package_install_path) 
   in
@@ -13951,7 +13951,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
+        Bsb_ninja_global_vars.g_pkg_incls, g_pkg_incls;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
