@@ -36,7 +36,7 @@ let bsc_flags = "bsc_flags"
 let ppx_flags = "ppx_flags"
 let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
-let bs_package_includes = "bs_package_includes"
+let g_pkg_incls = "g_pkg_incls"
 
 let bs_package_dev_includes = "bs_package_dev_includes"
 
@@ -48,7 +48,7 @@ let refmt_flags = "refmt_flags"
 
 let postbuild = "postbuild"
 
-let namespace = "namespace" 
+let g_ns = "g_ns" 
 
 let warnings = "warnings"
 

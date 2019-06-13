@@ -135,15 +135,7 @@ let merlin_file_gen ~cwd
           Printf.sprintf "\"%s -bs-jsx %d\"" built_in_ppx
             (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
        )
-      );
-    (*
-    (match external_includes with 
-    | [] -> ()
-    | _ -> 
-
-      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.include_dirs external_includes
-      ));
-    *)
+      );    
     Ext_list.iter external_includes (fun path -> 
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
