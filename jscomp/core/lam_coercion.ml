@@ -215,7 +215,8 @@ let coerce_and_group_big_lambda
     (* #3595 
     TODO: FIXME later
     *)
-    {
+    assert false
+    (* {
       export_list = meta.exports;
       export_set = meta.export_idents;
       export_map = Ident_map.empty ;
@@ -224,5 +225,5 @@ let coerce_and_group_big_lambda
       groups = [Nop lam] ;
       (* all code to be compiled later = original code + rebound coercions *)
     }
-    , meta
+    , meta *)
 
