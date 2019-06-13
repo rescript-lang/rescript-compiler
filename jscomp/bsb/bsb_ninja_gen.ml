@@ -77,12 +77,13 @@ let output_ninja_and_namespace_map
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let g_pkg_incls = 
-    Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
-      (fun x  -> x.package_install_path) 
+    Bsb_build_util.include_dirs 
+      (Ext_list.map bs_dependencies (fun x  -> x.package_install_path) )
   in
   let bs_package_dev_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map bs_dev_dependencies
-      (fun x -> x.package_install_path) 
+    Bsb_build_util.include_dirs 
+      (Ext_list.map bs_dev_dependencies
+         (fun x -> x.package_install_path) )
   in  
   let has_reason_files = ref false in 
   let bs_package_flags , namespace_flag = 
@@ -185,10 +186,10 @@ let output_ninja_and_namespace_map
   let emit_bsc_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
       Bsb_build_schemas.bsc_lib_includes 
-      (Bsb_build_util.include_dirs @@ 
-       (all_includes 
-          (if namespace = None then source_dirs 
-           else Filename.current_dir_name :: source_dirs) ))  oc 
+      (Bsb_build_util.include_dirs 
+         (all_includes 
+            (if namespace = None then source_dirs 
+             else Filename.current_dir_name :: source_dirs) ))  oc 
   in   
   let  bs_groups, bsc_lib_dirs, static_resources =
     let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
@@ -230,7 +231,7 @@ let output_ninja_and_namespace_map
             ) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
-          (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc
+          (Bsb_build_util.include_dirs source_dirs.(i)) oc
       done  ;
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
