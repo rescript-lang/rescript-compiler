@@ -10,16 +10,15 @@ var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 function test(n) {
   if (n === 0) {
     throw Foo;
-  } else {
-    try {
-      return test(n - 1 | 0);
-    }
-    catch (exn){
-      if (exn === Foo) {
-        return /* () */0;
-      } else {
-        throw exn;
-      }
+  }
+  try {
+    return test(n - 1 | 0);
+  }
+  catch (exn){
+    if (exn === Foo) {
+      return /* () */0;
+    } else {
+      throw exn;
     }
   }
 }

@@ -300,12 +300,13 @@ function flat_map2(f, lx, ly) {
               "Ext_list_test.flat_map2"
             ];
       }
-    } else if (ly$1) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Ext_list_test.flat_map2"
-          ];
     } else {
+      if (ly$1) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Ext_list_test.flat_map2"
+            ];
+      }
       return List.rev(acc);
     }
   };
@@ -431,12 +432,13 @@ function fold_right2_last(f, l1, l2, accu) {
       }
     }
     
-  } else if (l2) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "List.fold_right2"
-        ];
   } else {
+    if (l2) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "List.fold_right2"
+          ];
+    }
     return accu;
   }
 }
@@ -453,12 +455,11 @@ function take(n, l) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_list_test.take"
         ];
-  } else {
-    return /* tuple */[
-            $$Array.to_list($$Array.sub(arr, 0, n)),
-            $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
-          ];
   }
+  return /* tuple */[
+          $$Array.to_list($$Array.sub(arr, 0, n)),
+          $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
+        ];
 }
 
 function try_take(n, l) {
@@ -596,14 +597,16 @@ function drop(_n, _h) {
             Caml_builtin_exceptions.invalid_argument,
             "Ext_list_test.drop"
           ];
-    } else if (n === 0) {
+    }
+    if (n === 0) {
       return h;
-    } else if (h === /* [] */0) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Ext_list_test.drop"
-          ];
     } else {
+      if (h === /* [] */0) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Ext_list_test.drop"
+            ];
+      }
       _h = List.tl(h);
       _n = n - 1 | 0;
       continue ;

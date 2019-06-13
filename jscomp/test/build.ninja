@@ -157,6 +157,7 @@ build test/digest_test.cmi test/digest_test.cmj : cc test/digest_test.ml | test/
 build test/div_by_zero_test.cmi test/div_by_zero_test.cmj : cc test/div_by_zero_test.ml | test/mt.cmj $stdlib
 build test/dollar_escape_test.cmi test/dollar_escape_test.cmj : cc test/dollar_escape_test.ml | test/mt.cmj $stdlib
 build test/earger_curry_test.cmi test/earger_curry_test.cmj : cc test/earger_curry_test.ml | test/mt.cmj $stdlib
+build test/effect.cmi test/effect.cmj : cc test/effect.ml | $stdlib
 build test/empty_obj.cmi test/empty_obj.cmj : cc test/empty_obj.ml | $stdlib
 build test/epsilon_test.cmi test/epsilon_test.cmj : cc test/epsilon_test.ml | test/mt.cmj $stdlib
 build test/equal_box_test.cmi test/equal_box_test.cmj : cc test/equal_box_test.ml | test/mt.cmj $stdlib

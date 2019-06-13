@@ -92,7 +92,8 @@ function Make(funarg) {
                   Caml_builtin_exceptions.invalid_argument,
                   "Graph.Mincut: graph not reducible"
                 ];
-          } else if (rest_of_stack$1) {
+          }
+          if (rest_of_stack$1) {
             var match = rest_of_stack$1[0];
             var new_top = match[0];
             Curry._3(H[/* add */4], on_the_stack, top$1, false);

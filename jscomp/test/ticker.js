@@ -835,17 +835,15 @@ function compute_update_sequences(all_tickers) {
                                 Caml_builtin_exceptions.failure,
                                 "All nodes should be ranked"
                               ];
-                        } else {
-                          var match$1 = rhs[/* rank */1];
-                          if (typeof match$1 === "number") {
-                            throw [
-                                  Caml_builtin_exceptions.failure,
-                                  "All nodes should be ranked"
-                                ];
-                          } else {
-                            return Caml_primitive.caml_int_compare(match[0], match$1[0]);
-                          }
                         }
+                        var match$1 = rhs[/* rank */1];
+                        if (typeof match$1 === "number") {
+                          throw [
+                                Caml_builtin_exceptions.failure,
+                                "All nodes should be ranked"
+                              ];
+                        }
+                        return Caml_primitive.caml_int_compare(match[0], match$1[0]);
                       }), l);
                 return add(k, l$1, map);
               }), map, map);
@@ -909,15 +907,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                       Caml_builtin_exceptions.failure,
                       "Invalid input line"
                     ];
-              } else {
-                var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-                var value = Caml_format.caml_float_of_string(match$1[0]);
-                process_quote(ticker_map$1, match[0], value);
-                return /* tuple */[
-                        all_tickers,
-                        Caml_option.some(ticker_map$1)
-                      ];
               }
+              var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+              var value = Caml_format.caml_float_of_string(match$1[0]);
+              process_quote(ticker_map$1, match[0], value);
+              return /* tuple */[
+                      all_tickers,
+                      Caml_option.some(ticker_map$1)
+                    ];
             } else {
               throw [
                     Caml_builtin_exceptions.failure,
@@ -947,15 +944,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                                 Caml_builtin_exceptions.failure,
                                 "Invalid input line"
                               ];
-                        } else {
-                          return /* tuple */[
-                                  /* :: */[
-                                    make_binary_op(ticker_name, match$4[0], match$5[0], /* PLUS */0),
-                                    all_tickers
-                                  ],
-                                  ticker_map
-                                ];
                         }
+                        return /* tuple */[
+                                /* :: */[
+                                  make_binary_op(ticker_name, match$4[0], match$5[0], /* PLUS */0),
+                                  all_tickers
+                                ],
+                                ticker_map
+                              ];
                       } else {
                         throw [
                               Caml_builtin_exceptions.failure,
@@ -978,15 +974,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                                 Caml_builtin_exceptions.failure,
                                 "Invalid input line"
                               ];
-                        } else {
-                          return /* tuple */[
-                                  /* :: */[
-                                    make_binary_op(ticker_name, match$6[0], match$7[0], /* MINUS */1),
-                                    all_tickers
-                                  ],
-                                  ticker_map
-                                ];
                         }
+                        return /* tuple */[
+                                /* :: */[
+                                  make_binary_op(ticker_name, match$6[0], match$7[0], /* MINUS */1),
+                                  all_tickers
+                                ],
+                                ticker_map
+                              ];
                       } else {
                         throw [
                               Caml_builtin_exceptions.failure,
@@ -1005,20 +1000,19 @@ function process_input_line(ticker_map, all_tickers, line) {
                             Caml_builtin_exceptions.failure,
                             "Invalid input line"
                           ];
-                    } else {
-                      return /* tuple */[
-                              /* :: */[
-                                /* record */[
-                                  /* value */undefined,
-                                  /* rank : Uninitialized */0,
-                                  /* ticker_name */ticker_name,
-                                  /* type_ : Market */0
-                                ],
-                                all_tickers
-                              ],
-                              ticker_map
-                            ];
                     }
+                    return /* tuple */[
+                            /* :: */[
+                              /* record */[
+                                /* value */undefined,
+                                /* rank : Uninitialized */0,
+                                /* ticker_name */ticker_name,
+                                /* type_ : Market */0
+                              ],
+                              all_tickers
+                            ],
+                            ticker_map
+                          ];
                 default:
                   throw [
                         Caml_builtin_exceptions.failure,

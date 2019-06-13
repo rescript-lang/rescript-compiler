@@ -1946,99 +1946,98 @@ function runtime_function(param) {
             Caml_builtin_exceptions.failure,
             "Invalid encoding/OCaml type combination"
           ];
-    } else {
-      var match$1 = param[1];
-      if (typeof match$1 === "number") {
-        switch (match$1) {
-          case 0 : 
-              switch (param[2]) {
-                case 1 : 
-                    return "Pbrt.Encoder.float_as_bits32";
-                case 2 : 
-                    return "Pbrt.Encoder.int_as_bits32";
-                case 3 : 
-                    return "Pbrt.Encoder.int32_as_bits32";
-                case 0 : 
-                case 4 : 
-                case 5 : 
-                case 6 : 
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "Invalid encoding/OCaml type combination"
-                        ];
-                
-              }
-          case 1 : 
-              switch (param[2]) {
-                case 1 : 
-                    return "Pbrt.Encoder.float_as_bits64";
-                case 2 : 
-                    return "Pbrt.Encoder.int_as_bits64";
-                case 4 : 
-                    return "Pbrt.Encoder.int64_as_bits64";
-                case 0 : 
-                case 3 : 
-                case 5 : 
-                case 6 : 
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "Invalid encoding/OCaml type combination"
-                        ];
-                
-              }
-          case 2 : 
-              var match$2 = param[2];
-              if (match$2 !== 5) {
-                if (match$2 !== 0) {
+    }
+    var match$1 = param[1];
+    if (typeof match$1 === "number") {
+      switch (match$1) {
+        case 0 : 
+            switch (param[2]) {
+              case 1 : 
+                  return "Pbrt.Encoder.float_as_bits32";
+              case 2 : 
+                  return "Pbrt.Encoder.int_as_bits32";
+              case 3 : 
+                  return "Pbrt.Encoder.int32_as_bits32";
+              case 0 : 
+              case 4 : 
+              case 5 : 
+              case 6 : 
                   throw [
                         Caml_builtin_exceptions.failure,
                         "Invalid encoding/OCaml type combination"
                       ];
-                } else {
-                  return "Pbrt.Encoder.string";
-                }
+              
+            }
+        case 1 : 
+            switch (param[2]) {
+              case 1 : 
+                  return "Pbrt.Encoder.float_as_bits64";
+              case 2 : 
+                  return "Pbrt.Encoder.int_as_bits64";
+              case 4 : 
+                  return "Pbrt.Encoder.int64_as_bits64";
+              case 0 : 
+              case 3 : 
+              case 5 : 
+              case 6 : 
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "Invalid encoding/OCaml type combination"
+                      ];
+              
+            }
+        case 2 : 
+            var match$2 = param[2];
+            if (match$2 !== 5) {
+              if (match$2 !== 0) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid encoding/OCaml type combination"
+                    ];
               } else {
-                return "Pbrt.Encoder.bytes";
+                return "Pbrt.Encoder.string";
               }
-          
-        }
-      } else if (match$1[0]) {
-        switch (param[2]) {
-          case 2 : 
-              return "Pbrt.Encoder.int_as_zigzag";
-          case 3 : 
-              return "Pbrt.Encoder.int32_as_zigzag";
-          case 4 : 
-              return "Pbrt.Encoder.int64_as_zigzag";
-          case 0 : 
-          case 1 : 
-          case 5 : 
-          case 6 : 
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid encoding/OCaml type combination"
-                  ];
-          
-        }
-      } else {
-        switch (param[2]) {
-          case 2 : 
-              return "Pbrt.Encoder.int_as_varint";
-          case 3 : 
-              return "Pbrt.Encoder.int32_as_varint";
-          case 4 : 
-              return "Pbrt.Encoder.int64_as_varint";
-          case 0 : 
-          case 1 : 
-          case 5 : 
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid encoding/OCaml type combination"
-                  ];
-          case 6 : 
-              return "Pbrt.Encoder.bool";
-          
-        }
+            } else {
+              return "Pbrt.Encoder.bytes";
+            }
+        
+      }
+    } else if (match$1[0]) {
+      switch (param[2]) {
+        case 2 : 
+            return "Pbrt.Encoder.int_as_zigzag";
+        case 3 : 
+            return "Pbrt.Encoder.int32_as_zigzag";
+        case 4 : 
+            return "Pbrt.Encoder.int64_as_zigzag";
+        case 0 : 
+        case 1 : 
+        case 5 : 
+        case 6 : 
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "Invalid encoding/OCaml type combination"
+                ];
+        
+      }
+    } else {
+      switch (param[2]) {
+        case 2 : 
+            return "Pbrt.Encoder.int_as_varint";
+        case 3 : 
+            return "Pbrt.Encoder.int32_as_varint";
+        case 4 : 
+            return "Pbrt.Encoder.int64_as_varint";
+        case 0 : 
+        case 1 : 
+        case 5 : 
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "Invalid encoding/OCaml type combination"
+                ];
+        case 6 : 
+            return "Pbrt.Encoder.bool";
+        
       }
     }
   } else {
@@ -6372,9 +6371,8 @@ function module_of_file_name(file_name) {
             Compilation_error,
             /* Invalid_file_name */Block.__(6, [file_name$1])
           ];
-    } else {
-      throw exn;
     }
+    throw exn;
   }
   if (exit === 1) {
     return constructor_name($$String.sub(file_name$1, 0, dot_index) + "_pb");
@@ -6543,9 +6541,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
               Compilation_error,
               /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])
             ];
-      } else {
-        throw exn;
       }
+      throw exn;
     }
     if (exit === 1) {
       if (is_empty_message(t)) {

@@ -22,9 +22,11 @@ if (match.length !== 1) {
           4
         ]
       ];
-} else {
-  var a = match[0];
 }
+
+var a = match[0];
+
+var x = 1;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -206,14 +206,12 @@ function check_height_and_diff(param) {
     var hr = check_height_and_diff(param[2]);
     if (h !== (max_int_2(hl, hr) + 1 | 0)) {
       throw Height_invariant_broken;
-    } else {
-      var diff = Pervasives.abs(hl - hr | 0);
-      if (diff > 2) {
-        throw Height_diff_borken;
-      } else {
-        return h;
-      }
     }
+    var diff = Pervasives.abs(hl - hr | 0);
+    if (diff > 2) {
+      throw Height_diff_borken;
+    }
+    return h;
   } else {
     return 0;
   }

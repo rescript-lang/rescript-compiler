@@ -15,10 +15,9 @@ function find_package_json(_dir) {
       var new_dir = Path.dirname(dir);
       if (new_dir === dir) {
         throw Caml_builtin_exceptions.not_found;
-      } else {
-        _dir = new_dir;
-        continue ;
       }
+      _dir = new_dir;
+      continue ;
     }
   };
 }

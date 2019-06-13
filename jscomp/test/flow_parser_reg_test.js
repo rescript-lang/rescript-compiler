@@ -1057,18 +1057,20 @@ function parse_hex_symbol(f) {
   if (match) {
     if (match[0] !== 48) {
       throw No_good;
-    } else {
-      var match$1 = match[1];
-      if (match$1) {
-        var match$2 = match$1[0];
-        if (match$2 !== 88 && match$2 !== 120) {
+    }
+    var match$1 = match[1];
+    if (match$1) {
+      var match$2 = match$1[0];
+      if (match$2 !== 88) {
+        if (match$2 !== 120) {
           throw No_good;
-        } else {
-          return eat(eat(f));
         }
+        return eat(eat(f));
       } else {
-        throw No_good;
+        return eat(eat(f));
       }
+    } else {
+      throw No_good;
     }
   } else {
     throw No_good;
@@ -1085,9 +1087,8 @@ function parse_exponent(f) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.failure) {
       throw No_good;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
   return /* record */[
           /* negative */f[/* negative */0],
@@ -1198,9 +1199,8 @@ function float_of_string(str) {
       catch (exn){
         if (exn === No_good) {
           throw e;
-        } else {
-          throw exn;
         }
+        throw exn;
       }
     } else {
       throw e;
@@ -1272,9 +1272,8 @@ function oct_to_int(x) {
             11
           ]
         ];
-  } else {
-    return x - /* "0" */48 | 0;
   }
+  return x - /* "0" */48 | 0;
 }
 
 function hexa_to_int(x) {
@@ -8142,13 +8141,15 @@ function try_assignment_but_not_arrow_function(env) {
     if (Curry._2(Parser_env_048[/* is_identifier */8], undefined, env$1)) {
       if (Curry._2(Parser_env_048[/* value */1], undefined, env$1) === "checks") {
         throw Parser_env_051[/* Rollback */0];
+      }
+      var match$1 = ret[1];
+      if (typeof match$1 === "number" || !(match$1.tag === 18 && match$1[0][1][/* name */0] === "async")) {
+        return ret;
       } else {
-        var match$1 = ret[1];
-        if (typeof match$1 === "number" || !(match$1.tag === 18 && match$1[0][1][/* name */0] === "async" && !Curry._1(Parser_env_048[/* is_line_terminator */5], env$1))) {
-          return ret;
-        } else {
+        if (!Curry._1(Parser_env_048[/* is_line_terminator */5], env$1)) {
           throw Parser_env_051[/* Rollback */0];
         }
+        return ret;
       }
     } else {
       return ret;

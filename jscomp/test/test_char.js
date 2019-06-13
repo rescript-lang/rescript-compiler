@@ -12,9 +12,8 @@ function chr(n) {
           Caml_builtin_exceptions.invalid_argument,
           "Char.chr"
         ];
-  } else {
-    return n;
   }
+  return n;
 }
 
 function lowercase(c) {
