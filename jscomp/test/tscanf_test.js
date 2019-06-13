@@ -1388,12 +1388,11 @@ function scan_elems$1(ib, accu) {
                           Caml_builtin_exceptions.failure,
                           "scan_elems"
                         ];
-                  } else {
-                    return List.rev(/* :: */[
-                                i,
-                                accu
-                              ]);
                   }
+                  return List.rev(/* :: */[
+                              i,
+                              accu
+                            ]);
                 } else {
                   return scan_elems$1(ib, /* :: */[
                               i,
@@ -1667,9 +1666,8 @@ function scan_rest(ib, accu) {
                           Caml_builtin_exceptions.failure,
                           "scan_rest"
                         ];
-                  } else {
-                    return accu;
                   }
+                  return accu;
                 } else {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Scan_char_set */Block.__(20, [
@@ -1724,7 +1722,8 @@ function scan_elems$4(ib, accu) {
                         Caml_builtin_exceptions.failure,
                         "scan_elems"
                       ];
-                } else if (accu === /* [] */0) {
+                }
+                if (accu === /* [] */0) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Scan_char_set */Block.__(20, [
                                       undefined,
@@ -3673,12 +3672,11 @@ function next_char(ob, param) {
   var len = s.length;
   if (len === 0) {
     throw Caml_builtin_exceptions.end_of_file;
-  } else {
-    var c = Caml_string.get(s, 0);
-    ob[/* position */1] = 0;
-    $$Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
-    return c;
   }
+  var c = Caml_string.get(s, 0);
+  ob[/* position */1] = 0;
+  $$Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
+  return c;
 }
 
 function send_string(ob, s) {

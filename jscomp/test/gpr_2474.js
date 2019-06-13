@@ -11,4 +11,5 @@ throw [
       ]
     ];
 
+exports.coordinates = coordinates;
 /*  Not a pure module */

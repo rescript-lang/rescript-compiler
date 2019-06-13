@@ -157,6 +157,7 @@ build test/digest_test.cmi test/digest_test.cmj : cc test/digest_test.ml | test/
 build test/div_by_zero_test.cmi test/div_by_zero_test.cmj : cc test/div_by_zero_test.ml | test/mt.cmj $stdlib
 build test/dollar_escape_test.cmi test/dollar_escape_test.cmj : cc test/dollar_escape_test.ml | test/mt.cmj $stdlib
 build test/earger_curry_test.cmi test/earger_curry_test.cmj : cc test/earger_curry_test.ml | test/mt.cmj $stdlib
+build test/effect.cmi test/effect.cmj : cc test/effect.ml | $stdlib
 build test/empty_obj.cmi test/empty_obj.cmj : cc test/empty_obj.ml | $stdlib
 build test/epsilon_test.cmi test/epsilon_test.cmj : cc test/epsilon_test.ml | test/mt.cmj $stdlib
 build test/equal_box_test.cmi test/equal_box_test.cmj : cc test/equal_box_test.ml | test/mt.cmj $stdlib
@@ -288,6 +289,7 @@ build test/gpr_3548_test.cmi test/gpr_3548_test.cmj : cc test/gpr_3548_test.ml |
 build test/gpr_3549_test.cmi test/gpr_3549_test.cmj : cc test/gpr_3549_test.ml | test/mt.cmj $stdlib
 build test/gpr_3566_drive_test.cmi test/gpr_3566_drive_test.cmj : cc test/gpr_3566_drive_test.ml | test/gpr_3566_test.cmj test/mt.cmj $stdlib
 build test/gpr_3566_test.cmi test/gpr_3566_test.cmj : cc test/gpr_3566_test.ml | $stdlib
+build test/gpr_3595_test.cmi test/gpr_3595_test.cmj : cc test/gpr_3595_test.ml | test/mt.cmj $stdlib
 build test/gpr_373_test.cmi test/gpr_373_test.cmj : cc test/gpr_373_test.ml | $stdlib
 build test/gpr_405_test.cmj : cc test/gpr_405_test.ml | test/gpr_405_test.cmi $stdlib
 build test/gpr_405_test.cmi : cc test/gpr_405_test.mli | $stdlib
@@ -313,6 +315,7 @@ build test/ignore_test.cmi test/ignore_test.cmj : cc test/ignore_test.ml | test/
 build test/imm_map_bench.cmi test/imm_map_bench.cmj : cc test/imm_map_bench.ml | $stdlib
 build test/include_side_effect.cmi test/include_side_effect.cmj : cc test/include_side_effect.ml | test/side_effect.cmj $stdlib
 build test/include_side_effect_free.cmi test/include_side_effect_free.cmj : cc test/include_side_effect_free.ml | test/side_effect_free.cmj $stdlib
+build test/incomplete_toplevel_test.cmi test/incomplete_toplevel_test.cmj : cc test/incomplete_toplevel_test.ml | $stdlib
 build test/infer_type_test.cmj : cc test/infer_type_test.ml | test/infer_type_test.cmi $stdlib
 build test/infer_type_test.cmi : cc test/infer_type_test.mli | $stdlib
 build test/inline_const.cmj : cc test/inline_const.ml | test/inline_const.cmi $stdlib

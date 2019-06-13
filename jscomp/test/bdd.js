@@ -61,15 +61,14 @@ function resize(newSize) {
                   27
                 ]
               ];
-        } else {
-          var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
-          Caml_array.caml_array_set(newArr, ind, /* :: */[
-                n,
-                Caml_array.caml_array_get(newArr, ind)
-              ]);
-          _bucket = bucket[1];
-          continue ;
         }
+        var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
+        Caml_array.caml_array_set(newArr, ind, /* :: */[
+              n,
+              Caml_array.caml_array_get(newArr, ind)
+            ]);
+        _bucket = bucket[1];
+        continue ;
       } else {
         return /* () */0;
       }
@@ -131,7 +130,8 @@ function mkNode(low, v, high) {
                   31
                 ]
               ];
-        } else if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
+        }
+        if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
           return n;
         } else {
           _b = b[1];

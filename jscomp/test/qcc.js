@@ -221,9 +221,8 @@ function next(param) {
                 Caml_builtin_exceptions.failure,
                 "syntax error"
               ];
-        } else {
-          return /* ILit */Block.__(1, [ch]);
         }
+        return /* ILit */Block.__(1, [ch]);
       }
     } else {
       var b = gpos[0];

@@ -118,11 +118,10 @@ function range(from, to_) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_array_test.range"
         ];
-  } else {
-    return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
-                  return i + from | 0;
-                }));
   }
+  return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
+                return i + from | 0;
+              }));
 }
 
 function map2i(f, a, b) {
@@ -132,11 +131,10 @@ function map2i(f, a, b) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_array_test.map2i"
         ];
-  } else {
-    return $$Array.mapi((function (i, a) {
-                  return Curry._3(f, i, a, b[i]);
-                }), a);
   }
+  return $$Array.mapi((function (i, a) {
+                return Curry._3(f, i, a, b[i]);
+              }), a);
 }
 
 function tolist_aux(a, f, _i, _res) {

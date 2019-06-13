@@ -104,9 +104,8 @@ function char_of_int(n) {
           Caml_builtin_exceptions.invalid_argument,
           "char_of_int"
         ];
-  } else {
-    return n;
   }
+  return n;
 }
 
 function string_of_bool(b) {
@@ -251,9 +250,8 @@ function output(oc, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "output"
         ];
-  } else {
-    return Caml_io.caml_ml_output(oc, s, ofs, len);
   }
+  return Caml_io.caml_ml_output(oc, s, ofs, len);
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -262,9 +260,8 @@ function output_substring(oc, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "output_substring"
         ];
-  } else {
-    return Caml_io.caml_ml_output(oc, s, ofs, len);
   }
+  return Caml_io.caml_ml_output(oc, s, ofs, len);
 }
 
 function output_value(chan, v) {
@@ -321,9 +318,8 @@ function input(ic, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "input"
         ];
-  } else {
-    return Caml_missing_polyfill.not_implemented("caml_ml_input");
   }
+  return Caml_missing_polyfill.not_implemented("caml_ml_input");
 }
 
 function unsafe_really_input(ic, s, _ofs, _len) {
@@ -336,11 +332,10 @@ function unsafe_really_input(ic, s, _ofs, _len) {
       var r = Caml_missing_polyfill.not_implemented("caml_ml_input");
       if (r === 0) {
         throw Caml_builtin_exceptions.end_of_file;
-      } else {
-        _len = len - r | 0;
-        _ofs = ofs + r | 0;
-        continue ;
       }
+      _len = len - r | 0;
+      _ofs = ofs + r | 0;
+      continue ;
     }
   };
 }
@@ -351,9 +346,8 @@ function really_input(ic, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "really_input"
         ];
-  } else {
-    return unsafe_really_input(ic, s, ofs, len);
   }
+  return unsafe_really_input(ic, s, ofs, len);
 }
 
 function really_input_string(ic, len) {

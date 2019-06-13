@@ -231,9 +231,8 @@ function for_all_range(s, start, finish, p) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string_test.for_all_range"
         ];
-  } else {
-    return unsafe_for_all_range(s, start, finish, p);
   }
+  return unsafe_for_all_range(s, start, finish, p);
 }
 
 function for_all(p, s) {
@@ -308,22 +307,21 @@ function non_overlap_count(sub, s) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string_test.non_overlap_count"
         ];
-  } else {
-    var _acc = 0;
-    var _off = 0;
-    while(true) {
-      var off = _off;
-      var acc = _acc;
-      var i = find(off, sub, s);
-      if (i < 0) {
-        return acc;
-      } else {
-        _off = i + sub_len | 0;
-        _acc = acc + 1 | 0;
-        continue ;
-      }
-    };
   }
+  var _acc = 0;
+  var _off = 0;
+  while(true) {
+    var off = _off;
+    var acc = _acc;
+    var i = find(off, sub, s);
+    if (i < 0) {
+      return acc;
+    } else {
+      _off = i + sub_len | 0;
+      _acc = acc + 1 | 0;
+      continue ;
+    }
+  };
 }
 
 function rfind(sub, s) {
@@ -592,9 +590,8 @@ function no_char(x, ch, i, len) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string_test.no_char"
         ];
-  } else {
-    return unsafe_no_char(x, ch, i, len);
   }
+  return unsafe_no_char(x, ch, i, len);
 }
 
 function no_slash(x) {

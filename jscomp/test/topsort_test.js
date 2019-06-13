@@ -1252,15 +1252,14 @@ function pathsort(graph) {
               stack
             ]
           ];
-    } else {
-      return /* tuple */[
-              add(node, set),
-              /* :: */[
-                node,
-                stack
-              ]
-            ];
     }
+    return /* tuple */[
+            add(node, set),
+            /* :: */[
+              node,
+              stack
+            ]
+          ];
   };
   var sort_nodes = function (path, nodes) {
     return List.iter((function (node) {

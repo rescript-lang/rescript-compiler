@@ -58,19 +58,22 @@ function tst02(s) {
     } else {
       return 1;
     }
-  } else if (len === 0) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "stringmatch_test.ml",
-            32,
-            22
-          ]
-        ];
-  } else if (s === "A") {
-    return 2;
   } else {
-    return 3;
+    if (len === 0) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "stringmatch_test.ml",
+              32,
+              22
+            ]
+          ];
+    }
+    if (s === "A") {
+      return 2;
+    } else {
+      return 3;
+    }
   }
 }
 

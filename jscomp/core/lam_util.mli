@@ -71,7 +71,7 @@ val generate_label : ?name:string -> unit -> J.label
 
 
 (** [dump] when {!Js_config.is_same_file}*)
-val dump : Env.t   -> string -> Lam.t -> Lam.t
+val dump : Env.t   -> string -> Lam.t -> unit
 
 
 val not_function : Lam.t -> bool 

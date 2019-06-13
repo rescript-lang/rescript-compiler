@@ -3246,9 +3246,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
             throw Parse_error;
-          } else {
-            throw exn;
           }
+          throw exn;
         }
         if (!accept_s(":]")) {
           throw Parse_error;
@@ -3436,9 +3435,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             
           }
         }
-      } else if (c$2 >= 48) {
-        throw Not_supported;
       } else {
+        if (c$2 >= 48) {
+          throw Not_supported;
+        }
         return /* `Char */[
                 748194550,
                 c$2
@@ -3692,12 +3692,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       } else if (c$1 >= 44) {
         if (c$1 >= 63) {
           throw Parse_error;
-        } else {
-          return /* Set */Block.__(0, [single(c$1)]);
         }
-      } else if (c$1 >= 42) {
-        throw Parse_error;
+        return /* Set */Block.__(0, [single(c$1)]);
       } else {
+        if (c$1 >= 42) {
+          throw Parse_error;
+        }
         return /* Set */Block.__(0, [single(c$1)]);
       }
     }
@@ -3791,9 +3791,8 @@ function exec(rex, pos, s) {
   var match = exec_internal("Re.exec", pos$1, len, true, re, s$1);
   if (typeof match === "number") {
     throw Caml_builtin_exceptions.not_found;
-  } else {
-    return match[0];
   }
+  return match[0];
 }
 
 var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";

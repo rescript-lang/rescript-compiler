@@ -73,9 +73,10 @@ function _must_escape(s) {
         } else {
           exit = 1;
         }
-      } else if (c >= 9) {
-        throw Pervasives.Exit;
       } else {
+        if (c >= 9) {
+          throw Pervasives.Exit;
+        }
         exit = 1;
       }
       if (exit === 1) {

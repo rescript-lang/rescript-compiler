@@ -52,28 +52,27 @@ function nth(l, n) {
           Caml_builtin_exceptions.invalid_argument,
           "List.nth"
         ];
-  } else {
-    var _l = l;
-    var _n = n;
-    while(true) {
-      var n$1 = _n;
-      var l$1 = _l;
-      if (l$1) {
-        if (n$1 === 0) {
-          return l$1[0];
-        } else {
-          _n = n$1 - 1 | 0;
-          _l = l$1[1];
-          continue ;
-        }
-      } else {
-        throw [
-              Caml_builtin_exceptions.failure,
-              "nth"
-            ];
-      }
-    };
   }
+  var _l = l;
+  var _n = n;
+  while(true) {
+    var n$1 = _n;
+    var l$1 = _l;
+    if (l$1) {
+      if (n$1 === 0) {
+        return l$1[0];
+      } else {
+        _n = n$1 - 1 | 0;
+        _l = l$1[1];
+        continue ;
+      }
+    } else {
+      throw [
+            Caml_builtin_exceptions.failure,
+            "nth"
+          ];
+    }
+  };
 }
 
 function rev_append(_l1, _l2) {
@@ -252,12 +251,13 @@ function rev_map2(f, l1, l2) {
               "List.rev_map2"
             ];
       }
-    } else if (l2$1) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.rev_map2"
-          ];
     } else {
+      if (l2$1) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.rev_map2"
+            ];
+      }
       return accu;
     }
   };
@@ -307,12 +307,13 @@ function fold_left2(f, _accu, _l1, _l2) {
               "List.fold_left2"
             ];
       }
-    } else if (l2) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.fold_left2"
-          ];
     } else {
+      if (l2) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.fold_left2"
+            ];
+      }
       return accu;
     }
   };
@@ -328,12 +329,13 @@ function fold_right2(f, l1, l2, accu) {
             "List.fold_right2"
           ];
     }
-  } else if (l2) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "List.fold_right2"
-        ];
   } else {
+    if (l2) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "List.fold_right2"
+          ];
+    }
     return accu;
   }
 }

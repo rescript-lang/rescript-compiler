@@ -24,7 +24,8 @@ function f3(param, param$1) {
             9
           ]
         ];
-  } else if (typeof rhs === "number") {
+  }
+  if (typeof rhs === "number") {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -33,9 +34,8 @@ function f3(param, param$1) {
             9
           ]
         ];
-  } else {
-    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
   }
+  return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
 }
 
 function f4(param, param$1) {
@@ -50,7 +50,8 @@ function f4(param, param$1) {
             9
           ]
         ];
-  } else if (typeof rhs === "number") {
+  }
+  if (typeof rhs === "number") {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -59,9 +60,8 @@ function f4(param, param$1) {
             9
           ]
         ];
-  } else {
-    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
   }
+  return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
 }
 
 var x = /* `A */[

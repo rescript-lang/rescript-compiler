@@ -2266,9 +2266,8 @@ function get_variable(table, name) {
               50
             ]
           ];
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

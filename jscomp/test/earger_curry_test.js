@@ -27,12 +27,13 @@ function init(l, f) {
   var f$1 = Curry.__1(f);
   if (l$1 === 0) {
     return /* array */[];
-  } else if (l$1 < 0) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.init"
-        ];
   } else {
+    if (l$1 < 0) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Array.init"
+          ];
+    }
     var res = Caml_array.caml_make_vect(l$1, f$1(0));
     for(var i = 1 ,i_finish = l$1 - 1 | 0; i <= i_finish; ++i){
       res[i] = f$1(i);

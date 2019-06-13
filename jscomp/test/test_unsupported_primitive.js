@@ -9,9 +9,8 @@ function to_buffer(buff, ofs, len, v, flags) {
           Caml_builtin_exceptions.invalid_argument,
           "Marshal.to_buffer: substring out of bounds"
         ];
-  } else {
-    return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer");
   }
+  return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer");
 }
 
 exports.to_buffer = to_buffer;

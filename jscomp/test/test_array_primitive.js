@@ -17,9 +17,8 @@ function caml_array_set(xs, index, newval) {
           Caml_builtin_exceptions.invalid_argument,
           "index out of bounds"
         ];
-  } else {
-    return Caml_array.caml_array_set(xs, index, newval);
   }
+  return Caml_array.caml_array_set(xs, index, newval);
 }
 
 function caml_array_get(xs, index) {
@@ -28,9 +27,8 @@ function caml_array_get(xs, index) {
           Caml_builtin_exceptions.invalid_argument,
           "index out of bounds"
         ];
-  } else {
-    return Caml_array.caml_array_get(xs, index);
   }
+  return Caml_array.caml_array_get(xs, index);
 }
 
 function caml_make_vect(len, init) {

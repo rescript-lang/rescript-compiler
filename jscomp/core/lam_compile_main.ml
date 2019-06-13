@@ -117,51 +117,52 @@ let no_side_effects (rest : Lam_group.t list) : string option =
         else None (* TODO :*))
 
 
-
+let _d  = fun env s lam -> 
+#if undefined BS_RELEASE_BUILD then 
+    Lam_util.dump env s lam ;
+    Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
+    ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
+    Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
+#end
+    lam
 
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
-let compile  ~filename (output_prefix : string) env _sigs 
+let compile  
+    ~filename (output_prefix : string) 
+    (env : Env.t) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
 #if undefined BS_RELEASE_BUILD then     
-    export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn ~__POS__ "export: %s/%d"  id.name id.stamp) ;
+    Ext_list.iter export_idents 
+      (fun id -> Ext_log.dwarn ~__POS__ "export idents: %s/%d"  id.name id.stamp) ;
 #end      
     Lam_compile_env.reset () ;
   in 
   let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
-  let _d  = fun s lam -> 
-    let result = Lam_util.dump env s lam  in
-#if undefined BS_RELEASE_BUILD then 
-    Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
-    ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
-    Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
-#end
-    result 
-  in
+
   let _j = Js_pass_debug.dump in
-  let lam = _d "initial"  lam in
+  let lam = _d env "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
-  let lam = _d  "flatten0" lam in
+  let lam = _d  env "flatten0" lam in
   let meta = 
     Lam_pass_collect.count_alias_globals env filename
       export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam
-      |> _d "flattern1"
+      |> _d env "flattern1"
       |>  Lam_pass_exits.simplify_exits
-      |> _d "simplyf_exits"
+      |> _d env "simplyf_exits"
       |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
-      |> _d "simplify_alias"
+      |> _d env "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
-      |> _d "flatten2"
+      |> _d env "flatten2"
     in  (* Inling happens*)
 
     let ()  = Lam_pass_collect.collect_helper meta lam in
@@ -170,29 +171,29 @@ let compile  ~filename (output_prefix : string) env _sigs
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = 
       lam
-      |> _d "alpha_before"
+      |> _d env "alpha_before"
       |> Lam_pass_alpha_conversion.alpha_conversion meta
-      |> _d "alpha_after"
+      |> _d env "alpha_after"
       |> Lam_pass_exits.simplify_exits in    
     let () = Lam_pass_collect.collect_helper meta lam in
 
 
     lam
-    |> _d "simplify_alias_before"
+    |> _d env "simplify_alias_before"
     |>  Lam_pass_remove_alias.simplify_alias meta 
-    |> _d "alpha_conversion"
+    |> _d env "alpha_conversion"
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
-    |> _d "before-simplify_lets"
+    |> _d env "before-simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
 
-    |> _d "before-simplify-exits"
+    |> _d env "before-simplify-exits"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
-    |> _d "simplify_lets"
+    |> _d env "simplify_lets"
 #if undefined BS_RELEASE_BUILD then    
     |> (fun lam -> 
        let () = 
@@ -232,10 +233,12 @@ let compile  ~filename (output_prefix : string) env _sigs
 #end    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
+  let meta_exports = meta.exports in 
+  let export_set = Ident_set.of_list meta_exports in 
   let js : J.program = 
       { J.name = filename ; 
-        exports = meta.exports ; 
-        export_set = Ident_set.of_list meta.exports; 
+        exports = meta_exports ; 
+        export_set; 
         block = body}
   in
   js 
@@ -290,12 +293,11 @@ let (//) = Filename.concat
 
 let lambda_as_module 
     finalenv 
-    (current_signature : Types.signature)
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   let lambda_output = 
-    compile ~filename output_prefix finalenv current_signature lam in
+    compile ~filename output_prefix finalenv lam in
   let basename =  
     Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
       (Filename.basename

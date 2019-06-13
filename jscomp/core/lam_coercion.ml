@@ -200,7 +200,7 @@ let rec flatten
 *)
 let coerce_and_group_big_lambda
     (meta : Lam_stats.t)
-    lam =
+    lam : t * Lam_stats.t =
   match flatten [] lam with
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input
     ->
@@ -212,14 +212,18 @@ let coerce_and_group_big_lambda
         exports = coerced_input.export_list}
   | _ ->
     (* This could happen see #2474*)
-    {
-      export_list = [];
-      export_set = Ident_set.empty;
+    (* #3595 
+    TODO: FIXME later
+    *)
+    assert false
+    (* {
+      export_list = meta.exports;
+      export_set = meta.export_idents;
       export_map = Ident_map.empty ;
       (** not used in code generation, mostly used
           for store some information in cmj files *)
       groups = [Nop lam] ;
       (* all code to be compiled later = original code + rebound coercions *)
     }
-    , { meta with export_idents = Ident_set.empty ; exports= []}
+    , meta *)
 

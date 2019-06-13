@@ -715,6 +715,11 @@ let if_ (a : t) (b : t) (c : t) : t =
       (match  has_boolean_type a with
        | Some loc ->  not_ loc a 
        | None -> Lifthenelse (a,b,c))     
+    | Lprim {primitive = Praise } , _ ->    
+      begin match c with 
+        | Lconst _ -> Lifthenelse(a,b,c)
+        | _ -> seq (Lifthenelse (a,b,unit)) c
+      end 
     | _ -> 
       (match a with 
        | Lprim {primitive = Pisout; args = [Lconst(Const_int range); Lvar xx] } 

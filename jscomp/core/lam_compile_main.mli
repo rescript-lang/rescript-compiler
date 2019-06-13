@@ -40,12 +40,13 @@
 val compile :  
   filename : string -> 
   string -> 
-  Env.t -> 
-  Types.signature -> 
+  Env.t ->   
   Lambda.lambda -> 
   J.deps_program
 
 val lambda_as_module :  
   Env.t ->
-  Types.signature -> string -> 
-  string  -> Lambda.lambda -> unit
+  string -> 
+  string ->
+  Lambda.lambda -> 
+  unit
