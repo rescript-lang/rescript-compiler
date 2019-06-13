@@ -76,7 +76,7 @@ let set_attrs = [Ast_attributes.bs_set]
 
 let deprecated name = 
   Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
+    ("use " ^ name ^ "Get instead, or swith to the new [@bs.deriving {abstract: light}] for the type declaration (OCaml syntax: [@@bs.deriving {abstract = light}])")
 
 
 let handleTdcl 
