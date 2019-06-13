@@ -655,7 +655,8 @@ let translate  loc
           | _ -> assert false
         end
       | _, _, _ ,_ -> 
-        E.not_implemented ("caml_ba_get_" ^ string_of_int dimension )
+        E.resolve_and_apply
+          ("caml_ba_get_" ^ string_of_int dimension ) args
         (* E.runtime_call Js_config.bigarray  *)
         (*   ("caml_ba_get_" ^ string_of_int dimension ) args  *)
     end
@@ -677,15 +678,16 @@ let translate  loc
 
       | _ , _, _,_ 
         -> 
-        E.not_implemented
-          ("caml_ba_set_" ^ string_of_int dimension )
+        E.resolve_and_apply
+          ("caml_ba_set_" ^ string_of_int dimension) args
           (* E.runtime_call Js_config.bigarray  *)
           (*   ("caml_ba_set_" ^ string_of_int dimension ) args  *)
     end
 
   | Pbigarraydim i
     -> 
-    E.not_implemented ("caml_ba_dim_" ^ string_of_int i)
+    E.resolve_and_apply 
+      ("caml_ba_dim_" ^ string_of_int i) args
   (* E.runtime_call Js_config.bigarray *)
   (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
@@ -724,6 +726,6 @@ let translate  loc
     (*we dont use [throw] here, since [throw] is an statement  *)        
     let s = Lam_print.primitive_to_string prim in    
     Bs_warnings.warn_missing_primitive loc  s;
-    E.not_implemented s 
+    E.resolve_and_apply s args
 
 

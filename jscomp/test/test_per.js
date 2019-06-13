@@ -9,7 +9,7 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js");
 
@@ -182,7 +182,7 @@ var stdout = Caml_io.stdout;
 var stderr = Caml_io.stderr;
 
 function open_out_gen(mode, perm, name) {
-  return Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_out");
+  return Caml_external_polyfill.resolve("caml_ml_open_descriptor_out")(Caml_external_polyfill.resolve("caml_sys_open")(name, mode, perm));
 }
 
 function open_out(name) {
@@ -265,12 +265,12 @@ function output_substring(oc, s, ofs, len) {
 }
 
 function output_value(chan, v) {
-  return Caml_missing_polyfill.not_implemented("caml_output_value");
+  return Caml_external_polyfill.resolve("caml_output_value")(chan, v, /* [] */0);
 }
 
 function close_out(oc) {
   Caml_io.caml_ml_flush(oc);
-  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+  return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
 }
 
 function close_out_noerr(oc) {
@@ -281,7 +281,7 @@ function close_out_noerr(oc) {
     
   }
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
   }
   catch (exn$1){
     return /* () */0;
@@ -289,7 +289,7 @@ function close_out_noerr(oc) {
 }
 
 function open_in_gen(mode, perm, name) {
-  return Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_in");
+  return Caml_external_polyfill.resolve("caml_ml_open_descriptor_in")(Caml_external_polyfill.resolve("caml_sys_open")(name, mode, perm));
 }
 
 function open_in(name) {
@@ -319,7 +319,7 @@ function input(ic, s, ofs, len) {
           "input"
         ];
   }
-  return Caml_missing_polyfill.not_implemented("caml_ml_input");
+  return Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
 }
 
 function unsafe_really_input(ic, s, _ofs, _len) {
@@ -329,7 +329,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     if (len <= 0) {
       return /* () */0;
     } else {
-      var r = Caml_missing_polyfill.not_implemented("caml_ml_input");
+      var r = Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
       if (r === 0) {
         throw Caml_builtin_exceptions.end_of_file;
       }
@@ -378,7 +378,7 @@ function input_line(chan) {
   while(true) {
     var len = _len;
     var accu = _accu;
-    var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line");
+    var n = Caml_external_polyfill.resolve("caml_ml_input_scan_line")(chan);
     if (n === 0) {
       if (accu) {
         return build_result(Caml_bytes.caml_create_bytes(len), len, accu);
@@ -387,8 +387,8 @@ function input_line(chan) {
       }
     } else if (n > 0) {
       var res = Caml_bytes.caml_create_bytes(n - 1 | 0);
-      Caml_missing_polyfill.not_implemented("caml_ml_input");
-      Caml_missing_polyfill.not_implemented("caml_ml_input_char");
+      Caml_external_polyfill.resolve("caml_ml_input")(chan, res, 0, n - 1 | 0);
+      Caml_external_polyfill.resolve("caml_ml_input_char")(chan);
       if (accu) {
         var len$1 = (len + n | 0) - 1 | 0;
         return build_result(Caml_bytes.caml_create_bytes(len$1), len$1, /* :: */[
@@ -400,7 +400,7 @@ function input_line(chan) {
       }
     } else {
       var beg = Caml_bytes.caml_create_bytes(-n | 0);
-      Caml_missing_polyfill.not_implemented("caml_ml_input");
+      Caml_external_polyfill.resolve("caml_ml_input")(chan, beg, 0, -n | 0);
       _len = len - n | 0;
       _accu = /* :: */[
         beg,
@@ -413,7 +413,7 @@ function input_line(chan) {
 
 function close_in_noerr(ic) {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    return Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
   }
   catch (exn){
     return /* () */0;

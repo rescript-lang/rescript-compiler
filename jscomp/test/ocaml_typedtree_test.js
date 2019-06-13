@@ -40,7 +40,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var cmi_magic_number = "Caml1999I017";
@@ -225,9 +225,9 @@ function find_in_path_uncap(path, name) {
       var dir = param[0];
       var fullname = Filename.concat(dir, name);
       var ufullname = Filename.concat(dir, uname);
-      if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+      if (Caml_external_polyfill.resolve("caml_sys_file_exists")(ufullname)) {
         return ufullname;
-      } else if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+      } else if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
         return fullname;
       } else {
         _param = param[1];
@@ -241,7 +241,7 @@ function find_in_path_uncap(path, name) {
 
 function remove_file(filename) {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_sys_remove");
+    return Caml_external_polyfill.resolve("caml_sys_remove")(filename);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -1502,7 +1502,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
-  Caml_missing_polyfill.not_implemented("caml_terminfo_backup");
+  Caml_external_polyfill.resolve("caml_terminfo_backup")(lines);
   var bol = false;
   Pervasives.print_string("# ");
   for(var pos = 0 ,pos_finish = (lb[/* lex_buffer_len */2] - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
@@ -1515,21 +1515,21 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
             return pos === loc[/* loc_start */0][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+      Caml_external_polyfill.resolve("caml_terminfo_standout")(true);
     }
     if (List.exists((function(pos){
           return function (loc) {
             return pos === loc[/* loc_end */1][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+      Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
     }
     var c = Caml_bytes.get(lb[/* lex_buffer */1], pos + pos0 | 0);
     Pervasives.print_char(c);
     bol = c === /* "\n" */10;
   }
-  Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
-  Caml_missing_polyfill.not_implemented("caml_terminfo_resume");
+  Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
+  Caml_external_polyfill.resolve("caml_terminfo_resume")(num_loc_lines[0]);
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
@@ -1683,7 +1683,7 @@ function highlight_locations(ppf, locs) {
           return false;
         }
       } else {
-        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup");
+        status[0] = Caml_external_polyfill.resolve("caml_terminfo_setup")(Pervasives.stdout);
         continue ;
       }
     } else {
@@ -5359,9 +5359,9 @@ function backtrack(param) {
 var $$Error$1 = Caml_exceptions.create("Ocaml_typedtree_test.Cmi_format.Error");
 
 function input_cmi(ic) {
-  var match = Caml_missing_polyfill.not_implemented("caml_input_value");
-  var crcs = Caml_missing_polyfill.not_implemented("caml_input_value");
-  var flags = Caml_missing_polyfill.not_implemented("caml_input_value");
+  var match = Caml_external_polyfill.resolve("caml_input_value")(ic);
+  var crcs = Caml_external_polyfill.resolve("caml_input_value")(ic);
+  var flags = Caml_external_polyfill.resolve("caml_input_value")(ic);
   return /* record */[
           /* cmi_name */match[0],
           /* cmi_sign */match[1],
@@ -5375,7 +5375,7 @@ function read_cmi(filename) {
   try {
     var buffer = Pervasives.really_input_string(ic, cmi_magic_number.length);
     if (buffer !== cmi_magic_number) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+      Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       var pre_len = cmi_magic_number.length - 3 | 0;
       if ($$String.sub(buffer, 0, pre_len) === $$String.sub(cmi_magic_number, 0, pre_len)) {
         var msg = buffer < cmi_magic_number ? "an older" : "a newer";
@@ -5394,25 +5394,25 @@ function read_cmi(filename) {
       }
     }
     var cmi = input_cmi(ic);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return cmi;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+      Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw [
             $$Error$1,
             /* Corrupted_interface */Block.__(2, [filename])
           ];
     } else if (exn[0] === Caml_builtin_exceptions.failure) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+      Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw [
             $$Error$1,
             /* Corrupted_interface */Block.__(2, [filename])
           ];
     } else if (exn[0] === $$Error$1) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+      Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw [
             $$Error$1,
             exn[1]
@@ -5425,11 +5425,23 @@ function read_cmi(filename) {
 
 function output_cmi(filename, oc, cmi) {
   Pervasives.output_string(oc, cmi_magic_number);
-  Caml_missing_polyfill.not_implemented("caml_output_value");
+  Caml_external_polyfill.resolve("caml_output_value")(oc, /* tuple */[
+        cmi[/* cmi_name */0],
+        cmi[/* cmi_sign */1]
+      ], /* [] */0);
   Caml_io.caml_ml_flush(oc);
   var crc = Digest.file(filename);
-  Caml_missing_polyfill.not_implemented("caml_output_value");
-  Caml_missing_polyfill.not_implemented("caml_output_value");
+  var crcs_000 = /* tuple */[
+    cmi[/* cmi_name */0],
+    crc
+  ];
+  var crcs_001 = cmi[/* cmi_crcs */2];
+  var crcs = /* :: */[
+    crcs_000,
+    crcs_001
+  ];
+  Caml_external_polyfill.resolve("caml_output_value")(oc, crcs, /* [] */0);
+  Caml_external_polyfill.resolve("caml_output_value")(oc, cmi[/* cmi_flags */3], /* [] */0);
   return crc;
 }
 
@@ -12851,7 +12863,7 @@ function save_signature(sg, modname, filename) {
     ];
     var crc = output_cmi(filename$1, oc, cmi);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
     var comps = components_of_module(empty, identity, /* Pident */Block.__(0, [/* record */[
               /* stamp */0,
               /* name */modname$1,
@@ -12877,7 +12889,7 @@ function save_signature(sg, modname, filename) {
   }
   catch (exn){
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
     remove_file(filename$1);
     throw exn;
   }
@@ -24016,7 +24028,7 @@ function clear_env(binary_annots) {
 
 function output_cmt(oc, cmt) {
   Pervasives.output_string(oc, "Caml2012T004");
-  return Caml_missing_polyfill.not_implemented("caml_output_value");
+  return Caml_external_polyfill.resolve("caml_output_value")(oc, cmt, /* [] */0);
 }
 
 var saved_types = /* record */[/* contents : [] */0];
@@ -24097,7 +24109,7 @@ function save_cmt(filename, modname, binary_annots, sourcefile, initial_env, sg)
     ];
     output_cmt(oc, cmt);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
+    Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
     var exit = 0;
     var cmd;
     try {
@@ -75737,7 +75749,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
     } else {
       var sourceintf = chop_extension_if_any(sourcefile) + interface_suffix[0];
       var mli_status = assume_no_mli[0];
-      if (mli_status === /* Mli_na */0 && Caml_missing_polyfill.not_implemented("caml_sys_file_exists") || mli_status === /* Mli_exists */1) {
+      if (mli_status === /* Mli_na */0 && Caml_external_polyfill.resolve("caml_sys_file_exists")(sourceintf) || mli_status === /* Mli_exists */1) {
         var intf_file;
         try {
           intf_file = find_in_path_uncap(load_path[0], modulename + ".cmi");
