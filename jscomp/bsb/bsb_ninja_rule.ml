@@ -118,7 +118,7 @@ let copy_resources =
 let build_bin_deps =
   define
     ~restat:()
-    ~command:"$bsdep $namespace -g $bsb_dir_group $in"
+    ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
     "build_deps"
 
 

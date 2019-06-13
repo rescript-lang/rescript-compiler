@@ -12897,7 +12897,7 @@ let refmt_flags = "refmt_flags"
 
 let postbuild = "postbuild"
 
-let namespace = "namespace" 
+let g_ns = "g_ns" 
 
 let warnings = "warnings"
 
@@ -13100,7 +13100,7 @@ let copy_resources =
 let build_bin_deps =
   define
     ~restat:()
-    ~command:"$bsdep $namespace -g $bsb_dir_group $in"
+    ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
     "build_deps"
 
 
@@ -13867,7 +13867,7 @@ let output_ninja_and_namespace_map
          (fun x -> x.package_install_path) )
   in  
   let has_reason_files = ref false in 
-  let bs_package_flags , namespace_flag = 
+  let bs_package_flags , g_ns_flg = 
     match namespace with
     | None -> 
       Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
@@ -13946,7 +13946,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
         Bsb_ninja_global_vars.g_pkg_incls, g_pkg_incls;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
-        Bsb_ninja_global_vars.namespace , namespace_flag ; 
+        Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
   in      
