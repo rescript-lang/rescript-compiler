@@ -13003,24 +13003,36 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type state = {
+  mutable rule_id : int ;  
+  mutable rule_names : String_set.t 
+}
+
+let st = {
+  rule_id = 0;
+  rule_names = String_set.empty
+}
+
+let replace snapshot = 
+  st.rule_id <- snapshot.rule_id;
+  st.rule_names <- snapshot.rule_names
 
 
-let rule_id = ref 0
-let rule_names = ref String_set.empty
 (** To make it re-entrant across multiple ninja files, 
     We must reset [rule_id]
     could be improved later
              1. instead of having a global id, having a unique id per rule name
              2. the rule id is increased only when actually used
 *)
-let ask_name name =
-  let current_id = !rule_id in
-  let () = incr rule_id in
+let ask_name (name : string) : string =
+  let current_id = st.rule_id in
+  let current_names = st.rule_names in 
+  let () = st.rule_id <- current_id + 1 in
   let new_name  = 
-      if String_set.mem !rule_names name then 
+      if String_set.mem current_names name then 
         name ^ Printf.sprintf "_%d" current_id
       else name in   
-  rule_names := String_set.add !rule_names new_name ;    
+  st.rule_names <- String_set.add current_names new_name ;    
   new_name
 
 
@@ -13166,14 +13178,16 @@ let build_package =
     ~restat:()
     "build_package"
 
-(* a snapshot of rule_names environment*)
-let built_in_rule_names = !rule_names 
-let built_in_rule_id = !rule_id
+
+let snapshot = {
+  rule_names = st.rule_names;
+  rule_id = st.rule_id
+}
+
 type command = string
 
 let make_custom_rules (custom_rules : command String_map.t) = 
-  rule_id := built_in_rule_id;
-  rule_names := built_in_rule_names;
+  replace snapshot;
   build_ast_and_module_sets.used <- false ;
   build_ast_and_module_sets_from_re.used <- false ;  
   build_ast_and_module_sets_from_rei.used <- false ;
