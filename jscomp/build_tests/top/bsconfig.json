@@ -1,0 +1,19 @@
+{
+  "name": "a0002",
+  "version": "0.1.0",
+  "sources": {
+    "dir" : ".",
+    "subdirs" : false
+  },
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "bs-dependencies": [
+  ],
+  "warnings": {
+    "error" : "+101"
+  },
+  "refmt": 3
+}

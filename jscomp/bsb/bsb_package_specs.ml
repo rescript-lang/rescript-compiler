@@ -135,11 +135,10 @@ let package_flag ({format; in_source } : spec) dir =
            else assert false))
 
 let package_flag_of_package_specs (package_specs : t) 
-    (dirname : string ) = 
-  (Spec_set.fold (fun format acc ->
-       Ext_string.inter2 acc (package_flag format dirname )
-
-     ) package_specs Ext_string.empty)
+    (dirname : string ) : string  = 
+  Spec_set.fold (fun format acc ->
+      Ext_string.inter2 acc (package_flag format dirname )
+    ) package_specs Ext_string.empty
 
 let default_package_specs = 
   Spec_set.singleton 
