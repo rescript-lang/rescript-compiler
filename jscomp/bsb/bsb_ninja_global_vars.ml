@@ -24,7 +24,7 @@
 
 
  
-let bs_package_flags = "bs_package_flags"
+let g_pkg_flg = "g_pkg_flg"
 
 let bsc = "bsc" 
 

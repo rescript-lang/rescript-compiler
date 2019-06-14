@@ -22,24 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type state = {
+  mutable rule_id : int ;  
+  mutable rule_names : String_set.t 
+}
+
+let st = {
+  rule_id = 0;
+  rule_names = String_set.empty
+}
+
+let replace snapshot = 
+  st.rule_id <- snapshot.rule_id;
+  st.rule_names <- snapshot.rule_names
 
 
-let rule_id = ref 0
-let rule_names = ref String_set.empty
 (** To make it re-entrant across multiple ninja files, 
     We must reset [rule_id]
     could be improved later
              1. instead of having a global id, having a unique id per rule name
              2. the rule id is increased only when actually used
 *)
-let ask_name name =
-  let current_id = !rule_id in
-  let () = incr rule_id in
+let ask_name (name : string) : string =
+  let current_id = st.rule_id in
+  let current_names = st.rule_names in 
+  let () = st.rule_id <- current_id + 1 in
   let new_name  = 
-      if String_set.mem !rule_names name then 
+      if String_set.mem current_names name then 
         name ^ Printf.sprintf "_%d" current_id
       else name in   
-  rule_names := String_set.add !rule_names new_name ;    
+  st.rule_names <- String_set.add current_names new_name ;    
   new_name
 
 
@@ -137,14 +149,14 @@ let build_bin_deps =
 (* [g_lib_incls] are fixed for libs *)
 let ml_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
 let re_cmj_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "re_cmj_only"
@@ -152,14 +164,14 @@ let re_cmj_js =
 
 let ml_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
 let re_cmj_cmi_js =
   define
-    ~command:"$bsc $bs_package_flags -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -167,14 +179,14 @@ let re_cmj_cmi_js =
     
 let ml_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $g_pkg_flg -bs-no-implicit-include $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let re_cmi =
   define
-    ~command:"$bsc $bs_package_flags -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+    ~command:"$bsc $g_pkg_flg -bs-no-implicit-include -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
     ~dyndep:"$in_e.d"
     ~restat:()
     "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -185,14 +197,16 @@ let build_package =
     ~restat:()
     "build_package"
 
-(* a snapshot of rule_names environment*)
-let built_in_rule_names = !rule_names 
-let built_in_rule_id = !rule_id
+
+let snapshot = {
+  rule_names = st.rule_names;
+  rule_id = st.rule_id
+}
+
 type command = string
 
 let make_custom_rules (custom_rules : command String_map.t) = 
-  rule_id := built_in_rule_id;
-  rule_names := built_in_rule_names;
+  replace snapshot;
   build_ast_and_module_sets.used <- false ;
   build_ast_and_module_sets_from_re.used <- false ;  
   build_ast_and_module_sets_from_rei.used <- false ;

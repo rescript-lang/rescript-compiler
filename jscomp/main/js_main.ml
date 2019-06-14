@@ -218,7 +218,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    Arg.String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
   ::
-  ( "-bs-package-map", 
+  ( "-bs-ns", 
    Arg.String Js_packages_state.set_package_map, 
    " set package map, not only set package name but also use it as a namespace"    
   )

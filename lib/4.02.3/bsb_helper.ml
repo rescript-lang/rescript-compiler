@@ -5910,10 +5910,10 @@ let read_deps (fn : string) : string array =
 type kind = Js | Bytecode | Native
 
 let output_file (oc : Buffer.t) source namespace = 
-  match namespace with 
-  | None -> Buffer.add_string oc source 
-  | Some ns ->
-    Buffer.add_string oc (Ext_namespace.make ~ns source)
+  Buffer.add_string oc (match namespace with 
+      | None ->  source 
+      | Some ns ->
+        Ext_namespace.make ~ns source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -5944,6 +5944,14 @@ let handle_module_info
       oc_cmi buf namespace source
     end
 
+let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) = 
+  let opt = Bsb_db_io.find_opt db 0 dependent_module in 
+  match opt with 
+  | Some _ -> opt
+  | None -> 
+    if is_not_lib_dir then 
+      Bsb_db_io.find_opt db (index :> int) dependent_module 
+    else None 
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
@@ -5954,29 +5962,33 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
-  (* TODO: move namespace upper, it is better to resolve ealier *)
-  if Ext_array.is_empty dependent_module_set && namespace = None then ()
-  else begin 
+  (* TODO: move namespace upper, it is better to resolve ealier *)  
+  let has_deps = ref false in 
+  let at_most_once : unit lazy_t  = lazy (
+    has_deps := true ;
     output_file buf input_file namespace ; 
     Buffer.add_string buf lhs_suffix; 
-    Buffer.add_string buf dep_lit ; 
-    Ext_option.iter namespace (fun ns -> 
-        Buffer.add_string buf ns;
-        Buffer.add_string buf Literals.suffix_cmi;
-      ); (* TODO: moved into static files*)
-    Ext_array.iter dependent_module_set begin fun dependent_module ->
-      match Bsb_db_io.find_opt  db 0 dependent_module with
+    Buffer.add_string buf dep_lit ) in  
+  Ext_option.iter namespace (fun ns -> 
+      Lazy.force at_most_once;
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ) ; (* TODO: moved into static files*)
+  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
+  Ext_array.iter dependent_module_set (fun dependent_module ->
+      match  
+        find_module db dependent_module is_not_lib_dir index  
+      with      
+      | None -> ()
       | Some module_info -> 
-        handle_module_info module_info input_file namespace rhs_suffix buf
-      | None  -> 
-        if not (Bsb_dir_index.is_lib_dir index) then      
-          Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
-            (fun module_info -> 
-               handle_module_info module_info input_file namespace rhs_suffix buf)
-    end
-    ;
+        begin 
+          Lazy.force at_most_once;
+          handle_module_info module_info input_file namespace rhs_suffix buf
+        end     
+    );
+  if !has_deps then  
     Buffer.add_char buf '\n'
-  end
+
 
 
 (** Note since dependent file is [mli], it only depends on 
@@ -5989,29 +6001,33 @@ let oc_intf
     (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
-  if Ext_array.is_empty dependent_module_set && namespace = None then ()  
-  else begin 
+  let has_deps = ref false in  
+  let at_most_once : unit lazy_t = lazy (  
+    has_deps := true;
     output_file buf input_file namespace ;   
     Buffer.add_string buf Literals.suffix_cmi ; 
-    Buffer.add_string buf dep_lit;
-    Ext_option.iter namespace (fun ns -> 
-        Buffer.add_string buf ns;
-        Buffer.add_string buf Literals.suffix_cmi;
-      ); (* moved upwards *)
-    Ext_array.iter dependent_module_set begin fun dependent_module ->
-      match Bsb_db_io.find_opt db 0 dependent_module with 
-      | Some module_info -> 
-        let source = module_info.name_sans_extension in 
-        if source <> input_file then oc_cmi buf namespace source             
-      | None -> 
-        if not (Bsb_dir_index.is_lib_dir index)  then 
-          Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
-            ( fun module_info -> 
-                let source = module_info.name_sans_extension in 
-                if source <> input_file then  oc_cmi buf namespace source)
-    end;
+    Buffer.add_string buf dep_lit) in 
+  Ext_option.iter namespace (fun ns -> 
+      Lazy.force at_most_once;  
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ) ; 
+  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
+  Ext_array.iter dependent_module_set begin fun dependent_module ->
+    match  find_module db dependent_module is_not_lib_dir index 
+    with     
+    | None -> ()
+    | Some module_info -> 
+      let source = module_info.name_sans_extension in 
+      if source <> input_file then
+        begin 
+          Lazy.force at_most_once; 
+          oc_cmi buf namespace source             
+        end
+  end;
+  if !has_deps then
     Buffer.add_char buf '\n'
-  end
+
 
 let emit_d mlast 
   (index : Bsb_dir_index.t) 
