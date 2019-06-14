@@ -5968,11 +5968,12 @@ let oc_impl
     has_deps := true ;
     output_file buf input_file namespace ; 
     Buffer.add_string buf lhs_suffix; 
-    Buffer.add_string buf dep_lit ; 
-    Ext_option.iter namespace (fun ns -> 
-        Buffer.add_string buf ns;
-        Buffer.add_string buf Literals.suffix_cmi;
-      )) in (* TODO: moved into static files*)
+    Buffer.add_string buf dep_lit ) in  
+  Ext_option.iter namespace (fun ns -> 
+      Lazy.force at_most_once;
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   Ext_array.iter dependent_module_set (fun dependent_module ->
       match  
@@ -6005,11 +6006,12 @@ let oc_intf
     has_deps := true;
     output_file buf input_file namespace ;   
     Buffer.add_string buf Literals.suffix_cmi ; 
-    Buffer.add_string buf dep_lit;
-    Ext_option.iter namespace (fun ns -> 
-        Buffer.add_string buf ns;
-        Buffer.add_string buf Literals.suffix_cmi;
-      )) in 
+    Buffer.add_string buf dep_lit) in 
+  Ext_option.iter namespace (fun ns -> 
+      Lazy.force at_most_once;  
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ) ; 
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   Ext_array.iter dependent_module_set begin fun dependent_module ->
     match  find_module db dependent_module is_not_lib_dir index 
