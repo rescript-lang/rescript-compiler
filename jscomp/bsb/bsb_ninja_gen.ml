@@ -95,7 +95,7 @@ let output_ninja_and_namespace_map
         "-bs-package-name" package_name 
         "-bs-ns" s
       ,
-      Ext_string.inter2 "-ns" s  
+      Ext_string.inter2 "-bs-ns" s  
   in  
   let bsc_flags = 
     let result = 
