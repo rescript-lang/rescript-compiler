@@ -64,7 +64,7 @@ let () =
     "-g", Arg.Int (fun i -> dev_group := i ),
     " Set the dev group (default to be 0)"
     ;
-    "-ns", Arg.String (fun s -> namespace := Some s),
+    "-bs-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
 #if BS_NATIVE then    
     "-MD-bytecode", Arg.String (
