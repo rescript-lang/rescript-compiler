@@ -35,3 +35,6 @@ val warn_literal_overflow : Location.t -> unit
 
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
+
+val warn_fragile_external_name:  
+  Location.t -> unit 

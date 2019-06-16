@@ -250,6 +250,7 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 (* The processed attributes will be dropped *)
 let parse_external_attributes
     (no_arguments : bool)   
+    (prim_name_check : string)
     (prim_name_or_pval_prim: bundle_source )
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
@@ -257,18 +258,26 @@ let parse_external_attributes
      `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
      `[@@bs.send.pipe]` does not use it
   *)
-  let name_from_payload_or_prim ~loc (payload : Parsetree.payload) : name_source =
-    match payload with
-    | PStr [] ->
-      (prim_name_or_pval_prim :> name_source)
-    (* It is okay to have [@@bs.val] without payload *)
-    | _ ->
-      begin match Ast_payload.is_single_string payload with
-        | Some  (val_name, _) ->  `Nm_payload val_name
-        | None ->
-          Location.raise_errorf ~loc "Invalid payload"
-      end
-
+  let name_from_payload_or_prim_check 
+      ~loc 
+      (payload : Parsetree.payload) : name_source =
+    let name_source =   
+      match payload with
+      | PStr [] ->
+        (prim_name_or_pval_prim :> name_source)
+      (* It is okay to have [@@bs.val] without payload *)
+      | _ ->
+        begin match Ast_payload.is_single_string payload with
+          | Some  (val_name, _) ->  `Nm_payload val_name
+          | None ->
+            Location.raise_errorf ~loc "Invalid payload"
+        end
+    in 
+    (match name_source with 
+    | `Nm_val _ -> Bs_warnings.warn_fragile_external_name loc
+    | _ -> ()
+    );
+    name_source
   in
   Ext_list.fold_left prim_attributes ([], init_st) 
     (fun (attrs, st) (({txt ; loc}, payload) as attr )
@@ -283,10 +292,11 @@ let parse_external_attributes
         else if Ext_string.starts_with txt "bs." then
            attrs, begin match txt with
             | "bs.val" ->
+              let name_source = name_from_payload_or_prim_check ~loc payload in 
               if no_arguments then
-                {st with val_name = name_from_payload_or_prim ~loc payload}
+                {st with val_name = name_source}
               else
-                {st with call_name = name_from_payload_or_prim ~loc payload}
+                {st with call_name = name_source}
 
             | "bs.module" ->
               begin match Ast_payload.assert_strings loc payload with
@@ -319,17 +329,28 @@ let parse_external_attributes
               end
             | "bs.splice" | "bs.variadic" -> {st with splice = true}
             | "bs.send" ->
-              { st with val_send = name_from_payload_or_prim ~loc payload}
+              let name_source = name_from_payload_or_prim_check ~loc payload in 
+              { st with val_send = name_source}
             | "bs.send.pipe"
               ->
               { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}
             | "bs.set" ->
-              {st with set_name = name_from_payload_or_prim ~loc  payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
+              let name_source = name_from_payload_or_prim_check ~loc  payload in 
+              {st with set_name = name_source}
+            | "bs.get" -> 
+              let name_source = name_from_payload_or_prim_check ~loc payload in 
+              {st with get_name = name_source}
 
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
-            | "bs.set_index" -> {st with set_index = true}
-            | "bs.get_index"-> 
+            | "bs.new" ->   
+              let name_source = name_from_payload_or_prim_check ~loc payload in 
+              {st with new_name = name_source}
+            | "bs.set_index" -> 
+              if String.length prim_name_check <> 0 then 
+                Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+              {st with set_index = true}
+            | "bs.get_index"->               
+              if String.length prim_name_check <> 0 then
+                Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
@@ -523,7 +544,6 @@ let process_obj
 let external_desc_of_non_obj 
     (loc : Location.t) 
     (st : external_desc) 
-    (prim_name_check : string) 
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
@@ -548,8 +568,6 @@ let external_desc_of_non_obj
 
     }
     ->
-    if String.length prim_name_check <> 0 then
-      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
     else
@@ -573,8 +591,6 @@ let external_desc_of_non_obj
      mk_obj;
      return_wrapper ;
     } ->
-    if String.length prim_name_check <> 0 then
-      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
     else Location.raise_errorf ~loc
@@ -864,7 +880,7 @@ let handle_attributes
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  
-      prim_name_or_pval_name  prim_attributes in
+      prim_name prim_name_or_pval_name  prim_attributes in
   if external_desc.mk_obj then
     (* warn unused attributes here ? *)
     let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
@@ -947,7 +963,7 @@ let handle_attributes
         )  in
     let ffi : External_ffi_types.external_spec  = 
       external_desc_of_non_obj 
-        loc external_desc prim_name prim_name_or_pval_name arg_type_specs_length 
+        loc external_desc prim_name_or_pval_name arg_type_specs_length 
         arg_types_ty arg_type_specs in 
     let relative = External_ffi_types.check_ffi ~loc ffi in 
     (* result type can not be labeled *)
