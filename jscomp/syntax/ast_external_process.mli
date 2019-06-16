@@ -41,10 +41,10 @@
 *)
 val handle_attributes_as_string :
   Bs_loc.t ->
-  string  ->
   Ast_core_type.t ->
   Ast_attributes.t ->
-  string   ->
+  string  ->  
+  string  ->
   response
 
 

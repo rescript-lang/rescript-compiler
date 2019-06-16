@@ -41,9 +41,11 @@ let handleExternalInSig
   | [ v ] ->
     match Ast_external_process.handle_attributes_as_string
             loc
-            prim.pval_name.txt
             pval_type
-            pval_attributes v with
+            pval_attributes
+            prim.pval_name.txt            
+            v 
+    with
     | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->        
       {sigi with
        psig_desc =
@@ -71,8 +73,10 @@ let handleExternalInStru
   | [ v] ->
     match Ast_external_process.handle_attributes_as_string
             loc
+            pval_type 
+            pval_attributes 
             prim.pval_name.txt
-            pval_type pval_attributes v with 
+            v with 
     | { pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
       let external_result = 
         {str with

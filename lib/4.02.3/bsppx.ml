@@ -17451,10 +17451,10 @@ module Ast_external_process : sig
 *)
 val handle_attributes_as_string :
   Bs_loc.t ->
-  string  ->
   Ast_core_type.t ->
   Ast_attributes.t ->
-  string   ->
+  string  ->  
+  string  ->
   response
 
 
@@ -17659,6 +17659,8 @@ let string_of_bundle_source (x : bundle_source) =
   | `Nm_payload x
   | `Nm_external x
   | `Nm_val x -> x
+
+
 type name_source =
   [ bundle_source
   | `Nm_na
@@ -18434,9 +18436,12 @@ let handle_attributes
 
 
 let handle_attributes_as_string
-    pval_loc
-    pval_prim
-    (typ : Ast_core_type.t) attrs prim_name : response =
+    (pval_loc : Location.t)
+    (typ : Ast_core_type.t) 
+    (attrs : Ast_attributes.t) 
+    (pval_prim : string)
+    (prim_name : string) 
+  : response =
   let pval_type, ffi, pval_attributes, no_inline_cross_module  =
     handle_attributes pval_loc pval_prim typ attrs prim_name  in
   { pval_type;
@@ -21711,9 +21716,11 @@ let handleExternalInSig
   | [ v ] ->
     match Ast_external_process.handle_attributes_as_string
             loc
-            prim.pval_name.txt
             pval_type
-            pval_attributes v with
+            pval_attributes
+            prim.pval_name.txt            
+            v 
+    with
     | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->        
       {sigi with
        psig_desc =
@@ -21741,8 +21748,10 @@ let handleExternalInStru
   | [ v] ->
     match Ast_external_process.handle_attributes_as_string
             loc
+            pval_type 
+            pval_attributes 
             prim.pval_name.txt
-            pval_type pval_attributes v with 
+            v with 
     | { pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
       let external_result = 
         {str with
