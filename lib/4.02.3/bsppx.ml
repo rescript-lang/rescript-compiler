@@ -9625,20 +9625,7 @@ module Ast_comb : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression *)
 
-(* val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
-
-(* val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type *)
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
@@ -17516,28 +17503,28 @@ end = struct
 [@@@ocaml.warning "+9"]
 (* record pattern match complete checker*)
 
+type field = 
+  | No_fields
+  | Valid_fields
+  | Invalid_field
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    Ext_list.fold_left row_fields `No_fields      
+    Ext_list.fold_left row_fields No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
-          (`No_fields | `Valid_fields),
+          (No_fields | Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
           Rtag (label, attrs, false, ([ _ ]))
           ->
-          `Valid_fields
+          Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
-          `Invalid_field
+          Invalid_field
       end
-
   in
-  match validity with
-  | `Valid_fields -> true
-  | `No_fields
-  | `Invalid_field -> false
+  validity = Valid_fields 
 
 (*
   TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
