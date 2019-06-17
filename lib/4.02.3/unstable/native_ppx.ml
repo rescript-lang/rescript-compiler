@@ -9287,20 +9287,7 @@ module Ast_comb : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression *)
 
-(* val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
-
-(* val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type *)
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
@@ -16584,10 +16571,10 @@ module Ast_external_process : sig
 *)
 val handle_attributes_as_string :
   Bs_loc.t ->
-  string  ->
   Ast_core_type.t ->
   Ast_attributes.t ->
-  string   ->
+  string  ->  
+  string  ->
   response
 
 
@@ -16636,28 +16623,28 @@ end = struct
 [@@@ocaml.warning "+9"]
 (* record pattern match complete checker*)
 
+type field = 
+  | No_fields
+  | Valid_fields
+  | Invalid_field
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    Ext_list.fold_left row_fields `No_fields      
+    Ext_list.fold_left row_fields No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
-          (`No_fields | `Valid_fields),
+          (No_fields | Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
           Rtag (label, attrs, false, ([ _ ]))
           ->
-          `Valid_fields
+          Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
-          `Invalid_field
+          Invalid_field
       end
-
   in
-  match validity with
-  | `Valid_fields -> true
-  | `No_fields
-  | `Invalid_field -> false
+  validity = Valid_fields 
 
 (*
   TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
@@ -16792,6 +16779,8 @@ let string_of_bundle_source (x : bundle_source) =
   | `Nm_payload x
   | `Nm_external x
   | `Nm_val x -> x
+
+
 type name_source =
   [ bundle_source
   | `Nm_na
@@ -16857,7 +16846,6 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 let parse_external_attributes
     (no_arguments : bool)   
     (prim_name_or_pval_prim: bundle_source )
-    (pval_prim : string)
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
@@ -16936,7 +16924,8 @@ let parse_external_attributes
 
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> {st with set_index = true}
-            | "bs.get_index"-> {st with get_index = true}
+            | "bs.get_index"-> 
+              {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
               let actions =
@@ -17129,7 +17118,7 @@ let process_obj
 let external_desc_of_non_obj 
     (loc : Location.t) 
     (st : external_desc) 
-    (prim_name : string) 
+    (prim_name_check : string) 
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
@@ -17154,7 +17143,7 @@ let external_desc_of_non_obj
 
     }
     ->
-    if String.length prim_name <> 0 then
+    if String.length prim_name_check <> 0 then
       Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
@@ -17179,7 +17168,7 @@ let external_desc_of_non_obj
      mk_obj;
      return_wrapper ;
     } ->
-    if String.length prim_name <> 0 then
+    if String.length prim_name_check <> 0 then
       Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
@@ -17444,9 +17433,10 @@ let external_desc_of_non_obj
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
-    (pval_prim : string )
     (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string)
+    (prim_attributes : Ast_attributes.t) 
+    (pval_name : string )
+    (prim_name : string)
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
@@ -17456,8 +17446,8 @@ let handle_attributes
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
       ~loc "[@@bs.uncurry] can not be applied to the whole definition";
-  let prim_name_or_pval_prim =
-    if String.length prim_name = 0 then  `Nm_val pval_prim
+  let prim_name_or_pval_name =
+    if String.length prim_name = 0 then  `Nm_val pval_name
     else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
@@ -17469,7 +17459,7 @@ let handle_attributes
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  
-      prim_name_or_pval_prim pval_prim prim_attributes in
+      prim_name_or_pval_name  prim_attributes in
   if external_desc.mk_obj then
     (* warn unused attributes here ? *)
     let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
@@ -17552,7 +17542,7 @@ let handle_attributes
         )  in
     let ffi : External_ffi_types.external_spec  = 
       external_desc_of_non_obj 
-        loc external_desc prim_name prim_name_or_pval_prim arg_type_specs_length 
+        loc external_desc prim_name prim_name_or_pval_name arg_type_specs_length 
         arg_types_ty arg_type_specs in 
     let relative = External_ffi_types.check_ffi ~loc ffi in 
     (* result type can not be labeled *)
@@ -17567,11 +17557,14 @@ let handle_attributes
 
 
 let handle_attributes_as_string
-    pval_loc
-    pval_prim
-    (typ : Ast_core_type.t) attrs prim_name : response =
+    (pval_loc : Location.t)
+    (typ : Ast_core_type.t) 
+    (attrs : Ast_attributes.t) 
+    (pval_name : string)
+    (prim_name : string) 
+  : response =
   let pval_type, ffi, pval_attributes, no_inline_cross_module  =
-    handle_attributes pval_loc pval_prim typ attrs prim_name  in
+    handle_attributes pval_loc typ attrs pval_name prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
     pval_attributes;
