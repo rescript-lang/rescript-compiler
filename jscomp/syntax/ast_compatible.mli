@@ -119,21 +119,12 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string ->
-#if OCAML_VERSION =~ ">4.03.0" then
-  Asttypes.arg_label
-#else
-  string
-#end
+val opt_label : string -> Asttypes.arg_label
 
 val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
-#if OCAML_VERSION =~ ">4.03.0" then
   label:Asttypes.arg_label ->
-#else
-  label:string ->
-#end
   pattern ->
   expression ->
   expression
