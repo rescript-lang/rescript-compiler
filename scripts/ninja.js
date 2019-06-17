@@ -1472,6 +1472,7 @@ rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
+    generator = true
 ${cppoRule()}
 ${cppoList("ext", [
   ["string_hash_set.ml", "hash_set.cppo.ml", dTypeString],
@@ -1510,7 +1511,7 @@ ${cppoList("syntax", [
 build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
-
+    generator = true
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
