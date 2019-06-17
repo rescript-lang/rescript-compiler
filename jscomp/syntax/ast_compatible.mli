@@ -119,12 +119,12 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string -> Asttypes.arg_label
+val opt_label : string -> arg_label
 
 val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
-  label:Asttypes.arg_label ->
+  label:arg_label ->
   pattern ->
   expression ->
   expression

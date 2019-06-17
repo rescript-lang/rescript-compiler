@@ -55,7 +55,6 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
              pld_loc
             }:
               Parsetree.label_declaration) (acc, maker, labels) ->
-           let prim = [label_name] in
            let is_optional = Ast_attributes.has_bs_optional pld_attributes in
 
            let newLabel = if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name in
