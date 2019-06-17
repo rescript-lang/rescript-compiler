@@ -353,6 +353,15 @@ let is_bs (attr : attr) =
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
+let is_optional (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.optional"; _}, _ -> true
+  | _ -> false
+
+let is_bs_as (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.as"; _}, _ -> true
+  | _ -> false
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty

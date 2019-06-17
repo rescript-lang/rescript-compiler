@@ -119,8 +119,18 @@ val fun_ :
   expression -> 
   expression
 
-val is_arg_label_simple : 
-  arg_label -> bool   
+val opt_label : string -> arg_label
+
+val label_fun :
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+  label:arg_label ->
+  pattern ->
+  expression ->
+  expression
+
+val is_arg_label_simple :
+  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 

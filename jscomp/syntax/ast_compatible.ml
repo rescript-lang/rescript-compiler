@@ -129,6 +129,24 @@ let fun_
     pexp_desc = Pexp_fun(no_label,None, pat, exp)
   }
 
+let opt_label s =
+#if OCAML_VERSION =~ ">4.03.0" then
+  Asttypes.Optional s
+#else
+  "?" ^ s
+#end
+
+let label_fun
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ~label
+  pat
+  exp =
+  {
+    pexp_loc = loc;
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(label, None, pat, exp)
+  }
 
 #if OCAML_VERSION =~ ">4.03.0" then 
 
