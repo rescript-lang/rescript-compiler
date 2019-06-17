@@ -39,7 +39,7 @@ let dynamic arr =
 
 module Pipe = struct
   external push :  int -> int array -> unit = 
-    "" [@@bs.send.pipe: int array ] [@@bs.splice] 
+    "push" [@@bs.send.pipe: int array ] [@@bs.splice] 
 
   (* This is only test, the binding maybe wrong
      since in OCaml array'length is not mutable

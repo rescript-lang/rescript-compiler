@@ -1,5 +1,5 @@
 
-external join : string array -> string = "" 
+external join : string array -> string = "join" 
 [@@bs.module "path"]  [@@bs.splice]
 
 let () = Js.log (join [| "." ; __MODULE__  |])

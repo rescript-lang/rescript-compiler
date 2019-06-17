@@ -2,11 +2,11 @@
 
 
 
-external xx : string -> unit = "" [@@bs.module "x", "X"]
+external xx : string -> unit = "xx" [@@bs.module "x", "X"]
 
 type param 
 
-external executeCommands : string -> param array -> unit = "" 
+external executeCommands : string -> param array -> unit = "executeCommands" 
 [@@bs.scope "commands"] [@@bs.module "vscode"][@@bs.splice]
 
 external env : string Js.Dict.t = "env" [@@bs.scope "process"] [@@bs.val]
@@ -15,7 +15,7 @@ let f a b c  =
   executeCommands "hi"  [|a;b;c|];
   env
 
-external hi : string = "" 
+external hi : string = "hi" 
 [@@bs.module "z"] [@@bs.scope "a0", "a1", "a2"]
 external ho : string = "ho" 
 [@@bs.val] [@@bs.scope "a0","a1","a2"]
@@ -44,7 +44,7 @@ external max : float -> float -> float = "max"
 *)
 
 type t 
-external create : unit -> t = "" [@@bs.scope "mat4"] [@@bs.module "gl-matrix"]
+external create : unit -> t = "create" [@@bs.scope "mat4"] [@@bs.module "gl-matrix"]
 
 
 (* external scope_f : t -> int = "" [@@bs.get] [@@bs.scope "hi"]*)
@@ -95,11 +95,11 @@ external send2 : t -> int -> unit = "send2"
 external send3 : t -> int -> unit = "send3"
 [@@bs.send] [@@bs.scope "a0","a1"]
 
-external psend1 : int -> unit = "" (*FIXME*)
+external psend1 : int -> unit = "psend1" 
 [@@bs.send.pipe:t] [@@bs.scope "a0"]
-external psend2 :  int -> unit = ""
+external psend2 :  int -> unit = "psend2"
 [@@bs.send.pipe:t] [@@bs.scope "a0","a1"]
-external psend3 :  int -> unit = ""
+external psend3 :  int -> unit = "psend3"
 [@@bs.send.pipe:t] [@@bs.scope "a0","a1"]
 
 let f3 x =  

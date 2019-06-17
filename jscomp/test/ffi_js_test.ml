@@ -58,7 +58,7 @@ type null_obj
 external hh : null_obj   -> int = "hh" [@@bs.send] (* it also work *)
 external ff : null_obj -> unit  -> int = "ff" [@@bs.send]
 external ff_pipe :  unit  -> int = "ff_pipe" [@@bs.send.pipe: null_obj]
-external ff_pipe2 :   int = "" [@@bs.send.pipe: null_obj] (* FIXME *)
+external ff_pipe2 :   int = "ff_pipe2" [@@bs.send.pipe: null_obj] (* FIXME *)
 let vv z = hh z
 
 let v z = ff z ()

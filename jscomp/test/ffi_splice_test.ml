@@ -40,9 +40,9 @@ external sum : t -> unit -> int = "sum" [@@bs.send]
 
 (* compile error *)
 (* external join : string  -> string = "" [@@bs.module "path"] [@@bs.splice] *)
-external join : string array -> string = "" [@@bs.module "path"] [@@bs.splice]
+external join : string array -> string = "join" [@@bs.module "path"] [@@bs.splice]
 
-external test : string array -> t = "" [@@bs.send.pipe: t ] [@@bs.splice] (*FIXME*)
+external test : string array -> t = "test" [@@bs.send.pipe: t ] [@@bs.splice] (*FIXME*)
 
 (* compile error *)
 (* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@bs.splice] *)

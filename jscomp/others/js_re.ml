@@ -171,7 +171,7 @@ let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
 external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return null_to_opt]
 
 (** @deprecated please use {!exec_} instead *)
-external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
+external exec : string -> result option = "exec" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
 [@@ocaml.deprecated "please use Js.Re.exec_ instead"]
 
 (** tests whether the given RegExp object will match a given string
@@ -197,5 +197,5 @@ external test_ : t -> string -> bool = "test" [@@bs.send]
 (**
   @deprecated please use {!test_} instead
 *)
-external test : string -> bool = "" [@@bs.send.pipe: t]
+external test : string -> bool = "test" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use Js.Re.test_ instead"]

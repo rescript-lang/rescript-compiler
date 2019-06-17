@@ -7,12 +7,12 @@ let eq loc (x, y) =
 
 
 external readFileSync : string -> ([`utf8 | `ascii] [@bs.string]) -> string
-  = "" [@@bs.module "fs"]
+  = "readFileSync" [@@bs.module "fs"]
 
 
 type watcher
 
-external watch : unit -> watcher = "" [@@bs.module "fs"]
+external watch : unit -> watcher = "watch" [@@bs.module "fs"]
 
 type error
 

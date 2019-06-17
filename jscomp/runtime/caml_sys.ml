@@ -66,7 +66,7 @@ let caml_sys_random_seed () : nativeint array =
 
 type spawnResult
 
-external spawnSync : string -> spawnResult = "" [@@bs.module "child_process"]
+external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
 
 external readAs : spawnResult -> 
   < 

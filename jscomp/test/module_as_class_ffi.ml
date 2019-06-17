@@ -22,7 +22,7 @@ let ff () =
   mk2 3  
 *)
 
-external ff : int -> t = "" [@@bs.module "xx/foo_class"]
+external ff : int -> t = "ff" [@@bs.module "xx/foo_class"]
 
 let v () =
   ff 3  

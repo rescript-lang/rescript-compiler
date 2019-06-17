@@ -8,7 +8,7 @@ let eq loc x y =
 
 external map :
      ('a -> 'b [@bs.uncurry]) -> 'b array =
-     "" [@@bs.send.pipe: 'a array]
+     "map" [@@bs.send.pipe: 'a array]
 
 
 [%%raw{|

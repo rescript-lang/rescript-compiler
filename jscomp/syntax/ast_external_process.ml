@@ -179,11 +179,13 @@ type bundle_source =
   | `Nm_val of string   (* from function name *)
   ]
 
-let string_of_bundle_source (x : bundle_source) =
+let string_of_bundle_source loc (x : bundle_source) =
   match x with
   | `Nm_payload x
-  | `Nm_external x
-  | `Nm_val x -> x
+  | `Nm_external x -> x
+  | `Nm_val x ->     
+    Bs_warnings.warn_fragile_external_name loc x ; 
+    x
 
 
 type name_source =
@@ -311,7 +313,7 @@ let parse_external_attributes
                     module_as_val =
                       Some
                         { bundle =
-                            string_of_bundle_source
+                            string_of_bundle_source loc
                               (prim_name_or_pval_prim :> bundle_source) ;
                           module_bind_name = Phint_nothing}
                   }
@@ -701,7 +703,7 @@ let external_desc_of_non_obj
      return_wrapper= _ ;
     }
     ->
-    let name = string_of_bundle_source prim_name_or_pval_prim in
+    let name = string_of_bundle_source loc prim_name_or_pval_prim in
     if arg_type_specs_length  = 0 then
       (*
          {[
@@ -744,7 +746,7 @@ let external_desc_of_non_obj
     -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
   | {val_send_pipe = Some typ;
      (* splice = (false as splice); *)
-     val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     val_send = #bundle_source as val_send ;
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -761,7 +763,7 @@ let external_desc_of_non_obj
     } ->
     (** can be one argument *)
     Js_send {splice  ;
-             name;
+             name = string_of_bundle_source loc val_send;
              js_send_scopes = scopes;
              pipe = true}
 

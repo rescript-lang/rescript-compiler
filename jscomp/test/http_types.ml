@@ -35,4 +35,4 @@ type http = _http Js.t
 
 
 
-external http : http  = ""  [@@bs.module ]
+external http : http  = "http"  [@@bs.module ]

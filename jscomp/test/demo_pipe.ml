@@ -4,7 +4,7 @@ external on :
    | `close of unit -> unit] 
      [@bs.string]) ->
   readline = 
-  "" [@@bs.send.pipe:readline]
+  "on" [@@bs.send.pipe:readline]
 let register rl =
   rl
   |> on (`line (fun  x -> Js.log x ))

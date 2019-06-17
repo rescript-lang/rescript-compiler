@@ -105,7 +105,9 @@ let warn_fragile_external_name loc s =
       print_string_warning loc
         ("The external name is inferred from val name (" ^ s ^  ")is unsafe from refactoring when changing value name");
       Format.pp_print_flush warning_formatter ()
-#if 0 then
+      
+#if 1 then
+      ;
       Location.raise_errorf ~loc "ERROR"       
 #end      
     end 
