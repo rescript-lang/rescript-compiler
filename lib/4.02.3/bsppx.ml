@@ -17826,7 +17826,10 @@ let parse_external_attributes
               { st with val_send = name_source}
             | "bs.send.pipe"
               ->
-              { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}
+              { st with 
+                val_send_pipe = Some (Ast_payload.as_core_type loc payload);
+                val_send = (prim_name_or_pval_prim :> name_source)
+              }
             | "bs.set" ->
               let name_source = name_from_payload_or_prim_check ~loc  payload in 
               {st with set_name = name_source}
@@ -18230,11 +18233,11 @@ let external_desc_of_non_obj
       | _ :: _  ->
         Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
     end
-  | {val_send = #bundle_source; _ }
+  | {val_send = #bundle_source; val_send_pipe = None ;  _ }
     -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
   | {val_send_pipe = Some typ;
      (* splice = (false as splice); *)
-     val_send = `Nm_na;
+     val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -18251,7 +18254,7 @@ let external_desc_of_non_obj
     } ->
     (** can be one argument *)
     Js_send {splice  ;
-             name = string_of_bundle_source prim_name_or_pval_prim;
+             name;
              js_send_scopes = scopes;
              pipe = true}
 
