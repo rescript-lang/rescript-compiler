@@ -36,12 +36,12 @@ external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Arra
 external isArray : 'a -> bool = "Array.isArray" [@@bs.val] (** ES2015 *)
 (* Array.of: seems pointless unless you can bind *) (** ES2015 *)
 
-external length : 'a array -> int = "" [@@bs.get]
+external length : 'a array -> int = "length" [@@bs.get]
 
 
 (* Mutator functions
 *)
-external copyWithin : to_:int -> 'this = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external copyWithin : to_:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 external copyWithinFrom : to_:int -> from:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 external copyWithinFromRange : to_:int -> start:int -> end_:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
@@ -83,12 +83,12 @@ external includes : 'a -> bool = "" [@@bs.send.pipe: 'a t as 'this] (** ES2016 *
 external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> from:int -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
 
-external join : 'a t -> string = "" 
+external join : 'a t -> string = "join" 
 [@@bs.send] [@@ocaml.deprecated "please use joinWith instead"]
 
 external joinWith : string -> string = "join" [@@bs.send.pipe: 'a t as 'this]
 
-external lastIndexOf : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]
+external lastIndexOf : 'a -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
 external lastIndexOfFrom : 'a -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
 external lastIndexOf_start : 'a -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
 [@@ocaml.deprecated "Please use `lastIndexOf"]

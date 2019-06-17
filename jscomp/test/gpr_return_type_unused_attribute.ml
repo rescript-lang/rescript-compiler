@@ -6,7 +6,7 @@ external mk : int ->
   (
     [`a|`b] 
     (* [@bs.string] *)
-  ) = "" [@@bs.val] 
+  ) = "mk" [@@bs.val] 
 
 
 

@@ -33,13 +33,13 @@ type t =
     env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
   >   Js.t
 
-external process : t = "" [@@bs.module]
-external argv : string array = "" [@@bs.module "process"]
+external process : t = "" [@@bs.module] (*FIXME*)
+external argv : string array = "" [@@bs.module "process"] (*FIXME*)
 external exit : int -> unit = "" [@@bs.module "process"]
 external cwd : unit -> string = "" [@@bs.module "process"]
 (** The process.uptime() method returns the number of seconds 
    the current Node.js process has been running.) *)
-external uptime : t -> unit -> float = "" [@@bs.send]
+external uptime : t -> unit -> float = "uptime" [@@bs.send]
 
 val putEnvVar : string -> string -> unit
 val deleteEnvVar : string -> unit

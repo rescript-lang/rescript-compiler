@@ -62,7 +62,7 @@ let test_cb x =
 
 
 type u = int -> int [@bs]
-external v : u = "" [@@bs.val]
+external v : u = "v" [@@bs.val]
 
 let f  x = 
     ignore @@ (v x [@bs]) 

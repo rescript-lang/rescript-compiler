@@ -84,7 +84,7 @@ module Watch = struct
     ) ->
     t = "on"
     [@@bs.send]
-  external close :  t -> unit = "" [@@bs.send]
+  external close :  t -> unit = "close" [@@bs.send]
 end
 
 external ftruncateSync : fd -> int -> unit = "" [@@bs.module "fs"]
@@ -141,7 +141,7 @@ external readFileAsUtf8Sync :
   string = "readFileSync"
 [@@bs.val] [@@bs.module "fs"]
 
-external existsSync : string -> bool = ""
+external existsSync : string -> bool = "existsSync"
 [@@bs.val] [@@bs.module "fs"]
 
 external writeFileSync :

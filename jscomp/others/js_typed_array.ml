@@ -53,9 +53,9 @@ module ArrayBuffer = struct
   external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@bs.val]
   *)
 
-  external byteLength : t -> int = "" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
 
-  external slice : start:int -> end_:int -> array_buffer = "" [@@bs.send.pipe: t]
+  external slice : start:int -> end_:int -> array_buffer = "" [@@bs.send.pipe: t] (*FIXME*)
   external sliceFrom : int -> array_buffer = "slice" [@@bs.send.pipe: t]
 end
 module type S =  sig
@@ -68,9 +68,9 @@ module type S =  sig
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
 
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
 
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
@@ -79,11 +79,11 @@ module type S =  sig
   (* Array interface(-ish)
   * ---
   *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
 
   (* Mutator functions
   *)
-  external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
+  external copyWithin : to_:int -> t = "copyWithin" [@@bs.send.pipe: t] (*FIXME*)
   external copyWithinFrom : to_:int -> from:int -> t = "copyWithin" [@@bs.send.pipe: t]
   external copyWithinFromRange : to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send.pipe: t]
 
@@ -98,26 +98,26 @@ module type S =  sig
 
   (* Accessor functions
   *)
-  external includes : elt -> bool = "" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
 
-  external indexOf : elt  -> int = "" [@@bs.send.pipe: t]
+  external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
 
-  external join : string = "" [@@bs.send.pipe: t]
+  external join : string = "join" [@@bs.send.pipe: t]
   external joinWith : string -> string = "join" [@@bs.send.pipe: t]
 
-  external lastIndexOf : elt -> int = "" [@@bs.send.pipe: t]
+  external lastIndexOf : elt -> int = "lastIndexOf" [@@bs.send.pipe: t]
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
-  external slice : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
 
-  external subarray : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
 
-  external toString : string = "" [@@bs.send.pipe: t]
-  external toLocaleString : string = "" [@@bs.send.pipe: t]
+  external toString : string = "toString" [@@bs.send.pipe: t]
+  external toLocaleString : string = "toLocaleString" [@@bs.send.pipe: t]
 
 
   (* Iteration functions
@@ -182,16 +182,16 @@ module Int8Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -297,16 +297,16 @@ module Uint8Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -411,16 +411,16 @@ module Uint8ClampedArray = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -525,16 +525,16 @@ module Int16Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -639,16 +639,16 @@ module Uint16Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -753,16 +753,16 @@ module Int32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -876,16 +876,16 @@ module Uint32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -994,16 +994,16 @@ module Float32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -1117,16 +1117,16 @@ module Float64Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
   external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
   external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
@@ -1241,61 +1241,61 @@ module DataView = struct
   external fromBufferOffset : array_buffer -> int -> t = "DataView" [@@bs.new]
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "DataView" [@@bs.new]
 
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
 
-  external getInt8 : t -> int -> int = "" [@@bs.send]
-  external getUint8 : t -> int -> int = "" [@@bs.send]
+  external getInt8 : t -> int -> int = "getInt8" [@@bs.send]
+  external getUint8 : t -> int -> int = "getUint8" [@@bs.send]
 
-  external getInt16: t -> int -> int = "" [@@bs.send]
+  external getInt16: t -> int -> int = "getInt16" [@@bs.send]
   external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getInt16" [@@bs.send]
 
-  external getUint16: t -> int -> int = "" [@@bs.send]
+  external getUint16: t -> int -> int = "getUint16" [@@bs.send]
   external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getUint16" [@@bs.send]
 
-  external getInt32: t -> int -> int = "" [@@bs.send]
+  external getInt32: t -> int -> int = "getInt32" [@@bs.send]
   external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getInt32" [@@bs.send]
 
-  external getUint32: t -> int -> int = "" [@@bs.send]
+  external getUint32: t -> int -> int = "getUint32" [@@bs.send]
   external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getUint32" [@@bs.send]
 
-  external getFloat32: t -> int -> float = "" [@@bs.send]
+  external getFloat32: t -> int -> float = "getFloat32" [@@bs.send]
   external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
     "getFloat32" [@@bs.send]
 
-  external getFloat64: t -> int -> float = "" [@@bs.send]
+  external getFloat64: t -> int -> float = "getFloat64" [@@bs.send]
   external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
     "getFloat64" [@@bs.send]
 
-  external setInt8 : t -> int -> int -> unit = "" [@@bs.send]
-  external setUint8 : t -> int -> int -> unit = "" [@@bs.send]
+  external setInt8 : t -> int -> int -> unit = "setInt8" [@@bs.send]
+  external setUint8 : t -> int -> int -> unit = "setUint8" [@@bs.send]
 
-  external setInt16: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt16: t -> int -> int -> unit = "setInt16" [@@bs.send]
   external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setInt16" [@@bs.send]
 
-  external setUint16: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint16: t -> int -> int -> unit = "setUint16" [@@bs.send]
   external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setUint16" [@@bs.send]
 
-  external setInt32: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt32: t -> int -> int -> unit = "setInt32" [@@bs.send]
   external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setInt32" [@@bs.send]
 
-  external setUint32: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint32: t -> int -> int -> unit = "setUint32" [@@bs.send]
   external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setUint32" [@@bs.send]
 
-  external setFloat32: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat32: t -> int -> float -> unit = "setFloat32" [@@bs.send]
   external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
     "setFloat32" [@@bs.send]
 
-  external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat64: t -> int -> float -> unit = "setFloat64" [@@bs.send]
   external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
     "setFloat64" [@@bs.send]
 

@@ -48,9 +48,9 @@ module ArrayBuffer = struct
   external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@bs.val]
   *)
 
-  external byteLength : t -> int = "" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
 
-  external slice : t -> start:int -> end_:int -> array_buffer = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> array_buffer = "slice" [@@bs.send]
   external sliceFrom : t -> int -> array_buffer = "slice" [@@bs.send]
 end
 
@@ -73,19 +73,19 @@ module Int8Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -99,63 +99,63 @@ module Int8Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Int8Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -188,19 +188,19 @@ module Uint8Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -214,63 +214,63 @@ module Uint8Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Uint8Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -302,19 +302,19 @@ module Uint8ClampedArray = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -328,63 +328,63 @@ module Uint8ClampedArray = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Uint8ClampedArray.BYTES_PER_ELEMENT" [@@bs.val]
@@ -416,19 +416,19 @@ module Int16Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -442,63 +442,63 @@ module Int16Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Int16Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -530,19 +530,19 @@ module Uint16Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -556,63 +556,63 @@ module Uint16Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Uint16Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -644,19 +644,19 @@ module Int32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -670,63 +670,63 @@ module Int32Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Int32Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -758,19 +758,19 @@ module Uint32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -784,63 +784,63 @@ module Uint32Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Uint32Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -875,19 +875,19 @@ module Float32Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -901,63 +901,63 @@ module Float32Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Float32Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -989,19 +989,19 @@ module Float64Array = struct
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
   external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
   
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
   
   external setArray : t -> elt array -> unit = "set" [@@bs.send]
   external setArrayOffset : t -> elt array -> int -> unit = "set" [@@bs.send]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
   
   (* Array interface(-ish) *)
-  external length : t -> int = "" [@@bs.get]
+  external length : t -> int = "length" [@@bs.get]
   
   (* Mutator functions *)
-  external copyWithin : t -> to_:int -> t = "" [@@bs.send]
+  external copyWithin : t -> to_:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFrom : t -> to_:int -> from:int -> t = "copyWithin" [@@bs.send]
   external copyWithinFromRange : t -> to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send]
   
@@ -1015,63 +1015,63 @@ module Float64Array = struct
   external sortInPlaceWith : t -> (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send]
   
   (* Accessor functions *)
-  external includes : t -> elt -> bool = "" [@@bs.send] (** ES2016 *)
+  external includes : t -> elt -> bool = "includes" [@@bs.send] (** ES2016 *)
   
-  external indexOf : t -> elt  -> int = "" [@@bs.send]
+  external indexOf : t -> elt  -> int = "indexOf" [@@bs.send]
   external indexOfFrom : t -> elt -> from:int -> int = "indexOf" [@@bs.send]
   
-  external join : t -> string = "" [@@bs.send]
+  external join : t -> string = "join" [@@bs.send]
   external joinWith : t -> string -> string = "join" [@@bs.send]
   
-  external lastIndexOf : t -> elt -> int = "" [@@bs.send]
+  external lastIndexOf : t -> elt -> int = "lastIndexOf" [@@bs.send]
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]
   
-  external slice : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external copy : t -> t = "slice" [@@bs.send]
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]
   
-  external subarray : t -> start:int -> end_:int -> t = "" [@@bs.send]
+  external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]
   (** [start] is inclusive, [end_] exclusive *)
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]
   
-  external toString : t -> string = "" [@@bs.send]
-  external toLocaleString : t -> string = "" [@@bs.send]
+  external toString : t -> string = "toString" [@@bs.send]
+  external toLocaleString : t -> string = "toLocaleString" [@@bs.send]
   
   (* Iteration functions *)
   (* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@bs.send]
   *)
-  external every : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]
   
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : t -> (elt -> bool [@bs]) -> t = "" [@@bs.send]
+  external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]
   
-  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send]
+  external find : t -> (elt -> bool [@bs]) -> elt Js.undefined = "find" [@@bs.send]
   external findi : t -> (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send]
   
-  external findIndex : t -> (elt -> bool [@bs]) -> int = "" [@@bs.send]
+  external findIndex : t -> (elt -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   external findIndexi : t -> (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send]
   
-  external forEach : t -> (elt -> unit [@bs]) -> unit = "" [@@bs.send]
+  external forEach : t -> (elt -> unit [@bs]) -> unit = "forEach" [@@bs.send]
   external forEachi : t -> (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send]
   
   (* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@bs.send]
   *)
   
-  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send]
+  external map : t -> (elt  -> 'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   external mapi : t -> (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send]
   
-  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduce : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   external reducei : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send]
   
-  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send]
+  external reduceRight : t ->  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   external reduceRighti : t -> ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send]
   
-  external some : t -> (elt  -> bool [@bs]) -> bool = "" [@@bs.send]
+  external some : t -> (elt  -> bool [@bs]) -> bool = "some" [@@bs.send]
   external somei : t -> (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send]
   
   external _BYTES_PER_ELEMENT: int = "Float64Array.BYTES_PER_ELEMENT" [@@bs.val]
@@ -1105,61 +1105,61 @@ module DataView = struct
   external fromBufferOffset : array_buffer -> int -> t = "DataView" [@@bs.new]
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "DataView" [@@bs.new]
 
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "buffer" [@@bs.get]
+  external byteLength : t -> int = "byteLength" [@@bs.get]
+  external byteOffset : t -> int = "byteOffset" [@@bs.get]
 
-  external getInt8 : t -> int -> int = "" [@@bs.send]
-  external getUint8 : t -> int -> int = "" [@@bs.send]
+  external getInt8 : t -> int -> int = "getInt8" [@@bs.send]
+  external getUint8 : t -> int -> int = "getUint8" [@@bs.send]
 
-  external getInt16: t -> int -> int = "" [@@bs.send]
+  external getInt16: t -> int -> int = "getInt16" [@@bs.send]
   external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getInt16" [@@bs.send]
 
-  external getUint16: t -> int -> int = "" [@@bs.send]
+  external getUint16: t -> int -> int = "getUint16" [@@bs.send]
   external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getUint16" [@@bs.send]
 
-  external getInt32: t -> int -> int = "" [@@bs.send]
+  external getInt32: t -> int -> int = "getInt32" [@@bs.send]
   external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getInt32" [@@bs.send]
 
-  external getUint32: t -> int -> int = "" [@@bs.send]
+  external getUint32: t -> int -> int = "getUint32" [@@bs.send]
   external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
     "getUint32" [@@bs.send]
 
-  external getFloat32: t -> int -> float = "" [@@bs.send]
+  external getFloat32: t -> int -> float = "getFloat32" [@@bs.send]
   external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
     "getFloat32" [@@bs.send]
 
-  external getFloat64: t -> int -> float = "" [@@bs.send]
+  external getFloat64: t -> int -> float = "getFloat64" [@@bs.send]
   external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
     "getFloat64" [@@bs.send]
 
-  external setInt8 : t -> int -> int -> unit = "" [@@bs.send]
-  external setUint8 : t -> int -> int -> unit = "" [@@bs.send]
+  external setInt8 : t -> int -> int -> unit = "setInt8" [@@bs.send]
+  external setUint8 : t -> int -> int -> unit = "setUint8" [@@bs.send]
 
-  external setInt16: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt16: t -> int -> int -> unit = "setInt16" [@@bs.send]
   external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setInt16" [@@bs.send]
 
-  external setUint16: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint16: t -> int -> int -> unit = "setUint16" [@@bs.send]
   external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setUint16" [@@bs.send]
 
-  external setInt32: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt32: t -> int -> int -> unit = "setInt32" [@@bs.send]
   external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setInt32" [@@bs.send]
 
-  external setUint32: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint32: t -> int -> int -> unit = "setUint32" [@@bs.send]
   external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
     "setUint32" [@@bs.send]
 
-  external setFloat32: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat32: t -> int -> float -> unit = "setFloat32" [@@bs.send]
   external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
     "setFloat32" [@@bs.send]
 
-  external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat64: t -> int -> float -> unit = "setFloat64" [@@bs.send]
   external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
     "setFloat64" [@@bs.send]
 end

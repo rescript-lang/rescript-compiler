@@ -86,7 +86,7 @@ external fromCodePointMany : int array -> t = "String.fromCodePoint" [@@bs.val] 
 ]}
 
 *)
-external length : t -> int = "" [@@bs.get]
+external length : t -> int = "length" [@@bs.get]
 
 (** [get s n] returns as a string the character at the given index number. If [n] is out of range, this function returns [undefined], so at some point this function may be modified to return [t option].
 

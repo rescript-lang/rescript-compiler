@@ -37,4 +37,6 @@ val error_unescaped_delimiter :
   Location.t -> string  -> unit 
 
 val warn_fragile_external_name:  
-  Location.t -> unit 
+  Location.t -> 
+  string ->
+  unit 

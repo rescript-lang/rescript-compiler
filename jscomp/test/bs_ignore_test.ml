@@ -8,7 +8,7 @@ function add(x,y){
 type _ kind =
   | Float : float kind 
   | String : string kind
-external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "" [@@bs.val]
+external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "add" [@@bs.val]
 
 let () = 
   Js.log (add Float 3.0 2.0);
@@ -30,7 +30,7 @@ let string_of_kind (type t) (kind : t kind) =
   | Float -> "float"
   | String -> "string"
 
-external add_dyn : ('a kind [@bs.ignore]) -> string ->  'a -> 'a -> 'a = "" [@@bs.val]
+external add_dyn : ('a kind [@bs.ignore]) -> string ->  'a -> 'a -> 'a = "add_dyn" [@@bs.val]
 
 let add2 k x y = 
   add_dyn k (string_of_kind k) x y

@@ -10,14 +10,14 @@ external f : int -> int array -> int = "Math.max"
 
 ;; f 1 [||]
 
-external send : int -> int array -> int = "" 
+external send : int -> int array -> int = "send" 
   [@@bs.splice] [@@bs.send]
 
 let f00 a b =   
   a |. send [|b|]
 
 external push : int array -> int -> int array -> unit = 
-  "" [@@bs.send] [@@bs.splice]
+  "push" [@@bs.send] [@@bs.splice]
 
 (* This is only test, the binding maybe wrong
   since in OCaml array'length is not mutable

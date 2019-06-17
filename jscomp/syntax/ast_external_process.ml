@@ -274,7 +274,7 @@ let parse_external_attributes
         end
     in 
     (match name_source with 
-    | `Nm_val _ -> Bs_warnings.warn_fragile_external_name loc
+    | `Nm_val s -> Bs_warnings.warn_fragile_external_name loc s
     | _ -> ()
     );
     name_source

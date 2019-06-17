@@ -55,10 +55,10 @@ let () =
 
 type null_obj
 
-external hh : null_obj   -> int = "" [@@bs.send] (* it also work *)
-external ff : null_obj -> unit  -> int = "" [@@bs.send]
-external ff_pipe :  unit  -> int = "" [@@bs.send.pipe: null_obj]
-external ff_pipe2 :   int = "" [@@bs.send.pipe: null_obj]
+external hh : null_obj   -> int = "hh" [@@bs.send] (* it also work *)
+external ff : null_obj -> unit  -> int = "ff" [@@bs.send]
+external ff_pipe :  unit  -> int = "ff_pipe" [@@bs.send.pipe: null_obj]
+external ff_pipe2 :   int = "" [@@bs.send.pipe: null_obj] (* FIXME *)
 let vv z = hh z
 
 let v z = ff z ()
@@ -69,19 +69,19 @@ let vvvv z = z |> ff_pipe2
 let create_prim () =  [%obj{ x' = 3 ; x'' = 3; x'''' = 2}]
 
 type t
-external setGADT : t -> ('a kind [@bs.ignore]) -> 'a ->  unit = "" [@@bs.set]
+external setGADT : t -> ('a kind [@bs.ignore]) -> 'a ->  unit = "setGADT" [@@bs.set]
 external setGADT2 :
  t ->
  ('a kind [@bs.ignore]) ->
  ('b kind [@bs.ignore]) ->
- ('a * 'b) ->  unit = "" [@@bs.set]
+ ('a * 'b) ->  unit = "setGADT2" [@@bs.set]
 
-external getGADT : t -> ('a kind [@bs.ignore]) -> 'a  = "" [@@bs.get]
+external getGADT : t -> ('a kind [@bs.ignore]) -> 'a  = "getGADT" [@@bs.get]
 
 external getGADT2 :
  t -> ('a kind [@bs.ignore]) ->
  ('b kind [@bs.ignore])
-  -> ('a * 'b)  = "" [@@bs.get]
+  -> ('a * 'b)  = "getGADT2" [@@bs.get]
 
 external getGADTI2 :
  t -> ('a kind [@bs.ignore]) ->

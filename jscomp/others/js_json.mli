@@ -89,7 +89,7 @@ val decodeNull : t -> 'a Js_null.t option
     JSON values. 
 *)
 
-external null : t = "" [@@bs.val]
+external null : t = "null" [@@bs.val]
 (** [null] is the singleton null JSON value *)
 
 external string : string -> t = "%identity"

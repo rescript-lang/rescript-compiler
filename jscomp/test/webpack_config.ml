@@ -9,7 +9,7 @@ module WebpackDevMiddlewareConfig: Config = struct
   external configx : Js.Json.t = "../../../webpack.middleware.config.js" [@@bs.module]
 end
 
-external configX : unit ->  Js.Json.t = ""
+external configX : unit ->  Js.Json.t = "configX"
 [@@bs.module  "../../../webpack.middleware.config.js"]
 [@@bs.val]
 
@@ -17,7 +17,7 @@ let configX = configX
 module U  : sig 
   val configX : unit -> Js.Json.t 
 end = struct 
-    external configX : unit -> Js.Json.t =  ""
+    external configX : unit -> Js.Json.t =  "configX"
     [@@bs.module "../../../webpack.config.js" ]
     [@@bs.val]
 end

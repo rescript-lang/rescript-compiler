@@ -18,7 +18,7 @@ function hi (cb){
 }
 |}]
 
-external hi : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
+external hi : (unit -> unit [@bs.uncurry]) -> unit = "hi" [@@bs.val]
 
 let () =
     let xs = ref [] in

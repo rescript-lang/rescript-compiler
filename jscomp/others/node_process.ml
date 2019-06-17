@@ -41,7 +41,7 @@ external exit : int -> unit = "" [@@bs.module "process"]
 external cwd : unit -> string = "" [@@bs.module "process"]
 (** The process.uptime() method returns the number of seconds 
    the current Node.js process has been running.) *)
-external uptime : t -> unit -> float = "" [@@bs.send]
+external uptime : t -> unit -> float = "uptime" [@@bs.send]
 let putEnvVar key (var : string) = 
   Js_dict.set process##env key var
 (** Note that 

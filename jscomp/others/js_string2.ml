@@ -86,7 +86,7 @@ external fromCodePointMany : int array -> t = "String.fromCodePoint" [@@bs.val] 
 ]}
 
 *)
-external length : t -> int = "" [@@bs.get]
+external length : t -> int = "length" [@@bs.get]
 
 (** [get s n] returns as a string the character at the given index number. If [n] is out of range, this function returns [undefined], so at some point this function may be modified to return [t option].
 
@@ -106,7 +106,7 @@ external get : t -> int -> t = "" [@@bs.get_index]
   charAt {js|Rẽasöń|js} 5 = {js|ń|js}
 ]}
 *)
-external charAt : t -> int -> t = "" [@@bs.send]
+external charAt : t -> int -> t = "charAt" [@@bs.send]
 
 (** [charCodeAt n s] returns the character code at position [n] in string [s]; the result is in the range 0-65535, unlke [codePointAt], so it will not work correctly for characters with code points greater than or equal to [0x10000].
 The return type is [float] because this function returns [NaN] if [n] is less than zero or greater than the length of the string.
@@ -117,7 +117,7 @@ The return type is [float] because this function returns [NaN] if [n] is less th
 ]}
 
 *)
-external charCodeAt : t -> int -> float = "" [@@bs.send]
+external charCodeAt : t -> int -> float = "charCodeAt" [@@bs.send]
 
 (** [codePointAt n s] returns the code point at position [n] within string [s] as a [Some] value. The return value handles code points greater than or equal to [0x10000]. If there is no code point at the given position, the function returns [None].
 
@@ -126,7 +126,7 @@ external charCodeAt : t -> int -> float = "" [@@bs.send]
   codePointAt "abc" 5 = None
 ]}
 *)
-external codePointAt : t -> int -> int option = "" [@@bs.send] [@@bs.return {undefined_to_opt}] (** ES2015 *)
+external codePointAt : t -> int -> int option = "codePointAt" [@@bs.send] [@@bs.return {undefined_to_opt}] (** ES2015 *)
 
 (** [concat append original] returns a new string with [append] added after [original].
 
@@ -134,7 +134,7 @@ external codePointAt : t -> int -> int option = "" [@@bs.send] [@@bs.return {und
   concat "cow" "bell" = "cowbell";;
 ]}
 *)
-external concat : t -> t -> t = "" [@@bs.send]
+external concat : t -> t -> t = "concat" [@@bs.send]
 
 (** [concat arr original] returns a new string consisting of each item of an array of strings added to the [original] string.
 
@@ -152,7 +152,7 @@ external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
   endsWith "BuckleShoes" "Script" = false;;
 ]}
 *)
-external endsWith : t -> t -> bool = "" [@@bs.send]
+external endsWith : t -> t -> bool = "endsWith" [@@bs.send]
 
 (** [endsWithFrom ending len str] returns [true] if the first [len] characters of [str] end with [ending], [false] otherwise. If [n] is greater than or equal to the length of [str], then it works like [endsWith]. (Honestly, this should have been named [endsWithAt], but oh well.)
 
@@ -175,7 +175,7 @@ external endsWithFrom : t -> t -> int -> bool = "endsWith" [@@bs.send] (** ES201
   includes "programmer" "xyz" = false;;
 ]}
 *)
-external includes : t -> t -> bool = "" [@@bs.send] (** ES2015 *)
+external includes : t -> t -> bool = "includes" [@@bs.send] (** ES2015 *)
 
 (**
   [includes searchValue start s] returns [true] if [searchValue] is found anywhere within [s] starting at character number [start] (where 0 is the first character), [false] otherwise.
@@ -198,7 +198,7 @@ external includesFrom : t -> t -> int -> bool = "includes" [@@bs.send] (** ES201
   indexOf "bookseller" "xyz" = -1;;
 ]}
 *)
-external indexOf : t -> t -> int = "" [@@bs.send]
+external indexOf : t -> t -> int = "indexOf" [@@bs.send]
 
 (**
   [indexOfFrom searchValue start s] returns the position at which [searchValue] was found within [s] starting at character position [start], or [-1] if [searchValue] is not found in that portion of [s]. The return value is relative to the beginning of the string, no matter where the search started from.
@@ -221,7 +221,7 @@ external indexOfFrom : t -> t -> int -> int = "indexOf" [@@bs.send]
   lastIndexOf "abcdefg" "xyz" = -1;;
 ]}
 *)
-external lastIndexOf : t -> t -> int = "" [@@bs.send]
+external lastIndexOf : t -> t -> int = "lastIndexOf" [@@bs.send]
 
 (**
   [lastIndexOfFrom searchValue start s] returns the position of the {i last} occurrence of [searchValue] within [s], searching backwards from the given [start] position. Returns [-1] if [searchValue] is not in [s]. The return value is always relative to the beginning of the string.
@@ -252,7 +252,7 @@ external lastIndexOfFrom : t -> t -> int -> int = "lastIndexOf" [@@bs.send]
   (localeCompare "CAT" "cat") > 0.0;;
 ]}
 *)
-external localeCompare : t -> t -> float = "" [@@bs.send]
+external localeCompare : t -> t -> float = "localeCompare" [@@bs.send]
 
 (**
   [match regexp str] matches a string against the given [regexp]. If there is no match, it returns [None].
@@ -281,7 +281,7 @@ Consider the character [ã], which can be represented as the single codepoint [\
 
 @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
 *)
-external normalize : t -> t = "" [@@bs.send] (** ES2015 *)
+external normalize : t -> t = "normalize" [@@bs.send] (** ES2015 *)
 
 (**
   [normalize str form] (ES2015) returns the normalized Unicode string using the specified form of normalization, which may be one of:
@@ -305,7 +305,7 @@ external normalizeByForm : t -> t -> t = "normalize" [@@bs.send]
   repeat "empty" 0 = ""
 ]}
 *)
-external repeat : t -> int -> t = "" [@@bs.send] (** ES2015 *)
+external repeat : t -> int -> t = "repeat" [@@bs.send] (** ES2015 *)
 
 (** [replace substr newSubstr string] returns a new string which is
 identical to [string] except with the first matching instance of [substr]
@@ -319,7 +319,7 @@ expression.
   replace "the cat and the dog" "the" "this" = "this cat and the dog"
 ]}
 *)
-external replace : t -> t -> t -> t = "" [@@bs.send]
+external replace : t -> t -> t -> t = "replace" [@@bs.send]
 
 (** [replaceByRe regex replacement string] returns a new string where occurrences matching [regex]
 have been replaced by [replacement].
@@ -407,7 +407,7 @@ search "testing 1 2 3" [%re "/\\d+/"] = 8;;
 search "no numbers" [%re "/\\d+/"] = -1;;
 ]}
 *)
-external search : t -> Js_re.t -> int = "" [@@bs.send]
+external search : t -> Js_re.t -> int = "search" [@@bs.send]
 
 (** [slice from:n1 to_:n2 str] returns the substring of [str] starting at character [n1] up to but not including [n2]
 
@@ -424,7 +424,7 @@ If [n1] is greater than [n2], [slice] returns the empty string.
   slice "abcdefg" ~from:5 ~to_:1 == "";;
 ]}
 *)
-external slice : t -> from:int -> to_:int ->  t = "" [@@bs.send]
+external slice : t -> from:int -> to_:int ->  t = "slice" [@@bs.send]
 
 (** [sliceToEnd from: n str] returns the substring of [str] starting at character [n] to the end of the string
 
@@ -451,7 +451,7 @@ external sliceToEnd : t -> from:int ->  t = "slice" [@@bs.send]
   split "has-no-delimiter" ";" = [|"has-no-delimiter"|];;
 ]};
 *)
-external split : t -> t -> t array  = "" [@@bs.send]
+external split : t -> t -> t array  = "split" [@@bs.send]
 
 (**
   [splitAtMost delimiter ~limit: n str] splits the given [str] at every occurrence of [delimiter] and returns an array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
@@ -496,7 +496,7 @@ external splitByReAtMost : t -> Js_re.t -> limit:int ->  t option array = "split
   startsWith "JavaScript" "Buckle" = false;;
 ]}
 *)
-external startsWith : t -> t -> bool = "" [@@bs.send]
+external startsWith : t -> t -> bool = "startsWith" [@@bs.send]
 
 (** ES2015:
     [startsWithFrom substr n str] returns [true] if the [str] starts with [substr] starting at position [n], [false] otherwise. If [n] is negative, the search starts at the beginning of [str].
@@ -522,7 +522,7 @@ external startsWithFrom : t -> t -> int -> bool = "startsWith" [@@bs.send]
   substr "abcdefghij" ~from: 12 = ""
 ]}
 *)
-external substr : t -> from:int -> t = "" [@@bs.send]
+external substr : t -> from:int -> t = "substr" [@@bs.send]
 
 (**
   [substrAtMost ~from: pos ~length: n str] returns the substring of [str] of length [n] starting at position [pos].
@@ -556,7 +556,7 @@ external substrAtMost : t -> from:int -> length:int -> t = "substr" [@@bs.send]
   substring "playground" ~from: 4 ~to_: 12 = "ground";;
 ]}
 *)
-external substring : t -> from:int -> to_:int ->  t = "" [@@bs.send]
+external substring : t -> from:int -> to_:int ->  t = "substring" [@@bs.send]
 
 (**
   [substringToEnd ~from: start str] returns the substring of [str] from position [start] to the end.
@@ -582,12 +582,12 @@ external substringToEnd : t -> from:int ->  t = "substring" [@@bs.send]
   toLowerCase {js|ΠΣ|js} = {js|πς|js};;
 ]}
 *)
-external toLowerCase : t -> t = "" [@@bs.send]
+external toLowerCase : t -> t = "toLowerCase" [@@bs.send]
 
 (**
   [toLocaleLowerCase str] converts [str] to lower case using the current locale
 *)
-external toLocaleLowerCase : t -> t = "" [@@bs.send]
+external toLocaleLowerCase : t -> t = "toLocaleLowerCase" [@@bs.send]
 
 (**
   [toUpperCase str] converts [str] to upper case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can expand the number of letters in the result; for example the German [ß] capitalizes to two [S]es in a row.
@@ -598,12 +598,12 @@ external toLocaleLowerCase : t -> t = "" [@@bs.send]
   toLowerCase {js|πς|js} = {js|ΠΣ|js};;
 ]}
 *)
-external toUpperCase : t -> t = "" [@@bs.send]
+external toUpperCase : t -> t = "toUpperCase" [@@bs.send]
 
 (**
   [toLocaleUpperCase str] converts [str] to upper case using the current locale
 *)
-external toLocaleUpperCase : t -> t = "" [@@bs.send]
+external toLocaleUpperCase : t -> t = "toLocaleUpperCase" [@@bs.send]
 
 (**
   [trim str] returns a string that is [str] with whitespace stripped from both ends. Internal whitespace is not removed.
@@ -613,7 +613,7 @@ external toLocaleUpperCase : t -> t = "" [@@bs.send]
   trim "\n\r\t abc def \n\n\t\r " = "abc def"
 ]}
 *)
-external trim : t -> t = "" [@@bs.send]
+external trim : t -> t = "trim" [@@bs.send]
 
 (* HTML wrappers *)
 
@@ -624,7 +624,7 @@ external trim : t -> t = "" [@@bs.send]
   anchor "Page One" "page1" = "<a name=\"page1\">Page One</a>"
 ]}
 *)
-external anchor : t -> t -> t = "" [@@bs.send] (** ES2015 *)
+external anchor : t -> t -> t = "anchor" [@@bs.send] (** ES2015 *)
 
 (**
   [link urlText linkText] creates a string withan HTML [<a>] element with [href] attribute of [urlText] and [linkText] as its content.
@@ -633,7 +633,7 @@ external anchor : t -> t -> t = "" [@@bs.send] (** ES2015 *)
   link "Go to page two" "page2.html" = "<a href=\"page2.html\">Go to page two</a>"
 ]}
 *)
-external link : t -> t -> t = "" [@@bs.send] (** ES2015 *)
+external link : t -> t -> t = "link" [@@bs.send] (** ES2015 *)
 
 external castToArrayLike : t -> t Js_array2.array_like = "%identity"
 (* FIXME: we should not encourage people to use [%identity], better

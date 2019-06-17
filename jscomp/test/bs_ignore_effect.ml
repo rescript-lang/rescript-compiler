@@ -13,7 +13,7 @@ function add(x,y){
 type _ kind =
   | Float : float kind 
   | String : string kind
-external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "" [@@bs.val]
+external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "add" [@@bs.val]
 
 let v = ref 0
 
