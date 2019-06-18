@@ -410,14 +410,6 @@ var cany = /* :: */[
   /* [] */0
 ];
 
-function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
 function intersect(x, y) {
   return (x & y) !== 0;
 }
@@ -655,7 +647,7 @@ function mk_expr(ids, def) {
 }
 
 function cst(ids, s) {
-  if (is_empty(s)) {
+  if (s ? false : true) {
     return mk_expr(ids, /* Alt */Block.__(1, [/* [] */0]));
   } else {
     return mk_expr(ids, /* Cst */Block.__(0, [s]));
@@ -2626,9 +2618,7 @@ function seq$2(l) {
   }
 }
 
-alt$1(/* [] */0);
-
-var epsilon = seq$2(/* [] */0);
+var epsilon = /* Sequence */Block.__(1, [/* [] */0]);
 
 function repn(r, i, j) {
   if (i < 0) {
@@ -2860,6 +2850,48 @@ var xdigit = alt$1(/* :: */[
         ]
       ]
     ]);
+
+function compile(r) {
+  var regexp = anchored(r) ? /* Group */Block.__(6, [r]) : seq$2(/* :: */[
+          /* Sem */Block.__(4, [
+              /* Shortest */-1034406550,
+              repn(any, 0, undefined)
+            ]),
+          /* :: */[
+            /* Group */Block.__(6, [r]),
+            /* [] */0
+          ]
+        ]);
+  var regexp$1 = handle_case(false, regexp);
+  var c = Bytes.make(257, /* "\000" */0);
+  var need_lnl = colorize(c, regexp$1);
+  var match = flatten_cmap(c);
+  var ncol = match[2];
+  var col = match[0];
+  var lnl = need_lnl ? ncol : -1;
+  var ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
+  var ids = /* record */[/* contents */0];
+  var pos = /* record */[/* contents */0];
+  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, /* record */[/* contents : Empty */0], col, regexp$1);
+  var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
+  var init = r$1;
+  var cols = col;
+  var col_repr = match[1];
+  var ncol$2 = ncol$1;
+  var lnl$1 = lnl;
+  var group_count = pos[0] / 2 | 0;
+  return /* record */[
+          /* initial */init,
+          /* initial_states : [] */0,
+          /* cols */cols,
+          /* col_repr */col_repr,
+          /* ncol */ncol$2,
+          /* lnl */lnl$1,
+          /* tbl : record */[/* contents : array */[false]],
+          /* states */Curry._1(Re_automata_022[/* Table */2][/* create */0], 97),
+          /* group_count */group_count
+        ];
+}
 
 function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   var pos = $staropt$star !== undefined ? $staropt$star : 0;
@@ -3740,49 +3772,6 @@ function re($staropt$star, pat) {
   }
 }
 
-function regexp(flags, pat) {
-  var r = re(flags, pat);
-  var regexp$1 = anchored(r) ? /* Group */Block.__(6, [r]) : seq$2(/* :: */[
-          /* Sem */Block.__(4, [
-              /* Shortest */-1034406550,
-              repn(any, 0, undefined)
-            ]),
-          /* :: */[
-            /* Group */Block.__(6, [r]),
-            /* [] */0
-          ]
-        ]);
-  var regexp$2 = handle_case(false, regexp$1);
-  var c = Bytes.make(257, /* "\000" */0);
-  var need_lnl = colorize(c, regexp$2);
-  var match = flatten_cmap(c);
-  var ncol = match[2];
-  var col = match[0];
-  var lnl = need_lnl ? ncol : -1;
-  var ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
-  var ids = /* record */[/* contents */0];
-  var pos = /* record */[/* contents */0];
-  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, /* record */[/* contents : Empty */0], col, regexp$2);
-  var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
-  var init = r$1;
-  var cols = col;
-  var col_repr = match[1];
-  var ncol$2 = ncol$1;
-  var lnl$1 = lnl;
-  var group_count = pos[0] / 2 | 0;
-  return /* record */[
-          /* initial */init,
-          /* initial_states : [] */0,
-          /* cols */cols,
-          /* col_repr */col_repr,
-          /* ncol */ncol$2,
-          /* lnl */lnl$1,
-          /* tbl : record */[/* contents : array */[false]],
-          /* states */Curry._1(Re_automata_022[/* Table */2][/* create */0], 97),
-          /* group_count */group_count
-        ];
-}
-
 function exec(rex, pos, s) {
   var pos$1 = pos;
   var len = undefined;
@@ -3797,7 +3786,7 @@ function exec(rex, pos, s) {
 
 var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
-eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
+eq("File \"xx.ml\", line 7, characters 3-10", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
 
 Mt.from_pair_suites("Ocaml_re_test", suites[0]);
 

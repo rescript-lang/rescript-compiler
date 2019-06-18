@@ -27,7 +27,11 @@ function make(s, b, i) {
     });
 }
 
-var hh = make("", false, 0)(/* () */0);
+var hh = {
+  s: "",
+  b: false,
+  i: 0
+};
 
 eq("File \"optional_regression_test.ml\", line 21, characters 6-13", Caml_option.undefined_to_opt(hh.s), "");
 
@@ -44,4 +48,4 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.make = make;
 exports.hh = hh;
-/* hh Not a pure module */
+/*  Not a pure module */

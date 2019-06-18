@@ -29,7 +29,7 @@ function hello5(y, f) {
 function f(_x) {
   while(true) {
     var x = _x;
-    _x = (((x + 1 | 0) + 1 | 0) + 1 | 0) + 1 | 0;
+    _x = (x + 1 | 0) + 1 | 0;
     continue ;
   };
 }

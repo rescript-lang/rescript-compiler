@@ -39,14 +39,22 @@
    assert (old.arity = v) 
 *)
 let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) lambda = 
-  match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
+  Ident_hashtbl.add meta.ident_tbl k 
+      (FunctionId {arity; lambda = Some (lambda, rec_flag) })
+  (* see #3609 
+    we have to update since bounded function lambda
+    may contain staled unbounded varaibles
+  *)
+  (* match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
   | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
+    
+  |  Some (FunctionId old)  ->  
     Ident_hashtbl.add meta.ident_tbl k 
       (FunctionId {arity; lambda = Some (lambda, rec_flag) })
-  |  Some (FunctionId old)  ->  
-
-    old.arity <- arity  (* due to we keep refining arity analysis after each round*)      
-  | _ -> assert false (* TODO -- avoid exception *)
+    (* old.arity <- arity   *)
+    (* due to we keep refining arity analysis after each round*)      
+  | _ -> assert false  *)
+  (* TODO -- avoid exception *)
 
 
 (** it only make senses recording arities for 

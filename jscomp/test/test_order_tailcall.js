@@ -12,6 +12,7 @@ function f1(_x, _y, _z) {
     var z = _z;
     var y = _y;
     var x = _x;
+    console.log(z);
     _z = x;
     _y = z;
     _x = y;

@@ -2187,9 +2187,6 @@ function gen_decode_record(and_, param, sc) {
           }
           
         }), /* [] */0, r_fields);
-  var string_of_nonpacked_pk = function (pk) {
-    return string_of_payload_kind(/* () */0, pk, false);
-  };
   var process_field_common = function (sc, encoding_number, pk_as_string, f) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -2338,7 +2335,7 @@ function gen_decode_record(and_, param, sc) {
                                       var param$1 = rf_field_type[0];
                                       var pk = param$1[2];
                                       var field_type = param$1[0];
-                                      return process_field_common(sc$1, param$1[1], string_of_nonpacked_pk(pk), (function (sc) {
+                                      return process_field_common(sc$1, param$1[1], string_of_payload_kind(/* () */0, pk, false), (function (sc) {
                                                     return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "v.",
@@ -2365,7 +2362,7 @@ function gen_decode_record(and_, param, sc) {
                                       var param$2 = rf_field_type[0];
                                       var pk$1 = param$2[2];
                                       var field_type$1 = param$2[0];
-                                      return process_field_common(sc$2, param$2[1], string_of_nonpacked_pk(pk$1), (function (sc) {
+                                      return process_field_common(sc$2, param$2[1], string_of_payload_kind(/* () */0, pk$1, false), (function (sc) {
                                                     return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "v.",
@@ -2422,7 +2419,7 @@ function gen_decode_record(and_, param, sc) {
                                                         return line$1(sc, ") () d;");
                                                       }));
                                         } else {
-                                          return process_field_common(sc$3, encoding_number, string_of_nonpacked_pk(pk$2), (function (sc) {
+                                          return process_field_common(sc$3, encoding_number, string_of_payload_kind(/* () */0, pk$2, false), (function (sc) {
                                                         return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "Pbrt.Repeated_field.add (",
@@ -2467,7 +2464,7 @@ function gen_decode_record(and_, param, sc) {
                                                                         ]), rf_label$3, decode_field_f(field_type$2, pk$2)));
                                                     }));
                                       } else {
-                                        return process_field_common(sc$3, encoding_number, string_of_nonpacked_pk(pk$2), (function (sc) {
+                                        return process_field_common(sc$3, encoding_number, string_of_payload_kind(/* () */0, pk$2, false), (function (sc) {
                                                       return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                           /* String_literal */Block.__(11, [
                                                                               "v.",
@@ -2594,7 +2591,7 @@ function gen_decode_record(and_, param, sc) {
                                                     var pk = param[/* vc_payload_kind */3];
                                                     var vc_field_type = param[/* vc_field_type */1];
                                                     var vc_constructor = param[/* vc_constructor */0];
-                                                    return process_field_common(sc$5, param[/* vc_encoding_number */2], string_of_nonpacked_pk(pk), (function (sc) {
+                                                    return process_field_common(sc$5, param[/* vc_encoding_number */2], string_of_payload_kind(/* () */0, pk, false), (function (sc) {
                                                                   if (vc_field_type) {
                                                                     return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                                         /* String_literal */Block.__(11, [
