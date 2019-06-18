@@ -493,8 +493,14 @@ function expr_starting_with(c, k, t) {
     if (c >= 32) {
       switch (c - 32 | 0) {
         case 0 : 
-            exit = 2;
-            break;
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "sexpm.ml",
+                    183,
+                    27
+                  ]
+                ];
         case 2 : 
             return quoted(k, t);
         case 1 : 
@@ -521,23 +527,23 @@ function expr_starting_with(c, k, t) {
       exit = 1;
     }
   } else {
-    exit = c >= 9 ? 2 : 1;
+    if (c >= 9) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "sexpm.ml",
+              183,
+              27
+            ]
+          ];
+    }
+    exit = 1;
   }
-  switch (exit) {
-    case 1 : 
-        $$Buffer.add_char(t[/* atom */2], c);
-        return atom(k, t);
-    case 2 : 
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "sexpm.ml",
-                183,
-                27
-              ]
-            ];
-    
+  if (exit === 1) {
+    $$Buffer.add_char(t[/* atom */2], c);
+    return atom(k, t);
   }
+  
 }
 
 function expr_list(acc, k, t) {
@@ -566,12 +572,14 @@ function expr_list(acc, k, t) {
       }
       if (exit === 1) {
         return expr_starting_with(c, (function (last, e) {
-                      var exit = 0;
                       if (last !== undefined) {
                         var match = last;
                         if (match !== 40) {
                           if (match !== 41) {
-                            exit = 1;
+                            return expr_list(/* :: */[
+                                        e,
+                                        acc
+                                      ], k, t);
                           } else {
                             return Curry._2(k, undefined, /* `List */[
                                         848054398,
@@ -590,15 +598,11 @@ function expr_list(acc, k, t) {
                                       }), t);
                         }
                       } else {
-                        exit = 1;
-                      }
-                      if (exit === 1) {
                         return expr_list(/* :: */[
                                     e,
                                     acc
                                   ], k, t);
                       }
-                      
                     }), t);
       }
       
@@ -687,10 +691,10 @@ function quoted(k, t) {
                   }), _error_eof);
     } else {
       var c = _get(t);
-      var exit = 0;
       if (c !== 34) {
         if (c !== 92) {
-          exit = 1;
+          $$Buffer.add_char(t[/* atom */2], c);
+          continue ;
         } else {
           return escaped((function (c) {
                         $$Buffer.add_char(t[/* atom */2], c);
@@ -700,11 +704,6 @@ function quoted(k, t) {
       } else {
         return _return_atom(undefined, k, t);
       }
-      if (exit === 1) {
-        $$Buffer.add_char(t[/* atom */2], c);
-        continue ;
-      }
-      
     }
   };
 }
@@ -717,10 +716,9 @@ function escaped(k, t) {
   } else {
     var c = _get(t);
     var exit = 0;
-    var exit$1 = 0;
     if (c >= 92) {
       if (c >= 117) {
-        exit$1 = 2;
+        exit = 1;
       } else {
         switch (c - 92 | 0) {
           case 0 : 
@@ -751,7 +749,7 @@ function escaped(k, t) {
           case 20 : 
           case 21 : 
           case 23 : 
-              exit$1 = 2;
+              exit = 1;
               break;
           case 24 : 
               return Curry._1(k, /* "\t" */9);
@@ -759,30 +757,27 @@ function escaped(k, t) {
         }
       }
     } else if (c !== 34) {
-      exit$1 = 2;
+      exit = 1;
     } else {
       return Curry._1(k, /* "\"" */34);
     }
-    if (exit$1 === 2) {
+    if (exit === 1) {
       if (_is_digit(c)) {
         return read2int(c - /* "0" */48 | 0, (function (n) {
                       return Curry._1(k, Char.chr(n));
                     }), t);
       } else {
-        exit = 1;
+        return Curry._1(_error(t, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "unexpected escaped char '",
+                            /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                    /* "'" */39,
+                                    /* End_of_format */0
+                                  ])])
+                          ]),
+                        "unexpected escaped char '%c'"
+                      ]), c);
       }
-    }
-    if (exit === 1) {
-      return Curry._1(_error(t, /* Format */[
-                      /* String_literal */Block.__(11, [
-                          "unexpected escaped char '",
-                          /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
-                                  /* "'" */39,
-                                  /* End_of_format */0
-                                ])])
-                        ]),
-                      "unexpected escaped char '%c'"
-                    ]), c);
     }
     
   }
@@ -1119,8 +1114,14 @@ function MakeDecode(funarg) {
       if (c >= 32) {
         switch (c - 32 | 0) {
           case 0 : 
-              exit = 2;
-              break;
+              throw [
+                    Caml_builtin_exceptions.assert_failure,
+                    /* tuple */[
+                      "sexpm.ml",
+                      183,
+                      27
+                    ]
+                  ];
           case 2 : 
               return quoted(k, t);
           case 1 : 
@@ -1147,23 +1148,23 @@ function MakeDecode(funarg) {
         exit = 1;
       }
     } else {
-      exit = c >= 9 ? 2 : 1;
+      if (c >= 9) {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "sexpm.ml",
+                183,
+                27
+              ]
+            ];
+      }
+      exit = 1;
     }
-    switch (exit) {
-      case 1 : 
-          $$Buffer.add_char(t[/* atom */2], c);
-          return atom(k, t);
-      case 2 : 
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "sexpm.ml",
-                  183,
-                  27
-                ]
-              ];
-      
+    if (exit === 1) {
+      $$Buffer.add_char(t[/* atom */2], c);
+      return atom(k, t);
     }
+    
   };
   var expr_list = function (acc, k, t) {
     while(true) {
@@ -1191,12 +1192,14 @@ function MakeDecode(funarg) {
         }
         if (exit === 1) {
           return expr_starting_with(c, (function (last, e) {
-                        var exit = 0;
                         if (last !== undefined) {
                           var match = last;
                           if (match !== 40) {
                             if (match !== 41) {
-                              exit = 1;
+                              return expr_list(/* :: */[
+                                          e,
+                                          acc
+                                        ], k, t);
                             } else {
                               return Curry._2(k, undefined, /* `List */[
                                           848054398,
@@ -1215,15 +1218,11 @@ function MakeDecode(funarg) {
                                         }), t);
                           }
                         } else {
-                          exit = 1;
-                        }
-                        if (exit === 1) {
                           return expr_list(/* :: */[
                                       e,
                                       acc
                                     ], k, t);
                         }
-                        
                       }), t);
         }
         
@@ -1309,10 +1308,10 @@ function MakeDecode(funarg) {
                     }), _error_eof);
       } else {
         var c = _get(t);
-        var exit = 0;
         if (c !== 34) {
           if (c !== 92) {
-            exit = 1;
+            $$Buffer.add_char(t[/* atom */2], c);
+            continue ;
           } else {
             return escaped((function (c) {
                           $$Buffer.add_char(t[/* atom */2], c);
@@ -1322,11 +1321,6 @@ function MakeDecode(funarg) {
         } else {
           return _return_atom(undefined, k, t);
         }
-        if (exit === 1) {
-          $$Buffer.add_char(t[/* atom */2], c);
-          continue ;
-        }
-        
       }
     };
   };
@@ -1338,10 +1332,9 @@ function MakeDecode(funarg) {
     } else {
       var c = _get(t);
       var exit = 0;
-      var exit$1 = 0;
       if (c >= 92) {
         if (c >= 117) {
-          exit$1 = 2;
+          exit = 1;
         } else {
           switch (c - 92 | 0) {
             case 0 : 
@@ -1372,7 +1365,7 @@ function MakeDecode(funarg) {
             case 20 : 
             case 21 : 
             case 23 : 
-                exit$1 = 2;
+                exit = 1;
                 break;
             case 24 : 
                 return Curry._1(k, /* "\t" */9);
@@ -1380,30 +1373,27 @@ function MakeDecode(funarg) {
           }
         }
       } else if (c !== 34) {
-        exit$1 = 2;
+        exit = 1;
       } else {
         return Curry._1(k, /* "\"" */34);
       }
-      if (exit$1 === 2) {
+      if (exit === 1) {
         if (_is_digit(c)) {
           return read2int(c - /* "0" */48 | 0, (function (n) {
                         return Curry._1(k, Char.chr(n));
                       }), t);
         } else {
-          exit = 1;
+          return Curry._1(_error(t, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "unexpected escaped char '",
+                              /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                      /* "'" */39,
+                                      /* End_of_format */0
+                                    ])])
+                            ]),
+                          "unexpected escaped char '%c'"
+                        ]), c);
         }
-      }
-      if (exit === 1) {
-        return Curry._1(_error(t, /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "unexpected escaped char '",
-                            /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
-                                    /* "'" */39,
-                                    /* End_of_format */0
-                                  ])])
-                          ]),
-                        "unexpected escaped char '%c'"
-                      ]), c);
       }
       
     }

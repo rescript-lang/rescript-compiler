@@ -841,16 +841,11 @@ function max_binding(_param) {
 function remove_min_binding(param) {
   if (param) {
     var l = param[0];
-    var exit = 0;
     if (l) {
-      exit = 1;
+      return bal(remove_min_binding(l), param[1], param[2], param[3]);
     } else {
       return param[3];
     }
-    if (exit === 1) {
-      return bal(remove_min_binding(l), param[1], param[2], param[3]);
-    }
-    
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -869,21 +864,16 @@ function remove(x, param) {
     if (c === 0) {
       var t1 = l;
       var t2 = r;
-      var exit = 0;
       if (t1) {
         if (t2) {
-          exit = 1;
+          var match = min_binding(t2);
+          return bal(t1, match[0], match[1], remove_min_binding(t2));
         } else {
           return t1;
         }
       } else {
         return t2;
       }
-      if (exit === 1) {
-        var match = min_binding(t2);
-        return bal(t1, match[0], match[1], remove_min_binding(t2));
-      }
-      
     } else if (c < 0) {
       return bal(remove(x, l), v, d, r);
     } else {
@@ -1026,21 +1016,16 @@ function join(l, v, d, r) {
 }
 
 function concat(t1, t2) {
-  var exit = 0;
   if (t1) {
     if (t2) {
-      exit = 1;
+      var match = min_binding(t2);
+      return join(t1, match[0], match[1], remove_min_binding(t2));
     } else {
       return t1;
     }
   } else {
     return t2;
   }
-  if (exit === 1) {
-    var match = min_binding(t2);
-    return join(t1, match[0], match[1], remove_min_binding(t2));
-  }
-  
 }
 
 function concat_or_join(t1, v, d, t2) {
@@ -1544,16 +1529,11 @@ function max_binding$1(_param) {
 function remove_min_binding$1(param) {
   if (param) {
     var l = param[0];
-    var exit = 0;
     if (l) {
-      exit = 1;
+      return bal$1(remove_min_binding$1(l), param[1], param[2], param[3]);
     } else {
       return param[3];
     }
-    if (exit === 1) {
-      return bal$1(remove_min_binding$1(l), param[1], param[2], param[3]);
-    }
-    
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -1572,21 +1552,16 @@ function remove$1(x, param) {
     if (c === 0) {
       var t1 = l;
       var t2 = r;
-      var exit = 0;
       if (t1) {
         if (t2) {
-          exit = 1;
+          var match = min_binding$1(t2);
+          return bal$1(t1, match[0], match[1], remove_min_binding$1(t2));
         } else {
           return t1;
         }
       } else {
         return t2;
       }
-      if (exit === 1) {
-        var match = min_binding$1(t2);
-        return bal$1(t1, match[0], match[1], remove_min_binding$1(t2));
-      }
-      
     } else if (c < 0) {
       return bal$1(remove$1(x, l), v, d, r);
     } else {
@@ -1729,21 +1704,16 @@ function join$1(l, v, d, r) {
 }
 
 function concat$1(t1, t2) {
-  var exit = 0;
   if (t1) {
     if (t2) {
-      exit = 1;
+      var match = min_binding$1(t2);
+      return join$1(t1, match[0], match[1], remove_min_binding$1(t2));
     } else {
       return t1;
     }
   } else {
     return t2;
   }
-  if (exit === 1) {
-    var match = min_binding$1(t2);
-    return join$1(t1, match[0], match[1], remove_min_binding$1(t2));
-  }
-  
 }
 
 function concat_or_join$1(t1, v, d, t2) {

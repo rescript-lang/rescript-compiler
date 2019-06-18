@@ -40,7 +40,7 @@ eq("File \"a_filename_test.ml\", line 10, characters 5-12", /* tuple */[
       "/a/tmp.txt/subdir/file.txt"
     ]);
 
-eq("File \"a_filename_test.ml\", line 22, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 22, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/b.c"
         ], /* `File */[
@@ -48,7 +48,7 @@ eq("File \"a_filename_test.ml\", line 22, characters 5-12", test(/* `File */[
           "./a/u/g.c"
         ]), "./u/g.c");
 
-eq("File \"a_filename_test.ml\", line 27, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 27, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/b.c"
         ], /* `File */[
@@ -56,7 +56,7 @@ eq("File \"a_filename_test.ml\", line 27, characters 5-12", test(/* `File */[
           "xxxghsoghos/ghsoghso/node_modules/buckle-stdlib/list.js"
         ]), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 33, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 33, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/b.c"
         ], /* `File */[
@@ -64,7 +64,7 @@ eq("File \"a_filename_test.ml\", line 33, characters 5-12", test(/* `File */[
           "xxxghsoghos/ghsoghso/node_modules//buckle-stdlib/list.js"
         ]), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 39, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 39, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/b.c"
         ], /* `File */[
@@ -72,7 +72,7 @@ eq("File \"a_filename_test.ml\", line 39, characters 5-12", test(/* `File */[
           "xxxghsoghos/ghsoghso/node_modules/./buckle-stdlib/list.js"
         ]), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 45, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 45, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/c.js"
         ], /* `File */[
@@ -80,7 +80,7 @@ eq("File \"a_filename_test.ml\", line 45, characters 5-12", test(/* `File */[
           "./a/b"
         ]), "./b");
 
-eq("File \"a_filename_test.ml\", line 50, characters 5-12", test(/* `File */[
+eq("File \"a_filename_test.ml\", line 50, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
           781515420,
           "./a/c"
         ], /* `File */[
@@ -88,7 +88,7 @@ eq("File \"a_filename_test.ml\", line 50, characters 5-12", test(/* `File */[
           "./a/b.js"
         ]), "./b.js");
 
-eq("File \"a_filename_test.ml\", line 55, characters 5-12", test(/* `Dir */[
+eq("File \"a_filename_test.ml\", line 55, characters 5-12", Ext_filename_test.node_relative_path(true, /* `Dir */[
           3405101,
           "./a/"
         ], /* `File */[

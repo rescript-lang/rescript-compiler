@@ -2960,14 +2960,8 @@ function mem$1(x) {
 }
 
 function swap(f1, f2, v) {
-  var partial_arg = single(f2);
-  var v$prime = set(f1, (function (param) {
-            return subset(partial_arg, param);
-          })(v), v);
-  var partial_arg$1 = single(f1);
-  return set(f2, (function (param) {
-                  return subset(partial_arg$1, param);
-                })(v), v$prime);
+  var v$prime = set(f1, mem$1(f2)(v), v);
+  return set(f2, mem$1(f1)(v), v$prime);
 }
 
 function conjugate(v) {
@@ -2976,17 +2970,17 @@ function conjugate(v) {
 
 function get_upper(v) {
   return /* tuple */[
-          subset(1, v),
-          subset(2, v)
+          mem$1(/* May_pos */0)(v),
+          mem$1(/* May_neg */1)(v)
         ];
 }
 
 function get_lower(v) {
   return /* tuple */[
-          subset(16, v),
-          subset(32, v),
-          subset(64, v),
-          subset(8, v)
+          mem$1(/* Pos */4)(v),
+          mem$1(/* Neg */5)(v),
+          mem$1(/* Inv */6)(v),
+          mem$1(/* Inj */3)(v)
         ];
 }
 
@@ -9240,6 +9234,12 @@ function cltype_declaration(s, decl) {
   return decl$1;
 }
 
+function class_type$1(s, cty) {
+  var cty$1 = class_type(s, cty);
+  cleanup_types(/* () */0);
+  return cty$1;
+}
+
 function value_description(s, descr) {
   return /* record */[
           /* val_type */type_expr(s, descr[/* val_type */0]),
@@ -9722,14 +9722,6 @@ var strengthen = /* record */[/* contents */(function (env, mty, path) {
           ];
     })];
 
-function md(md_type) {
-  return /* record */[
-          /* md_type */md_type,
-          /* md_attributes : [] */0,
-          /* md_loc */none
-        ];
-}
-
 var current_unit = /* record */[/* contents */""];
 
 var persistent_structures = Hashtbl.create(undefined, 17);
@@ -10130,7 +10122,11 @@ function find_module(alias, path, env) {
           if (exn === Caml_builtin_exceptions.not_found) {
             if (id[/* stamp */0] === 0 && id[/* name */1] !== current_unit[0]) {
               var ps = find_pers_struct(undefined, id[/* name */1]);
-              return md(/* Mty_signature */Block.__(1, [ps[/* ps_sig */1]]));
+              return /* record */[
+                      /* md_type : Mty_signature */Block.__(1, [ps[/* ps_sig */1]]),
+                      /* md_attributes : [] */0,
+                      /* md_loc */none
+                    ];
             } else {
               throw Caml_builtin_exceptions.not_found;
             }
@@ -10144,7 +10140,11 @@ function find_module(alias, path, env) {
           throw Caml_builtin_exceptions.not_found;
         } else {
           var match$1 = find$2(path[1], match[0][/* comp_modules */4]);
-          return md(force(subst_modtype_maker, match$1[0]));
+          return /* record */[
+                  /* md_type */force(subst_modtype_maker, match$1[0]),
+                  /* md_attributes : [] */0,
+                  /* md_loc */none
+                ];
         }
     case 2 : 
         var p2 = path[1];
@@ -10172,7 +10172,11 @@ function find_module(alias, path, env) {
               }
             }
           }
-          return md(tmp);
+          return /* record */[
+                  /* md_type */tmp,
+                  /* md_attributes : [] */0,
+                  /* md_loc */none
+                ];
         } else {
           throw Caml_builtin_exceptions.not_found;
         }
@@ -10580,8 +10584,7 @@ function lookup(proj1, proj2, lid, env) {
 function lookup_all_simple(proj1, proj2, shadow, lid, env) {
   switch (lid.tag | 0) {
     case 0 : 
-        var tbl = Curry._1(proj1, env);
-        var xl = find_all(lid[0], tbl);
+        var xl = find_all(lid[0], Curry._1(proj1, env));
         var do_shadow = function (param) {
           if (param) {
             var match = param[0];
@@ -12589,7 +12592,11 @@ function add_cltype(id, ty, env) {
 }
 
 function add_module$1(arg, id, mty, env) {
-  return add_module_declaration(arg, id, md(mty), env);
+  return add_module_declaration(arg, id, /* record */[
+              /* md_type */mty,
+              /* md_attributes : [] */0,
+              /* md_loc */none
+            ], env);
 }
 
 function add_local_constraint(id, info, elv, env) {
@@ -12656,6 +12663,14 @@ function enter(store_fun, name, data, env) {
         ];
 }
 
+function enter_value(check) {
+  return (function (param, param$1, param$2) {
+      return enter((function (param, param$1, param$2, param$3, param$4, param$5) {
+                    return store_value(check, param, param$1, param$2, param$3, param$4, param$5);
+                  }), param, param$1, param$2);
+    });
+}
+
 function enter_type(param, param$1, param$2) {
   return enter((function (param, param$1, param$2, param$3, param$4, param$5) {
                 return store_type(true, param, param$1, param$2, param$3, param$4, param$5);
@@ -12675,7 +12690,11 @@ function enter_modtype(param, param$1, param$2) {
 }
 
 function enter_module(arg, s, mty, env) {
-  return enter_module_declaration(arg, s, md(mty), env);
+  return enter_module_declaration(arg, s, /* record */[
+              /* md_type */mty,
+              /* md_attributes : [] */0,
+              /* md_loc */none
+            ], env);
 }
 
 function add_item(comp, env) {
@@ -12953,7 +12972,11 @@ function fold_modules(f, lid, env, acc) {
                                   p,
                                   s,
                                   param[1]
-                                ]), md(force(subst_modtype_maker, param[0])), acc);
+                                ]), /* record */[
+                                /* md_type */force(subst_modtype_maker, param[0]),
+                                /* md_attributes : [] */0,
+                                /* md_loc */none
+                              ], acc);
                   }), match$1[0][/* comp_modules */4], acc);
     }
   } else {
@@ -12966,7 +12989,11 @@ function fold_modules(f, lid, env, acc) {
                                     /* stamp */0,
                                     /* name */name,
                                     /* flags */1
-                                  ]]), md(/* Mty_signature */Block.__(1, [ps[/* ps_sig */1]])), acc);
+                                  ]]), /* record */[
+                                /* md_type : Mty_signature */Block.__(1, [ps[/* ps_sig */1]]),
+                                /* md_attributes : [] */0,
+                                /* md_loc */none
+                              ], acc);
                   } else {
                     return acc;
                   }
@@ -13783,13 +13810,6 @@ function mkcf(attrs, docs, d) {
   return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
 }
 
-function mkrhs(rhs, pos) {
-  return /* record */[
-          /* txt */rhs,
-          /* loc */rhs_loc(pos)
-        ];
-}
-
 function mkoption(d) {
   var init = d[/* ptyp_loc */1];
   var loc_000 = /* loc_start */init[/* loc_start */0];
@@ -13839,7 +13859,10 @@ function mkoperator(name, pos) {
 }
 
 function mkpatvar(name, pos) {
-  return mk$1(rhs_loc(pos), undefined, /* Ppat_var */Block.__(0, [mkrhs(name, pos)]));
+  return mk$1(rhs_loc(pos), undefined, /* Ppat_var */Block.__(0, [/* record */[
+                  /* txt */name,
+                  /* loc */rhs_loc(pos)
+                ]]));
 }
 
 function ghexp(d) {
@@ -13852,13 +13875,6 @@ function ghpat(d) {
 
 function ghtyp(d) {
   return mk(symbol_gloc(/* () */0), undefined, d);
-}
-
-function ghloc(d) {
-  return /* record */[
-          /* txt */d,
-          /* loc */symbol_gloc(/* () */0)
-        ];
 }
 
 function mkinfix(arg1, name, arg2) {
@@ -14039,10 +14055,13 @@ function mkexp_constraint(e, param) {
 }
 
 function array_function(str, name) {
-  return ghloc(/* Ldot */Block.__(1, [
-                /* Lident */Block.__(0, [str]),
-                fast[0] ? "unsafe_" + name : name
-              ]));
+  return /* record */[
+          /* txt : Ldot */Block.__(1, [
+              /* Lident */Block.__(0, [str]),
+              fast[0] ? "unsafe_" + name : name
+            ]),
+          /* loc */symbol_gloc(/* () */0)
+        ];
 }
 
 function unclosed(opening_name, opening_num, closing_name, closing_num) {
@@ -14078,13 +14097,16 @@ function not_expecting(pos, nonterm) {
 }
 
 function bigarray_function(str, name) {
-  return ghloc(/* Ldot */Block.__(1, [
-                /* Ldot */Block.__(1, [
-                    /* Lident */Block.__(0, ["Bigarray"]),
-                    str
-                  ]),
-                name
-              ]));
+  return /* record */[
+          /* txt : Ldot */Block.__(1, [
+              /* Ldot */Block.__(1, [
+                  /* Lident */Block.__(0, ["Bigarray"]),
+                  str
+                ]),
+              name
+            ]),
+          /* loc */symbol_gloc(/* () */0)
+        ];
 }
 
 function bigarray_untuplify(exp) {
@@ -14100,11 +14122,19 @@ function bigarray_untuplify(exp) {
 }
 
 function exp_of_label(lbl, pos) {
-  return mkexp(/* Pexp_ident */Block.__(0, [mkrhs(/* Lident */Block.__(0, [last$1(lbl)]), pos)]));
+  var rhs = /* Lident */Block.__(0, [last$1(lbl)]);
+  return mkexp(/* Pexp_ident */Block.__(0, [/* record */[
+                  /* txt */rhs,
+                  /* loc */rhs_loc(pos)
+                ]]));
 }
 
 function pat_of_label(lbl, pos) {
-  return mkpat(/* Ppat_var */Block.__(0, [mkrhs(last$1(lbl), pos)]));
+  var rhs = last$1(lbl);
+  return mkpat(/* Ppat_var */Block.__(0, [/* record */[
+                  /* txt */rhs,
+                  /* loc */rhs_loc(pos)
+                ]]));
 }
 
 function check_variable(vl, loc, v) {
@@ -14304,14 +14334,6 @@ function wrap_exp_attrs(body, param) {
   }
 }
 
-function text_str(pos) {
-  return text$1(get_text(Parsing.rhs_start_pos(pos)));
-}
-
-function text_sig(pos) {
-  return text(get_text(Parsing.rhs_start_pos(pos)));
-}
-
 function text_cstr(pos) {
   return Curry._1(Ast_helper_021[/* text */9], get_text(Parsing.rhs_start_pos(pos)));
 }
@@ -14331,14 +14353,6 @@ function extra_text(text, pos, items) {
   var pre_extras = get_pre_extra_text(Parsing.rhs_start_pos(pos));
   var post_extras = get_post_extra_text(Parsing.rhs_end_pos(pos));
   return Pervasives.$at(Curry._1(text, pre_extras), Pervasives.$at(items, Curry._1(text, post_extras)));
-}
-
-function extra_str(pos, items) {
-  return extra_text(text$1, pos, items);
-}
-
-function extra_sig(pos, items) {
-  return extra_text(text, pos, items);
 }
 
 function extra_cstr(pos, items) {
@@ -14517,15 +14531,15 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return extra_str(1, _1);
+      return extra_text(text$1, 1, _1);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return extra_sig(1, _1);
+      return extra_text(text, 1, _1);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* Ptop_def */Block.__(0, [extra_str(1, _1)]);
+      return /* Ptop_def */Block.__(0, [extra_text(text$1, 1, _1)]);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
@@ -14536,7 +14550,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_str(1), /* :: */[
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */[
                   mkstrexp(_1, _2),
                   /* [] */0
                 ]);
@@ -14550,7 +14564,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_str(1), /* :: */[
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */[
                   _1,
                   _2
                 ]);
@@ -14651,7 +14665,10 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       return /* tuple */[
-              mkrhs("*", 2),
+              /* record */[
+                /* txt */"*",
+                /* loc */rhs_loc(2)
+              ],
               undefined
             ];
     }),
@@ -14659,7 +14676,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       return /* tuple */[
-              mkrhs(_2, 2),
+              /* record */[
+                /* txt */_2,
+                /* loc */rhs_loc(2)
+              ],
               _4
             ];
     }),
@@ -14686,11 +14706,14 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkmod(/* Pmod_ident */Block.__(0, [mkrhs(_1, 1)]));
+      return mkmod(/* Pmod_ident */Block.__(0, [/* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      return mkmod(/* Pmod_structure */Block.__(1, [extra_str(2, _2)]));
+      return mkmod(/* Pmod_structure */Block.__(1, [extra_text(text$1, 2, _2)]));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 1);
@@ -14804,7 +14827,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       mark_rhs_docs(1, 2);
-      return Pervasives.$at(text_str(1), /* :: */[
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */[
                   mkstrexp(_1, _2),
                   _3
                 ]);
@@ -14817,12 +14840,12 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_str(1), _2);
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_str(1), /* :: */[
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */[
                   _1,
                   _2
                 ]);
@@ -14978,7 +15001,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -14999,21 +15025,30 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _4);
+      return mk$14(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkmty(/* Pmty_ident */Block.__(0, [mkrhs(_1, 1)]));
+      return mkmty(/* Pmty_ident */Block.__(0, [/* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      return mkmty(/* Pmty_signature */Block.__(1, [extra_sig(2, _2)]));
+      return mkmty(/* Pmty_signature */Block.__(1, [extra_text(text, 2, _2)]));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 1);
@@ -15063,12 +15098,12 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_sig(1), _2);
+      return Pervasives.$at(text(get_text(Parsing.rhs_start_pos(1))), _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_sig(1), /* :: */[
+      return Pervasives.$at(text(get_text(Parsing.rhs_start_pos(1))), /* :: */[
                   _1,
                   _2
                 ]);
@@ -15142,7 +15177,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$15(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), _2, mkrhs(_3, 3));
+      return mk$15(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), _2, /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
@@ -15157,7 +15195,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return mkmty(/* Pmty_functor */Block.__(2, [
-                    mkrhs(_2, 2),
+                    /* record */[
+                      /* txt */_2,
+                      /* loc */rhs_loc(2)
+                    ],
                     _4,
                     _6
                   ]));
@@ -15165,7 +15206,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkmty(/* Pmty_functor */Block.__(2, [
-                    mkrhs("*", 1),
+                    /* record */[
+                      /* txt */"*",
+                      /* loc */rhs_loc(1)
+                    ],
                     undefined,
                     _3
                   ]));
@@ -15174,13 +15218,22 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
+      return mk$12(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _3);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), alias$2(rhs_loc(4), undefined, mkrhs(_4, 4)));
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], alias$2(rhs_loc(4), undefined, /* record */[
+                      /* txt */_4,
+                      /* loc */rhs_loc(4)
+                    ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15201,13 +15254,19 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _5);
+      return mk$12(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ], _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _4);
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       return undefined;
@@ -15219,7 +15278,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$13(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, _4, mkrhs(_3, 3));
+      return mk$13(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, _4, /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15242,7 +15304,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, _2, _3, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -15250,7 +15315,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15377,7 +15445,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkclass(/* Pcl_constr */Block.__(0, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     /* [] */0
                   ]));
     }),
@@ -15510,7 +15581,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_3, 3),
+              /* record */[
+                /* txt */_3,
+                /* loc */rhs_loc(3)
+              ],
               _2,
               /* Cfk_virtual */Block.__(0, [_5])
             ];
@@ -15521,7 +15595,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_3, 3),
+              /* record */[
+                /* txt */_3,
+                /* loc */rhs_loc(3)
+              ],
               _2,
               /* Cfk_concrete */Block.__(1, [
                   _1,
@@ -15537,7 +15614,10 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       var e = mkexp_constraint(_6, _4);
       return /* tuple */[
-              mkrhs(_3, 3),
+              /* record */[
+                /* txt */_3,
+                /* loc */rhs_loc(3)
+              ],
               _2,
               /* Cfk_concrete */Block.__(1, [
                   _1,
@@ -15698,7 +15778,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkcty(/* Pcty_constr */Block.__(0, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     /* [] */0
                   ]));
     }),
@@ -15851,7 +15934,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), undefined, _2, _3, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], _6);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -15859,7 +15945,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], _6);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15882,7 +15971,10 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _8, symbol_docs(/* () */0), undefined, _3, _4, mkrhs(_5, 5), _7);
+      return mk$18(symbol_rloc(/* () */0), _8, symbol_docs(/* () */0), undefined, _3, _4, /* record */[
+                  /* txt */_5,
+                  /* loc */rhs_loc(5)
+                ], _7);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -15890,7 +15982,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], _6);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15977,7 +16072,10 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkpat(/* Ppat_var */Block.__(0, [mkrhs(_1, 1)]));
+      return mkpat(/* Ppat_var */Block.__(0, [/* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       return mkpat(/* Ppat_any */0);
@@ -16006,7 +16104,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               _1,
-              mkpat(/* Ppat_var */Block.__(0, [mkrhs(_1, 1)]))
+              mkpat(/* Ppat_var */Block.__(0, [/* record */[
+                        /* txt */_1,
+                        /* loc */rhs_loc(1)
+                      ]]))
             ];
     }),
   (function (__caml_parser_env) {
@@ -16065,7 +16166,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_000 = mkrhs(_4, 4);
+      var d_000 = /* record */[
+        /* txt */_4,
+        /* loc */rhs_loc(4)
+      ];
       var d = /* Pexp_letmodule */Block.__(25, [
           d_000,
           _5,
@@ -16078,7 +16182,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = mkrhs(_5, 5);
+      var d_001 = /* record */[
+        /* txt */_5,
+        /* loc */rhs_loc(5)
+      ];
       var d = /* Pexp_open */Block.__(32, [
           _3,
           d_001,
@@ -16150,7 +16257,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_construct */Block.__(9, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     _2
                   ]));
     }),
@@ -16451,7 +16561,10 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_setfield */Block.__(13, [
                     _1,
-                    mkrhs(_3, 3),
+                    /* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ],
                     _5
                   ]));
     }),
@@ -16651,7 +16764,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_setinstvar */Block.__(23, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     _3
                   ]));
     }),
@@ -16682,7 +16798,10 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkexp(/* Pexp_ident */Block.__(0, [mkrhs(_1, 1)]));
+      return mkexp(/* Pexp_ident */Block.__(0, [/* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -16691,7 +16810,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_construct */Block.__(9, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     undefined
                   ]));
     }),
@@ -16741,7 +16863,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_field */Block.__(12, [
                     _1,
-                    mkrhs(_3, 3)
+                    /* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ]
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -16749,7 +16874,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     _4
                   ]));
     }),
@@ -16945,7 +17073,10 @@ var yyact = /* array */[
             ]));
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     rec_exp
                   ]));
     }),
@@ -16973,7 +17104,10 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     mkexp(/* Pexp_array */Block.__(14, [List.rev(_4)]))
                   ]));
     }),
@@ -17000,7 +17134,10 @@ var yyact = /* array */[
       var list_exp = reloc_exp(mktailexp(rhs_loc(6), List.rev(_4)));
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     list_exp
                   ]));
     }),
@@ -17040,7 +17177,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      var d = /* Pexp_new */Block.__(22, [mkrhs(_3, 3)]);
+      var d = /* Pexp_new */Block.__(22, [/* record */[
+            /* txt */_3,
+            /* loc */rhs_loc(3)
+          ]]);
       return wrap_exp_attrs(mkexp(d), _2);
     }),
   (function (__caml_parser_env) {
@@ -17062,7 +17202,10 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     mkexp(/* Pexp_override */Block.__(24, [List.rev(_4)]))
                   ]));
     }),
@@ -17108,7 +17251,10 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       return mkexp(/* Pexp_open */Block.__(32, [
                     /* Fresh */1,
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     mkexp(/* Pexp_constraint */Block.__(19, [
                             ghexp(/* Pexp_pack */Block.__(31, [_5])),
                             ghtyp(/* Ptyp_package */Block.__(9, [_7]))
@@ -17179,7 +17325,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               _1,
-              mkexp(/* Pexp_ident */Block.__(0, [mkrhs(/* Lident */Block.__(0, [_1]), 1)]))
+              mkexp(/* Pexp_ident */Block.__(0, [/* record */[
+                        /* txt : Lident */Block.__(0, [_1]),
+                        /* loc */rhs_loc(1)
+                      ]]))
             ];
     }),
   (function (__caml_parser_env) {
@@ -17434,14 +17583,20 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               _3
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               exp_of_label(_1, 1)
             ];
     }),
@@ -17450,7 +17605,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */[
               /* tuple */[
-                mkrhs(_1, 1),
+                /* record */[
+                  /* txt */_1,
+                  /* loc */rhs_loc(1)
+                ],
                 _3
               ],
               /* [] */0
@@ -17462,7 +17620,10 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */[
               /* tuple */[
-                mkrhs(_3, 3),
+                /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ],
                 _5
               ],
               _1
@@ -17519,7 +17680,10 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_alias */Block.__(1, [
                     _1,
-                    mkrhs(_3, 3)
+                    /* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ]
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -17534,7 +17698,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_construct */Block.__(5, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     _2
                   ]));
     }),
@@ -17604,7 +17771,10 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkpat(/* Ppat_var */Block.__(0, [mkrhs(_1, 1)]));
+      return mkpat(/* Ppat_var */Block.__(0, [/* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -17627,7 +17797,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_construct */Block.__(5, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     undefined
                   ]));
     }),
@@ -17640,7 +17813,10 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkpat(/* Ppat_type */Block.__(11, [mkrhs(_2, 2)]));
+      return mkpat(/* Ppat_type */Block.__(11, [/* record */[
+                      /* txt */_2,
+                      /* loc */rhs_loc(2)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
@@ -17702,13 +17878,19 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return mkpat(/* Ppat_unpack */Block.__(13, [mkrhs(_3, 3)]));
+      return mkpat(/* Ppat_unpack */Block.__(13, [/* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ]]));
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       return mkpat(/* Ppat_constraint */Block.__(10, [
-                    mkpat(/* Ppat_unpack */Block.__(13, [mkrhs(_3, 3)])),
+                    mkpat(/* Ppat_unpack */Block.__(13, [/* record */[
+                              /* txt */_3,
+                              /* loc */rhs_loc(3)
+                            ]])),
                     ghtyp(/* Ptyp_package */Block.__(9, [_5]))
                   ]));
     }),
@@ -17805,14 +17987,20 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               _3
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               pat_of_label(_1, 1)
             ];
     }),
@@ -17820,7 +18008,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -17842,7 +18033,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), _6, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), _6, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -17866,7 +18060,10 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(symbol_rloc(/* () */0), add_nonrec(_2, _7, 2), symbol_docs(/* () */0), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], mkrhs(_4, 4));
+      return mk$19(symbol_rloc(/* () */0), add_nonrec(_2, _7, 2), symbol_docs(/* () */0), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -17874,7 +18071,10 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, List.rev(_5), _4[0], _4[1], _4[2], mkrhs(_3, 3));
+      return mk$19(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, List.rev(_5), _4[0], _4[1], _4[2], /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -18088,13 +18288,19 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return constructor(symbol_rloc(/* () */0), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], /* record */[
+                  /* txt */_1,
+                  /* loc */rhs_loc(1)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return constructor(symbol_rloc(/* () */0), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ]);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -18104,14 +18310,23 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), Pervasives.$at(_5, _6), symbol_docs(/* () */0), undefined, mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), Pervasives.$at(_5, _6), symbol_docs(/* () */0), undefined, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ]);
     }),
   (function (__caml_parser_env) {
       return /* tuple */[
@@ -18168,7 +18383,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(symbol_rloc(/* () */0), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -18178,7 +18396,10 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
       var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Caml_option.some(info), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Caml_option.some(info), _1, /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -18190,7 +18411,10 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -18202,7 +18426,10 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ], List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -18274,25 +18501,43 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return decl(symbol_rloc(/* () */0), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], /* record */[
+                  /* txt */_1,
+                  /* loc */rhs_loc(1)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
+      return rebind(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), /* record */[
+                  /* txt */_1,
+                  /* loc */rhs_loc(1)
+                ], /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ], /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ]);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -18315,31 +18560,53 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
+      var rhs = last$1(_3);
       return /* Pwith_type */Block.__(0, [
-                mkrhs(_3, 3),
-                mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, mkrhs(last$1(_3), 3))
+                /* record */[
+                  /* txt */_3,
+                  /* loc */rhs_loc(3)
+                ],
+                mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, /* record */[
+                      /* txt */rhs,
+                      /* loc */rhs_loc(3)
+                    ])
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, mkrhs(_3, 3))]);
+      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, /* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ])]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* Pwith_module */Block.__(1, [
-                mkrhs(_2, 2),
-                mkrhs(_4, 4)
+                /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ],
+                /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ]
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* Pwith_modsubst */Block.__(3, [
-                mkrhs(_2, 2),
-                mkrhs(_4, 4)
+                /* record */[
+                  /* txt */_2,
+                  /* loc */rhs_loc(2)
+                ],
+                /* record */[
+                  /* txt */_4,
+                  /* loc */rhs_loc(4)
+                ]
               ]);
     }),
   (function (__caml_parser_env) {
@@ -18484,7 +18751,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_constr */Block.__(3, [
-                    mkrhs(_1, 1),
+                    /* record */[
+                      /* txt */_1,
+                      /* loc */rhs_loc(1)
+                    ],
                     /* [] */0
                   ]));
     }),
@@ -18492,7 +18762,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_constr */Block.__(3, [
-                    mkrhs(_2, 2),
+                    /* record */[
+                      /* txt */_2,
+                      /* loc */rhs_loc(2)
+                    ],
                     /* :: */[
                       _1,
                       /* [] */0
@@ -18503,7 +18776,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_constr */Block.__(3, [
-                    mkrhs(_4, 4),
+                    /* record */[
+                      /* txt */_4,
+                      /* loc */rhs_loc(4)
+                    ],
                     List.rev(_2)
                   ]));
     }),
@@ -18523,7 +18799,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_class */Block.__(5, [
-                    mkrhs(_2, 2),
+                    /* record */[
+                      /* txt */_2,
+                      /* loc */rhs_loc(2)
+                    ],
                     /* [] */0
                   ]));
     }),
@@ -18531,7 +18810,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_class */Block.__(5, [
-                    mkrhs(_3, 3),
+                    /* record */[
+                      /* txt */_3,
+                      /* loc */rhs_loc(3)
+                    ],
                     /* :: */[
                       _1,
                       /* [] */0
@@ -18542,7 +18824,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_class */Block.__(5, [
-                    mkrhs(_5, 5),
+                    /* record */[
+                      /* txt */_5,
+                      /* loc */rhs_loc(5)
+                    ],
                     List.rev(_2)
                   ]));
     }),
@@ -18623,7 +18908,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               /* [] */0
             ];
     }),
@@ -18631,7 +18919,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_1, 1),
+              /* record */[
+                /* txt */_1,
+                /* loc */rhs_loc(1)
+              ],
               _3
             ];
     }),
@@ -18639,7 +18930,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              mkrhs(_2, 2),
+              /* record */[
+                /* txt */_2,
+                /* loc */rhs_loc(2)
+              ],
               _4
             ];
     }),
@@ -20919,10 +21213,6 @@ var preprocessor = /* record */[/* contents */undefined];
 
 var escaped_newlines = /* record */[/* contents */false];
 
-function warn_latin1(lexbuf) {
-  return prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
-}
-
 var comment_list = /* record */[/* contents : [] */0];
 
 function add_comment(com) {
@@ -21165,14 +21455,14 @@ function token(lexbuf) {
       case 5 : 
           return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
       case 6 : 
-          warn_latin1(lexbuf$1);
+          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
       case 7 : 
           return /* QUESTION */76;
       case 8 : 
           return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
       case 9 : 
-          warn_latin1(lexbuf$1);
+          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
       case 10 : 
           var s = Lexing.lexeme(lexbuf$1);
@@ -21187,12 +21477,12 @@ function token(lexbuf) {
             }
           }
       case 11 : 
-          warn_latin1(lexbuf$1);
+          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
       case 12 : 
           return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
       case 13 : 
-          warn_latin1(lexbuf$1);
+          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
       case 14 : 
           try {
@@ -24338,6 +24628,10 @@ function newvar(name, param) {
   return newty2(current_level[0], /* Tvar */Block.__(0, [name]));
 }
 
+function new_global_var(name, param) {
+  return newty2(global_level[0], /* Tvar */Block.__(0, [name]));
+}
+
 function newobj(fields) {
   return newty2(current_level[0], /* Tobject */Block.__(4, [
                 fields,
@@ -25295,18 +25589,6 @@ function closed_class(params, sign) {
       throw exn;
     }
   }
-}
-
-function duplicate_type(ty) {
-  return type_expr(identity, ty);
-}
-
-function duplicate_class_type(ty) {
-  var s = identity;
-  var cty = ty;
-  var cty$1 = class_type(s, cty);
-  cleanup_types(/* () */0);
-  return cty$1;
 }
 
 function iter_generalize(tyl, ty) {
@@ -28795,7 +29077,7 @@ function find_newtype_level(env, path) {
 }
 
 function add_gadt_equation(env, source, destination) {
-  var destination$1 = duplicate_type(destination);
+  var destination$1 = type_expr(identity, destination);
   var source_lev = find_newtype_level(env[0], /* Pident */Block.__(0, [source]));
   var decl = new_declaration(source_lev, destination$1);
   var newtype_level = get_newtype_level(/* () */0);
@@ -28877,7 +29159,7 @@ function concat_longident(lid1, param) {
 function nondep_instance(env, level, id, ty) {
   var ty$1 = Curry._3(nondep_type$prime[0], env, id, ty);
   if (level === 100000000) {
-    return duplicate_type(ty$1);
+    return type_expr(identity, ty$1);
   } else {
     var old = current_level[0];
     current_level[0] = level;
@@ -31468,7 +31750,7 @@ function moregen$1(inst_nongen, type_pairs, env, patt, subj) {
 function moregeneral(env, inst_nongen, pat_sch, subj_sch) {
   var old_level = current_level[0];
   current_level[0] = 99999999;
-  var subj = duplicate_type(instance(undefined, env, subj_sch));
+  var subj = type_expr(identity, instance(undefined, env, subj_sch));
   current_level[0] = 100000000;
   var patt = instance(undefined, env, pat_sch);
   var res;
@@ -32478,7 +32760,7 @@ function match_class_types($staropt$star, env, pat_sch, subj_sch) {
   var old_level = current_level[0];
   current_level[0] = 99999999;
   var match = instance_class(/* [] */0, subj_sch);
-  var subj = duplicate_class_type(match[1]);
+  var subj = class_type$1(identity, match[1]);
   current_level[0] = 100000000;
   var match$1 = instance_class(/* [] */0, pat_sch);
   var patt = match$1[1];
@@ -33090,10 +33372,6 @@ function find_cltype_for_path(env, p) {
   }
 }
 
-function has_constr_row$prime(env, t) {
-  return has_constr_row(expand_abbrev(env)(t));
-}
-
 function build_subtype(env, visited, loops, posi, level, t) {
   var t$1 = repr(t);
   var match = t$1[/* desc */0];
@@ -33203,7 +33481,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
       case 3 : 
           var tl = match[1];
           var p = match[0];
-          if (level > 0 && generic_abbrev(env, p) && safe_abbrev(env, t$1) && !has_constr_row$prime(env, t$1)) {
+          if (level > 0 && generic_abbrev(env, p) && safe_abbrev(env, t$1) && !has_constr_row(expand_abbrev(env)(t$1))) {
             var t$prime$1 = repr(expand_abbrev(env)(t$1));
             var level$prime = pred_expand(level);
             try {
@@ -33335,7 +33613,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             ];
             try {
               var decl = find_type_full(p, env)[0];
-              if (level === 0 && generic_abbrev(env, p) && safe_abbrev(env, t$1) && !has_constr_row$prime(env, t$1)) {
+              if (level === 0 && generic_abbrev(env, p) && safe_abbrev(env, t$1) && !has_constr_row(expand_abbrev(env)(t$1))) {
                 warn[0] = true;
               }
               var tl$prime = List.map2((function (v, t) {
@@ -41179,7 +41457,7 @@ function tree_of_class_type(sch, params, _param) {
   };
 }
 
-function class_type$1(ppf, cty) {
+function class_type$2(ppf, cty) {
   reset(/* () */0);
   prepare_class_type(/* [] */0, cty);
   return Curry._2(out_class_type[0], ppf, tree_of_class_type(false, /* [] */0, cty));
@@ -43172,7 +43450,7 @@ function include_err(ppf, param) {
                                               ])
                                           ]),
                                         "@[The class type@;<1 2>%a@ %s@;<1 2>%a@]"
-                                      ]), class_type$1, cty1, "is not matched by the class type", class_type$1, cty2);
+                                      ]), class_type$2, cty1, "is not matched by the class type", class_type$2, cty2);
                       }));
       case 3 : 
           return report_unification_error(ppf, param[0], false, param[1], (function (ppf) {
@@ -44238,9 +44516,6 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
       } else {
         var abstr = decl2[/* type_private */3] === /* Private */0 || decl2[/* type_kind */2] === /* Type_abstract */0 && decl2[/* type_manifest */4] === undefined;
         var opn = decl2[/* type_kind */2] === /* Type_open */1 && decl2[/* type_manifest */4] === undefined;
-        var constrained = function (ty) {
-          return !is_Tvar(repr(ty));
-        };
         if (List.for_all2((function (ty, param) {
                   var v2 = param[1];
                   var v1 = param[0];
@@ -44251,7 +44526,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
                   var cn2 = match$1[1];
                   var co2 = match$1[0];
                   if (abstr ? (!co1 || co2) && (!cn1 || cn2) : (
-                        opn || constrained(ty) ? co1 === co2 && cn1 === cn2 : true
+                        opn || !is_Tvar(repr(ty)) ? co1 === co2 && cn1 === cn2 : true
                       )) {
                     var match$2 = Curry._1(Types_003[/* get_lower */11], v1);
                     var match$3 = Curry._1(Types_003[/* get_lower */11], v2);
@@ -44361,10 +44636,6 @@ function scrape(env, mty) {
       }
     }
   }
-}
-
-function freshen(mty) {
-  return modtype(identity, mty);
 }
 
 function strengthen$1(env, mty, p) {
@@ -44845,30 +45116,7 @@ function contains_type(env, _param) {
             throw exn;
           }
       case 1 : 
-          return List.iter((function (param) {
-                        var env$1 = env;
-                        var param$1 = param;
-                        switch (param$1.tag | 0) {
-                          case 1 : 
-                              var match = param$1[1];
-                              var match$1 = match[/* type_kind */2];
-                              if (match[/* type_manifest */4] !== undefined) {
-                                if (typeof match$1 === "number" && !(match$1 !== 0 || match[/* type_private */3])) {
-                                  throw Pervasives.Exit;
-                                } else {
-                                  return /* () */0;
-                                }
-                              } else {
-                                throw Pervasives.Exit;
-                              }
-                          case 3 : 
-                              return contains_type(env$1, param$1[1][/* md_type */0]);
-                          case 4 : 
-                              throw Pervasives.Exit;
-                          default:
-                            return /* () */0;
-                        }
-                      }), param[0]);
+          return contains_type_sig(env)(param[0]);
       case 2 : 
           _param = param[2];
           continue ;
@@ -44877,6 +45125,35 @@ function contains_type(env, _param) {
       
     }
   };
+}
+
+function contains_type_sig(env) {
+  return (function (param) {
+      return List.iter((function (param) {
+                    var env$1 = env;
+                    var param$1 = param;
+                    switch (param$1.tag | 0) {
+                      case 1 : 
+                          var match = param$1[1];
+                          var match$1 = match[/* type_kind */2];
+                          if (match[/* type_manifest */4] !== undefined) {
+                            if (typeof match$1 === "number" && !(match$1 !== 0 || match[/* type_private */3])) {
+                              throw Pervasives.Exit;
+                            } else {
+                              return /* () */0;
+                            }
+                          } else {
+                            throw Pervasives.Exit;
+                          }
+                      case 3 : 
+                          return contains_type(env$1, param$1[1][/* md_type */0]);
+                      case 4 : 
+                          throw Pervasives.Exit;
+                      default:
+                        return /* () */0;
+                    }
+                  }), param);
+    });
 }
 
 function contains_type$1(env, mty) {
@@ -52239,10 +52516,6 @@ function get_first(f, _param) {
   };
 }
 
-function mkpat$1(desc) {
-  return mk$1(undefined, undefined, desc);
-}
-
 function select(param) {
   if (param) {
     var xs = param[0];
@@ -52292,7 +52565,7 @@ function conv(typed) {
       var match = pat[/* pat_desc */0];
       if (typeof match === "number") {
         return /* :: */[
-                mkpat$1(/* Ppat_any */0),
+                mk$1(undefined, undefined, /* Ppat_any */0),
                 /* [] */0
               ];
       } else {
@@ -52303,7 +52576,7 @@ function conv(typed) {
           case 3 : 
               var results = select(List.map(loop, match[0]));
               return List.map((function (lst) {
-                            return mkpat$1(/* Ppat_tuple */Block.__(4, [lst]));
+                            return mk$1(undefined, undefined, /* Ppat_tuple */Block.__(4, [lst]));
                           }), results);
           case 4 : 
               var lst = match[2];
@@ -52322,7 +52595,7 @@ function conv(typed) {
                           return function (lst) {
                             var arg;
                             if (lst) {
-                              arg = lst[1] ? mkpat$1(/* Ppat_tuple */Block.__(4, [lst])) : lst[0];
+                              arg = lst[1] ? mk$1(undefined, undefined, /* Ppat_tuple */Block.__(4, [lst])) : lst[0];
                             } else {
                               throw [
                                     Caml_builtin_exceptions.assert_failure,
@@ -52333,7 +52606,7 @@ function conv(typed) {
                                     ]
                                   ];
                             }
-                            return mkpat$1(/* Ppat_construct */Block.__(5, [
+                            return mk$1(undefined, undefined, /* Ppat_construct */Block.__(5, [
                                           lid,
                                           arg
                                         ]));
@@ -52341,7 +52614,7 @@ function conv(typed) {
                           }(lid)), results$1);
               } else {
                 return /* :: */[
-                        mkpat$1(/* Ppat_construct */Block.__(5, [
+                        mk$1(undefined, undefined, /* Ppat_construct */Block.__(5, [
                                 lid,
                                 undefined
                               ])),
@@ -52355,7 +52628,7 @@ function conv(typed) {
                 var results$2 = loop(p_opt);
                 return List.map((function(label){
                           return function (p) {
-                            return mkpat$1(/* Ppat_variant */Block.__(6, [
+                            return mk$1(undefined, undefined, /* Ppat_variant */Block.__(6, [
                                           label,
                                           p
                                         ]));
@@ -52363,7 +52636,7 @@ function conv(typed) {
                           }(label)), results$2);
               } else {
                 return /* :: */[
-                        mkpat$1(/* Ppat_variant */Block.__(6, [
+                        mk$1(undefined, undefined, /* Ppat_variant */Block.__(6, [
                                 label,
                                 undefined
                               ])),
@@ -52392,7 +52665,7 @@ function conv(typed) {
                                           pat
                                         ];
                                 }), label_idents, lst);
-                          return mkpat$1(/* Ppat_record */Block.__(7, [
+                          return mk$1(undefined, undefined, /* Ppat_record */Block.__(7, [
                                         lst$1,
                                         /* Open */1
                                       ]));
@@ -52401,18 +52674,18 @@ function conv(typed) {
           case 7 : 
               var results$3 = select(List.map(loop, match[0]));
               return List.map((function (lst) {
-                            return mkpat$1(/* Ppat_array */Block.__(8, [lst]));
+                            return mk$1(undefined, undefined, /* Ppat_array */Block.__(8, [lst]));
                           }), results$3);
           case 8 : 
               return Pervasives.$at(loop(match[0]), loop(match[1]));
           case 9 : 
               var results$4 = loop(match[0]);
               return List.map((function (p) {
-                            return mkpat$1(/* Ppat_lazy */Block.__(12, [p]));
+                            return mk$1(undefined, undefined, /* Ppat_lazy */Block.__(12, [p]));
                           }), results$4);
           default:
             return /* :: */[
-                    mkpat$1(/* Ppat_any */0),
+                    mk$1(undefined, undefined, /* Ppat_any */0),
                     /* [] */0
                   ];
         }
@@ -53250,20 +53523,11 @@ function validate_name(s) {
   
 }
 
-function new_global_var(name, param) {
-  var name$1 = validate_name(name);
-  return newty2(global_level[0], /* Tvar */Block.__(0, [name$1]));
-}
-
-function newvar$1(name, param) {
-  return newvar(validate_name(name), /* () */0);
-}
-
 function transl_type_param(env, styp) {
   var loc = styp[/* ptyp_loc */1];
   var match = styp[/* ptyp_desc */0];
   if (typeof match === "number") {
-    var ty = new_global_var("_", /* () */0);
+    var ty = new_global_var(validate_name("_"), /* () */0);
     return /* record */[
             /* ctyp_desc : Ttyp_any */0,
             /* ctyp_type */ty,
@@ -53297,7 +53561,7 @@ function transl_type_param(env, styp) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        var v = new_global_var(name, /* () */0);
+        var v = new_global_var(validate_name(name), /* () */0);
         type_variables[0] = add$5(name, v, type_variables[0]);
         ty$1 = v;
       } else {
@@ -53315,7 +53579,7 @@ function transl_type_param(env, styp) {
 }
 
 function new_pre_univar(name, param) {
-  var v = newvar$1(name, /* () */0);
+  var v = newvar(validate_name(name), /* () */0);
   pre_univars[0] = /* :: */[
     v,
     pre_univars[0]
@@ -53367,7 +53631,7 @@ function transl_type(env, policy, styp) {
               /* Unbound_type_variable */Block.__(0, ["_"])
             ];
       }
-      ty = newvar$1(undefined, /* () */0);
+      ty = newvar(validate_name(undefined), /* () */0);
     }
     return ctyp(/* Ttyp_any */0, ty);
   } else {
@@ -53393,7 +53657,7 @@ function transl_type(env, policy, styp) {
               }
               catch (exn$1){
                 if (exn$1 === Caml_builtin_exceptions.not_found) {
-                  var v = policy === /* Univars */2 ? new_pre_univar(name, /* () */0) : newvar$1(name, /* () */0);
+                  var v = policy === /* Univars */2 ? new_pre_univar(name, /* () */0) : newvar(validate_name(name), /* () */0);
                   used_variables[0] = add$5(name, /* tuple */[
                         v,
                         styp[/* ptyp_loc */1]
@@ -53719,7 +53983,7 @@ function transl_type(env, policy, styp) {
                                   tmp
                                 ];
                         }), row[/* row_fields */0]);
-                  var row_001 = /* row_more */newvar$1(undefined, /* () */0);
+                  var row_001 = /* row_more */newvar(validate_name(undefined), /* () */0);
                   var row_005 = /* row_name *//* tuple */[
                     path$1,
                     ty_args
@@ -53809,7 +54073,7 @@ function transl_type(env, policy, styp) {
               if (principal[0]) {
                 begin_def(/* () */0);
               }
-              var t$2 = newvar$1(undefined, /* () */0);
+              var t$2 = newvar(validate_name(undefined), /* () */0);
               used_variables[0] = add$5(alias, /* tuple */[
                     t$2,
                     styp[/* ptyp_loc */1]
@@ -53885,7 +54149,7 @@ function transl_type(env, policy, styp) {
                     ],
                     /* [] */0
                   ],
-                  /* row_more */newvar$1(undefined, /* () */0),
+                  /* row_more */newvar(validate_name(undefined), /* () */0),
                   /* row_bound : () */0,
                   /* row_closed */true,
                   /* row_fixed */false,
@@ -54127,7 +54391,7 @@ function transl_type(env, policy, styp) {
                   }), present);
           }
           var row_000 = /* row_fields */List.rev(fields$2);
-          var row_001$1 = /* row_more */newvar$1(undefined, /* () */0);
+          var row_001$1 = /* row_more */newvar(validate_name(undefined), /* () */0);
           var row_003 = /* row_closed */closed === /* Closed */0;
           var row_005$1 = /* row_name */name$1[0];
           var row$3 = /* record */[
@@ -54168,7 +54432,7 @@ function transl_type(env, policy, styp) {
           var new_univars = List.map((function (name) {
                   return /* tuple */[
                           name,
-                          newvar$1(name, /* () */0)
+                          newvar(validate_name(name), /* () */0)
                         ];
                 }), vars);
           var old_univars = univars[0];
@@ -54212,7 +54476,7 @@ function transl_type(env, policy, styp) {
                   ty$10,
                   List.rev(ty_list)
                 ]));
-          unify_var(env, newvar$1(undefined, /* () */0), ty$prime);
+          unify_var(env, newvar(validate_name(undefined), /* () */0), ty$prime);
           return ctyp(/* Ttyp_poly */Block.__(8, [
                         vars,
                         cty$1
@@ -54293,7 +54557,7 @@ function transl_fields(loc, env, policy, seen, o, param) {
     if (policy >= 2) {
       return new_pre_univar(undefined, /* () */0);
     } else {
-      return newvar$1(undefined, /* () */0);
+      return newvar(validate_name(undefined), /* () */0);
     }
   } else {
     return newty2(current_level[0], /* Tnil */0);
@@ -54341,17 +54605,12 @@ function make_fixed_univars(ty) {
   }
 }
 
-function make_fixed_univars$1(ty) {
-  make_fixed_univars(ty);
-  return unmark_type(ty);
-}
-
 function globalize_used_variables(env, fixed) {
   var r = /* record */[/* contents : [] */0];
   iter$2((function (name, param) {
           var loc = param[1];
           var ty = param[0];
-          var v = new_global_var(undefined, /* () */0);
+          var v = new_global_var(validate_name(undefined), /* () */0);
           var snap = snapshot(/* () */0);
           var tmp;
           try {
@@ -54384,7 +54643,7 @@ function globalize_used_variables(env, fixed) {
                         /* Unbound_type_variable */Block.__(0, ["'" + name])
                       ];
                 }
-                var v2 = new_global_var(undefined, /* () */0);
+                var v2 = new_global_var(validate_name(undefined), /* () */0);
                 r[0] = /* :: */[
                   /* tuple */[
                     loc,
@@ -54430,7 +54689,9 @@ function transl_simple_type(env, fixed, styp) {
   used_variables[0] = /* Empty */0;
   var typ = transl_type(env, fixed ? /* Fixed */0 : /* Extensible */1, styp);
   globalize_used_variables(env, fixed)(/* () */0);
-  make_fixed_univars$1(typ[/* ctyp_type */1]);
+  var ty = typ[/* ctyp_type */1];
+  make_fixed_univars(ty);
+  unmark_type(ty);
   return typ;
 }
 
@@ -54466,7 +54727,9 @@ function transl_simple_type_univars(env, styp) {
                   ];
           }
         }), /* [] */0, pre_univars[0]);
-  make_fixed_univars$1(typ[/* ctyp_type */1]);
+  var ty = typ[/* ctyp_type */1];
+  make_fixed_univars(ty);
+  unmark_type(ty);
   return /* record */[
           /* ctyp_desc */typ[/* ctyp_desc */0],
           /* ctyp_type */instance(undefined, env, newty2(100000000, /* Tpoly */Block.__(10, [
@@ -54483,7 +54746,9 @@ function transl_simple_type_delayed(env, styp) {
   univars[0] = /* [] */0;
   used_variables[0] = /* Empty */0;
   var typ = transl_type(env, /* Extensible */1, styp);
-  make_fixed_univars$1(typ[/* ctyp_type */1]);
+  var ty = typ[/* ctyp_type */1];
+  make_fixed_univars(ty);
+  unmark_type(ty);
   return /* tuple */[
           typ,
           globalize_used_variables(env, false)
@@ -56478,13 +56743,18 @@ var type_kind = "record";
 
 function get_type_path$1(env, d) {
   var match = d[/* lbl_res */1][/* desc */0];
-  var exit = 0;
-  if (typeof match === "number" || match.tag !== 3) {
-    exit = 1;
-  } else {
+  if (typeof match === "number") {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "typecore.ml",
+            602,
+            11
+          ]
+        ];
+  } else if (match.tag === 3) {
     return match[0];
-  }
-  if (exit === 1) {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -56494,7 +56764,6 @@ function get_type_path$1(env, d) {
           ]
         ];
   }
-  
 }
 
 function lookup_from_type(env, tpath, lid) {
@@ -57034,13 +57303,18 @@ var type_kind$1 = "variant";
 
 function get_type_path$2(env, d) {
   var match = d[/* cstr_res */1][/* desc */0];
-  var exit = 0;
-  if (typeof match === "number" || match.tag !== 3) {
-    exit = 1;
-  } else {
+  if (typeof match === "number") {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "typecore.ml",
+            602,
+            11
+          ]
+        ];
+  } else if (match.tag === 3) {
     return match[0];
-  }
-  if (exit === 1) {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -57050,7 +57324,6 @@ function get_type_path$2(env, d) {
           ]
         ];
   }
-  
 }
 
 function lookup_from_type$1(env, tpath, lid) {
@@ -58973,7 +59246,7 @@ function check_absent_variant(env) {
                         return /* () */0;
                       } else {
                         var ty_arg = arg !== undefined ? /* :: */[
-                            duplicate_type(arg[/* pat_type */3]),
+                            type_expr(identity, arg[/* pat_type */3]),
                             /* [] */0
                           ] : /* [] */0;
                         var row$prime_000 = /* row_fields : :: */[
@@ -59004,7 +59277,7 @@ function check_absent_variant(env) {
                                     /* pat_type */newty2(current_level[0], /* Tvariant */Block.__(8, [row$prime])),
                                     /* pat_env */pat[/* pat_env */4],
                                     /* pat_attributes */pat[/* pat_attributes */5]
-                                  ], duplicate_type(pat[/* pat_type */3]));
+                                  ], type_expr(identity, pat[/* pat_type */3]));
                       }
                     }
                   }), param);
@@ -59023,7 +59296,7 @@ function duplicate_ident_types(loc, caselist, env) {
                   var path = match[0];
                   switch (path.tag | 0) {
                     case 0 : 
-                        var desc_000 = /* val_type */duplicate_type(desc[/* val_type */0]);
+                        var desc_000 = /* val_type */type_expr(identity, desc[/* val_type */0]);
                         var desc_001 = /* val_kind */desc[/* val_kind */1];
                         var desc_002 = /* val_loc */desc[/* val_loc */2];
                         var desc_003 = /* val_attributes */desc[/* val_attributes */3];
@@ -60146,15 +60419,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 /* Invalid_for_loop_index */6
               ];
         } else {
-          var partial_arg = (function (s) {
-              return /* Unused_for_index */Block.__(19, [s]);
-            });
-          var partial_arg$1 = function (param, param$1, param$2, param$3, param$4, param$5) {
-            return store_value(partial_arg, param, param$1, param$2, param$3, param$4, param$5);
-          };
-          match$36 = (function (param, param$1, param$2) {
-                return enter(partial_arg$1, param, param$1, param$2);
-              })(match$35[0][/* txt */0], /* record */[
+          match$36 = enter_value((function (s) {
+                    return /* Unused_for_index */Block.__(19, [s]);
+                  }))(match$35[0][/* txt */0], /* record */[
                 /* val_type */instance_def(type_int),
                 /* val_kind : Val_reg */0,
                 /* val_loc */loc,
@@ -62217,9 +62484,9 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
   var has_gadts = List.exists((function (param) {
           return contains_gadt(env, param);
         }), patterns);
-  var ty_arg$1 = (has_gadts || erase_either) && !principal[0] ? duplicate_type(ty_arg) : ty_arg;
+  var ty_arg$1 = (has_gadts || erase_either) && !principal[0] ? type_expr(identity, ty_arg) : ty_arg;
   var match = has_gadts && !principal[0] ? /* tuple */[
-      duplicate_type(ty_res),
+      type_expr(identity, ty_res),
       duplicate_ident_types(loc, caselist, env)
     ] : /* tuple */[
       ty_res,
@@ -62333,7 +62600,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
             generalize_structure$1(current_level[0], ty);
             ty_res$prime = ty;
           } else {
-            ty_res$prime = contains_gadt(env$2, param$1[/* pc_lhs */0]) ? duplicate_type(ty_res$1) : ty_res$1;
+            ty_res$prime = contains_gadt(env$2, param$1[/* pc_lhs */0]) ? type_expr(identity, ty_res$1) : ty_res$1;
           }
           var guard = pc_guard !== undefined ? type_expect(undefined, ext_env, wrap_unpacks(pc_guard, unpacks), type_bool) : undefined;
           var exp = type_expect(in_function$1, ext_env, sexp, ty_res$prime);
@@ -66989,15 +67256,9 @@ function transl_value_decl(env, loc, valdecl) {
       /* val_attributes */valdecl[/* pval_attributes */3]
     ];
   }
-  var partial_arg = (function (s) {
-      return /* Unused_value_declaration */Block.__(16, [s]);
-    });
-  var partial_arg$1 = function (param, param$1, param$2, param$3, param$4, param$5) {
-    return store_value(partial_arg, param, param$1, param$2, param$3, param$4, param$5);
-  };
-  var match = (function (param, param$1, param$2) {
-        return enter(partial_arg$1, param, param$1, param$2);
-      })(valdecl[/* pval_name */0][/* txt */0], v, env);
+  var match = enter_value((function (s) {
+            return /* Unused_value_declaration */Block.__(16, [s]);
+          }))(valdecl[/* pval_name */0][/* txt */0], v, env);
   var desc_000 = /* val_id */match[0];
   var desc_001 = /* val_name */valdecl[/* pval_name */0];
   var desc_004 = /* val_prim */valdecl[/* pval_prim */2];
@@ -68341,35 +68602,30 @@ function scrape_class_type(_cty) {
   };
 }
 
-function generalize_class_type(vars) {
-  var partial_arg = vars ? generalize : generalize_structure$2;
-  return (function (param) {
-      var gen = partial_arg;
-      var _param = param;
-      while(true) {
-        var param$1 = _param;
-        switch (param$1.tag | 0) {
-          case 0 : 
-              List.iter(gen, param$1[1]);
-              _param = param$1[2];
-              continue ;
-          case 1 : 
-              var match = param$1[0];
-              Curry._1(gen, match[/* csig_self */0]);
-              iter$1((function (param, param$1) {
-                      return Curry._1(gen, param$1[2]);
-                    }), match[/* csig_vars */1]);
-              return List.iter((function (param) {
-                            return List.iter(gen, param[1]);
-                          }), match[/* csig_inher */3]);
-          case 2 : 
-              Curry._1(gen, param$1[1]);
-              _param = param$1[2];
-              continue ;
-          
-        }
-      };
-    });
+function generalize_class_type(gen, _param) {
+  while(true) {
+    var param = _param;
+    switch (param.tag | 0) {
+      case 0 : 
+          List.iter(gen, param[1]);
+          _param = param[2];
+          continue ;
+      case 1 : 
+          var match = param[0];
+          Curry._1(gen, match[/* csig_self */0]);
+          iter$1((function (param, param$1) {
+                  return Curry._1(gen, param$1[2]);
+                }), match[/* csig_vars */1]);
+          return List.iter((function (param) {
+                        return List.iter(gen, param[1]);
+                      }), match[/* csig_inher */3]);
+      case 2 : 
+          Curry._1(gen, param[1]);
+          _param = param[2];
+          continue ;
+      
+    }
+  };
 }
 
 function virtual_methods(sign) {
@@ -68544,15 +68800,12 @@ function rc(node) {
 }
 
 function enter_met_env(check, loc, lab, kind, ty, val_env, met_env, par_env) {
-  var param = /* record */[
-    /* val_type */ty,
-    /* val_kind : Val_unbound */1,
-    /* val_loc */loc,
-    /* val_attributes : [] */0
-  ];
-  var match = enter((function (param, param$1, param$2, param$3, param$4, param$5) {
-          return store_value(undefined, param, param$1, param$2, param$3, param$4, param$5);
-        }), lab, param, val_env);
+  var match = enter_value(undefined)(lab, /* record */[
+        /* val_type */ty,
+        /* val_kind : Val_unbound */1,
+        /* val_loc */loc,
+        /* val_attributes : [] */0
+      ], val_env);
   var id = match[0];
   return /* tuple */[
           id,
@@ -68973,7 +69226,7 @@ function class_signature$1(env, param) {
           switch (match.tag | 0) {
             case 0 : 
                 var sparent = match[0];
-                var parent = class_type$2(env$1, sparent);
+                var parent = class_type$3(env$1, sparent);
                 var match$1 = parent[/* cltyp_type */1];
                 var inher$1;
                 switch (match$1.tag | 0) {
@@ -69112,7 +69365,7 @@ function class_signature$1(env, param) {
         ];
 }
 
-function class_type$2(env, scty) {
+function class_type$3(env, scty) {
   var cltyp = function (desc, typ) {
     return /* record */[
             /* cltyp_desc */desc,
@@ -69191,7 +69444,7 @@ function class_type$2(env, scty) {
         var l = match[0];
         var cty = transl_simple_type(env, false, match[1]);
         var ty = cty[/* ctyp_type */1];
-        var clty = class_type$2(env, match[2]);
+        var clty = class_type$3(env, match[2]);
         var typ_002$1 = clty[/* cltyp_type */1];
         var typ$2 = /* Cty_arrow */Block.__(2, [
             l,
@@ -69212,9 +69465,9 @@ function class_type$2(env, scty) {
   }
 }
 
-function class_type$3(env, scty) {
+function class_type$4(env, scty) {
   delayed_meth_specs[0] = /* [] */0;
-  var cty = class_type$2(env, scty);
+  var cty = class_type$3(env, scty);
   List.iter((function (prim) {
           var tag = prim.tag | 0;
           if (tag === 250) {
@@ -70214,7 +70467,9 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var cl$2 = class_expr(cl_num, val_env, met_env, match[0]);
           if (principal[0]) {
             end_def(/* () */0);
-            generalize_class_type(false)(cl$2[/* cl_type */2]);
+            ((function (param) {
+                    return generalize_class_type(generalize_structure$2, param);
+                  })(cl$2[/* cl_type */2]));
           }
           var nonopt_labels = function (_ls, _ty_fun) {
             while(true) {
@@ -70555,7 +70810,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var cl$4 = class_expr(cl_num, val_env, met_env, match[0]);
           widen(context);
           var context$1 = narrow(/* () */0);
-          var clty$1 = class_type$3(val_env, match[1]);
+          var clty$1 = class_type$4(val_env, match[1]);
           widen(context$1);
           end_def(/* () */0);
           limited_generalize$1(row_variable(repr(signature_of_class_type(cl$4[/* cl_type */2])[/* csig_self */0])), cl$4[/* cl_type */2]);
@@ -71152,7 +71407,9 @@ function type_classes(define_class, approx, kind, env, cls) {
             throw exn;
           }
           List.iter(generalize, clty[/* cty_params */0]);
-          generalize_class_type(true)(clty[/* cty_type */1]);
+          ((function (param) {
+                  return generalize_class_type(generalize, param);
+                })(clty[/* cty_type */1]));
           may(generalize, clty[/* cty_new */3]);
           List.iter(generalize, obj_abbr[/* type_params */0]);
           may(generalize, obj_abbr[/* type_manifest */4]);
@@ -71330,7 +71587,7 @@ function class_declaration$2(env, sexpr) {
 }
 
 function class_description(env, sexpr) {
-  var expr = class_type$3(env, sexpr);
+  var expr = class_type$4(env, sexpr);
   return /* tuple */[
           expr,
           expr[/* cltyp_type */1]
@@ -71566,7 +71823,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[This class expression is not a class structure; it has type@ %a@]"
-                                                            ]), class_type$1, param$1[0]);
+                                                            ]), class_type$2, param$1[0]);
                                           case 3 : 
                                               return Format.fprintf(ppf$1, /* Format */[
                                                           /* String_literal */Block.__(11, [
@@ -72623,11 +72880,6 @@ function type_open$1(toplevel, env, sod) {
           match[1],
           od
         ];
-}
-
-function rm(node) {
-  record$2(/* Ti_mod */Block.__(3, [node]));
-  return node;
 }
 
 var type_module_type_of_fwd = /* record */[/* contents */(function (env, m) {
@@ -73802,7 +74054,7 @@ function transl_modtype$1(env, smty) {
         return mkmty$1(/* Tmty_with */Block.__(3, [
                       body,
                       List.rev(match$2[0])
-                    ]), freshen(/* Mty_signature */Block.__(1, [match$2[1]])), env, loc, smty[/* pmty_attributes */2]);
+                    ]), modtype(identity, /* Mty_signature */Block.__(1, [match$2[1]])), env, loc, smty[/* pmty_attributes */2]);
     case 4 : 
         var match$3 = Curry._2(type_module_type_of_fwd[0], env, match[0]);
         return mkmty$1(/* Tmty_typeof */Block.__(4, [match$3[0]]), match$3[1], env, loc, smty[/* pmty_attributes */2]);
@@ -74775,17 +75027,17 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           /* mod_env */env,
           md_004
         ];
-        var tmp;
+        var node;
         if (alias && !is_functor_arg(path, env)) {
           add_required_global(head(path));
-          tmp = md;
+          node = md;
         } else {
           var mty = find_module(false, path, env)[/* md_type */0];
           var exit = 0;
           if (mty.tag === 3 && !alias) {
             var p1 = normalize_path$1(smod[/* pmod_loc */1], env, mty[0]);
             var mty$1 = expand_module_alias(env, /* [] */0, p1);
-            tmp = /* record */[
+            node = /* record */[
               /* mod_desc : Tmod_constraint */Block.__(4, [
                   md,
                   mty$1,
@@ -74805,7 +75057,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           }
           if (exit === 1) {
             var mty$2 = sttn ? strengthen$1(env, mty, path) : mty;
-            tmp = /* record */[
+            node = /* record */[
               md_000,
               md_001,
               /* mod_type */mty$2,
@@ -74815,22 +75067,28 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           }
           
         }
-        return rm(tmp);
+        record$2(/* Ti_mod */Block.__(3, [node]));
+        return node;
     case 1 : 
         var match$1 = type_structure(undefined, funct_body, anchor, env, match[0], smod[/* pmod_loc */1]);
         var sg = match$1[1];
-        var md$1 = rm(/* record */[
-              /* mod_desc : Tmod_structure */Block.__(1, [match$1[0]]),
-              /* mod_loc */smod[/* pmod_loc */1],
-              /* mod_type : Mty_signature */Block.__(1, [sg]),
-              /* mod_env */env,
-              /* mod_attributes */smod[/* pmod_attributes */2]
-            ]);
+        var node_000 = /* mod_desc : Tmod_structure */Block.__(1, [match$1[0]]);
+        var node_001 = /* mod_loc */smod[/* pmod_loc */1];
+        var node_002 = /* mod_type : Mty_signature */Block.__(1, [sg]);
+        var node_004 = /* mod_attributes */smod[/* pmod_attributes */2];
+        var node$1 = /* record */[
+          node_000,
+          node_001,
+          node_002,
+          /* mod_env */env,
+          node_004
+        ];
+        record$2(/* Ti_mod */Block.__(3, [node$1]));
         var sg$prime = simplify_signature(sg);
         if (List.length(sg$prime) === List.length(sg)) {
-          return md$1;
+          return node$1;
         } else {
-          return wrap_constraint(implicit_coercion(env), md$1, /* Mty_signature */Block.__(1, [sg$prime]), /* Tmodtype_implicit */0);
+          return wrap_constraint(implicit_coercion(env), node$1, /* Mty_signature */Block.__(1, [sg$prime]), /* Tmodtype_implicit */0);
         }
     case 2 : 
         var name = match[0];
@@ -74853,22 +75111,28 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
         var match$3 = match$2[0];
         var id = match$3[0];
         var body = type_module$1(undefined, sttn, match$2[1], undefined, match$3[1], match[2]);
-        return rm(/* record */[
-                    /* mod_desc : Tmod_functor */Block.__(2, [
-                        id,
-                        name,
-                        mty$3,
-                        body
-                      ]),
-                    /* mod_loc */smod[/* pmod_loc */1],
-                    /* mod_type : Mty_functor */Block.__(2, [
-                        id,
-                        ty_arg,
-                        body[/* mod_type */2]
-                      ]),
-                    /* mod_env */env,
-                    /* mod_attributes */smod[/* pmod_attributes */2]
-                  ]);
+        var node_000$1 = /* mod_desc : Tmod_functor */Block.__(2, [
+            id,
+            name,
+            mty$3,
+            body
+          ]);
+        var node_001$1 = /* mod_loc */smod[/* pmod_loc */1];
+        var node_002$1 = /* mod_type : Mty_functor */Block.__(2, [
+            id,
+            ty_arg,
+            body[/* mod_type */2]
+          ]);
+        var node_004$1 = /* mod_attributes */smod[/* pmod_attributes */2];
+        var node$2 = /* record */[
+          node_000$1,
+          node_001$1,
+          node_002$1,
+          /* mod_env */env,
+          node_004$1
+        ];
+        record$2(/* Ti_mod */Block.__(3, [node$2]));
+        return node$2;
     case 3 : 
         var sarg = match[1];
         var sfunct = match[0];
@@ -74938,17 +75202,22 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
               throw exn$1;
             }
           }
-          return rm(/* record */[
-                      /* mod_desc : Tmod_apply */Block.__(3, [
-                          funct,
-                          arg,
-                          coercion
-                        ]),
-                      /* mod_loc */smod[/* pmod_loc */1],
-                      /* mod_type */mty_appl,
-                      /* mod_env */env,
-                      /* mod_attributes */smod[/* pmod_attributes */2]
-                    ]);
+          var node_000$2 = /* mod_desc : Tmod_apply */Block.__(3, [
+              funct,
+              arg,
+              coercion
+            ]);
+          var node_001$2 = /* mod_loc */smod[/* pmod_loc */1];
+          var node_004$2 = /* mod_attributes */smod[/* pmod_attributes */2];
+          var node$3 = /* record */[
+            node_000$2,
+            node_001$2,
+            /* mod_type */mty_appl,
+            /* mod_env */env,
+            node_004$2
+          ];
+          record$2(/* Ti_mod */Block.__(3, [node$3]));
+          return node$3;
         } else {
           throw [
                 $$Error$10,
@@ -74961,13 +75230,20 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
         var arg$1 = type_module$1(alias, true, funct_body, anchor, env, match[0]);
         var mty$4 = transl_modtype$1(env, match[1]);
         var init = wrap_constraint(env, arg$1, mty$4[/* mty_type */1], /* Tmodtype_explicit */[mty$4]);
-        return rm(/* record */[
-                    /* mod_desc */init[/* mod_desc */0],
-                    /* mod_loc */smod[/* pmod_loc */1],
-                    /* mod_type */init[/* mod_type */2],
-                    /* mod_env */init[/* mod_env */3],
-                    /* mod_attributes */smod[/* pmod_attributes */2]
-                  ]);
+        var node_000$3 = /* mod_desc */init[/* mod_desc */0];
+        var node_001$3 = /* mod_loc */smod[/* pmod_loc */1];
+        var node_002$2 = /* mod_type */init[/* mod_type */2];
+        var node_003 = /* mod_env */init[/* mod_env */3];
+        var node_004$3 = /* mod_attributes */smod[/* pmod_attributes */2];
+        var node$4 = /* record */[
+          node_000$3,
+          node_001$3,
+          node_002$2,
+          node_003,
+          node_004$3
+        ];
+        record$2(/* Ti_mod */Block.__(3, [node$4]));
+        return node$4;
     case 5 : 
         if (principal[0]) {
           begin_def(/* () */0);
@@ -75029,16 +75305,21 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
                 /* Not_allowed_in_functor_body */1
               ];
         }
-        return rm(/* record */[
-                    /* mod_desc : Tmod_unpack */Block.__(5, [
-                        exp,
-                        mty$5
-                      ]),
-                    /* mod_loc */smod[/* pmod_loc */1],
-                    /* mod_type */mty$5,
-                    /* mod_env */env,
-                    /* mod_attributes */smod[/* pmod_attributes */2]
-                  ]);
+        var node_000$4 = /* mod_desc : Tmod_unpack */Block.__(5, [
+            exp,
+            mty$5
+          ]);
+        var node_001$4 = /* mod_loc */smod[/* pmod_loc */1];
+        var node_004$4 = /* mod_attributes */smod[/* pmod_attributes */2];
+        var node$5 = /* record */[
+          node_000$4,
+          node_001$4,
+          /* mod_type */mty$5,
+          /* mod_env */env,
+          node_004$4
+        ];
+        record$2(/* Ti_mod */Block.__(3, [node$5]));
+        return node$5;
     case 6 : 
         throw [
               Error_forward$3,
@@ -75550,32 +75831,36 @@ function type_structure$1(param, param$1, param$2) {
   return type_structure(undefined, false, undefined, param, param$1, param$2);
 }
 
-function normalize_signature_item(env, param) {
-  switch (param.tag | 0) {
-    case 0 : 
-        return normalize_type(env, param[1][/* val_type */0]);
-    case 3 : 
-        var env$1 = env;
-        var _param = param[1][/* md_type */0];
-        while(true) {
-          var param$1 = _param;
-          switch (param$1.tag | 0) {
-            case 1 : 
-                return List.iter((function (param) {
-                              return normalize_signature_item(env$1, param);
-                            }), param$1[0]);
-            case 2 : 
-                _param = param$1[2];
-                continue ;
-            case 0 : 
-            case 3 : 
-                return /* () */0;
-            
-          }
-        };
-    default:
-      return /* () */0;
-  }
+function normalize_signature(env) {
+  return (function (param) {
+      return List.iter((function (param) {
+                    var env$1 = env;
+                    var param$1 = param;
+                    switch (param$1.tag | 0) {
+                      case 0 : 
+                          return normalize_type(env$1, param$1[1][/* val_type */0]);
+                      case 3 : 
+                          var env$2 = env$1;
+                          var _param = param$1[1][/* md_type */0];
+                          while(true) {
+                            var param$2 = _param;
+                            switch (param$2.tag | 0) {
+                              case 1 : 
+                                  return normalize_signature(env$2)(param$2[0]);
+                              case 2 : 
+                                  _param = param$2[2];
+                                  continue ;
+                              case 0 : 
+                              case 3 : 
+                                  return /* () */0;
+                              
+                            }
+                          };
+                      default:
+                        return /* () */0;
+                    }
+                  }), param);
+    });
 }
 
 function type_module_type_of(env, smod) {
@@ -75586,16 +75871,22 @@ function type_module_type_of(env, smod) {
   } else {
     var lid = match[0];
     var match$1 = find_module$1(env, smod[/* pmod_loc */1], lid[/* txt */0]);
-    tmty = rm(/* record */[
-          /* mod_desc : Tmod_ident */Block.__(0, [
-              match$1[0],
-              lid
-            ]),
-          /* mod_loc */smod[/* pmod_loc */1],
-          /* mod_type */match$1[1][/* md_type */0],
-          /* mod_env */env,
-          /* mod_attributes */smod[/* pmod_attributes */2]
-        ]);
+    var node_000 = /* mod_desc : Tmod_ident */Block.__(0, [
+        match$1[0],
+        lid
+      ]);
+    var node_001 = /* mod_loc */smod[/* pmod_loc */1];
+    var node_002 = /* mod_type */match$1[1][/* md_type */0];
+    var node_004 = /* mod_attributes */smod[/* pmod_attributes */2];
+    var node = /* record */[
+      node_000,
+      node_001,
+      node_002,
+      /* mod_env */env,
+      node_004
+    ];
+    record$2(/* Ti_mod */Block.__(3, [node]));
+    tmty = node;
   }
   var mty = tmty[/* mod_type */2];
   var mty$1 = remove_aliases$1(env, mty);
@@ -75811,9 +76102,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                     return /* () */0;
                 }
               }), str[/* str_items */0]);
-        List.iter((function (param) {
-                return normalize_signature_item(finalenv, param);
-              }), simple_sg);
+        normalize_signature(finalenv)(simple_sg);
         var coercion$1 = compunit(initial_env, sourcefile, sg, "(inferred signature)", simple_sg);
         force_delayed_checks(/* () */0);
         if (!dont_write_files[0]) {

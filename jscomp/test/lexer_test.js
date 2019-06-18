@@ -50,7 +50,7 @@ var lexer_suites_000 = /* tuple */[
   "arith_token",
   (function (param) {
       return /* Eq */Block.__(0, [
-                f("x + 3 + 4 + y"),
+                get_tokens(Arith_lexer.lexeme, "x + 3 + 4 + y"),
                 /* :: */[
                   /* IDENT */Block.__(1, ["x"]),
                   /* :: */[

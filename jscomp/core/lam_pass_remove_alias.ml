@@ -32,9 +32,9 @@ let id_is_for_sure_true_in_boolean (tbl : Lam_stats.ident_tbl) id =
   | Some (Normal_optional _ )
   | Some (MutableBlock _) -> true
   | Some 
-    (Constant _  | Module _ | FunctionId _ | Exception | Parameter | NA
-    | OptionalBlock(_, (Undefined | Null | Null_undefined))
-    )
+      (Constant _  | Module _ | FunctionId _ | Exception | Parameter | NA
+      | OptionalBlock(_, (Undefined | Null | Null_undefined))
+      )
 
   | None -> false
 
@@ -47,25 +47,25 @@ let simplify_alias
     match lam with 
     | Lvar v ->
       begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
-      | None -> lam
-      | Some v ->
-        if Ident.persistent v then 
-          Lam.global_module v 
-        else 
-         Lam.var v 
-        (* This is wrong
-            currently alias table has info 
-            include -> Array
+        | None -> lam
+        | Some v ->
+          if Ident.persistent v then 
+            Lam.global_module v 
+          else 
+            Lam.var v 
+            (* This is wrong
+                currently alias table has info 
+                include -> Array
 
-            however, (field id Array/xx) 
-            does not result in a reduction, so we 
-            still pick the old one (field id include)
-            which makes dead code elimination wrong
-         *)
+                however, (field id Array/xx) 
+                does not result in a reduction, so we 
+                still pick the old one (field id include)
+                which makes dead code elimination wrong
+            *)
       end
-      (* GLOBAL module needs to be propogated *)
+    (* GLOBAL module needs to be propogated *)
     | Llet (kind, k, (Lglobal_module i as g), l )
-           -> 
+      -> 
       (* This is detection of global MODULE inclusion
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
@@ -77,68 +77,68 @@ let simplify_alias
       *)
       let v = simpl l in
       Lam.let_ kind k g v
-        (* in this case it is preserved, but will still be simplified 
-            for the inner expression
-        *)
-      
+    (* in this case it is preserved, but will still be simplified 
+        for the inner expression
+    *)
+
     | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       begin match  simpl  arg with 
-      | Lglobal_module g 
-      ->    
-        Lam.prim 
-          ~primitive:(Pfield(i,Lam_compat.Fld_na))
-          ~args:[Lam.global_module g ]
-          loc
-      | Lvar v as l-> 
-        Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
-         v  i meta.ident_tbl 
-      | _ ->  
-        Lam.prim ~primitive ~args:[simpl arg] loc 
+        | Lglobal_module g 
+          ->    
+          Lam.prim 
+            ~primitive:(Pfield(i,Lam_compat.Fld_na))
+            ~args:[Lam.global_module g ]
+            loc
+        | Lvar v as l-> 
+          Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
+            v  i meta.ident_tbl 
+        | _ ->  
+          Lam.prim ~primitive ~args:[simpl arg] loc 
       end
     | Lprim {primitive = Pval_from_option | Pval_from_option_not_nest; args = [Lvar v]} as x -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl v with 
-      | Some (OptionalBlock (l,_)) -> l
-      | _ -> x 
+        | Some (OptionalBlock (l,_)) -> l
+        | _ -> x 
       end 
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
       -> Lam.prim ~primitive ~args:(Ext_list.map args simpl) loc
-    
+
     | Lifthenelse(Lprim {primitive = Pis_not_none; args =  [Lvar id ]} as l1, l2, l3) 
       -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
-      | Some (ImmutableBlock ( _) | (MutableBlock _  ) 
-      | Normal_optional _)
-        -> simpl l2 
-      | Some (OptionalBlock(l, Null)) -> 
-        Lam.if_ 
-        (Lam.not_ (Location.none) ( Lam.prim ~primitive:Pis_null ~args:[l] Location.none)) 
-        (simpl l2) (simpl l3)
-      | Some (OptionalBlock(l, Undefined)) -> 
-        Lam.if_
-        (Lam.not_  Location.none (Lam.prim ~primitive:Pis_undefined ~args:[l] Location.none))
-        (simpl l2)   (simpl l3)
-      | Some (OptionalBlock(l, Null_undefined)) -> 
-        Lam.if_
-        (Lam.not_ Location.none
-              ( Lam.prim ~primitive:Pis_null_undefined  ~args:[l] Location.none) )  
-        (simpl l2) (simpl l3)
-      | Some _
-      | None -> Lam.if_ l1 (simpl l2) (simpl l3)
+        | Some (ImmutableBlock ( _) | (MutableBlock _  ) 
+               | Normal_optional _)
+          -> simpl l2 
+        | Some (OptionalBlock(l, Null)) -> 
+          Lam.if_ 
+            (Lam.not_ (Location.none) ( Lam.prim ~primitive:Pis_null ~args:[l] Location.none)) 
+            (simpl l2) (simpl l3)
+        | Some (OptionalBlock(l, Undefined)) -> 
+          Lam.if_
+            (Lam.not_  Location.none (Lam.prim ~primitive:Pis_undefined ~args:[l] Location.none))
+            (simpl l2)   (simpl l3)
+        | Some (OptionalBlock(l, Null_undefined)) -> 
+          Lam.if_
+            (Lam.not_ Location.none
+               ( Lam.prim ~primitive:Pis_null_undefined  ~args:[l] Location.none) )  
+            (simpl l2) (simpl l3)
+        | Some _
+        | None -> Lam.if_ l1 (simpl l2) (simpl l3)
       end
-      (* could be the code path
-        {[ match x with 
-          | h::hs -> 
-        ]}
-      *)             
+    (* could be the code path
+       {[ match x with 
+         | h::hs -> 
+       ]}
+    *)             
     | Lifthenelse (l1, l2, l3) -> 
       begin match l1 with 
-      | Lvar id when id_is_for_sure_true_in_boolean meta.ident_tbl id-> 
-        simpl l2 
-      | _ -> 
-        Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
+        | Lvar id when id_is_for_sure_true_in_boolean meta.ident_tbl id-> 
+          simpl l2 
+        | _ -> 
+          Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
       end   
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
@@ -146,14 +146,14 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = Ext_list.map_snd  bindings simpl in 
       Lam.letrec bindings (simpl body) 
- 
+
     (* complicated 
         1. inline this function
         2. ...
         exports.Make=
         function(funarg)
-      {var $$let=Make(funarg);
-        return [0, $$let[5],... $$let[16]]}
+    {var $$let=Make(funarg);
+      return [0, $$let[5],... $$let[16]]}
     *)      
     | Lapply{fn = 
                Lprim {primitive = Pfield (index, _) ;
@@ -161,27 +161,27 @@ let simplify_alias
                       _} as l1;
              args; loc ; status} ->
       begin
-             match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
-              | {closed_lambda=Some Lfunction{params; body; _} } 
-                (** be more cautious when do cross module inlining *)
-                when
-                    Ext_list.same_length params args &&
-                    Ext_list.for_all args (fun arg ->
-                        match arg with 
-                        | Lvar p -> 
-                          begin 
-                            match Ident_hashtbl.find_opt meta.ident_tbl p with
-                            | Some v  -> v <> Parameter
-                            | None -> true 
-                          end
-                        |  _ -> true 
-                      ) -> 
-                simpl @@
-                Lam_beta_reduce.propogate_beta_reduce
-                  meta params body args
-              | _ -> 
-                Lam.apply (simpl l1) (Ext_list.map args simpl) loc status
-            
+        match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
+        | {closed_lambda=Some Lfunction{params; body; _} } 
+          (** be more cautious when do cross module inlining *)
+          when
+            Ext_list.same_length params args &&
+            Ext_list.for_all args (fun arg ->
+                match arg with 
+                | Lvar p -> 
+                  begin 
+                    match Ident_hashtbl.find_opt meta.ident_tbl p with
+                    | Some v  -> v <> Parameter
+                    | None -> true 
+                  end
+                |  _ -> true 
+              ) -> 
+          simpl @@
+          Lam_beta_reduce.propogate_beta_reduce
+            meta params body args
+        | _ -> 
+          Lam.apply (simpl l1) (Ext_list.map args simpl) loc status
+
 
       end
     (* Function inlining interact with other optimizations...
@@ -198,14 +198,14 @@ let simplify_alias
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
         | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
-                    rec_flag)
-                     })
+                                          rec_flag)
+                           })
           -> 
-        
+
           if Ext_list.same_length args params (* && false *)
           then               
             if Lam_inline_util.maybe_functor v.name  
-              (* && (Ident_set.mem v meta.export_idents) && false *)
+            (* && (Ident_set.mem v meta.export_idents) && false *)
             then 
               (* TODO: check l1 if it is exported, 
                  if so, maybe not since in that case, 
@@ -222,25 +222,25 @@ let simplify_alias
               Lam_analysis.ok_to_inline_fun_when_app ~body params args 
             then 
 
-                (* let param_map =  *)
-                (*   Lam_analysis.free_variables meta.export_idents  *)
-                (*     (Lam_analysis.param_map_of_list params) body in *)
-                (* let old_count = List.length params in *)
-                (* let new_count = Ident_map.cardinal param_map in *)
-                let param_map = 
-                  Lam_closure.is_closed_with_map 
-                    meta.export_idents params body in
-                let is_export_id = Ident_set.mem meta.export_idents v in
-                match is_export_id, param_map with 
-                | false, (_, param_map)
-                | true, (true, param_map) -> 
-                  if rec_flag = Rec then               
-                    Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
-                  else 
-                    simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
-                | _ -> normal ()
+              (* let param_map =  *)
+              (*   Lam_analysis.free_variables meta.export_idents  *)
+              (*     (Lam_analysis.param_map_of_list params) body in *)
+              (* let old_count = List.length params in *)
+              (* let new_count = Ident_map.cardinal param_map in *)
+              let param_map = 
+                Lam_closure.is_closed_with_map 
+                  meta.export_idents params body in
+              let is_export_id = Ident_set.mem meta.export_idents v in
+              match is_export_id, param_map with 
+              | false, (_, param_map)
+              | true, (true, param_map) -> 
+                if rec_flag = Rec then               
+                  Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
+                else 
+                  simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
+              | _ -> normal ()
             else 
-                normal ()
+              normal ()
           else
             normal ()
         | Some _
@@ -270,17 +270,17 @@ let simplify_alias
                    sw_numconsts;
                   }) ->
       Lam.switch (simpl  l)
-               {sw_consts = 
-                  Ext_list.map_snd  sw_consts simpl;
-                sw_blocks = Ext_list.map_snd sw_blocks simpl;
-                sw_numconsts;
-                sw_numblocks;
-                sw_failaction = Ext_option.map sw_failaction simpl
-                }
+        {sw_consts = 
+           Ext_list.map_snd  sw_consts simpl;
+         sw_blocks = Ext_list.map_snd sw_blocks simpl;
+         sw_numconsts;
+         sw_numblocks;
+         sw_failaction = Ext_option.map sw_failaction simpl
+        }
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (simpl  l )
-                    (Ext_list.map_snd  sw simpl)
-                    (Ext_option.map d simpl)
+        (Ext_list.map_snd  sw simpl)
+        (Ext_option.map d simpl)
     | Lstaticraise (i,ls) -> 
       Lam.staticraise i (Ext_list.map ls simpl )
     | Lstaticcatch (l1, ids, l2) -> 
