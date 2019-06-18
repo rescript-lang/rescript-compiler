@@ -1377,6 +1377,7 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
+  | Bs_fragile_external of string           (* 105 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -1482,6 +1483,7 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
+  | Bs_fragile_external of string           (* 105 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -1546,9 +1548,10 @@ let number = function
   | Bs_polymorphic_comparison -> 102
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
+  | Bs_fragile_external _ -> 105
 ;;
 
-let last_warning_number = 104
+let last_warning_number = 105
 (* Must be the max number returned by the [number] function. *)
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -1818,6 +1821,8 @@ let message = function
       "BuckleScript FFI warning: " ^ s
   | Bs_derive_warning s ->
       "BuckleScript bs.deriving warning: " ^ s 
+  | Bs_fragile_external s ->     
+      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
 ;;
 
 let nerrors = ref 0;;

@@ -2705,6 +2705,7 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
+  | Bs_fragile_external of string           (* 105 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -2810,6 +2811,7 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
+  | Bs_fragile_external of string           (* 105 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -2874,9 +2876,10 @@ let number = function
   | Bs_polymorphic_comparison -> 102
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
+  | Bs_fragile_external _ -> 105
 ;;
 
-let last_warning_number = 104
+let last_warning_number = 105
 (* Must be the max number returned by the [number] function. *)
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -3146,6 +3149,8 @@ let message = function
       "BuckleScript FFI warning: " ^ s
   | Bs_derive_warning s ->
       "BuckleScript bs.deriving warning: " ^ s 
+  | Bs_fragile_external s ->     
+      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
 ;;
 
 let nerrors = ref 0;;
@@ -11856,10 +11861,6 @@ val warn_literal_overflow : Location.t -> unit
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
 
-val warn_fragile_external_name:  
-  Location.t -> 
-  string ->
-  unit 
 end = struct
 #1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11959,19 +11960,7 @@ let warn_literal_overflow loc =
     Format.pp_print_flush warning_formatter ()  
   end 
 
-(**
-    external x : .. = "";
-    the name is inferred from x
-*)
-let warn_fragile_external_name loc s = 
-  if not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc
-        (s ^": the external name is inferred from val name is unsafe from refactoring when changing value name");
-      Format.pp_print_flush warning_formatter ()
 
-      
-    end 
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
@@ -17707,14 +17696,14 @@ let get_opt_arg_type
 type bundle_source =
   [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
   |`Nm_external of string (* from "" in external *)
-  | `Nm_val of string   (* from function name *)
+  | `Nm_val of string lazy_t   (* from function name *)
   ]
 
 let string_of_bundle_source (x : bundle_source) =
   match x with
   | `Nm_payload x
   | `Nm_external x
-  | `Nm_val x -> x
+  | `Nm_val lazy x -> x
 
 
 type name_source =
@@ -17781,6 +17770,7 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 (* The processed attributes will be dropped *)
 let parse_external_attributes
     (no_arguments : bool)   
+    (prim_name_check : string)
     (prim_name_or_pval_prim: bundle_source )
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
@@ -17859,8 +17849,13 @@ let parse_external_attributes
             | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
-            | "bs.set_index" -> {st with set_index = true}
-            | "bs.get_index"-> 
+            | "bs.set_index" -> 
+              if String.length prim_name_check <> 0 then 
+                Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+              {st with set_index = true}
+            | "bs.get_index"->               
+              if String.length prim_name_check <> 0 then
+                Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
@@ -18054,7 +18049,6 @@ let process_obj
 let external_desc_of_non_obj 
     (loc : Location.t) 
     (st : external_desc) 
-    (prim_name_check : string) 
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
@@ -18079,8 +18073,6 @@ let external_desc_of_non_obj
 
     }
     ->
-    if String.length prim_name_check <> 0 then
-      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
     else
@@ -18104,8 +18096,6 @@ let external_desc_of_non_obj
      mk_obj;
      return_wrapper ;
     } ->
-    if String.length prim_name_check <> 0 then
-      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
     else Location.raise_errorf ~loc
@@ -18146,7 +18136,7 @@ let external_desc_of_non_obj
     end
   | {module_as_val = Some x; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+  | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
      external_module_name;
@@ -18168,7 +18158,7 @@ let external_desc_of_non_obj
   | {call_name = #bundle_source ; _ }
     ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      call_name = `Nm_na ;
@@ -18222,7 +18212,7 @@ let external_desc_of_non_obj
       *)
       Js_var { name; external_module_name; scopes}
     else  Js_call {splice; name; external_module_name; scopes}
-  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_send = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      splice;
      scopes;
      val_send_pipe = None;
@@ -18280,7 +18270,7 @@ let external_desc_of_non_obj
   | {val_send_pipe = Some _ ; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
 
-  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {new_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      val_name = `Nm_na  ;
@@ -18300,7 +18290,7 @@ let external_desc_of_non_obj
     -> Js_new {name; external_module_name;  scopes}
   | {new_name = #bundle_source ; _ } ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {set_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -18322,7 +18312,7 @@ let external_desc_of_non_obj
     else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
   | {set_name = #bundle_source; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {get_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
 
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
@@ -18383,7 +18373,8 @@ let handle_attributes
     Location.raise_errorf
       ~loc "[@@bs.uncurry] can not be applied to the whole definition";
   let prim_name_or_pval_name =
-    if String.length prim_name = 0 then  `Nm_val pval_name
+    if String.length prim_name = 0 then  
+      `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
     else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
@@ -18395,7 +18386,7 @@ let handle_attributes
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  
-      prim_name_or_pval_name  prim_attributes in
+      prim_name prim_name_or_pval_name  prim_attributes in
   if external_desc.mk_obj then
     (* warn unused attributes here ? *)
     let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
@@ -18478,7 +18469,7 @@ let handle_attributes
         )  in
     let ffi : External_ffi_types.external_spec  = 
       external_desc_of_non_obj 
-        loc external_desc prim_name prim_name_or_pval_name arg_type_specs_length 
+        loc external_desc prim_name_or_pval_name arg_type_specs_length 
         arg_types_ty arg_type_specs in 
     let relative = External_ffi_types.check_ffi ~loc ffi in 
     (* result type can not be labeled *)
