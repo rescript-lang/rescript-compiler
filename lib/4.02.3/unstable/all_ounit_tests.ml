@@ -8157,7 +8157,7 @@ let suites =
     end;
      __LOC__ >:: begin fun _ ->
       let should_be_warning =
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "" [@@bs.val] |} in
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
         OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
                                    should_be_warning.stderr "Unused")
@@ -8182,7 +8182,7 @@ external ff :
       let should_err = bsc_check_eval {|
     external v3 :
     int -> int -> (int -> int -> int [@bs.uncurry])
-    = ""[@@bs.val]
+    = "v3"[@@bs.val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err;*)
@@ -8220,7 +8220,7 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] ) = "" [@@bs.val]
+      external mk : int -> ([`a|`b] ) = "mk" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
       (* give a warning or ?
@@ -8232,7 +8232,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
+      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
     end
@@ -8240,7 +8240,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
+      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -8339,7 +8339,7 @@ external ff :
   (
     [`a|`b]
      [@bs.string]
-  ) = "" [@@bs.val]
+  ) = "mk" [@@bs.val]
     |} in
     (* Ounit_cmd_util.debug_output should_err ;  *)
     OUnit.assert_bool __LOC__
@@ -10160,7 +10160,7 @@ let output = bsc_eval {|
         let output = bsc_eval {|
     external err : 
    ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> unit = "" [@@bs.val]
+   unit -> unit = "err" [@@bs.val]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
@@ -10173,7 +10173,7 @@ let output = bsc_eval {|
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "" [@@bs.val]
+              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "err" [@@bs.val]
             |}
           in
           OUnit.assert_bool __LOC__
