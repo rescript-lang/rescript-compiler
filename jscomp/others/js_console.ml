@@ -42,7 +42,7 @@ external error4 : 'a -> 'b -> 'c -> 'd -> unit = "error"
 external errorMany : 'a array -> unit = "error"
 [@@bs.val] [@@bs.scope "console"] [@@bs.splice]
 
-external trace : unit -> unit = "" [@@bs.val] [@@bs.scope "console"]
+external trace : unit -> unit = "trace" [@@bs.val] [@@bs.scope "console"]
 
 external timeStart : string -> unit = 
   "time" [@@bs.val] [@@bs.scope "console"]

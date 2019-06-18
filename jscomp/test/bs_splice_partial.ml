@@ -24,7 +24,7 @@ external on_exit_slice3 :
 *)    
 
 
-external hi : int array -> int option = ""
+external hi : int array -> int option = "hi"
     [@@bs.splice] [@@bs.return {null_to_opt}]
     [@@bs.send.pipe:int]
 
@@ -35,7 +35,7 @@ let test_hi x =
     | Some y -> Js.log y ; 2
 
 
-external hi__2 : int array -> int option = ""
+external hi__2 : int array -> int option = "hi__2"
     [@@bs.splice] [@@bs.return nullable ]
     [@@bs.send.pipe:int]
 
@@ -46,12 +46,12 @@ let test_hi__2 x =
 
 type id = int -> int 
 
-external cb : string -> int array -> id = ""    
+external cb : string -> int array -> id = "cb"    
     [@@bs.splice] [@@bs.send.pipe: int]
 
 
 type id2 = int -> int [@bs]
-external cb2 : string -> int array -> id2 = ""    
+external cb2 : string -> int array -> id2 = "cb2"    
     [@@bs.splice] [@@bs.send.pipe: int]
 
 
@@ -62,7 +62,7 @@ let test_cb x =
 
 
 type u = int -> int [@bs]
-external v : u = "" [@@bs.val]
+external v : u = "v" [@@bs.val]
 
 let f  x = 
     ignore @@ (v x [@bs]) 

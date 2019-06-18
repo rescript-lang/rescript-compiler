@@ -40,19 +40,19 @@ external map2 :
 
 external ff : 
     int -> (int [@bs.ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 
-    = "" [@@bs.val]
+    = "ff" [@@bs.val]
 
 external ff1 : 
     int -> (_ [@bs.as 3 ]) -> (int -> int -> int [@bs.uncurry]) -> int 
-    = "" [@@bs.val]
+    = "ff1" [@@bs.val]
 
 
 external ff2 : 
     int -> (_ [@bs.as "3" ]) -> (int -> int -> int [@bs.uncurry]) -> int 
-    = "" [@@bs.val]
+    = "ff2" [@@bs.val]
 
 external
- hi: (unit -> unit [@bs.uncurry 0]) -> int = "" [@@bs.val]
+ hi: (unit -> unit [@bs.uncurry 0]) -> int = "hi" [@@bs.val]
 
 (** 
 fun (_){
@@ -106,7 +106,7 @@ let h6 x =
 type elem
 external optional_cb : 
     (string -> ?props:elem -> int array -> elem [@bs.uncurry] (* This should emit a warning ? *)
-    ) -> string -> int = "" [@@bs.val]
+    ) -> string -> int = "optional_cb" [@@bs.val]
 
 
 
@@ -202,6 +202,6 @@ let unit_magic () =
 
 let f_unit_magic  = unit_magic ()
 
-external f_0002 :  string  -> int array ->  unit = "" [@@bs.splice] [@@bs.val]
+external f_0002 :  string  -> int array ->  unit = "f_0002" [@@bs.splice] [@@bs.val]
 
 let hh xs = f_0002 xs 

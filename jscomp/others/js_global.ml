@@ -55,7 +55,7 @@ let cancel () =
 
 @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval> MDN
 *)
-external clearInterval : intervalId -> unit = "" [@@bs.val]
+external clearInterval : intervalId -> unit = "clearInterval" [@@bs.val]
 
 
 (** Clear a timeout started by {! setTimeout}
@@ -74,7 +74,7 @@ let procrastinate mins =
 
 @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout> MDN
 *)
-external clearTimeout : timeoutId -> unit = "" [@@bs.val]
+external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 
 
 (** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
@@ -95,7 +95,7 @@ let _ =
   Js.Global.setInterval tick 1000
 ]}
 *)
-external setInterval : (unit -> unit) -> int -> intervalId = "" [@@bs.val]
+external setInterval : (unit -> unit) -> int -> intervalId = "setInterval" [@@bs.val]
 
 (** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
 
@@ -133,7 +133,7 @@ let _ =
   Js.Global.setTimeout (fun () -> Js.log message) 1000
 ]}
 *)
-external setTimeout : (unit -> unit) -> int -> timeoutId = "" [@@bs.val]
+external setTimeout : (unit -> unit) -> int -> timeoutId = "setTimeout" [@@bs.val]
 
 (** Execute a callback after a specified delay (in milliseconds)
 
@@ -156,24 +156,24 @@ external setTimeoutFloat : (unit -> unit) -> float -> timeoutId = "setTimeout" [
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI> MDN
 *)
-external encodeURI : string -> string = "" [@@bs.val]
+external encodeURI : string -> string = "encodeURI" [@@bs.val]
 
 
 (** Decodes a URL-enmcoded string produced by [encodeURI]
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI> MDN
 *)
-external decodeURI : string -> string = "" [@@bs.val]
+external decodeURI : string -> string = "decodeURI" [@@bs.val]
 
 (** URL-encodes a string, including characters with special meaning in a URI.
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent> MDN
 *)
-external encodeURIComponent : string -> string = "" [@@bs.val]
+external encodeURIComponent : string -> string = "encodeURIComponent" [@@bs.val]
 
 
 (** Decodes a URL-enmcoded string produced by [encodeURIComponent]
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent> MDN
 *)
-external decodeURIComponent : string -> string = "" [@@bs.val]
+external decodeURIComponent : string -> string = "decodeURIComponent" [@@bs.val]

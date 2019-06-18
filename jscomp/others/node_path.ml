@@ -24,13 +24,13 @@
 
 (** Node Path API *)
 
-external basename : string -> string = "" [@@bs.module "path"]
+external basename : string -> string = "basename" [@@bs.module "path"]
 external basename_ext : string -> string -> string  =
   "basename" [@@bs.module "path"]
 
-external delimiter : string = "" [@@bs.module "path"]
+external delimiter : string = "delimiter" [@@bs.module "path"]
 
-external dirname : string -> string = "" [@@bs.module "path"]
+external dirname : string -> string = "dirname" [@@bs.module "path"]
 
 external dirname_ext : string -> string -> string = "dirname" [@@bs.module "path"]
 
@@ -43,29 +43,29 @@ type pathObject =
          ext : string          
        >            
   ]  
-external format : pathObject -> string = "" [@@bs.module "path"]
+external format : pathObject -> string = "format" [@@bs.module "path"]
 
-external isAbsolute : string -> bool = "" [@@bs.module "path"]
+external isAbsolute : string -> bool = "isAbsolute" [@@bs.module "path"]
 
 (* TODO: improve after we support [@bs.rest] calling convention  *)
 external join2 : string -> string -> string = "join" [@@bs.module "path"]
 
-external join : string array -> string = "" 
+external join : string array -> string = "join" 
 [@@bs.module "path"]  [@@bs.splice]
    
-external normalize : string -> string = "" [@@bs.module "path"]
+external normalize : string -> string = "normalize" [@@bs.module "path"]
 
 (* TODO: check if there is an exception raised *)
-external parse : string -> pathObject = "" [@@bs.module "path"]
+external parse : string -> pathObject = "parse" [@@bs.module "path"]
 
 (* TODO: provide bindings to [path.posix]*)
 
 external relative : from:string -> to_:string -> unit -> string =
-  "" [@@bs.module "path"]
+  "relative" [@@bs.module "path"]
 
 (* TODO: improve after rest calling convention *)
-external resolve : string -> string -> string = "" [@@bs.module "path"]
+external resolve : string -> string -> string = "resolve" [@@bs.module "path"]
 
-external sep : string = "" [@@bs.module "path"]
+external sep : string = "sep" [@@bs.module "path"]
 
 (* TODO: provides [path.win32] *)

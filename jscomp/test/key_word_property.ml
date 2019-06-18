@@ -6,7 +6,7 @@ external default :   t = "default" [@@bs.module "some-es6-module"]
 
 let default  = default
 type window
-external window : window = "" [@@bs.val] [@@bs.module "vscode"]
+external window : window = "window" [@@bs.val] [@@bs.module "vscode"]
 
 let window = window
 let mk window default = [%obj{window; default ; }]
@@ -21,7 +21,7 @@ let case = 3
 
 let test =  [%obj{case ; window = 3}]
 
-external switch : window -> string = "" [@@bs.send]
+external switch : window -> string = "switch" [@@bs.send]
 
 let u () = switch window
 

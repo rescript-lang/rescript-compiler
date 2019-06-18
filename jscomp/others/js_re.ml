@@ -61,10 +61,10 @@ external matches : result -> string array = "%identity"
 [@@deprecated "Use Js.Re.captures instead"]
 
 (** 0-based index of the match in the input string *)
-external index : result -> int = "" [@@bs.get]
+external index : result -> int = "index" [@@bs.get]
 
 (** the original input string *)
-external input : result -> string = "" [@@bs.get]
+external input : result -> string = "input" [@@bs.get]
 
 
 (** Constructs a RegExp object ({! t}) from a string
@@ -103,13 +103,13 @@ Valid flags:
 external fromStringWithFlags : string -> flags:string -> t = "RegExp" [@@bs.new]
 
 (** returns the enabled flags as a string *)
-external flags : t -> string = "" [@@bs.get]
+external flags : t -> string = "flags" [@@bs.get]
 
 (** returns a bool indicating whether the [global] flag is set *)
-external global : t -> bool = "" [@@bs.get]
+external global : t -> bool = "global" [@@bs.get]
 
 (** returns a bool indicating whether the [ignoreCase] flag is set *)
-external ignoreCase : t -> bool = "" [@@bs.get]
+external ignoreCase : t -> bool = "ignoreCase" [@@bs.get]
 
 (** returns the index where the next match will start its search
 
@@ -135,22 +135,22 @@ done
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex> MDN
 *)
-external lastIndex : t -> int = "" [@@bs.get]
+external lastIndex : t -> int = "lastIndex" [@@bs.get]
 
 (** sets the index at which the next match will start its search from *)
 external setLastIndex : t -> int -> unit = "lastIndex" [@@bs.set]
 
 (** returns a bool indicating whether the [multiline] flag is set *)
-external multiline : t -> bool = "" [@@bs.get]
+external multiline : t -> bool = "multiline" [@@bs.get]
 
 (** returns the pattern as a string *)
-external source : t -> string = "" [@@bs.get]
+external source : t -> string = "source" [@@bs.get]
 
 (** returns a bool indicating whether the [sticky] flag is set *)
-external sticky : t -> bool = "" [@@bs.get]
+external sticky : t -> bool = "sticky" [@@bs.get]
 
 (** returns a bool indicating whether the [unicode] flag is set *)
-external unicode : t -> bool = "" [@@bs.get]
+external unicode : t -> bool = "unicode" [@@bs.get]
 
 (** executes a search on a given string using the given RegExp object
 
@@ -171,7 +171,7 @@ let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
 external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return null_to_opt]
 
 (** @deprecated please use {!exec_} instead *)
-external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
+external exec : string -> result option = "exec" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
 [@@ocaml.deprecated "please use Js.Re.exec_ instead"]
 
 (** tests whether the given RegExp object will match a given string
@@ -197,5 +197,5 @@ external test_ : t -> string -> bool = "test" [@@bs.send]
 (**
   @deprecated please use {!test_} instead
 *)
-external test : string -> bool = "" [@@bs.send.pipe: t]
+external test : string -> bool = "test" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use Js.Re.test_ instead"]

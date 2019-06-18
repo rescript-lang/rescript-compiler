@@ -9,7 +9,7 @@ module WebpackDevMiddlewareConfig: Config = struct
   external configx : Js.Json.t = "../../../webpack.middleware.config.js" [@@bs.module]
 end
 
-external configX : unit ->  Js.Json.t = ""
+external configX : unit ->  Js.Json.t = "configX"
 [@@bs.module  "../../../webpack.middleware.config.js"]
 [@@bs.val]
 
@@ -17,18 +17,18 @@ let configX = configX
 module U  : sig 
   val configX : unit -> Js.Json.t 
 end = struct 
-    external configX : unit -> Js.Json.t =  ""
+    external configX : unit -> Js.Json.t =  "configX"
     [@@bs.module "../../../webpack.config.js" ]
     [@@bs.val]
 end
  external hey : unit -> unit  = "xx" [@@bs.module "List"] 
 module A = struct 
-  external ff : unit -> unit = "" [@@bs.module "reactX", "List" ]
-  external ff2 : unit -> unit = "" [@@bs.module "reactX", "List" ]
+  external ff : unit -> unit = "ff" [@@bs.module "reactX", "List" ]
+  external ff2 : unit -> unit = "ff2" [@@bs.module "reactX", "List" ]
 end
 module B = struct 
-  external ff : unit -> unit = "" [@@bs.module "reactV", "List"]
-  external ff2 : unit -> unit = "" [@@bs.module "reactV", "List"]
+  external ff : unit -> unit = "ff" [@@bs.module "reactV", "List"]
+  external ff2 : unit -> unit = "ff2" [@@bs.module "reactV", "List"]
 end
 
 let f ()   = A.ff , A.ff2,  B.ff, B.ff2
@@ -37,4 +37,4 @@ let f ()   = A.ff , A.ff2,  B.ff, B.ff2
  ;; List.length [1;2] , List.length []
 
 type t 
-external ff : unit -> t = "" [@@bs.module "./local"]
+external ff : unit -> t = "ff" [@@bs.module "./local"]

@@ -1,7 +1,7 @@
 
 type element
 type dom
-external getElementById : string -> element option = "" 
+external getElementById : string -> element option = "getElementById" 
 [@@bs.send.pipe:dom] [@@bs.return {null_to_opt}]
 
 let test dom = 

@@ -44,7 +44,7 @@ let _ = Js.log \@\@ Js.Int.toExponential 77
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
 *)
-external toExponential : int -> string = "" [@@bs.send]
+external toExponential : int -> string = "toExponential" [@@bs.send]
 
 (** Formats an [int] using exponential (scientific) notation
 
@@ -86,7 +86,7 @@ let _ = Js.log \@\@ Js.Int.toPrecision 123456789
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
 *)
-external toPrecision : int -> string = "" [@@bs.send] (* equivalent to `toString` I think *)
+external toPrecision : int -> string = "toPrecision" [@@bs.send] (* equivalent to `toString` I think *)
 
 (** Formats an [int] using some fairly arbitrary rules
 
@@ -130,7 +130,7 @@ let _ = Js.log \@\@ Js.Int.toString 123456789
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
 *)
-external toString : int -> string = "" [@@bs.send]
+external toString : int -> string = "toString" [@@bs.send]
 
 (** Formats an [int] as a string
 

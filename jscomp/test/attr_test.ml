@@ -33,7 +33,7 @@ let max2 : float -> float -> float [@bs] =
 
 let hh = max2 1. 2. [@bs]
 
-external des : string -> (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
+external des : string -> (unit -> unit [@bs.uncurry]) -> unit = "des" [@@bs.val]
 
 let f x = 
   des x (fun () -> Js.log "hei")

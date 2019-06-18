@@ -9,5 +9,5 @@ and Point : sig
   val add : t -> t -> t 
 end = struct
   type t
-  external add : t -> t -> t = "" [@@bs.send]
+  external add : t -> t -> t = "add" [@@bs.send]
 end

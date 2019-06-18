@@ -29,7 +29,7 @@ type option
 external option : ?cwd:string -> ?encoding:string -> unit -> option = "" [@@bs.obj]
 
 (* TODO: when no option it would return buffer  *)
-external execSync : string -> option -> string = "" [@@bs.module "child_process"]
+external execSync : string -> option -> string = "execSync" [@@bs.module "child_process"]
 
 (* Note we have to make it abstract type, since if you declare it as
    [ < pid : float > Js.t ], then you will create other external
@@ -38,7 +38,7 @@ external execSync : string -> option -> string = "" [@@bs.module "child_process"
 type spawnResult
 
 
-external spawnSync : string -> spawnResult = "" [@@bs.module "child_process"]
+external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
 
 external readAs : spawnResult -> 
   < pid : int ; 

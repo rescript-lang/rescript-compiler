@@ -19,7 +19,7 @@ external min_int : int -> int -> int = "min" [@@bs.val] [@@bs.scope "Math"]
 let min_int = min_int
 
 type t 
-external say : int -> int = ""[@@bs.send.pipe:t]
+external say : int -> int = "say"[@@bs.send.pipe:t]
 
 let say = say
 

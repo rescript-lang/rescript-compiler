@@ -9,7 +9,7 @@ let eq loc x y =
 
 type element
 type dom
-external getElementById : string -> element option = ""
+external getElementById : string -> element option = "getElementById"
 [@@bs.send.pipe:dom] [@@bs.return nullable] 
 
 let test dom =

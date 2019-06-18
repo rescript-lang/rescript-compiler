@@ -17,4 +17,4 @@ external opt_make :
   "" [@@bs.obj]
 
 
-external f : int -> int = "" [@@genType.import "hh"]  
+external f : int -> int = "f" [@@genType.import "hh"]  

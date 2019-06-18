@@ -30,13 +30,13 @@ exception Error = Caml_js_exceptions.Error
 external asJsExn : exn -> t option = 
   "caml_as_js_exn"
 
-external stack : t -> string option = ""
+external stack : t -> string option = "stack"
   [@@bs.get] 
-external message : t -> string option = ""
+external message : t -> string option = "message"
   [@@bs.get] 
-external name : t -> string option = ""
+external name : t -> string option = "name"
   [@@bs.get] 
-external fileName : t -> string option = ""
+external fileName : t -> string option = "fileName"
   [@@bs.get] 
 
 type error

@@ -8,7 +8,7 @@ external on :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   'self = 
-  "" [@@bs.send.pipe:readline as 'self]
+  "on" [@@bs.send.pipe:readline as 'self]
 let u rl =
   rl
   |> on (`line (fun [@bs] x -> Js.log x ))
@@ -17,7 +17,7 @@ let u rl =
 
 
 
-external send : string -> 'self   = "" [@@bs.send.pipe: [%bs.obj: < hi : int > ] as 'self]
+external send : string -> 'self   = "send" [@@bs.send.pipe: [%bs.obj: < hi : int > ] as 'self]
 
 
 let xx h : int  =

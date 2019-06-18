@@ -40,7 +40,7 @@ therefore necessary to test for [_NaN].
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
 *)
-external isNaN : float -> bool = "" [@@bs.val]
+external isNaN : float -> bool = "isNaN" [@@bs.val]
 
 (** Tests if the given value is finite
 
@@ -62,7 +62,7 @@ let _ = Js.Float.isFinite 1234
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite> MDN
 *)
-external isFinite : float -> bool = "" [@@bs.val]
+external isFinite : float -> bool = "isFinite" [@@bs.val]
 
 (** Formats a [float] using exponential (scientific) notation
 
@@ -80,7 +80,7 @@ let _ = Js.log \@\@ Js.Float.toExponential 77.
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
 *)
-external toExponential : float -> string = "" [@@bs.send]
+external toExponential : float -> string = "toExponential" [@@bs.send]
 
 (** Formats a [float] using exponential (scientific) notation
 
@@ -118,7 +118,7 @@ let _ = Js.log \@\@ Js.Float.toFixed 1.2e21
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed> MDN
 *)
-external toFixed : float -> string = "" [@@bs.send]
+external toFixed : float -> string = "toFixed" [@@bs.send]
 
 (** Formats a [float] using fixed point notation
 
@@ -163,7 +163,7 @@ let _ = Js.log \@\@ Js.Float.toPrecision 1.2e21
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
 *)
-external toPrecision : float -> string = "" [@@bs.send] (* equivalent to `toString` I think *)
+external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent to `toString` I think *)
 
 (** Formats a [float] using some fairly arbitrary rules
 
@@ -207,7 +207,7 @@ let _ = Js.log \@\@ Js.Float.toString 12345.6789
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
 *)
-external toString : float -> string = "" [@@bs.send]
+external toString : float -> string = "toString" [@@bs.send]
 
 (** Formats a [float] as a string
 
