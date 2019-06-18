@@ -41,7 +41,7 @@ let output = bsc_eval {|
         let output = bsc_eval {|
     external err : 
    ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> unit = "" [@@bs.val]
+   unit -> unit = "err" [@@bs.val]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
@@ -54,7 +54,7 @@ let output = bsc_eval {|
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "" [@@bs.val]
+              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "err" [@@bs.val]
             |}
           in
           OUnit.assert_bool __LOC__

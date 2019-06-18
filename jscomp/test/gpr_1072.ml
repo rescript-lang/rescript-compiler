@@ -139,7 +139,7 @@ let v_mk7   :  < y : int > Js.t list   = [
 ]
 
 
-external again : ?x__ignore:([`a|`b][@bs.string]) -> int -> unit = "" [@@bs.val]
+external again : ?x__ignore:([`a|`b][@bs.string]) -> int -> unit = "again" [@@bs.val]
 
 let () =
      again ~x__ignore:`a 3 ;
@@ -147,12 +147,12 @@ let () =
      again ?x__ignore:None 3 ;
      again ?x__ignore:(ignore 3 ; None) 3 
 
-external again2 : x__ignore:([`a|`b][@bs.string]) -> int -> unit = "" [@@bs.val]
+external again2 : x__ignore:([`a|`b][@bs.string]) -> int -> unit = "again2" [@@bs.val]
 
 let () = 
     again2 ~x__ignore:`a 3 
 
-external again3 : x__ignore:([`a|`b][@bs.ignore]) -> int -> unit = "" [@@bs.val]
+external again3 : x__ignore:([`a|`b][@bs.ignore]) -> int -> unit = "again3" [@@bs.val]
 
 let () = 
     again3 ~x__ignore:`a 3;

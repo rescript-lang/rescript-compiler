@@ -4,7 +4,7 @@ external on :
   foo ->
   ([`bar of unit -> unit
    | `foo of string -> unit ] [@bs.string]) ->
-   unit = "" [@@bs.send]
+   unit = "on" [@@bs.send]
 
 let on1 foo event =
   on foo event

@@ -75,7 +75,7 @@ external on :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   unit = 
-  "" [@@bs.send]
+  "on" [@@bs.send]
 
 
 let register readline = 
@@ -94,11 +94,11 @@ external on2 :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   unit = 
-  "" [@@bs.send]
+  "on2" [@@bs.send]
 
 external readFileSync :
   string -> ([`utf8 | `ascii] [@bs.string]) ->
-  string = ""
+  string = "readFileSync"
   [@@bs.module "fs"]
 
 let read name = 
@@ -107,7 +107,7 @@ let read name =
 module N = struct
   external readFileSync :
     string -> ([`utf8 | `ascii] [@bs.string]) ->
-    string = ""
+    string = "readFileSync"
       [@@bs.module "fs"]
   let read name = 
     readFileSync name `utf8
