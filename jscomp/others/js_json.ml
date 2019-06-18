@@ -112,7 +112,7 @@ external stringifyAny : 'a -> string option =
 "stringify" [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
-external null : t = "" [@@bs.val]
+external null : t = "null" [@@bs.val]
 external string : string -> t = "%identity"
 external number : float -> t = "%identity"
 external boolean : bool -> t = "%identity"

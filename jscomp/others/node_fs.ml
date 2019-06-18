@@ -31,9 +31,9 @@
     callback is used that rethrows errors. To get a trace to the original call
     site, set the `NODE_DEBUG` environment variable:
 *)
-external readdirSync : string -> string array  = "" [@@bs.module "fs"]
+external readdirSync : string -> string array  = "readdirSync" [@@bs.module "fs"]
 
-external renameSync : string -> string -> unit = "" [@@bs.module "fs"]
+external renameSync : string -> string -> unit = "renameSync" [@@bs.module "fs"]
 
 type fd = private int
 
@@ -57,7 +57,7 @@ module Watch = struct
     string ->
     ?config:config ->
     unit ->
-    t = ""
+    t = "watch"
   [@@bs.module "fs"]
   (** there is no need to accept listener, since we return a [watcher]
       back it can register event listener there .
@@ -71,7 +71,7 @@ module Watch = struct
       `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
     | `error of (unit -> unit [@bs])
     ] [@bs.string]
-    ) -> t = ""
+    ) -> t = "on"
   [@@bs.send.pipe: t]
   [@@ocaml.deprecated "Please use `Node.Fs.on_` instead "]
 
@@ -84,22 +84,22 @@ module Watch = struct
     ) ->
     t = "on"
     [@@bs.send]
-  external close :  t -> unit = "" [@@bs.send]
+  external close :  t -> unit = "close" [@@bs.send]
 end
 
-external ftruncateSync : fd -> int -> unit = "" [@@bs.module "fs"]
+external ftruncateSync : fd -> int -> unit = "ftruncateSync" [@@bs.module "fs"]
 
-external truncateSync : string -> int -> unit = "" [@@bs.module "fs"]
+external truncateSync : string -> int -> unit = "truncateSync" [@@bs.module "fs"]
 
-external chownSync : string -> uid:int -> gid:int -> unit = "" [@@bs.module "fs"]
+external chownSync : string -> uid:int -> gid:int -> unit = "chownSync" [@@bs.module "fs"]
 
-external fchownSync : fd -> uid:int -> gid:int -> unit = "" [@@bs.module "fs"]
+external fchownSync : fd -> uid:int -> gid:int -> unit = "fchownSync" [@@bs.module "fs"]
 
-external readlinkSync : string -> string  = "" [@@bs.module "fs"]
+external readlinkSync : string -> string  = "readlinkSync" [@@bs.module "fs"]
 
-external unlinkSync : string -> unit  = "" [@@bs.module "fs"]
+external unlinkSync : string -> unit  = "unlinkSync" [@@bs.module "fs"]
 
-external rmdirSync : string -> unit = ""  [@@bs.module "fs"]
+external rmdirSync : string -> unit = "rmdirSync"  [@@bs.module "fs"]
 
 (* TODO: [flags] support *)
 external openSync :
@@ -117,7 +117,7 @@ external openSync :
     | `Append_read [@bs.as "a+"]
     | `Append_read_fail_if_exists [@bs.as "ax+"]
     ] [@bs.string]) ->
-  unit = ""  [@@bs.module "fs"]
+  unit = "openSync"  [@@bs.module "fs"]
 
 
 external readFileSync :
@@ -141,7 +141,7 @@ external readFileAsUtf8Sync :
   string = "readFileSync"
 [@@bs.val] [@@bs.module "fs"]
 
-external existsSync : string -> bool = ""
+external existsSync : string -> bool = "existsSync"
 [@@bs.val] [@@bs.module "fs"]
 
 external writeFileSync :

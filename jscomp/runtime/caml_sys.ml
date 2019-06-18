@@ -46,8 +46,8 @@ external now : unit -> float = "" [@@bs.val "Date.now"]
 (* let caml_initial_time = now ()  *. 0.001 *)
 
 type process
-external uptime : process -> unit -> float = "" [@@bs.send]
-external exit : process -> int -> 'a =  ""  [@@bs.send]
+external uptime : process -> unit -> float = "uptime" [@@bs.send]
+external exit : process -> int -> 'a =  "exit"  [@@bs.send]
 
 let caml_sys_time () =
   if Js.typeof [%raw{|process|}] = "undefined" 
@@ -66,7 +66,7 @@ let caml_sys_random_seed () : nativeint array =
 
 type spawnResult
 
-external spawnSync : string -> spawnResult = "" [@@bs.module "child_process"]
+external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
 
 external readAs : spawnResult -> 
   < 
