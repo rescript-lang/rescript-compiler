@@ -176,14 +176,14 @@ let get_opt_arg_type
 type bundle_source =
   [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
   |`Nm_external of string (* from "" in external *)
-  | `Nm_val of string   (* from function name *)
+  | `Nm_val of string lazy_t   (* from function name *)
   ]
 
 let string_of_bundle_source (x : bundle_source) =
   match x with
   | `Nm_payload x
   | `Nm_external x
-  | `Nm_val x -> x
+  | `Nm_val lazy x -> x
 
 
 type name_source =
@@ -616,7 +616,7 @@ let external_desc_of_non_obj
     end
   | {module_as_val = Some x; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+  | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
      external_module_name;
@@ -638,7 +638,7 @@ let external_desc_of_non_obj
   | {call_name = #bundle_source ; _ }
     ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      call_name = `Nm_na ;
@@ -692,7 +692,7 @@ let external_desc_of_non_obj
       *)
       Js_var { name; external_module_name; scopes}
     else  Js_call {splice; name; external_module_name; scopes}
-  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_send = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      splice;
      scopes;
      val_send_pipe = None;
@@ -750,7 +750,7 @@ let external_desc_of_non_obj
   | {val_send_pipe = Some _ ; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
 
-  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {new_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      val_name = `Nm_na  ;
@@ -770,7 +770,7 @@ let external_desc_of_non_obj
     -> Js_new {name; external_module_name;  scopes}
   | {new_name = #bundle_source ; _ } ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {set_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -792,7 +792,7 @@ let external_desc_of_non_obj
     else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
   | {set_name = #bundle_source; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {get_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
 
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
@@ -853,7 +853,8 @@ let handle_attributes
     Location.raise_errorf
       ~loc "[@@bs.uncurry] can not be applied to the whole definition";
   let prim_name_or_pval_name =
-    if String.length prim_name = 0 then  `Nm_val pval_name
+    if String.length prim_name = 0 then  
+      `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
     else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)

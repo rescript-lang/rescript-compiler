@@ -95,22 +95,7 @@ let warn_literal_overflow loc =
     Format.pp_print_flush warning_formatter ()  
   end 
 
-(**
-    external x : .. = "";
-    the name is inferred from x
-*)
-let warn_fragile_external_name loc s = 
-  if not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc
-        (s ^": the external name is inferred from val name is unsafe from refactoring when changing value name");
-      Format.pp_print_flush warning_formatter ()
 
-#if 0 then
-      ;
-      Location.raise_errorf ~loc "ERROR"       
-#end      
-    end 
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
