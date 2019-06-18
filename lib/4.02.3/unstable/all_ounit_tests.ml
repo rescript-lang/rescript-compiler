@@ -18050,8 +18050,18 @@ val fun_ :
   expression -> 
   expression
 
-val is_arg_label_simple : 
-  arg_label -> bool   
+val opt_label : string -> arg_label
+
+val label_fun :
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+  label:arg_label ->
+  pattern ->
+  expression ->
+  expression
+
+val is_arg_label_simple :
+  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
@@ -18255,6 +18265,22 @@ let fun_
     pexp_desc = Pexp_fun(no_label,None, pat, exp)
   }
 
+let opt_label s =
+
+  "?" ^ s
+
+
+let label_fun
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ~label
+  pat
+  exp =
+  {
+    pexp_loc = loc;
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(label, None, pat, exp)
+  }
 
  
 

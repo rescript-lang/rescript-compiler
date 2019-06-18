@@ -25238,8 +25238,18 @@ val fun_ :
   expression -> 
   expression
 
-val is_arg_label_simple : 
-  arg_label -> bool   
+val opt_label : string -> arg_label
+
+val label_fun :
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+  label:arg_label ->
+  pattern ->
+  expression ->
+  expression
+
+val is_arg_label_simple :
+  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
@@ -25443,6 +25453,22 @@ let fun_
     pexp_desc = Pexp_fun(no_label,None, pat, exp)
   }
 
+let opt_label s =
+
+  "?" ^ s
+
+
+let label_fun
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ~label
+  pat
+  exp =
+  {
+    pexp_loc = loc;
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(label, None, pat, exp)
+  }
 
  
 
@@ -29776,6 +29802,11 @@ val warn_literal_overflow : Location.t -> unit
 
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
+
+val warn_fragile_external_name:  
+  Location.t -> 
+  string ->
+  unit 
 end = struct
 #1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -29874,6 +29905,20 @@ let warn_literal_overflow loc =
       "Integer literal exceeds the range of representable integers of type int";
     Format.pp_print_flush warning_formatter ()  
   end 
+
+(**
+    external x : .. = "";
+    the name is inferred from x
+*)
+let warn_fragile_external_name loc s = 
+  if not !Clflags.bs_quiet then
+    begin 
+      print_string_warning loc
+        (s ^": the external name is inferred from val name is unsafe from refactoring when changing value name");
+      Format.pp_print_flush warning_formatter ()
+
+      
+    end 
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
@@ -30848,6 +30893,8 @@ val iter_process_derive_type :
 
 val bs : attr
 val is_bs : attr -> bool
+val is_optional : attr -> bool
+val is_bs_as : attr -> bool
 
 
 
@@ -31215,6 +31262,15 @@ let is_bs (attr : attr) =
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
+let is_optional (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.optional"; _}, _ -> true
+  | _ -> false
+
+let is_bs_as (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.as"; _}, _ -> true
+  | _ -> false
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
@@ -39187,11 +39243,13 @@ let app_exp_mapper
           Ast_attributes.is_bs with
       | None -> default_expr_mapper self e
       | Some pexp_attributes ->
+
         {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                 pexp_attributes }
       
   
-  
+
+
 end
 module Ast_exp_extension : sig 
 #1 "ast_exp_extension.mli"
@@ -40041,6 +40099,8 @@ let newTdcls
       
 
 
+
+
 let handleTdclsInSigi
     (self : Bs_ast_mapper.mapper)
     (sigi : Parsetree.signature_item)
@@ -40055,7 +40115,9 @@ let handleTdclsInSigi
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
     let kind = Ast_derive_abstract.isAbstract actions in
     if kind <> Not_abstract then
+
       let  codes = Ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
+
       Ast_signature.fuseAll ~loc
         (
           Sig.include_ ~loc
@@ -40063,7 +40125,9 @@ let handleTdclsInSigi
                (Mty.typeof_ ~loc
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
+
                          Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
+
                          ] )
                      (Mty.signature ~loc [])) ) )
           :: (* include module type of struct [processed_code for checking like invariance ]end *)
@@ -40101,7 +40165,8 @@ let handleTdclsInStru
     in
     let kind = Ast_derive_abstract.isAbstract actions in 
     if kind <> Not_abstract then
-      let codes = 
+
+      let codes =
           Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
@@ -40109,6 +40174,8 @@ let handleTdclsInStru
           Ast_structure.constraint_ ~loc [newStr] []
           :: (* [include struct end : sig end] for error checking *)
           self.structure self codes)
+
+
     else
       Ast_structure.fuseAll ~loc
         (newStr ::
