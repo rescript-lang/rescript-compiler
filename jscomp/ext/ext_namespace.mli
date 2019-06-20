@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [make ~ns "a" ]
+(** [make ~ns:"Ns" "a" ]
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
@@ -31,11 +31,6 @@ val make : ns:string -> string -> string
 val try_split_module_name :
   string -> (string * string ) option
 
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
 
 
 (* Note  we have to output uncapitalized file Name, 

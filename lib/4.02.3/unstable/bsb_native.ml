@@ -737,6 +737,11 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -842,7 +847,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
@@ -1236,6 +1241,27 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
 
 let uncapitalize_ascii =
 
@@ -4840,8 +4866,6 @@ val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
-val suffix_mlastd : string
-val suffix_mliastd : string
 
 val suffix_mli : string 
 val suffix_cmt : string 
@@ -4970,8 +4994,6 @@ let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 (* let suffix_re_js = ".re.js" *)
@@ -9326,215 +9348,6 @@ let simple_convert_node_path_to_os_path =
 
 
 end
-module Ext_namespace : sig 
-#1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [make ~ns "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : ns:string -> string -> string 
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
-
-
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
-
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
-
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : file_kind -> string -> string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
-
-val namespace_of_package_name : string -> string
-
-end = struct
-#1 "ext_namespace.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
-
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
-
-let path_char = Filename.dir_sep.[0]
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
-    let char = String.unsafe_get s i in
-    if char = path_char then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
-
-let remove_ns_suffix name =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
-
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
-
-let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js
-  
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
-
-let js_name_of_modulename little s = 
-  match little with 
-  | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
-  | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
-  | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
-  | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    Buffer.add_char buf 
-      (if capital then 
-         (Ext_char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
-    if off >= len then ()
-    else 
-      let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Buffer.contents buf 
-
-end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9661,7 +9474,7 @@ val scan :
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
-  clean_staled_bs_js:bool -> 
+  bs_suffix:bool -> 
   ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t
@@ -9703,7 +9516,7 @@ end = struct
 
 type build_generator = Bsb_file_groups.build_generator
 
-type public = Bsb_file_groups.public 
+
 
 type file_group = Bsb_file_groups.file_group
 
@@ -9719,6 +9532,9 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
+let errorf x fmt = 
+  Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
+
 type cxt = {
   not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
@@ -9727,7 +9543,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  clean_staled_bs_js: bool;
+  bs_suffix: bool;
   ignored_dirs : String_set.t
 }
 
@@ -9741,16 +9557,14 @@ let collect_pub_modules
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
     match v with 
-    | Str { str ; loc }
+    | Str { str}
       -> 
       if String_map.mem cache str then 
         set := String_set.add !set str
       else 
-        begin 
-          Bsb_log.warn
-            "@{<warning>IGNORED@} %S in public is ignored since it is not\
-             an existing module@." str
-        end  
+        Bsb_log.warn
+          "@{<warning>IGNORED@} %S in public is ignored since it is not\
+           an existing module@." str
     | _ -> 
       Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
@@ -9758,12 +9572,12 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
+let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
   match String_map.find_opt input  Bsb_build_schemas.public with 
-  | Some (Str{str = s; loc}) ->  
-    if s = Bsb_build_schemas.export_all then (Export_all : public) else 
+  | Some ((Str({str = s}) as x)) ->  
+    if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
-      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+      errorf x "invalid str for %s "  s 
   | Some (Arr {content = s}) ->         
     Export_set (collect_pub_modules s cur_sources)
   | Some config -> 
@@ -9771,10 +9585,10 @@ let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t)
   | None ->
     Export_all 
 
-let extract_resources (input : Ext_json_types.t String_map.t) =   
+let extract_resources (input : Ext_json_types.t String_map.t) : string list =   
   match String_map.find_opt input  Bsb_build_schemas.resources with 
-  | Some (Arr {content = s}) ->
-    Bsb_build_util.get_list_string s 
+  | Some (Arr x) ->
+    Bsb_build_util.get_list_string x.content
   | Some config -> 
     Bsb_exception.config_error config 
       "expect array "  
@@ -9795,12 +9609,12 @@ let  handle_empty_sources
         if is_input_or_output generators name then acc 
         else
           match Ext_string.is_valid_source_name name with 
-          | Good ->   begin 
-              let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
-              String_vec.push dyn_file_array name;
-              new_acc 
-            end 
+          | Good ->  
+            let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
+            String_vec.push dyn_file_array name;
+            new_acc 
           | Invalid_module_name ->
+            (* TODO: no warning for xx.cppo.ml *)
             Bsb_log.warn
               warning_unused_file name dir ;
             acc 
@@ -9810,17 +9624,15 @@ let  handle_empty_sources
   [ Ext_file_pp.patch_action dyn_file_array 
       loc_start loc_end
   ]
-  (* ,
-  files *)
 
 
-let extract_input_output 
-    (loc_start : Ext_position.t) 
-    (content : Ext_json_types.t array) : string list * string list = 
+let extract_input_output (edge : Ext_json_types.t) : string list * string list = 
   let error () = 
-    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+    errorf edge {| invalid edge format, expect  ["output" , ":", "input" ]|}
   in  
-  match Ext_array.find_and_split content 
+  match edge with 
+  | Arr {content} -> 
+  (match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
           () with 
   | `No_split -> error ()
@@ -9839,7 +9651,8 @@ let extract_input_output
           error () 
         | Str {str} -> 
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input)
+        | _ -> None) input))
+    | _ -> error ()    
 
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
@@ -9853,16 +9666,14 @@ let extract_generators
       (* Need check is dev build or not *)
       Ext_array.iter content (fun x ->
         match x with
-        | Obj { map = generator; loc} ->
-          begin match String_map.find_opt generator Bsb_build_schemas.name ,
-                      String_map.find_opt generator Bsb_build_schemas.edge
+        | Obj { map } ->
+           (match String_map.find_opt map Bsb_build_schemas.name ,
+                      String_map.find_opt map Bsb_build_schemas.edge
             with
-            | Some (Str{str = command}), Some (Arr {content })->
-
-              let output, input = extract_input_output loc_start content in 
-              if not cut_generators_or_not_dev then begin 
-                generators := {input ; output ; command } :: !generators
-              end;
+            | Some (Str command), Some edge ->
+              let output, input = extract_input_output edge in 
+              if not cut_generators_or_not_dev then  
+                generators := {input ; output ; command = command.str } :: !generators;
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
@@ -9873,13 +9684,12 @@ let extract_generators
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
-              )
+                )
             | _ ->
-              Bsb_exception.errorf ~loc "Invalid generator format"
-          end
-        | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+              errorf x "Invalid generator format")
+        | _ -> errorf x "Invalid generator format"
       )  
-    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
+    | Some x  -> errorf x "Invalid generator format"
     | None -> ()
   end ;
   !generators 
@@ -9894,56 +9704,91 @@ let try_unlink s =
   with _ -> 
     Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
+let bs_cmt_post_process_cmd = 
+  lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
+
+type suffix_kind =   
+   | Cmi of int | Cmt of int  | Cmj of int | Cmti of int
+   | Not_any 
+
+let classify_suffix (x : string) : suffix_kind =   
+  let i =  
+    Ext_string.ends_with_index x Literals.suffix_cmi in 
+  if i >=0 then Cmi i
+  else 
+    let i =  
+      Ext_string.ends_with_index x Literals.suffix_cmj in 
+    if i >= 0 then Cmj i    
+    else 
+      let i =  
+        Ext_string.ends_with_index x Literals.suffix_cmt in 
+      if i >= 0 then Cmt i   
+      else 
+        let i =  
+          Ext_string.ends_with_index x Literals.suffix_cmti in 
+        if i >= 0 then Cmti i 
+        else Not_any
 
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let clean_staled_bs_js_files 
+let prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
-    (files : string array)  =     
-  Ext_array.iter files (fun current_file -> 
-    match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
-    | None -> ()
-    | Some basename -> (* Found [.bs.js] files *)
-         let parent = Filename.concat context.root context.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
-             context.cwd in 
-         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
-           begin 
-             Unix.unlink (Filename.concat parent current_file);
-             let basename = 
-               match context.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             (
-               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
-               | exception _ -> ()
-               | cmd -> 
-                 Ext_pervasives.try_it (fun _ -> 
-                   Sys.command (
-                     cmd ^ 
-                     " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
-                 )
-             );
-             Ext_list.iter [
-                Literals.suffix_cmi; Literals.suffix_cmj ; 
-                Literals.suffix_cmt; Literals.suffix_cmti ; 
-                Literals.suffix_mlast; Literals.suffix_mlastd;
-                Literals.suffix_mliast; Literals.suffix_mliastd
-                (*TODO: GenType*)
-             ] (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             )
-           end           
-  )
+     : unit =     
+  let lib_parent = 
+    Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+      context.cwd in 
+  if Sys.file_exists lib_parent then
+    let artifacts = Sys.readdir lib_parent in 
+    Ext_array.iter artifacts (fun x ->       
+        let kind = classify_suffix x  in
+        match kind with 
+        | Not_any -> ()
+        | Cmi i | Cmt i | Cmj i | Cmti i -> 
+          let j = 
+            if context.namespace = None then i              
+            else
+              Ext_string.rindex_neg x '-' 
+          in 
+          if j >= 0 then
+            let cmp = Ext_string.capitalize_sub x  j  in
+            if not (String_map.mem cur_sources cmp) then 
+            begin (* prune action *)
+              let filepath = Filename.concat lib_parent x in 
+              (match kind with 
+               | Cmt _ -> 
+                 let lazy cmd =  bs_cmt_post_process_cmd in 
 
+                 if cmd <> "" then
+                   Ext_pervasives.try_it (fun _ -> 
+                       Sys.command (
+                         cmd ^ 
+                         " -cmt-rm " ^ filepath)                   
+                     )
+                | Cmj _ ->        
+                  (* remove .bs.js *)
+                  if context.bs_suffix then
+                    try_unlink 
+                      (Filename.concat context.cwd
+                         (String.sub x 0 j ^ Literals.suffix_bs_js)
+                      )
+               | _ -> ());
+              try_unlink filepath
+            end
+            else () (* assert false *)
+      )
+
+
+
+
+
+(********************************************************************)  
+(* starts parsing *)
 let rec 
   parsing_source_dir_map 
     ({ cwd =  dir;} as cxt )
-    (input : Ext_json_types.t String_map.t) : t     
+    (input : Ext_json_types.t String_map.t) : Bsb_file_groups.t     
   = 
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
@@ -9962,17 +9807,13 @@ let rec
         (** We should avoid temporary files *)
         cur_sources := 
           Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then 
-                acc 
+              if is_input_or_output generators name then acc 
               else 
                 match Ext_string.is_valid_source_name name with 
                 | Good -> 
                   Bsb_db.collect_module_by_filename  ~dir acc name 
                 | Invalid_module_name ->
-                  Bsb_log.warn
-                    warning_unused_file
-                    name dir 
-                  ; 
+                  Bsb_log.warn warning_unused_file name dir; 
                   acc 
                 | Suffix_mismatch ->  acc
             ) ;
@@ -9984,12 +9825,12 @@ let rec
             file_array 
             empty_json_array
             generators
-      | Some (Arr {loc_start;loc_end; content = sx }) -> 
+      | Some (Arr sx ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx !cur_sources (fun acc s ->
+          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
               match s with 
               | Str str -> 
                 Bsb_db.collect_module_by_filename ~dir acc str.str
@@ -10050,10 +9891,7 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    if cxt.clean_staled_bs_js then 
-      begin
-        clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
-      end;
+    prune_staled_bs_js_files cxt cur_sources ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
                    sources = cur_sources; 
@@ -10119,7 +9957,7 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~clean_staled_bs_js 
+  ~bs_suffix 
   ~ignored_dirs
   x : t = 
   parse_sources {
@@ -10130,7 +9968,7 @@ let scan
     root ;
     cut_generators;
     namespace;
-    clean_staled_bs_js;
+    bs_suffix;
     traverse = false
   } x
 
@@ -10459,6 +10297,210 @@ let clean_bs_deps bsc_dir proj_dir =
     )
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
+
+end
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [make ~ns:"Ns" "a" ]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
+*)
+val make : ns:string -> string -> string 
+
+val try_split_module_name :
+  string -> (string * string ) option
+
+
+
+(* Note  we have to output uncapitalized file Name, 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
+
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
+*)
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
+val namespace_of_package_name : string -> string
+
+end = struct
+#1 "ext_namespace.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
+let make ~ns cunit  = 
+  cunit ^ ns_sep ^ ns
+
+let path_char = Filename.dir_sep.[0]
+
+let rec rindex_rec s i  =
+  if i < 0 then i else
+    let char = String.unsafe_get s i in
+    if char = path_char then -1 
+    else if char = ns_sep_char then i 
+    else
+      rindex_rec s (i - 1) 
+
+let remove_ns_suffix name =
+  let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then name 
+  else String.sub name 0 i 
+
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
+
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
+
+(* let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js *)
+  
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
+
+(* https://docs.npmjs.com/files/package.json 
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    Ext_string.for_all_from s 1 
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+let namespace_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+         (Ext_char.uppercase_ascii ch)
+       else ch) in    
+  let rec aux capital off len =     
+    if off >= len then ()
+    else 
+      let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+        ->
+        add capital ch ; 
+        aux false (off + 1) len 
+      | '/'
+      | '-' -> 
+        aux true (off + 1) len 
+      | _ -> aux capital (off+1) len
+  in 
+  aux true 0 len ;
+  Buffer.contents buf 
 
 end
 module Bsb_package_specs : sig 
@@ -12007,7 +12049,7 @@ let interpret_json
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
-            ~clean_staled_bs_js:bs_suffix
+            ~bs_suffix
             ~namespace
             x in 
         if generate_watch_metadata then

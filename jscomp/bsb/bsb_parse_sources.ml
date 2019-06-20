@@ -26,7 +26,7 @@
 
 type build_generator = Bsb_file_groups.build_generator
 
-type public = Bsb_file_groups.public 
+
 
 type file_group = Bsb_file_groups.file_group
 
@@ -42,6 +42,9 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
+let errorf x fmt = 
+  Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
+
 type cxt = {
   not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
@@ -50,7 +53,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  clean_staled_bs_js: bool;
+  bs_suffix: bool;
   ignored_dirs : String_set.t
 }
 
@@ -64,16 +67,14 @@ let collect_pub_modules
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
     match v with 
-    | Str { str ; loc }
+    | Str { str}
       -> 
       if String_map.mem cache str then 
         set := String_set.add !set str
       else 
-        begin 
-          Bsb_log.warn
-            "@{<warning>IGNORED@} %S in public is ignored since it is not\
-             an existing module@." str
-        end  
+        Bsb_log.warn
+          "@{<warning>IGNORED@} %S in public is ignored since it is not\
+           an existing module@." str
     | _ -> 
       Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
@@ -81,12 +82,12 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
+let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
   match String_map.find_opt input  Bsb_build_schemas.public with 
-  | Some (Str{str = s; loc}) ->  
-    if s = Bsb_build_schemas.export_all then (Export_all : public) else 
+  | Some ((Str({str = s}) as x)) ->  
+    if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
-      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+      errorf x "invalid str for %s "  s 
   | Some (Arr {content = s}) ->         
     Export_set (collect_pub_modules s cur_sources)
   | Some config -> 
@@ -94,10 +95,10 @@ let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t)
   | None ->
     Export_all 
 
-let extract_resources (input : Ext_json_types.t String_map.t) =   
+let extract_resources (input : Ext_json_types.t String_map.t) : string list =   
   match String_map.find_opt input  Bsb_build_schemas.resources with 
-  | Some (Arr {content = s}) ->
-    Bsb_build_util.get_list_string s 
+  | Some (Arr x) ->
+    Bsb_build_util.get_list_string x.content
   | Some config -> 
     Bsb_exception.config_error config 
       "expect array "  
@@ -118,12 +119,12 @@ let  handle_empty_sources
         if is_input_or_output generators name then acc 
         else
           match Ext_string.is_valid_source_name name with 
-          | Good ->   begin 
-              let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
-              String_vec.push dyn_file_array name;
-              new_acc 
-            end 
+          | Good ->  
+            let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
+            String_vec.push dyn_file_array name;
+            new_acc 
           | Invalid_module_name ->
+            (* TODO: no warning for xx.cppo.ml *)
             Bsb_log.warn
               warning_unused_file name dir ;
             acc 
@@ -133,17 +134,15 @@ let  handle_empty_sources
   [ Ext_file_pp.patch_action dyn_file_array 
       loc_start loc_end
   ]
-  (* ,
-  files *)
 
 
-let extract_input_output 
-    (loc_start : Ext_position.t) 
-    (content : Ext_json_types.t array) : string list * string list = 
+let extract_input_output (edge : Ext_json_types.t) : string list * string list = 
   let error () = 
-    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+    errorf edge {| invalid edge format, expect  ["output" , ":", "input" ]|}
   in  
-  match Ext_array.find_and_split content 
+  match edge with 
+  | Arr {content} -> 
+  (match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
           () with 
   | `No_split -> error ()
@@ -162,7 +161,8 @@ let extract_input_output
           error () 
         | Str {str} -> 
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input)
+        | _ -> None) input))
+    | _ -> error ()    
 
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
@@ -176,16 +176,14 @@ let extract_generators
       (* Need check is dev build or not *)
       Ext_array.iter content (fun x ->
         match x with
-        | Obj { map = generator; loc} ->
-          begin match String_map.find_opt generator Bsb_build_schemas.name ,
-                      String_map.find_opt generator Bsb_build_schemas.edge
+        | Obj { map } ->
+           (match String_map.find_opt map Bsb_build_schemas.name ,
+                      String_map.find_opt map Bsb_build_schemas.edge
             with
-            | Some (Str{str = command}), Some (Arr {content })->
-
-              let output, input = extract_input_output loc_start content in 
-              if not cut_generators_or_not_dev then begin 
-                generators := {input ; output ; command } :: !generators
-              end;
+            | Some (Str command), Some edge ->
+              let output, input = extract_input_output edge in 
+              if not cut_generators_or_not_dev then  
+                generators := {input ; output ; command = command.str } :: !generators;
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
@@ -196,13 +194,12 @@ let extract_generators
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
-              )
+                )
             | _ ->
-              Bsb_exception.errorf ~loc "Invalid generator format"
-          end
-        | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+              errorf x "Invalid generator format")
+        | _ -> errorf x "Invalid generator format"
       )  
-    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
+    | Some x  -> errorf x "Invalid generator format"
     | None -> ()
   end ;
   !generators 
@@ -217,56 +214,91 @@ let try_unlink s =
   with _ -> 
     Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
+let bs_cmt_post_process_cmd = 
+  lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
+
+type suffix_kind =   
+   | Cmi of int | Cmt of int  | Cmj of int | Cmti of int
+   | Not_any 
+
+let classify_suffix (x : string) : suffix_kind =   
+  let i =  
+    Ext_string.ends_with_index x Literals.suffix_cmi in 
+  if i >=0 then Cmi i
+  else 
+    let i =  
+      Ext_string.ends_with_index x Literals.suffix_cmj in 
+    if i >= 0 then Cmj i    
+    else 
+      let i =  
+        Ext_string.ends_with_index x Literals.suffix_cmt in 
+      if i >= 0 then Cmt i   
+      else 
+        let i =  
+          Ext_string.ends_with_index x Literals.suffix_cmti in 
+        if i >= 0 then Cmti i 
+        else Not_any
 
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let clean_staled_bs_js_files 
+let prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
-    (files : string array)  =     
-  Ext_array.iter files (fun current_file -> 
-    match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
-    | None -> ()
-    | Some basename -> (* Found [.bs.js] files *)
-         let parent = Filename.concat context.root context.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
-             context.cwd in 
-         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
-           begin 
-             Unix.unlink (Filename.concat parent current_file);
-             let basename = 
-               match context.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             (
-               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
-               | exception _ -> ()
-               | cmd -> 
-                 Ext_pervasives.try_it (fun _ -> 
-                   Sys.command (
-                     cmd ^ 
-                     " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
-                 )
-             );
-             Ext_list.iter [
-                Literals.suffix_cmi; Literals.suffix_cmj ; 
-                Literals.suffix_cmt; Literals.suffix_cmti ; 
-                Literals.suffix_mlast; Literals.suffix_mlastd;
-                Literals.suffix_mliast; Literals.suffix_mliastd
-                (*TODO: GenType*)
-             ] (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             )
-           end           
-  )
+     : unit =     
+  let lib_parent = 
+    Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+      context.cwd in 
+  if Sys.file_exists lib_parent then
+    let artifacts = Sys.readdir lib_parent in 
+    Ext_array.iter artifacts (fun x ->       
+        let kind = classify_suffix x  in
+        match kind with 
+        | Not_any -> ()
+        | Cmi i | Cmt i | Cmj i | Cmti i -> 
+          let j = 
+            if context.namespace = None then i              
+            else
+              Ext_string.rindex_neg x '-' 
+          in 
+          if j >= 0 then
+            let cmp = Ext_string.capitalize_sub x  j  in
+            if not (String_map.mem cur_sources cmp) then 
+            begin (* prune action *)
+              let filepath = Filename.concat lib_parent x in 
+              (match kind with 
+               | Cmt _ -> 
+                 let lazy cmd =  bs_cmt_post_process_cmd in 
 
+                 if cmd <> "" then
+                   Ext_pervasives.try_it (fun _ -> 
+                       Sys.command (
+                         cmd ^ 
+                         " -cmt-rm " ^ filepath)                   
+                     )
+                | Cmj _ ->        
+                  (* remove .bs.js *)
+                  if context.bs_suffix then
+                    try_unlink 
+                      (Filename.concat context.cwd
+                         (String.sub x 0 j ^ Literals.suffix_bs_js)
+                      )
+               | _ -> ());
+              try_unlink filepath
+            end
+            else () (* assert false *)
+      )
+
+
+
+
+
+(********************************************************************)  
+(* starts parsing *)
 let rec 
   parsing_source_dir_map 
     ({ cwd =  dir;} as cxt )
-    (input : Ext_json_types.t String_map.t) : t     
+    (input : Ext_json_types.t String_map.t) : Bsb_file_groups.t     
   = 
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
@@ -285,17 +317,13 @@ let rec
         (** We should avoid temporary files *)
         cur_sources := 
           Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then 
-                acc 
+              if is_input_or_output generators name then acc 
               else 
                 match Ext_string.is_valid_source_name name with 
                 | Good -> 
                   Bsb_db.collect_module_by_filename  ~dir acc name 
                 | Invalid_module_name ->
-                  Bsb_log.warn
-                    warning_unused_file
-                    name dir 
-                  ; 
+                  Bsb_log.warn warning_unused_file name dir; 
                   acc 
                 | Suffix_mismatch ->  acc
             ) ;
@@ -307,12 +335,12 @@ let rec
             file_array 
             empty_json_array
             generators
-      | Some (Arr {loc_start;loc_end; content = sx }) -> 
+      | Some (Arr sx ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx !cur_sources (fun acc s ->
+          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
               match s with 
               | Str str -> 
                 Bsb_db.collect_module_by_filename ~dir acc str.str
@@ -373,10 +401,7 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    if cxt.clean_staled_bs_js then 
-      begin
-        clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
-      end;
+    prune_staled_bs_js_files cxt cur_sources ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
                    sources = cur_sources; 
@@ -442,7 +467,7 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~clean_staled_bs_js 
+  ~bs_suffix 
   ~ignored_dirs
   x : t = 
   parse_sources {
@@ -453,7 +478,7 @@ let scan
     root ;
     cut_generators;
     namespace;
-    clean_staled_bs_js;
+    bs_suffix;
     traverse = false
   } x
 

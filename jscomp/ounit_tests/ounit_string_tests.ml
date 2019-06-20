@@ -409,7 +409,7 @@ let suites =
       Ext_path.chop_all_extensions_if_any "a" =~ "a";
       Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
     end;
-    let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in 
+    (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
       let k = Ext_modulename.js_id_name_of_hint_name in 
       k "xx" =~ "Xx";
@@ -424,5 +424,11 @@ let suites =
       k "ab/c/xx.b.js" =~ "XxBJs"; (* improve it in the future*)
       k "c/d/a--b"=~ "AB";
       k "c/d/ac--" =~ "Ac"
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.capitalize_sub "ab-Ns.cmi" 2 =~ "Ab";
+      Ext_string.capitalize_sub "Ab-Ns.cmi" 2 =~ "Ab";
+      Ext_string.capitalize_sub "Ab-Ns.cmi" 3 =~ "Ab-"
     end 
+
   ]

@@ -34,7 +34,7 @@ val scan :
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
-  clean_staled_bs_js:bool -> 
+  bs_suffix:bool -> 
   ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t
