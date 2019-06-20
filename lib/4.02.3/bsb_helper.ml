@@ -5535,11 +5535,6 @@ val make : ns:string -> string -> string
 val try_split_module_name :
   string -> (string * string ) option
 
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
 
 
 (* Note  we have to output uncapitalized file Name, 
@@ -5642,8 +5637,8 @@ type file_kind =
 let suffix_js = ".js"  
 let bs_suffix_js = ".bs.js"
 
-let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js
+(* let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js *)
   
 let js_name_of_basename bs_suffix s =   
   remove_ns_suffix  s ^ 

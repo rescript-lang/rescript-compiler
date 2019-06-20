@@ -31,11 +31,6 @@ val make : ns:string -> string -> string
 val try_split_module_name :
   string -> (string * string ) option
 
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
 
 
 (* Note  we have to output uncapitalized file Name, 

@@ -276,6 +276,13 @@ let prune_staled_bs_js_files
                          cmd ^ 
                          " -cmt-rm " ^ filepath)                   
                      )
+                | Cmj _ ->        
+                  (* remove .bs.js *)
+                  if context.clean_staled_bs_js then
+                    try_unlink 
+                      (Filename.concat context.cwd
+                         (String.sub x 0 j ^ Literals.suffix_bs_js)
+                      )
                | _ -> ());
               try_unlink filepath
             end
@@ -394,9 +401,7 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    if cxt.clean_staled_bs_js then 
-      prune_staled_bs_js_files cxt cur_sources 
-    ;
+    prune_staled_bs_js_files cxt cur_sources ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
                    sources = cur_sources; 
