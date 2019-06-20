@@ -372,9 +372,8 @@ let rec
     in 
     (** Do some clean up *)  
     if cxt.clean_staled_bs_js then 
-      begin
-        clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
-      end;
+      clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
+    ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
                    sources = cur_sources; 

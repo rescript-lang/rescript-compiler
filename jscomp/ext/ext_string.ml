@@ -98,7 +98,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
