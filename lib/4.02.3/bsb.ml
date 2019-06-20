@@ -9474,7 +9474,7 @@ val scan :
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
-  clean_staled_bs_js:bool -> 
+  bs_suffix:bool -> 
   ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t
@@ -9543,7 +9543,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  clean_staled_bs_js: bool;
+  bs_suffix: bool;
   ignored_dirs : String_set.t
 }
 
@@ -9768,7 +9768,7 @@ let prune_staled_bs_js_files
                      )
                 | Cmj _ ->        
                   (* remove .bs.js *)
-                  if context.clean_staled_bs_js then
+                  if context.bs_suffix then
                     try_unlink 
                       (Filename.concat context.cwd
                          (String.sub x 0 j ^ Literals.suffix_bs_js)
@@ -9957,7 +9957,7 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~clean_staled_bs_js 
+  ~bs_suffix 
   ~ignored_dirs
   x : t = 
   parse_sources {
@@ -9968,7 +9968,7 @@ let scan
     root ;
     cut_generators;
     namespace;
-    clean_staled_bs_js;
+    bs_suffix;
     traverse = false
   } x
 
@@ -12049,7 +12049,7 @@ let interpret_json
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
-            ~clean_staled_bs_js:bs_suffix
+            ~bs_suffix
             ~namespace
             x in 
         if generate_watch_metadata then

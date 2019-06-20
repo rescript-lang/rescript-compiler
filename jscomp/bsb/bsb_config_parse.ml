@@ -358,7 +358,7 @@ let interpret_json
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
-            ~clean_staled_bs_js:bs_suffix
+            ~bs_suffix
             ~namespace
             x in 
         if generate_watch_metadata then
