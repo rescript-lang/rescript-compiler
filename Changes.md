@@ -1,5 +1,46 @@
 
-* potential break changes
+`*` means  potential break changes
+# 5.0.5
+Fixes
+
+- #3615 pruning staled build artifacts in bsb, more robust to file changes (moving files around, renaming)
+
+- #3609, #3914 Fix a fatal error in code generation
+- #3598, #3595 Fix code generation when toplevel binding is partial match (edge case)
+- #3588 Fix double quote -ppx argument on windows
+- #3577 fix webpack file serving for direct route access
+- #3574, #3566 Fix code generation when some built in module names are reused
+- #3572, #3570 fix infinite loop in bsb -w (edge case)
+
+- #3558, #3557  fix missing Js.MapperRt module (playground js)
+- #3555, #3546 bs.deriving `accessors` add support for GADT
+- #3553, #3549 Fix code generation for leading zero float (edge case)
+- #3474 fix bad error message when bsconfig `dev` and `non-dev` overlap
+
+- #3532 add missing docs for `Js.error` and `Js.trace`
+- #3536 fixing nesting `|.` issue
+- #3519 avoid `'a array` manifested in external generated signature which causes inconsistent signatures. The concrete issue is that when adding `.rei` file for `[@react.component]` it triggers not match type error
+- #3534 correct commands for building vendor OCaml from ocaml.tar.gz
+- `*` enforce the rule that a module has to contain `.ml` or `.re` file, interface only file is not supported
+
+
+Features
+
+- #3613, #3612 add a warning number 105 (on by default) for cases as below
+
+
+```ocaml
+external f : int -> int = "" [@@bs.val]
+```
+Such ffi declaration is fragile to refactoring when changing names of `f`
+- #3587, #3571, #3568 simplify debugger mode, `debugger.chrome` is not needed to turn on debug mode 
+
+Internals
+
+- #3556, #3554 allow test reason files directly
+- #3594, #3586, #3580, #3575 upgrade ninja to a customized more performant internal version
+
+
 # 5.0.4
 Features
 - #3523, #3516 Fusing react-jsx ppx as a flag (details https://bucklescript.github.io/blog/2019/04/22/release-5-0-4)
