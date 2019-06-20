@@ -267,12 +267,12 @@ let emit_dep_file
      lhs_suffix 
      rhs_suffix       
      ;
-   write_file (input_file ^ Literals.suffix_mlastd ) buf 
+   write_file (input_file ^ Literals.suffix_d ) buf 
     
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
-        let filename = (input_file ^ Literals.suffix_mliastd) in 
+        let filename = (input_file ^ Literals.suffix_d) in 
         let buf = Buffer.create 64 in 
         oc_intf 
           set 

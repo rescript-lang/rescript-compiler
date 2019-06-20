@@ -4200,8 +4200,6 @@ val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
-val suffix_mlastd : string
-val suffix_mliastd : string
 
 val suffix_mli : string 
 val suffix_cmt : string 
@@ -4330,8 +4328,6 @@ let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 (* let suffix_re_js = ".re.js" *)
@@ -6090,12 +6086,12 @@ let emit_dep_file
      lhs_suffix 
      rhs_suffix       
      ;
-   write_file (input_file ^ Literals.suffix_mlastd ) buf 
+   write_file (input_file ^ Literals.suffix_d ) buf 
     
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
-        let filename = (input_file ^ Literals.suffix_mliastd) in 
+        let filename = (input_file ^ Literals.suffix_d) in 
         let buf = Buffer.create 64 in 
         oc_intf 
           set 

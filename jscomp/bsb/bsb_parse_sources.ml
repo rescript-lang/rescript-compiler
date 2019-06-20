@@ -42,6 +42,9 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
+let errorf x fmt = 
+  Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
+
 type cxt = {
   not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
@@ -81,10 +84,10 @@ let collect_pub_modules
 
 let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
   match String_map.find_opt input  Bsb_build_schemas.public with 
-  | Some (Str{str = s; loc}) ->  
+  | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
-      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+      errorf x "invalid str for %s "  s 
   | Some (Arr {content = s}) ->         
     Export_set (collect_pub_modules s cur_sources)
   | Some config -> 
@@ -132,8 +135,6 @@ let  handle_empty_sources
       loc_start loc_end
   ]
 
-let errorf x fmt = 
-  Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 let extract_input_output (edge : Ext_json_types.t) : string list * string list = 
   let error () = 
@@ -213,7 +214,8 @@ let try_unlink s =
   with _ -> 
     Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
-
+let bs_cmt_post_process_cmd = 
+  lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
@@ -229,6 +231,7 @@ let clean_staled_bs_js_files
          let lib_parent = 
            Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
              context.cwd in 
+         (* no .ml file *)    
          if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
            begin 
              Unix.unlink (Filename.concat parent current_file);
@@ -236,29 +239,32 @@ let clean_staled_bs_js_files
                match context.namespace with  
                | None -> basename
                | Some ns -> Ext_namespace.make ~ns basename in 
-             (
-               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
-               | exception _ -> ()
-               | cmd -> 
-                 Ext_pervasives.try_it (fun _ -> 
-                   Sys.command (
-                     cmd ^ 
-                     " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
-                 )
-             );
+             let () = 
+               match bs_cmt_post_process_cmd with 
+               | lazy cmd -> 
+                 if cmd <> "" then
+                   Ext_pervasives.try_it (fun _ -> 
+                       Sys.command (
+                         cmd ^ 
+                         " -cmt-rm " ^
+                         Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                     )
+             in 
              Ext_list.iter [
-                Literals.suffix_cmi; Literals.suffix_cmj ; 
-                Literals.suffix_cmt; Literals.suffix_cmti ; 
-                Literals.suffix_mlast; Literals.suffix_mlastd;
-                Literals.suffix_mliast; Literals.suffix_mliastd
-                (*TODO: GenType*)
+               Literals.suffix_cmi; Literals.suffix_cmj ; 
+               Literals.suffix_cmt; Literals.suffix_cmti ; 
              ] (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             )
+                 try_unlink (Filename.concat lib_parent (basename ^ suffix))
+               )
            end           
-  )
+    )
 
+
+
+
+
+(********************************************************************)  
+(* starts parsing *)
 let rec 
   parsing_source_dir_map 
     ({ cwd =  dir;} as cxt )
@@ -281,17 +287,13 @@ let rec
         (** We should avoid temporary files *)
         cur_sources := 
           Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then 
-                acc 
+              if is_input_or_output generators name then acc 
               else 
                 match Ext_string.is_valid_source_name name with 
                 | Good -> 
                   Bsb_db.collect_module_by_filename  ~dir acc name 
                 | Invalid_module_name ->
-                  Bsb_log.warn
-                    warning_unused_file
-                    name dir 
-                  ; 
+                  Bsb_log.warn warning_unused_file name dir; 
                   acc 
                 | Suffix_mismatch ->  acc
             ) ;
@@ -303,12 +305,12 @@ let rec
             file_array 
             empty_json_array
             generators
-      | Some (Arr {loc_start;loc_end; content = sx }) -> 
+      | Some (Arr sx ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx !cur_sources (fun acc s ->
+          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
               match s with 
               | Str str -> 
                 Bsb_db.collect_module_by_filename ~dir acc str.str
