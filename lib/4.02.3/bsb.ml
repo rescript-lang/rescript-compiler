@@ -737,6 +737,11 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -842,7 +847,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
@@ -1236,6 +1241,27 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
 
 let uncapitalize_ascii =
 
@@ -9322,215 +9348,6 @@ let simple_convert_node_path_to_os_path =
 
 
 end
-module Ext_namespace : sig 
-#1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [make ~ns "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : ns:string -> string -> string 
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
-
-
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
-
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
-
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : file_kind -> string -> string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
-
-val namespace_of_package_name : string -> string
-
-end = struct
-#1 "ext_namespace.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
-
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
-
-let path_char = Filename.dir_sep.[0]
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
-    let char = String.unsafe_get s i in
-    if char = path_char then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
-
-let remove_ns_suffix name =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
-
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
-
-let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js
-  
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
-
-let js_name_of_modulename little s = 
-  match little with 
-  | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
-  | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
-  | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
-  | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    Buffer.add_char buf 
-      (if capital then 
-         (Ext_char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
-    if off >= len then ()
-    else 
-      let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Buffer.contents buf 
-
-end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9889,48 +9706,71 @@ let try_unlink s =
 
 let bs_cmt_post_process_cmd = 
   lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
+
+type suffix_kind =   
+   | Cmi of int | Cmt of int  | Cmj of int | Cmti of int
+   | Not_any 
+
+let classify_suffix (x : string) : suffix_kind =   
+  let i =  
+    Ext_string.ends_with_index x Literals.suffix_cmi in 
+  if i >=0 then Cmi i
+  else 
+    let i =  
+      Ext_string.ends_with_index x Literals.suffix_cmj in 
+    if i >= 0 then Cmj i    
+    else 
+      let i =  
+        Ext_string.ends_with_index x Literals.suffix_cmt in 
+      if i >= 0 then Cmt i   
+      else 
+        let i =  
+          Ext_string.ends_with_index x Literals.suffix_cmti in 
+        if i >= 0 then Cmti i 
+        else Not_any
+
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let clean_staled_bs_js_files 
+let prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
-    (files : string array)  =     
-  Ext_array.iter files (fun current_file -> 
-    match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
-    | None -> ()
-    | Some basename -> (* Found [.bs.js] files *)
-         let parent = Filename.concat context.root context.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
-             context.cwd in 
-         (* no .ml file *)    
-         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
-           begin 
-             Unix.unlink (Filename.concat parent current_file);
-             let basename = 
-               match context.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             let () = 
-               match bs_cmt_post_process_cmd with 
-               | lazy cmd -> 
+     : unit =     
+  let lib_parent = 
+    Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+      context.cwd in 
+  if Sys.file_exists lib_parent then
+    let artifacts = Sys.readdir lib_parent in 
+    Ext_array.iter artifacts (fun x ->       
+        let kind = classify_suffix x  in
+        match kind with 
+        | Not_any -> ()
+        | Cmi i | Cmt i | Cmj i | Cmti i -> 
+          let j = 
+            if context.namespace = None then i              
+            else
+              Ext_string.rindex_neg x '-' 
+          in 
+          if j >= 0 then
+            let cmp = Ext_string.capitalize_sub x  j  in
+            if not (String_map.mem cur_sources cmp) then 
+            begin (* prune action *)
+              let filepath = Filename.concat lib_parent x in 
+              (match kind with 
+               | Cmt _ -> 
+                 let lazy cmd =  bs_cmt_post_process_cmd in 
+
                  if cmd <> "" then
                    Ext_pervasives.try_it (fun _ -> 
                        Sys.command (
                          cmd ^ 
-                         " -cmt-rm " ^
-                         Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                         " -cmt-rm " ^ filepath)                   
                      )
-             in 
-             Ext_list.iter [
-               Literals.suffix_cmi; Literals.suffix_cmj ; 
-               Literals.suffix_cmt; Literals.suffix_cmti ; 
-             ] (fun suffix -> 
-                 try_unlink (Filename.concat lib_parent (basename ^ suffix))
-               )
-           end           
-    )
+               | _ -> ());
+              try_unlink filepath
+            end
+            else () (* assert false *)
+      )
 
 
 
@@ -10045,9 +9885,8 @@ let rec
     in 
     (** Do some clean up *)  
     if cxt.clean_staled_bs_js then 
-      begin
-        clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
-      end;
+      prune_staled_bs_js_files cxt cur_sources 
+    ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
                    sources = cur_sources; 
@@ -10453,6 +10292,215 @@ let clean_bs_deps bsc_dir proj_dir =
     )
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
+
+end
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [make ~ns:"Ns" "a" ]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
+*)
+val make : ns:string -> string -> string 
+
+val try_split_module_name :
+  string -> (string * string ) option
+
+(** [ends_with_bs_suffix_then_chop filename]
+  is used to help we have dangling modules
+*)
+val ends_with_bs_suffix_then_chop : 
+  string -> string option   
+
+
+(* Note  we have to output uncapitalized file Name, 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
+
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
+*)
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
+val namespace_of_package_name : string -> string
+
+end = struct
+#1 "ext_namespace.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
+let make ~ns cunit  = 
+  cunit ^ ns_sep ^ ns
+
+let path_char = Filename.dir_sep.[0]
+
+let rec rindex_rec s i  =
+  if i < 0 then i else
+    let char = String.unsafe_get s i in
+    if char = path_char then -1 
+    else if char = ns_sep_char then i 
+    else
+      rindex_rec s (i - 1) 
+
+let remove_ns_suffix name =
+  let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then name 
+  else String.sub name 0 i 
+
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
+
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
+
+let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js
+  
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
+
+(* https://docs.npmjs.com/files/package.json 
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    Ext_string.for_all_from s 1 
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+let namespace_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+         (Ext_char.uppercase_ascii ch)
+       else ch) in    
+  let rec aux capital off len =     
+    if off >= len then ()
+    else 
+      let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+        ->
+        add capital ch ; 
+        aux false (off + 1) len 
+      | '/'
+      | '-' -> 
+        aux true (off + 1) len 
+      | _ -> aux capital (off+1) len
+  in 
+  aux true 0 len ;
+  Buffer.contents buf 
 
 end
 module Bsb_package_specs : sig 

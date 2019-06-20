@@ -216,48 +216,71 @@ let try_unlink s =
 
 let bs_cmt_post_process_cmd = 
   lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
+
+type suffix_kind =   
+   | Cmi of int | Cmt of int  | Cmj of int | Cmti of int
+   | Not_any 
+
+let classify_suffix (x : string) : suffix_kind =   
+  let i =  
+    Ext_string.ends_with_index x Literals.suffix_cmi in 
+  if i >=0 then Cmi i
+  else 
+    let i =  
+      Ext_string.ends_with_index x Literals.suffix_cmj in 
+    if i >= 0 then Cmj i    
+    else 
+      let i =  
+        Ext_string.ends_with_index x Literals.suffix_cmt in 
+      if i >= 0 then Cmt i   
+      else 
+        let i =  
+          Ext_string.ends_with_index x Literals.suffix_cmti in 
+        if i >= 0 then Cmti i 
+        else Not_any
+
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let clean_staled_bs_js_files 
+let prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
-    (files : string array)  =     
-  Ext_array.iter files (fun current_file -> 
-    match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
-    | None -> ()
-    | Some basename -> (* Found [.bs.js] files *)
-         let parent = Filename.concat context.root context.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
-             context.cwd in 
-         (* no .ml file *)    
-         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
-           begin 
-             Unix.unlink (Filename.concat parent current_file);
-             let basename = 
-               match context.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             let () = 
-               match bs_cmt_post_process_cmd with 
-               | lazy cmd -> 
+     : unit =     
+  let lib_parent = 
+    Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+      context.cwd in 
+  if Sys.file_exists lib_parent then
+    let artifacts = Sys.readdir lib_parent in 
+    Ext_array.iter artifacts (fun x ->       
+        let kind = classify_suffix x  in
+        match kind with 
+        | Not_any -> ()
+        | Cmi i | Cmt i | Cmj i | Cmti i -> 
+          let j = 
+            if context.namespace = None then i              
+            else
+              Ext_string.rindex_neg x '-' 
+          in 
+          if j >= 0 then
+            let cmp = Ext_string.capitalize_sub x  j  in
+            if not (String_map.mem cur_sources cmp) then 
+            begin (* prune action *)
+              let filepath = Filename.concat lib_parent x in 
+              (match kind with 
+               | Cmt _ -> 
+                 let lazy cmd =  bs_cmt_post_process_cmd in 
+
                  if cmd <> "" then
                    Ext_pervasives.try_it (fun _ -> 
                        Sys.command (
                          cmd ^ 
-                         " -cmt-rm " ^
-                         Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                         " -cmt-rm " ^ filepath)                   
                      )
-             in 
-             Ext_list.iter [
-               Literals.suffix_cmi; Literals.suffix_cmj ; 
-               Literals.suffix_cmt; Literals.suffix_cmti ; 
-             ] (fun suffix -> 
-                 try_unlink (Filename.concat lib_parent (basename ^ suffix))
-               )
-           end           
-    )
+               | _ -> ());
+              try_unlink filepath
+            end
+            else () (* assert false *)
+      )
 
 
 
@@ -372,7 +395,7 @@ let rec
     in 
     (** Do some clean up *)  
     if cxt.clean_staled_bs_js then 
-      clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
+      prune_staled_bs_js_files cxt cur_sources 
     ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 

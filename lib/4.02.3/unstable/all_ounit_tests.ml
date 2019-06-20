@@ -2203,6 +2203,11 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -2308,7 +2313,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
@@ -2702,6 +2707,27 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
 
 let uncapitalize_ascii =
 
@@ -16878,7 +16904,7 @@ module Ext_namespace : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [make ~ns "a" ]
+(** [make ~ns:"Ns" "a" ]
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
@@ -17488,7 +17514,7 @@ let suites =
       Ext_path.chop_all_extensions_if_any "a" =~ "a";
       Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
     end;
-    let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in 
+    (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
       let k = Ext_modulename.js_id_name_of_hint_name in 
       k "xx" =~ "Xx";
@@ -17503,7 +17529,13 @@ let suites =
       k "ab/c/xx.b.js" =~ "XxBJs"; (* improve it in the future*)
       k "c/d/a--b"=~ "AB";
       k "c/d/ac--" =~ "Ac"
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.capitalize_sub "ab-Ns.cmi" 2 =~ "Ab";
+      Ext_string.capitalize_sub "Ab-Ns.cmi" 2 =~ "Ab";
+      Ext_string.capitalize_sub "Ab-Ns.cmi" 3 =~ "Ab-"
     end 
+
   ]
 
 end
