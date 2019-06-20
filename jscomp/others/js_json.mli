@@ -102,7 +102,7 @@ external boolean : bool -> t = "%identity"
 (** [boolean b] makes a JSON boolean of the [bool] [b] *)
 
 external object_ : t Js_dict.t -> t = "%identity"
-(** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
+(** [object_ dict] makes a JSON object of the [Js.Dict.t] [dict] *)
 
 
 external array : t array -> t = "%identity"
