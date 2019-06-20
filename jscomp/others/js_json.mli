@@ -191,7 +191,7 @@ external stringify: t -> string = "stringify"
 
 let dict = Js.Dict.empty () in 
 Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "age" (Js.Json.number 30.0); 
 Js.Dict.set dict "likes" 
   (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
@@ -212,11 +212,11 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
 
 let dict = Js.Dict.empty () in 
 Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "age" (Js.Json.number 30.0); 
 Js.Dict.set dict "likes" 
   (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict) 2
+Js.log \@\@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
