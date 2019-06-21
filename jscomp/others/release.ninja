@@ -2,7 +2,7 @@
 bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I others -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I others -c $in
     description = $in -> $out
 
 

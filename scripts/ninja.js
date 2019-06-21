@@ -814,7 +814,7 @@ ${BSC_COMPILER}
 bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
     description = $in -> $out
 
 ${ninjaQuickBuidList([
@@ -916,7 +916,7 @@ async function othersNinja(devmode = true) {
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
     description = $in -> $out
 
 ${
@@ -1046,7 +1046,7 @@ async function stdlibNinja(devmode = true) {
 ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings} -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $${bsc_flags}    -I ${ninjaCwd} -c $in
     description = $in -> $out
 
 ${ninjaQuickBuidList([
@@ -1184,13 +1184,13 @@ async function testNinja() {
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c $in
     description = $in -> $out
 rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c -impl $in
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
     description = $in -> $out
 rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c -intf $in
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I ${ninjaCwd} -c -intf $in
     description = $in -> $out
 
 ${mllRule}

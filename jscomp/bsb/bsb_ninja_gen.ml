@@ -189,7 +189,9 @@ let output_ninja_and_namespace_map
       (Bsb_build_util.include_dirs 
          (all_includes 
             (if namespace = None then source_dirs 
-             else Filename.current_dir_name :: source_dirs) ))  oc 
+             else Filename.current_dir_name :: source_dirs
+             (*working dir is [lib/bs] we include this path to have namespace mapping*)
+              )))  oc 
   in   
   let  bs_groups, bsc_lib_dirs, static_resources =
     let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in

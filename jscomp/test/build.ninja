@@ -2,13 +2,13 @@
 bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I test -c $in
     description = $in -> $out
 rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c -impl $in
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I test -c -impl $in
     description = $in -> $out
 rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags -bs-no-implicit-include -I test -c -intf $in
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I test -c -intf $in
     description = $in -> $out
 
 
