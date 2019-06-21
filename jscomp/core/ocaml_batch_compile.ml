@@ -50,7 +50,7 @@ let process_result ppf  main_file ast_table result =
   else 0
 
 type task = 
-  | Bsc_task_main of string
+
   | Bsc_task_eval of string 
   (* currently we just output JS file, 
      it is compilicated to run via node.
@@ -64,47 +64,14 @@ let print_if ppf flag printer arg =
   if !flag then Format.fprintf ppf "%a@." printer arg;
   arg
 
-let batch_compile ppf search_dirs files main_file =
+let batch_compile ppf main_file =
 #if OCAML_VERSION =~ ">4.03.0" then
   Compenv.readenv ppf (Before_compile ""); (*FIXME*)
 #else
   Compenv.readenv ppf Before_compile; 
 #end  
   Compmisc.init_path  false;
-  if files <> [] then 
-    begin
-      let ast_table =
-        Ast_extract.collect_ast_map ppf files
-          Ocaml_parse.parse_implementation
-          Ocaml_parse.parse_interface in
-      Ast_extract.build_queue ppf
-        (Ast_extract.sort Ext_pervasives.id  Ext_pervasives.id  ast_table)
-        ast_table
-        Js_implementation.after_parsing_impl
-        Js_implementation.after_parsing_sig        
-    end        
-  ;
-  begin match main_file with
-    | Bsc_task_main main_file -> 
-      let main_module = (Ext_modulename.module_name_of_file main_file) in
-      let ast_table, result =
-        Ast_extract.collect_from_main ppf 
-          ~extra_dirs:(Ext_list.map search_dirs
-                         (fun x -> 
-                            ({ dir = x ; excludes = [] } : Ast_extract.dir_spec)) )
-          Ocaml_parse.lazy_parse_implementation
-          Ocaml_parse.lazy_parse_interface         
-          Lazy.force
-          Lazy.force
-          main_module
-      in
-      if Queue.is_empty result then
-        Bs_exception.error (Bs_main_not_exist main_module);
-      (* ; Not necessary since we will alwasy check [main_file] is valid or not,
-         so if we support 
-         bsc -I xx -I yy -bs-main Module_name
-      *)
-      process_result ppf main_file ast_table result     
+  begin match main_file with       
     | Bsc_task_none ->  0
     | Bsc_task_eval s ->
       Ext_ref.protect_list 
