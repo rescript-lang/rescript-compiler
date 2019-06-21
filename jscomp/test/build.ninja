@@ -1,15 +1,24 @@
 
 bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
+
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I test -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I test -c $in
     description = $in -> $out
+rule cc_cmi
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I test -c $in
+    description = $in -> $out    
 rule re
     command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I test -c -impl $in
     description = $in -> $out
+rule re_cmi
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I test -c -impl $in
+    description = $in -> $out
 rule rei
     command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I test -c -intf $in
-    description = $in -> $out
+    description = $in -> $out    
+
+
 
 
 rule mll
@@ -23,19 +32,19 @@ build test/406_primitive_test.cmi test/406_primitive_test.cmj : cc test/406_prim
 build test/a.cmi test/a.cmj : cc test/a.ml | test/test_order.cmj $stdlib
 build test/a_filename_test.cmi test/a_filename_test.cmj : cc test/a_filename_test.ml | test/ext_filename_test.cmj test/mt.cmj $stdlib
 build test/a_list_test.cmi test/a_list_test.cmj : cc test/a_list_test.ml | test/ext_list_test.cmj test/mt.cmj $stdlib
-build test/a_recursive_type.cmj : cc test/a_recursive_type.ml | test/a_recursive_type.cmi $stdlib
+build test/a_recursive_type.cmj : cc_cmi test/a_recursive_type.ml | test/a_recursive_type.cmi $stdlib
 build test/a_recursive_type.cmi : cc test/a_recursive_type.mli | $stdlib
 build test/a_scope_bug.cmi test/a_scope_bug.cmj : cc test/a_scope_bug.ml | $stdlib
 build test/a_string_test.cmi test/a_string_test.cmj : cc test/a_string_test.ml | test/ext_string_test.cmj test/mt.cmj $stdlib
-build test/abstract_type.cmj : cc test/abstract_type.ml | test/abstract_type.cmi $stdlib
+build test/abstract_type.cmj : cc_cmi test/abstract_type.ml | test/abstract_type.cmi $stdlib
 build test/abstract_type.cmi : cc test/abstract_type.mli | test/mt.cmi $stdlib
 build test/adt_optimize_test.cmi test/adt_optimize_test.cmj : cc test/adt_optimize_test.ml | $stdlib
-build test/alias_test.cmj : cc test/alias_test.ml | test/alias_test.cmi $stdlib
+build test/alias_test.cmj : cc_cmi test/alias_test.ml | test/alias_test.cmi $stdlib
 build test/alias_test.cmi : cc test/alias_test.mli | $stdlib
 build test/and_or_tailcall_test.cmi test/and_or_tailcall_test.cmj : cc test/and_or_tailcall_test.ml | test/mt.cmj $stdlib
 build test/app_root_finder.cmi test/app_root_finder.cmj : cc test/app_root_finder.ml | $stdlib
 build test/argv_test.cmi test/argv_test.cmj : cc test/argv_test.ml | $stdlib
-build test/ari_regress_test.cmj : cc test/ari_regress_test.ml | test/ari_regress_test.cmi test/mt.cmj $stdlib
+build test/ari_regress_test.cmj : cc_cmi test/ari_regress_test.ml | test/ari_regress_test.cmi test/mt.cmj $stdlib
 build test/ari_regress_test.cmi : cc test/ari_regress_test.mli | $stdlib
 build test/arith_lexer.cmi test/arith_lexer.cmj : cc test/arith_lexer.ml | test/arith_parser.cmj test/arith_syntax.cmj $stdlib
 build test/arith_parser.cmi test/arith_parser.cmj : cc test/arith_parser.ml | test/arith_syntax.cmj $stdlib
@@ -45,11 +54,11 @@ build test/arity_infer.cmi test/arity_infer.cmj : cc test/arity_infer.ml | $stdl
 build test/array_data_util.cmi test/array_data_util.cmj : cc test/array_data_util.ml | $stdlib
 build test/array_safe_get.cmi test/array_safe_get.cmj : cc test/array_safe_get.ml | $stdlib
 build test/array_subtle_test.cmi test/array_subtle_test.cmj : cc test/array_subtle_test.ml | test/mt.cmj $stdlib
-build test/array_test.cmj : cc test/array_test.ml | test/array_test.cmi test/mt.cmj $stdlib
+build test/array_test.cmj : cc_cmi test/array_test.ml | test/array_test.cmi test/mt.cmj $stdlib
 build test/array_test.cmi : cc test/array_test.mli | $stdlib
 build test/ast_abstract_test.cmi test/ast_abstract_test.cmj : cc test/ast_abstract_test.ml | test/mt.cmj $stdlib
 build test/ast_js_mapper_poly_test.cmi test/ast_js_mapper_poly_test.cmj : cc test/ast_js_mapper_poly_test.ml | test/mt.cmj $stdlib
-build test/ast_js_mapper_test.cmj : cc test/ast_js_mapper_test.ml | test/ast_js_mapper_test.cmi $stdlib
+build test/ast_js_mapper_test.cmj : cc_cmi test/ast_js_mapper_test.ml | test/ast_js_mapper_test.cmi $stdlib
 build test/ast_js_mapper_test.cmi : cc test/ast_js_mapper_test.mli | $stdlib
 build test/ast_mapper_defensive_test.cmi test/ast_mapper_defensive_test.cmj : cc test/ast_mapper_defensive_test.ml | test/mt.cmj $stdlib
 build test/ast_mapper_unused_warning_test.cmi test/ast_mapper_unused_warning_test.cmj : cc test/ast_mapper_unused_warning_test.ml | $stdlib
@@ -58,7 +67,7 @@ build test/attr_test.cmi test/attr_test.cmj : cc test/attr_test.ml | $stdlib
 build test/b.cmi test/b.cmj : cc test/b.ml | $stdlib
 build test/bal_set_mini.cmi test/bal_set_mini.cmj : cc test/bal_set_mini.ml | $stdlib
 build test/bang_primitive.cmi test/bang_primitive.cmj : cc test/bang_primitive.ml | $stdlib
-build test/basic_module_test.cmj : cc test/basic_module_test.ml | test/basic_module_test.cmi test/mt.cmj test/mt_global.cmj test/offset.cmj test/pr6726.cmj $stdlib
+build test/basic_module_test.cmj : cc_cmi test/basic_module_test.ml | test/basic_module_test.cmi test/mt.cmj test/mt_global.cmj test/offset.cmj test/pr6726.cmj $stdlib
 build test/basic_module_test.cmi : cc test/basic_module_test.mli | $stdlib
 build test/bb.cmi test/bb.cmj : cc test/bb.ml | $stdlib
 build test/bdd.cmi test/bdd.cmj : cc test/bdd.ml | $stdlib
@@ -69,7 +78,7 @@ build test/bigarray_test.cmi test/bigarray_test.cmj : cc test/bigarray_test.ml |
 build test/block_alias_test.cmi test/block_alias_test.cmj : cc test/block_alias_test.ml | test/mt.cmj $stdlib
 build test/boolean_test.cmi test/boolean_test.cmj : cc test/boolean_test.ml | test/mt.cmj test/test_bool_equal.cmj $stdlib
 build test/bs_MapInt_test.cmi test/bs_MapInt_test.cmj : cc test/bs_MapInt_test.ml | $stdlib
-build test/bs_abstract_test.cmj : cc test/bs_abstract_test.ml | test/bs_abstract_test.cmi $stdlib
+build test/bs_abstract_test.cmj : cc_cmi test/bs_abstract_test.ml | test/bs_abstract_test.cmi $stdlib
 build test/bs_abstract_test.cmi : cc test/bs_abstract_test.mli | $stdlib
 build test/bs_array_test.cmi test/bs_array_test.cmj : cc test/bs_array_test.ml | test/mt.cmj $stdlib
 build test/bs_auto_uncurry.cmi test/bs_auto_uncurry.cmj : cc test/bs_auto_uncurry.ml | $stdlib
@@ -117,7 +126,7 @@ build test/class7_test.cmi test/class7_test.cmj : cc test/class7_test.ml | test/
 build test/class8_test.cmi test/class8_test.cmj : cc test/class8_test.ml | test/mt.cmj $stdlib
 build test/class_fib_open_recursion_test.cmi test/class_fib_open_recursion_test.cmj : cc test/class_fib_open_recursion_test.ml | test/mt.cmj $stdlib
 build test/class_repr.cmi test/class_repr.cmj : cc test/class_repr.ml | $stdlib
-build test/class_setter_getter.cmj : cc test/class_setter_getter.ml | test/class_setter_getter.cmi $stdlib
+build test/class_setter_getter.cmj : cc_cmi test/class_setter_getter.ml | test/class_setter_getter.cmi $stdlib
 build test/class_setter_getter.cmi : cc test/class_setter_getter.mli | $stdlib
 build test/class_test.cmi test/class_test.cmj : cc test/class_test.ml | test/mt.cmj $stdlib
 build test/class_type_ffi_test.cmi test/class_type_ffi_test.cmj : cc test/class_type_ffi_test.ml | $stdlib
@@ -127,10 +136,10 @@ build test/complex_test.cmi test/complex_test.cmj : cc test/complex_test.ml | te
 build test/complex_while_loop.cmi test/complex_while_loop.cmj : cc test/complex_while_loop.ml | $stdlib
 build test/condition_compilation_test.cmi test/condition_compilation_test.cmj : cc test/condition_compilation_test.ml | test/mt.cmj $stdlib
 build test/config1_test.cmi test/config1_test.cmj : cc test/config1_test.ml | $stdlib
-build test/config2_test.cmj : cc test/config2_test.ml | test/config2_test.cmi $stdlib
+build test/config2_test.cmj : cc_cmi test/config2_test.ml | test/config2_test.cmi $stdlib
 build test/config2_test.cmi : cc test/config2_test.mli | $stdlib
 build test/console_log_test.cmi test/console_log_test.cmj : cc test/console_log_test.ml | $stdlib
-build test/const_block_test.cmj : cc test/const_block_test.ml | test/const_block_test.cmi test/mt.cmj $stdlib
+build test/const_block_test.cmj : cc_cmi test/const_block_test.ml | test/const_block_test.cmi test/mt.cmj $stdlib
 build test/const_block_test.cmi : cc test/const_block_test.mli | $stdlib
 build test/const_defs.cmi test/const_defs.cmj : cc test/const_defs.ml | $stdlib
 build test/const_defs_test.cmi test/const_defs_test.cmj : cc test/const_defs_test.ml | test/const_defs.cmj $stdlib
@@ -145,12 +154,12 @@ build test/default_export_test.cmi test/default_export_test.cmj : cc test/defaul
 build test/defunctor_make_test.cmi test/defunctor_make_test.cmj : cc test/defunctor_make_test.ml | $stdlib
 build test/demo.cmi test/demo.cmj : cc test/demo.ml | test/demo_binding.cmj $stdlib
 build test/demo_binding.cmi test/demo_binding.cmj : cc test/demo_binding.ml | $stdlib
-build test/demo_int_map.cmj : cc test/demo_int_map.ml | test/demo_int_map.cmi $stdlib
+build test/demo_int_map.cmj : cc_cmi test/demo_int_map.ml | test/demo_int_map.cmi $stdlib
 build test/demo_int_map.cmi : cc test/demo_int_map.mli | $stdlib
 build test/demo_page.cmi test/demo_page.cmj : cc test/demo_page.ml | $stdlib
 build test/demo_pipe.cmi test/demo_pipe.cmj : cc test/demo_pipe.ml | $stdlib
 build test/derive_dyntype.cmi test/derive_dyntype.cmj : cc test/derive_dyntype.ml | $stdlib
-build test/derive_projector_test.cmj : cc test/derive_projector_test.ml | test/derive_projector_test.cmi $stdlib
+build test/derive_projector_test.cmj : cc_cmi test/derive_projector_test.ml | test/derive_projector_test.cmi $stdlib
 build test/derive_projector_test.cmi : cc test/derive_projector_test.mli | $stdlib
 build test/derive_type_test.cmi test/derive_type_test.cmj : cc test/derive_type_test.ml | $stdlib
 build test/digest_test.cmi test/digest_test.cmj : cc test/digest_test.ml | test/ext_array_test.cmj test/mt.cmj $stdlib
@@ -181,10 +190,10 @@ build test/ext_bytes_test.cmi test/ext_bytes_test.cmj : cc test/ext_bytes_test.m
 build test/ext_filename_test.cmi test/ext_filename_test.cmj : cc test/ext_filename_test.ml | test/ext_pervasives_test.cmj test/ext_string_test.cmj test/test_literals.cmj $stdlib
 build test/ext_list_test.cmi test/ext_list_test.cmj : cc test/ext_list_test.ml | test/ext_string_test.cmj $stdlib
 build test/ext_log_test.cmi test/ext_log_test.cmj : cc test/ext_log_test.ml | $stdlib
-build test/ext_pervasives_test.cmj : cc test/ext_pervasives_test.ml | test/ext_pervasives_test.cmi $stdlib
+build test/ext_pervasives_test.cmj : cc_cmi test/ext_pervasives_test.ml | test/ext_pervasives_test.cmi $stdlib
 build test/ext_pervasives_test.cmi : cc test/ext_pervasives_test.mli | $stdlib
 build test/ext_string_test.cmi test/ext_string_test.cmj : cc test/ext_string_test.ml | test/ext_bytes_test.cmj $stdlib
-build test/ext_sys_test.cmj : cc test/ext_sys_test.ml | test/ext_sys_test.cmi $stdlib
+build test/ext_sys_test.cmj : cc_cmi test/ext_sys_test.ml | test/ext_sys_test.cmi $stdlib
 build test/ext_sys_test.cmi : cc test/ext_sys_test.mli | $stdlib
 build test/extensible_variant_test.cmi test/extensible_variant_test.cmj : cc test/extensible_variant_test.ml | test/mt.cmj $stdlib
 build test/external_polyfill_test.cmi test/external_polyfill_test.cmj : cc test/external_polyfill_test.ml | test/mt.cmj $stdlib
@@ -200,11 +209,11 @@ build test/flattern_order_test.cmi test/flattern_order_test.cmj : cc test/flatte
 build test/flexible_array_test.cmi test/flexible_array_test.cmj : cc test/flexible_array_test.ml | $stdlib
 build test/float_array.cmi test/float_array.cmj : cc test/float_array.ml | $stdlib
 build test/float_of_bits_test.cmi test/float_of_bits_test.cmj : cc test/float_of_bits_test.ml | test/mt.cmj $stdlib
-build test/float_record.cmj : cc test/float_record.ml | test/float_record.cmi $stdlib
+build test/float_record.cmj : cc_cmi test/float_record.ml | test/float_record.cmi $stdlib
 build test/float_record.cmi : cc test/float_record.mli | $stdlib
 build test/float_test.cmi test/float_test.cmj : cc test/float_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 build test/floatarray_test.cmi test/floatarray_test.cmj : cc test/floatarray_test.ml | test/mt.cmj $stdlib
-build test/flow_parser_reg_test.cmj : cc test/flow_parser_reg_test.ml | test/flow_parser_reg_test.cmi test/mt.cmj $stdlib
+build test/flow_parser_reg_test.cmj : cc_cmi test/flow_parser_reg_test.ml | test/flow_parser_reg_test.cmi test/mt.cmj $stdlib
 build test/flow_parser_reg_test.cmi : cc test/flow_parser_reg_test.mli | $stdlib
 build test/for_loop_test.cmi test/for_loop_test.cmj : cc test/for_loop_test.ml | test/mt.cmj $stdlib
 build test/for_side_effect_test.cmi test/for_side_effect_test.cmj : cc test/for_side_effect_test.ml | test/mt.cmj $stdlib
@@ -293,7 +302,7 @@ build test/gpr_3566_test.cmi test/gpr_3566_test.cmj : cc test/gpr_3566_test.ml |
 build test/gpr_3595_test.cmi test/gpr_3595_test.cmj : cc test/gpr_3595_test.ml | test/mt.cmj $stdlib
 build test/gpr_3609_test.cmi test/gpr_3609_test.cmj : cc test/gpr_3609_test.ml | $stdlib
 build test/gpr_373_test.cmi test/gpr_373_test.cmj : cc test/gpr_373_test.ml | $stdlib
-build test/gpr_405_test.cmj : cc test/gpr_405_test.ml | test/gpr_405_test.cmi $stdlib
+build test/gpr_405_test.cmj : cc_cmi test/gpr_405_test.ml | test/gpr_405_test.cmi $stdlib
 build test/gpr_405_test.cmi : cc test/gpr_405_test.mli | $stdlib
 build test/gpr_441.cmi test/gpr_441.cmj : cc test/gpr_441.ml | $stdlib
 build test/gpr_459_test.cmi test/gpr_459_test.cmj : cc test/gpr_459_test.ml | test/mt.cmj $stdlib
@@ -318,21 +327,21 @@ build test/imm_map_bench.cmi test/imm_map_bench.cmj : cc test/imm_map_bench.ml |
 build test/include_side_effect.cmi test/include_side_effect.cmj : cc test/include_side_effect.ml | test/side_effect.cmj $stdlib
 build test/include_side_effect_free.cmi test/include_side_effect_free.cmj : cc test/include_side_effect_free.ml | test/side_effect_free.cmj $stdlib
 build test/incomplete_toplevel_test.cmi test/incomplete_toplevel_test.cmj : cc test/incomplete_toplevel_test.ml | $stdlib
-build test/infer_type_test.cmj : cc test/infer_type_test.ml | test/infer_type_test.cmi $stdlib
+build test/infer_type_test.cmj : cc_cmi test/infer_type_test.ml | test/infer_type_test.cmi $stdlib
 build test/infer_type_test.cmi : cc test/infer_type_test.mli | $stdlib
-build test/inline_const.cmj : cc test/inline_const.ml | test/inline_const.cmi $stdlib
+build test/inline_const.cmj : cc_cmi test/inline_const.ml | test/inline_const.cmi $stdlib
 build test/inline_const.cmi : cc test/inline_const.mli | $stdlib
 build test/inline_const_test.cmi test/inline_const_test.cmj : cc test/inline_const_test.ml | test/inline_const.cmj test/mt.cmj $stdlib
-build test/inline_edge_cases.cmj : cc test/inline_edge_cases.ml | test/inline_edge_cases.cmi $stdlib
+build test/inline_edge_cases.cmj : cc_cmi test/inline_edge_cases.ml | test/inline_edge_cases.cmi $stdlib
 build test/inline_edge_cases.cmi : cc test/inline_edge_cases.mli | $stdlib
 build test/inline_map2_test.cmi test/inline_map2_test.cmj : cc test/inline_map2_test.ml | test/mt.cmj $stdlib
-build test/inline_map_test.cmj : cc test/inline_map_test.ml | test/inline_map_test.cmi test/mt.cmj $stdlib
+build test/inline_map_test.cmj : cc_cmi test/inline_map_test.ml | test/inline_map_test.cmi test/mt.cmj $stdlib
 build test/inline_map_test.cmi : cc test/inline_map_test.mli | $stdlib
 build test/inline_record_test.cmi test/inline_record_test.cmj : cc test/inline_record_test.ml | test/mt.cmj $stdlib
 build test/inline_regression_test.cmi test/inline_regression_test.cmj : cc test/inline_regression_test.ml | test/mt.cmj $stdlib
 build test/inline_string_test.cmi test/inline_string_test.cmj : cc test/inline_string_test.ml | $stdlib
 build test/inner_call.cmi test/inner_call.cmj : cc test/inner_call.ml | test/inner_define.cmj $stdlib
-build test/inner_define.cmj : cc test/inner_define.ml | test/inner_define.cmi $stdlib
+build test/inner_define.cmj : cc_cmi test/inner_define.ml | test/inner_define.cmi $stdlib
 build test/inner_define.cmi : cc test/inner_define.mli | $stdlib
 build test/inner_unused.cmi test/inner_unused.cmj : cc test/inner_unused.ml | $stdlib
 build test/installation_test.cmi test/installation_test.cmj : cc test/installation_test.ml | test/app_root_finder.cmj test/mt.cmj $stdlib
@@ -386,7 +395,7 @@ build test/local_exception_test.cmi test/local_exception_test.cmj : cc test/loca
 build test/loop_regression_test.cmi test/loop_regression_test.cmj : cc test/loop_regression_test.ml | test/mt.cmj $stdlib
 build test/loop_suites_test.cmi test/loop_suites_test.cmj : cc test/loop_suites_test.ml | test/for_loop_test.cmj test/mt.cmj $stdlib
 build test/map_find_test.cmi test/map_find_test.cmj : cc test/map_find_test.ml | test/mt.cmj $stdlib
-build test/map_test.cmj : cc test/map_test.ml | test/map_test.cmi test/mt.cmj $stdlib
+build test/map_test.cmj : cc_cmi test/map_test.ml | test/map_test.cmi test/mt.cmj $stdlib
 build test/map_test.cmi : cc test/map_test.mli | $stdlib
 build test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $stdlib
 build test/method_chain.cmi test/method_chain.cmj : cc test/method_chain.ml | $stdlib
@@ -402,9 +411,9 @@ build test/module_parameter_test.cmi test/module_parameter_test.cmj : cc test/mo
 build test/module_splice_test.cmi test/module_splice_test.cmj : cc test/module_splice_test.ml | test/mt.cmj $stdlib
 build test/more_uncurry.cmi test/more_uncurry.cmj : cc test/more_uncurry.ml | $stdlib
 build test/mpr_6033_test.cmi test/mpr_6033_test.cmj : cc test/mpr_6033_test.ml | test/mt.cmj $stdlib
-build test/mt.cmj : cc test/mt.ml | test/mt.cmi $stdlib
+build test/mt.cmj : cc_cmi test/mt.ml | test/mt.cmi $stdlib
 build test/mt.cmi : cc test/mt.mli | $stdlib
-build test/mt_global.cmj : cc test/mt_global.ml | test/mt.cmj test/mt_global.cmi $stdlib
+build test/mt_global.cmj : cc_cmi test/mt_global.ml | test/mt.cmj test/mt_global.cmi $stdlib
 build test/mt_global.cmi : cc test/mt_global.mli | test/mt.cmi $stdlib
 build test/mutable_obj_test.cmi test/mutable_obj_test.cmj : cc test/mutable_obj_test.ml | $stdlib
 build test/mutual_non_recursive_type.cmi test/mutual_non_recursive_type.cmj : cc test/mutual_non_recursive_type.ml | $stdlib
@@ -424,12 +433,12 @@ build test/obj_literal_ppx_test.cmi test/obj_literal_ppx_test.cmj : cc test/obj_
 build test/obj_magic_test.cmi test/obj_magic_test.cmj : cc test/obj_magic_test.ml | test/mt.cmj $stdlib
 build test/obj_test.cmi test/obj_test.cmj : cc test/obj_test.ml | test/mt.cmj $stdlib
 build test/obj_type_test.cmi test/obj_type_test.cmj : cc test/obj_type_test.ml | $stdlib
-build test/ocaml_parsetree_test.cmj : cc test/ocaml_parsetree_test.ml | test/ocaml_parsetree_test.cmi $stdlib
+build test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/ocaml_parsetree_test.cmi $stdlib
 build test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
-build test/ocaml_proto_test.cmj : cc test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
+build test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
 build test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 build test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-build test/ocaml_typedtree_test.cmj : cc test/ocaml_typedtree_test.ml | test/ocaml_typedtree_test.cmi $stdlib
+build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/ocaml_typedtree_test.cmi $stdlib
 build test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 build test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 build test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
@@ -442,9 +451,9 @@ build test/parser_api_test.cmi test/parser_api_test.cmj : cc test/parser_api_tes
 build test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_readline.ml | $stdlib
 build test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $stdlib
 build test/poly_type.cmi test/poly_type.cmj : cc test/poly_type.ml | $stdlib
-build test/poly_variant_test.cmj : cc test/poly_variant_test.ml | test/mt.cmj test/poly_variant_test.cmi $stdlib
+build test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.ml | test/mt.cmj test/poly_variant_test.cmi $stdlib
 build test/poly_variant_test.cmi : cc test/poly_variant_test.mli | $stdlib
-build test/polymorphism_test.cmj : cc test/polymorphism_test.ml | test/polymorphism_test.cmi $stdlib
+build test/polymorphism_test.cmj : cc_cmi test/polymorphism_test.ml | test/polymorphism_test.cmi $stdlib
 build test/polymorphism_test.cmi : cc test/polymorphism_test.mli | $stdlib
 build test/polyvar_test.cmi test/polyvar_test.cmj : cc test/polyvar_test.ml | $stdlib
 build test/ppx_apply_test.cmi test/ppx_apply_test.cmj : cc test/ppx_apply_test.ml | test/mt.cmj $stdlib
@@ -481,21 +490,21 @@ build test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml |
 build test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 build test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
 build test/scanf_io.cmi test/scanf_io.cmj : cc test/scanf_io.ml | test/testing.cmj $stdlib
-build test/scanf_reference_error_regression_test.cmj : cc test/scanf_reference_error_regression_test.ml | test/mt.cmj test/mt_global.cmj test/scanf_reference_error_regression_test.cmi $stdlib
+build test/scanf_reference_error_regression_test.cmj : cc_cmi test/scanf_reference_error_regression_test.ml | test/mt.cmj test/mt_global.cmj test/scanf_reference_error_regression_test.cmi $stdlib
 build test/scanf_reference_error_regression_test.cmi : cc test/scanf_reference_error_regression_test.mli | $stdlib
 build test/scanf_test.cmi test/scanf_test.cmj : cc test/scanf_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 build test/set_gen.cmi test/set_gen.cmj : cc test/set_gen.ml | $stdlib
-build test/sexp.cmj : cc test/sexp.ml | test/sexp.cmi $stdlib
+build test/sexp.cmj : cc_cmi test/sexp.ml | test/sexp.cmi $stdlib
 build test/sexp.cmi : cc test/sexp.mli | $stdlib
-build test/sexpm.cmj : cc test/sexpm.ml | test/sexpm.cmi $stdlib
+build test/sexpm.cmj : cc_cmi test/sexpm.ml | test/sexpm.cmi $stdlib
 build test/sexpm.cmi : cc test/sexpm.mli | $stdlib
 build test/sexpm_test.cmi test/sexpm_test.cmj : cc test/sexpm_test.ml | test/mt.cmj test/sexpm.cmj $stdlib
 build test/shift_test.cmi test/shift_test.cmj : cc test/shift_test.ml | $stdlib
 build test/side_effect.cmi test/side_effect.cmj : cc test/side_effect.ml | $stdlib
 build test/side_effect_free.cmi test/side_effect_free.cmj : cc test/side_effect_free.ml | $stdlib
-build test/simple_derive_test.cmj : cc test/simple_derive_test.ml | test/simple_derive_test.cmi $stdlib
+build test/simple_derive_test.cmj : cc_cmi test/simple_derive_test.ml | test/simple_derive_test.cmi $stdlib
 build test/simple_derive_test.cmi : cc test/simple_derive_test.mli | $stdlib
-build test/simple_derive_use.cmj : cc test/simple_derive_use.ml | test/simple_derive_use.cmi $stdlib
+build test/simple_derive_use.cmj : cc_cmi test/simple_derive_use.ml | test/simple_derive_use.cmi $stdlib
 build test/simple_derive_use.cmi : cc test/simple_derive_use.mli | $stdlib
 build test/simple_lexer_test.cmi test/simple_lexer_test.cmj : cc test/simple_lexer_test.ml | test/mt.cmj $stdlib
 build test/simplify_lambda_632o.cmi test/simplify_lambda_632o.cmj : cc test/simplify_lambda_632o.ml | $stdlib
@@ -552,7 +561,7 @@ build test/test_fib.cmi test/test_fib.cmj : cc test/test_fib.ml | $stdlib
 build test/test_filename.cmi test/test_filename.cmj : cc test/test_filename.ml | $stdlib
 build test/test_for_loop.cmi test/test_for_loop.cmj : cc test/test_for_loop.ml | $stdlib
 build test/test_for_map.cmi test/test_for_map.cmj : cc test/test_for_map.ml | $stdlib
-build test/test_for_map2.cmj : cc test/test_for_map2.ml | test/int_map.cmj test/test_for_map2.cmi $stdlib
+build test/test_for_map2.cmj : cc_cmi test/test_for_map2.ml | test/int_map.cmj test/test_for_map2.cmi $stdlib
 build test/test_for_map2.cmi : cc test/test_for_map2.mli | $stdlib
 build test/test_format.cmi test/test_format.cmj : cc test/test_format.ml | $stdlib
 build test/test_formatter.cmi test/test_formatter.cmj : cc test/test_formatter.ml | $stdlib
@@ -560,7 +569,7 @@ build test/test_functor_dead_code.cmi test/test_functor_dead_code.cmj : cc test/
 build test/test_generative_module.cmi test/test_generative_module.cmj : cc test/test_generative_module.ml | $stdlib
 build test/test_global_print.cmi test/test_global_print.cmj : cc test/test_global_print.ml | $stdlib
 build test/test_google_closure.cmi test/test_google_closure.cmj : cc test/test_google_closure.ml | $stdlib
-build test/test_http_server.cmj : cc test/test_http_server.ml | test/http_types.cmj test/test_http_server.cmi $stdlib
+build test/test_http_server.cmj : cc_cmi test/test_http_server.ml | test/http_types.cmj test/test_http_server.cmi $stdlib
 build test/test_http_server.cmi : cc test/test_http_server.mli | $stdlib
 build test/test_include.cmi test/test_include.cmj : cc test/test_include.ml | test/test_order.cmj $stdlib
 build test/test_incomplete.cmi test/test_incomplete.cmj : cc test/test_incomplete.ml | $stdlib
@@ -568,13 +577,13 @@ build test/test_incr_ref.cmi test/test_incr_ref.cmj : cc test/test_incr_ref.ml |
 build test/test_index.cmi test/test_index.cmj : cc test/test_index.ml | $stdlib
 build test/test_int_map_find.cmi test/test_int_map_find.cmj : cc test/test_int_map_find.ml | $stdlib
 build test/test_internalOO.cmi test/test_internalOO.cmj : cc test/test_internalOO.ml | $stdlib
-build test/test_is_js.cmj : cc test/test_is_js.ml | test/mt.cmj test/test_is_js.cmi $stdlib
+build test/test_is_js.cmj : cc_cmi test/test_is_js.ml | test/mt.cmj test/test_is_js.cmi $stdlib
 build test/test_is_js.cmi : cc test/test_is_js.mli | $stdlib
 build test/test_js_ffi.cmi test/test_js_ffi.cmj : cc test/test_js_ffi.ml | $stdlib
 build test/test_let.cmi test/test_let.cmj : cc test/test_let.ml | $stdlib
 build test/test_list.cmi test/test_list.cmj : cc test/test_list.ml | $stdlib
 build test/test_literal.cmi test/test_literal.cmj : cc test/test_literal.ml | $stdlib
-build test/test_literals.cmj : cc test/test_literals.ml | test/test_literals.cmi $stdlib
+build test/test_literals.cmj : cc_cmi test/test_literals.ml | test/test_literals.cmi $stdlib
 build test/test_literals.cmi : cc test/test_literals.mli | $stdlib
 build test/test_match_exception.cmi test/test_match_exception.cmj : cc test/test_match_exception.ml | $stdlib
 build test/test_mutliple.cmi test/test_mutliple.cmj : cc test/test_mutliple.ml | $stdlib
@@ -626,15 +635,15 @@ build test/test_tuple_destructring.cmi test/test_tuple_destructring.cmj : cc tes
 build test/test_type_based_arity.cmi test/test_type_based_arity.cmj : cc test/test_type_based_arity.ml | test/abstract_type.cmj $stdlib
 build test/test_u.cmi test/test_u.cmj : cc test/test_u.ml | $stdlib
 build test/test_unsafe_cmp.cmi test/test_unsafe_cmp.cmj : cc test/test_unsafe_cmp.ml | $stdlib
-build test/test_unsafe_obj_ffi.cmj : cc test/test_unsafe_obj_ffi.ml | test/test_unsafe_obj_ffi.cmi $stdlib
+build test/test_unsafe_obj_ffi.cmj : cc_cmi test/test_unsafe_obj_ffi.ml | test/test_unsafe_obj_ffi.cmi $stdlib
 build test/test_unsafe_obj_ffi.cmi : cc test/test_unsafe_obj_ffi.mli | $stdlib
-build test/test_unsafe_obj_ffi_ppx.cmj : cc test/test_unsafe_obj_ffi_ppx.ml | test/test_unsafe_obj_ffi_ppx.cmi $stdlib
+build test/test_unsafe_obj_ffi_ppx.cmj : cc_cmi test/test_unsafe_obj_ffi_ppx.ml | test/test_unsafe_obj_ffi_ppx.cmi $stdlib
 build test/test_unsafe_obj_ffi_ppx.cmi : cc test/test_unsafe_obj_ffi_ppx.mli | $stdlib
 build test/test_unsupported_primitive.cmi test/test_unsupported_primitive.cmj : cc test/test_unsupported_primitive.ml | $stdlib
 build test/test_while_closure.cmi test/test_while_closure.cmj : cc test/test_while_closure.ml | $stdlib
 build test/test_while_side_effect.cmi test/test_while_side_effect.cmj : cc test/test_while_side_effect.ml | $stdlib
 build test/test_zero_nullable.cmi test/test_zero_nullable.cmj : cc test/test_zero_nullable.ml | test/mt.cmj $stdlib
-build test/testing.cmj : cc test/testing.ml | test/testing.cmi $stdlib
+build test/testing.cmj : cc_cmi test/testing.ml | test/testing.cmi $stdlib
 build test/testing.cmi : cc test/testing.mli | $stdlib
 build test/tfloat_record_test.cmi test/tfloat_record_test.cmj : cc test/tfloat_record_test.ml | test/float_array.cmj test/float_record.cmj test/mt.cmj test/mt_global.cmj $stdlib
 build test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
@@ -652,7 +661,7 @@ build test/unicode_type_error.cmi test/unicode_type_error.cmj : cc test/unicode_
 build test/unitest_string.cmi test/unitest_string.cmj : cc test/unitest_string.ml | $stdlib
 build test/unsafe_obj_external.cmi test/unsafe_obj_external.cmj : cc test/unsafe_obj_external.ml | $stdlib
 build test/unsafe_ppx_test.cmi test/unsafe_ppx_test.cmj : cc test/unsafe_ppx_test.ml | test/ffi_js_test.cmj test/mt.cmj $stdlib
-build test/unsafe_this.cmj : cc test/unsafe_this.ml | test/unsafe_this.cmi $stdlib
+build test/unsafe_this.cmj : cc_cmi test/unsafe_this.ml | test/unsafe_this.cmi $stdlib
 build test/unsafe_this.cmi : cc test/unsafe_this.mli | $stdlib
 build test/update_record_test.cmi test/update_record_test.cmj : cc test/update_record_test.ml | test/mt.cmj $stdlib
 build test/utf8_decode_test.cmi test/utf8_decode_test.cmj : cc test/utf8_decode_test.ml | test/mt.cmj $stdlib

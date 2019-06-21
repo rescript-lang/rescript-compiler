@@ -124,11 +124,8 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
   ::
-  ("-bs-assume-has-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+  ("-bs-read-cmi", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
     " (internal) Assume mli always exist ")
-  ::
-  ("-bs-assume-no-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_non_exists),
-  " (internal) Don't lookup whether mli exist or not")
   ::
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
@@ -260,6 +257,7 @@ let _ =
   (* default true 
     otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
+  Clflags.assume_no_mli := Clflags.Mli_non_exists;
   Clflags.unsafe_string := false;
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
