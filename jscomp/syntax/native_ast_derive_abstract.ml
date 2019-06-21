@@ -10,7 +10,7 @@ let strip_option arg_name =
    if arg_name.[0] = '?' then
      String.sub arg_name 1 (String.length arg_name - 1)
    else arg_name
-
+[@@@ocaml.warning "-a"]
 let handleTdcl light (tdcl : Parsetree.type_declaration) =
    let core_type = U.core_type_of_type_declaration tdcl in
    let loc = tdcl.ptype_loc in
@@ -57,7 +57,13 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
               Parsetree.label_declaration) (acc, maker, labels) ->
            let is_optional = Ast_attributes.has_bs_optional pld_attributes in
 
-           let newLabel = if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name in
+           let newLabel = 
+#if BS_NATIVE then            
+            if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name 
+#else            
+assert false (* FIXME *)
+#end
+            in
 
             let maker, getter_type =
               if is_optional then
@@ -146,6 +152,8 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
          else maker_body) in
 
         let myMaker =
+#if BS_NATIVE then          
+
          Str.value Nonrecursive [
            Vb.mk
              (Pat.var {loc; txt = type_name})
@@ -158,6 +166,8 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
                      (Pat.var ({arg_name with txt = strip_option arg_name.Asttypes.txt})) rest))
                  ) makeType)
          ]
+#else         assert false
+#end
          in
         (myMaker :: setter_accessor))
 
@@ -176,7 +186,11 @@ let code_sig_transform sigi = match sigi with
       } as _makerVb) :: []))
     } ->
     Sig.value (Val.mk ~loc:pstr_loc name typ)
-  | _ -> Sig.type_ []
+  | _ -> 
+#if BS_NATIVE  then
+    Sig.type_ []
+#else assert false    
+#end
 
 let handleTdclsInStr ~light tdcls =
   let tdcls, tdcls_sig, code, code_sig =

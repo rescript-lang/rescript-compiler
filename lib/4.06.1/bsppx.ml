@@ -836,6 +836,11 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -941,7 +946,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
@@ -1335,6 +1340,27 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
 
 let uncapitalize_ascii =
 
@@ -4588,7 +4614,8 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
-      
+  | Bs_fragile_external of string           (* 105 *)
+        
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -4731,7 +4758,8 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
-          
+  | Bs_fragile_external of string           (* 105 *)
+  
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -4809,12 +4837,11 @@ let number = function
   | Bs_polymorphic_comparison -> 102
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
-    
+  | Bs_fragile_external _ -> 105
+  
 ;;
 
-let last_warning_number = 104
-;;
-
+let last_warning_number = 105
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -5174,8 +5201,10 @@ let message = function
   | Bs_ffi_warning s ->
       "BuckleScript FFI warning: " ^ s
   | Bs_derive_warning s ->
-      "BuckleScript bs.deriving warning: " ^ s     
-
+      "BuckleScript bs.deriving warning: " ^ s 
+  | Bs_fragile_external s ->     
+      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+      
 ;;
 
 let sub_locs = function
@@ -9134,6 +9163,11 @@ val fold_left:
 
 val singleton_exn:     
     'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9841,6 +9875,10 @@ let rec fold_left2 l1 l2 accu f =
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
 
 end
 module Ast_compatible : sig 
@@ -9958,8 +9996,18 @@ val fun_ :
   expression -> 
   expression
 
-val is_arg_label_simple : 
-  arg_label -> bool   
+val opt_label : string -> arg_label
+
+val label_fun :
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+  label:arg_label ->
+  pattern ->
+  expression ->
+  expression
+
+val is_arg_label_simple :
+  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
@@ -10152,6 +10200,22 @@ let fun_
     pexp_desc = Pexp_fun(no_label,None, pat, exp)
   }
 
+let opt_label s =
+
+  Asttypes.Optional s
+
+
+let label_fun
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ~label
+  pat
+  exp =
+  {
+    pexp_loc = loc;
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(label, None, pat, exp)
+  }
 
  
 
@@ -12080,20 +12144,7 @@ module Ast_comb : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression *)
 
-(* val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
-
-(* val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type *)
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
@@ -14409,6 +14460,7 @@ val warn_literal_overflow : Location.t -> unit
 
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
+
 end = struct
 #1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14507,6 +14559,8 @@ let warn_literal_overflow loc =
       "Integer literal exceeds the range of representable integers of type int";
     Format.pp_print_flush warning_formatter ()  
   end 
+
+
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
@@ -15231,18 +15285,16 @@ val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
-val suffix_mlastd : string
-val suffix_mliastd : string
 
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
 
 val commonjs : string 
-val amdjs : string 
+
 val es6 : string 
 val es6_global : string
-val amdjs_global : string 
+
 val unused_attribute : string 
 val dash_nostdlib : string
 
@@ -15361,8 +15413,6 @@ let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 (* let suffix_re_js = ".re.js" *)
@@ -15371,10 +15421,10 @@ let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
-let amdjs = "amdjs"
+
 let es6 = "es6"
 let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
+
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 
@@ -15497,6 +15547,8 @@ val iter_process_derive_type :
 
 val bs : attr
 val is_bs : attr -> bool
+val is_optional : attr -> bool
+val is_bs_as : attr -> bool
 
 
 
@@ -15864,6 +15916,15 @@ let is_bs (attr : attr) =
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
+let is_optional (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.optional"; _}, _ -> true
+  | _ -> false
+
+let is_bs_as (attr : attr) =
+  match attr with
+  | {Location.txt = "bs.as"; _}, _ -> true
+  | _ -> false
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
@@ -17431,7 +17492,7 @@ let lf = '\010'
 
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
@@ -17440,7 +17501,7 @@ let __ocaml_lex_tables = {
     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
     \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
@@ -17449,7 +17510,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
     \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
@@ -17458,7 +17519,7 @@ let __ocaml_lex_tables = {
     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
@@ -17528,7 +17589,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
@@ -17598,22 +17659,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec lex_json buf lexbuf =
-    __ocaml_lex_lex_json_rec buf lexbuf 0
+   __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -17715,11 +17776,11 @@ let
           ( error lexbuf (Illegal_character c ))
 # 408 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-    __ocaml_lex_comment_rec buf lexbuf 40
+   __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -17737,11 +17798,11 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
        (error lexbuf Unterminated_comment)
 # 430 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 45
+   __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -17876,7 +17937,7 @@ let
       )
 # 569 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
@@ -18909,9 +18970,9 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)    
-let version = "5.0.4"
+let version = "5.0.5"
 let header = 
-   "// Generated by BUCKLESCRIPT VERSION 5.0.4, PLEASE EDIT WITH CARE"  
+   "// Generated by BUCKLESCRIPT VERSION 5.0.5, PLEASE EDIT WITH CARE"  
 let package_name = "bs-platform"   
     
 end
@@ -20105,10 +20166,10 @@ module Ast_external_process : sig
 *)
 val handle_attributes_as_string :
   Bs_loc.t ->
-  string  ->
   Ast_core_type.t ->
   Ast_attributes.t ->
-  string   ->
+  string  ->  
+  string  ->
   response
 
 
@@ -20157,28 +20218,28 @@ end = struct
 [@@@ocaml.warning "+9"]
 (* record pattern match complete checker*)
 
+type field = 
+  | No_fields
+  | Valid_fields
+  | Invalid_field
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    Ext_list.fold_left row_fields `No_fields      
+    Ext_list.fold_left row_fields No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
-          (`No_fields | `Valid_fields),
+          (No_fields | Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
           Rtag (label, attrs, false, ([ _ ]))
           ->
-          `Valid_fields
+          Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
-          `Invalid_field
+          Invalid_field
       end
-
   in
-  match validity with
-  | `Valid_fields -> true
-  | `No_fields
-  | `Invalid_field -> false
+  validity = Valid_fields 
 
 (*
   TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
@@ -20303,14 +20364,16 @@ let get_opt_arg_type
 type bundle_source =
   [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
   |`Nm_external of string (* from "" in external *)
-  | `Nm_val of string   (* from function name *)
+  | `Nm_val of string lazy_t   (* from function name *)
   ]
 
 let string_of_bundle_source (x : bundle_source) =
   match x with
   | `Nm_payload x
   | `Nm_external x
-  | `Nm_val x -> x
+  | `Nm_val lazy x -> x
+
+
 type name_source =
   [ bundle_source
   | `Nm_na
@@ -20375,8 +20438,8 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 (* The processed attributes will be dropped *)
 let parse_external_attributes
     (no_arguments : bool)   
+    (prim_name_check : string)
     (prim_name_or_pval_prim: bundle_source )
-    (pval_prim : string)
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
@@ -20454,8 +20517,14 @@ let parse_external_attributes
             | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
-            | "bs.set_index" -> {st with set_index = true}
-            | "bs.get_index"-> {st with get_index = true}
+            | "bs.set_index" -> 
+              if String.length prim_name_check <> 0 then 
+                Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+              {st with set_index = true}
+            | "bs.get_index"->               
+              if String.length prim_name_check <> 0 then
+                Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+              {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
               let actions =
@@ -20648,7 +20717,6 @@ let process_obj
 let external_desc_of_non_obj 
     (loc : Location.t) 
     (st : external_desc) 
-    (prim_name : string) 
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
@@ -20673,8 +20741,6 @@ let external_desc_of_non_obj
 
     }
     ->
-    if String.length prim_name <> 0 then
-      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
     else
@@ -20698,8 +20764,6 @@ let external_desc_of_non_obj
      mk_obj;
      return_wrapper ;
     } ->
-    if String.length prim_name <> 0 then
-      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
     else Location.raise_errorf ~loc
@@ -20740,7 +20804,7 @@ let external_desc_of_non_obj
     end
   | {module_as_val = Some x; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+  | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
      external_module_name;
@@ -20762,7 +20826,7 @@ let external_desc_of_non_obj
   | {call_name = #bundle_source ; _ }
     ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      call_name = `Nm_na ;
@@ -20816,7 +20880,7 @@ let external_desc_of_non_obj
       *)
       Js_var { name; external_module_name; scopes}
     else  Js_call {splice; name; external_module_name; scopes}
-  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {val_send = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      splice;
      scopes;
      val_send_pipe = None;
@@ -20874,7 +20938,7 @@ let external_desc_of_non_obj
   | {val_send_pipe = Some _ ; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
 
-  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {new_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
      val_name = `Nm_na  ;
@@ -20894,7 +20958,7 @@ let external_desc_of_non_obj
     -> Js_new {name; external_module_name;  scopes}
   | {new_name = #bundle_source ; _ } ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {set_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -20916,7 +20980,7 @@ let external_desc_of_non_obj
     else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
   | {set_name = #bundle_source; _}
     -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+  | {get_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
 
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
@@ -20963,9 +21027,10 @@ let external_desc_of_non_obj
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
-    (pval_prim : string )
     (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string)
+    (prim_attributes : Ast_attributes.t) 
+    (pval_name : string )
+    (prim_name : string)
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
@@ -20975,8 +21040,9 @@ let handle_attributes
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
       ~loc "[@@bs.uncurry] can not be applied to the whole definition";
-  let prim_name_or_pval_prim =
-    if String.length prim_name = 0 then  `Nm_val pval_prim
+  let prim_name_or_pval_name =
+    if String.length prim_name = 0 then  
+      `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
     else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
@@ -20988,7 +21054,7 @@ let handle_attributes
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  
-      prim_name_or_pval_prim pval_prim prim_attributes in
+      prim_name prim_name_or_pval_name  prim_attributes in
   if external_desc.mk_obj then
     (* warn unused attributes here ? *)
     let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
@@ -21071,7 +21137,7 @@ let handle_attributes
         )  in
     let ffi : External_ffi_types.external_spec  = 
       external_desc_of_non_obj 
-        loc external_desc prim_name prim_name_or_pval_prim arg_type_specs_length 
+        loc external_desc prim_name_or_pval_name arg_type_specs_length 
         arg_types_ty arg_type_specs in 
     let relative = External_ffi_types.check_ffi ~loc ffi in 
     (* result type can not be labeled *)
@@ -21086,11 +21152,14 @@ let handle_attributes
 
 
 let handle_attributes_as_string
-    pval_loc
-    pval_prim
-    (typ : Ast_core_type.t) attrs prim_name : response =
+    (pval_loc : Location.t)
+    (typ : Ast_core_type.t) 
+    (attrs : Ast_attributes.t) 
+    (pval_name : string)
+    (prim_name : string) 
+  : response =
   let pval_type, ffi, pval_attributes, no_inline_cross_module  =
-    handle_attributes pval_loc pval_prim typ attrs prim_name  in
+    handle_attributes pval_loc typ attrs pval_name prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
     pval_attributes;
@@ -23477,9 +23546,7 @@ let init () =
   Ast_derive.register
     derivingName
     (fun (x : Parsetree.expression option) ->
-       (match x with 
-        | Some config -> invalid_config config
-        | None -> ());
+       Ext_option.iter x invalid_config;
        {structure_gen = 
           begin fun (tdcls : tdcls) _explict_nonrec ->
             let handle_tdcl tdcl = 
@@ -23499,9 +23566,7 @@ let init () =
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun
-                    ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                        Parsetree.constructor_declaration)
+                  (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
                     -> (* TODO: add type annotations *)
 
                       let pcd_args = 
@@ -23511,12 +23576,16 @@ let init () =
                         
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
+                      let annotate_type = 
+                        match pcd_res with 
+                        | None -> core_type
+                        | Some x -> x in  
                       Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
                         (
                           if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
                             (Exp.constraint_
                                (Exp.construct {loc ; txt = Longident.Lident con_name } None)
-                               core_type
+                               annotate_type
                             )
                           else 
                             begin 
@@ -23527,13 +23596,11 @@ let init () =
                                   ( 
                                     Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
                                     Some
-                                      ( 
-                                        if  arity = 1 then 
-                                          Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
+                                      (if  arity = 1 then 
+                                          Exp.ident { loc ; txt = Lident (List.hd vars )}
                                         else 
                                           Exp.tuple (Ext_list.map vars 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
-                                                    ) )) core_type
+                                                       (fun x -> Exp.ident {loc ; txt = Lident x})))) annotate_type
                               in 
                               Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
@@ -23556,19 +23623,13 @@ let init () =
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
                 ->                 
-                Ext_list.map label_declarations 
-                  (fun 
-                    ({pld_name ;
-                      pld_type
-                     } : 
-                       Parsetree.label_declaration) -> 
+                Ext_list.map label_declarations (fun {pld_name; pld_type}  -> 
                     Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                           Parsetree.constructor_declaration)
+                  (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
                     -> 
                                           
                       let pcd_args = 
@@ -23576,10 +23637,12 @@ let init () =
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in 
                         
+                      let annotate_type = 
+                        match pcd_res with
+                        | Some x -> x 
+                        | None -> core_type in 
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right pcd_args core_type
-                           (fun x acc -> Ast_compatible.arrow x acc)
-                           ))
+                        (Ext_list.fold_right pcd_args annotate_type (fun x acc -> Ast_compatible.arrow x acc)))
               | Ptype_open | Ptype_abstract -> 
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
@@ -23968,11 +24031,13 @@ let app_exp_mapper
           Ast_attributes.is_bs with
       | None -> default_expr_mapper self e
       | Some pexp_attributes ->
+
         {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                 pexp_attributes }
       
   
-  
+
+
 end
 module Ast_exp_extension : sig 
 #1 "ast_exp_extension.mli"
@@ -24382,9 +24447,11 @@ let handleExternalInSig
   | [ v ] ->
     match Ast_external_process.handle_attributes_as_string
             loc
-            prim.pval_name.txt
             pval_type
-            pval_attributes v with
+            pval_attributes
+            prim.pval_name.txt            
+            v 
+    with
     | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->        
       {sigi with
        psig_desc =
@@ -24412,8 +24479,10 @@ let handleExternalInStru
   | [ v] ->
     match Ast_external_process.handle_attributes_as_string
             loc
+            pval_type 
+            pval_attributes 
             prim.pval_name.txt
-            pval_type pval_attributes v with 
+            v with 
     | { pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
       let external_result = 
         {str with
@@ -24572,7 +24641,7 @@ let set_attrs = [Ast_attributes.bs_set]
 
 let deprecated name = 
   Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
+    ("use " ^ name ^ "Get instead, or swith to the new [@bs.deriving {abstract: light}] for the type declaration (OCaml syntax: [@@bs.deriving {abstract = light}])")
 
 
 let handleTdcl 
@@ -24817,6 +24886,8 @@ let newTdcls
       
 
 
+
+
 let handleTdclsInSigi
     (self : Bs_ast_mapper.mapper)
     (sigi : Parsetree.signature_item)
@@ -24831,7 +24902,9 @@ let handleTdclsInSigi
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
     let kind = Ast_derive_abstract.isAbstract actions in
     if kind <> Not_abstract then
+
       let  codes = Ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
+
       Ast_signature.fuseAll ~loc
         (
           Sig.include_ ~loc
@@ -24839,7 +24912,9 @@ let handleTdclsInSigi
                (Mty.typeof_ ~loc
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
+
                          Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
+
                          ] )
                      (Mty.signature ~loc [])) ) )
           :: (* include module type of struct [processed_code for checking like invariance ]end *)
@@ -24877,7 +24952,8 @@ let handleTdclsInStru
     in
     let kind = Ast_derive_abstract.isAbstract actions in 
     if kind <> Not_abstract then
-      let codes = 
+
+      let codes =
           Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
@@ -24885,6 +24961,8 @@ let handleTdclsInStru
           Ast_structure.constraint_ ~loc [newStr] []
           :: (* [include struct end : sig end] for error checking *)
           self.structure self codes)
+
+
     else
       Ast_structure.fuseAll ~loc
         (newStr ::
@@ -25376,13 +25454,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     Ast_util.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
-    if !Js_config.debug then 
-      let open Ast_helper in 
-      Str.eval ~loc (Ast_compatible.app1 ~loc 
-                       (Exp.ident ~loc {txt = setupChromeDebugger;loc} )
-                       (Ast_literal.val_unit ~loc ())
-                    )
-    else Ast_structure.dummy_item loc
+    Ast_structure.dummy_item loc
   | Pstr_type (
 
           _rf, 

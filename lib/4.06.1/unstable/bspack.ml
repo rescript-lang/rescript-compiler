@@ -3394,7 +3394,8 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
-      
+  | Bs_fragile_external of string           (* 105 *)
+        
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -3537,7 +3538,8 @@ type t =
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
-          
+  | Bs_fragile_external of string           (* 105 *)
+  
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -3615,12 +3617,11 @@ let number = function
   | Bs_polymorphic_comparison -> 102
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
-    
+  | Bs_fragile_external _ -> 105
+  
 ;;
 
-let last_warning_number = 104
-;;
-
+let last_warning_number = 105
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -3980,8 +3981,10 @@ let message = function
   | Bs_ffi_warning s ->
       "BuckleScript FFI warning: " ^ s
   | Bs_derive_warning s ->
-      "BuckleScript bs.deriving warning: " ^ s     
-
+      "BuckleScript bs.deriving warning: " ^ s 
+  | Bs_fragile_external s ->     
+      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+      
 ;;
 
 let sub_locs = function
@@ -7815,6 +7818,11 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -7920,7 +7928,7 @@ let rec ends_aux s end_ j k =
 (** return an index which is minus when [s] does not 
     end with [beg]
 *)
-let ends_with_index s end_ = 
+let ends_with_index s end_ : int = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
@@ -8315,6 +8323,27 @@ let capitalize_ascii (s : string) : string =
       else s 
     end
 
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
+
 let uncapitalize_ascii =
 
     String.uncapitalize_ascii
@@ -8692,6 +8721,11 @@ val fold_left:
 
 val singleton_exn:     
     'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9399,6 +9433,10 @@ let rec fold_left2 l1 l2 accu f =
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
 
 end
 module Ext_char : sig 
@@ -9686,18 +9724,16 @@ val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
-val suffix_mlastd : string
-val suffix_mliastd : string
 
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
 
 val commonjs : string 
-val amdjs : string 
+
 val es6 : string 
 val es6_global : string
-val amdjs_global : string 
+
 val unused_attribute : string 
 val dash_nostdlib : string
 
@@ -9816,8 +9852,6 @@ let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 (* let suffix_re_js = ".re.js" *)
@@ -9826,10 +9860,10 @@ let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
-let amdjs = "amdjs"
+
 let es6 = "es6"
 let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
+
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 
@@ -12306,7 +12340,7 @@ let collect_from_main
         Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                 Ext_string.ends_with source_file ".mli" )
-            && (* not_excluded source_file *) (not (List.mem source_file excludes))
+            && (* not_excluded source_file *) (not (Ext_list.mem_string excludes source_file ))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) )
@@ -31895,9 +31929,9 @@ let () =
                    (fun dep acc  -> 
                       acc ^ 
                       dep ^
-                      "\n"
+                      " "
                    ) sorted_dep_queue
-                   (file ^ ":\n" )
+                   (file ^ ": " )
                    (* collection_modules *)
                )
        end

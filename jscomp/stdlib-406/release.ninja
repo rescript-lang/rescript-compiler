@@ -1,136 +1,149 @@
 
 bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  -w -40-49-103-3 -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
+
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I stdlib-406 -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I stdlib-406 -c $in
     description = $in -> $out
+rule cc_cmi
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I stdlib-406 -c $in
+    description = $in -> $out    
+rule re
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I stdlib-406 -c -impl $in
+    description = $in -> $out
+rule re_cmi
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I stdlib-406 -c -impl $in
+    description = $in -> $out
+rule rei
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I stdlib-406 -c -intf $in
+    description = $in -> $out    
 
 build stdlib-406/camlinternalFormatBasics.cmi : cc stdlib-406/camlinternalFormatBasics.mli | others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-406/camlinternalFormatBasics.cmj : cc stdlib-406/camlinternalFormatBasics.ml | stdlib-406/camlinternalFormatBasics.cmi others
+build stdlib-406/camlinternalFormatBasics.cmj : cc_cmi stdlib-406/camlinternalFormatBasics.ml | stdlib-406/camlinternalFormatBasics.cmi others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-406/pervasives.cmj : cc stdlib-406/pervasives.ml | stdlib-406/pervasives.cmi others
+build stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.ml | stdlib-406/pervasives.cmi others
     bsc_flags = $bsc_flags -nopervasives
 build stdlib-406/pervasives.cmi : cc stdlib-406/pervasives.mli | stdlib-406/camlinternalFormatBasics.cmj others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-406/arg.cmj : cc stdlib-406/arg.ml | stdlib-406/arg.cmi stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/list.cmj stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/arg.cmj : cc_cmi stdlib-406/arg.ml | stdlib-406/arg.cmi stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/list.cmj stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/arg.cmi : cc stdlib-406/arg.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/array.cmj : cc stdlib-406/array.ml | stdlib-406/array.cmi others
+build stdlib-406/array.cmj : cc_cmi stdlib-406/array.ml | stdlib-406/array.cmi others
 build stdlib-406/array.cmi : cc stdlib-406/array.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/arrayLabels.cmj : cc stdlib-406/arrayLabels.ml | stdlib-406/array.cmj stdlib-406/arrayLabels.cmi others
+build stdlib-406/arrayLabels.cmj : cc_cmi stdlib-406/arrayLabels.ml | stdlib-406/array.cmj stdlib-406/arrayLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/arrayLabels.cmi : cc stdlib-406/arrayLabels.mli | stdlib-406/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/bigarray.cmj : cc stdlib-406/bigarray.ml | stdlib-406/array.cmj stdlib-406/bigarray.cmi stdlib-406/camlinternalBigarray.cmj stdlib-406/sys.cmj stdlib-406/unix.cmj others
+build stdlib-406/bigarray.cmj : cc_cmi stdlib-406/bigarray.ml | stdlib-406/array.cmj stdlib-406/bigarray.cmi stdlib-406/camlinternalBigarray.cmj stdlib-406/sys.cmj stdlib-406/unix.cmj others
 build stdlib-406/bigarray.cmi : cc stdlib-406/bigarray.mli | stdlib-406/camlinternalBigarray.cmj stdlib-406/complex.cmi stdlib-406/pervasives.cmj stdlib-406/unix.cmi others
-build stdlib-406/buffer.cmj : cc stdlib-406/buffer.ml | stdlib-406/buffer.cmi stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/string.cmj stdlib-406/sys.cmj stdlib-406/uchar.cmj others
+build stdlib-406/buffer.cmj : cc_cmi stdlib-406/buffer.ml | stdlib-406/buffer.cmi stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/string.cmj stdlib-406/sys.cmj stdlib-406/uchar.cmj others
 build stdlib-406/buffer.cmi : cc stdlib-406/buffer.mli | stdlib-406/pervasives.cmj stdlib-406/uchar.cmi others
-build stdlib-406/bytes.cmj : cc stdlib-406/bytes.ml | stdlib-406/bytes.cmi stdlib-406/char.cmj stdlib-406/pervasives.cmj others
+build stdlib-406/bytes.cmj : cc_cmi stdlib-406/bytes.ml | stdlib-406/bytes.cmi stdlib-406/char.cmj stdlib-406/pervasives.cmj others
 build stdlib-406/bytes.cmi : cc stdlib-406/bytes.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/bytesLabels.cmj : cc stdlib-406/bytesLabels.ml | stdlib-406/bytes.cmj stdlib-406/bytesLabels.cmi others
+build stdlib-406/bytesLabels.cmj : cc_cmi stdlib-406/bytesLabels.ml | stdlib-406/bytes.cmj stdlib-406/bytesLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/bytesLabels.cmi : cc stdlib-406/bytesLabels.mli | stdlib-406/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/callback.cmj : cc stdlib-406/callback.ml | stdlib-406/callback.cmi stdlib-406/obj.cmj others
+build stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.ml | stdlib-406/callback.cmi stdlib-406/obj.cmj others
 build stdlib-406/callback.cmi : cc stdlib-406/callback.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/camlinternalBigarray.cmi stdlib-406/camlinternalBigarray.cmj : cc stdlib-406/camlinternalBigarray.ml | stdlib-406/complex.cmj stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalFormat.cmj : cc stdlib-406/camlinternalFormat.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmi stdlib-406/camlinternalFormatBasics.cmj stdlib-406/char.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/camlinternalFormat.cmj : cc_cmi stdlib-406/camlinternalFormat.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmi stdlib-406/camlinternalFormatBasics.cmj stdlib-406/char.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/camlinternalFormat.cmi : cc stdlib-406/camlinternalFormat.mli | stdlib-406/buffer.cmi stdlib-406/camlinternalFormatBasics.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalLazy.cmj : cc stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi stdlib-406/obj.cmj others
+build stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi stdlib-406/obj.cmj others
 build stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalMod.cmj : cc stdlib-406/camlinternalMod.ml | stdlib-406/array.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalOO.cmj stdlib-406/obj.cmj others
+build stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.ml | stdlib-406/array.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalOO.cmj stdlib-406/obj.cmj others
 build stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalOO.cmj : cc stdlib-406/camlinternalOO.ml | stdlib-406/array.cmj stdlib-406/camlinternalOO.cmi stdlib-406/char.cmj stdlib-406/list.cmj stdlib-406/map.cmj stdlib-406/obj.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/camlinternalOO.cmj : cc_cmi stdlib-406/camlinternalOO.ml | stdlib-406/array.cmj stdlib-406/camlinternalOO.cmi stdlib-406/char.cmj stdlib-406/list.cmj stdlib-406/map.cmj stdlib-406/obj.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/camlinternalOO.cmi : cc stdlib-406/camlinternalOO.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/char.cmj : cc stdlib-406/char.ml | stdlib-406/char.cmi others
+build stdlib-406/char.cmj : cc_cmi stdlib-406/char.ml | stdlib-406/char.cmi others
 build stdlib-406/char.cmi : cc stdlib-406/char.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/complex.cmj : cc stdlib-406/complex.ml | stdlib-406/complex.cmi others
+build stdlib-406/complex.cmj : cc_cmi stdlib-406/complex.ml | stdlib-406/complex.cmi others
 build stdlib-406/complex.cmi : cc stdlib-406/complex.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/digest.cmj : cc stdlib-406/digest.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/digest.cmi stdlib-406/string.cmj others
+build stdlib-406/digest.cmj : cc_cmi stdlib-406/digest.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/digest.cmi stdlib-406/string.cmj others
 build stdlib-406/digest.cmi : cc stdlib-406/digest.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/ephemeron.cmj : cc stdlib-406/ephemeron.ml | stdlib-406/array.cmj stdlib-406/ephemeron.cmi stdlib-406/hashtbl.cmj stdlib-406/lazy.cmj stdlib-406/obj.cmj stdlib-406/random.cmj stdlib-406/sys.cmj others
+build stdlib-406/ephemeron.cmj : cc_cmi stdlib-406/ephemeron.ml | stdlib-406/array.cmj stdlib-406/ephemeron.cmi stdlib-406/hashtbl.cmj stdlib-406/lazy.cmj stdlib-406/obj.cmj stdlib-406/random.cmj stdlib-406/sys.cmj others
 build stdlib-406/ephemeron.cmi : cc stdlib-406/ephemeron.mli | stdlib-406/hashtbl.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/filename.cmj : cc stdlib-406/filename.ml | stdlib-406/buffer.cmj stdlib-406/filename.cmi stdlib-406/lazy.cmj stdlib-406/printf.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/filename.cmj : cc_cmi stdlib-406/filename.ml | stdlib-406/buffer.cmj stdlib-406/filename.cmi stdlib-406/lazy.cmj stdlib-406/printf.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/filename.cmi : cc stdlib-406/filename.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/format.cmj : cc stdlib-406/format.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/format.cmi stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/string.cmj others
+build stdlib-406/format.cmj : cc_cmi stdlib-406/format.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/format.cmi stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/string.cmj others
 build stdlib-406/format.cmi : cc stdlib-406/format.mli | stdlib-406/buffer.cmi stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/gc.cmj : cc stdlib-406/gc.ml | stdlib-406/gc.cmi stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/gc.cmj : cc_cmi stdlib-406/gc.ml | stdlib-406/gc.cmi stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/gc.cmi : cc stdlib-406/gc.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/genlex.cmj : cc stdlib-406/genlex.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/genlex.cmi stdlib-406/hashtbl.cmj stdlib-406/list.cmj stdlib-406/stream.cmj stdlib-406/string.cmj others
+build stdlib-406/genlex.cmj : cc_cmi stdlib-406/genlex.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/genlex.cmi stdlib-406/hashtbl.cmj stdlib-406/list.cmj stdlib-406/stream.cmj stdlib-406/string.cmj others
 build stdlib-406/genlex.cmi : cc stdlib-406/genlex.mli | stdlib-406/pervasives.cmj stdlib-406/stream.cmi others
-build stdlib-406/hashtbl.cmj : cc stdlib-406/hashtbl.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/hashtbl.cmj : cc_cmi stdlib-406/hashtbl.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/hashtbl.cmi : cc stdlib-406/hashtbl.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/int32.cmj : cc stdlib-406/int32.ml | stdlib-406/int32.cmi stdlib-406/pervasives.cmj others
+build stdlib-406/int32.cmj : cc_cmi stdlib-406/int32.ml | stdlib-406/int32.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/int32.cmi : cc stdlib-406/int32.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/int64.cmj : cc stdlib-406/int64.ml | stdlib-406/int64.cmi stdlib-406/pervasives.cmj others
+build stdlib-406/int64.cmj : cc_cmi stdlib-406/int64.ml | stdlib-406/int64.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/int64.cmi : cc stdlib-406/int64.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/lazy.cmj : cc stdlib-406/lazy.ml | stdlib-406/camlinternalLazy.cmj stdlib-406/lazy.cmi stdlib-406/obj.cmj others
+build stdlib-406/lazy.cmj : cc_cmi stdlib-406/lazy.ml | stdlib-406/camlinternalLazy.cmj stdlib-406/lazy.cmi stdlib-406/obj.cmj others
 build stdlib-406/lazy.cmi : cc stdlib-406/lazy.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/lexing.cmj : cc stdlib-406/lexing.ml | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/lexing.cmi stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/lexing.cmj : cc_cmi stdlib-406/lexing.ml | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/lexing.cmi stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/lexing.cmi : cc stdlib-406/lexing.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/list.cmj : cc stdlib-406/list.ml | stdlib-406/list.cmi others
+build stdlib-406/list.cmj : cc_cmi stdlib-406/list.ml | stdlib-406/list.cmi others
 build stdlib-406/list.cmi : cc stdlib-406/list.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/listLabels.cmj : cc stdlib-406/listLabels.ml | stdlib-406/list.cmj stdlib-406/listLabels.cmi others
+build stdlib-406/listLabels.cmj : cc_cmi stdlib-406/listLabels.ml | stdlib-406/list.cmj stdlib-406/listLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/listLabels.cmi : cc stdlib-406/listLabels.mli | stdlib-406/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/map.cmj : cc stdlib-406/map.ml | stdlib-406/map.cmi others
+build stdlib-406/map.cmj : cc_cmi stdlib-406/map.ml | stdlib-406/map.cmi others
 build stdlib-406/map.cmi : cc stdlib-406/map.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/marshal.cmj : cc stdlib-406/marshal.ml | stdlib-406/bytes.cmj stdlib-406/marshal.cmi others
+build stdlib-406/marshal.cmj : cc_cmi stdlib-406/marshal.ml | stdlib-406/bytes.cmj stdlib-406/marshal.cmi others
 build stdlib-406/marshal.cmi : cc stdlib-406/marshal.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/moreLabels.cmj : cc stdlib-406/moreLabels.ml | stdlib-406/hashtbl.cmj stdlib-406/map.cmj stdlib-406/moreLabels.cmi stdlib-406/set.cmj others
+build stdlib-406/moreLabels.cmj : cc_cmi stdlib-406/moreLabels.ml | stdlib-406/hashtbl.cmj stdlib-406/map.cmj stdlib-406/moreLabels.cmi stdlib-406/set.cmj others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/moreLabels.cmi : cc stdlib-406/moreLabels.mli | stdlib-406/hashtbl.cmi stdlib-406/map.cmi stdlib-406/pervasives.cmj stdlib-406/set.cmi others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/nativeint.cmj : cc stdlib-406/nativeint.ml | stdlib-406/nativeint.cmi stdlib-406/pervasives.cmj stdlib-406/sys.cmj others
+build stdlib-406/nativeint.cmj : cc_cmi stdlib-406/nativeint.ml | stdlib-406/nativeint.cmi stdlib-406/pervasives.cmj stdlib-406/sys.cmj others
 build stdlib-406/nativeint.cmi : cc stdlib-406/nativeint.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/obj.cmj : cc stdlib-406/obj.ml | stdlib-406/int32.cmj stdlib-406/marshal.cmj stdlib-406/obj.cmi others
+build stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.ml | stdlib-406/int32.cmj stdlib-406/marshal.cmj stdlib-406/obj.cmi others
 build stdlib-406/obj.cmi : cc stdlib-406/obj.mli | stdlib-406/int32.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/oo.cmj : cc stdlib-406/oo.ml | stdlib-406/camlinternalOO.cmj stdlib-406/oo.cmi others
+build stdlib-406/oo.cmj : cc_cmi stdlib-406/oo.ml | stdlib-406/camlinternalOO.cmj stdlib-406/oo.cmi others
 build stdlib-406/oo.cmi : cc stdlib-406/oo.mli | stdlib-406/camlinternalOO.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/parsing.cmj : cc stdlib-406/parsing.ml | stdlib-406/array.cmj stdlib-406/lexing.cmj stdlib-406/obj.cmj stdlib-406/parsing.cmi others
+build stdlib-406/parsing.cmj : cc_cmi stdlib-406/parsing.ml | stdlib-406/array.cmj stdlib-406/lexing.cmj stdlib-406/obj.cmj stdlib-406/parsing.cmi others
 build stdlib-406/parsing.cmi : cc stdlib-406/parsing.mli | stdlib-406/lexing.cmi stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/printexc.cmj : cc stdlib-406/printexc.ml | stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/obj.cmj stdlib-406/pervasives.cmj stdlib-406/printexc.cmi stdlib-406/printf.cmj others
+build stdlib-406/printexc.cmj : cc_cmi stdlib-406/printexc.ml | stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/obj.cmj stdlib-406/pervasives.cmj stdlib-406/printexc.cmi stdlib-406/printf.cmj others
 build stdlib-406/printexc.cmi : cc stdlib-406/printexc.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/printf.cmj : cc stdlib-406/printf.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/printf.cmi others
+build stdlib-406/printf.cmj : cc_cmi stdlib-406/printf.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/printf.cmi others
 build stdlib-406/printf.cmi : cc stdlib-406/printf.mli | stdlib-406/buffer.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/queue.cmj : cc stdlib-406/queue.ml | stdlib-406/queue.cmi others
+build stdlib-406/queue.cmj : cc_cmi stdlib-406/queue.ml | stdlib-406/queue.cmi others
 build stdlib-406/queue.cmi : cc stdlib-406/queue.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/random.cmj : cc stdlib-406/random.ml | stdlib-406/array.cmj stdlib-406/char.cmj stdlib-406/digest.cmj stdlib-406/int32.cmj stdlib-406/int64.cmj stdlib-406/nativeint.cmj stdlib-406/pervasives.cmj stdlib-406/random.cmi stdlib-406/string.cmj others
+build stdlib-406/random.cmj : cc_cmi stdlib-406/random.ml | stdlib-406/array.cmj stdlib-406/char.cmj stdlib-406/digest.cmj stdlib-406/int32.cmj stdlib-406/int64.cmj stdlib-406/nativeint.cmj stdlib-406/pervasives.cmj stdlib-406/random.cmi stdlib-406/string.cmj others
 build stdlib-406/random.cmi : cc stdlib-406/random.mli | stdlib-406/int32.cmi stdlib-406/int64.cmi stdlib-406/nativeint.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/scanf.cmj : cc stdlib-406/scanf.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/printf.cmj stdlib-406/scanf.cmi stdlib-406/string.cmj others
+build stdlib-406/scanf.cmj : cc_cmi stdlib-406/scanf.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/printf.cmj stdlib-406/scanf.cmi stdlib-406/string.cmj others
 build stdlib-406/scanf.cmi : cc stdlib-406/scanf.mli | stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/set.cmj : cc stdlib-406/set.ml | stdlib-406/list.cmj stdlib-406/set.cmi others
+build stdlib-406/set.cmj : cc_cmi stdlib-406/set.ml | stdlib-406/list.cmj stdlib-406/set.cmi others
 build stdlib-406/set.cmi : cc stdlib-406/set.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/sort.cmj : cc stdlib-406/sort.ml | stdlib-406/array.cmj stdlib-406/sort.cmi others
+build stdlib-406/sort.cmj : cc_cmi stdlib-406/sort.ml | stdlib-406/array.cmj stdlib-406/sort.cmi others
 build stdlib-406/sort.cmi : cc stdlib-406/sort.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/spacetime.cmj : cc stdlib-406/spacetime.ml | stdlib-406/gc.cmj stdlib-406/spacetime.cmi others
+build stdlib-406/spacetime.cmj : cc_cmi stdlib-406/spacetime.ml | stdlib-406/gc.cmj stdlib-406/spacetime.cmi others
 build stdlib-406/spacetime.cmi : cc stdlib-406/spacetime.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/stack.cmj : cc stdlib-406/stack.ml | stdlib-406/list.cmj stdlib-406/stack.cmi others
+build stdlib-406/stack.cmj : cc_cmi stdlib-406/stack.ml | stdlib-406/list.cmj stdlib-406/stack.cmi others
 build stdlib-406/stack.cmi : cc stdlib-406/stack.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/stdLabels.cmj : cc stdlib-406/stdLabels.ml | stdlib-406/arrayLabels.cmj stdlib-406/bytesLabels.cmj stdlib-406/listLabels.cmj stdlib-406/stdLabels.cmi stdlib-406/stringLabels.cmj others
+build stdlib-406/stdLabels.cmj : cc_cmi stdlib-406/stdLabels.ml | stdlib-406/arrayLabels.cmj stdlib-406/bytesLabels.cmj stdlib-406/listLabels.cmj stdlib-406/stdLabels.cmi stdlib-406/stringLabels.cmj others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/stdLabels.cmi : cc stdlib-406/stdLabels.mli | stdlib-406/arrayLabels.cmi stdlib-406/bytesLabels.cmi stdlib-406/listLabels.cmi stdlib-406/pervasives.cmj stdlib-406/stringLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/std_exit.cmi stdlib-406/std_exit.cmj : cc stdlib-406/std_exit.ml | stdlib-406/pervasives.cmj others
-build stdlib-406/stream.cmj : cc stdlib-406/stream.ml | stdlib-406/bytes.cmj stdlib-406/lazy.cmj stdlib-406/list.cmj stdlib-406/stream.cmi stdlib-406/string.cmj others
+build stdlib-406/stream.cmj : cc_cmi stdlib-406/stream.ml | stdlib-406/bytes.cmj stdlib-406/lazy.cmj stdlib-406/list.cmj stdlib-406/stream.cmi stdlib-406/string.cmj others
 build stdlib-406/stream.cmi : cc stdlib-406/stream.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/string.cmj : cc stdlib-406/string.ml | stdlib-406/bytes.cmj stdlib-406/pervasives.cmj stdlib-406/string.cmi others
+build stdlib-406/string.cmj : cc_cmi stdlib-406/string.ml | stdlib-406/bytes.cmj stdlib-406/pervasives.cmj stdlib-406/string.cmi others
 build stdlib-406/string.cmi : cc stdlib-406/string.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/stringLabels.cmj : cc stdlib-406/stringLabels.ml | stdlib-406/string.cmj stdlib-406/stringLabels.cmi others
+build stdlib-406/stringLabels.cmj : cc_cmi stdlib-406/stringLabels.ml | stdlib-406/string.cmj stdlib-406/stringLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/stringLabels.cmi : cc stdlib-406/stringLabels.mli | stdlib-406/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/sys.cmj : cc stdlib-406/sys.ml | stdlib-406/sys.cmi others
+build stdlib-406/sys.cmj : cc_cmi stdlib-406/sys.ml | stdlib-406/sys.cmi others
 build stdlib-406/sys.cmi : cc stdlib-406/sys.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/uchar.cmj : cc stdlib-406/uchar.ml | stdlib-406/char.cmj stdlib-406/pervasives.cmj stdlib-406/uchar.cmi others
+build stdlib-406/uchar.cmj : cc_cmi stdlib-406/uchar.ml | stdlib-406/char.cmj stdlib-406/pervasives.cmj stdlib-406/uchar.cmi others
 build stdlib-406/uchar.cmi : cc stdlib-406/uchar.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/unix.cmj : cc stdlib-406/unix.ml | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/callback.cmj stdlib-406/camlinternalBigarray.cmj stdlib-406/filename.cmj stdlib-406/hashtbl.cmj stdlib-406/list.cmj stdlib-406/printexc.cmj stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj stdlib-406/unix.cmi others
+build stdlib-406/unix.cmj : cc_cmi stdlib-406/unix.ml | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/callback.cmj stdlib-406/camlinternalBigarray.cmj stdlib-406/filename.cmj stdlib-406/hashtbl.cmj stdlib-406/list.cmj stdlib-406/printexc.cmj stdlib-406/printf.cmj stdlib-406/string.cmj stdlib-406/sys.cmj stdlib-406/unix.cmi others
 build stdlib-406/unix.cmi : cc stdlib-406/unix.mli | stdlib-406/camlinternalBigarray.cmj stdlib-406/pervasives.cmj others
-build stdlib-406/unixLabels.cmj : cc stdlib-406/unixLabels.ml | stdlib-406/unix.cmj stdlib-406/unixLabels.cmi others
+build stdlib-406/unixLabels.cmj : cc_cmi stdlib-406/unixLabels.ml | stdlib-406/unix.cmj stdlib-406/unixLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/unixLabels.cmi : cc stdlib-406/unixLabels.mli | stdlib-406/camlinternalBigarray.cmj stdlib-406/pervasives.cmj stdlib-406/unix.cmi others
     bsc_flags = $bsc_flags -nolabels
-build stdlib-406/weak.cmj : cc stdlib-406/weak.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmj stdlib-406/obj.cmj stdlib-406/sys.cmj stdlib-406/weak.cmi others
+build stdlib-406/weak.cmj : cc_cmi stdlib-406/weak.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmj stdlib-406/obj.cmj stdlib-406/sys.cmj stdlib-406/weak.cmi others
 build stdlib-406/weak.cmi : cc stdlib-406/weak.mli | stdlib-406/hashtbl.cmi stdlib-406/pervasives.cmj others
 build $stdlib : phony stdlib-406/camlinternalFormatBasics.cmi stdlib-406/camlinternalFormatBasics.cmj stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj stdlib-406/arg.cmi stdlib-406/arg.cmj stdlib-406/array.cmi stdlib-406/array.cmj stdlib-406/arrayLabels.cmi stdlib-406/arrayLabels.cmj stdlib-406/bigarray.cmi stdlib-406/bigarray.cmj stdlib-406/buffer.cmi stdlib-406/buffer.cmj stdlib-406/bytes.cmi stdlib-406/bytes.cmj stdlib-406/bytesLabels.cmi stdlib-406/bytesLabels.cmj stdlib-406/callback.cmi stdlib-406/callback.cmj stdlib-406/camlinternalBigarray.cmi stdlib-406/camlinternalBigarray.cmj stdlib-406/camlinternalFormat.cmi stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/camlinternalOO.cmi stdlib-406/camlinternalOO.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/complex.cmi stdlib-406/complex.cmj stdlib-406/digest.cmi stdlib-406/digest.cmj stdlib-406/ephemeron.cmi stdlib-406/ephemeron.cmj stdlib-406/filename.cmi stdlib-406/filename.cmj stdlib-406/format.cmi stdlib-406/format.cmj stdlib-406/gc.cmi stdlib-406/gc.cmj stdlib-406/genlex.cmi stdlib-406/genlex.cmj stdlib-406/hashtbl.cmi stdlib-406/hashtbl.cmj stdlib-406/int32.cmi stdlib-406/int32.cmj stdlib-406/int64.cmi stdlib-406/int64.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/lexing.cmi stdlib-406/lexing.cmj stdlib-406/list.cmi stdlib-406/list.cmj stdlib-406/listLabels.cmi stdlib-406/listLabels.cmj stdlib-406/map.cmi stdlib-406/map.cmj stdlib-406/marshal.cmi stdlib-406/marshal.cmj stdlib-406/moreLabels.cmi stdlib-406/moreLabels.cmj stdlib-406/nativeint.cmi stdlib-406/nativeint.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/oo.cmi stdlib-406/oo.cmj stdlib-406/parsing.cmi stdlib-406/parsing.cmj stdlib-406/printexc.cmi stdlib-406/printexc.cmj stdlib-406/printf.cmi stdlib-406/printf.cmj stdlib-406/queue.cmi stdlib-406/queue.cmj stdlib-406/random.cmi stdlib-406/random.cmj stdlib-406/scanf.cmi stdlib-406/scanf.cmj stdlib-406/set.cmi stdlib-406/set.cmj stdlib-406/sort.cmi stdlib-406/sort.cmj stdlib-406/spacetime.cmi stdlib-406/spacetime.cmj stdlib-406/stack.cmi stdlib-406/stack.cmj stdlib-406/stdLabels.cmi stdlib-406/stdLabels.cmj stdlib-406/std_exit.cmi stdlib-406/std_exit.cmj stdlib-406/stream.cmi stdlib-406/stream.cmj stdlib-406/string.cmi stdlib-406/string.cmj stdlib-406/stringLabels.cmi stdlib-406/stringLabels.cmj stdlib-406/sys.cmi stdlib-406/sys.cmj stdlib-406/uchar.cmi stdlib-406/uchar.cmj stdlib-406/unix.cmi stdlib-406/unix.cmj stdlib-406/unixLabels.cmi stdlib-406/unixLabels.cmj stdlib-406/weak.cmi stdlib-406/weak.cmj
