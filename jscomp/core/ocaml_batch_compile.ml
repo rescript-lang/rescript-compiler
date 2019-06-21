@@ -26,28 +26,7 @@
 
 module String_set = Depend.StringSet
 
-(* we can cache it, since all deps have already being processed,
-   but having this functionalilty will introduce deps on {!Unix.stat}
-*)
-let process_result ppf  main_file ast_table result = 
-  if Js_config.get_diagnose () then
-    Format.fprintf Format.err_formatter
-      "Order: @[%a@]@."
-      (Ext_format.pp_print_queue
-         ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      result ;
-  Ast_extract.build_lazy_queue ppf result ast_table
-    Js_implementation.after_parsing_impl
-    Js_implementation.after_parsing_sig 
-  ;
-  if not (!Clflags.compile_only) then
-    Sys.command
-      ("node " ^
-        Ext_namespace.js_name_of_basename 
-        !Js_config.bs_suffix (Filename.chop_extension main_file)
-      )
-  else 0
+
 
 type task = 
 
