@@ -110,7 +110,29 @@ var getVersionString = () => {
 var version6 = () => {
   return !getVersionString().includes("4.02");
 };
-
+/**
+ *
+ * @param {string} ninjaCwd
+ */
+function ruleCC(ninjaCwd) {
+  return `
+rule cc
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
+    description = $in -> $out
+rule cc_cmi
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
+    description = $in -> $out    
+rule re
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
+    description = $in -> $out
+rule re_cmi
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
+    description = $in -> $out
+rule rei
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I ${ninjaCwd} -c -intf $in
+    description = $in -> $out    
+`;
+}
 /**
  * Fixed since it is already vendored
  */
@@ -774,11 +796,11 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
     };
     switch (x) {
       case "HAS_BOTH":
-        mk([ouptput_cmj], [input_ml]);
+        mk([ouptput_cmj], [input_ml], "cc_cmi");
         mk([output_cmi], [input_mli]);
         break;
       case "HAS_BOTH_RE":
-        mk([ouptput_cmj], [input_re], "re");
+        mk([ouptput_cmj], [input_re], "re_cmi");
         mk([output_cmi], [input_rei], "rei");
         break;
       case "HAS_RE":
@@ -813,10 +835,7 @@ async function runtimeNinja(devmode = true) {
 ${BSC_COMPILER}
 bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
-rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
-    description = $in -> $out
-
+${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   [
     "bs_stdlib_mini.cmi",
@@ -915,10 +934,7 @@ async function othersNinja(devmode = true) {
   var templateOthersRules = `
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
-rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
-    description = $in -> $out
-
+${ruleCC(ninjaCwd)}
 ${
   devmode
     ? `${cppoRule()}
@@ -1045,10 +1061,7 @@ async function stdlibNinja(devmode = true) {
   var templateStdlibRules = `
 ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings} -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
-rule cc
-    command = $bsc -bs-cmi -bs-cmj $${bsc_flags}    -I ${ninjaCwd} -c $in
-    description = $in -> $out
-
+${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   [
     "camlinternalFormatBasics.cmi",
@@ -1065,7 +1078,7 @@ ${ninjaQuickBuidList([
   [
     "camlinternalFormatBasics.cmj",
     "camlinternalFormatBasics.ml",
-    "cc",
+    "cc_cmi",
     ninjaCwd,
     bsc_builtin_overrides,
     "camlinternalFormatBasics.cmi",
@@ -1074,7 +1087,7 @@ ${ninjaQuickBuidList([
   [
     "pervasives.cmj",
     "pervasives.ml",
-    "cc",
+    "cc_cmi",
     ninjaCwd,
     bsc_builtin_overrides,
     "pervasives.cmi",
@@ -1183,15 +1196,8 @@ async function testNinja() {
   var templateTestRules = `
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
-rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c $in
-    description = $in -> $out
-rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
-    description = $in -> $out
-rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I ${ninjaCwd} -c -intf $in
-    description = $in -> $out
+${ruleCC(ninjaCwd)}
+
 
 ${mllRule}
 ${mllList(ninjaCwd, [
@@ -1636,8 +1642,8 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
     { cwd: jscompDir, encoding: "ascii" },
     function(error, out) {
-      if(error !== null){
-        throw error
+      if (error !== null) {
+        throw error;
       }
       /**
        * @type {Map<string,Set<string>>}

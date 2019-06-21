@@ -13051,7 +13051,7 @@ let build_bin_deps =
 (* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
-    ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+    ~command:"${bsc} ${bs_package_flags} -bs-read-cmi -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     ~restat:() (* Always restat when having mli *)

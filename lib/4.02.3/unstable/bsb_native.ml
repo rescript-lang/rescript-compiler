@@ -13172,14 +13172,14 @@ let build_bin_deps =
 (* [g_lib_incls] are fixed for libs *)
 let ml_cmj_js =
   define
-    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "ml_cmj_only"
     
 let re_cmj_js =
   define
-    ~command:"$bsc $g_pkg_flg -bs-assume-has-mli  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d"
     ~restat:() (* Always restat when having mli *)
     "re_cmj_only"
@@ -13187,14 +13187,14 @@ let re_cmj_js =
 
 let ml_cmj_cmi_js =
   define
-    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 
 let re_cmj_cmi_js =
   define
-    ~command:"$bsc $g_pkg_flg -bs-assume-no-mli  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+    ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
     ~dyndep:"$in_e.d" 
     ~restat:() (* may not need it in the future *)
     "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
