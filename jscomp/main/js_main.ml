@@ -288,6 +288,10 @@ let _ =
   (* Default configuration: sync up with 
     {!Jsoo_main}  *)
   Clflags.bs_only := true;  
+  Clflags.no_implicit_current_dir := true; 
+  (* default true 
+    otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
+  *)
   Clflags.unsafe_string := false;
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
