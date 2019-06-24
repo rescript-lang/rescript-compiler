@@ -12604,6 +12604,8 @@ val node_sep : string
 val node_parent : string 
 val node_current : string 
 val gentype_import : string
+
+val bsbuild_cache : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12738,6 +12740,9 @@ let node_parent = ".."
 let node_current = "."
 
 let gentype_import = "genType.import"
+
+let bsbuild_cache = ".bsbuild"    
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
@@ -20367,7 +20372,7 @@ let strip_option arg_name =
    if arg_name.[0] = '?' then
      String.sub arg_name 1 (String.length arg_name - 1)
    else arg_name
-
+[@@@ocaml.warning "-a"]
 let handleTdcl light (tdcl : Parsetree.type_declaration) =
    let core_type = U.core_type_of_type_declaration tdcl in
    let loc = tdcl.ptype_loc in
@@ -20414,7 +20419,11 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
               Parsetree.label_declaration) (acc, maker, labels) ->
            let is_optional = Ast_attributes.has_bs_optional pld_attributes in
 
-           let newLabel = if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name in
+           let newLabel = 
+            
+            if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name 
+
+            in
 
             let maker, getter_type =
               if is_optional then
@@ -20502,6 +20511,8 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
          else maker_body) in
 
         let myMaker =
+          
+
          Str.value Nonrecursive [
            Vb.mk
              (Pat.var {loc; txt = type_name})
@@ -20514,6 +20525,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
                      (Pat.var ({arg_name with txt = strip_option arg_name.Asttypes.txt})) rest))
                  ) makeType)
          ]
+
          in
         (myMaker :: setter_accessor))
 
@@ -20532,7 +20544,10 @@ let code_sig_transform sigi = match sigi with
       } as _makerVb) :: []))
     } ->
     Sig.value (Val.mk ~loc:pstr_loc name typ)
-  | _ -> Sig.type_ []
+  | _ -> 
+
+    Sig.type_ []
+
 
 let handleTdclsInStr ~light tdcls =
   let tdcls, tdcls_sig, code, code_sig =

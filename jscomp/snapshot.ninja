@@ -33,7 +33,7 @@ build $SNAP/bsdep.ml: bspack | ./bin/bspack.exe
     main = Ocamldep
 
 build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb_helper  -I main 
      main = Bsb_helper_main 
 
 build $SNAP/bsb.ml: bspack | ./bin/bspack.exe
@@ -55,7 +55,7 @@ build $SNAP/unstable/native_ppx.ml: bspack | ./bin/bspack.exe
 
 
 build $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe
-    flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -I main
+    flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I bsb_helper -I common -I ext -I syntax -I depends -I bspp -I core -I main
     main = Ounit_tests_main         
 
 build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe 

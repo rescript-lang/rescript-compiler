@@ -12719,6 +12719,8 @@ val node_sep : string
 val node_parent : string 
 val node_current : string 
 val gentype_import : string
+
+val bsbuild_cache : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12853,6 +12855,9 @@ let node_parent = ".."
 let node_current = "."
 
 let gentype_import = "genType.import"
+
+let bsbuild_cache = ".bsbuild"    
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"

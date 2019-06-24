@@ -63,7 +63,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-    } : Bsb_config_types.t)
+    } : Bsb_config_types.t) : unit 
   =
   let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -200,12 +200,12 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
           (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
             ->
-            Bsb_db.merge  acc  sources ,  
+            Bsb_db_util.merge  acc  sources ,  
             (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
-      Bsb_db.sanity_check bs_group;
+      Bsb_db_util.sanity_check bs_group;
       has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
@@ -215,21 +215,21 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
             let dir_index = (dir_index :> int) in 
-            bs_groups.(dir_index) <- Bsb_db.merge bs_groups.(dir_index) sources ;
+            bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-      Bsb_db.sanity_check lib;
+      Bsb_db_util.sanity_check lib;
       has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
-        Bsb_db.sanity_check c;
+        Bsb_db_util.sanity_check c;
         has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
-              Bsb_db.conflict_module_info k a (String_map.find_exn lib k)            
+              Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
             ) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
@@ -239,7 +239,7 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config ();
-  Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
+  Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bsc_lib_dirs;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
