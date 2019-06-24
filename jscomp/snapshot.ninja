@@ -33,7 +33,7 @@ build $SNAP/bsdep.ml: bspack | ./bin/bspack.exe
     main = Ocamldep
 
 build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb_helper  -I main 
      main = Bsb_helper_main 
 
 build $SNAP/bsb.ml: bspack | ./bin/bspack.exe
