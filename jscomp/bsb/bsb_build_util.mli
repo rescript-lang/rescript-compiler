@@ -44,6 +44,11 @@ include_dirs [dirs]
 *)
 val include_dirs : string list -> string
 
+val include_dirs_by : 
+  'a list ->   
+  ('a -> string ) ->
+  string
+  
 
 val mkp : string -> unit
 
