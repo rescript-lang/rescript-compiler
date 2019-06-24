@@ -1544,6 +1544,7 @@ function nativeNinja() {
     "super_errors",
     "outcome_printer",
     "bsb",
+    "bsb_helper",
     "ounit",
     "ounit_tests",
     "main"
@@ -1595,7 +1596,7 @@ build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa synt
     libs = ocamlcommon.cmxa
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
+build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
