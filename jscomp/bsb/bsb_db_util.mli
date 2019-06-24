@@ -23,50 +23,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type case = bool
-(** true means upper case*)
+open Bsb_db
 
-type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source of  bool  * case  
-  | Mli_empty
-
-type module_info = 
-  {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string  ;
-  }
+val conflict_module_info:
+  string ->
+  Bsb_db.module_info -> 
+  Bsb_db.module_info -> 
+  'a 
 
 
-type t = module_info String_map.t 
+val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
 
-type ts = t array 
-(** indexed by the group *)
+val sanity_check : t -> unit
 
-
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
-
-
-let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
-
-
-
+(** 
+  Currently it is okay to have duplicated module, 
+  In the future, we may emit a warning 
+*)
+val collect_module_by_filename : 
+  dir:string -> t ->  string -> t

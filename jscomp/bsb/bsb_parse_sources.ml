@@ -120,7 +120,7 @@ let  handle_empty_sources
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->  
-            let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
+            let new_acc = Bsb_db_util.collect_module_by_filename ~dir acc name  in 
             String_vec.push dyn_file_array name;
             new_acc 
           | Invalid_module_name ->
@@ -190,7 +190,7 @@ let extract_generators
               Ext_list.iter output (fun  output -> 
                   match Ext_string.is_valid_source_name output with
                   | Good ->
-                    cur_sources := Bsb_db.collect_module_by_filename ~dir !cur_sources output
+                    cur_sources := Bsb_db_util.collect_module_by_filename ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
@@ -321,7 +321,7 @@ let rec
               else 
                 match Ext_string.is_valid_source_name name with 
                 | Good -> 
-                  Bsb_db.collect_module_by_filename  ~dir acc name 
+                  Bsb_db_util.collect_module_by_filename  ~dir acc name 
                 | Invalid_module_name ->
                   Bsb_log.warn warning_unused_file name dir; 
                   acc 
@@ -343,7 +343,7 @@ let rec
           Ext_array.fold_left sx.content !cur_sources (fun acc s ->
               match s with 
               | Str str -> 
-                Bsb_db.collect_module_by_filename ~dir acc str.str
+                Bsb_db_util.collect_module_by_filename ~dir acc str.str
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -367,7 +367,7 @@ let rec
         cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
             if is_input_or_output generators name || not (predicate name) then acc 
             else 
-              Bsb_db.collect_module_by_filename  ~dir acc name 
+              Bsb_db_util.collect_module_by_filename  ~dir acc name 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;

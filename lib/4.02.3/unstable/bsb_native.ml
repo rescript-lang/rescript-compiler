@@ -7068,6 +7068,164 @@ let cmd_package_specs = ref None
 
 
 end
+module Bsb_db : sig 
+#1 "bsb_db.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Store a file called [.bsbuild] that can be communicated 
+    between [bsb.exe] and [bsb_helper.exe]. 
+    [bsb.exe] stores such data which would be retrieved by 
+    [bsb_helper.exe]. It is currently used to combine with 
+    ocamldep to figure out which module->file it depends on
+*) 
+
+type case = bool 
+
+
+type ml_info =
+  | Ml_source of  bool  * bool
+     (* No extension stored
+      Ml_source(name,is_re)
+      [is_re] default to false
+      *)
+  
+  | Ml_empty
+type mli_info = 
+  | Mli_source of  bool * bool
+  | Mli_empty
+
+type module_info = 
+  {
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string
+  }
+
+type t = module_info String_map.t 
+
+type ts = t array 
+
+(** store  the meta data indexed by {!Bsb_dir_index}
+  {[
+    0 --> lib group
+    1 --> dev 1 group
+    .
+    
+  ]}
+*)
+
+val filename_sans_suffix_of_module_info : module_info -> string 
+
+
+
+(**
+  return [boolean] to indicate whether reason file exists or not
+  will raise if it fails sanity check
+*)
+val has_reason_files : t -> bool
+
+
+
+
+end = struct
+#1 "bsb_db.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type case = bool
+(** true means upper case*)
+
+type ml_info =
+  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_empty
+type mli_info = 
+  | Mli_source of  bool  * case  
+  | Mli_empty
+
+type module_info = 
+  {
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string  ;
+  }
+
+
+type t = module_info String_map.t 
+
+type ts = t array 
+(** indexed by the group *)
+
+
+
+
+
+let filename_sans_suffix_of_module_info (x : module_info) =
+  x.name_sans_extension
+
+
+
+
+let has_reason_files (map  : t ) = 
+  String_map.exists map (fun _ module_info ->
+      match module_info with 
+      |  { ml_info = Ml_source(is_re,_); 
+           mli_info = Mli_source(is_rei,_) } ->
+        is_re || is_rei
+      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
+      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
+        ->  is_re
+      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
+    )  
+
+
+
+
+end
 module Ext_modulename : sig 
 #1 "ext_modulename.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -7235,8 +7393,8 @@ let js_id_name_of_hint_name module_name =
     else res   
 
 end
-module Bsb_db : sig 
-#1 "bsb_db.mli"
+module Bsb_db_util : sig 
+#1 "bsb_db_util.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7262,53 +7420,18 @@ module Bsb_db : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Store a file called [.bsbuild] that can be communicated 
-    between [bsb.exe] and [bsb_helper.exe]. 
-    [bsb.exe] stores such data which would be retrieved by 
-    [bsb_helper.exe]. It is currently used to combine with 
-    ocamldep to figure out which module->file it depends on
-*) 
+open Bsb_db
 
-type case = bool 
-
-
-type ml_info =
-  | Ml_source of  bool  * bool
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source of  bool * bool
-  | Mli_empty
-
-type module_info = 
-  {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string
-  }
-
-type t = module_info String_map.t 
-
-type ts = t array 
-
-(** store  the meta data indexed by {!Bsb_dir_index}
-  {[
-    0 --> lib group
-    1 --> dev 1 group
-    .
-    
-  ]}
-*)
-
-(* val dir_of_module_info : module_info -> string *)
+val conflict_module_info:
+  string ->
+  Bsb_db.module_info -> 
+  Bsb_db.module_info -> 
+  'a 
 
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
 
+val sanity_check : t -> unit
 
 (** 
   Currently it is okay to have duplicated module, 
@@ -7317,22 +7440,8 @@ val filename_sans_suffix_of_module_info : module_info -> string
 val collect_module_by_filename : 
   dir:string -> t ->  string -> t
 
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
-val has_reason_files : t -> bool
-
-val conflict_module_info:
-  string ->
-  module_info -> 
-  module_info -> 
-  'a 
-val merge : t -> t -> t 
-
-val sanity_check : t -> unit
 end = struct
-#1 "bsb_db.ml"
+#1 "bsb_db_util.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7357,39 +7466,42 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type case = bool
-(** true means upper case*)
-
-type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source of  bool  * case  
-  | Mli_empty
-
-type module_info = 
-  {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string  ;
-  }
-
-
-type t = module_info String_map.t 
-
-type ts = t array 
-(** indexed by the group *)
-
-
-
+open Bsb_db
 let dir_of_module_info (x : module_info)
   = 
   Filename.dirname x.name_sans_extension
-    
+     
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
 
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
+
+let sanity_check (map : t) = 
+  String_map.iter map (fun m module_info -> 
+      match module_info.ml_info, module_info.mli_info with 
+      | Ml_empty, _ ->      
+        Bsb_exception.no_implementation m 
+      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
+        ->
+        if impl_is_re <> intf_is_re then
+          Bsb_exception.not_consistent m
+      | Ml_source _ , Mli_empty -> ()    
+    )    
 
 (* invariant check:
   ml and mli should have the same case, same path
@@ -7401,7 +7513,11 @@ let check (x : module_info) name_sans_extension =
          "implementation and interface have different path names or different cases %s vs %s"
          x.name_sans_extension name_sans_extension)
 
-let adjust_module_info (x : module_info option) suffix name_sans_extension upper : module_info =
+let adjust_module_info 
+  (x : module_info option) 
+  (suffix : string) 
+  (name_sans_extension : string) 
+  (upper : case) : module_info =
   match suffix with 
   | ".ml" -> 
     let ml_info = Ml_source  ( false, upper) in 
@@ -7452,50 +7568,6 @@ let collect_module_by_filename
          opt_module_info
          suffix 
          name_sans_extension upper )
-
-
-let sanity_check (map : t) = 
-  String_map.iter map (fun m module_info -> 
-      match module_info.ml_info, module_info.mli_info with 
-      | Ml_empty, _ ->      
-        Bsb_exception.no_implementation m 
-      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
-        ->
-        if impl_is_re <> intf_is_re then
-          Bsb_exception.not_consistent m
-      | Ml_source _ , Mli_empty -> ()    
-    )
-let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
-
-let conflict_module_info modname a b = 
-  Bsb_exception.conflict_module
-    modname
-    (dir_of_module_info a)
-    (dir_of_module_info b)
-
-(* merge data info from two directories*)    
-let merge (acc : t) (sources : t) : t =
-  String_map.merge acc sources (fun modname k1 k2 ->
-      match k1 , k2 with
-      | None , None ->
-        assert false
-      | Some a, Some b  ->
-        conflict_module_info modname 
-          a
-          b
-      | Some v, None  -> Some v
-      | None, Some v ->  Some v
-    )
 
 end
 module Bsb_dir_index : sig 
@@ -9615,7 +9687,7 @@ let  handle_empty_sources
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->  
-            let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
+            let new_acc = Bsb_db_util.collect_module_by_filename ~dir acc name  in 
             String_vec.push dyn_file_array name;
             new_acc 
           | Invalid_module_name ->
@@ -9685,7 +9757,7 @@ let extract_generators
               Ext_list.iter output (fun  output -> 
                   match Ext_string.is_valid_source_name output with
                   | Good ->
-                    cur_sources := Bsb_db.collect_module_by_filename ~dir !cur_sources output
+                    cur_sources := Bsb_db_util.collect_module_by_filename ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
@@ -9816,7 +9888,7 @@ let rec
               else 
                 match Ext_string.is_valid_source_name name with 
                 | Good -> 
-                  Bsb_db.collect_module_by_filename  ~dir acc name 
+                  Bsb_db_util.collect_module_by_filename  ~dir acc name 
                 | Invalid_module_name ->
                   Bsb_log.warn warning_unused_file name dir; 
                   acc 
@@ -9838,7 +9910,7 @@ let rec
           Ext_array.fold_left sx.content !cur_sources (fun acc s ->
               match s with 
               | Str str -> 
-                Bsb_db.collect_module_by_filename ~dir acc str.str
+                Bsb_db_util.collect_module_by_filename ~dir acc str.str
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -9862,7 +9934,7 @@ let rec
         cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
             if is_input_or_output generators name || not (predicate name) then acc 
             else 
-              Bsb_db.collect_module_by_filename  ~dir acc name 
+              Bsb_db_util.collect_module_by_filename  ~dir acc name 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;
@@ -13902,12 +13974,12 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
           (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
             ->
-            Bsb_db.merge  acc  sources ,  
+            Bsb_db_util.merge  acc  sources ,  
             (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
-      Bsb_db.sanity_check bs_group;
+      Bsb_db_util.sanity_check bs_group;
       has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
@@ -13917,21 +13989,21 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
             let dir_index = (dir_index :> int) in 
-            bs_groups.(dir_index) <- Bsb_db.merge bs_groups.(dir_index) sources ;
+            bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-      Bsb_db.sanity_check lib;
+      Bsb_db_util.sanity_check lib;
       has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
-        Bsb_db.sanity_check c;
+        Bsb_db_util.sanity_check c;
         has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
-              Bsb_db.conflict_module_info k a (String_map.find_exn lib k)            
+              Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
             ) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))

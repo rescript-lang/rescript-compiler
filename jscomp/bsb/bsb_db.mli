@@ -65,18 +65,9 @@ type ts = t array
   ]}
 *)
 
-(* val dir_of_module_info : module_info -> string *)
-
-
 val filename_sans_suffix_of_module_info : module_info -> string 
 
 
-(** 
-  Currently it is okay to have duplicated module, 
-  In the future, we may emit a warning 
-*)
-val collect_module_by_filename : 
-  dir:string -> t ->  string -> t
 
 (**
   return [boolean] to indicate whether reason file exists or not
@@ -84,11 +75,5 @@ val collect_module_by_filename :
 *)
 val has_reason_files : t -> bool
 
-val conflict_module_info:
-  string ->
-  module_info -> 
-  module_info -> 
-  'a 
-val merge : t -> t -> t 
 
-val sanity_check : t -> unit
+
