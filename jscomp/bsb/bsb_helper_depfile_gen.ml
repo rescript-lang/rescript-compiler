@@ -115,18 +115,18 @@ let handle_module_info
     end
 
 let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) = 
-  let opt = Bsb_db_io.find_opt db 0 dependent_module in 
+  let opt = Bsb_db_decode.find_opt db 0 dependent_module in 
   match opt with 
   | Some _ -> opt
   | None -> 
     if is_not_lib_dir then 
-      Bsb_db_io.find_opt db (index :> int) dependent_module 
+      Bsb_db_decode.find_opt db (index :> int) dependent_module 
     else None 
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
     (index : Bsb_dir_index.t)
-    (db : Bsb_db_io.t)
+    (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Buffer.t)
     (lhs_suffix : string)
@@ -168,7 +168,7 @@ let oc_intf
     (dependent_module_set : string array)
     input_file 
     (index : Bsb_dir_index.t)
-    (db : Bsb_db_io.t)
+    (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
   let has_deps = ref false in  
@@ -203,7 +203,7 @@ let emit_d mlast
   (index : Bsb_dir_index.t) 
   (namespace : string option) has_intf = 
   let data  =
-    Bsb_db_io.read_build_cache 
+    Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set_a = read_deps mlast in 
@@ -239,7 +239,7 @@ let emit_dep_file
     (index : Bsb_dir_index.t) 
     (namespace : string option) : unit = 
   let data  =
-    Bsb_db_io.read_build_cache 
+    Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 

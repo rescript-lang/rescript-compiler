@@ -8,7 +8,7 @@ let (=~) = OUnit.assert_equal  ~printer:printer_string
 
 
 let parse_data_one = 
-(Bsb_db_io.decode {|4.0.19
+(Bsb_db_decode.decode {|4.0.19
 2
 1
 Demo
@@ -19,7 +19,7 @@ examples/test,01
 |} (ref 7))
 
 let parse_data_two = 
-  Bsb_db_io.decode {|4.0.19
+  Bsb_db_decode.decode {|4.0.19
 3
 2
 Fib
@@ -28,10 +28,10 @@ src/hi/fib,01
 src/demo,01
 0
 0|} (ref 7)
-let data_one : Bsb_db_io.group array = 
+let data_one : Bsb_db_decode.group array = 
   [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 35}|]
 
-let data_two : Bsb_db_io.group array =  
+let data_two : Bsb_db_decode.group array =  
   [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 48}; {modules = [||]; meta_info_offset = -1} |]
 
 #if 0 then  

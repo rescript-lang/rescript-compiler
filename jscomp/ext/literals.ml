@@ -130,3 +130,5 @@ let node_parent = ".."
 let node_current = "."
 
 let gentype_import = "genType.import"
+
+let bsbuild_cache = ".bsbuild"    
