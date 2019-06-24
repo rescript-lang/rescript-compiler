@@ -63,7 +63,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-    } : Bsb_config_types.t)
+    } : Bsb_config_types.t) : unit 
   =
   let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)

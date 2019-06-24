@@ -22,7 +22,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-open Bsb_db
+type module_info = Bsb_db.module_info
+type t = Bsb_db.t
+type case = Bsb_db.case
+
 let dir_of_module_info (x : module_info)
   = 
   Filename.dirname x.name_sans_extension
@@ -76,7 +79,7 @@ let adjust_module_info
   (upper : case) : module_info =
   match suffix with 
   | ".ml" -> 
-    let ml_info = Ml_source  ( false, upper) in 
+    let ml_info : Bsb_db.ml_info = Ml_source  ( false, upper) in 
     (match x with 
     | None -> 
       {name_sans_extension ; ml_info ; mli_info = Mli_empty}
@@ -84,21 +87,21 @@ let adjust_module_info
       check x name_sans_extension;
       {x with ml_info })
   | ".re" -> 
-    let ml_info = Ml_source  ( true, upper)in
+    let ml_info  : Bsb_db.ml_info = Ml_source  ( true, upper)in
     (match x with None -> 
       {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
     | Some x -> 
       check x name_sans_extension;
       {x with ml_info})
   | ".mli" ->  
-    let mli_info = Mli_source (false, upper) in 
+    let mli_info : Bsb_db.mli_info = Mli_source (false, upper) in 
     (match x with None -> 
       {name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
       check x name_sans_extension;
       {x with mli_info })
   | ".rei" -> 
-    let mli_info = Mli_source (true, upper) in
+    let mli_info : Bsb_db.mli_info = Mli_source (true, upper) in
     (match x with None -> 
       { name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 

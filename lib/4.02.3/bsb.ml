@@ -7466,7 +7466,10 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-open Bsb_db
+type module_info = Bsb_db.module_info
+type t = Bsb_db.t
+type case = Bsb_db.case
+
 let dir_of_module_info (x : module_info)
   = 
   Filename.dirname x.name_sans_extension
@@ -7520,7 +7523,7 @@ let adjust_module_info
   (upper : case) : module_info =
   match suffix with 
   | ".ml" -> 
-    let ml_info = Ml_source  ( false, upper) in 
+    let ml_info : Bsb_db.ml_info = Ml_source  ( false, upper) in 
     (match x with 
     | None -> 
       {name_sans_extension ; ml_info ; mli_info = Mli_empty}
@@ -7528,21 +7531,21 @@ let adjust_module_info
       check x name_sans_extension;
       {x with ml_info })
   | ".re" -> 
-    let ml_info = Ml_source  ( true, upper)in
+    let ml_info  : Bsb_db.ml_info = Ml_source  ( true, upper)in
     (match x with None -> 
       {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
     | Some x -> 
       check x name_sans_extension;
       {x with ml_info})
   | ".mli" ->  
-    let mli_info = Mli_source (false, upper) in 
+    let mli_info : Bsb_db.mli_info = Mli_source (false, upper) in 
     (match x with None -> 
       {name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
       check x name_sans_extension;
       {x with mli_info })
   | ".rei" -> 
-    let mli_info = Mli_source (true, upper) in
+    let mli_info : Bsb_db.mli_info = Mli_source (true, upper) in
     (match x with None -> 
       { name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
@@ -13837,7 +13840,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-    } : Bsb_config_types.t)
+    } : Bsb_config_types.t) : unit 
   =
   let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -17049,9 +17052,9 @@ end = struct
 #1 "bsb_file.ml"
 
 
-open Unix
 
-let set_infos filename infos =
+
+let set_infos filename (infos : Unix.stats) =
   Unix.utimes filename infos.st_atime infos.st_mtime;
   Unix.chmod filename infos.st_perm
   (** it is not necessary to call [chown] since it is within the same user 
@@ -17067,16 +17070,16 @@ let buffer_size = 8192;;
 let buffer = Bytes.create buffer_size;;
 
 let file_copy input_name output_name =
-  let fd_in = openfile input_name [O_RDONLY] 0 in
-  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let fd_in = Unix.openfile input_name [O_RDONLY] 0 in
+  let fd_out = Unix.openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
   let rec copy_loop () =
-    match read fd_in buffer 0 buffer_size with
+    match Unix.read fd_in buffer 0 buffer_size with
     |  0 -> ()
-    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+    | r -> ignore (Unix.write fd_out buffer 0 r); copy_loop ()
   in
   copy_loop ();
-  close fd_in;
-  close fd_out;;
+  Unix.close fd_in;
+  Unix.close fd_out;;
 
 
 let copy_with_permission input_name output_name =

@@ -1,8 +1,8 @@
 
 
-open Unix
 
-let set_infos filename infos =
+
+let set_infos filename (infos : Unix.stats) =
   Unix.utimes filename infos.st_atime infos.st_mtime;
   Unix.chmod filename infos.st_perm
   (** it is not necessary to call [chown] since it is within the same user 
@@ -18,16 +18,16 @@ let buffer_size = 8192;;
 let buffer = Bytes.create buffer_size;;
 
 let file_copy input_name output_name =
-  let fd_in = openfile input_name [O_RDONLY] 0 in
-  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let fd_in = Unix.openfile input_name [O_RDONLY] 0 in
+  let fd_out = Unix.openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
   let rec copy_loop () =
-    match read fd_in buffer 0 buffer_size with
+    match Unix.read fd_in buffer 0 buffer_size with
     |  0 -> ()
-    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+    | r -> ignore (Unix.write fd_out buffer 0 r); copy_loop ()
   in
   copy_loop ();
-  close fd_in;
-  close fd_out;;
+  Unix.close fd_in;
+  Unix.close fd_out;;
 
 
 let copy_with_permission input_name output_name =
