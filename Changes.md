@@ -26,6 +26,7 @@ Fixes
 
 Features
 
+- #3600 allow user to polyfill missing c stubs
 - #3613, #3612 add a warning number 105 (on by default) for cases as below
 
 
