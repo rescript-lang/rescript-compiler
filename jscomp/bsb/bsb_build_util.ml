@@ -39,7 +39,8 @@ let pp_flag (xs : string) =
 
 let include_dirs = flag_concat "-I"
 
-
+let include_dirs_by xs fn = 
+  include_dirs (Ext_list.map xs fn)
 (* we use lazy $src_root_dir *)
 
 

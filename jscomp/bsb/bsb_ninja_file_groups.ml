@@ -30,7 +30,8 @@ let (//) = Ext_path.combine
 
 
 let handle_generators oc 
-    (group : Bsb_file_groups.file_group) custom_rules =   
+    (group : Bsb_file_groups.file_group) 
+    custom_rules =   
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
   Ext_list.iter group.generators (fun {output; input; command} -> 

@@ -36,6 +36,79 @@ let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
+let output_reason_config 
+  (has_reason_files : bool)
+  (reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+  (refmt : Bsb_config_types.refmt) 
+  (bsc_dir : string)
+  (refmt_flags : string) 
+  (oc : out_channel) : unit =   
+  if has_reason_files then 
+    let reason_react_jsx_flag = 
+      match reason_react_jsx with 
+      | None -> Ext_string.empty          
+      | Some v ->           
+        Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
+    in 
+    Bsb_ninja_util.output_kvs
+      [|
+        Bsb_ninja_global_vars.refmt, 
+          (match refmt with 
+          | Refmt_none -> 
+            Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+            bsc_dir // Bsb_default.refmt_none
+          | Refmt_v3 -> 
+            bsc_dir // Bsb_default.refmt_v3
+          | Refmt_custom x -> x );
+        Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
+        Bsb_ninja_global_vars.refmt_flags, refmt_flags;
+      |] oc 
+
+let get_bsc_flags 
+    (not_dev : bool) 
+    (built_in_dependency : Bsb_config_types.dependency option) 
+    (bsc_flags : string list)
+    (bs_suffix : bool ) : string =       
+  let flags =  
+    String.concat Ext_string.single_space 
+      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+  in
+  let result = 
+    Ext_string.inter2  Literals.dash_nostdlib (
+      match built_in_dependency with 
+      | None -> flags   
+      | Some x -> 
+        Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags)
+  in 
+  if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
+
+let emit_bsc_lib_includes 
+  (source_dirs : string list) 
+  (external_includes) 
+  (namespace : _ option)
+  (oc : out_channel): unit = 
+  let all_includes acc  = 
+    match external_includes with 
+    | [] -> acc 
+    | _ ->  
+      (* for external includes, if it is absolute path, leave it as is 
+         for relative path './xx', we need '../.././x' since we are in 
+         [lib/bs], [build] is different from merlin though
+      *)
+      Ext_list.map_append 
+        external_includes
+        acc 
+        (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+  in 
+  Bsb_ninja_util.output_kv
+    Bsb_build_schemas.g_lib_incls 
+    (Bsb_build_util.include_dirs 
+       (all_includes 
+          (if namespace = None then source_dirs 
+           else Filename.current_dir_name :: source_dirs
+           (*working dir is [lib/bs] we include this path to have namespace mapping*)
+          )))  oc 
+
 
 let output_ninja_and_namespace_map
     ~cwd 
@@ -70,21 +143,8 @@ let output_ninja_and_namespace_map
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
-  let bsc_flags =  
-      String.concat Ext_string.single_space 
-      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
-  in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
-  let g_pkg_incls = 
-    Bsb_build_util.include_dirs 
-      (Ext_list.map bs_dependencies (fun x  -> x.package_install_path) )
-  in
-  let bs_package_dev_includes = 
-    Bsb_build_util.include_dirs 
-      (Ext_list.map bs_dev_dependencies
-         (fun x -> x.package_install_path) )
-  in  
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let has_reason_files = ref false in 
   let g_pkg_flg , g_ns_flg = 
     match namespace with
@@ -95,63 +155,27 @@ let output_ninja_and_namespace_map
         "-bs-package-name" package_name 
         "-bs-ns" s
       ,
-      Ext_string.inter2 "-bs-ns" s  
-  in  
-  let bsc_flags = 
-    let result = 
-      Ext_string.inter2  Literals.dash_nostdlib @@
-      match built_in_dependency with 
-      | None -> bsc_flags   
-      | Some {package_install_path} -> 
-        Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
-    in 
-    if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
-  in 
-  let warnings = 
-    Bsb_warning.opt_warning_to_string not_dev warning 
-  in
-  let output_reason_config () =   
-    if !has_reason_files then 
-      let reason_react_jsx_flag = 
-        match reason_react_jsx with 
-        | None -> Ext_string.empty          
-        | Some v ->           
-          Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
-      in 
-      Bsb_ninja_util.output_kvs
-        [|
-          Bsb_ninja_global_vars.refmt, 
-            (match refmt with 
-            | Refmt_none -> 
-              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
-              bsc_dir // Bsb_default.refmt_none
-            | Refmt_v3 -> 
-              bsc_dir // Bsb_default.refmt_v3
-            | Refmt_custom x -> x );
-          Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
-          Bsb_ninja_global_vars.refmt_flags, refmt_flags;
-        |] oc 
-  in   
+      Ext_string.inter2 "-bs-ns" s in  
   let () = 
     Ext_option.iter pp_file (fun flag ->
-      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
-      (Bsb_build_util.pp_flag flag) oc 
-    );
-    Ext_option.iter gentype_config (fun {path} -> 
-      (* resolved earlier *)
-      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
-      ("-bs-gentype " ^ path) oc
-    )
+        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
+          (Bsb_build_util.pp_flag flag) oc 
+      );
+    Ext_option.iter gentype_config (fun x -> 
+        (* resolved earlier *)
+        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+          ("-bs-gentype " ^ x.path) oc
+      )
     ;  
     (*
     TODO: 
     see https://github.com/ninja-build/ninja/issues/1375
     *)
     (match ppx_checked_files with
-    | first_ppx_checked_file :: _ -> 
-      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
-      first_ppx_checked_file oc
-    | [] -> ())
+     | first_ppx_checked_file :: _ -> 
+       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
+         first_ppx_checked_file oc
+     | [] -> ())
     ;
 
     Bsb_ninja_util.output_kvs
@@ -160,39 +184,20 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;
-        Bsb_ninja_global_vars.warnings, warnings;
-        Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.g_pkg_incls, g_pkg_incls;
-        Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
+        Bsb_ninja_global_vars.g_pkg_incls, 
+        (Bsb_build_util.include_dirs_by 
+           bs_dependencies (fun x  -> x.package_install_path)) ;
+        Bsb_ninja_global_vars.bs_package_dev_includes, 
+        (Bsb_build_util.include_dirs_by
+           bs_dev_dependencies
+           (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
-  in      
-  let all_includes acc  = 
-    match external_includes with 
-    | [] -> acc 
-    | _ ->  
-      (* for external includes, if it is absolute path, leave it as is 
-         for relative path './xx', we need '../.././x' since we are in 
-         [lib/bs], [build] is different from merlin though
-      *)
-      Ext_list.map_append 
-        external_includes
-        acc 
-        (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
-
-  in 
-  let emit_bsc_lib_includes source_dirs = 
-    Bsb_ninja_util.output_kv
-      Bsb_build_schemas.g_lib_incls 
-      (Bsb_build_util.include_dirs 
-         (all_includes 
-            (if namespace = None then source_dirs 
-             else Filename.current_dir_name :: source_dirs
-             (*working dir is [lib/bs] we include this path to have namespace mapping*)
-              )))  oc 
-  in   
+  in        
   let  bs_groups, bsc_lib_dirs, static_resources =
     let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
     if number_of_dev_groups = 0 then
@@ -238,9 +243,9 @@ let output_ninja_and_namespace_map
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
-  output_reason_config ();
+  output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs;
+  emit_bsc_lib_includes bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc
