@@ -132,7 +132,12 @@ let merlin_file_gen ~cwd
        (match reason_react_jsx with 
         | None -> built_in_ppx
         | Some opt ->
-          Printf.sprintf "\"%s -bs-jsx %d\"" built_in_ppx
+          let fmt : _ format = 
+            if Ext_sys.is_windows_or_cygwin then
+              "\"%s -bs-jsx %d\"" 
+            else  "'%s -bs-jsx %d'" 
+          in 
+          Printf.sprintf fmt  built_in_ppx        
             (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
        )
       );    
