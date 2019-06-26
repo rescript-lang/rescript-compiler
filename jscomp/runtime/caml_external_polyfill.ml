@@ -39,4 +39,12 @@ let resolve  = fun%raw s -> {|
   return myGlobal[s]
 |}
   
+(* FIXME: it does not have to global states *)
+type fn 
 
+
+let register : string -> fn -> unit = fun%raw s fn -> {|
+  var myGlobal = getGlobalThis();
+  myGlobal[s] = fn 
+  return 0
+|}
