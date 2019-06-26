@@ -234,7 +234,7 @@ function set_color_tag_handling(ppf) {
     functions$prime_002,
     functions$prime_003
   ];
-  ppf[/* pp_mark_tags */21] = true;
+  ppf[/* pp_mark_tags */22] = true;
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
 }
 
@@ -1738,7 +1738,8 @@ function prerr_warning(loc, w) {
         /* out_string */out_string,
         /* out_flush */out_functions[/* out_flush */1],
         /* out_newline */out_functions[/* out_newline */2],
-        /* out_spaces */out_functions[/* out_spaces */3]
+        /* out_spaces */out_functions[/* out_spaces */3],
+        /* out_indent */out_functions[/* out_indent */4]
       ]);
   Curry._2(f, ppf$1, arg);
   Format.pp_print_flush(ppf$1, /* () */0);
@@ -10096,6 +10097,21 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     
   };
+  var parse_and_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number" && e === 0) {
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
+      } else {
+        return false;
+      }
+    } else {
+      push(e);
+      return v;
+    }
+  };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
     var curr_loc = curr(lexbuf);
@@ -10235,21 +10251,6 @@ function directive_parse(token_with_comments, lexbuf) {
                 curr_loc
               ];
       }
-    }
-  };
-  var parse_and_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number" && e === 0) {
-      var calc$1 = calc && v;
-      var b = parse_and_aux(calc$1, parse_relation(calc$1));
-      if (v) {
-        return b;
-      } else {
-        return false;
-      }
-    } else {
-      push(e);
-      return v;
     }
   };
   var parse_or_aux = function (calc, v) {
@@ -11408,45 +11409,6 @@ function token(lexbuf) {
   };
 }
 
-function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 : 
-          update_loc(lexbuf, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 183;
-          continue ;
-      case 1 : 
-          is_in_string[0] = false;
-          throw [
-                $$Error$2,
-                /* Unterminated_string */0,
-                string_start_loc[0]
-              ];
-      case 2 : 
-          var edelim = Lexing.lexeme(lexbuf);
-          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
-          if (delim === edelim$1) {
-            return /* () */0;
-          } else {
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 183;
-            continue ;
-          }
-      case 3 : 
-          store_string_char(Lexing.lexeme_char(lexbuf, 0));
-          ___ocaml_lex_state = 183;
-          continue ;
-      default:
-        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
 function string(lexbuf) {
   lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
   var lexbuf$1 = lexbuf;
@@ -11499,6 +11461,45 @@ function string(lexbuf) {
           return string(lexbuf$1);
       default:
         Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
+function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 1 : 
+          is_in_string[0] = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc[0]
+              ];
+      case 2 : 
+          var edelim = Lexing.lexeme(lexbuf);
+          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
+          if (delim === edelim$1) {
+            return /* () */0;
+          } else {
+            store_string(Lexing.lexeme(lexbuf));
+            ___ocaml_lex_state = 183;
+            continue ;
+          }
+      case 3 : 
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          ___ocaml_lex_state = 183;
+          continue ;
+      default:
+        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -12092,33 +12093,29 @@ function wrap(parsing_fun, lexbuf) {
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
-      } else {
+      if (typeof tmp === "number") {
+        throw err;
+      } else if (tmp.tag) {
+        throw err;
+      } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);
         throw err;
+      } else {
+        throw err;
       }
-    } else {
-      exit$2 = 3;
-    }
-    if (exit$2 === 3) {
-      if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
+    } else if (err[0] === $$Error$1) {
+      if (input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
       } else {
-        exit$1 = 2;
-      }
-    }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
         throw err;
       }
+    } else if (err === Parsing.Parse_error || err === Escape_error) {
+      exit = 1;
+    } else {
+      throw err;
     }
     if (exit === 1) {
       var loc = curr(lexbuf);

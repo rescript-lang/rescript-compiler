@@ -3,20 +3,21 @@
 
 function f9(param) {
   if (typeof param === "number") {
-    if (param === 3) {
-      return 3;
-    } else {
-      return 1;
+    switch (param) {
+      case 0 : 
+      case 1 : 
+      case 2 : 
+          return 1;
+      default:
+        return 3;
     }
   } else {
     switch (param.tag | 0) {
       case 0 : 
       case 1 : 
           return 2;
-      case 2 : 
-      case 3 : 
-          return 3;
-      
+      default:
+        return 3;
     }
   }
 }

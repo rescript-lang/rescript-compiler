@@ -15,7 +15,7 @@ Mt.from_pair_suites("To_string_test", /* :: */[
         "File \"to_string_test.ml\", line 7, characters 2-9",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      Pervasives.string_of_float(Number.POSITIVE_INFINITY),
+                      Pervasives.string_of_float(Pervasives.infinity),
                       "inf"
                     ]);
           })
@@ -25,7 +25,7 @@ Mt.from_pair_suites("To_string_test", /* :: */[
           "File \"to_string_test.ml\", line 8, characters 1-8",
           (function (param) {
               return /* Eq */Block.__(0, [
-                        Pervasives.string_of_float(Number.NEGATIVE_INFINITY),
+                        Pervasives.string_of_float(Pervasives.neg_infinity),
                         "-inf"
                       ]);
             })
