@@ -12,9 +12,9 @@ function eq(loc, x, y) {
 }
 
 
-global.caml_fancy_add= function(x,y){
+require('../../lib/js/caml_external_polyfill.js').register("caml_fancy_add", function(x,y){
   return + ((""+x ) + (""+y))
-}
+})
 
 ;
 
