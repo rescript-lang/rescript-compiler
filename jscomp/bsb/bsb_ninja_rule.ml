@@ -27,14 +27,6 @@ type state = {
   mutable rule_names : String_set.t 
 }
 
-let st = {
-  rule_id = 0;
-  rule_names = String_set.empty
-}
-
-let replace snapshot = 
-  st.rule_id <- snapshot.rule_id;
-  st.rule_names <- snapshot.rule_names
 
 
 (** To make it re-entrant across multiple ninja files, 
@@ -43,16 +35,8 @@ let replace snapshot =
              1. instead of having a global id, having a unique id per rule name
              2. the rule id is increased only when actually used
 *)
-let ask_name (name : string) : string =
-  let current_id = st.rule_id in
-  let current_names = st.rule_names in 
-  let () = st.rule_id <- current_id + 1 in
-  let new_name  = 
-      if String_set.mem current_names name then 
-        name ^ Printf.sprintf "_%d" current_id
-      else name in   
-  st.rule_names <- String_set.add current_names new_name ;    
-  new_name
+let ask_name (name : string) : string = name
+
 
 
 type t = { 
@@ -82,7 +66,7 @@ let define
     ?dyndep
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
-    name
+    name : t 
   =
   let rule_name = ask_name name  in 
   let rec self = {
@@ -198,15 +182,10 @@ let build_package =
     "build_package"
 
 
-let snapshot = {
-  rule_names = st.rule_names;
-  rule_id = st.rule_id
-}
-
 type command = string
 
 let make_custom_rules (custom_rules : command String_map.t) = 
-  replace snapshot;
+
   build_ast_and_module_sets.used <- false ;
   build_ast_and_module_sets_from_re.used <- false ;  
   build_ast_and_module_sets_from_rei.used <- false ;
@@ -223,7 +202,7 @@ let make_custom_rules (custom_rules : command String_map.t) =
 
   build_package.used <- false;    
   String_map.mapi custom_rules begin fun name command -> 
-    define ~command name
+    define ~command ("custom_" ^ name)
   end
 
 
