@@ -115,12 +115,12 @@ let make_custom_rules (custom_rules : command String_map.t) :
 
   let build_ast_and_module_sets_from_re =
     define
-      ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in|}
       "build_ast_and_module_sets_from_re" in 
 
   let build_ast_and_module_sets_from_rei =
     define
-      ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in|}
       "build_ast_and_module_sets_from_rei" in 
 
   let copy_resources =    
