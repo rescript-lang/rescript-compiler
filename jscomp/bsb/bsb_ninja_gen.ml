@@ -138,7 +138,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -251,12 +251,12 @@ let output_ninja_and_namespace_map
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_ninja_rule.copy_resources);
+        ~rule:rules.copy_resources);
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
     ~has_checked_ppx:(ppx_checked_files <> [])
     ~bs_suffix     
-    ~custom_rules
+    ~rules
     ~js_post_build_cmd 
     ~package_specs 
     ~files_to_install
@@ -278,6 +278,6 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_build oc 
         ~output:(ns ^ Literals.suffix_cmi)
         ~input:(ns ^ Literals.suffix_mlmap)
-        ~rule:Bsb_ninja_rule.build_package
+        ~rule:rules.build_package
     );
   close_out oc

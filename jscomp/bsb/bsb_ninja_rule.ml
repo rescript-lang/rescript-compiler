@@ -22,20 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type state = {
-  mutable rule_id : int ;  
-  mutable rule_names : String_set.t 
-}
 
 
-
-(** To make it re-entrant across multiple ninja files, 
-    We must reset [rule_id]
-    could be improved later
-             1. instead of having a global id, having a unique id per rule name
-             2. the rule id is increased only when actually used
-*)
-let ask_name (name : string) : string = name
 
 
 
@@ -51,11 +39,12 @@ let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name 
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   Ext_option.iter dyndep (fun f ->
       output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
-  );
+    );
   (if restat <>  None then   
-      output_string oc "  restat = 1\n");
+     output_string oc "  restat = 1\n");
 
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
 
 
 
@@ -66,9 +55,9 @@ let define
     ?dyndep
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
-    name : t 
+    rule_name : t 
   =
-  let rule_name = ask_name name  in 
+
   let rec self = {
     used  = false;
     rule_name ;
@@ -79,130 +68,168 @@ let define
           self.used <- true
         end ;
       rule_name
-  } in self
+  } in 
+
+  self
 
 
-(** FIXME: We don't need set [-o ${out}] when building ast 
-    since the default is already good -- it does not*)
-let build_ast_and_module_sets =
-  define
-    ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
-    "build_ast_and_module_sets"
-
-
-let build_ast_and_module_sets_from_re =
-  define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
-    "build_ast_and_module_sets_from_re"
-
-let build_ast_and_module_sets_from_rei =
-  define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
-    "build_ast_and_module_sets_from_rei"
-
-let copy_resources =    
-  define 
-    ~command:(
-      if Ext_sys.is_windows_or_cygwin then
-        "cmd.exe /C copy /Y $in $out > null" 
-      else "cp $in $out"
-    )
-    "copy_resource" 
-
-
-      
-let build_bin_deps =
-  define
-    ~restat:()
-    ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
-    "build_deps"
-
-
-(* only generate mll no mli generated *)
-(* actually we would prefer generators in source ?
-   generator are divided into two categories:
-   1. not system dependent (ocamllex,ocamlyacc)
-   2. system dependent - has to be run on client's machine
-*)
-
-
-(**************************************)
-(* below are rules not local any more *)
-(**************************************)
-
-(* [g_lib_incls] are fixed for libs *)
-let ml_cmj_js =
-  define
-    ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d"
-    ~restat:() (* Always restat when having mli *)
-    "ml_cmj_only"
-    
-let re_cmj_js =
-  define
-    ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d"
-    ~restat:() (* Always restat when having mli *)
-    "re_cmj_only"
-
-
-let ml_cmj_cmi_js =
-  define
-    ~command:"$bsc $g_pkg_flg $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d" 
-    ~restat:() (* may not need it in the future *)
-    "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-
-let re_cmj_cmi_js =
-  define
-    ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d" 
-    ~restat:() (* may not need it in the future *)
-    "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-
-    
-let ml_cmi =
-  define
-    ~command:"$bsc $g_pkg_flg  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-    ~dyndep:"$in_e.d"
-    ~restat:()
-    "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-
-let re_cmi =
-  define
-    ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-    ~dyndep:"$in_e.d"
-    ~restat:()
-    "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-    
-let build_package = 
-  define
-    ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
-    ~restat:()
-    "build_package"
 
 
 type command = string
 
-let make_custom_rules (custom_rules : command String_map.t) = 
+type builtin = {
+  build_ast_and_module_sets : t;
+  (** TODO: Implement it on top of pp_flags *)
+  build_ast_and_module_sets_from_re : t ;
+  build_ast_and_module_sets_from_rei : t ;
 
-  build_ast_and_module_sets.used <- false ;
-  build_ast_and_module_sets_from_re.used <- false ;  
-  build_ast_and_module_sets_from_rei.used <- false ;
-  build_bin_deps.used <- false;
-  copy_resources.used <- false ;
 
-  ml_cmj_js.used <- false;
-  ml_cmj_cmi_js.used <- false ;
-  ml_cmi.used <- false ;
+  (** platform dependent, on Win32,
+      invoking cmd.exe
+  *)
+  copy_resources : t;
+  (** Rules below all need restat *)
+  build_bin_deps : t ;
 
-  re_cmj_cmi_js.used <- false;
-  re_cmj_js.used <- false;
-  re_cmi.used <- false;
+  ml_cmj_js : t;
+  ml_cmj_cmi_js : t ;
+  ml_cmi : t;
 
-  build_package.used <- false;    
-  String_map.mapi custom_rules begin fun name command -> 
-    define ~command ("custom_" ^ name)
-  end
+  re_cmj_js : t ;
+  re_cmj_cmi_js : t ;
+  re_cmi : t ;
+  build_package : t ;
+  customs : t String_map.t
+}
+
+;;
+let make_custom_rules (custom_rules : command String_map.t) : 
+  builtin = 
+  (** FIXME: We don't need set [-o ${out}] when building ast 
+      since the default is already good -- it does not*)
+  let build_ast_and_module_sets =
+    define
+      ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+      "build_ast_and_module_sets" in
+
+
+  let build_ast_and_module_sets_from_re =
+    define
+      ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
+      "build_ast_and_module_sets_from_re" in 
+
+  let build_ast_and_module_sets_from_rei =
+    define
+      ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
+      "build_ast_and_module_sets_from_rei" in 
+
+  let copy_resources =    
+    define 
+      ~command:(
+        if Ext_sys.is_windows_or_cygwin then
+          "cmd.exe /C copy /Y $in $out > null" 
+        else "cp $in $out"
+      )
+      "copy_resource" in
+
+
+
+  let build_bin_deps =
+    define
+      ~restat:()
+      ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
+      "build_deps" in 
+
+
+  (* only generate mll no mli generated *)
+  (* actually we would prefer generators in source ?
+     generator are divided into two categories:
+     1. not system dependent (ocamllex,ocamlyacc)
+     2. system dependent - has to be run on client's machine
+  *)
+
+
+  (**************************************)
+  (* below are rules not local any more *)
+  (**************************************)
+
+  (* [g_lib_incls] are fixed for libs *)
+  let ml_cmj_js =
+    define
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      "ml_cmj_only" in 
+
+  let re_cmj_js =
+    define
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      "re_cmj_only" in 
+
+
+  let ml_cmj_cmi_js =
+    define
+      ~command:"$bsc $g_pkg_flg $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d" 
+      ~restat:() (* may not need it in the future *)
+      "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
+
+  let re_cmj_cmi_js =
+    define
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d" 
+      ~restat:() (* may not need it in the future *)
+      "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+  in 
+
+  let ml_cmi =
+    define
+      ~command:"$bsc $g_pkg_flg  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~dyndep:"$in_e.d"
+      ~restat:()
+      "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+  in 
+  let re_cmi =
+    define
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~dyndep:"$in_e.d"
+      ~restat:()
+      "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+  in     
+  let build_package = 
+    define
+      ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
+      ~restat:()
+      "build_package"
+  in 
+  {
+    build_ast_and_module_sets ;
+    (** TODO: Implement it on top of pp_flags *)
+    build_ast_and_module_sets_from_re  ;
+    build_ast_and_module_sets_from_rei ;
+
+
+    (** platform dependent, on Win32,
+        invoking cmd.exe
+    *)
+    copy_resources;
+    (** Rules below all need restat *)
+    build_bin_deps ;
+
+    ml_cmj_js ;
+    ml_cmj_cmi_js ;
+    ml_cmi ;
+
+    re_cmj_js ;
+    re_cmj_cmi_js ;
+    re_cmi ;
+    build_package ;
+    customs =
+
+      String_map.mapi custom_rules begin fun name command -> 
+        define ~command ("custom_" ^ name)
+      end}
 
 

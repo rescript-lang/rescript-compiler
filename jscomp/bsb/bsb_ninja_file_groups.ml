@@ -82,6 +82,7 @@ let make_common_shadows
 
 
 let emit_impl_build
+    (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
@@ -122,9 +123,9 @@ let emit_impl_build
     ~input
     ~implicit_deps
     ~rule:( if is_re then 
-              Bsb_ninja_rule.build_ast_and_module_sets_from_re
+              rules.build_ast_and_module_sets_from_re
             else
-              Bsb_ninja_rule.build_ast_and_module_sets);
+              rules.build_ast_and_module_sets);
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -134,8 +135,8 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
-             else Bsb_ninja_rule.build_ast_and_module_sets)
+      ~rule:(if is_re then rules.build_ast_and_module_sets_from_rei
+             else rules.build_ast_and_module_sets)
       ~implicit_deps
     ;
     Bsb_ninja_util.output_build oc
@@ -143,7 +144,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.ml_cmi)
+      ~rule:(if is_re then rules.re_cmi else rules.ml_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -151,7 +152,7 @@ let emit_impl_build
     ~output:output_d
     ~inputs:(if not no_intf_file then [output_mliast] else [])
     ~input:output_mlast
-    ~rule:Bsb_ninja_rule.build_bin_deps
+    ~rule:rules.build_bin_deps
     ~implicit_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
               else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
@@ -168,9 +169,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.ml_cmj_cmi_js), [output_cmi], []
+      (if is_re then rules.re_cmj_cmi_js else rules.ml_cmj_cmi_js), [output_cmi], []
     else  
-      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.ml_cmj_js), []  , [output_cmi]
+      (if is_re then rules.re_cmj_js else rules.ml_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
@@ -184,6 +185,7 @@ let emit_impl_build
 
 
 let handle_module_info 
+    rules
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
@@ -195,7 +197,7 @@ let handle_module_info
   : unit =
   match module_info.ml_info with
   | Ml_source (is_re,_) ->
-    emit_impl_build       
+    emit_impl_build  rules
       package_specs
       group_dir_index
       oc 
@@ -214,7 +216,7 @@ let handle_file_group
     oc 
     ~(has_checked_ppx : bool)
     ~bs_suffix
-    ~custom_rules 
+    ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) 
@@ -222,7 +224,7 @@ let handle_file_group
     (group: Bsb_file_groups.file_group ) 
   : unit =
 
-  handle_generators oc group custom_rules ;
+  handle_generators oc group rules.customs ;
   String_map.iter group.sources   (fun  module_name module_info   ->
       let installable =
         match group.public with
@@ -232,7 +234,7 @@ let handle_file_group
           String_set.mem set module_name in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
-      (handle_module_info 
+      (handle_module_info rules
         ~has_checked_ppx
         ~bs_suffix
          group.dir_index 
@@ -251,14 +253,15 @@ let handle_file_groups
     ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
-    ~files_to_install ~custom_rules
+    ~files_to_install 
+    ~rules
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace   =
   Ext_list.iter file_groups
     (handle_file_group 
        oc  
        ~has_checked_ppx
-       ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
+       ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
