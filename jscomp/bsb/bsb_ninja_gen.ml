@@ -83,11 +83,14 @@ let get_bsc_flags
   if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
 
 let emit_bsc_lib_includes 
+    (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
   (namespace : _ option)
   (oc : out_channel): unit = 
   let all_includes acc  = 
+    (*FIXME order *)
+    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ (
     match external_includes with 
     | [] -> acc 
     | _ ->  
@@ -99,6 +102,7 @@ let emit_bsc_lib_includes
         external_includes
         acc 
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+    )
   in 
   Bsb_ninja_util.output_kv
     Bsb_build_schemas.g_lib_incls 
@@ -187,9 +191,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.g_pkg_incls, 
-        (Bsb_build_util.include_dirs_by 
-           bs_dependencies (fun x  -> x.package_install_path)) ;
+
         Bsb_ninja_global_vars.bs_package_dev_includes, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
@@ -245,7 +247,7 @@ let output_ninja_and_namespace_map
 
   output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs external_includes namespace oc;
+  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc

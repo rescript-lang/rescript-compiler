@@ -12878,7 +12878,7 @@ let bsc_flags = "bsc_flags"
 let ppx_flags = "ppx_flags"
 let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
-let g_pkg_incls = "g_pkg_incls"
+
 
 let bs_package_dev_includes = "bs_package_dev_includes"
 
@@ -13116,14 +13116,14 @@ let make_custom_rules (custom_rules : command String_map.t) :
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js =
     define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       "ml_cmj_only" in 
 
   let re_cmj_js =
     define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       "re_cmj_only" in 
@@ -13131,14 +13131,14 @@ let make_custom_rules (custom_rules : command String_map.t) :
 
   let ml_cmj_cmi_js =
     define
-      ~command:"$bsc $g_pkg_flg $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
       ~dyndep:"$in_e.d" 
       ~restat:() (* may not need it in the future *)
       "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
 
   let re_cmj_cmi_js =
     define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
       ~dyndep:"$in_e.d" 
       ~restat:() (* may not need it in the future *)
       "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -13146,14 +13146,14 @@ let make_custom_rules (custom_rules : command String_map.t) :
 
   let ml_cmi =
     define
-      ~command:"$bsc $g_pkg_flg  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
       ~dyndep:"$in_e.d"
       ~restat:()
       "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
   in 
   let re_cmi =
     define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
       ~dyndep:"$in_e.d"
       ~restat:()
       "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13553,12 +13553,7 @@ let make_common_shadows
           )
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [
-         (* {
-         key = Bsb_ninja_global_vars.g_pkg_incls; 
-         op = AppendVar 
-       }
-        ; *)
+       [         
         { key =  "bsc_extra_includes";
           op = OverwriteVars 
           [
@@ -13881,11 +13876,14 @@ let get_bsc_flags
   if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
 
 let emit_bsc_lib_includes 
+    (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
   (namespace : _ option)
   (oc : out_channel): unit = 
   let all_includes acc  = 
+    (*FIXME order *)
+    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ (
     match external_includes with 
     | [] -> acc 
     | _ ->  
@@ -13897,6 +13895,7 @@ let emit_bsc_lib_includes
         external_includes
         acc 
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+    )
   in 
   Bsb_ninja_util.output_kv
     Bsb_build_schemas.g_lib_incls 
@@ -13985,9 +13984,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.g_pkg_incls, 
-        (Bsb_build_util.include_dirs_by 
-           bs_dependencies (fun x  -> x.package_install_path)) ;
+
         Bsb_ninja_global_vars.bs_package_dev_includes, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
@@ -14043,7 +14040,7 @@ let output_ninja_and_namespace_map
 
   output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs external_includes namespace oc;
+  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc

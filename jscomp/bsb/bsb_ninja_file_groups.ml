@@ -68,13 +68,13 @@ let make_common_shadows
           )
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [{
-         key = Bsb_ninja_global_vars.g_pkg_incls; 
-         op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
-       }
-        ;
-        { key = "bsc_extra_includes";
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
+       [         
+        { key =  "bsc_extra_includes";
+          op = OverwriteVars 
+          [
+            Bsb_ninja_global_vars.bs_package_dev_includes ;
+            Bsb_dir_index.string_of_bsb_dev_include dir_index;
+          ]
         }
        ]
     )   
