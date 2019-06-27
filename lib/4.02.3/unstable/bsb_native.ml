@@ -13108,28 +13108,11 @@ let make_custom_rules (custom_rules : command String_map.t) :
         else "cp $in $out"
       )
       "copy_resource" in
-
-
-
   let build_bin_deps =
     define
       ~restat:()
       ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
       "build_deps" in 
-
-
-  (* only generate mll no mli generated *)
-  (* actually we would prefer generators in source ?
-     generator are divided into two categories:
-     1. not system dependent (ocamllex,ocamlyacc)
-     2. system dependent - has to be run on client's machine
-  *)
-
-
-  (**************************************)
-  (* below are rules not local any more *)
-  (**************************************)
-
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js =
     define
@@ -13250,6 +13233,8 @@ type override =
   
   | OverwriteVar of string 
 
+  | OverwriteVars of string list
+  
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -13323,6 +13308,7 @@ type override =
       OverwriteVar s 
       $s
     *)
+  | OverwriteVars of string list
 
 type shadow = 
   { key : string ; op : override }
@@ -13378,7 +13364,7 @@ let output_build
   begin match shadows with
     | [] -> ()
     | xs ->
-      List.iter (fun {key=k; op= v} ->
+      Ext_list.iter xs (fun {key=k; op= v} ->
           output_string oc "  " ;
           output_string oc k ;
           output_string oc " = ";
@@ -13390,14 +13376,21 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
+          | OverwriteVars s ->  
+            Ext_list.iter s (fun s ->
+                output_string oc "$";
+                output_string oc s ; 
+                output_string oc Ext_string.single_space
+              );
+            output_string oc "\n"
           | AppendList ls -> 
             output_string oc "$" ;
             output_string oc k;
-            List.iter 
+            Ext_list.iter ls
               (fun s ->
                  output_string oc Ext_string.single_space;
                  output_string oc s 
-                 ) ls;
+                 ) ;
             output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
@@ -13411,7 +13404,7 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
-        ) xs
+        ) 
   end;
   if restat <> None then 
     output_string oc "  restat = 1 \n"
@@ -13560,13 +13553,18 @@ let make_common_shadows
           )
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [{
+       [
+         (* {
          key = Bsb_ninja_global_vars.g_pkg_incls; 
-         op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
+         op = AppendVar 
        }
-        ;
-        { key = "bsc_extra_includes";
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
+        ; *)
+        { key =  "bsc_extra_includes";
+          op = OverwriteVars 
+          [
+            Bsb_ninja_global_vars.bs_package_dev_includes ;
+            Bsb_dir_index.string_of_bsb_dev_include dir_index;
+          ]
         }
        ]
     )   

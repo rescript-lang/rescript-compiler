@@ -131,28 +131,11 @@ let make_custom_rules (custom_rules : command String_map.t) :
         else "cp $in $out"
       )
       "copy_resource" in
-
-
-
   let build_bin_deps =
     define
       ~restat:()
       ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
       "build_deps" in 
-
-
-  (* only generate mll no mli generated *)
-  (* actually we would prefer generators in source ?
-     generator are divided into two categories:
-     1. not system dependent (ocamllex,ocamlyacc)
-     2. system dependent - has to be run on client's machine
-  *)
-
-
-  (**************************************)
-  (* below are rules not local any more *)
-  (**************************************)
-
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js =
     define
