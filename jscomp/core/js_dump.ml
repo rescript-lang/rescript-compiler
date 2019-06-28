@@ -906,11 +906,21 @@ and expression_desc cxt (level:int) f x : cxt  =
         | Blk_constructor(name,number) 
 
           -> (* has to be debug mode *)          
-          (if number = 1 && Js_block_runtime.tag_is_zero tag then          
-             dbg_simple_variant f 
-           else dbg_variant f) ;
-          P.paren_group f 1 (fun _ -> arguments cxt f 
-                                [E.str name; E.array mutable_flag el])             
+          if number = 1 && Js_block_runtime.tag_is_zero tag then 
+            begin
+              dbg_simple_variant f; 
+              P.paren_group f 1 (fun _ ->
+                  arguments cxt f 
+                    [E.str name; E.array mutable_flag el])             
+            end
+          else begin 
+            dbg_variant f;
+            P.paren_group f 1 (fun _ ->
+                arguments cxt f 
+                  [E.str name; tag; E.array mutable_flag el])
+          end
+
+          
 #if OCAML_VERSION =~ ">4.03.0" then                               
         | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
 #end
