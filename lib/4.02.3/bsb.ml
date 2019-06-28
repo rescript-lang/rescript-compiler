@@ -13113,32 +13113,51 @@ let make_custom_rules (custom_rules : command String_map.t) :
       ~restat:()
       ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
       "build_deps" in 
+  let buf = Buffer.create 100 in     
+  let mk_ml_cmj_cmd 
+      ~read_cmi 
+      ~has_re 
+      ~is_dev 
+      ~postbuild : string =     
+    Buffer.clear buf;
+    Buffer.add_string buf "$bsc $g_pkg_flg";
+    if has_re then 
+      Buffer.add_string buf " -bs-re-out -bs-super-errors";
+    if read_cmi then 
+      Buffer.add_string buf " -bs-read-cmi";
+    Buffer.add_string buf " $g_lib_incls" ;
+    if true || is_dev then 
+      Buffer.add_string buf " $bsc_extra_includes";
+    Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
+    if postbuild then
+      Buffer.add_string buf " $postbuild";
+    Buffer.contents buf
+  in   
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js =
     define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi:true ~has_re:false ~is_dev:false 
+                  ~postbuild:true)
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       "ml_cmj_only" in 
-
   let re_cmj_js =
     define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:(mk_ml_cmj_cmd ~read_cmi:true ~has_re:true ~is_dev:false ~postbuild:true)      
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       "re_cmj_only" in 
-
-
   let ml_cmj_cmi_js =
     define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:(mk_ml_cmj_cmd ~read_cmi:false ~has_re:false ~is_dev:false ~postbuild:true)
       ~dyndep:"$in_e.d" 
       ~restat:() (* may not need it in the future *)
       "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
 
   let re_cmj_cmi_js =
     define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~command:(mk_ml_cmj_cmd ~read_cmi:false ~has_re:true ~is_dev:false ~postbuild:true)
       ~dyndep:"$in_e.d" 
       ~restat:() (* may not need it in the future *)
       "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
@@ -13146,14 +13165,15 @@ let make_custom_rules (custom_rules : command String_map.t) :
 
   let ml_cmi =
     define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~command:(mk_ml_cmj_cmd ~read_cmi:false ~has_re:false ~is_dev:false ~postbuild:false)
       ~dyndep:"$in_e.d"
       ~restat:()
       "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
   in 
   let re_cmi =
     define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~command:(mk_ml_cmj_cmd ~read_cmi:false ~postbuild:false ~has_re:true ~is_dev:false)
+
       ~dyndep:"$in_e.d"
       ~restat:()
       "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
