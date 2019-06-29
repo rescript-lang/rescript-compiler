@@ -162,13 +162,21 @@ function installDirBy(src,dest,filter){
     })
 }
 
+/**
+ * 
+ * @param {string} dir 
+ * TODO: `mkdirSync` may fail 
+ */
+function ensureExists(dir){
+    if(!fs.existsSync(dir)){
+        fs.mkdirSync(dir)
+    }
+}
 function install(){
-    if (!fs.existsSync(lib_dir)) {
-        fs.mkdirSync(lib_dir)
-    }
-    if (!fs.existsSync(ocaml_dir)) {
-        fs.mkdirSync(ocaml_dir)
-    }
+    ensureExists(lib_dir)
+    ensureExists(ocaml_dir)
+    ensureExists(path.join(lib_dir,'js'))
+    ensureExists(path.join(lib_dir,'es6'))
     installDirBy(runtime_dir,ocaml_dir,function(file){        
         var y = path.parse(file)
         return y.name === 'js' || y.ext.includes('cm')        
