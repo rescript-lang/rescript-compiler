@@ -24045,7 +24045,7 @@ let capitalize_sub (s : string) len : string =
       || (c >= '\248' && c <= '\254') then 
         Char.unsafe_chr (Char.code c - 32) else c in 
     Bytes.unsafe_set bytes 0 uc;
-    for i = 1 to len do 
+    for i = 1 to len - 1 do 
       Bytes.unsafe_set bytes i (String.unsafe_get s i)
     done ;
     Bytes.unsafe_to_string bytes 
