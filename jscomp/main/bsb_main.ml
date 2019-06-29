@@ -178,7 +178,7 @@ let () =
                      ~not_dev:false 
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
-                   Bsb_world.make_world_deps cwd config_opt
+                   Bsb_world.make_world_deps cwd config_opt [||]
                  end;
                  if !watch_mode then begin
                    program_exit ()
@@ -202,7 +202,7 @@ let () =
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps cwd config_opt ;
+              Bsb_world.make_world_deps cwd config_opt ninja_args;
             if !watch_mode then program_exit ()
             else ninja_command_exit  vendor_ninja ninja_args 
           end
