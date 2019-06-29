@@ -17149,6 +17149,7 @@ module Bsb_world : sig
 val make_world_deps:
   string ->
   Bsb_config_types.t option ->
+  string array ->
   unit  
 end = struct
 #1 "bsb_world.ml"
@@ -17217,10 +17218,14 @@ let install_targets cwd (config : Bsb_config_types.t option) =
 
 
 
-let build_bs_deps cwd (deps : Bsb_package_specs.t) =
+let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
+  let args = 
+    if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
+    else Array.append [|vendor_ninja|] ninja_args
+  in 
   Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
       if not top then
         begin 
@@ -17232,7 +17237,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) =
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = cwd // Bsb_config.lib_bs;
-             args  = [|vendor_ninja|]
+             args 
             } in     
           let eid =
             Bsb_unix.run_command_execv
@@ -17249,7 +17254,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) =
     )
 
 
-let make_world_deps cwd (config : Bsb_config_types.t option) =
+let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
   Bsb_log.info "Making the dependency world!@.";
   let deps =
     match config with
@@ -17260,7 +17265,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some config -> config.package_specs in
-  build_bs_deps cwd deps
+  build_bs_deps cwd deps ninja_args
 end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
@@ -17448,7 +17453,7 @@ let () =
                      ~not_dev:false 
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
-                   Bsb_world.make_world_deps cwd config_opt
+                   Bsb_world.make_world_deps cwd config_opt [||]
                  end;
                  if !watch_mode then begin
                    program_exit ()
@@ -17472,7 +17477,7 @@ let () =
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps cwd config_opt ;
+              Bsb_world.make_world_deps cwd config_opt ninja_args;
             if !watch_mode then program_exit ()
             else ninja_command_exit  vendor_ninja ninja_args 
           end
