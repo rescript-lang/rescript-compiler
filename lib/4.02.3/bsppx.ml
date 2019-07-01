@@ -25002,30 +25002,43 @@ let jsxMapper () =
         a project to depend on a third-party which is still using an old version
         of JSX
       *)
-      | {
+      | ({
+          pstr_desc = Pstr_attribute (
+            {txt = "ocaml.ppx.context"} ,
+            _
+          )
+        }::
+        {
           pstr_loc;
           pstr_desc = Pstr_attribute (
             ({txt = "bs.config"} as bsConfigLabel),
             PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
           )
-        }::restOfStructure -> begin
+        } 
+        ::restOfStructure ) | ({
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure) -> begin
           let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
           match (jsxField, recordFieldsWithoutJsx) with
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
           
-# 1010 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1023 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
               
-# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1025 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
               
-# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1030 "syntax/reactjs_jsx_ppx.cppo.ml"
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3
               
-# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1033 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
@@ -26061,30 +26074,43 @@ let jsxMapper () =
         a project to depend on a third-party which is still using an old version
         of JSX
       *)
-      | {
+      | ({
+          pstr_desc = Pstr_attribute (
+            {txt = "ocaml.ppx.context"} ,
+            _
+          )
+        }::
+        {
           pstr_loc;
           pstr_desc = Pstr_attribute (
             ({txt = "bs.config"} as bsConfigLabel),
             PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
           )
-        }::restOfStructure -> begin
+        } 
+        ::restOfStructure ) | ({
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure) -> begin
           let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
           match (jsxField, recordFieldsWithoutJsx) with
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
           
-# 1010 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1023 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
               
-# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1025 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
               
-# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1030 "syntax/reactjs_jsx_ppx.cppo.ml"
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3
               
-# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1033 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
