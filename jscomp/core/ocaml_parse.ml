@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+let print_if ppf flag printer arg =
+  if !flag then Format.fprintf ppf "%a@." printer arg;
+  arg
 
 let parse_interface ppf sourcefile = 
   Ppx_entry.rewrite_signature (Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile)
@@ -33,7 +35,14 @@ let lazy_parse_interface ppf sourcefile =
 
 let parse_implementation ppf sourcefile = 
   Ppx_entry.rewrite_implementation
-    (Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile)
+    (
+      Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile
+#if undefined BS_RELEASE_BUILD then       
+      |> print_if ppf Clflags.dump_parsetree Printast.implementation
+      |> print_if ppf Clflags.dump_source Pprintast.structure
+
+#end
+      )
 
 let parse_implementation_from_string  str = 
   let lb = Lexing.from_string str in

@@ -30447,7 +30447,9 @@ let is_bs_attribute txt =
    String.unsafe_get txt 2 = '.'
   )
 
-let used_attributes : _ Hash_set_poly.t = Hash_set_poly.create 16 
+let used_attributes : string Asttypes.loc Hash_set_poly.t = 
+    Hash_set_poly.create 16 
+
 
 
 

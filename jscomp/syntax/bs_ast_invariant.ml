@@ -33,7 +33,9 @@ let is_bs_attribute txt =
    String.unsafe_get txt 2 = '.'
   )
 
-let used_attributes : _ Hash_set_poly.t = Hash_set_poly.create 16 
+let used_attributes : string Asttypes.loc Hash_set_poly.t = 
+    Hash_set_poly.create 16 
+
 
 #if false then
 let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
@@ -42,7 +44,7 @@ let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) ->
 
 let dump_used_attributes fmt = 
   Format.fprintf fmt "Used attributes Listing Start:@.";
-  Hash_set_poly.iter  (fun attr -> dump_attribute fmt attr) used_attributes;
+  Hash_set_poly.iter  used_attributes (fun attr -> dump_attribute fmt attr) ;
   Format.fprintf fmt "Used attributes Listing End:@."
 #end
 
