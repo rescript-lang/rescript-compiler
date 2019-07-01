@@ -1,5 +1,20 @@
 
 `*` means  potential break changes
+# 5.0.6
+
+Fixes
+
+- #3648, #3647, #3645 make sure bsppx.exe (used by editor tools/Merlin, Reason Language service) behaves consistently with bsc.exe
+
+- #3643 fix a hidden out of bounds bug
+
+- #3642 pass down ninja internal flags in combination of `bsb -make-world`, for example `bsb -make-world -- -d explain`
+
+- #3641 fix pnpm install
+- #3635 fix debug mode runtime crash
+- #3633 fix bs dev dependency issue
+
+
 # 5.0.5
 Fixes
 
