@@ -992,13 +992,26 @@ let jsxMapper () =
         a project to depend on a third-party which is still using an old version
         of JSX
       *)
-      | {
+      | ({
+          pstr_desc = Pstr_attribute (
+            {txt = "ocaml.ppx.context"} ,
+            _
+          )
+        }::
+        {
           pstr_loc;
           pstr_desc = Pstr_attribute (
             ({txt = "bs.config"} as bsConfigLabel),
             PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
           )
-        }::restOfStructure -> begin
+        } 
+        ::restOfStructure ) | ({
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure) -> begin
           let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
           match (jsxField, recordFieldsWithoutJsx) with
           (* no file-level jsx config found *)
