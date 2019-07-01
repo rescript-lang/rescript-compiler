@@ -43,5 +43,7 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
     | _ -> ast 
   in 
   if !Js_config.no_builtin_ppx_ml then ast else
+  begin
     Bs_builtin_ppx.rewrite_implementation ast 
+  end
   
