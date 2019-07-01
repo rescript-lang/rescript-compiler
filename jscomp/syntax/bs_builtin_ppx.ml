@@ -382,6 +382,8 @@ let signature_config_table : action_table =
 let rewrite_signature (x : Parsetree.signature) =  
   let result = 
     match x with
+    | {psig_desc = Psig_attribute ({txt = "ocaml.ppx.context"},_)}
+      :: {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
     | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
       ->          
       Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload) 
@@ -398,6 +400,8 @@ let rewrite_signature (x : Parsetree.signature) =
 let rewrite_implementation (x : Parsetree.structure) =  
   let result =
     match x with
+    | {pstr_desc = Pstr_attribute ({txt = "ocaml.ppx.context"},_)}
+      :: {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
     | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
       ->
       begin
