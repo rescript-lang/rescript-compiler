@@ -789,8 +789,8 @@ let jsxMapper () =
           let expression = match (default) with
           | (Some default) -> Exp.match_ expression [
             Exp.case
-              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
-              (Exp.ident ~loc {txt = (Lident labelString); loc});
+              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = "$value"; loc})))
+              (Exp.ident ~loc {txt = (Lident "$value"); loc});
             Exp.case
               (Pat.construct {loc; txt=Lident "None"} None)
               default
