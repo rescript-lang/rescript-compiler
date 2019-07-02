@@ -8337,7 +8337,7 @@ let capitalize_sub (s : string) len : string =
       || (c >= '\248' && c <= '\254') then 
         Char.unsafe_chr (Char.code c - 32) else c in 
     Bytes.unsafe_set bytes 0 uc;
-    for i = 1 to len do 
+    for i = 1 to len - 1 do 
       Bytes.unsafe_set bytes i (String.unsafe_get s i)
     done ;
     Bytes.unsafe_to_string bytes 
@@ -9748,6 +9748,8 @@ val node_sep : string
 val node_parent : string 
 val node_current : string 
 val gentype_import : string
+
+val bsbuild_cache : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9882,6 +9884,9 @@ let node_parent = ".."
 let node_current = "."
 
 let gentype_import = "genType.import"
+
+let bsbuild_cache = ".bsbuild"    
+
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
