@@ -322,13 +322,16 @@ build all: phony runtime others $stdlib
 `;
   var filePath = path.join(jscomp_dir, "release.ninja");
   fs.writeFileSync(filePath, releaseNinja, "ascii");
-  let cleanArgs = ["-f", "release.ninja", "-t", "clean"];
+  var cleanArgs = ["-f", "release.ninja", "-t", "clean"];
   cp.execFileSync(ninja_bin_output, cleanArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
     shell: false
   });
-  let buildArgs = ["-f", "release.ninja"];
+  var buildArgs = ["-f", "release.ninja"];
+  if(process.env.BS_TRAVIS_CI){
+      buildArgs.push('--verbose')
+  }
   cp.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
