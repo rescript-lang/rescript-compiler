@@ -36,10 +36,13 @@ function f_bool(b) {
   return Curry._1(record(/* Format */[
                   /* String_literal */Block.__(11, [
                       "bool(",
-                      /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                      /* Bool */Block.__(9, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
                               /* ")" */41,
                               /* End_of_format */0
-                            ])])
+                            ])
+                        ])
                     ]),
                   "bool(%b)"
                 ]), b);
@@ -452,21 +455,11 @@ function test(argv) {
 
 test(args1);
 
-var suites_000 = /* tuple */[
-  "should raise",
-  (function (param) {
-      return /* ThrowAny */Block.__(7, [(function (param) {
-                    return test(args2);
-                  })]);
-    })
-];
+test(args2);
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+Mt.from_pair_suites("Libarg_test", /* [] */0);
 
-Mt.from_pair_suites("Libarg_test", suites);
+var suites = /* [] */0;
 
 exports.current = current;
 exports.accum = accum;

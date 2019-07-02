@@ -14,26 +14,6 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var Int32 = Caml_module.init_mod([
-      "recursive_module.ml",
-      14,
-      6
-    ], [[
-        0,
-        0,
-        0,
-        0,
-        0
-      ]]);
-
-Caml_module.update_mod([[
-        0,
-        0,
-        0,
-        0,
-        0
-      ]], Int32, Int32);
-
 var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
       19,
@@ -61,9 +41,11 @@ eq("File \"recursive_module.ml\", line 24, characters 6-13", 4, tmp);
 
 Mt.from_pair_suites("Recursive_module", suites[0]);
 
+var Int32 = /* () */0;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.Int32 = Int32;
 exports.Int3 = Int3;
-/* Int32 Not a pure module */
+/* Int3 Not a pure module */
