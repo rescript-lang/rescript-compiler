@@ -188,10 +188,6 @@ function ensureExists(dir) {
   }
 }
 function install() {
-  ensureExists(lib_dir);
-  ensureExists(ocaml_dir);
-  ensureExists(path.join(lib_dir, "js"));
-  ensureExists(path.join(lib_dir, "es6"));
   installDirBy(runtime_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
     return y.name === "js" || y.ext.includes("cm");
@@ -311,6 +307,10 @@ function checkPrebuiltBscCompiler() {
 }
 
 function buildLibs() {
+  ensureExists(lib_dir);
+  ensureExists(ocaml_dir);
+  ensureExists(path.join(lib_dir, "js"));
+  ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
   var releaseNinja = `
 stdlib = ${ocamlVersion.includes("4.06") ? "stdlib-406" : "stdlib-402"}
@@ -329,8 +329,8 @@ build all: phony runtime others $stdlib
     shell: false
   });
   var buildArgs = ["-f", "release.ninja"];
-  if(process.env.BS_TRAVIS_CI){
-      buildArgs.push('--verbose')
+  if (process.env.BS_TRAVIS_CI) {
+    buildArgs.push("--verbose");
   }
   cp.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
