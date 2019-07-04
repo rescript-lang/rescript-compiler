@@ -22,7 +22,7 @@ function getVersionPrefix() {
     cached = version.substr(0, version.indexOf("+"));
     return cached;
   }
-  console.error(`cannot find '${file}'`);
+  console.warn(`cannot find '${file}'`);
 
   file = path.join(__dirname, "..", "OCAML_VERSION");
   if (fs.existsSync(file)) {
