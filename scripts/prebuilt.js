@@ -8,7 +8,7 @@ var root_config = { cwd: root, stdio: [0, 1, 2] }
 process.env.BS_RELEASE_BUILD = 'true'
 
 
-var version = require('./buildocaml.js').getVersionPrefix()
+var ocamlVersion = require('./buildocaml.js').getVersionPrefix()
 var fs = require('fs')
 var hostPlatform = 'darwin'
 
@@ -19,9 +19,9 @@ function buildCompiler() {
   // delete process.env.OCAMLLIB
   var prebuilt = 'prebuilt.ninja'
   var content = require('./ninjaFactory.js').libNinja({
-    ocamlopt : is_windows?`ocamlopt.opt.exe`:`../native/${version}/bin/ocamlopt.opt`,
+    ocamlopt : is_windows?`ocamlopt.opt.exe`:`../native/${ocamlVersion}/bin/ocamlopt.opt`,
     ext : sys_extension,
-    INCL : version
+    INCL : ocamlVersion
   })
   
   fs.writeFileSync(path.join(root,'lib',prebuilt),content,'ascii')
