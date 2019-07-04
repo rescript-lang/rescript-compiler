@@ -38,7 +38,7 @@ In general, you'd edit files and rerun `ninja -C jscomp`.
 We have an optional watcher to auto rebuild on file changes. Suppose you are in `jscomp`:
 
 ```sh
-node ../scripts/task.js
+node ../scripts/tasks.js
 ```
 
 ### Troubleshooting broken builds
