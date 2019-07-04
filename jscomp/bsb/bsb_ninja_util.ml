@@ -42,6 +42,7 @@ type override =
       OverwriteVar s 
       $s
     *)
+  | OverwriteVars of string list
 
 type shadow = 
   { key : string ; op : override }
@@ -97,7 +98,7 @@ let output_build
   begin match shadows with
     | [] -> ()
     | xs ->
-      List.iter (fun {key=k; op= v} ->
+      Ext_list.iter xs (fun {key=k; op= v} ->
           output_string oc "  " ;
           output_string oc k ;
           output_string oc " = ";
@@ -109,14 +110,21 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
+          | OverwriteVars s ->  
+            Ext_list.iter s (fun s ->
+                output_string oc "$";
+                output_string oc s ; 
+                output_string oc Ext_string.single_space
+              );
+            output_string oc "\n"
           | AppendList ls -> 
             output_string oc "$" ;
             output_string oc k;
-            List.iter 
+            Ext_list.iter ls
               (fun s ->
                  output_string oc Ext_string.single_space;
                  output_string oc s 
-                 ) ls;
+                 ) ;
             output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
@@ -130,7 +138,7 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
-        ) xs
+        ) 
   end;
   if restat <> None then 
     output_string oc "  restat = 1 \n"
