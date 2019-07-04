@@ -357,7 +357,7 @@ function provideCompiler() {
     var releaseNinja = require("./ninjaFactory.js").libNinja({
       ocamlopt: "ocamlopt.opt",
       ext: ".exe",
-      INCL: require("./buildocaml.js").getVersionPrefix()
+      INCL: ocamlVersion
     });
 
     var filePath = path.join(lib_dir, "release.ninja");
