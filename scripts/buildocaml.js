@@ -22,6 +22,7 @@ function getVersionPrefix() {
     cached = version.substr(0, version.indexOf("+"));
     return cached;
   }
+  console.error(`cannot find '${file}'`);
 
   file = path.join(__dirname, "..", "OCAML_VERSION");
   if (fs.existsSync(file)) {
@@ -29,8 +30,8 @@ function getVersionPrefix() {
     cached = version.substr(0, version.indexOf("+"));
     return cached;
   }
-
   console.error(`cannot find '${file}'`);
+
   console.error("You should create OCAML_VERSION or ocaml/VERSION file to specify OCaml version like '4.02.3+buckle-master'");
   console.error("For example, run `opam switch show > OCAML_VERSION`");
   throw new Error("version file not found");
