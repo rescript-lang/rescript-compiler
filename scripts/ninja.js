@@ -27,6 +27,38 @@ var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
+var visitorPattern = `
+rule p4of
+    command = camlp4of $flags -impl $in -printer o -o $out
+    generator = true
+build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
+    flags = -I core -filter map -filter trash
+build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
+    flags = -I core -filter Camlp4FoldGenerator -filter trash
+`
+/**
+ * @returns {boolean}
+ */
+function hasCamlp4(){
+  try{
+    console.log(cp.execSync(`camlp4of -v`, {encoding:'ascii'}))
+    console.log(`camlp4 detected`)
+    return true
+  }catch(e){
+    return false
+  }
+}
+/**
+ * @returns {string}
+ */
+function generateVisitorPattern(){
+  if(hasCamlp4()){
+    return visitorPattern
+  } else {
+    console.warn(`camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`)
+    return ``
+  }
+}
 /**
  * By default we use vendored,
  * we produce two ninja files which won't overlap
@@ -1451,6 +1483,7 @@ function getVendorConfigNinja() {
 ocamlopt = ${prefix}/ocamlopt.opt
 ocamllex = ${prefix}/ocamllex.opt
 ocamlmklib = ${prefix}/ocamlmklib
+ocaml = ${prefix}/ocaml
 `;
 }
 function getEnnvConfigNinja() {
@@ -1582,13 +1615,7 @@ build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
-rule p4of
-    command = camlp4of $flags -impl $in -printer o -o $out
-    generator = true
-build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
-    flags = -I core -filter map -filter trash
-build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
-    flags = -I core -filter Camlp4FoldGenerator -filter trash
+${generateVisitorPattern()}
 
 build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
