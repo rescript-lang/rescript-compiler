@@ -1603,7 +1603,7 @@ rule ocamlmklib
     command = $ocamlmklib $in -o $name
 
 rule mk_keywords
-    command = ocaml $in
+    command = $ocaml $in
     generator = true
 build ext/js_reserved_map.ml: mk_keywords build_sorted.ml keywords.list
 
