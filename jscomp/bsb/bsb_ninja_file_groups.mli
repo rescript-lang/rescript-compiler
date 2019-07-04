@@ -32,7 +32,7 @@ val handle_file_groups :
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_ninja_rule.t String_map.t ->
+  rules:Bsb_ninja_rule.builtin ->
   Bsb_file_groups.file_groups ->
   string option -> 
   unit

@@ -12878,7 +12878,7 @@ let bsc_flags = "bsc_flags"
 let ppx_flags = "ppx_flags"
 let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
-let g_pkg_incls = "g_pkg_incls"
+
 
 let bs_package_dev_includes = "bs_package_dev_includes"
 
@@ -12935,28 +12935,30 @@ val get_name : t  -> out_channel -> string
 
 (***********************************************************)
 (** A list of existing rules *)
-val build_ast_and_module_sets : t
-(** TODO: Implement it on top of pp_flags *)
-val build_ast_and_module_sets_from_re : t 
-val build_ast_and_module_sets_from_rei : t 
+type builtin = {
+  build_ast_and_module_sets : t;
+  (** TODO: Implement it on top of pp_flags *)
+  build_ast_and_module_sets_from_re : t ;
+  build_ast_and_module_sets_from_rei : t ;
 
 
-(** platform dependent, on Win32,
-  invoking cmd.exe
- *)
-val copy_resources : t
-(** Rules below all need restat *)
-val build_bin_deps : t 
+  (** platform dependent, on Win32,
+      invoking cmd.exe
+  *)
+  copy_resources : t;
+  (** Rules below all need restat *)
+  build_bin_deps : t ;
 
-val ml_cmj_js : t
-val ml_cmj_cmi_js : t 
-val ml_cmi : t
+  ml_cmj_js : t;
+  ml_cmj_cmi_js : t ;
+  ml_cmi : t;
 
-val re_cmj_js : t 
-val re_cmj_cmi_js : t 
-val re_cmi : t 
-val build_package : t 
-
+  re_cmj_js : t ;
+  re_cmj_cmi_js : t ;
+  re_cmi : t ;
+  build_package : t ;
+  customs : t String_map.t
+}
 (***********************************************************)
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
@@ -12969,7 +12971,7 @@ type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val make_custom_rules : command String_map.t -> t String_map.t
+val make_custom_rules : command String_map.t -> builtin
 
 end = struct
 #1 "bsb_ninja_rule.ml"
@@ -12997,37 +12999,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type state = {
-  mutable rule_id : int ;  
-  mutable rule_names : String_set.t 
-}
-
-let st = {
-  rule_id = 0;
-  rule_names = String_set.empty
-}
-
-let replace snapshot = 
-  st.rule_id <- snapshot.rule_id;
-  st.rule_names <- snapshot.rule_names
 
 
-(** To make it re-entrant across multiple ninja files, 
-    We must reset [rule_id]
-    could be improved later
-             1. instead of having a global id, having a unique id per rule name
-             2. the rule id is increased only when actually used
-*)
-let ask_name (name : string) : string =
-  let current_id = st.rule_id in
-  let current_names = st.rule_names in 
-  let () = st.rule_id <- current_id + 1 in
-  let new_name  = 
-      if String_set.mem current_names name then 
-        name ^ Printf.sprintf "_%d" current_id
-      else name in   
-  st.rule_names <- String_set.add current_names new_name ;    
-  new_name
+
 
 
 type t = { 
@@ -13042,11 +13016,12 @@ let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name 
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   Ext_option.iter dyndep (fun f ->
       output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
-  );
+    );
   (if restat <>  None then   
-      output_string oc "  restat = 1\n");
+     output_string oc "  restat = 1\n");
 
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
 
 
 
@@ -13057,9 +13032,9 @@ let define
     ?dyndep
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
-    name
+    rule_name : t 
   =
-  let rule_name = ask_name name  in 
+
   let rec self = {
     used  = false;
     rule_name ;
@@ -13070,136 +13045,152 @@ let define
           self.used <- true
         end ;
       rule_name
-  } in self
+  } in 
+
+  self
 
 
-(** FIXME: We don't need set [-o ${out}] when building ast 
-    since the default is already good -- it does not*)
-let build_ast_and_module_sets =
-  define
-    ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
-    "build_ast_and_module_sets"
 
-
-let build_ast_and_module_sets_from_re =
-  define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in"
-    "build_ast_and_module_sets_from_re"
-
-let build_ast_and_module_sets_from_rei =
-  define
-    ~command:"$bsc -pp \"$refmt $refmt_flags\" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in"
-    "build_ast_and_module_sets_from_rei"
-
-let copy_resources =    
-  define 
-    ~command:(
-      if Ext_sys.is_windows_or_cygwin then
-        "cmd.exe /C copy /Y $in $out > null" 
-      else "cp $in $out"
-    )
-    "copy_resource" 
-
-
-      
-let build_bin_deps =
-  define
-    ~restat:()
-    ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
-    "build_deps"
-
-
-(* only generate mll no mli generated *)
-(* actually we would prefer generators in source ?
-   generator are divided into two categories:
-   1. not system dependent (ocamllex,ocamlyacc)
-   2. system dependent - has to be run on client's machine
-*)
-
-
-(**************************************)
-(* below are rules not local any more *)
-(**************************************)
-
-(* [g_lib_incls] are fixed for libs *)
-let ml_cmj_js =
-  define
-    ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d"
-    ~restat:() (* Always restat when having mli *)
-    "ml_cmj_only"
-    
-let re_cmj_js =
-  define
-    ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d"
-    ~restat:() (* Always restat when having mli *)
-    "re_cmj_only"
-
-
-let ml_cmj_cmi_js =
-  define
-    ~command:"$bsc $g_pkg_flg $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d" 
-    ~restat:() (* may not need it in the future *)
-    "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-
-let re_cmj_cmi_js =
-  define
-    ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-    ~dyndep:"$in_e.d" 
-    ~restat:() (* may not need it in the future *)
-    "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-
-    
-let ml_cmi =
-  define
-    ~command:"$bsc $g_pkg_flg  $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-    ~dyndep:"$in_e.d"
-    ~restat:()
-    "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-
-let re_cmi =
-  define
-    ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_pkg_incls $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-    ~dyndep:"$in_e.d"
-    ~restat:()
-    "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-    
-let build_package = 
-  define
-    ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
-    ~restat:()
-    "build_package"
-
-
-let snapshot = {
-  rule_names = st.rule_names;
-  rule_id = st.rule_id
-}
 
 type command = string
 
-let make_custom_rules (custom_rules : command String_map.t) = 
-  replace snapshot;
-  build_ast_and_module_sets.used <- false ;
-  build_ast_and_module_sets_from_re.used <- false ;  
-  build_ast_and_module_sets_from_rei.used <- false ;
-  build_bin_deps.used <- false;
-  copy_resources.used <- false ;
+type builtin = {
+  build_ast_and_module_sets : t;
+  (** TODO: Implement it on top of pp_flags *)
+  build_ast_and_module_sets_from_re : t ;
+  build_ast_and_module_sets_from_rei : t ;
 
-  ml_cmj_js.used <- false;
-  ml_cmj_cmi_js.used <- false ;
-  ml_cmi.used <- false ;
 
-  re_cmj_cmi_js.used <- false;
-  re_cmj_js.used <- false;
-  re_cmi.used <- false;
+  (** platform dependent, on Win32,
+      invoking cmd.exe
+  *)
+  copy_resources : t;
+  (** Rules below all need restat *)
+  build_bin_deps : t ;
 
-  build_package.used <- false;    
-  String_map.mapi custom_rules begin fun name command -> 
-    define ~command name
-  end
+  ml_cmj_js : t;
+  ml_cmj_cmi_js : t ;
+  ml_cmi : t;
+
+  re_cmj_js : t ;
+  re_cmj_cmi_js : t ;
+  re_cmi : t ;
+  build_package : t ;
+  customs : t String_map.t
+}
+
+;;
+let make_custom_rules (custom_rules : command String_map.t) : 
+  builtin = 
+  (** FIXME: We don't need set [-o ${out}] when building ast 
+      since the default is already good -- it does not*)
+  let build_ast_and_module_sets =
+    define
+      ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+      "build_ast_and_module_sets" in
+
+
+  let build_ast_and_module_sets_from_re =
+    define
+      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in|}
+      "build_ast_and_module_sets_from_re" in 
+
+  let build_ast_and_module_sets_from_rei =
+    define
+      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in|}
+      "build_ast_and_module_sets_from_rei" in 
+
+  let copy_resources =    
+    define 
+      ~command:(
+        if Ext_sys.is_windows_or_cygwin then
+          "cmd.exe /C copy /Y $in $out > null" 
+        else "cp $in $out"
+      )
+      "copy_resource" in
+  let build_bin_deps =
+    define
+      ~restat:()
+      ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
+      "build_deps" in 
+  (* [g_lib_incls] are fixed for libs *)
+  let ml_cmj_js =
+    define
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      "ml_cmj_only" in 
+
+  let re_cmj_js =
+    define
+      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      "re_cmj_only" in 
+
+
+  let ml_cmj_cmi_js =
+    define
+      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d" 
+      ~restat:() (* may not need it in the future *)
+      "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
+
+  let re_cmj_cmi_js =
+    define
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
+      ~dyndep:"$in_e.d" 
+      ~restat:() (* may not need it in the future *)
+      "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+  in 
+
+  let ml_cmi =
+    define
+      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~dyndep:"$in_e.d"
+      ~restat:()
+      "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+  in 
+  let re_cmi =
+    define
+      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
+      ~dyndep:"$in_e.d"
+      ~restat:()
+      "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+  in     
+  let build_package = 
+    define
+      ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
+      ~restat:()
+      "build_package"
+  in 
+  {
+    build_ast_and_module_sets ;
+    (** TODO: Implement it on top of pp_flags *)
+    build_ast_and_module_sets_from_re  ;
+    build_ast_and_module_sets_from_rei ;
+
+
+    (** platform dependent, on Win32,
+        invoking cmd.exe
+    *)
+    copy_resources;
+    (** Rules below all need restat *)
+    build_bin_deps ;
+
+    ml_cmj_js ;
+    ml_cmj_cmi_js ;
+    ml_cmi ;
+
+    re_cmj_js ;
+    re_cmj_cmi_js ;
+    re_cmi ;
+    build_package ;
+    customs =
+
+      String_map.mapi custom_rules begin fun name command -> 
+        define ~command ("custom_" ^ name)
+      end}
 
 
 
@@ -13242,6 +13233,8 @@ type override =
   
   | OverwriteVar of string 
 
+  | OverwriteVars of string list
+  
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -13315,6 +13308,7 @@ type override =
       OverwriteVar s 
       $s
     *)
+  | OverwriteVars of string list
 
 type shadow = 
   { key : string ; op : override }
@@ -13370,7 +13364,7 @@ let output_build
   begin match shadows with
     | [] -> ()
     | xs ->
-      List.iter (fun {key=k; op= v} ->
+      Ext_list.iter xs (fun {key=k; op= v} ->
           output_string oc "  " ;
           output_string oc k ;
           output_string oc " = ";
@@ -13382,14 +13376,21 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
+          | OverwriteVars s ->  
+            Ext_list.iter s (fun s ->
+                output_string oc "$";
+                output_string oc s ; 
+                output_string oc Ext_string.single_space
+              );
+            output_string oc "\n"
           | AppendList ls -> 
             output_string oc "$" ;
             output_string oc k;
-            List.iter 
+            Ext_list.iter ls
               (fun s ->
                  output_string oc Ext_string.single_space;
                  output_string oc s 
-                 ) ls;
+                 ) ;
             output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
@@ -13403,7 +13404,7 @@ let output_build
             output_string oc "$";
             output_string oc s ; 
             output_string oc "\n"
-        ) xs
+        ) 
   end;
   if restat <> None then 
     output_string oc "  restat = 1 \n"
@@ -13476,7 +13477,7 @@ val handle_file_groups :
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_ninja_rule.t String_map.t ->
+  rules:Bsb_ninja_rule.builtin ->
   Bsb_file_groups.file_groups ->
   string option -> 
   unit
@@ -13552,13 +13553,13 @@ let make_common_shadows
           )
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [{
-         key = Bsb_ninja_global_vars.g_pkg_incls; 
-         op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
-       }
-        ;
-        { key = "bsc_extra_includes";
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
+       [         
+        { key =  "bsc_extra_includes";
+          op = OverwriteVars 
+          [
+            Bsb_ninja_global_vars.bs_package_dev_includes ;
+            Bsb_dir_index.string_of_bsb_dev_include dir_index;
+          ]
         }
        ]
     )   
@@ -13566,6 +13567,7 @@ let make_common_shadows
 
 
 let emit_impl_build
+    (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
@@ -13606,9 +13608,9 @@ let emit_impl_build
     ~input
     ~implicit_deps
     ~rule:( if is_re then 
-              Bsb_ninja_rule.build_ast_and_module_sets_from_re
+              rules.build_ast_and_module_sets_from_re
             else
-              Bsb_ninja_rule.build_ast_and_module_sets);
+              rules.build_ast_and_module_sets);
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -13618,8 +13620,8 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
-             else Bsb_ninja_rule.build_ast_and_module_sets)
+      ~rule:(if is_re then rules.build_ast_and_module_sets_from_rei
+             else rules.build_ast_and_module_sets)
       ~implicit_deps
     ;
     Bsb_ninja_util.output_build oc
@@ -13627,7 +13629,7 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then Bsb_ninja_rule.re_cmi else Bsb_ninja_rule.ml_cmi)
+      ~rule:(if is_re then rules.re_cmi else rules.ml_cmi)
     ;
   end;
   Bsb_ninja_util.output_build
@@ -13635,7 +13637,7 @@ let emit_impl_build
     ~output:output_d
     ~inputs:(if not no_intf_file then [output_mliast] else [])
     ~input:output_mlast
-    ~rule:Bsb_ninja_rule.build_bin_deps
+    ~rule:rules.build_bin_deps
     ~implicit_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
               else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
@@ -13652,9 +13654,9 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then Bsb_ninja_rule.re_cmj_cmi_js else Bsb_ninja_rule.ml_cmj_cmi_js), [output_cmi], []
+      (if is_re then rules.re_cmj_cmi_js else rules.ml_cmj_cmi_js), [output_cmi], []
     else  
-      (if is_re then Bsb_ninja_rule.re_cmj_js else Bsb_ninja_rule.ml_cmj_js), []  , [output_cmi]
+      (if is_re then rules.re_cmj_js else rules.ml_cmj_js), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
@@ -13668,6 +13670,7 @@ let emit_impl_build
 
 
 let handle_module_info 
+    rules
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
@@ -13679,7 +13682,7 @@ let handle_module_info
   : unit =
   match module_info.ml_info with
   | Ml_source (is_re,_) ->
-    emit_impl_build       
+    emit_impl_build  rules
       package_specs
       group_dir_index
       oc 
@@ -13698,7 +13701,7 @@ let handle_file_group
     oc 
     ~(has_checked_ppx : bool)
     ~bs_suffix
-    ~custom_rules 
+    ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) 
@@ -13706,7 +13709,7 @@ let handle_file_group
     (group: Bsb_file_groups.file_group ) 
   : unit =
 
-  handle_generators oc group custom_rules ;
+  handle_generators oc group rules.customs ;
   String_map.iter group.sources   (fun  module_name module_info   ->
       let installable =
         match group.public with
@@ -13716,7 +13719,7 @@ let handle_file_group
           String_set.mem set module_name in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
-      (handle_module_info 
+      (handle_module_info rules
         ~has_checked_ppx
         ~bs_suffix
          group.dir_index 
@@ -13735,14 +13738,15 @@ let handle_file_groups
     ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
-    ~files_to_install ~custom_rules
+    ~files_to_install 
+    ~rules
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace   =
   Ext_list.iter file_groups
     (handle_file_group 
        oc  
        ~has_checked_ppx
-       ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
+       ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
@@ -13872,11 +13876,14 @@ let get_bsc_flags
   if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
 
 let emit_bsc_lib_includes 
+    (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
   (namespace : _ option)
   (oc : out_channel): unit = 
   let all_includes acc  = 
+    (*FIXME order *)
+    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ (
     match external_includes with 
     | [] -> acc 
     | _ ->  
@@ -13888,6 +13895,7 @@ let emit_bsc_lib_includes
         external_includes
         acc 
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+    )
   in 
   Bsb_ninja_util.output_kv
     Bsb_build_schemas.g_lib_incls 
@@ -13927,7 +13935,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -13976,9 +13984,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.g_pkg_incls, 
-        (Bsb_build_util.include_dirs_by 
-           bs_dependencies (fun x  -> x.package_install_path)) ;
+
         Bsb_ninja_global_vars.bs_package_dev_includes, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
@@ -14034,18 +14040,18 @@ let output_ninja_and_namespace_map
 
   output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs external_includes namespace oc;
+  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_ninja_rule.copy_resources);
+        ~rule:rules.copy_resources);
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
     ~has_checked_ppx:(ppx_checked_files <> [])
     ~bs_suffix     
-    ~custom_rules
+    ~rules
     ~js_post_build_cmd 
     ~package_specs 
     ~files_to_install
@@ -14067,7 +14073,7 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_build oc 
         ~output:(ns ^ Literals.suffix_cmi)
         ~input:(ns ^ Literals.suffix_mlmap)
-        ~rule:Bsb_ninja_rule.build_package
+        ~rule:rules.build_package
     );
   close_out oc
 

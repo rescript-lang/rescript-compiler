@@ -34,28 +34,30 @@ val get_name : t  -> out_channel -> string
 
 (***********************************************************)
 (** A list of existing rules *)
-val build_ast_and_module_sets : t
-(** TODO: Implement it on top of pp_flags *)
-val build_ast_and_module_sets_from_re : t 
-val build_ast_and_module_sets_from_rei : t 
+type builtin = {
+  build_ast_and_module_sets : t;
+  (** TODO: Implement it on top of pp_flags *)
+  build_ast_and_module_sets_from_re : t ;
+  build_ast_and_module_sets_from_rei : t ;
 
 
-(** platform dependent, on Win32,
-  invoking cmd.exe
- *)
-val copy_resources : t
-(** Rules below all need restat *)
-val build_bin_deps : t 
+  (** platform dependent, on Win32,
+      invoking cmd.exe
+  *)
+  copy_resources : t;
+  (** Rules below all need restat *)
+  build_bin_deps : t ;
 
-val ml_cmj_js : t
-val ml_cmj_cmi_js : t 
-val ml_cmi : t
+  ml_cmj_js : t;
+  ml_cmj_cmi_js : t ;
+  ml_cmi : t;
 
-val re_cmj_js : t 
-val re_cmj_cmi_js : t 
-val re_cmi : t 
-val build_package : t 
-
+  re_cmj_js : t ;
+  re_cmj_cmi_js : t ;
+  re_cmi : t ;
+  build_package : t ;
+  customs : t String_map.t
+}
 (***********************************************************)
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
@@ -68,4 +70,4 @@ type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val make_custom_rules : command String_map.t -> t String_map.t
+val make_custom_rules : command String_map.t -> builtin
