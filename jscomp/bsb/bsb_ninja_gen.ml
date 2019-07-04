@@ -83,22 +83,25 @@ let get_bsc_flags
   if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
 
 let emit_bsc_lib_includes 
+    (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
   (namespace : _ option)
   (oc : out_channel): unit = 
-  let all_includes acc  = 
-    match external_includes with 
-    | [] -> acc 
-    | _ ->  
+  (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
+  let all_includes source_dirs  = 
+    source_dirs @
+    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ 
+    (
       (* for external includes, if it is absolute path, leave it as is 
          for relative path './xx', we need '../.././x' since we are in 
          [lib/bs], [build] is different from merlin though
       *)
-      Ext_list.map_append 
+      Ext_list.map
         external_includes
-        acc 
+
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+    )
   in 
   Bsb_ninja_util.output_kv
     Bsb_build_schemas.g_lib_incls 
@@ -138,7 +141,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let custom_rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules = Bsb_ninja_rule.make_custom_rules generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -187,9 +190,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.g_pkg_incls, 
-        (Bsb_build_util.include_dirs_by 
-           bs_dependencies (fun x  -> x.package_install_path)) ;
+
         Bsb_ninja_global_vars.bs_package_dev_includes, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
@@ -245,18 +246,18 @@ let output_ninja_and_namespace_map
 
   output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
-  emit_bsc_lib_includes bsc_lib_dirs external_includes namespace oc;
+  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_ninja_rule.copy_resources);
+        ~rule:rules.copy_resources);
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
     ~has_checked_ppx:(ppx_checked_files <> [])
     ~bs_suffix     
-    ~custom_rules
+    ~rules
     ~js_post_build_cmd 
     ~package_specs 
     ~files_to_install
@@ -278,6 +279,6 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_build oc 
         ~output:(ns ^ Literals.suffix_cmi)
         ~input:(ns ^ Literals.suffix_mlmap)
-        ~rule:Bsb_ninja_rule.build_package
+        ~rule:rules.build_package
     );
   close_out oc

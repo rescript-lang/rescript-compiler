@@ -34,6 +34,8 @@ type override =
   
   | OverwriteVar of string 
 
+  | OverwriteVars of string list
+  
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly

@@ -6,7 +6,7 @@
       "dir": "src",
       "generators": [
         {
-          "name": "cpp",
+          "name": "ml_cmj_cmi",
           "edge": [
             "test.ml", ":", "test.cpp.ml"
           ]
@@ -17,11 +17,11 @@
   ],
   "generators": [
     {
-      "name" : "cpp",
+      "name" : "ml_cmj_cmi",
       "command": "sed 's/OCAML/3/' $in > $out"
     }
   ],
   "bs-dependencies" : [
-      // add your bs-dependencies here 
+      
   ]
 }
