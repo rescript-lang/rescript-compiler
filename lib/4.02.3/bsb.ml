@@ -12950,12 +12950,17 @@ type builtin = {
   build_bin_deps : t ;
 
   ml_cmj_js : t;
+  ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
+  ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
-
+  ml_cmi_dev : t ;
   re_cmj_js : t ;
+  re_cmj_js_dev: t;
   re_cmj_cmi_js : t ;
+  re_cmj_cmi_js_dev : t ;
   re_cmi : t ;
+  re_cmi_dev : t;
   build_package : t ;
   customs : t String_map.t
 }
@@ -13025,7 +13030,6 @@ let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name 
 
 
 
-
 (** allocate an unique name for such rule*)
 let define
     ~command
@@ -13069,15 +13073,21 @@ type builtin = {
   build_bin_deps : t ;
 
   ml_cmj_js : t;
+  ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
+  ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
-
+  ml_cmi_dev : t ;
   re_cmj_js : t ;
+  re_cmj_js_dev: t;
   re_cmj_cmi_js : t ;
+  re_cmj_cmi_js_dev : t ;
   re_cmi : t ;
+  re_cmi_dev : t;
   build_package : t ;
   customs : t String_map.t
 }
+
 
 ;;
 let make_custom_rules (custom_rules : command String_map.t) : 
@@ -13113,51 +13123,67 @@ let make_custom_rules (custom_rules : command String_map.t) :
       ~restat:()
       ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
       "build_deps" in 
+  let buf = Buffer.create 100 in     
+  let mk_ml_cmj_cmd 
+      ~read_cmi 
+      ~is_re 
+      ~is_dev 
+      ~postbuild : string =     
+    Buffer.clear buf;
+    Buffer.add_string buf "$bsc $g_pkg_flg";
+    if is_re then 
+      Buffer.add_string buf " -bs-re-out -bs-super-errors";
+    if read_cmi then 
+      Buffer.add_string buf " -bs-read-cmi";
+    Buffer.add_string buf " $g_lib_incls" ;
+    if is_dev then 
+      Buffer.add_string buf " $bsc_extra_includes";
+    Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
+    if postbuild then
+      Buffer.add_string buf " $postbuild";
+    Buffer.contents buf
+  in   
+  let aux ~name ~read_cmi  ~postbuild =
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:false ~is_dev:false 
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      name,
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:false ~is_dev:true
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_dev"),
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:true ~is_dev:false 
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_re"),
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:true ~is_dev:true
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_re_dev")  
+  in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js =
-    define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      "ml_cmj_only" in 
-
-  let re_cmj_js =
-    define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      "re_cmj_only" in 
-
-
-  let ml_cmj_cmi_js =
-    define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d" 
-      ~restat:() (* may not need it in the future *)
-      "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
-
-  let re_cmj_cmi_js =
-    define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d" 
-      ~restat:() (* may not need it in the future *)
-      "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-  in 
-
-  let ml_cmi =
-    define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-      ~dyndep:"$in_e.d"
-      ~restat:()
-      "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-  in 
-  let re_cmi =
-    define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-      ~dyndep:"$in_e.d"
-      ~restat:()
-      "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-  in     
+  let ml_cmj_js, ml_cmj_js_dev, re_cmj_js, re_cmj_js_dev =
+    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
+  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev, re_cmj_cmi_js, re_cmj_cmi_js_dev =
+    aux
+      ~read_cmi:false 
+      ~name:"ml_cmj_cmi" ~postbuild:true in  
+  let ml_cmi, ml_cmi_dev, re_cmi, re_cmi_dev =
+    aux 
+       ~read_cmi:false  ~postbuild:false
+      ~name:"ml_cmi" in 
   let build_package = 
     define
       ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
@@ -13179,18 +13205,23 @@ let make_custom_rules (custom_rules : command String_map.t) :
     build_bin_deps ;
 
     ml_cmj_js ;
+    ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
     ml_cmi ;
-
+    re_cmj_js_dev;
+    re_cmi_dev;
+    ml_cmj_cmi_js_dev;
+    ml_cmi_dev;
+    re_cmj_cmi_js_dev;
     re_cmj_js ;
     re_cmj_cmi_js ;
     re_cmi ;
     build_package ;
     customs =
-
       String_map.mapi custom_rules begin fun name command -> 
         define ~command ("custom_" ^ name)
-      end}
+      end
+  }
 
 
 
@@ -13579,6 +13610,7 @@ let emit_impl_build
     namespace
     filename_sans_extension
   : unit =    
+  let is_dev = Bsb_dir_index.is_lib_dir group_dir_index in
   let input = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
@@ -13629,7 +13661,12 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then rules.re_cmi else rules.ml_cmi)
+      ~rule:(match is_re,is_dev with 
+             | true, false -> rules.re_cmi 
+             | true, true -> rules.re_cmi_dev 
+             | false, false -> rules.ml_cmi
+             | false, true -> rules.ml_cmi_dev             
+             )
     ;
   end;
   Bsb_ninja_util.output_build
@@ -13654,9 +13691,18 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then rules.re_cmj_cmi_js else rules.ml_cmj_cmi_js), [output_cmi], []
+      (match is_re, is_dev with
+      | true, false -> rules.re_cmj_cmi_js 
+      | false, false ->  rules.ml_cmj_cmi_js
+      | true, true -> rules.re_cmj_cmi_js_dev
+      | false, true -> rules.ml_cmj_cmi_js_dev
+      ), [output_cmi], []
     else  
-      (if is_re then rules.re_cmj_js else rules.ml_cmj_js), []  , [output_cmi]
+      (match is_re, is_dev with
+      | true, false -> rules.re_cmj_js 
+      | false, false -> rules.ml_cmj_js
+      | true, true -> rules.re_cmj_js_dev
+      | false, true -> rules.ml_cmj_js_dev), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
@@ -13881,19 +13927,18 @@ let emit_bsc_lib_includes
   (external_includes) 
   (namespace : _ option)
   (oc : out_channel): unit = 
-  let all_includes acc  = 
-    (*FIXME order *)
-    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ (
-    match external_includes with 
-    | [] -> acc 
-    | _ ->  
+  (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
+  let all_includes source_dirs  = 
+    source_dirs @
+    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ 
+    (
       (* for external includes, if it is absolute path, leave it as is 
          for relative path './xx', we need '../.././x' since we are in 
          [lib/bs], [build] is different from merlin though
       *)
-      Ext_list.map_append 
+      Ext_list.map
         external_includes
-        acc 
+
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
