@@ -13610,7 +13610,7 @@ let emit_impl_build
     namespace
     filename_sans_extension
   : unit =    
-  let is_dev = Bsb_dir_index.is_lib_dir group_dir_index in
+  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
