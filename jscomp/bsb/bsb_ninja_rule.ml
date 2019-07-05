@@ -153,9 +153,11 @@ let make_custom_rules (custom_rules : command String_map.t) :
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
-    Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then 
-      Buffer.add_string buf " $bsc_extra_includes";
+      Buffer.add_string buf " $bsc_extra_includes";      
+    Buffer.add_string buf " $g_lib_incls" ;
+    if is_dev then
+      Buffer.add_string buf " $bs_package_dev_includes";
     Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";

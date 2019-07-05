@@ -13135,9 +13135,11 @@ let make_custom_rules (custom_rules : command String_map.t) :
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
-    Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then 
-      Buffer.add_string buf " $bsc_extra_includes";
+      Buffer.add_string buf " $bsc_extra_includes";      
+    Buffer.add_string buf " $g_lib_incls" ;
+    if is_dev then
+      Buffer.add_string buf " $bs_package_dev_includes";
     Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";
@@ -13586,11 +13588,7 @@ let make_common_shadows
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [         
         { key =  "bsc_extra_includes";
-          op = OverwriteVars 
-          [
-            Bsb_ninja_global_vars.bs_package_dev_includes ;
-            Bsb_dir_index.string_of_bsb_dev_include dir_index;
-          ]
+          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
         }
        ]
     )   
