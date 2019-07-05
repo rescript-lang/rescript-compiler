@@ -141,21 +141,39 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  
+  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx  ~explicit : string =
+    Buffer.clear buf ; 
+    Buffer.add_string buf "$bsc  $warnings";
+    (match has_pp with 
+      | `regular -> Buffer.add_string buf " $pp_flags"
+      | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
+      | `none -> ()
+      );
+    if has_reason_react_jsx then  
+      Buffer.add_string buf " $reason_react_jsx";
+    if has_ppx then 
+      Buffer.add_string buf " $ppx_flags"; 
+    Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast";
+    (match explicit with 
+     | `impl ->
+       Buffer.add_string buf " -impl $in"
+     | `intf ->
+       Buffer.add_string buf " -intf $in"
+     | `regular ->
+       Buffer.add_string buf " $in");
+    Buffer.contents buf
+  in  
   let build_ast_and_module_sets =
     define
-      ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+      ~command:(mk_ast ~has_pp:`regular ~has_ppx:true ~has_reason_react_jsx:false ~explicit:`regular)
       "build_ast_and_module_sets" in
-
-
   let build_ast_and_module_sets_from_re =
     define
-      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in|}
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx:true ~has_reason_react_jsx:true ~explicit:`impl)
       "build_ast_and_module_sets_from_re" in 
-
   let build_ast_and_module_sets_from_rei =
     define
-      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in|}
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx:true ~has_reason_react_jsx:true ~explicit:`intf)      
       "build_ast_and_module_sets_from_rei" in 
 
   let copy_resources =    
