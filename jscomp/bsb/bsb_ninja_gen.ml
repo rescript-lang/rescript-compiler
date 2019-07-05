@@ -141,7 +141,11 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules = 
+      Bsb_ninja_rule.make_custom_rules 
+      ~has_gentype:(gentype_config <> None)
+      ~has_postbuild:(js_post_build_cmd <> None)
+      generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 

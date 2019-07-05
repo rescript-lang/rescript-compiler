@@ -75,4 +75,8 @@ type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val make_custom_rules : command String_map.t -> builtin
+val make_custom_rules : 
+  has_gentype:bool ->
+  has_postbuild:bool ->
+  command String_map.t -> builtin
+

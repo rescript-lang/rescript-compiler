@@ -12977,7 +12977,11 @@ type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val make_custom_rules : command String_map.t -> builtin
+val make_custom_rules : 
+  has_gentype:bool ->
+  has_postbuild:bool ->
+  command String_map.t -> builtin
+
 
 end = struct
 #1 "bsb_ninja_rule.ml"
@@ -13091,7 +13095,10 @@ type builtin = {
 
 
 ;;
-let make_custom_rules (custom_rules : command String_map.t) : 
+let make_custom_rules 
+  ~(has_gentype : bool)        
+  ~(has_postbuild : bool)
+  (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
@@ -13141,12 +13148,16 @@ let make_custom_rules (custom_rules : command String_map.t) :
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
-    Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
+    Buffer.add_string buf " $warnings $bsc_flags";
+    if has_gentype then
+      Buffer.add_string buf " $gentypeconfig";
+    Buffer.add_string buf " -o $out -c  $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
   let aux ~name ~read_cmi  ~postbuild =
+    let postbuild = has_postbuild && postbuild in 
     define
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi ~is_re:false ~is_dev:false 
@@ -13979,7 +13990,11 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules = 
+      Bsb_ninja_rule.make_custom_rules 
+      ~has_gentype:(gentype_config <> None)
+      ~has_postbuild:(js_post_build_cmd <> None)
+      generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
