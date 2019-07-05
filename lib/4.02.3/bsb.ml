@@ -7678,10 +7678,10 @@ let get_current_number_of_dev_groups =
 
 (** bsb generate pre-defined variables [bsc_group_i_includes]
   for each rule, there is variable [bsc_extra_excludes]
-  [bsc_extra_includes] are for app test etc
+  [g_dev_incls] are for app test etc
   it will be like
   {[
-    bsc_extra_includes = ${bsc_group_1_includes}
+    g_dev_incls = ${bsc_group_1_includes}
   ]}
   where [bsc_group_1_includes] will be pre-calcuated
 *)
@@ -12896,6 +12896,7 @@ let warnings = "warnings"
 
 let gentypeconfig = "gentypeconfig"
 
+let g_dev_incls = "g_dev_incls"
 end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
@@ -13136,7 +13137,7 @@ let make_custom_rules (custom_rules : command String_map.t) :
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
-      Buffer.add_string buf " $bsc_extra_includes";      
+      Buffer.add_string buf " $g_dev_incls";      
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
@@ -13587,7 +13588,7 @@ let make_common_shadows
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [         
-        { key =  "bsc_extra_includes";
+        { key =  Bsb_ninja_global_vars.g_dev_incls;
           op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
         }
        ]

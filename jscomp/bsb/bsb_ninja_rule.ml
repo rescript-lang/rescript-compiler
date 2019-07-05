@@ -154,7 +154,7 @@ let make_custom_rules (custom_rules : command String_map.t) :
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
-      Buffer.add_string buf " $bsc_extra_includes";      
+      Buffer.add_string buf " $g_dev_incls";      
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";

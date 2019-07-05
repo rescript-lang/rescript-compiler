@@ -53,3 +53,5 @@ let g_ns = "g_ns"
 let warnings = "warnings"
 
 let gentypeconfig = "gentypeconfig"
+
+let g_dev_incls = "g_dev_incls"
