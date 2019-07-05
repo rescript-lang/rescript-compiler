@@ -12880,7 +12880,7 @@ let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
 
 
-let bs_package_dev_includes = "bs_package_dev_includes"
+let g_dpkg_incls = "g_dpkg_incls"
 
 let refmt = "refmt"
 
@@ -13139,7 +13139,7 @@ let make_custom_rules (custom_rules : command String_map.t) :
       Buffer.add_string buf " $bsc_extra_includes";      
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
-      Buffer.add_string buf " $bs_package_dev_includes";
+      Buffer.add_string buf " $g_dpkg_incls";
     Buffer.add_string buf " $warnings $bsc_flags $gentypeconfig -o $out -c  $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";
@@ -14028,7 +14028,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
-        Bsb_ninja_global_vars.bs_package_dev_includes, 
+        Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  

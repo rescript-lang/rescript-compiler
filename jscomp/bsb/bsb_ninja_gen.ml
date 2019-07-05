@@ -191,7 +191,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
-        Bsb_ninja_global_vars.bs_package_dev_includes, 
+        Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
