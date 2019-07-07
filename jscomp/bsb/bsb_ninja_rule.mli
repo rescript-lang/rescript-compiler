@@ -80,6 +80,7 @@ val make_custom_rules :
   has_postbuild:bool ->
   has_ppx:bool ->
   has_pp:bool ->
+  has_builtin:bool -> 
   bs_suffix:bool ->
   command String_map.t ->
   builtin

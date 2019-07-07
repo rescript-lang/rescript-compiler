@@ -12897,6 +12897,9 @@ let warnings = "warnings"
 let gentypeconfig = "gentypeconfig"
 
 let g_dev_incls = "g_dev_incls"
+
+(* path to stdlib *)
+let g_stdlib_incl = "g_std_incl"
 end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
@@ -12982,6 +12985,7 @@ val make_custom_rules :
   has_postbuild:bool ->
   has_ppx:bool ->
   has_pp:bool ->
+  has_builtin:bool -> 
   bs_suffix:bool ->
   command String_map.t ->
   builtin
@@ -13105,6 +13109,7 @@ let make_custom_rules
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
   ~(has_pp : bool)
+  ~(has_builtin : bool)
   ~(bs_suffix : bool)
   (custom_rules : command String_map.t) : 
   builtin = 
@@ -13129,6 +13134,8 @@ let make_custom_rules
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
+    if has_builtin then   
+      Buffer.add_string buf " -I $g_std_incl";
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";
@@ -13943,18 +13950,11 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool) 
-    (built_in_dependency : Bsb_config_types.dependency option) 
+    (not_dev : bool)     
     (bsc_flags : string list)
-    : string =       
-  let flags =  
-    String.concat Ext_string.single_space 
-      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
-  in
-  match built_in_dependency with 
-  | None -> flags   
-  | Some x -> 
-    Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags
+  : string =       
+  String.concat Ext_string.single_space 
+    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
 
 
 let emit_bsc_lib_includes 
@@ -14022,6 +14022,7 @@ let output_ninja_and_namespace_map
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
+      ~has_builtin:(built_in_dependency <> None)
       ~bs_suffix
       generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -14050,7 +14051,11 @@ let output_ninja_and_namespace_map
         (* resolved earlier *)
         Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
-      )
+      );
+    Ext_option.iter built_in_dependency (fun x -> 
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
+      (Filename.quote x.package_install_path) oc 
+    )  
     ;  
     (*
     TODO: 
@@ -14070,7 +14075,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 

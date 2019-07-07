@@ -114,6 +114,7 @@ let make_custom_rules
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
   ~(has_pp : bool)
+  ~(has_builtin : bool)
   ~(bs_suffix : bool)
   (custom_rules : command String_map.t) : 
   builtin = 
@@ -138,6 +139,8 @@ let make_custom_rules
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
+    if has_builtin then   
+      Buffer.add_string buf " -I $g_std_incl";
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";

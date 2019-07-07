@@ -65,18 +65,11 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool) 
-    (built_in_dependency : Bsb_config_types.dependency option) 
+    (not_dev : bool)     
     (bsc_flags : string list)
-    : string =       
-  let flags =  
-    String.concat Ext_string.single_space 
-      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
-  in
-  match built_in_dependency with 
-  | None -> flags   
-  | Some x -> 
-    Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags
+  : string =       
+  String.concat Ext_string.single_space 
+    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
 
 
 let emit_bsc_lib_includes 
@@ -144,6 +137,7 @@ let output_ninja_and_namespace_map
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
+      ~has_builtin:(built_in_dependency <> None)
       ~bs_suffix
       generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -172,7 +166,11 @@ let output_ninja_and_namespace_map
         (* resolved earlier *)
         Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
-      )
+      );
+    Ext_option.iter built_in_dependency (fun x -> 
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
+      (Filename.quote x.package_install_path) oc 
+    )  
     ;  
     (*
     TODO: 
@@ -192,7 +190,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
