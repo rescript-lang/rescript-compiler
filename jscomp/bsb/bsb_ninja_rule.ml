@@ -126,7 +126,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc $g_pkg_flg";
+    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if is_re then 

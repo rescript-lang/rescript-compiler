@@ -73,11 +73,10 @@ let get_bsc_flags
     String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
   in
-  Ext_string.inter2  Literals.dash_nostdlib (
-    match built_in_dependency with 
-    | None -> flags   
-    | Some x -> 
-      Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags)
+  match built_in_dependency with 
+  | None -> flags   
+  | Some x -> 
+    Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags
 
 
 let emit_bsc_lib_includes 
