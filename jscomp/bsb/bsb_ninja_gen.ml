@@ -65,22 +65,12 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool) 
-    (built_in_dependency : Bsb_config_types.dependency option) 
+    (not_dev : bool)     
     (bsc_flags : string list)
-    (bs_suffix : bool ) : string =       
-  let flags =  
-    String.concat Ext_string.single_space 
-      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
-  in
-  let result = 
-    Ext_string.inter2  Literals.dash_nostdlib (
-      match built_in_dependency with 
-      | None -> flags   
-      | Some x -> 
-        Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags)
-  in 
-  if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
+  : string =       
+  String.concat Ext_string.single_space 
+    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+
 
 let emit_bsc_lib_includes 
     (bs_dependencies : Bsb_config_types.dependencies)
@@ -141,7 +131,15 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let rules = Bsb_ninja_rule.make_custom_rules generators in 
+  let rules : Bsb_ninja_rule.builtin = 
+      Bsb_ninja_rule.make_custom_rules 
+      ~has_gentype:(gentype_config <> None)
+      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_ppx:(ppx_files <> [])
+      ~has_pp:(pp_file <> None)
+      ~has_builtin:(built_in_dependency <> None)
+      ~bs_suffix
+      generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -168,7 +166,11 @@ let output_ninja_and_namespace_map
         (* resolved earlier *)
         Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
-      )
+      );
+    Ext_option.iter built_in_dependency (fun x -> 
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
+      (Filename.quote x.package_install_path) oc 
+    )  
     ;  
     (*
     TODO: 
@@ -188,10 +190,10 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
-        Bsb_ninja_global_vars.bs_package_dev_includes, 
+        Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  

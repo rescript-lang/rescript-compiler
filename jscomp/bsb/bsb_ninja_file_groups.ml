@@ -69,12 +69,8 @@ let make_common_shadows
     } ::
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [         
-        { key =  "bsc_extra_includes";
-          op = OverwriteVars 
-          [
-            Bsb_ninja_global_vars.bs_package_dev_includes ;
-            Bsb_dir_index.string_of_bsb_dev_include dir_index;
-          ]
+        { key =  Bsb_ninja_global_vars.g_dev_incls;
+          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
         }
        ]
     )   
@@ -94,6 +90,7 @@ let emit_impl_build
     namespace
     filename_sans_extension
   : unit =    
+  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
@@ -144,7 +141,12 @@ let emit_impl_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(if is_re then rules.re_cmi else rules.ml_cmi)
+      ~rule:(match is_re,is_dev with 
+             | true, false -> rules.re_cmi 
+             | true, true -> rules.re_cmi_dev 
+             | false, false -> rules.ml_cmi
+             | false, true -> rules.ml_cmi_dev             
+             )
     ;
   end;
   Bsb_ninja_util.output_build
@@ -169,9 +171,18 @@ let emit_impl_build
   in
   let rule , cm_outputs, implicit_deps =
     if no_intf_file then 
-      (if is_re then rules.re_cmj_cmi_js else rules.ml_cmj_cmi_js), [output_cmi], []
+      (match is_re, is_dev with
+      | true, false -> rules.re_cmj_cmi_js 
+      | false, false ->  rules.ml_cmj_cmi_js
+      | true, true -> rules.re_cmj_cmi_js_dev
+      | false, true -> rules.ml_cmj_cmi_js_dev
+      ), [output_cmi], []
     else  
-      (if is_re then rules.re_cmj_js else rules.ml_cmj_js), []  , [output_cmi]
+      (match is_re, is_dev with
+      | true, false -> rules.re_cmj_js 
+      | false, false -> rules.ml_cmj_js
+      | true, true -> rules.re_cmj_js_dev
+      | false, true -> rules.ml_cmj_js_dev), []  , [output_cmi]
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

@@ -49,12 +49,17 @@ type builtin = {
   build_bin_deps : t ;
 
   ml_cmj_js : t;
+  ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
+  ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
-
+  ml_cmi_dev : t ;
   re_cmj_js : t ;
+  re_cmj_js_dev: t;
   re_cmj_cmi_js : t ;
+  re_cmj_cmi_js_dev : t ;
   re_cmi : t ;
+  re_cmi_dev : t;
   build_package : t ;
   customs : t String_map.t
 }
@@ -70,4 +75,13 @@ type command = string
 (** Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
-val make_custom_rules : command String_map.t -> builtin
+val make_custom_rules : 
+  has_gentype:bool ->
+  has_postbuild:bool ->
+  has_ppx:bool ->
+  has_pp:bool ->
+  has_builtin:bool -> 
+  bs_suffix:bool ->
+  command String_map.t ->
+  builtin
+

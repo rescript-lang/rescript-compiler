@@ -91,35 +91,97 @@ type builtin = {
   build_bin_deps : t ;
 
   ml_cmj_js : t;
+  ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
+  ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
-
+  ml_cmi_dev : t ;
   re_cmj_js : t ;
+  re_cmj_js_dev: t;
   re_cmj_cmi_js : t ;
+  re_cmj_cmi_js_dev : t ;
   re_cmi : t ;
+  re_cmi_dev : t;
   build_package : t ;
   customs : t String_map.t
 }
 
+
 ;;
-let make_custom_rules (custom_rules : command String_map.t) : 
+
+let make_custom_rules 
+  ~(has_gentype : bool)        
+  ~(has_postbuild : bool)
+  ~(has_ppx : bool)
+  ~(has_pp : bool)
+  ~(has_builtin : bool)
+  ~(bs_suffix : bool)
+  (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
+  let buf = Buffer.create 100 in     
+  let mk_ml_cmj_cmd 
+      ~read_cmi 
+      ~is_re 
+      ~is_dev 
+      ~postbuild : string =     
+    Buffer.clear buf;
+    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg";
+    if bs_suffix then
+      Buffer.add_string buf " -bs-suffix";
+    if is_re then 
+      Buffer.add_string buf " -bs-re-out -bs-super-errors";
+    if read_cmi then 
+      Buffer.add_string buf " -bs-read-cmi";
+    if is_dev then 
+      Buffer.add_string buf " $g_dev_incls";      
+    Buffer.add_string buf " $g_lib_incls" ;
+    if is_dev then
+      Buffer.add_string buf " $g_dpkg_incls";
+    if has_builtin then   
+      Buffer.add_string buf " -I $g_std_incl";
+    Buffer.add_string buf " $warnings $bsc_flags";
+    if has_gentype then
+      Buffer.add_string buf " $gentypeconfig";
+    Buffer.add_string buf " -o $out -c  $in";
+    if postbuild then
+      Buffer.add_string buf " $postbuild";
+    Buffer.contents buf
+  in   
+  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx  ~explicit : string =
+    Buffer.clear buf ; 
+    Buffer.add_string buf "$bsc  $warnings";
+    (match has_pp with 
+      | `regular -> Buffer.add_string buf " $pp_flags"
+      | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
+      | `none -> ()
+      );
+    if has_reason_react_jsx then  
+      Buffer.add_string buf " $reason_react_jsx";
+    if has_ppx then 
+      Buffer.add_string buf " $ppx_flags"; 
+    Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast";
+    (match explicit with 
+     | `impl ->
+       Buffer.add_string buf " -impl $in"
+     | `intf ->
+       Buffer.add_string buf " -intf $in"
+     | `regular ->
+       Buffer.add_string buf " $in");
+    Buffer.contents buf
+  in  
   let build_ast_and_module_sets =
     define
-      ~command:"$bsc  $pp_flags $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in"
+      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false ~explicit:`regular)
       "build_ast_and_module_sets" in
-
-
   let build_ast_and_module_sets_from_re =
     define
-      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx  $ppx_flags $warnings $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast -impl $in|}
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`impl)
       "build_ast_and_module_sets_from_re" in 
-
   let build_ast_and_module_sets_from_rei =
     define
-      ~command:{|$bsc -pp "$refmt $refmt_flags" $reason_react_jsx $ppx_flags $warnings $bsc_flags  -c -o $out -bs-syntax-only -bs-binary-ast -intf $in|}
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`intf)      
       "build_ast_and_module_sets_from_rei" in 
 
   let copy_resources =    
@@ -135,51 +197,48 @@ let make_custom_rules (custom_rules : command String_map.t) :
       ~restat:()
       ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
       "build_deps" in 
+  let aux ~name ~read_cmi  ~postbuild =
+    let postbuild = has_postbuild && postbuild in 
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:false ~is_dev:false 
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      name,
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:false ~is_dev:true
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_dev"),
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:true ~is_dev:false 
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_re"),
+    define
+      ~command:(mk_ml_cmj_cmd 
+                  ~read_cmi ~is_re:true ~is_dev:true
+                  ~postbuild)
+      ~dyndep:"$in_e.d"
+      ~restat:() (* Always restat when having mli *)
+      (name ^ "_re_dev")  
+  in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js =
-    define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      "ml_cmj_only" in 
-
-  let re_cmj_js =
-    define
-      ~command:"$bsc $g_pkg_flg -bs-read-cmi  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      "re_cmj_only" in 
-
-
-  let ml_cmj_cmi_js =
-    define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d" 
-      ~restat:() (* may not need it in the future *)
-      "ml_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *) in 
-
-  let re_cmj_cmi_js =
-    define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in $postbuild"
-      ~dyndep:"$in_e.d" 
-      ~restat:() (* may not need it in the future *)
-      "re_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-  in 
-
-  let ml_cmi =
-    define
-      ~command:"$bsc $g_pkg_flg $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-      ~dyndep:"$in_e.d"
-      ~restat:()
-      "ml_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-  in 
-  let re_cmi =
-    define
-      ~command:"$bsc $g_pkg_flg  -bs-re-out -bs-super-errors  $g_lib_incls $bsc_extra_includes $warnings $bsc_flags $gentypeconfig -o $out -c  $in"
-      ~dyndep:"$in_e.d"
-      ~restat:()
-      "re_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-  in     
+  let ml_cmj_js, ml_cmj_js_dev, re_cmj_js, re_cmj_js_dev =
+    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
+  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev, re_cmj_cmi_js, re_cmj_cmi_js_dev =
+    aux
+      ~read_cmi:false 
+      ~name:"ml_cmj_cmi" ~postbuild:true in  
+  let ml_cmi, ml_cmi_dev, re_cmi, re_cmi_dev =
+    aux 
+       ~read_cmi:false  ~postbuild:false
+      ~name:"ml_cmi" in 
   let build_package = 
     define
       ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
@@ -201,17 +260,22 @@ let make_custom_rules (custom_rules : command String_map.t) :
     build_bin_deps ;
 
     ml_cmj_js ;
+    ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
     ml_cmi ;
-
+    re_cmj_js_dev;
+    re_cmi_dev;
+    ml_cmj_cmi_js_dev;
+    ml_cmi_dev;
+    re_cmj_cmi_js_dev;
     re_cmj_js ;
     re_cmj_cmi_js ;
     re_cmi ;
     build_package ;
     customs =
-
       String_map.mapi custom_rules begin fun name command -> 
         define ~command ("custom_" ^ name)
-      end}
+      end
+  }
 
 

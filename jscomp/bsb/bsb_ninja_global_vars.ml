@@ -38,7 +38,7 @@ let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
 
 
-let bs_package_dev_includes = "bs_package_dev_includes"
+let g_dpkg_incls = "g_dpkg_incls"
 
 let refmt = "refmt"
 
@@ -53,3 +53,8 @@ let g_ns = "g_ns"
 let warnings = "warnings"
 
 let gentypeconfig = "gentypeconfig"
+
+let g_dev_incls = "g_dev_incls"
+
+(* path to stdlib *)
+let g_stdlib_incl = "g_std_incl"
