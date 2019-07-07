@@ -640,10 +640,11 @@ let jsxMapper () =
     | _ -> types
   in
 
-  let argToConcreteType types (name, _loc, type_) = match name with
-    | name when isLabelled name || isOptional name ->
+  let argToConcreteType types (name, loc, type_) = match name with
+    | name when isLabelled name ->
     (getLabel name, [], type_) :: types
-    (* return value *)
+    | name when isOptional name ->
+    (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
     | _ -> types
   in
 
