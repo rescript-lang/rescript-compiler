@@ -38,29 +38,22 @@ let dash_i = "-I"
 
 let output_reason_config 
   (has_reason_files : bool)
-  (reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   (refmt : Bsb_config_types.refmt) 
   (bsc_dir : string)
   (refmt_flags : string) 
   (oc : out_channel) : unit =   
   if has_reason_files then 
-    let reason_react_jsx_flag = 
-      match reason_react_jsx with 
-      | None -> Ext_string.empty          
-      | Some v ->           
-        Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
-    in 
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.refmt, 
-          (match refmt with 
-          | Refmt_none -> 
-            Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
-            bsc_dir // Bsb_default.refmt_none
-          | Refmt_v3 -> 
-            bsc_dir // Bsb_default.refmt_v3
-          | Refmt_custom x -> x );
-        Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
+        (Ext_filename.maybe_quote
+           (match refmt with 
+            | Refmt_none -> 
+              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+              bsc_dir // Bsb_default.refmt_none
+            | Refmt_v3 -> 
+              bsc_dir // Bsb_default.refmt_v3
+            | Refmt_custom x -> x ));        
         Bsb_ninja_global_vars.refmt_flags, refmt_flags;
       |] oc 
 
@@ -138,10 +131,11 @@ let output_ninja_and_namespace_map
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
+      ~reason_react_jsx
       ~bs_suffix
       generators in 
-  let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
-  let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
+  
+  
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
@@ -169,7 +163,7 @@ let output_ninja_and_namespace_map
       );
     Ext_option.iter built_in_dependency (fun x -> 
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
-      (Filename.quote x.package_install_path) oc 
+      (Ext_filename.maybe_quote x.package_install_path) oc 
     )  
     ;  
     (*
@@ -187,8 +181,10 @@ let output_ninja_and_namespace_map
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
-        Bsb_ninja_global_vars.bsc, bsc ;
-        Bsb_ninja_global_vars.bsdep, bsdep;
+        (* The path to [bsc.exe] independent of config  *)
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
+        (* The path to [bsb_heler.exe] *)
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
@@ -246,7 +242,7 @@ let output_ninja_and_namespace_map
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
-  output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
+  output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 

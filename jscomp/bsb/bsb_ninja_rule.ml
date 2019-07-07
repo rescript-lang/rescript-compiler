@@ -116,6 +116,7 @@ let make_custom_rules
   ~(has_pp : bool)
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
+  ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -157,8 +158,14 @@ let make_custom_rules
       | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
       | `none -> ()
       );
-    if has_reason_react_jsx then  
-      Buffer.add_string buf " $reason_react_jsx";
+    (match has_reason_react_jsx, reason_react_jsx with
+    | false, _ 
+    | _, None -> ()
+    | _, Some Jsx_v2
+      -> Buffer.add_string buf " -bs-jsx 2"
+    | _, Some Jsx_v3 
+      -> Buffer.add_string buf " -bs-jsx 3"
+    );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
     Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast";
