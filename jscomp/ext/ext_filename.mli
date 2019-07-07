@@ -55,3 +55,6 @@ val package_dir : string Lazy.t
 
 val simple_convert_node_path_to_os_path : string -> string
 
+val maybe_quote:
+  string -> 
+  string

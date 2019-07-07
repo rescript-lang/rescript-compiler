@@ -140,8 +140,8 @@ let output_ninja_and_namespace_map
       ~has_builtin:(built_in_dependency <> None)
       ~bs_suffix
       generators in 
-  let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
-  let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
+  
+  
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
@@ -169,7 +169,7 @@ let output_ninja_and_namespace_map
       );
     Ext_option.iter built_in_dependency (fun x -> 
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
-      (Filename.quote x.package_install_path) oc 
+      (Ext_filename.maybe_quote x.package_install_path) oc 
     )  
     ;  
     (*
@@ -187,8 +187,10 @@ let output_ninja_and_namespace_map
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
-        Bsb_ninja_global_vars.bsc, bsc ;
-        Bsb_ninja_global_vars.bsdep, bsdep;
+        (* The path to [bsc.exe] independent of config  *)
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
+        (* The path to [bsb_heler.exe] *)
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
