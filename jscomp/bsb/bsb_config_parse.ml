@@ -397,6 +397,15 @@ let interpret_json
           pp_file = pp_flags ;          
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
+          (*
+            reference for quoting
+             {[
+               let tmpfile = Filename.temp_file "ocamlpp" "" in
+               let comm = Printf.sprintf "%s %s > %s"
+                   pp (Filename.quote sourcefile) tmpfile
+               in
+             ]}
+          *)          
           refmt;
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;

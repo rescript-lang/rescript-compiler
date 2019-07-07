@@ -38,18 +38,11 @@ let dash_i = "-I"
 
 let output_reason_config 
   (has_reason_files : bool)
-  (reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   (refmt : Bsb_config_types.refmt) 
   (bsc_dir : string)
   (refmt_flags : string) 
   (oc : out_channel) : unit =   
   if has_reason_files then 
-    let reason_react_jsx_flag = 
-      match reason_react_jsx with 
-      | None -> Ext_string.empty          
-      | Some v ->           
-        Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
-    in 
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.refmt, 
@@ -59,8 +52,7 @@ let output_reason_config
             bsc_dir // Bsb_default.refmt_none
           | Refmt_v3 -> 
             bsc_dir // Bsb_default.refmt_v3
-          | Refmt_custom x -> x );
-        Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
+          | Refmt_custom x -> x );        
         Bsb_ninja_global_vars.refmt_flags, refmt_flags;
       |] oc 
 
@@ -138,6 +130,7 @@ let output_ninja_and_namespace_map
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
+      ~reason_react_jsx
       ~bs_suffix
       generators in 
   
@@ -248,7 +241,7 @@ let output_ninja_and_namespace_map
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
-  output_reason_config !has_reason_files reason_react_jsx refmt bsc_dir refmt_flags oc;
+  output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
   Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
