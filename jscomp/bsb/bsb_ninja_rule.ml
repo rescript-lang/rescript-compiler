@@ -112,6 +112,8 @@ type builtin = {
 let make_custom_rules 
   ~(has_gentype : bool)        
   ~(has_postbuild : bool)
+  ~(has_ppx : bool)
+  ~(has_pp : bool)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -165,15 +167,15 @@ let make_custom_rules
   in  
   let build_ast_and_module_sets =
     define
-      ~command:(mk_ast ~has_pp:`regular ~has_ppx:true ~has_reason_react_jsx:false ~explicit:`regular)
+      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false ~explicit:`regular)
       "build_ast_and_module_sets" in
   let build_ast_and_module_sets_from_re =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx:true ~has_reason_react_jsx:true ~explicit:`impl)
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`impl)
       "build_ast_and_module_sets_from_re" in 
   let build_ast_and_module_sets_from_rei =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx:true ~has_reason_react_jsx:true ~explicit:`intf)      
+      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`intf)      
       "build_ast_and_module_sets_from_rei" in 
 
   let copy_resources =    

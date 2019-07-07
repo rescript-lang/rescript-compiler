@@ -78,5 +78,8 @@ type command = string
 val make_custom_rules : 
   has_gentype:bool ->
   has_postbuild:bool ->
-  command String_map.t -> builtin
+  has_ppx:bool ->
+  has_pp:bool ->
+  command String_map.t ->
+  builtin
 
