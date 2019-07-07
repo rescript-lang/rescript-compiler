@@ -114,6 +114,7 @@ let make_custom_rules
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
   ~(has_pp : bool)
+  ~(bs_suffix : bool)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -126,6 +127,8 @@ let make_custom_rules
       ~postbuild : string =     
     Buffer.clear buf;
     Buffer.add_string buf "$bsc $g_pkg_flg";
+    if bs_suffix then
+      Buffer.add_string buf " -bs-suffix";
     if is_re then 
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 

@@ -12982,6 +12982,7 @@ val make_custom_rules :
   has_postbuild:bool ->
   has_ppx:bool ->
   has_pp:bool ->
+  bs_suffix:bool ->
   command String_map.t ->
   builtin
 
@@ -13104,6 +13105,7 @@ let make_custom_rules
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
   ~(has_pp : bool)
+  ~(bs_suffix : bool)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13116,6 +13118,8 @@ let make_custom_rules
       ~postbuild : string =     
     Buffer.clear buf;
     Buffer.add_string buf "$bsc $g_pkg_flg";
+    if bs_suffix then
+      Buffer.add_string buf " -bs-suffix";
     if is_re then 
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
@@ -13942,7 +13946,7 @@ let get_bsc_flags
     (not_dev : bool) 
     (built_in_dependency : Bsb_config_types.dependency option) 
     (bsc_flags : string list)
-    (bs_suffix : bool ) : string =       
+    : string =       
   let flags =  
     String.concat Ext_string.single_space 
       (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
@@ -13954,7 +13958,7 @@ let get_bsc_flags
       | Some x -> 
         Ext_string.inter3 dash_i (Filename.quote x.package_install_path) flags)
   in 
-  if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
+  result
 
 let emit_bsc_lib_includes 
     (bs_dependencies : Bsb_config_types.dependencies)
@@ -14021,6 +14025,7 @@ let output_ninja_and_namespace_map
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
+      ~bs_suffix
       generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
@@ -14068,7 +14073,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, bsc ;
         Bsb_ninja_global_vars.bsdep, bsdep;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags bs_suffix) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev built_in_dependency bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
