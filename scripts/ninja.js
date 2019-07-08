@@ -27,6 +27,15 @@ var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
+var vendorNinjaPath = path.join(
+  "..",
+  "vendor",
+  "ninja",
+  "snapshot",
+  "ninja" + require("./config.js").sys_extension
+);
+
+exports.vendorNinjaPath = vendorNinjaPath;
 var visitorPattern = `
 rule p4of
     command = camlp4of $flags -impl $in -printer o -o $out
@@ -35,28 +44,29 @@ build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
 build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
-`
+`;
 /**
  * @returns {boolean}
  */
-function hasCamlp4(){
-  try{
-    console.log(cp.execSync(`camlp4of -v`, {encoding:'ascii'}))
-    console.log(`camlp4 detected`)
-    return true
-  }catch(e){
-    return false
+function hasCamlp4() {
+  try {
+    console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 /**
  * @returns {string}
  */
-function generateVisitorPattern(){
-  if(hasCamlp4()){
-    return visitorPattern
+function generateVisitorPattern() {
+  if (hasCamlp4()) {
+    return visitorPattern;
   } else {
-    console.warn(`camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`)
-    return ``
+    console.warn(
+      `camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`
+    );
+    return ``;
   }
 }
 /**
@@ -174,7 +184,7 @@ var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`;
  * @param {string} name
  * @param {string} content
  */
-function writeFile(name, content) {
+function writeFileAscii(name, content) {
   fs.writeFile(name, content, "ascii", throwIfError);
 }
 
@@ -918,7 +928,7 @@ ${ninjaQuickBuidList([
     stmts.push(
       phony(runtimeTarget, fileTargets(allFileTargetsInRuntime), ninjaCwd)
     );
-    writeFile(
+    writeFileAscii(
       path.join(runtimeDir, ninjaOutput),
       templateRuntimeRules + stmts.join("\n") + "\n"
     );
@@ -1059,7 +1069,7 @@ ${ninjaQuickBuidList([
   var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, externalDeps);
   beltOutput.push(phony(othersTarget, fileTargets(allOthersTarget), ninjaCwd));
   // ninjaBuild([`belt_HashSetString.ml`,])
-  writeFile(
+  writeFileAscii(
     path.join(othersDir, ninjaOutput),
     templateOthersRules +
       jsOutput.join("\n") +
@@ -1167,7 +1177,7 @@ ${ninjaQuickBuidList([
   var output = generateNinja(depsMap, targets, ninjaCwd, externalDeps);
   output.push(phony(stdlibTarget, fileTargets(allTargets), ninjaCwd));
 
-  writeFile(
+  writeFileAscii(
     path.join(stdlibDir, ninjaOutput),
     templateStdlibRules + output.join("\n") + "\n"
   );
@@ -1220,7 +1230,7 @@ function baseName(x) {
 
 /**
  *
- *
+ * @returns {Promise<void>}
  */
 async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
@@ -1251,7 +1261,7 @@ ${mllList(ninjaCwd, [
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
-  writeFile(
+  writeFileAscii(
     path.join(testDir, ninjaOutput),
     templateTestRules + output.join("\n") + "\n"
   );
@@ -1392,7 +1402,7 @@ function updateRelease() {
 
 function updateDev() {
   if (useEnv) {
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "env.ninja"),
       `
 ${getEnnvConfigNinja()}
@@ -1406,7 +1416,7 @@ build all: phony runtime others $stdlib test
 `
     );
   } else {
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "build.ninja"),
       `
 ${getVendorConfigNinja()}
@@ -1421,7 +1431,7 @@ subninja test/build.ninja
 build all: phony runtime others $stdlib test
 `
     );
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "..", "lib", "build.ninja"),
       `
 ocamlopt = ocamlopt.opt 
@@ -1554,7 +1564,7 @@ build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
+  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose"], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
     encoding: "utf8"
@@ -1726,7 +1736,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
       });
 
-      writeFile(
+      writeFileAscii(
         path.join(jscompDir, ninjaOutput),
         templateNative + stmts.join("\n") + "\n"
       );
@@ -1744,22 +1754,66 @@ function main() {
     if (process.argv.includes("-check")) {
       checkEffect();
     }
-    if (process.argv.length === emptyCount) {
-      updateDev();
-      updateRelease();
-    } else {
-      var dev = process.argv.includes("-dev");
-      var release = process.argv.includes("-release");
-      var all = process.argv.includes("-all");
-      if (all) {
+
+    var subcommand = process.argv[2];
+    switch (subcommand) {
+      case "build":
+        try {
+          cp.execFileSync(vendorNinjaPath, {
+            encoding: "utf8",
+            cwd: jscompDir,
+            stdio: [0, 1, 2]
+          });
+        } catch (e) {
+          console.log(e.message);
+          console.log(`please run "./scripts/ninja.js config" first`);
+        }
+        break;
+      case "clean":
+        try {
+          cp.execFileSync(vendorNinjaPath, ["-t", "clean"], {
+            encoding: "utf8",
+            cwd: jscompDir,
+            stdio: [0, 1]
+          });
+        } catch (e) {}
+        cp.execSync(`git clean -dfx .`, {
+          encoding: "utf8",
+          cwd: jscompDir,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`git clean -dfx .`, {
+          encoding: "utf8",
+          cwd: path.join(__dirname, "..", "lib"),
+          stdio: [0, 1, 2]
+        });
+        break;
+      case "config":
+        console.log(`config for the first time may take a while`);
         updateDev();
         updateRelease();
-      } else if (dev) {
-        updateDev();
-      } else if (release) {
-        updateRelease();
-      }
+
+        break;
+      default:
+        if (process.argv.length === emptyCount) {
+          updateDev();
+          updateRelease();
+        } else {
+          var dev = process.argv.includes("-dev");
+          var release = process.argv.includes("-release");
+          var all = process.argv.includes("-all");
+          if (all) {
+            updateDev();
+            updateRelease();
+          } else if (dev) {
+            updateDev();
+          } else if (release) {
+            updateRelease();
+          }
+        }
+        break;
     }
   }
 }
+
 main();

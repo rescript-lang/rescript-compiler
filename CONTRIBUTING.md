@@ -7,33 +7,26 @@ Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't
 Prerequisites:
 
 - [NodeJS](https://nodejs.org/)
-- [Ninja](https://ninja-build.org/manual.html)
 - C compiler toolchain (you probably already have it installed)
 - OS: Mac/Linux (BuckleScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
 
 ### Build the vendored ocaml compiler
 
 ```
-node scripts/buildocaml.js
-```
-
-The codebase recently moved from keeping its version of OCaml in a subtree to using git submodules. If you run into error on this step, executing the following can help:
-
-```
-git submodule update --init
+git submodule update --init && node scripts/buildocaml.js
 ```
 
 ### Build everything in dev mode using vendored compiler
 
 ```
-node ./scripts/ninja.js && ninja -C jscomp
+./scripts/ninja.js config && ./scripts/ninja.js build
 ```
 
-`scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory, then you'd invoke `ninja` to execute them.
+`scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory which will be invoked by `./scripts/ninja.js build`.
 
 #### Edit file and test changes
 
-In general, you'd edit files and rerun `ninja -C jscomp`.
+In general, you'd edit files and rerun `./scripts/ninja.js build`.
 
 We have an optional watcher to auto rebuild on file changes. Suppose you are in `jscomp`:
 
@@ -46,9 +39,9 @@ node ../scripts/tasks.js
 Try to run:
 
 ```
-ninja -C jscomp -t clean # asks ninja to clean the artifacts
-./scripts/ninja.js # repeat the usual step from scratch
-ninja -C jscomp
+./scripts/ninja.js clean # it will remove files not in version control
+./scripts/ninja.js config
+./scripts/ninja.js build
 ```
 
 ### Advanced: building everything in dev mode using a different compiler

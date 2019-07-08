@@ -27,7 +27,7 @@ var sourceDirs =
 
 var buildAppending = false
 var isBuilding = false
-
+var ninjaFile = require('./ninja.js')
 var jscompDir = path.join('..','jscomp')
 function rebuild(){
     console.log(">>>> Start compiling")
@@ -35,7 +35,7 @@ function rebuild(){
         buildAppending = true
     } else {
         isBuilding = true
-        var p = cp.spawn(`ninja`, [], {stdio:['inherit','inherit','pipe'], shell : true})
+        var p = cp.spawn(ninjaFile.vendorNinjaPath, [], {stdio:['inherit','inherit','pipe']})
         p.on('exit',buildFinished)
     }
 }
@@ -58,7 +58,7 @@ function buildFinished(code,signal){
         // TODO: check ninja exit error code
         if(code===0){
             // This is not always correct
-            require('./ninja.js').updateDev()
+            ninjaFile.updateDev()
         }
         
     }
