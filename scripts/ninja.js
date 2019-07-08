@@ -35,6 +35,7 @@ var vendorNinjaPath = path.join(
   "ninja" + require("./config.js").sys_extension
 );
 
+exports.vendorNinjaPath = vendorNinjaPath;
 var visitorPattern = `
 rule p4of
     command = camlp4of $flags -impl $in -printer o -o $out
@@ -50,7 +51,6 @@ build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
 function hasCamlp4() {
   try {
     console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
-    console.log(`camlp4 detected`);
     return true;
   } catch (e) {
     return false;
@@ -1230,7 +1230,7 @@ function baseName(x) {
 
 /**
  *
- *
+ * @returns {Promise<void>}
  */
 async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
@@ -1564,7 +1564,7 @@ build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile], {
+  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose"], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
     encoding: "utf8"
@@ -1754,26 +1754,66 @@ function main() {
     if (process.argv.includes("-check")) {
       checkEffect();
     }
-    if (process.argv.length === emptyCount) {
-      updateDev();
-      updateRelease();
-    } else {
-      var dev = process.argv.includes("-dev");
-      var release = process.argv.includes("-release");
-      var all = process.argv.includes("-all");
-      if (all) {
+
+    var subcommand = process.argv[2];
+    switch (subcommand) {
+      case "build":
+        try {
+          cp.execFileSync(vendorNinjaPath, {
+            encoding: "utf8",
+            cwd: jscompDir,
+            stdio: [0, 1, 2]
+          });
+        } catch (e) {
+          console.log(e.message);
+          console.log(`please run "./scripts/ninja.js config" first`);
+        }
+        break;
+      case "clean":
+        try {
+          cp.execFileSync(vendorNinjaPath, ["-t", "clean"], {
+            encoding: "utf8",
+            cwd: jscompDir,
+            stdio: [0, 1]
+          });
+        } catch (e) {}
+        cp.execSync(`git clean -dfx .`, {
+          encoding: "utf8",
+          cwd: jscompDir,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`git clean -dfx .`, {
+          encoding: "utf8",
+          cwd: path.join(__dirname, "..", "lib"),
+          stdio: [0, 1, 2]
+        });
+        break;
+      case "config":
+        console.log(`config for the first time may take a while`);
         updateDev();
         updateRelease();
-      } else if (dev) {
-        updateDev();
-      } else if (release) {
-        updateRelease();
-      }
+
+        break;
+      default:
+        if (process.argv.length === emptyCount) {
+          updateDev();
+          updateRelease();
+        } else {
+          var dev = process.argv.includes("-dev");
+          var release = process.argv.includes("-release");
+          var all = process.argv.includes("-all");
+          if (all) {
+            updateDev();
+            updateRelease();
+          } else if (dev) {
+            updateDev();
+          } else if (release) {
+            updateRelease();
+          }
+        }
+        break;
     }
   }
-
-  // if(process.argv.includes('-build')){
-  //   cp.execFileSync(vendorNinjaPath,{encoding:'utf8',cwd:jscompDir})
-  // }
 }
+
 main();
