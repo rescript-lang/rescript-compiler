@@ -97,7 +97,7 @@ val get: 'a t -> int -> 'a option
     or [None] if [n] is larger than the length
 
     @example {[
-      get [0;3;32] 2 = Some 2 ;;
+      get [0;3;32] 2 = Some 32 ;;
       get [0;3;32] 3 = None;;
     ]}
  *)
