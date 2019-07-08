@@ -27,9 +27,13 @@ var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
-  
-var vendorNinjaPath = path.join('..','vendor','ninja','snapshot','ninja' + require('./config.js').sys_extension)
-
+var vendorNinjaPath = path.join(
+  "..",
+  "vendor",
+  "ninja",
+  "snapshot",
+  "ninja" + require("./config.js").sys_extension
+);
 
 var visitorPattern = `
 rule p4of
@@ -39,28 +43,30 @@ build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
 build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
-`
+`;
 /**
  * @returns {boolean}
  */
-function hasCamlp4(){
-  try{
-    console.log(cp.execSync(`camlp4of -v`, {encoding:'ascii'}))
-    console.log(`camlp4 detected`)
-    return true
-  }catch(e){
-    return false
+function hasCamlp4() {
+  try {
+    console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
+    console.log(`camlp4 detected`);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 /**
  * @returns {string}
  */
-function generateVisitorPattern(){
-  if(hasCamlp4()){
-    return visitorPattern
+function generateVisitorPattern() {
+  if (hasCamlp4()) {
+    return visitorPattern;
   } else {
-    console.warn(`camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`)
-    return ``
+    console.warn(
+      `camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`
+    );
+    return ``;
   }
 }
 /**
@@ -1558,7 +1564,7 @@ build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execFileSync(vendorNinjaPath,['-f', cppoNinjaFile], {
+  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
     encoding: "utf8"
@@ -1765,5 +1771,9 @@ function main() {
       }
     }
   }
+
+  // if(process.argv.includes('-build')){
+  //   cp.execFileSync(vendorNinjaPath,{encoding:'utf8',cwd:jscompDir})
+  // }
 }
 main();
