@@ -27,6 +27,10 @@ var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
+  
+var vendorNinjaPath = path.join('..','vendor','ninja','snapshot','ninja' + require('./config.js').sys_extension)
+
+
 var visitorPattern = `
 rule p4of
     command = camlp4of $flags -impl $in -printer o -o $out
@@ -174,7 +178,7 @@ var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`;
  * @param {string} name
  * @param {string} content
  */
-function writeFile(name, content) {
+function writeFileAscii(name, content) {
   fs.writeFile(name, content, "ascii", throwIfError);
 }
 
@@ -918,7 +922,7 @@ ${ninjaQuickBuidList([
     stmts.push(
       phony(runtimeTarget, fileTargets(allFileTargetsInRuntime), ninjaCwd)
     );
-    writeFile(
+    writeFileAscii(
       path.join(runtimeDir, ninjaOutput),
       templateRuntimeRules + stmts.join("\n") + "\n"
     );
@@ -1059,7 +1063,7 @@ ${ninjaQuickBuidList([
   var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, externalDeps);
   beltOutput.push(phony(othersTarget, fileTargets(allOthersTarget), ninjaCwd));
   // ninjaBuild([`belt_HashSetString.ml`,])
-  writeFile(
+  writeFileAscii(
     path.join(othersDir, ninjaOutput),
     templateOthersRules +
       jsOutput.join("\n") +
@@ -1167,7 +1171,7 @@ ${ninjaQuickBuidList([
   var output = generateNinja(depsMap, targets, ninjaCwd, externalDeps);
   output.push(phony(stdlibTarget, fileTargets(allTargets), ninjaCwd));
 
-  writeFile(
+  writeFileAscii(
     path.join(stdlibDir, ninjaOutput),
     templateStdlibRules + output.join("\n") + "\n"
   );
@@ -1251,7 +1255,7 @@ ${mllList(ninjaCwd, [
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
-  writeFile(
+  writeFileAscii(
     path.join(testDir, ninjaOutput),
     templateTestRules + output.join("\n") + "\n"
   );
@@ -1392,7 +1396,7 @@ function updateRelease() {
 
 function updateDev() {
   if (useEnv) {
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "env.ninja"),
       `
 ${getEnnvConfigNinja()}
@@ -1406,7 +1410,7 @@ build all: phony runtime others $stdlib test
 `
     );
   } else {
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "build.ninja"),
       `
 ${getVendorConfigNinja()}
@@ -1421,7 +1425,7 @@ subninja test/build.ninja
 build all: phony runtime others $stdlib test
 `
     );
-    writeFile(
+    writeFileAscii(
       path.join(jscompDir, "..", "lib", "build.ninja"),
       `
 ocamlopt = ocamlopt.opt 
@@ -1554,7 +1558,7 @@ build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execSync(`ninja -f ${cppoNinjaFile}`, {
+  cp.execFileSync(vendorNinjaPath,['-f', cppoNinjaFile], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
     encoding: "utf8"
@@ -1726,7 +1730,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
       });
 
-      writeFile(
+      writeFileAscii(
         path.join(jscompDir, ninjaOutput),
         templateNative + stmts.join("\n") + "\n"
       );
