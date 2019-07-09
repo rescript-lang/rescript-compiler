@@ -14,7 +14,7 @@
 var cp = require("child_process");
 var fs = require("fs");
 var path = require("path");
-var root_dir = path.join(__dirname, "..");
+var root_dir = process.env.cur__target_dir || path.join(__dirname, "..");
 var lib_dir = path.join(root_dir, "lib");
 var jscomp_dir = path.join(root_dir, "jscomp");
 var runtime_dir = path.join(jscomp_dir, "runtime");
@@ -39,7 +39,7 @@ process.env.PATH =
   path.delimiter +
   process.env.PATH;
 
-var ninja_bin_output = path.join(root_dir, "lib", "ninja.exe");
+var ninja_bin_output = path.join(lib_dir, "ninja.exe");
 
 /**
  * Make sure `ninja_bin_output` exists

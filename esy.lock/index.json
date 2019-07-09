@@ -1,0 +1,43 @@
+{
+  "checksum": "e17c6dafb73c8efbaf344e301ebfa25d",
+  "root": "reason-rocket@link-dev:./esy.json",
+  "node": {
+    "reason-rocket@link-dev:./esy.json": {
+      "id": "reason-rocket@link-dev:./esy.json",
+      "name": "reason-rocket",
+      "version": "link-dev:./esy.json",
+      "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
+      "overrides": [],
+      "dependencies": [ "ocaml@4.2.3007@d41d8cd9" ],
+      "devDependencies": [ "ocaml@4.2.3007@d41d8cd9" ]
+    },
+    "ocaml@4.2.3007@d41d8cd9": {
+      "id": "ocaml@4.2.3007@d41d8cd9",
+      "name": "ocaml",
+      "version": "4.2.3007",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://registry.npmjs.org/ocaml/-/ocaml-4.2.3007.tgz#sha1:b36f3357f7da99e43e19d60c2c2cfb69bd8ab66d"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [ "flexdll-prebuilt@0.37.4@d41d8cd9" ],
+      "devDependencies": []
+    },
+    "flexdll-prebuilt@0.37.4@d41d8cd9": {
+      "id": "flexdll-prebuilt@0.37.4@d41d8cd9",
+      "name": "flexdll-prebuilt",
+      "version": "0.37.4",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://registry.npmjs.org/flexdll-prebuilt/-/flexdll-prebuilt-0.37.4.tgz#sha1:c48478f4b2420a75e8dac9172f89c57bbf192598"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [],
+      "devDependencies": []
+    }
+  }
+}

@@ -140,3 +140,5 @@ jscomp/outcome_printer/reason_syntax_util.mli
 jscomp/bin/all_ounit_tests.ml
 native/
 vendor/ocaml
+
+_esy
