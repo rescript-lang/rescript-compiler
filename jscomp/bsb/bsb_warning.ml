@@ -72,7 +72,14 @@ let warning_to_string not_dev
    | None ->
      Ext_string.empty
    | Some x ->
-     Ext_string.trim x) ^
+    let content = 
+     Ext_string.trim x in 
+    if content = "" then content 
+    else 
+      match content.[0] with 
+      | '0' .. '9' -> "+" ^ content
+      | _ -> content
+    ) ^
   if not_dev then Ext_string.empty
   else
     match warning.error with
