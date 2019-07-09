@@ -10,6 +10,7 @@ jobs: # a collection of steps
           name: "Setting env variables"
           command: |
             echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
+            echo 'export OCAMLRUNPARAM="b"' >> $BASH_ENV
       - run:    
           name: "Check env variables"
           command: |
