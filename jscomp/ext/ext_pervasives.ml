@@ -84,3 +84,5 @@ let hash_variant s =
 
 let todo loc = 
   failwith (loc ^ " Not supported yet")
+
+let digest_length = 16  

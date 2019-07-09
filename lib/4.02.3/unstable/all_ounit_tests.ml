@@ -1924,6 +1924,8 @@ external id : 'a -> 'a = "%identity"
 val hash_variant : string -> int
 
 val todo : string -> 'a
+
+val digest_length : int
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2012,6 +2014,8 @@ let hash_variant s =
 
 let todo loc = 
   failwith (loc ^ " Not supported yet")
+
+let digest_length = 16  
 end
 module Ext_string : sig 
 #1 "ext_string.mli"

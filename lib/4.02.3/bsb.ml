@@ -458,6 +458,8 @@ external id : 'a -> 'a = "%identity"
 val hash_variant : string -> int
 
 val todo : string -> 'a
+
+val digest_length : int
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -546,6 +548,8 @@ let hash_variant s =
 
 let todo loc = 
   failwith (loc ^ " Not supported yet")
+
+let digest_length = 16  
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -12853,20 +12857,47 @@ let (//) = Ext_path.combine
 
 
 
-
-let output ~dir namespace 
+let write_file fname digest contents = 
+  let oc = open_out_bin fname in 
+  Digest.output oc digest;
+  output_char oc '\n';
+  output_string oc contents;
+  close_out oc 
+(** 
+  TODO:
+  sort filegroupts to ensure deterministic behavior
+  
+  if [.bsbuild] is not changed
+  [.mlmap] does not need to be changed too
+  
+*)
+let output 
+    ~dir 
+    (namespace : string)
     (file_groups : Bsb_file_groups.file_groups )
   = 
   let fname = namespace ^ Literals.suffix_mlmap in 
-  let oc = open_out_bin (dir// fname ) in 
-  List.iter
-    (fun  (x : Bsb_file_groups.file_group) ->
-      String_map.iter x.sources (fun k _ -> 
-        output_string oc k ;
-        output_string oc "\n"
-      ) 
-     )  file_groups ;
-  close_out oc 
+  let buf = Buffer.create 10000 in   
+  Ext_list.iter file_groups 
+    (fun  x ->
+       String_map.iter x.sources (fun k _ -> 
+           Buffer.add_string buf k ;
+           Buffer.add_char buf '\n'
+         ) 
+    );
+  let contents = Buffer.contents buf in   
+  let digest = Digest.string contents in 
+  let fname = (dir// fname ) in 
+  if Sys.file_exists fname then
+    let ic = open_in_bin fname in 
+    let old_digest = really_input_string ic Ext_pervasives.digest_length in 
+    close_in ic ;
+    (if old_digest <> digest then 
+      write_file fname digest contents)
+  else 
+    write_file fname digest contents
+    
+  
 end
 module Bsb_ninja_global_vars
 = struct
@@ -16875,6 +16906,8 @@ val load_file : string -> string
 
 val rev_lines_of_file : string -> string list
 
+val rev_lines_of_chann : in_channel -> string list
+
 val write_file : string -> string -> unit
 
 end = struct
@@ -16914,14 +16947,17 @@ let load_file f =
   end
 
 
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
-    let rec loop acc = 
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
       match input_line chan with
-      | line -> loop (line :: acc)
+      | line -> loop (line :: acc) chan
       | exception End_of_file -> close_in chan ; acc in
-    loop []
-  end
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
+  
 
 let write_file f content = 
   Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   

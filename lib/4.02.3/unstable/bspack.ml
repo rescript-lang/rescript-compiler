@@ -4900,6 +4900,8 @@ external id : 'a -> 'a = "%identity"
 val hash_variant : string -> int
 
 val todo : string -> 'a
+
+val digest_length : int
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4988,6 +4990,8 @@ let hash_variant s =
 
 let todo loc = 
   failwith (loc ^ " Not supported yet")
+
+let digest_length = 16  
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -9749,6 +9753,8 @@ val load_file : string -> string
 
 val rev_lines_of_file : string -> string list
 
+val rev_lines_of_chann : in_channel -> string list
+
 val write_file : string -> string -> unit
 
 end = struct
@@ -9788,14 +9794,17 @@ let load_file f =
   end
 
 
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
-    let rec loop acc = 
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
       match input_line chan with
-      | line -> loop (line :: acc)
+      | line -> loop (line :: acc) chan
       | exception End_of_file -> close_in chan ; acc in
-    loop []
-  end
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
+  
 
 let write_file f content = 
   Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
