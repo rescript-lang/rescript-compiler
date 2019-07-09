@@ -434,6 +434,24 @@ let suites =
       OUnit.assert_equal 
         (String.length (Digest.string "")) 
          Ext_digest.length
-    end
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      let bench = String.concat 
+        ";" (Ext_list.init 11 (fun i -> string_of_int i)) in
+      let buf = Ext_buffer.create 10 in 
+      OUnit.assert_bool
+        __LOC__ (Ext_buffer.not_equal buf bench); 
+      for i = 0 to 9 do   
+        Ext_buffer.add_string buf (string_of_int i);
+        Ext_buffer.add_string buf ";"
+      done ;
+      OUnit.assert_bool
+        __LOC__ (Ext_buffer.not_equal buf bench); 
+      Ext_buffer.add_string buf "10"  ;
+      (* print_endline (Ext_buffer.contents buf);
+      print_endline bench; *)
+      OUnit.assert_bool
+      __LOC__ (not (Ext_buffer.not_equal buf bench))
+    end 
   ]

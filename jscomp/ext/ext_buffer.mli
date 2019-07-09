@@ -83,3 +83,8 @@ val output_buffer : out_channel -> t -> unit
    on the output channel [oc]. *)   
 
 val digest : t -> Digest.t   
+
+val not_equal : 
+  t -> 
+  string -> 
+  bool 
