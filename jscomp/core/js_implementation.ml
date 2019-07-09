@@ -190,16 +190,20 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
           ; loc}))
 
 
-
+(** decoding [.mlmap]
+  keep in sync {!Bsb_namespace_map_gen.output}
+*)
 let implementation_map ppf sourcefile outputprefix = 
-  let list_of_modules = Ext_io.rev_lines_of_file sourcefile 
-  in 
+  let ichan = open_in_bin sourcefile in 
+  seek_in ichan (Ext_digest.length +1);
+  let list_of_modules = Ext_io.rev_lines_of_chann ichan in 
+  close_in ichan;
   let ns = 
     Ext_string.capitalize_ascii
       (Filename.chop_extension (Filename.basename sourcefile)) in
-  let ml_ast = Ext_list.fold_left list_of_modules [] (fun acc module_name -> 
-      if Ext_string.is_empty module_name then acc 
-      else make_structure_item ~ns module_name :: acc 
+  let ml_ast = Ext_list.fold_left list_of_modules [] (fun acc line -> 
+      if Ext_string.is_empty line then acc 
+      else make_structure_item ~ns line :: acc 
     )  in 
   Compmisc.init_path false;
   ml_ast

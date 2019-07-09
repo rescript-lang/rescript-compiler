@@ -27,22 +27,22 @@
 let dep_lit = " : "
 let write_buf name buf  =     
   let oc = open_out_bin name in 
-  Buffer.output_buffer oc buf ;
+  Ext_buffer.output_buffer oc buf ;
   close_out oc 
 
 (* should be good for small file *)
-let load_file name (buf : Buffer.t): unit  = 
-  let len = Buffer.length buf in 
+let load_file name (buf : Ext_buffer.t): unit  = 
+  let len = Ext_buffer.length buf in 
   let ic = open_in_bin name in 
   let n = in_channel_length ic in   
   if n <> len then begin close_in ic ; write_buf name buf  end 
   else
     let holder = really_input_string ic  n in 
     close_in ic ; 
-    if holder <> Buffer.contents buf then 
+    if Ext_buffer.not_equal buf holder then 
       write_buf name buf 
 ;;
-let write_file name  (buf : Buffer.t) = 
+let write_file name  (buf : Ext_buffer.t) = 
   if Sys.file_exists name then 
     load_file name buf 
   else 
@@ -79,8 +79,8 @@ let read_deps (fn : string) : string array =
 
 type kind = Js | Bytecode | Native
 
-let output_file (oc : Buffer.t) source namespace = 
-  Buffer.add_string oc (match namespace with 
+let output_file (oc : Ext_buffer.t) source namespace = 
+  Ext_buffer.add_string oc (match namespace with 
       | None ->  source 
       | Some ns ->
         Ext_namespace.make ~ns source)
@@ -92,9 +92,9 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmi] if it has [mli]
 *)
 let oc_cmi buf namespace source = 
-  Buffer.add_char buf ' ';  
+  Ext_buffer.add_char buf ' ';  
   output_file buf source namespace;
-  Buffer.add_string buf Literals.suffix_cmi 
+  Ext_buffer.add_string buf Literals.suffix_cmi 
 
 
 let handle_module_info 
@@ -106,9 +106,9 @@ let handle_module_info
     begin 
       if module_info.ml_info <> Ml_empty then 
         begin
-          Buffer.add_char buf ' ';  
+          Ext_buffer.add_char buf ' ';  
           output_file buf source namespace;
-          Buffer.add_string buf rhs_suffix
+          Ext_buffer.add_string buf rhs_suffix
         end;
       (* #3260 cmj changes does not imply cmi change anymore *)
       oc_cmi buf namespace source
@@ -128,7 +128,7 @@ let oc_impl
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
-    (buf : Buffer.t)
+    (buf : Ext_buffer.t)
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
@@ -137,12 +137,12 @@ let oc_impl
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
     output_file buf input_file namespace ; 
-    Buffer.add_string buf lhs_suffix; 
-    Buffer.add_string buf dep_lit ) in  
+    Ext_buffer.add_string buf lhs_suffix; 
+    Ext_buffer.add_string buf dep_lit ) in  
   Ext_option.iter namespace (fun ns -> 
       Lazy.force at_most_once;
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
+      Ext_buffer.add_string buf ns;
+      Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   Ext_array.iter dependent_module_set (fun dependent_module ->
@@ -157,7 +157,7 @@ let oc_impl
         end     
     );
   if !has_deps then  
-    Buffer.add_char buf '\n'
+    Ext_buffer.add_char buf '\n'
 
 
 
@@ -170,17 +170,17 @@ let oc_intf
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
-    (buf : Buffer.t) : unit =   
+    (buf : Ext_buffer.t) : unit =   
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
     output_file buf input_file namespace ;   
-    Buffer.add_string buf Literals.suffix_cmi ; 
-    Buffer.add_string buf dep_lit) in 
+    Ext_buffer.add_string buf Literals.suffix_cmi ; 
+    Ext_buffer.add_string buf dep_lit) in 
   Ext_option.iter namespace (fun ns -> 
       Lazy.force at_most_once;  
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
+      Ext_buffer.add_string buf ns;
+      Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   Ext_array.iter dependent_module_set begin fun dependent_module ->
@@ -196,7 +196,7 @@ let oc_intf
         end
   end;
   if !has_deps then
-    Buffer.add_char buf '\n'
+    Ext_buffer.add_char buf '\n'
 
 
 let emit_d mlast 
@@ -207,7 +207,7 @@ let emit_d mlast
       ~dir:Filename.current_dir_name
   in 
   let set_a = read_deps mlast in 
-  let buf = Buffer.create 128 in 
+  let buf = Ext_buffer.create 128 in 
   let input_file = Filename.chop_extension mlast in 
   let filename = input_file ^ Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
@@ -256,7 +256,7 @@ let emit_dep_file
    let lhs_suffix = Literals.suffix_cmj in   
    let rhs_suffix = Literals.suffix_cmj in 
 #end
-   let buf = Buffer.create 64 in 
+   let buf = Ext_buffer.create 64 in 
    oc_impl 
      set 
      input_file 
@@ -273,7 +273,7 @@ let emit_dep_file
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
         let filename = (input_file ^ Literals.suffix_d) in 
-        let buf = Buffer.create 64 in 
+        let buf = Ext_buffer.create 64 in 
         oc_intf 
           set 
           input_file 

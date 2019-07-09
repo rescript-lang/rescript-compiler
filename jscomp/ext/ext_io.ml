@@ -33,14 +33,17 @@ let load_file f =
   end
 
 
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
-    let rec loop acc = 
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
       match input_line chan with
-      | line -> loop (line :: acc)
+      | line -> loop (line :: acc) chan
       | exception End_of_file -> close_in chan ; acc in
-    loop []
-  end
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
+  
 
 let write_file f content = 
   Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
