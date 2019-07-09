@@ -32,7 +32,7 @@ let write_file fname digest contents =
   let oc = open_out_bin fname in 
   Digest.output oc digest;
   output_char oc '\n';
-  output_string oc contents;
+  Ext_buffer.output_buffer oc contents;
   close_out oc 
 (** 
   TODO:
@@ -48,24 +48,24 @@ let output
     (file_groups : Bsb_file_groups.file_groups )
   = 
   let fname = namespace ^ Literals.suffix_mlmap in 
-  let buf = Buffer.create 10000 in   
+  let buf = Ext_buffer.create 10000 in   
   Ext_list.iter file_groups 
     (fun  x ->
        String_map.iter x.sources (fun k _ -> 
-           Buffer.add_string buf k ;
-           Buffer.add_char buf '\n'
+           Ext_buffer.add_string buf k ;
+           Ext_buffer.add_char buf '\n'
          ) 
     );
-  let contents = Buffer.contents buf in   
-  let digest = Digest.string contents in 
+  (* let contents = Buffer.contents buf in    *)
+  let digest = Ext_buffer.digest buf in 
   let fname = (dir// fname ) in 
   if Sys.file_exists fname then
     let ic = open_in_bin fname in 
     let old_digest = really_input_string ic Ext_digest.length in 
     close_in ic ;
     (if old_digest <> digest then 
-      write_file fname digest contents)
+      write_file fname digest buf)
   else 
-    write_file fname digest contents
+    write_file fname digest buf
     
   
