@@ -1777,16 +1777,11 @@ function main() {
             stdio: [0, 1]
           });
         } catch (e) {}
-        cp.execSync(`git clean -dfx .`, {
+        cp.execSync(`git clean -dfx jscomp lib`, {
           encoding: "utf8",
-          cwd: jscompDir,
+          cwd: path.join(__dirname,'..'),
           stdio: [0, 1, 2]
-        });
-        cp.execSync(`git clean -dfx .`, {
-          encoding: "utf8",
-          cwd: path.join(__dirname, "..", "lib"),
-          stdio: [0, 1, 2]
-        });
+        });        
         break;
       case "config":
         console.log(`config for the first time may take a while`);
