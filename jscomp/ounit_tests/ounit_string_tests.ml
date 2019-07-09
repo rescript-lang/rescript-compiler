@@ -429,6 +429,11 @@ let suites =
       Ext_string.capitalize_sub "ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 3 =~ "Ab-"
-    end 
+    end ;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_equal 
+        (String.length (Digest.string "")) 
+         Ext_digest.length
+    end
 
   ]

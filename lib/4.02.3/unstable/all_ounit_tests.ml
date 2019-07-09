@@ -1925,7 +1925,7 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
-val digest_length : int
+
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2015,7 +2015,7 @@ let hash_variant s =
 let todo loc = 
   failwith (loc ^ " Not supported yet")
 
-let digest_length = 16  
+
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -16551,6 +16551,63 @@ let suites =
     ]
 
 end
+module Ext_digest : sig 
+#1 "ext_digest.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ val length : int 
+end = struct
+#1 "ext_digest.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let length = 16
+end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -17202,7 +17259,12 @@ let suites =
       Ext_string.capitalize_sub "ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 3 =~ "Ab-"
-    end 
+    end ;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_equal 
+        (String.length (Digest.string "")) 
+         Ext_digest.length
+    end
 
   ]
 

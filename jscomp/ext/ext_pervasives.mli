@@ -62,4 +62,3 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
-val digest_length : int

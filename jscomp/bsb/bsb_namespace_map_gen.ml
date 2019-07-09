@@ -61,7 +61,7 @@ let output
   let fname = (dir// fname ) in 
   if Sys.file_exists fname then
     let ic = open_in_bin fname in 
-    let old_digest = really_input_string ic Ext_pervasives.digest_length in 
+    let old_digest = really_input_string ic Ext_digest.length in 
     close_in ic ;
     (if old_digest <> digest then 
       write_file fname digest contents)

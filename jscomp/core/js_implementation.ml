@@ -195,7 +195,7 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
 *)
 let implementation_map ppf sourcefile outputprefix = 
   let ichan = open_in_bin sourcefile in 
-  seek_in ichan (Ext_pervasives.digest_length +1);
+  seek_in ichan (Ext_digest.length +1);
   let list_of_modules = Ext_io.rev_lines_of_chann ichan in 
   close_in ichan;
   let ns = 
