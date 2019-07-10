@@ -1,0 +1,209 @@
+#!/usr/bin/env node
+"use strict";
+// @ts-check
+
+const fs = require("fs");
+const readline = require("readline");
+const path = require("path");
+
+/**
+ *
+ * @param {string} file
+ * @param {(line:string)=>void} lineCb
+ * @param {()=>void} finish
+ */
+function processEntry(file, lineCb, finish) {
+  let input = fs.createReadStream(file);
+  input.on("error", function(error) {
+    console.error(error.message);
+    console.error(
+      "make sure you are running after bsb building and in the top directory"
+    );
+    process.exit(2);
+  });
+  const rl = readline.createInterface({
+    input: input,
+    crlfDelay: Infinity
+  });
+
+  rl.on("line", lineCb);
+  rl.on("close", finish);
+}
+
+class Target {
+  /**
+   *
+   * @param {number} start
+   * @param {number} end
+   */
+  constructor(start, end) {
+    this.start = start;
+    this.end = end;
+    /**
+     * @type {string[]}
+     */
+    this.targets = [];
+  }
+}
+
+class Threads {
+  constructor() {
+    /**
+     * @type {number[]}
+     */
+    this.workers = [];
+  }
+  /**
+   *
+   * @param {{start : number; end : number}} target
+   */
+  alloc(target) {
+    for (let i = 0; i < this.workers.length; ++i) {
+      if (this.workers[i] <= target.start) {
+        this.workers[i] = target.end;
+        return i;
+      }
+    }
+    this.workers.push(target.end);
+    return this.workers.length - 1;
+  }
+}
+/**
+ *
+ * @param {Map<string,Target>} map
+ * @param {string} key
+ * @param {Target} def
+ *
+ * */
+function setDefault(map, key, def) {
+  if (map.has(key)) {
+    return map.get(key);
+  }
+  map.set(key, def);
+  return def;
+}
+
+// https://github.com/catapult-project/catapult/blob/master/tracing/tracing/base/color_scheme.html#L50
+const colors = [
+  "thread_state_uninterruptible",
+  "thread_state_iowait",
+  "thread_state_running",
+  "thread_state_runnable",
+  "thread_state_sleeping",
+  "thread_state_unknown",
+  "background_memory_dump",
+  "light_memory_dump",
+  "detailed_memory_dump",
+  "vsync_highlight_color",
+  "generic_work",
+  "good",
+  "bad",
+  "terrible",
+  "black",
+  "grey",
+  "white",
+  "yellow",
+  "olive",
+  "rail_response",
+  "rail_animation",
+  "rail_idle",
+  "rail_load",
+  "startup",
+  "heap_dump_stack_frame",
+  "heap_dump_object_type",
+  "heap_dump_child_node_arrow",
+  "cq_build_running",
+  "cq_build_passed",
+  "cq_build_failed",
+  "cq_build_abandoned",
+  "cq_build_attempt_runnig",
+  "cq_build_attempt_passed",
+  "cq_build_attempt_failed"
+];
+
+let allocated = new Map();
+
+function getColorName(obj, cat) {
+  obj.cat = cat;
+  let i;
+  if (allocated.has(cat)) {
+    i = allocated.get(cat);
+  } else {
+    allocated.set(cat, allocated.size);
+  }
+  obj.cname = colors[i % colors.length];
+  return;
+}
+/**
+ *
+ * @param {Target} target
+ */
+function category(target, obj) {
+  let targets = target.targets;
+  if (targets.length === 1) {
+    let curTar = targets[0];
+    if (curTar.endsWith(".d")) {
+      getColorName(obj, "dep");
+    } else if (curTar.endsWith(".mlast") || curTar.endsWith(".mliast")) {
+      getColorName(obj, "parse");
+    } else if (curTar.endsWith(".cmi")) {
+      getColorName(obj, "cmi");
+    } else if (curTar.endsWith(".cmj")) {
+      getColorName(obj, "cmj-only");
+    } else {
+      getColorName(obj, "unknown");
+    }
+  } else {
+    getColorName(obj, "cmj");
+  }
+  obj.name = target.targets.map(x => path.parse(x).base).join(",");
+  return obj;
+}
+/**
+ *
+ * @param {boolean} showAll
+ */
+function readTargets(showAll) {
+  let lastEndSeen = 0;
+  let targets = new Map();
+  processEntry(
+    path.join("lib", "bs", ".ninja_log"),
+    line => {
+      let lineTrim = line.trim();
+      if (lineTrim.startsWith("#")) {
+        return;
+      }
+
+      let [start, end, _, name, cmdHash] = lineTrim.split("\t");
+      if (!showAll && +end < lastEndSeen) {
+        targets = new Map();
+      }
+
+      lastEndSeen = +end;
+      setDefault(targets, cmdHash, new Target(+start, +end)).targets.push(name);
+    },
+    () => {
+      let sorted = [...targets.values()].sort((a, b) => {
+        return a.start - b.start;
+      });
+      let jsonArray = [];
+      let threads = new Threads();
+      for (let target of sorted) {
+        jsonArray.push(
+          category(target, {
+            ph: "X",
+            pid: 0,
+            dur: (target.end - target.start) * 1000,
+            ts: target.start * 1000,
+            tid: threads.alloc(target),
+            args: {}
+          })
+        );
+      }
+      console.log("tracing.json is produced, loade it via chrome://tracing/");
+      fs.writeFileSync("tracing.json", JSON.stringify(jsonArray), "utf8");
+    }
+  );
+}
+
+readTargets(false);

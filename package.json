@@ -19,7 +19,8 @@
   "bin": {
     "bsb": "lib/bsb",
     "bsc": "lib/bsc",
-    "bsrefmt": "lib/bsrefmt"
+    "bsrefmt": "lib/bsrefmt",
+    "bstracing" : "lib/bstracing"
   },
   "scripts": {
     "test": "node scripts/ciTest.js  -all",
