@@ -4624,7 +4624,7 @@ let load_file name (buf : Ext_buffer.t): unit  =
   else
     let holder = really_input_string ic  n in 
     close_in ic ; 
-    if holder <> Ext_buffer.contents buf then 
+    if Ext_buffer.not_equal buf holder then 
       write_buf name buf 
 ;;
 let write_file name  (buf : Ext_buffer.t) = 
