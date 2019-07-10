@@ -56,10 +56,9 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
   let number = String_set.cardinal output_set in 
   Ext_buffer.add_string buf (string_of_int number) ;
   Ext_buffer.add_char buf magic_sep_char;
-  String_set.iter (fun s -> Ext_buffer.add_string buf s ; Ext_buffer.add_char buf magic_sep_char) output_set ;
-  let buf_contents = Ext_buffer.contents buf in 
-  output_binary_int oc (String.length buf_contents);
-  output_string oc buf_contents; 
+  String_set.iter (fun s -> Ext_buffer.add_string buf s ; Ext_buffer.add_char buf magic_sep_char) output_set ;  
+  output_binary_int oc (Ext_buffer.length buf);
+  Ext_buffer.output_buffer oc buf;
   Ml_binary.write_ast kind fname pt oc;
   close_out oc 
 
