@@ -8,13 +8,8 @@
     "ocaml": " >= 4.2.3"
   },
   "esy": {
-    "build": [
-      ["cp", "-r", "./vendor", "#{self.target_dir / 'vendor'}"],
-      ["cp", "-r", "./lib", "#{self.target_dir / 'lib'}"],
-      ["cp", "-r", "./jscomp", "#{self.target_dir / 'jscomp'}"],
-      ["cp", "-r", "./native", "#{self.target_dir / 'native'}"],
-      ["node", "scripts/install.js"]
-    ],
+    "buildsInSource": true,
+    "build": [["node", "scripts/install.js"]],
     "install": ["make install"],
     "exportedEnv": {
       "OCAMLLIB": {
