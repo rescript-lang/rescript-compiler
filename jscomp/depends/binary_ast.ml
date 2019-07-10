@@ -52,12 +52,12 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
   let oc = open_out_bin output in 
 
   let output_set = Ast_extract.read_parse_and_extract kind pt in
-  let buf = Buffer.create 64 in
+  let buf = Ext_buffer.create 64 in
   let number = String_set.cardinal output_set in 
-  Buffer.add_string buf (string_of_int number) ;
-  Buffer.add_char buf magic_sep_char;
-  String_set.iter (fun s -> Buffer.add_string buf s ; Buffer.add_char buf magic_sep_char) output_set ;
-  let buf_contents = Buffer.contents buf in 
+  Ext_buffer.add_string buf (string_of_int number) ;
+  Ext_buffer.add_char buf magic_sep_char;
+  String_set.iter (fun s -> Ext_buffer.add_string buf s ; Ext_buffer.add_char buf magic_sep_char) output_set ;
+  let buf_contents = Ext_buffer.contents buf in 
   output_binary_int oc (String.length buf_contents);
   output_string oc buf_contents; 
   Ml_binary.write_ast kind fname pt oc;
