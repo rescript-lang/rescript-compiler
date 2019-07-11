@@ -1,0 +1,3 @@
+(library
+ (name rocket_super_errors)
+ (public_name rocket.super_errors))

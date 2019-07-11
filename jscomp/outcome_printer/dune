@@ -1,0 +1,3 @@
+(library
+ (name rocket_outcome_printer)
+ (public_name rocket.outcome_printer))

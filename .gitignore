@@ -141,4 +141,10 @@ jscomp/bin/all_ounit_tests.ml
 native/
 vendor/ocaml
 
+.merlin
 _esy
+_build
+_release
+*.byte
+*.native
+*.install

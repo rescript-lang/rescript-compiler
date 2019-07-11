@@ -1,0 +1,3 @@
+(library
+ (name rocket_depends)
+ (public_name rocket.depends))

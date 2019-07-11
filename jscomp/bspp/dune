@@ -1,0 +1,3 @@
+(library
+ (name rocket_bspp)
+ (public_name rocket.bspp))

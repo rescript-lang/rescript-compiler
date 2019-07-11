@@ -1,61 +1,22 @@
 {
-  "name": "reason-rocket",
-  "version": "5.1.0",
-  "devDependencies": {
-    "ocaml": "~4.2.3000"
-  },
-  "peerDependencies": {
-    "ocaml": " >= 4.2.3"
-  },
+  "name": "rocket",
+  "version": "0.0.0",
   "esy": {
-    "buildsInSource": true,
-    "build": [["node", "scripts/install.js"]],
-    "install": ["make install"],
-    "exportedEnv": {
-      "OCAMLLIB": {
-        "val": "#{self.lib / 'ocaml' }",
-        "scope": "global"
-      },
-      "CAML_LD_LIBRARY_PATH": {
-        "val": "#{self.lib / 'ocaml'  / 'stublibs' : self.lib / 'ocaml'  : $CAML_LD_LIBRARY_PATH}",
-        "scope": "global"
-      },
-      "OCAML_TOPLEVEL_PATH": {
-        "val": "#{self.lib / 'ocaml' }",
-        "scope": "global"
-      },
-      "bs_custom_resolution": {
-        "val": "true",
-        "scope": "global"
-      },
-      "bs_platform__install": {
-        "val": "#{self.install}",
-        "scope": "global"
-      },
-      "PATH": {
-        "val": "#{reason-rocket.lib : $PATH}",
-        "scope": "global"
-      }
-    }
+    "build": "dune build @all"
   },
-  "description": "bucklescript compiler for use in esy, ocaml standard libary by bucklescript and its required runtime support",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reuniverse/reason-rocket.git"
+  "scripts": {
+    "fmt": "dune build @fmt --auto-promote"
   },
-  "keywords": ["ocaml", "bucklescript", "stdlib", "functional programming"],
-  "author": {
-    "name": "Hongbo Zhang"
+  "dependencies": {
+    "@esy-ocaml/reason": ">= 3.4.0 < 3.5.0",
+    "@opam/dune": "*",
+    "@opam/ounit": "2.0.8",
+    "ocaml": "~4.6.0"
   },
-  "maintainers": [
-    {
-      "name": "reuniverse",
-      "email": "ulrik.strid@outlook.com"
-    }
-  ],
-  "license": "SEE LICENSE IN LICENSE",
-  "bugs": {
-    "url": "https://github.com/reuniverse/reason-rocket/issues"
-  },
-  "homepage": "https://github.com/reuniverse/reason-rocket#readme"
+  "devDependencies": {
+    "@opam/dune": "*",
+    "@opam/merlin": "*",
+    "@opam/ocamlformat": "*",
+    "ocaml": "~4.6.0"
+  }
 }

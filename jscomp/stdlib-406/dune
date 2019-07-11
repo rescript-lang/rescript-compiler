@@ -1,0 +1,3 @@
+(library
+ (name rocket_stdlib)
+ (public_name rocket.stdlib))

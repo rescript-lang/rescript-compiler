@@ -1,0 +1,4 @@
+(library
+ (name rocket_core)
+ (public_name rocket.core)
+ (modules_without_implementation lam_pass_unused_params lam_runtime))

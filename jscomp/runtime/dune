@@ -1,0 +1,4 @@
+(library
+ (name rocket_runtime)
+ (public_name rocket.runtime)
+ (modules_without_implementation bs_stdlib_mini))

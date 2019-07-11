@@ -1,0 +1,3 @@
+(library
+ (name rocket_common)
+ (public_name rocket.common))

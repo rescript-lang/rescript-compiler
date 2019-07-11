@@ -1,0 +1,4 @@
+(library
+ (name rocket_test)
+ (public_name rocket.test)
+ (modules_without_implementation ui_defs))
