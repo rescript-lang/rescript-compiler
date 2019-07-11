@@ -23,10 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+ (** Synced up with module {!Bsb_helper_depfile_gen} *)
 module String_set = Ast_extract.String_set
-
-
-
 
 
 
@@ -50,14 +48,14 @@ let magic_sep_char = '\n'
 *)      
 let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
   let oc = open_out_bin output in 
-
   let output_set = Ast_extract.read_parse_and_extract kind pt in
-  let buf = Ext_buffer.create 64 in
-  let number = String_set.cardinal output_set in 
-  Ext_buffer.add_string buf (string_of_int number) ;
+  let buf = Ext_buffer.create 1000 in
+  
   Ext_buffer.add_char buf magic_sep_char;
-  String_set.iter (fun s -> Ext_buffer.add_string buf s ; Ext_buffer.add_char buf magic_sep_char) output_set ;  
-  output_binary_int oc (Ext_buffer.length buf);
+  String_set.iter (fun s -> Ext_buffer.add_string buf s ; 
+    Ext_buffer.add_char buf magic_sep_char) output_set ;  
+
+  output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;
   Ml_binary.write_ast kind fname pt oc;
   close_out oc 

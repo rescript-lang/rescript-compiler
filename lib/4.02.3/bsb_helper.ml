@@ -4561,7 +4561,7 @@ type kind = Js | Bytecode | Native
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
 *)
-val deps_of_channel : in_channel -> string array
+val deps_of_channel : in_channel -> string list
 
 (**
   [make compilation_kind filename index namespace]
@@ -4636,26 +4636,28 @@ let write_file name  (buf : Ext_buffer.t) =
 (* Make sure it is the same as {!Binary_ast.magic_sep_char}*)
 let magic_sep_char = '\n'
 
-let deps_of_channel (ic : in_channel) : string array = 
+let deps_of_channel (ic : in_channel) : string list = 
   let size = input_binary_int ic in 
-  let s = really_input_string ic size in 
-  let first_tab  = String.index s magic_sep_char in 
-  let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
-  let rec aux s ith (offset : int) : unit = 
+  let s = really_input_string ic size in   
+  let rec aux (s : string) acc (offset : int) size : string list = 
     if offset < size then
-      let next_tab = String.index_from s offset magic_sep_char  in 
-      return_arr.(ith) <- String.sub s offset (next_tab - offset) ; 
-      aux s (ith + 1) (next_tab + 1) 
+      let next_tab = String.index_from s offset magic_sep_char in        
+      aux s 
+        (String.sub s offset (next_tab - offset)::acc) (next_tab + 1) 
+        size
+    else acc    
   in 
-  aux s 0 (first_tab + 1) ; 
+  aux s [] 1 size 
 
-  return_arr 
+  
+
+
 
 (** Please refer to {!Binary_ast} for encoding format, we move it here 
     mostly for cutting the dependency so that [bsb_helper.exe] does
     not depend on compler-libs
 *)
-let read_deps (fn : string) : string array = 
+let read_deps (fn : string) : string list = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
@@ -4708,7 +4710,7 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
       Bsb_db_decode.find_opt db (index :> int) dependent_module 
     else None 
 let oc_impl 
-    (dependent_module_set : string array)
+    (dependent_module_set : string list)
     (input_file : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
@@ -4730,7 +4732,7 @@ let oc_impl
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
-  Ext_array.iter dependent_module_set (fun dependent_module ->
+  Ext_list.iter dependent_module_set (fun dependent_module ->
       match  
         find_module db dependent_module is_not_lib_dir index  
       with      
@@ -4750,7 +4752,7 @@ let oc_impl
     [.cmi] file
 *)
 let oc_intf
-    (dependent_module_set : string array)
+    (dependent_module_set : string list)
     input_file 
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
@@ -4768,7 +4770,7 @@ let oc_intf
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
-  Ext_array.iter dependent_module_set begin fun dependent_module ->
+  Ext_list.iter dependent_module_set begin fun dependent_module ->
     match  find_module db dependent_module is_not_lib_dir index 
     with     
     | None -> ()
