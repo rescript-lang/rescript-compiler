@@ -4,7 +4,7 @@
 //@ts-check
 /**
  * 
- * @param {{ocamlopt : string ; ext : string ; INCL : string}} config 
+ * @param {{ocamlopt : string ; ext : string ; INCL : string, isWin : boolean}} config 
  * 
  */
 function libNinja(config){
@@ -14,7 +14,7 @@ ext = ${config.ext}
 INCL = ${config.INCL}
 flags = -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 rule cc
-    command = $ocamlopt $flags $in -o $out
+    command = $ocamlopt $flags $in -o $out ${config.isWin? '' : '&& strip $out'}
     description = Making $out
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good

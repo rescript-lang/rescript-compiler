@@ -21,7 +21,8 @@ function buildCompiler() {
   var content = require('./ninjaFactory.js').libNinja({
     ocamlopt : is_windows?`ocamlopt.opt.exe`:`../native/${ocamlVersion}/bin/ocamlopt.opt`,
     ext : sys_extension,
-    INCL : ocamlVersion
+    INCL : ocamlVersion,
+    isWin : is_windows
   })
   
   fs.writeFileSync(path.join(root,'lib',prebuilt),content,'ascii')
