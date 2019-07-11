@@ -5903,21 +5903,28 @@ type group = {
    meta_info_offset : int 
  }
 
-val decode : 
+(* exposed only for testing *)
+val decode_internal : 
   string -> 
   int ref ->
   group array 
-  
+
 
 
 val read_build_cache : 
   dir:string -> t
 
+type module_info = {
+  mli_info : Bsb_db.mli_info;
+  ml_info : Bsb_db.ml_info;
+  name_sans_extension : string
+} 
+
 val find_opt :
   t -> (* contains global info *)
   int -> (* more likely to be zero *)
   string -> (* module name *)
-  Bsb_db.module_info option 
+  module_info option 
 end = struct
 #1 "bsb_db_decode.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -5996,7 +6003,7 @@ let next_mdoule_info (s : string) (cur : int) ~count  =
   else 
     Ext_string.index_count s cur '\n' count  + 1
 
-let rec decode (x : string) (offset : cursor) =   
+let rec decode_internal (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single x (offset : cursor) : group = 
@@ -6024,7 +6031,7 @@ let read_build_cache ~dir  : t =
   let offset = ref 0 in 
   let cur_module_info_magic_number = extract_line all_content offset in 
   assert (cur_module_info_magic_number = Bs_version.version); 
-  decode all_content offset, all_content
+  decode_internal all_content offset, all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -6059,6 +6066,13 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
+type module_info = Bsb_db.module_info = {
+  mli_info : Bsb_db.mli_info;
+  ml_info : Bsb_db.ml_info;
+  name_sans_extension : string
+} 
+
+
 let find_opt 
   ((sorteds,whole) : t )  i key 
     : Bsb_db.module_info option = 
@@ -6072,9 +6086,152 @@ let find_opt
     in 
     let name_sans_extension = 
         Ext_string.extract_until whole cursor ',' in 
-    let mli_info =  decode_mli_info whole.[!cursor] in 
-    let ml_info = decode_ml_info whole.[!cursor + 1] in
-    Some {mli_info ; ml_info; name_sans_extension}
+    Some (match whole.[!cursor] with
+        | 'f'
+          -> 
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_empty
+          }
+        | 'g'
+          -> 
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(false,false)
+          }
+        | 'h'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(false,true)
+          }
+        | 'i'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(true,false)}
+
+        | 'j'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(true,true)}
+
+        (* another group *)
+        | 'k'
+          -> {
+              name_sans_extension;
+              ml_info = Ml_source(false,true) ;
+              mli_info = Mli_empty
+            } 
+        | 'l'
+          -> {
+              name_sans_extension;
+              ml_info = Ml_source(false,true) ;
+              mli_info = Mli_source(false,false)
+            } 
+        | 'm'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(false,true)
+          }
+        | 'n'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(true,false)
+          }
+        | 'o'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(true,true)
+          }
+        (* another group*)
+        | 'p'
+          -> 
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_empty
+          }
+
+
+        | 'q'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(false,false)
+          }
+        | 'r'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(false,true)
+          }
+        | 's'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(true,false)
+          }
+        | 't'
+          -> 
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(true,true)
+          }
+        (* another group *)
+        | 'u'
+          -> 
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_empty
+          }
+        | 'v'
+          ->
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(false,false)
+          }
+        | 'w'
+          ->
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(false,true)
+          }
+        | 'x' -> 
+
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(true,false)
+          }
+        | 'y' 
+          -> 
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(true,true)
+          }
+        | 'a'
+
+        | 'b'
+
+        | 'c'
+
+        | 'd'
+
+        | 'e' 
+          -> assert false    
+        | _ -> assert false)
+
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
@@ -6235,7 +6392,7 @@ let (=~) = OUnit.assert_equal  ~printer:printer_string
 
 
 let parse_data_one = 
-(Bsb_db_decode.decode {|4.0.19
+(Bsb_db_decode.decode_internal {|4.0.19
 2
 1
 Demo
@@ -6246,7 +6403,7 @@ examples/test,01
 |} (ref 7))
 
 let parse_data_two = 
-  Bsb_db_decode.decode {|4.0.19
+  Bsb_db_decode.decode_internal {|4.0.19
 3
 2
 Fib

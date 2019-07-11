@@ -108,10 +108,10 @@ let oc_cmi buf namespace source =
 
 
 let handle_module_info 
-    (module_info : Bsb_db.module_info)
+    module_info 
     input_file 
     namespace rhs_suffix buf = 
-  let source = module_info.name_sans_extension in 
+  let source = module_info.Bsb_db_decode.name_sans_extension in 
   if source <> input_file then 
     begin 
       if module_info.ml_info <> Ml_empty then 
