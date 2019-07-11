@@ -37,7 +37,7 @@ let () =
       (Format.pp_print_list ~pp_sep:(fun fmt () ->
            p fmt "@ ;"
          ) Format.pp_print_string) 
-      (Array.to_list arrs);
+       arrs;
     p Format.std_formatter "@.==============================@.";
     if Ext_path.check_suffix_case file ".mlast" then 
       begin
