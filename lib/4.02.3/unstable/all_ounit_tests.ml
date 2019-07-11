@@ -5966,33 +5966,6 @@ type t = group array * string (* string is whole content*)
 let bool buf b =   
   Buffer.add_char buf (if b then '1' else '0')
 
-
-
-let decode_ml_info (x : char ) : Bsb_db.ml_info =   
-  match x with 
-  | '0' -> Ml_empty 
-  | '1' -> Ml_source(false,false) 
-  | '2' -> Ml_source(false,true) 
-  | '3' -> Ml_source(true, false) 
-  | '4' -> Ml_source(true, true) 
-  | _ -> assert false
-
-
-let decode_mli_info (x : char ) : Bsb_db.mli_info =   
-  match x with 
-  | '0' -> Mli_empty 
-  | '1' -> Mli_source(false,false) 
-  | '2' -> Mli_source(false,true) 
-  | '3' -> Mli_source(true, false)
-  | '4' -> Mli_source(true, true) 
-  | _ -> assert false
-
-
-
-
-
-
-
 type cursor = int ref 
 
 let extract_line (x : string) (cur : cursor) : string =

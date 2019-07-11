@@ -27,10 +27,10 @@ let bsbuild_cache = Literals.bsbuild_cache
 
 
 let nl buf = 
-  Buffer.add_char buf '\n'
+  Ext_buffer.add_char buf '\n'
 
 let comma buf = 
-  Buffer.add_char buf ','
+  Ext_buffer.add_char buf ','
 
 (* IDEAS: 
   Pros: 
@@ -75,10 +75,10 @@ let encode_info (x : Bsb_db.ml_info ) (y : Bsb_db.mli_info) : char =
 
 
 
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
-  Buffer.add_string buf x.name_sans_extension;
+let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
+  Ext_buffer.add_string buf x.name_sans_extension;
   comma buf; 
-  Buffer.add_char buf (encode_info x.ml_info x.mli_info)
+  Ext_buffer.add_char buf (encode_info x.ml_info x.mli_info)
   
   
 
@@ -86,29 +86,29 @@ let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =    
-  let len = String_map.cardinal x in 
+let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t)  (buf2 : Ext_buffer.t) =    
+  let len = String_map.cardinal db in 
   nl buf ; 
-  Buffer.add_string buf (string_of_int len);
-  String_map.iter x (fun name module_info ->
+  Ext_buffer.add_string buf (string_of_int len);
+  String_map.iter db (fun name module_info ->
       nl buf; 
-      Buffer.add_string buf name; 
+      Ext_buffer.add_string buf name; 
       nl buf2; 
       encode_module_info module_info buf2 
     ) 
 
-let encode (x : Bsb_db.ts) (oc : out_channel)=     
+let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';
-  let len = Array.length x in 
+  let len = Array.length dbs in 
   output_string oc (string_of_int len); 
-  let tmp_buf1 = Buffer.create 10_000 in 
-  let tmp_buf2 = Buffer.create 60_000 in 
-  Ext_array.iter x (fun x -> begin 
+  let tmp_buf1 = Ext_buffer.create 10_000 in 
+  let tmp_buf2 = Ext_buffer.create 60_000 in 
+  Ext_array.iter dbs (fun x -> begin 
         encode_single x  tmp_buf1 tmp_buf2;
-        Buffer.output_buffer oc tmp_buf1;
-        Buffer.output_buffer oc tmp_buf2;
-        Buffer.clear tmp_buf1; 
-        Buffer.clear tmp_buf2
+        Ext_buffer.output_buffer oc tmp_buf1;
+        Ext_buffer.output_buffer oc tmp_buf2;
+        Ext_buffer.clear tmp_buf1; 
+        Ext_buffer.clear tmp_buf2
       end
     )
 
