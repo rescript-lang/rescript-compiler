@@ -21,7 +21,8 @@ var sourceDirs =
         'stdlib-406',
         'runtime',
         'test',
-        'ounit_tests'
+        'ounit_tests',
+        'bsb_helper'
     ]
 
 
