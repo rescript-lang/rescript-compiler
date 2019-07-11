@@ -1,7 +1,0 @@
-{
-  "name": "${bsb:name}",
-  "sources": {
-      "dir": "src",
-      "subdirs": true
-  }
-}

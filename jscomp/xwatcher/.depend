@@ -1,5 +1,0 @@
-xwatcher_util.cmi : ../others/node.cmj ../runtime/js.cmj
-xwatcher.cmj : xwatcher_util.cmj ../others/node.cmj ../runtime/js.cmj
-xwatcher_current.cmj : xwatcher_util.cmj ../others/node.cmj \
-    ../runtime/js.cmj
-xwatcher_util.cmj : ../others/node.cmj ../runtime/js.cmj xwatcher_util.cmi
