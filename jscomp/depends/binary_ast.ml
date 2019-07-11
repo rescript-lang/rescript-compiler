@@ -50,10 +50,14 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
   let oc = open_out_bin output in 
   let output_set = Ast_extract.read_parse_and_extract kind pt in
   let buf = Ext_buffer.create 1000 in
-  
-  Ext_buffer.add_char buf magic_sep_char;
-  String_set.iter (fun s -> Ext_buffer.add_string buf s ; 
-    Ext_buffer.add_char buf magic_sep_char) output_set ;  
+
+  Ext_buffer.add_char buf magic_sep_char;  
+  String_set.iter (fun s ->
+      if s <> "" && s.[0] <> '*' then begin (* filter *predef* *)
+        Ext_buffer.add_string buf s ; 
+        Ext_buffer.add_char buf magic_sep_char
+      end
+    ) output_set ;  
 
   output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;

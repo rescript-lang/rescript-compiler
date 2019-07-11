@@ -4563,16 +4563,6 @@ type kind = Js | Bytecode | Native
 *)
 val deps_of_channel : in_channel -> string list
 
-(**
-  [make compilation_kind filename index namespace]
-  emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
-*)
-val emit_dep_file: 
-  kind ->
-  string -> 
-  Bsb_dir_index.t ->  
-  string option ->
-  unit
 
 
 val emit_d:
@@ -4710,7 +4700,7 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
       Bsb_db_decode.find_opt db (index :> int) dependent_module 
     else None 
 let oc_impl 
-    (dependent_module_set : string list)
+    (mlast : string)
     (input_file : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
@@ -4732,6 +4722,7 @@ let oc_impl
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
+  let (dependent_module_set : string list) = read_deps mlast in
   Ext_list.iter dependent_module_set (fun dependent_module ->
       match  
         find_module db dependent_module is_not_lib_dir index  
@@ -4752,12 +4743,12 @@ let oc_impl
     [.cmi] file
 *)
 let oc_intf
-    (dependent_module_set : string list)
+    mliast    
     input_file 
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
-    (buf : Ext_buffer.t) : unit =   
+    (buf : Ext_buffer.t) : unit =     
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
@@ -4770,6 +4761,7 @@ let oc_intf
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
+  let (dependent_module_set : string list) = read_deps mliast in
   Ext_list.iter dependent_module_set begin fun dependent_module ->
     match  find_module db dependent_module is_not_lib_dir index 
     with     
@@ -4793,14 +4785,14 @@ let emit_d mlast
     Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
-  let set_a = read_deps mlast in 
-  let buf = Ext_buffer.create 128 in 
+  
+  let buf = Ext_buffer.create 2048 in 
   let input_file = Filename.chop_extension mlast in 
   let filename = input_file ^ Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
   oc_impl 
-    set_a 
+    mlast
     input_file 
     index 
     data
@@ -4810,7 +4802,7 @@ let emit_d mlast
     rhs_suffix ;      
   if has_intf <> "" then begin
     oc_intf 
-      (read_deps has_intf)
+      has_intf
       input_file 
       index 
       data 
@@ -4819,52 +4811,11 @@ let emit_d mlast
   end;          
   write_file filename buf 
 
-(* OPT: Don't touch the .d file if nothing changed *)
-let emit_dep_file
-    compilation_kind
-    (fn : string)
-    (index : Bsb_dir_index.t) 
-    (namespace : string option) : unit = 
-  let data  =
-    Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name
-  in 
-  let set = read_deps fn in 
-  match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
-  | Some  input_file -> 
-     
-   let lhs_suffix = Literals.suffix_cmj in   
-   let rhs_suffix = Literals.suffix_cmj in 
 
-   let buf = Ext_buffer.create 64 in 
-   oc_impl 
-     set 
-     input_file 
-     index 
-     data
-     namespace
-     buf 
-     lhs_suffix 
-     rhs_suffix       
-     ;
-   write_file (input_file ^ Literals.suffix_d ) buf 
-    
-  | None -> 
-    begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
-      | Some input_file -> 
-        let filename = (input_file ^ Literals.suffix_d) in 
-        let buf = Ext_buffer.create 64 in 
-        oc_intf 
-          set 
-          input_file 
-          index 
-          data 
-          namespace 
-          buf; 
-        write_file filename buf 
-      | None -> 
-        raise (Arg.Bad ("don't know what to do with  " ^ fn))
-    end
+
+
+
+
 
 end
 module Ext_sys : sig 

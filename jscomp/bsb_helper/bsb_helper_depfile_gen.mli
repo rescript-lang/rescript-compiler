@@ -29,6 +29,7 @@ type kind = Js | Bytecode | Native
 *)
 val deps_of_channel : in_channel -> string list
 
+#if BS_NATIVE then
 (**
   [make compilation_kind filename index namespace]
   emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
@@ -39,7 +40,7 @@ val emit_dep_file:
   Bsb_dir_index.t ->  
   string option ->
   unit
-
+#end
 
 val emit_d:
   string ->
