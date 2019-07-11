@@ -4781,16 +4781,16 @@ let oc_intf
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
     (match  find_module db dependent_module is_not_lib_dir index 
-    with     
-    | None -> ()
-    | Some module_info -> 
-      let source = module_info.name_sans_extension in 
-      if source <> input_file then
-        begin 
-          Lazy.force at_most_once; 
-          oc_cmi buf namespace source             
-        end);
-     offset := next_tab + 1   
+     with     
+     | None -> ()
+     | Some module_info -> 
+       let source = module_info.name_sans_extension in 
+       if source <> input_file then
+         begin 
+           Lazy.force at_most_once; 
+           oc_cmi buf namespace source             
+         end);
+    offset := next_tab + 1   
   done;  
   if !has_deps then
     Ext_buffer.add_char buf '\n'
@@ -5434,6 +5434,6 @@ let () =
       (Bsb_dir_index.of_int !dev_group)
       !namespace y
   | _ -> 
-    assert false  
+    ()
 
 end

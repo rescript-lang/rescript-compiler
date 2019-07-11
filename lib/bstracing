@@ -200,8 +200,10 @@ function readTargets(showAll) {
           })
         );
       }
-      console.log("tracing.json is produced, loade it via chrome://tracing/");
-      fs.writeFileSync("tracing.json", JSON.stringify(jsonArray), "utf8");
+      let curDate = new Date ()
+      let file = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDate.getSeconds()}.json`
+      console.log(` ${file} is produced, loade it via chrome://tracing/`);
+      fs.writeFileSync(file, JSON.stringify(jsonArray), "utf8");
     }
   );
 }

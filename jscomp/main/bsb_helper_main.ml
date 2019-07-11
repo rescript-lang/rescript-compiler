@@ -150,4 +150,4 @@ let () =
       (Bsb_dir_index.of_int !dev_group)
       !namespace y
   | _ -> 
-    assert false  
+    ()
