@@ -22,14 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type _ kind = Ml : Parsetree.structure kind | Mli : Parsetree.signature kind
 
-
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind
-
-
-val read_ast : 'a kind -> in_channel -> 'a 
-
-val write_ast :
-   'a kind -> string -> 'a -> out_channel -> unit
+val read_ast : 'a kind -> in_channel -> 'a
+val write_ast : 'a kind -> string -> 'a -> out_channel -> unit

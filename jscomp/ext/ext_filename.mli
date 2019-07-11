@@ -22,39 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* TODO: Change the module name, this code is not really an extension of the
+   standard library but rather specific to JS Module name convention. *)
 
+(** An extension module to calculate relative path follow node/npm style. TODO
+    : this short name will have to change upon renaming the file. *)
 
+(** Js_output is node style, which means separator is only '/'
 
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
-*)
+    if the path contains 'node_modules', [node_relative_path] will discard its
+    prefix and just treat it as a library instead *)
 
 val cwd : string Lazy.t
 
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
-
-
 val simple_convert_node_path_to_os_path : string -> string
-
-val maybe_quote:
-  string -> 
-  string
+val maybe_quote : string -> string

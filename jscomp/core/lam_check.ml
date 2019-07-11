@@ -22,95 +22,58 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(**
-   checks
-   1. variables are not bound twice
-   2. all variables are of right scope
-*)
+(** checks 1. variables are not bound twice 2. all variables are of right scope *)
 let check file lam =
   let defined_variables = Ident_hash_set.create 1000 in
   let success = ref true in
-  let use (id : Ident.t)  =
-    if not @@ Ident_hash_set.mem defined_variables id  then
-      begin
-        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
-        success := false
-      end
-  in
+  let use (id : Ident.t) =
+    if not @@ Ident_hash_set.mem defined_variables id then (
+      Format.fprintf Format.err_formatter
+        "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+      success := false ) in
   let def (id : Ident.t) =
-    if Ident_hash_set.mem defined_variables id  then
-      begin
-        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
-        success := false
-      end
-    else Ident_hash_set.add defined_variables id
-  in
-  let rec 
-    iter_list xs = List.iter iter xs   
-    and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
-      Ext_list.iter_snd  xs iter
-    and iter (l : Lam.t) =
-      match l with
-      | Lvar id -> use id
-      | Lglobal_module _ -> ()
-      | Lprim {args; _} ->
-        iter_list args
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        iter fn; iter_list args
-      | Lfunction{body;params} ->
-        List.iter def params;
-        iter body
-      | Llet(str, id, arg, body) ->
-        iter arg;
-        def id;
-        iter body
-      | Lletrec(decl, body) ->
-        Ext_list.iter_fst decl def;
-        iter_list_snd  decl;
-        iter body
-
-      | Lswitch(arg, sw) ->
-        iter arg;
-        iter_list_snd sw.sw_consts;
-        iter_list_snd sw.sw_blocks;
-        Ext_option.iter sw.sw_failaction iter;         
-        assert (not (sw.sw_failaction <> None && sw.sw_numconsts && sw.sw_numblocks))
-      | Lstringswitch (arg,cases,default) ->
+    if Ident_hash_set.mem defined_variables id then (
+      Format.fprintf Format.err_formatter
+        "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp file ;
+      success := false )
+    else Ident_hash_set.add defined_variables id in
+  let rec iter_list xs = List.iter iter xs
+  and iter_list_snd : 'a. ('a * Lam.t) list -> unit =
+   fun xs -> Ext_list.iter_snd xs iter
+  and iter (l : Lam.t) =
+    match l with
+    | Lvar id -> use id
+    | Lglobal_module _ -> ()
+    | Lprim {args; _} -> iter_list args
+    | Lconst _ -> ()
+    | Lapply {fn; args; _} -> iter fn ; iter_list args
+    | Lfunction {body; params} -> List.iter def params ; iter body
+    | Llet (str, id, arg, body) -> iter arg ; def id ; iter body
+    | Lletrec (decl, body) ->
+        Ext_list.iter_fst decl def ; iter_list_snd decl ; iter body
+    | Lswitch (arg, sw) ->
+        iter arg ;
+        iter_list_snd sw.sw_consts ;
+        iter_list_snd sw.sw_blocks ;
+        Ext_option.iter sw.sw_failaction iter ;
+        assert (
+          not (sw.sw_failaction <> None && sw.sw_numconsts && sw.sw_numblocks)
+        )
+    | Lstringswitch (arg, cases, default) ->
         iter arg ;
         iter_list_snd cases ;
         Ext_option.iter default iter
-      | Lstaticraise (_i,args) ->
-        iter_list args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        iter e1;
-        List.iter def vars;
-        iter e2
-      | Ltrywith(e1, exn, e2) ->
-        iter e1;
-        def exn;
-        iter e2
-      | Lifthenelse(e1, e2, e3) ->
-        iter e1; iter e2; iter e3
-      | Lsequence(e1, e2) ->
-        iter e1; iter e2
-      | Lwhile(e1, e2) ->
-        iter e1; iter e2
-      | Lfor(v, e1, e2, dir, e3) ->
-        iter e1; iter e2;
-        def v;
-        iter e3;
-      | Lassign(id, e) ->
-        use id ;
-        iter e
-      | Lsend (k, met, obj, args, _) ->
-        iter met; iter obj;
-        iter_list args
-
+    | Lstaticraise (_i, args) -> iter_list args
+    | Lstaticcatch (e1, (_, vars), e2) ->
+        iter e1 ; List.iter def vars ; iter e2
+    | Ltrywith (e1, exn, e2) -> iter e1 ; def exn ; iter e2
+    | Lifthenelse (e1, e2, e3) -> iter e1 ; iter e2 ; iter e3
+    | Lsequence (e1, e2) -> iter e1 ; iter e2
+    | Lwhile (e1, e2) -> iter e1 ; iter e2
+    | Lfor (v, e1, e2, dir, e3) -> iter e1 ; iter e2 ; def v ; iter e3
+    | Lassign (id, e) -> use id ; iter e
+    | Lsend (k, met, obj, args, _) -> iter met ; iter obj ; iter_list args
   in
-  begin
-    iter lam;
-    assert (!success) ;
-    lam
-  end
+  iter lam ;
+  assert !success ;
+  lam

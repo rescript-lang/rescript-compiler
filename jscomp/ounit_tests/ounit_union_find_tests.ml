@@ -1,8 +1,8 @@
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
+let ( >:: ), ( >::: ) = OUnit.(( >:: ), ( >::: ))
+let ( =~ ) = OUnit.assert_equal
 
-let (=~) = OUnit.assert_equal
-let tinyUF = {|10
+let tinyUF =
+  {|10
                4 3
                3 8
                6 5
@@ -15,7 +15,9 @@ let tinyUF = {|10
                1 0
                6 7
              |}
-let mediumUF = {|625
+
+let mediumUF =
+  {|625
                  528 503
                  548 523
                  389 414
@@ -918,67 +920,52 @@ let mediumUF = {|625
                  403 402
                |}
 
-
-let process_str tinyUF = 
-  match Ext_string.split tinyUF '\n' with 
+let process_str tinyUF =
+  match Ext_string.split tinyUF '\n' with
   | number :: rest ->
-    let n = int_of_string number in
-    let store = Union_find.init n in
-    List.iter (fun x ->
-        match Ext_string.quick_split_by_ws x with 
-        | [a;b] ->
-          let a,b = int_of_string a , int_of_string b in 
-          Union_find.union store a b 
-        | _ -> ()) rest;
-    Union_find.count store
+      let n = int_of_string number in
+      let store = Union_find.init n in
+      List.iter
+        (fun x ->
+          match Ext_string.quick_split_by_ws x with
+          | [a; b] ->
+              let a, b = (int_of_string a, int_of_string b) in
+              Union_find.union store a b
+          | _ -> ())
+        rest ;
+      Union_find.count store
   | _ -> assert false
-;;        
 
-let process_file file = 
+let process_file file =
   let ichan = open_in_bin file in
   let n = int_of_string (input_line ichan) in
   let store = Union_find.init n in
-  let edges = Int_vec_vec.make n in   
-  let rec aux i =  
-    match input_line ichan with 
+  let edges = Int_vec_vec.make n in
+  let rec aux i =
+    match input_line ichan with
     | exception _ -> ()
     | v ->
-      begin 
-        (* if i = 0 then 
-          print_endline "processing 100 nodes start";
-    *)
-        begin match Ext_string.quick_split_by_ws v with
-          | [a;b] ->
-            let a,b = int_of_string a , int_of_string b in
-            Int_vec_vec.push  edges (Int_vec.of_array [|a;b|]); 
-          | _ -> ()
-        end;
-        aux ((i+1) mod 10000);
-      end
-  in aux 0;
+        (* if i = 0 then print_endline "processing 100 nodes start"; *)
+        ( match Ext_string.quick_split_by_ws v with
+        | [a; b] ->
+            let a, b = (int_of_string a, int_of_string b) in
+            Int_vec_vec.push edges (Int_vec.of_array [|a; b|])
+        | _ -> () ) ;
+        aux ((i + 1) mod 10000) in
+  aux 0 ;
   (* indeed, [unsafe_internal_array] is necessary for real performnace *)
   let internal = Int_vec_vec.unsafe_internal_array edges in
   for i = 0 to Array.length internal - 1 do
-     let i = Int_vec.unsafe_internal_array (Array.unsafe_get internal i) in 
-     Union_find.union store (Array.unsafe_get i 0) (Array.unsafe_get i 1) 
-  done;  
-              (* Union_find.union store a b *)
-  Union_find.count store 
-;;                
-let suites = 
-  __FILE__
-  >:::
-  [
-    __LOC__ >:: begin fun _ ->
-      OUnit.assert_equal (process_str tinyUF) 2
-    end;
-    __LOC__ >:: begin fun _ ->
-      OUnit.assert_equal (process_str mediumUF) 3
-    end;
-(*
-   __LOC__ >:: begin fun _ ->
-      OUnit.assert_equal (process_file "largeUF.txt") 6
-    end;
-  *)  
+    let i = Int_vec.unsafe_internal_array (Array.unsafe_get internal i) in
+    Union_find.union store (Array.unsafe_get i 0) (Array.unsafe_get i 1)
+  done ;
+  (* Union_find.union store a b *)
+  Union_find.count store
 
-  ]
+let suites =
+  __FILE__
+  >::: [ (__LOC__ >:: fun _ -> OUnit.assert_equal (process_str tinyUF) 2)
+       ; (__LOC__ >:: fun _ -> OUnit.assert_equal (process_str mediumUF) 3)
+         (* __LOC__ >:: begin fun _ -> OUnit.assert_equal (process_file
+            "largeUF.txt") 6 end; *)
+        ]

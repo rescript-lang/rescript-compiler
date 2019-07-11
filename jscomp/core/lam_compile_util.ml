@@ -22,43 +22,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
-
-let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop = 
-  match cmp with 
+let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop =
+  match cmp with
   | Ceq -> EqEqEq (* comparison*)
   | Cneq -> NotEqEq
-  | Clt -> Lt 
-  | Cgt  -> Gt 
-  | Cle -> Le 
-  | Cge  -> Ge
+  | Clt -> Lt
+  | Cgt -> Gt
+  | Cle -> Le
+  | Cge -> Ge
 
-let comment_of_tag_info  (x : Lam_tag_info.t) = 
-  match x with 
-  | Blk_constructor (n, _) -> Some n 
+let comment_of_tag_info (x : Lam_tag_info.t) =
+  match x with
+  | Blk_constructor (n, _) -> Some n
   | Blk_tuple -> Some "tuple"
-  | Blk_variant x -> Some ("`" ^  x)
+  | Blk_variant x -> Some ("`" ^ x)
   | Blk_record _ -> Some "record"
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_inlined (_,ctor,_) -> Some ctor
+  | Blk_record_inlined (_, ctor, _) -> Some ctor
   | Blk_record_ext _ -> None
-#end  
   | Blk_array -> Some "array"
-  | Blk_module _ ->  
-     (* Turn it on next time to save some noise diff*)
-    Some "module"
+  | Blk_module _ ->
+      (* Turn it on next time to save some noise diff*)
+      Some "module"
   | Blk_extension_slot -> None
-  | Blk_na -> None 
-let comment_of_pointer_info (x :  Lam_pointer_info.t)= 
-  match x with 
-  | Pt_constructor x -> Some x 
-  | Pt_variant x -> Some x 
+  | Blk_na -> None
+
+let comment_of_pointer_info (x : Lam_pointer_info.t) =
+  match x with
+  | Pt_constructor x -> Some x
+  | Pt_variant x -> Some x
   | Pt_module_alias -> None (* FIXME *)
   | Pt_na -> None

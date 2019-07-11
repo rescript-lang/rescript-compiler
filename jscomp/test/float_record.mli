@@ -10,9 +10,9 @@
 (*                                                                     *)
 (***********************************************************************)
 
-type t = private float;;
+type t = private float
 
-val make : float -> t;;
-val from : t -> float;;
+val make : float -> t
+val from : t -> float
 
-type s = {f : t};;
+type s = {f: t}

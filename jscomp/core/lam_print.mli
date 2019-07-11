@@ -23,15 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val lambda : Format.formatter -> Lam.t -> unit
-
-val primitive: Format.formatter -> Lam_primitive.t -> unit
-
-
-
+val primitive : Format.formatter -> Lam_primitive.t -> unit
 val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit
-
 val seriaize : 'a -> string -> Lam.t -> unit
-
-val lambda_to_string : Lam.t -> string 
-
+val lambda_to_string : Lam.t -> string
 val primitive_to_string : Lam_primitive.t -> string

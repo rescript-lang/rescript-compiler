@@ -23,19 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val parse_interface : Format.formatter -> string -> Parsetree.signature
-
 val parse_implementation : Format.formatter -> string -> Parsetree.structure
-
 val parse_implementation_from_string : string -> Parsetree.structure
-val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
 
-val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
-    
-type valid_input = 
-  | Ml 
-  | Mli
-  | Mlast    
-  | Mliast 
-  | Mlmap
-  | Cmi
-val check_suffix :  string -> valid_input * string
+val lazy_parse_interface :
+  Format.formatter -> string -> Parsetree.signature lazy_t
+
+val lazy_parse_implementation :
+  Format.formatter -> string -> Parsetree.structure lazy_t
+
+type valid_input = Ml | Mli | Mlast | Mliast | Mlmap | Cmi
+
+val check_suffix : string -> valid_input * string

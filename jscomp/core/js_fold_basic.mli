@@ -22,12 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 (** A module to calculate hard dependency based on JS IR in module [J] *)
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t
 
-(** TODO: {!Ordered_hash_set} for better ordering *)
 val calculate_hard_dependencies : J.block -> Lam_module_ident.Hash_set.t
+(** TODO: {!Ordered_hash_set} for better ordering *)

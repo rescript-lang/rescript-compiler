@@ -26,9 +26,13 @@
 (** Minimal graph signature for edge contraction algorithm *)
 module type G = sig
   type t
+
   module V : Sig.COMPARABLE
+
   type vertex = V.t
+
   module E : Sig.EDGE with type vertex = vertex
+
   type edge = E.t
 
   val empty : t
@@ -37,13 +41,10 @@ module type G = sig
   val fold_vertex : (vertex -> 'a -> 'a) -> t -> 'a -> 'a
 end
 
-module Make
-    (G : G) :
-sig
+module Make (G : G) : sig
   val contract : (G.E.t -> bool) -> G.t -> G.t
-  (** [contract p g] will perform edge contraction on the graph [g].
-      The edges for which the property [p] holds/is true will get contracted:
-      The resulting graph will not have these edges; the start- and end-node
-      of these edges will get united. *)
+  (** [contract p g] will perform edge contraction on the graph [g]. The edges
+      for which the property [p] holds/is true will get contracted: The
+      resulting graph will not have these edges; the start- and end-node of
+      these edges will get united. *)
 end
-

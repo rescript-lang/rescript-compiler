@@ -22,51 +22,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-module E = Js_exp_make  
+module E = Js_exp_make
 module S = Js_stmt_make
 
-(* TODO: used in functor inlining, so that it can not be an exception
-   Make(S), S can not be an exception
-*)
+(* TODO: used in functor inlining, so that it can not be an exception Make(S),
+   S can not be an exception *)
 
-
-
-let expand_global_module_as_lam id env = 
-  Lam_compile_env.query_and_add_if_not_exist 
-    (Lam_module_ident.of_ml id) 
+let expand_global_module_as_lam id env =
+  Lam_compile_env.query_and_add_if_not_exist
+    (Lam_module_ident.of_ml id)
     (Has_env env)
     ~not_found:(fun id -> assert false)
-    ~found:(fun {signature ; _} 
-             -> 
+    ~found:(fun {signature; _} ->
+      Lam.prim
+        ~primitive:(Pmakeblock (0, Blk_module None, Immutable))
+        ~args:
+          (let len = Ocaml_types.length signature in
+           Ext_list.init len (fun i ->
                Lam.prim
-                 ~primitive:(Pmakeblock(0, Blk_module None, Immutable))  
-                 ~args:(
-                   let len = Ocaml_types.length signature in 
-                   Ext_list.init len (fun i  -> 
-                       Lam.prim
-                         ~primitive:(Pfield (i, Lambda.Fld_na)) 
-                         ~args:[ Lam.global_module id  ] Location.none)
-                 )
-                 Location.none (* FIXME*))
+                 ~primitive:(Pfield (i, Lambda.Fld_na))
+                 ~args:[Lam.global_module id] Location.none))
+        Location.none
+      (* FIXME*))
 
-
-(* Given an module name,  find its expanded structure  *)  
-let expand_global_module  id env  : J.expression = 
-  Lam_compile_env.query_and_add_if_not_exist 
-    (Lam_module_ident.of_ml id) 
+(* Given an module name, find its expanded structure *)
+let expand_global_module id env : J.expression =
+  Lam_compile_env.query_and_add_if_not_exist
+    (Lam_module_ident.of_ml id)
     (Has_env env)
     ~not_found:(fun _ -> assert false)
-    ~found:(fun   {signature; _} -> 
-        Js_of_lam_module.make ~comment:id.name 
-          (Ocaml_types.map (fun name -> E.ml_var_dot id name) signature )
-      )
-
-
-
+    ~found:(fun {signature; _} ->
+      Js_of_lam_module.make ~comment:id.name
+        (Ocaml_types.map (fun name -> E.ml_var_dot id name) signature))

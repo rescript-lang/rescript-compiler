@@ -22,76 +22,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** WIP: List operations *)
 type 'a t = 'a list
+(** WIP: List operations *)
 
-
-
-let rec lengthAux len = function
-  | [] -> len
-  | a::l -> lengthAux (len + 1) l
-
+let rec lengthAux len = function [] -> len | a :: l -> lengthAux (len + 1) l
 let length l = lengthAux 0 l
-
-let cons  x xs = x :: xs
-
-let isEmpty x =  x = []
-
-let hd = function
-  | [] -> None
-  | a::l -> Some a
-
-let tl = function
-  | [] -> None
-  | a::l -> Some l
+let cons x xs = x :: xs
+let isEmpty x = x = []
+let hd = function [] -> None | a :: l -> Some a
+let tl = function [] -> None | a :: l -> Some l
 
 let nth l n =
-  if n < 0 then None else
+  if n < 0 then None
+  else
     let rec nth_aux l n =
       match l with
       | [] -> None
-      | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-    in nth_aux l n
-
-
+      | a :: l -> if n = 0 then Some a else nth_aux l (n - 1) in
+    nth_aux l n
 
 let rec revAppend l1 l2 =
-  match l1 with
-  | [] -> l2
-  | a :: l -> revAppend l (a :: l2)
+  match l1 with [] -> l2 | a :: l -> revAppend l (a :: l2)
 
 let rev l = revAppend l []
 
-
 let rec mapRevAux f acc ls =
-  match ls with
-  | [] ->  acc
-  | a::l ->
-    mapRevAux f (f a [@bs] :: acc) l
+  match ls with [] -> acc | a :: l -> mapRevAux f ((f a [@bs]) :: acc) l
 
 let mapRev f ls = mapRevAux f [] ls
-
-let rec map f ls = rev (mapRevAux f [] ls )
-
-let rec iter f = function
-    [] -> ()
-  | a::l -> f a [@bs]; iter f l
+let rec map f ls = rev (mapRevAux f [] ls)
+let rec iter f = function [] -> () | a :: l -> (f a [@bs]) ; iter f l
 
 let rec iteri i f = function
-    [] -> ()
-  | a::l -> f i a [@bs]; iteri (i + 1) f l
+  | [] -> ()
+  | a :: l ->
+      (f i a [@bs]) ;
+      iteri (i + 1) f l
 
 let iteri f l = iteri 0 f l
 
 let rec foldLeft f accu l =
-  match l with
-    [] -> accu
-  | a::l -> foldLeft f (f accu a [@bs]) l
+  match l with [] -> accu | a :: l -> foldLeft f (f accu a [@bs]) l
 
 let foldRightMaxStack = 1000
 
-
-let rec tailLoop f  acc = function
+let rec tailLoop f acc = function
   | [] -> acc
   | h :: t -> tailLoop f (f h acc [@bs]) t
 
@@ -99,75 +74,59 @@ let foldRight f l init =
   let rec loop n = function
     | [] -> init
     | h :: t ->
-      if n < foldRightMaxStack then
-        f h (loop (n+1) t) [@bs]
-      else
-        f h (tailLoop f init (rev t)) [@bs]
-  in
+        if n < foldRightMaxStack then (f h (loop (n + 1) t) [@bs])
+        else (f h (tailLoop f init (rev t)) [@bs]) in
   loop 0 l
 
+let rec flattenAux acc lx =
+  match lx with [] -> rev acc | y :: ys -> flattenAux (revAppend y acc) ys
 
-let rec flattenAux  acc  lx =
-  match lx with
-  | [] -> rev acc
-  | y::ys -> flattenAux  (revAppend  y   acc )  ys
-
-let flatten  lx =
-  flattenAux  [] lx
-
+let flatten lx = flattenAux [] lx
 
 let rec filterRevAux f acc xs =
   match xs with
-  | [] ->  acc
-  | y :: ys ->
-    begin match f y [@bs] with
-      | false ->   filterRevAux f acc ys
-      | true -> filterRevAux f  (y::acc) ys
-    end
+  | [] -> acc
+  | y :: ys -> (
+    match (f y [@bs]) with
+    | false -> filterRevAux f acc ys
+    | true -> filterRevAux f (y :: acc) ys )
 
-let filter f xs  =  rev (filterRevAux f [] xs )
+let filter f xs = rev (filterRevAux f [] xs)
 
-let rec filterMapRevAux (f:  'a -> 'b option [@bs]) acc xs =
+let rec filterMapRevAux (f : ('a -> 'b option[@bs])) acc xs =
   match xs with
-  | [] ->  acc
-  | y :: ys ->
-    begin match f y [@bs] with
-      | None ->   filterMapRevAux f acc ys
-      | Some z -> filterMapRevAux f  (z::acc) ys
-    end
+  | [] -> acc
+  | y :: ys -> (
+    match (f y [@bs]) with
+    | None -> filterMapRevAux f acc ys
+    | Some z -> filterMapRevAux f (z :: acc) ys )
 
-let rec filterMap f xs =
-  rev (filterMapRevAux f [] xs)
-
+let rec filterMap f xs = rev (filterMapRevAux f [] xs)
 
 let rec countByAux f acc xs =
   match xs with
   | [] -> acc
-  | y::ys ->
-    countByAux f (if f y [@bs] then acc + 1 else acc) ys
+  | y :: ys -> countByAux f (if (f y [@bs]) then acc + 1 else acc) ys
 
 let rec countBy f xs = countByAux f 0 xs
+let init n f = Js_vector.toList (Js_vector.init n f)
 
-let init n f =
-  Js_vector.toList (Js_vector.init n f )
-
-external createUnsafe : int -> 'a Js_vector.t =
-  "Array" [@@bs.new]
+external createUnsafe : int -> 'a Js_vector.t = "Array" [@@bs.new]
 
 let toVector xs =
   match xs with
   | [] -> [||]
   | l ->
-    let a = createUnsafe (length l) in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Js_array2.unsafe_set a i hd; fill (i+1) tl in
-    fill 0 l
+      let a = createUnsafe (length l) in
+      let rec fill i = function
+        | [] -> a
+        | hd :: tl ->
+            Js_array2.unsafe_set a i hd ;
+            fill (i + 1) tl in
+      fill 0 l
 
 let rec equal cmp xs ys =
-  match xs,ys with
+  match (xs, ys) with
   | [], [] -> true
-  | x::xs, y::ys ->
-    if cmp x y [@bs] then equal cmp xs ys
-    else false
+  | x :: xs, y :: ys -> if (cmp x y [@bs]) then equal cmp xs ys else false
   | _, _ -> false

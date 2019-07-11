@@ -22,90 +22,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** The intemediate output when compiling lambda into JS IR *)
 
 (* Hongbo Should we rename this module js_of_lambda since it looks like it's
-   containing that step
- *)
+   containing that step *)
 
+type finished = True | False | Dummy
 
-type finished =
-  | True
-  | False
-  | Dummy (* Have no idea, so that when [++] is applied, always use the other *)
+(* Have no idea, so that when [++] is applied, always use the other *)
 
-type t  =  {
-  block : J.block ;
-  value : J.expression option;
-  output_finished : finished
-}
+type t = {block: J.block; value: J.expression option; output_finished: finished}
 
-(** When [finished] is true the block is already terminated,
-    value does not make sense
-    [finished]  default to false, which is conservative
-*)
+(** When [finished] is true the block is already terminated, value does not
+    make sense [finished] default to false, which is conservative *)
 
-val make :
-  ?value: J.expression ->
-  ?output_finished:finished ->
-  J.block ->
-  t
+val make : ?value:J.expression -> ?output_finished:finished -> J.block -> t
+val output_as_block : t -> J.block
+val to_break_block : t -> J.block * bool
 
-val output_as_block :
-  t ->
-  J.block
+(* the second argument is [true] means [break] needed
 
-val to_break_block :
-  t ->
-  J.block * bool
-  (* the second argument is
-    [true] means [break] needed
+   When we know the output is gonna finished true we can reduce {[ return xx ;
+   break ]} into {[ return ; ]} *)
 
-    When we know the output is gonna finished true
-    we can reduce
-    {[
-      return xx ;
-      break
-    ]}
-    into
-    {[
-      return ;
-    ]}
-
-  *)
-
-val append_output: t -> t -> t
-
-
+val append_output : t -> t -> t
 val dummy : t
 
-
 val output_of_expression :
-    Lam_compile_context.continuation ->
-  
-    J.expression -> (* compiled expression *)
-    no_effects: bool Lazy.t -> 
-    t
+     Lam_compile_context.continuation
+  -> J.expression
+  -> no_effects:(* compiled expression *)
+     bool Lazy.t
+  -> t
 
-(** - needed for instrument [return] statement properly
-*)
 val output_of_block_and_expression :
-    Lam_compile_context.continuation ->
-    J.block ->
-    J.expression ->
-    t
+  Lam_compile_context.continuation -> J.block -> J.expression -> t
+(** - needed for instrument [return] statement properly *)
 
-val concat :
-  t list ->
-  t
-
-val to_string :
-  t ->
-  string
+val concat : t list -> t
+val to_string : t -> string

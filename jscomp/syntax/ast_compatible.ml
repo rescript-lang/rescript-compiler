@@ -22,344 +22,142 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type loc = Location.t 
-type attrs = Parsetree.attribute list 
+type loc = Location.t
+type attrs = Parsetree.attribute list
+
 open Parsetree
+
 let default_loc = Location.none
 
-#if OCAML_VERSION =~ ">4.03.0" then 
 type poly_var_label = Asttypes.label Asttypes.loc
 
-type arg_label = Asttypes.arg_label = 
+type arg_label = Asttypes.arg_label =
   | Nolabel
   | Labelled of string
   | Optional of string
+
 let no_label : arg_label = Nolabel
-let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
-type label = arg_label 
+let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)
+
+type label = arg_label
+
 external convert : arg_label -> label = "%identity"
-#else 
-type poly_var_label = string 
-type arg_label = string
-type label = 
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-let no_label : arg_label = ""
-let is_arg_label_simple s = (s : arg_label) = no_label  
 
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
+let arrow ?(loc = default_loc) ?(attrs = []) a b =
+  Ast_helper.Typ.arrow ~loc ~attrs no_label a b
 
-(** for
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)  
-let convert l : label =
-  if l = "" then Nolabel else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l  
-#end
+let apply_simple ?(loc = default_loc) ?(attrs = []) fn args : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_apply (fn, Ext_list.map args (fun x -> (no_label, x))) }
 
-let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+let app1 ?(loc = default_loc) ?(attrs = []) fn arg1 : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_apply (fn, [(no_label, arg1)]) }
 
-let apply_simple
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        (Ext_list.map args (fun x -> no_label, x) ) ) }
+let app2 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_apply (fn, [(no_label, arg1); (no_label, arg2)]) }
 
-let app1        
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [no_label, arg1]
-        ) }
-
-let app2
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          no_label, arg1;
-          no_label, arg2 ]
-        ) }
-
-let app3
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 arg3 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          no_label, arg1;
-          no_label, arg2;
-          no_label, arg3
-        ]
-        ) }
-
-let fun_         
-  ?(loc = default_loc) 
-  ?(attrs = [])
-  pat
-  exp = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc=
+      Pexp_apply (fn, [(no_label, arg1); (no_label, arg2); (no_label, arg3)])
   }
 
-let opt_label s =
-#if OCAML_VERSION =~ ">4.03.0" then
-  Asttypes.Optional s
-#else
-  "?" ^ s
-#end
+let fun_ ?(loc = default_loc) ?(attrs = []) pat exp =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_fun (no_label, None, pat, exp) }
 
-let label_fun
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ~label
-  pat
-  exp =
-  {
-    pexp_loc = loc;
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(label, None, pat, exp)
-  }
+let opt_label s = Asttypes.Optional s
 
-#if OCAML_VERSION =~ ">4.03.0" then 
+let label_fun ?(loc = default_loc) ?(attrs = []) ~label pat exp =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_fun (label, None, pat, exp) }
 
-let const_exp_string 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ?delimiter
-  (s : string) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
-  }
+let const_exp_string ?(loc = default_loc) ?(attrs = []) ?delimiter (s : string)
+    : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_constant (Pconst_string (s, delimiter)) }
 
+let const_exp_int ?(loc = default_loc) ?(attrs = []) (s : int) : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc= Pexp_constant (Pconst_integer (string_of_int s, None)) }
 
-let const_exp_int 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  (s : int) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_integer (string_of_int s, None))
-  }
+let apply_labels ?(loc = default_loc) ?(attrs = []) fn
+    (args : (string * expression) list) : expression =
+  { pexp_loc= loc
+  ; pexp_attributes= attrs
+  ; pexp_desc=
+      Pexp_apply
+        (fn, Ext_list.map args (fun (l, a) -> (Asttypes.Labelled l, a))) }
 
+let object_ ?(loc = default_loc) ?(attrs = [])
+    (fields : (string * attributes * core_type) list)
+    (* FIXME after upgrade *)
+    flg : core_type =
+  { ptyp_desc=
+      Ptyp_object
+        ( Ext_list.map fields (fun (a, b, c) ->
+              Parsetree.Otag ({txt= a; loc= c.ptyp_loc}, b, c))
+        , flg )
+  ; ptyp_loc= loc
+  ; ptyp_attributes= attrs }
 
-let apply_labels
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn (args : (string * expression) list) : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
+let label_arrow ?(loc = default_loc) ?(attrs = []) s a b : core_type =
+  { ptyp_desc= Ptyp_arrow (Asttypes.Labelled s, a, b)
+  ; ptyp_loc= loc
+  ; ptyp_attributes= attrs }
 
-let object_ 
-  ?(loc= default_loc)
-  ?(attrs = [])
-  (fields : (string * attributes * core_type) list)
-  (* FIXME after upgrade *)
-  flg : core_type = 
-  {
-    ptyp_desc = 
-      Ptyp_object(
-        Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
-    ptyp_loc = loc;
-    ptyp_attributes = attrs
-  }
+let opt_arrow ?(loc = default_loc) ?(attrs = []) s a b : core_type =
+  { ptyp_desc= Ptyp_arrow (Asttypes.Optional s, a, b)
+  ; ptyp_loc= loc
+  ; ptyp_attributes= attrs }
 
-#else 
+let rec_type_str ?(loc = default_loc) tds : structure_item =
+  {pstr_loc= loc; pstr_desc= Pstr_type (Recursive, tds)}
 
-let const_exp_string 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ?delimiter
-  (s : string) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_string(s,delimiter))
-  }
+let nonrec_type_str ?(loc = default_loc) tds : structure_item =
+  {pstr_loc= loc; pstr_desc= Pstr_type (Nonrecursive, tds)}
 
+let rec_type_sig ?(loc = default_loc) tds : signature_item =
+  {psig_loc= loc; psig_desc= Psig_type (Recursive, tds)}
 
-let const_exp_int 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  (s : int) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_int s)
-  }
+(* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)
+let nonrec_type_sig ?(loc = default_loc) tds : signature_item =
+  {psig_loc= loc; psig_desc= Psig_type (Nonrecursive, tds)}
 
+let const_exp_int_list_as_array xs =
+  Ast_helper.Exp.array (Ext_list.map xs (fun x -> const_exp_int x))
 
+let const_exp_string_list_as_array xs =
+  Ast_helper.Exp.array (Ext_list.map xs (fun x -> const_exp_string x))
 
+type param_type =
+  { label: arg_label
+  ; ty: Parsetree.core_type
+  ; attr: Parsetree.attributes
+  ; loc: loc }
 
-let apply_labels
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        args ) }
+let mk_fn_type (new_arg_types_ty : param_type list) (result : core_type) :
+    core_type =
+  Ext_list.fold_right new_arg_types_ty result
+    (fun {label; ty; attr; loc} acc ->
+      { ptyp_desc= Ptyp_arrow (label, ty, acc)
+      ; ptyp_loc= loc
+      ; ptyp_attributes= attr })
 
-let object_ = Ast_helper.Typ.object_
+type object_field = Parsetree.object_field
 
-
-#end 
-
-let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
-  {
-      ptyp_desc = Ptyp_arrow(
-#if OCAML_VERSION =~ ">4.03.0" then 
-      Asttypes.Labelled s
-#else
-      s
-#end      
-      ,
-      a,
-      b);
-      ptyp_loc = loc;
-      ptyp_attributes = attrs
-  }
-
-let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
-  {
-      ptyp_desc = Ptyp_arrow( 
-#if OCAML_VERSION =~ ">4.03.0" then 
-        Asttypes.Optional s
-#else
-        "?" ^ s
-#end        
-        ,
-        a,
-        b);
-      ptyp_loc = loc;
-      ptyp_attributes = attrs
-  }    
-
-let rec_type_str ?(loc=default_loc)  tds : structure_item = 
-  {
-    pstr_loc = loc;
-    pstr_desc = Pstr_type ( 
-#if OCAML_VERSION =~ ">4.03.0" then 
-      Recursive,
-#end      
-      tds)
-  }
-
-let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
-  {
-    pstr_loc = loc;
-    pstr_desc = Pstr_type ( 
-#if OCAML_VERSION =~ ">4.03.0" then 
-      Nonrecursive,
-#end      
-      tds)
-  }  
-
-let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
-  {
-    psig_loc = loc;
-    psig_desc = Psig_type ( 
-#if OCAML_VERSION =~ ">4.03.0" then 
-      Recursive,
-#end      
-      tds)
-  }
-
-(* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
-let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
-  {
-    psig_loc = loc;
-    psig_desc = Psig_type ( 
-#if OCAML_VERSION =~ ">4.03.0" then 
-      Nonrecursive,
-#end      
-      tds)
-  }  
-
-
-let const_exp_int_list_as_array xs = 
-  Ast_helper.Exp.array 
-  (Ext_list.map  xs (fun x -> const_exp_int x ))  
-
-let const_exp_string_list_as_array xs =   
-  Ast_helper.Exp.array 
-  (Ext_list.map xs (fun x -> const_exp_string x ) )  
-
-type param_type = 
-  {label : arg_label ;
-   ty :  Parsetree.core_type ; 
-   attr :Parsetree.attributes;
-   loc : loc
-  }
-
- let mk_fn_type 
-  (new_arg_types_ty : param_type list)
-  (result : core_type) : core_type = 
-  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
-    {
-      ptyp_desc = Ptyp_arrow(label,ty,acc);
-      ptyp_loc = loc; 
-      ptyp_attributes = attr
-    }
-  )
-
-type object_field = 
-#if OCAML_VERSION =~ ">4.03.0" then 
-  Parsetree.object_field 
-#else   
-  string * attributes * core_type
-#end  
-
-let object_field   l attrs ty = 
-#if OCAML_VERSION =~ ">4.03.0" then
-  Parsetree.Otag 
-#end (l,attrs,ty)  
-
-
-#if OCAML_VERSION =~ ">4.03.0" then 
+let object_field l attrs ty = Parsetree.Otag (l, attrs, ty)
 let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
-#else
-let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
-external label_of_name : poly_var_label -> string = "%identity"
-#end
 
-type args  = 
-  (arg_label * Parsetree.expression) list 
+type args = (arg_label * Parsetree.expression) list

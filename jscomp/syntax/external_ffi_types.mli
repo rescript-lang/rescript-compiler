@@ -27,74 +27,44 @@ type module_bind_name =
   (* explicit hint name *)
   | Phint_nothing
 
-type external_module_name =
-  { bundle : string ;
-    module_bind_name : module_bind_name
-  }
-
+type external_module_name = {bundle: string; module_bind_name: module_bind_name}
 type pipe = bool
-type js_call = {
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool ;
-  scopes : string list
-}
 
-type js_send = {
-  name : string ;
-  splice : bool ;
-  pipe : pipe  ;
-  js_send_scopes : string list;
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+type js_call =
+  { name: string
+  ; external_module_name: external_module_name option
+  ; splice: bool
+  ; scopes: string list }
 
-type js_var = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list
-}
+type js_send =
+  {name: string; splice: bool; pipe: pipe; js_send_scopes: string list}
 
-type js_new_val = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list;
-}
+(* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_var =
+  { name: string
+  ; external_module_name: external_module_name option
+  ; scopes: string list }
+
+type js_new_val =
+  { name: string
+  ; external_module_name: external_module_name option
+  ; scopes: string list }
 
 type js_module_as_fn =
-  { external_module_name : external_module_name;
-    splice : bool
-  }
+  {external_module_name: external_module_name; splice: bool}
 
 type arg_type = External_arg_spec.attr
-
 type arg_label = External_arg_spec.label
-
-
 type obj_create = External_arg_spec.t list
+type js_get = {js_get_name: string; js_get_scopes: string list}
+type js_set = {js_set_name: string; js_set_scopes: string list}
+type js_get_index = {js_get_index_scopes: string list}
+type js_set_index = {js_set_index_scopes: string list}
 
-type js_get =
-  { js_get_name : string   ;
-    js_get_scopes :  string list;
-  }
-
-type js_set =
-  { js_set_name : string  ;
-    js_set_scopes : string list
-  }
-
-
-type js_get_index =   {
-  js_get_index_scopes : string list
-}
-
-type js_set_index = {
-  js_set_index_scopes : string list
-}
-
-
-
-type external_spec  =
+type external_spec =
   | Js_var of js_var
-  | Js_module_as_var of  external_module_name
+  | Js_module_as_var of external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
   | Js_call of js_call
@@ -113,35 +83,21 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
-type t  =
-  | Ffi_bs of
-      External_arg_spec.t list  *
-      return_wrapper *
-      external_spec
+type t =
+  | Ffi_bs of External_arg_spec.t list * return_wrapper * external_spec
   | Ffi_obj_create of obj_create
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
-  (* When it's normal, it is handled as normal c functional ffi call *)
 
+(* When it's normal, it is handled as normal c functional ffi call *)
 
 val name_of_ffi : external_spec -> string
-
-val check_ffi : ?loc:Location.t ->  external_spec -> bool
-
+val check_ffi : ?loc:Location.t -> external_spec -> bool
 val to_string : t -> string
 
-(** Note *)
 val from_string : string -> t
+(** Note *)
 
-val inline_string_primitive : 
-  string -> 
-  string option -> 
-  string list 
-
-val inline_bool_primitive :   
-  bool -> 
-  string list
-
-val inline_int_primitive :   
-  int -> 
-  string list
+val inline_string_primitive : string -> string option -> string list
+val inline_bool_primitive : bool -> string list
+val inline_int_primitive : int -> string list

@@ -22,25 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
+type color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
+type style = FG of color | BG of color | Bold | Dim
 
 let ansi_of_color = function
   | Black -> "0"
@@ -61,7 +44,6 @@ let code_of_style = function
   | FG Magenta -> "35"
   | FG Cyan -> "36"
   | FG White -> "37"
-  
   | BG Black -> "40"
   | BG Red -> "41"
   | BG Green -> "42"
@@ -70,14 +52,12 @@ let code_of_style = function
   | BG Magenta -> "45"
   | BG Cyan -> "46"
   | BG White -> "47"
-
   | Bold -> "1"
   | Dim -> "2"
 
-
-
 (** TODO: add more styles later *)
-let style_of_tag s = match s with
+let style_of_tag s =
+  match s with
   | "error" -> [Bold; FG Red]
   | "warning" -> [Bold; FG Magenta]
   | "info" -> [Bold; FG Yellow]
@@ -85,15 +65,9 @@ let style_of_tag s = match s with
   | "filename" -> [FG Cyan]
   | _ -> []
 
-let ansi_of_tag s = 
+let ansi_of_tag s =
   let l = style_of_tag s in
-  let s =  String.concat ";" (Ext_list.map l  code_of_style) in
+  let s = String.concat ";" (Ext_list.map l code_of_style) in
   "\x1b[" ^ s ^ "m"
 
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
+let reset_lit = "\x1b[0m"

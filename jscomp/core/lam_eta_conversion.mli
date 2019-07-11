@@ -22,21 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** [transform n loc status fn args] n is the number of missing arguments
+    required for [fn]. Return a function of airty [n] *)
 
-(** 
-  [transform n loc status fn args]
-  n is the number of missing arguments required for [fn].
-  Return a function of airty [n]
-*) 
-
-val transform_under_supply : 
-  int ->
-  Location.t -> Lam.apply_status -> Lam.t -> Lam.t list -> Lam.t
-
+val transform_under_supply :
+  int -> Location.t -> Lam.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
 val unsafe_adjust_to_arity :
-  Location.t -> 
-  to_:int -> 
-  ?from:int -> 
-  Lam.t -> 
-  Lam.t 
+  Location.t -> to_:int -> ?from:int -> Lam.t -> Lam.t

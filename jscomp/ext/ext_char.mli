@@ -22,20 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 (** Extension to Standard char module, avoid locale sensitivity *)
 
 val escaped : char -> string
-
-
 val valid_hex : char -> bool
-
 val is_lower_case : char -> bool
-
 val uppercase_ascii : char -> char
-
 val lowercase_ascii : char -> char

@@ -24,24 +24,17 @@
 
 module C = Belt_internalBucketsType
 
-type 'a bucket = {
-  mutable key : 'a;
-  mutable next : 'a bucket C.opt
-}  
-and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
+type 'a bucket = {mutable key: 'a; mutable next: 'a bucket C.opt}
+
+and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container
 [@@bs.deriving abstract]
 
-val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
-
-val forEachU: ('hash, 'eq, 'a) t  -> ('a -> unit [@bs]) -> unit
-val forEach: ('hash, 'eq, 'a) t -> ('a -> unit) -> unit
-val fillArray: int -> 'a array -> 'a bucket -> int
-
-val toArray: (_,_,'a) t -> 'a array
-
-val reduceU: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
-val reduce: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b) -> 'b
-
-val logStats: _ t -> unit
-
-val getBucketHistogram: _ t -> int array  
+val copy : ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
+val forEachU : ('hash, 'eq, 'a) t -> (('a -> unit)[@bs]) -> unit
+val forEach : ('hash, 'eq, 'a) t -> ('a -> unit) -> unit
+val fillArray : int -> 'a array -> 'a bucket -> int
+val toArray : (_, _, 'a) t -> 'a array
+val reduceU : (_, _, 'a) t -> 'b -> (('b -> 'a -> 'b)[@bs]) -> 'b
+val reduce : (_, _, 'a) t -> 'b -> ('b -> 'a -> 'b) -> 'b
+val logStats : _ t -> unit
+val getBucketHistogram : _ t -> int array

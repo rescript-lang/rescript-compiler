@@ -22,48 +22,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = int 
+type t = int
 
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
 external of_int : int -> t = "%identity"
+(** 0 : lib 1 : dev 1 2 : dev 2 *)
+
 let lib_dir_index = 0
-
 let is_lib_dir x = x = lib_dir_index
+let dir_index = ref 0
+let get_dev_index () = incr dir_index ; !dir_index
+let get_current_number_of_dev_groups () = !dir_index
 
-let dir_index = ref 0 
-
-let get_dev_index ( ) = 
-  incr dir_index ; !dir_index
-
-let get_current_number_of_dev_groups =
-   (fun () -> !dir_index )
-
-
-(** bsb generate pre-defined variables [bsc_group_i_includes]
-  for each rule, there is variable [bsc_extra_excludes]
-  [g_dev_incls] are for app test etc
-  it will be like
-  {[
+(** bsb generate pre-defined variables [bsc_group_i_includes] for each rule,
+    there is variable [bsc_extra_excludes] [g_dev_incls] are for app test etc
+    it will be like {[
     g_dev_incls = ${bsc_group_1_includes}
-  ]}
-  where [bsc_group_1_includes] will be pre-calcuated
-*)
+                    ]} where [bsc_group_1_includes] will be pre-calcuated *)
 let bsc_group_1_includes = "bsc_group_1_includes"
+
 let bsc_group_2_includes = "bsc_group_2_includes"
 let bsc_group_3_includes = "bsc_group_3_includes"
 let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
+
+let string_of_bsb_dev_include i =
+  match i with
+  | 1 -> bsc_group_1_includes
   | 2 -> bsc_group_2_includes
   | 3 -> bsc_group_3_includes
   | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
-
+  | _ -> "bsc_group_" ^ string_of_int i ^ "_includes"
 
 let reset () = dir_index := 0

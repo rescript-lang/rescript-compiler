@@ -22,16 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** This pass detect functions used once and if it is used in used
-    in the tail position, it will get inlined, this will help 
-    remove some common use cases like This
+(** This pass detect functions used once and if it is used in used in the tail
+    position, it will get inlined, this will help remove some common use cases
+    like This
     {[
       let length x = 
         let rec aux n x = 
@@ -39,7 +32,6 @@
           | [] -> n 
           | _ :: rest -> aux (n + 1) rest in
         aux 0 x         
-    ]} 
-*)
+    ]} *)
 
-val tailcall_inline : J.program -> J.program 
+val tailcall_inline : J.program -> J.program

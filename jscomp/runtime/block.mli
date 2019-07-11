@@ -22,22 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(** *)
-type obj = Caml_obj_extern.t
+type obj = Caml_obj_extern.t  (**  *)
 
 val __ : int -> obj -> obj
-
 val record : 'a -> obj -> obj
-
-val variant : 'a -> int ->  obj -> obj
-
+val variant : 'a -> int -> obj -> obj
 val simpleVariant : 'a -> obj -> obj
-
-val localModule : 'a -> obj -> obj 
-
+val localModule : 'a -> obj -> obj
 val polyVar : 'a -> obj -> obj
-

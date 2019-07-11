@@ -29,15 +29,19 @@ external shift_right : int32 -> int -> int32 = "%int32_asr"
 external shift_right_logical : int32 -> int -> int32 = "%int32_lsr"
 external of_int : int -> int32 = "%int32_of_int"
 external to_int : int32 -> int = "%int32_to_int"
+
 external of_float : float -> int32
   = "caml_int32_of_float" "caml_int32_of_float_unboxed"
   [@@unboxed] [@@noalloc]
+
 external to_float : int32 -> float
   = "caml_int32_to_float" "caml_int32_to_float_unboxed"
   [@@unboxed] [@@noalloc]
+
 external bits_of_float : float -> int32
   = "caml_int32_bits_of_float" "caml_int32_bits_of_float_unboxed"
   [@@unboxed] [@@noalloc]
+
 external float_of_bits : int32 -> float
   = "caml_int32_float_of_bits" "caml_int32_float_of_bits_unboxed"
   [@@unboxed] [@@noalloc]
@@ -53,16 +57,16 @@ let max_int = 0x7FFFFFFFl
 let lognot n = logxor n (-1l)
 
 external format : string -> int32 -> string = "caml_int32_format"
+
 let to_string n = format "%d" n
 
 external of_string : string -> int32 = "caml_int32_of_string"
 
 let of_string_opt s =
   (* TODO: expose a non-raising primitive directly. *)
-  try Some (of_string s)
-  with Failure _ -> None
+  try Some (of_string s) with Failure _ -> None
 
 type t = int32
 
-let compare (x: t) (y: t) = Pervasives.compare x y
-let equal (x: t) (y: t) = compare x y = 0
+let compare (x : t) (y : t) = Pervasives.compare x y
+let equal (x : t) (y : t) = compare x y = 0

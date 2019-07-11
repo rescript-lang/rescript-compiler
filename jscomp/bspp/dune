@@ -1,3 +1,4 @@
 (library
  (name rocket_bspp)
- (public_name rocket.bspp))
+ (public_name rocket.bspp)
+ (libraries ocaml-migrate-parsetree))

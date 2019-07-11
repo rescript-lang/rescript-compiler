@@ -25,7 +25,6 @@ external get : bytes -> int -> char = "%bytes_safe_get"
 
     Raise [Invalid_argument] if [n] is not a valid index in [s]. *)
 
-
 external set : bytes -> int -> char -> unit = "%bytes_safe_set"
 (** [set s n c] modifies [s] in place, replacing the byte at index [n]
     with [c].
@@ -95,8 +94,7 @@ val fill : bytes -> pos:int -> len:int -> char -> unit
     valid range of [s]. *)
 
 val blit :
-  src:bytes -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
-  -> unit
+  src:bytes -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int -> unit
 (** [blit src srcoff dst dstoff len] copies [len] bytes from sequence
     [src], starting at index [srcoff], to sequence [dst], starting at
     index [dstoff]. It works correctly even if [src] and [dst] are the
@@ -108,8 +106,7 @@ val blit :
     do not designate a valid range of [dst]. *)
 
 val blit_string :
-  src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
-  -> unit
+  src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int -> unit
 (** [blit src srcoff dst dstoff len] copies [len] bytes from string
     [src], starting at index [srcoff], to byte sequence [dst],
     starting at index [dstoff].
@@ -167,7 +164,7 @@ val index : bytes -> char -> int
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: bytes -> char -> int option
+val index_opt : bytes -> char -> int option
 (** [index_opt s c] returns the index of the first occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
@@ -178,7 +175,7 @@ val rindex : bytes -> char -> int
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: bytes -> char -> int option
+val rindex_opt : bytes -> char -> int option
 (** [rindex_opt s c] returns the index of the last occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
@@ -191,7 +188,7 @@ val index_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: bytes -> int -> char -> int option
+val index_from_opt : bytes -> int -> char -> int option
 (** [index_from _opts i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i] or [None] if [c] does not occur in [s] after position [i].
     [Bytes.index_opt s c] is equivalent to [Bytes.index_from_opt s 0 c].
@@ -207,7 +204,7 @@ val rindex_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: bytes -> int -> char -> int option
+val rindex_from_opt : bytes -> int -> char -> int option
 (** [rindex_from_opt s i c] returns the index of the last occurrence
     of byte [c] in [s] before position [i+1] or [None] if [c] does not
     occur in [s] before position [i+1].  [rindex_opt s c] is equivalent to
@@ -282,13 +279,13 @@ val uncapitalize_ascii : bytes -> bytes
 type t = bytes
 (** An alias for the type of byte sequences. *)
 
-val compare: t -> t -> int
+val compare : t -> t -> int
 (** The comparison function for byte sequences, with the same
     specification as {!Pervasives.compare}.  Along with the type [t],
     this function [compare] allows the module [Bytes] to be passed as
     argument to the functors {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal : t -> t -> bool
 (** The equality function for byte sequences.
     @since 4.05.0 *)
 
@@ -297,11 +294,18 @@ val equal: t -> t -> bool
 (* The following is for system use only. Do not call directly. *)
 
 external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
+
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+
 external unsafe_blit :
-  src:bytes -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int ->
-    unit = "caml_blit_bytes" [@@noalloc]
-external unsafe_fill :
-  bytes -> pos:int -> len:int -> char -> unit = "caml_fill_bytes" [@@noalloc]
+  src:bytes -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int -> unit
+  = "caml_blit_bytes"
+  [@@noalloc]
+
+external unsafe_fill : bytes -> pos:int -> len:int -> char -> unit
+  = "caml_fill_bytes"
+  [@@noalloc]
+
 val unsafe_to_string : bytes -> string
+
 val unsafe_of_string : string -> bytes

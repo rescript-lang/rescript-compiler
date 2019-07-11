@@ -22,52 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val binarySearch : int -> int -> (int * 'a) array -> 'a
+(** [serach polyvar assocArray] Search hashvariant of [polyvar] to get the
+    returned string, assume that [polvar] exists in the array *)
 
-(** [serach polyvar assocArray]
-   Search hashvariant of [polyvar] to get the returned string,
-   assume that  [polvar] exists in the array
-*)
-val binarySearch:
-  int ->
-  int -> 
-  (int * 'a) array ->
-  'a
+val revSearch : int -> (int * string) array -> string -> int option
+(** [revSearch len assocArray value] Based on the value to find the associated
+    key, i.e, polyvar *)
 
-(**
-  [revSearch len assocArray value]
-  Based on the value to find the associated key, i.e, polyvar
-*)  
-val revSearch:  
-  int -> 
-  (int * string) array ->
-  string ->
-  int option
+val revSearchAssert : int -> (* len *)
+                             (int * string) array -> string -> int
 
-val revSearchAssert:  
-  int -> (* len *)
-  (int * string) array ->
-  string ->
-  int 
-  
-(**
-  [toInt enum array]
-  Based on the value of [enum], return its mapped int
-*)  
-val toInt :   
-  int -> int array -> int 
+val toInt : int -> int array -> int
+(** [toInt enum array] Based on the value of [enum], return its mapped int *)
 
-(**
-  [fromInt len array int]
-  return the mapped [enum]
-*)
-val fromInt :   
-  int ->
-  int array -> 
-  int -> 
-  int option 
+val fromInt : int -> int array -> int -> int option
+(** [fromInt len array int] return the mapped [enum] *)
 
-val fromIntAssert:   
-  int -> (* len *)
-  int array -> 
-  int -> 
-  int 
+val fromIntAssert : int -> (* len *)
+                           int array -> int -> int

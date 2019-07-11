@@ -22,69 +22,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* It can be useful for common sub expression elimination ? if two lambdas are
+   not equal, it should return false, other wise, it might return true , this
+   is only used as a way of optimizaton
 
+   Use case : 1. switch case -- common fall through *)
 
+(* lambda pass for alpha conversion and alias we need think about the order of
+   the pass, might be the alias pass can be done in the beginning, when we do
+   alpha conversion, we can instrument the table *)
 
+type alias_tbl = Ident.t Ident_hashtbl.t
+type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
-
-
-
-(* It can be useful for common sub expression elimination ? 
-    if two lambdas are not equal, it should return false, other wise, 
-    it might return true , this is only used as a way of optimizaton
-
-    Use case :
-    1. switch case -- common fall through
- *)
-
-(* lambda pass for alpha conversion 
-    and alias
-    we need think about the order of the pass, might be the alias pass can be done 
-    in the  beginning, when we do alpha conversion, we can instrument the table 
- *)
-
-
-
-type alias_tbl =  Ident.t Ident_hashtbl.t
-
-
-
-type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
-
-
-
-type t = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ; (*It is kept since order matters? *)
-
-  alias_tbl : alias_tbl; 
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
-  *)
-  
-}
+type t =
+  { env: Env.t
+  ; filename: string
+  ; export_idents: Ident_set.t
+  ; exports: Ident.t list
+  ; (*It is kept since order matters? *)
+    alias_tbl: alias_tbl
+  ; ident_tbl: ident_tbl
+        (** we don't need count arities for all identifiers, for identifiers
+            for sure it's not a function, there is no need to count them *) }
 
 let pp = Format.fprintf
 
-let pp_alias_tbl fmt (tbl : alias_tbl) = 
-  Ident_hashtbl.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-  
+let pp_alias_tbl fmt (tbl : alias_tbl) =
+  Ident_hashtbl.iter tbl (fun k v ->
+      pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
 
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) =
+  Ident_hashtbl.iter ident_tbl (fun k v ->
+      pp fmt "@[%a -> %a@]@." Ident.print k Lam_id_kind.print v)
 
-
-let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
-  Ident_hashtbl.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    
-
-let print fmt (v : t) = 
-    pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
-    pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
-    pp fmt "@[exports:@ @[%a@]@]"
-        (Format.pp_print_list 
-            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
-            Ident.print
-        ) v.exports
+let print fmt (v : t) =
+  pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;
+  pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
+  pp fmt "@[exports:@ @[%a@]@]"
+    (Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt "@ ;") Ident.print)
+    v.exports

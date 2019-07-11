@@ -28,15 +28,15 @@
 (** Minimal signature for computing the minimal separators *)
 module type G = sig
   type t
+
   module V : Sig.VERTEX
+
   val succ : t -> V.t -> V.t list
 end
 
 module Make (G : G) : sig
-
+  val min_cutset : G.t -> G.V.t -> G.V.t list
   (** Find a minimal cutset.
       @raise Invalid_argument if the graph is not reducible.
   *)
-  val min_cutset : G.t -> G.V.t -> G.V.t list
-
 end

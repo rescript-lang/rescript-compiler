@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,57 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Store a file called [.bsbuild] that can be communicated 
-    between [bsb.exe] and [bsb_helper.exe]. 
-    [bsb.exe] stores such data which would be retrieved by 
-    [bsb_helper.exe]. It is currently used to combine with 
-    ocamldep to figure out which module->file it depends on
-*) 
+(** Store a file called [.bsbuild] that can be communicated between [bsb.exe]
+    and [bsb_helper.exe]. [bsb.exe] stores such data which would be retrieved
+    by [bsb_helper.exe]. It is currently used to combine with ocamldep to
+    figure out which module->file it depends on *)
 
-type case = bool 
-
+type case = bool
 
 type ml_info =
-  | Ml_source of  bool  * bool
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
+  | Ml_source of bool * bool
+  (* No extension stored Ml_source(name,is_re) [is_re] default to false *)
   | Ml_empty
-type mli_info = 
-  | Mli_source of  bool * bool
-  | Mli_empty
 
-type module_info = 
-  {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string
-  }
+type mli_info = Mli_source of bool * bool | Mli_empty
 
-type t = module_info String_map.t 
+type module_info =
+  {mli_info: mli_info; ml_info: ml_info; name_sans_extension: string}
 
-type ts = t array 
+type t = module_info String_map.t
+type ts = t array
 
-(** store  the meta data indexed by {!Bsb_dir_index}
-  {[
+(** store the meta data indexed by {!Bsb_dir_index} 
+    {[
     0 --> lib group
     1 --> dev 1 group
     .
     
-  ]}
-*)
+    ]} *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+val filename_sans_suffix_of_module_info : module_info -> string
 
-
-
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
 val has_reason_files : t -> bool
-
-
-
+(** return [boolean] to indicate whether reason file exists or not will raise
+    if it fails sanity check *)

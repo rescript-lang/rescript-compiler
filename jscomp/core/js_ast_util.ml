@@ -22,23 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module E = Js_exp_make
+module S = Js_stmt_make
 
-
-
-
-
-module E = Js_exp_make 
-
-module S = Js_stmt_make  
-
-
-let rec named_expression (e : J.expression)
-  :  (J.statement  * Ident.t) option = 
-  if Js_analyzer.is_okay_to_duplicate e then 
-    None 
-  else 
-    let obj = Ext_ident.create_tmp () in 
-    let obj_code = 
-      S.define_variable
-        ~kind:Strict obj e in 
+let rec named_expression (e : J.expression) : (J.statement * Ident.t) option =
+  if Js_analyzer.is_okay_to_duplicate e then None
+  else
+    let obj = Ext_ident.create_tmp () in
+    let obj_code = S.define_variable ~kind:Strict obj e in
     Some (obj_code, obj)

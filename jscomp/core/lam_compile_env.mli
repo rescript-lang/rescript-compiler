@@ -22,106 +22,68 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Helper for global Ocaml module index into meaningful names *)
 
+type path = string
+type module_info = {signature: Ocaml_types.t; pure: bool}
 
+type _ t =
+  | No_env : (path * Js_cmj_format.t) t
+  | Has_env : Env.t -> module_info t
 
+type ident_info =
+  { name: string
+  ; signature: Ocaml_types.t
+  ; arity: Js_cmj_format.arity
+  ; closed_lambda: Lam.t option }
 
+val reset : unit -> unit
 
+val add_js_module : External_ffi_types.module_bind_name -> string -> Ident.t
+(** [add_js_module hint_name module_name] Given a js module name and hint name,
+    assign an id to it we also bookkeep it as [External] dependency.
 
+    Note the complexity lies in that we should consolidate all same external
+    dependencies into a single dependency.
 
-(** Helper for global Ocaml module index into meaningful names  *) 
+    The strategy is that we first create a [Lam_module_ident.t] and query it if
+    already exists in [cache_tbl], if it already exists, we discard the freshly
+    made one, and use the cached one, otherwise, use the freshly made one
+    instead
 
+    Invariant: any [id] as long as put in the [cached_tbl] should be always
+    valid, *)
 
+(* The other dependencies are captured by querying either when [access] or when
+   expansion, however such dependency can be removed after inlining etc.
 
-type path = string 
+   When we register such compile time dependency we classified it as Visit
+   (ml), Builtin(built in js), External()
 
+   For external, we never remove, we only consider remove dependency for
+   Runtime and Visit, so when compile OCaml to Javascript, we only need pay
+   attention to for those modules are actually used or not *)
 
+val cached_find_ml_id_pos : Ident.t -> int -> Env.t -> ident_info
+(** [cached_find_ml_id_pos id pos env found] will raise if not found *)
 
-type module_info = {
-  signature :  Ocaml_types.t ;
-  pure : bool 
-}
-
-type _ t = 
-  | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> module_info t 
-
-
-type ident_info = {
-  name : string;
-  signature : Ocaml_types.t;
-  arity : Js_cmj_format.arity;
-  closed_lambda : Lam.t option 
-}  
-
-
-
-
-val reset : unit -> unit 
-
-(** 
-  [add_js_module hint_name module_name]
-  Given a js module name and hint name, assign an id to it
-  we also bookkeep it as [External] dependency.
-
-  Note the complexity lies in that we should consolidate all 
-  same external dependencies into a single dependency.
-  
-  The strategy is that we first create a [Lam_module_ident.t] 
-  and  query it if already exists in [cache_tbl], if it already
-  exists, we discard the freshly made one, and use the cached one,
-  otherwise, use the freshly made one instead
-
-  Invariant: 
-    any [id] as long as put in the [cached_tbl] should be always valid,
-*)  
-val add_js_module : 
-    External_ffi_types.module_bind_name -> string  -> Ident.t 
-
-
-(* The other dependencies are captured by querying 
-   either when [access] or when expansion, 
-   however such dependency can be removed after inlining etc.
-
-   When we register such compile time dependency we classified 
-   it as 
-   Visit (ml), Builtin(built in js), External()
-
-   For external, we never remove, we only consider 
-   remove dependency for Runtime and Visit, so 
-   when compile OCaml to Javascript, we only need 
-   pay attention to for those modules are actually used or not
-*)
-(**
-  [cached_find_ml_id_pos id pos env found]
-  will raise if not found
-*)
-val cached_find_ml_id_pos : 
-  Ident.t ->
-  int -> 
-  Env.t -> 
-  ident_info
-
-val query_and_add_if_not_exist : 
-  Lam_module_ident.t ->
-  'a t -> not_found:(unit -> 'b) ->
-  found:('a -> 'b) -> 'b
+val query_and_add_if_not_exist :
+     Lam_module_ident.t
+  -> 'a t
+  -> not_found:(unit -> 'b)
+  -> found:('a -> 'b)
+  -> 'b
 
 val is_pure_module : Lam_module_ident.t -> bool
 
+val get_package_path_from_cmj :
+     Lam_module_ident.t
+  -> (string * Js_packages_info.t * Js_cmj_format.cmj_case) option
 
-val get_package_path_from_cmj : 
-  Lam_module_ident.t -> 
-  (string * Js_packages_info.t * Js_cmj_format.cmj_case) option
-
-
-
-(* The second argument is mostly from [runtime] modules 
-    will change the input [hard_dependencies]
-    [get_required_modules extra hard_dependencies]
-    [extra] maybe removed if it is pure and not in [hard_dependencies]
-*)
-val get_required_modules : 
-  Lam_module_ident.Hash_set.t  ->
-  Lam_module_ident.Hash_set.t -> 
-  Lam_module_ident.t list
+(* The second argument is mostly from [runtime] modules will change the input
+   [hard_dependencies] [get_required_modules extra hard_dependencies] [extra]
+   maybe removed if it is pure and not in [hard_dependencies] *)
+val get_required_modules :
+     Lam_module_ident.Hash_set.t
+  -> Lam_module_ident.Hash_set.t
+  -> Lam_module_ident.t list

@@ -22,21 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-type lex_tables 
+type lex_tables
 type lexbuf
 
-(** *)
+(**  *)
 
 (* caml_lex_array("abcd") *)
 (* [25185, 25699] *)
 (* @param s *)
 (* @returns {any[]} *)
 
-
-[%%bs.raw{| 
+[%%bs.raw
+{| 
 
 /***********************************************************************/
 /*                                                                     */
@@ -68,43 +65,22 @@ function caml_lex_array(s) {
 }
 |}]
 
-(**
- * external c_engine  : lex_tables -> int -> lexbuf -> int
- * lexing.ml
- * type lex_tables = {
- *   lex_base : string;
- *   lex_backtrk : string;
- *   lex_default : string;
- *   lex_trans : string;
- *   lex_check : string;
- *   lex_base_code : string;
- *   lex_backtrk_code : string;
- *   lex_default_code : string;
- *   lex_trans_code : string;
- *   lex_check_code : string;
- *   lex_code : string;
- * }
- *
- * type lexbuf = {
- *   refill_buff : lexbuf -> unit ;
- *   mutable lex_buffer : bytes;
- *   mutable lex_buffer_len : int;
- *   mutable lex_abs_pos : int;
- *   mutable lex_start_pos : int;
- *   mutable lex_curr_pos : int;
- *   mutable lex_last_pos : int;
- *   mutable lex_last_action : int;
- *   mutable lex_eof_reached : bool;
- *   mutable lex_mem : int array;
- *   mutable lex_start_p : position;
- *   mutable lex_curr_p;
- * }
- * @param tbl
- * @param start_state
- * @param lexbuf
- * @returns {any}
- *)
-let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tbl start_state lexbuf exn -> {|
+(** * external c_engine : lex_tables -> int -> lexbuf -> int * lexing.ml * type
+    lex_tables = { * lex_base : string; * lex_backtrk : string; * lex_default :
+    string; * lex_trans : string; * lex_check : string; * lex_base_code :
+    string; * lex_backtrk_code : string; * lex_default_code : string; *
+    lex_trans_code : string; * lex_check_code : string; * lex_code : string; *
+    } * * type lexbuf = { * refill_buff : lexbuf -> unit ; * mutable lex_buffer
+    : bytes; * mutable lex_buffer_len : int; * mutable lex_abs_pos : int; *
+    mutable lex_start_pos : int; * mutable lex_curr_pos : int; * mutable
+    lex_last_pos : int; * mutable lex_last_action : int; * mutable
+    lex_eof_reached : bool; * mutable lex_mem : int array; * mutable
+    lex_start_p : position; * mutable lex_curr_p; * } * @param tbl * @param
+    start_state * @param lexbuf * @returns {any} *)
+let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int =
+  [%raw
+    fun tbl start_state lexbuf exn ->
+      {|
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -185,15 +161,15 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tb
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-|}
+|}]
 
 let empty_token_lit = "lexing: empty token"
 
 let caml_lex_engine : lex_tables -> int -> lexbuf -> int =
-    fun tbls i buf -> 
-    caml_lex_engine_aux tbls i buf (Failure empty_token_lit)
+ fun tbls i buf -> caml_lex_engine_aux tbls i buf (Failure empty_token_lit)
 
-[%%bs.raw{|
+[%%bs.raw
+{|
 
 
 /***********************************************/
@@ -242,16 +218,17 @@ function caml_lex_run_tag(s, i, mem) {
 }
 |}]
 
-(**
- * external c_new_engine : lex_tables -> int -> lexbuf -> int = "caml_new_lex_engine"
- * @param tbl
- * @param start_state
- * @param lexbuf
- * @returns {any}
- *)
+(** * external c_new_engine : lex_tables -> int -> lexbuf -> int =
+    "caml_new_lex_engine" *
+    @param tbl *
+    @param start_state *
+    @param lexbuf *
+    @returns {any} *)
 
-
-let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= fun%raw tbl start_state lexbuf exn -> {|
+let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int =
+  [%raw
+    fun tbl start_state lexbuf exn ->
+      {|
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -361,11 +338,7 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= fun%raw
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-|}
+|}]
 
-
-
-let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
-  = fun tbl i buf -> 
-caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)
-
+let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int =
+ fun tbl i buf -> caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)

@@ -22,23 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Safe cast between OCaml values which share the same 
-    runtime representation
+(** Safe cast between OCaml values which share the same runtime representation
 
+    Different OCaml types might share the same represention in the BuckleScript
+    runtime; while this is a compiler internal knowledge, applications might
+    benefit from having a safe and zero cost conversion between those types.
 
-    Different OCaml types might share the same represention in the 
-    BuckleScript runtime; while this is a compiler internal knowledge,
-    applications might benefit from having a safe and zero cost 
-    conversion between those types. 
-    
-    This modules acts as the {b single place} for such conversion. 
-    
-    If for any reason, the runtime representation changes, those function 
-    will be modified accordingly. *)
+    This modules acts as the {b single place} for such conversion.
 
-external intOfBool : bool -> int = "%identity"  
-(** [intOfBool b] returns [1] for when [b] is [true] and [0] when [b] is 
+    If for any reason, the runtime representation changes, those function will
+    be modified accordingly. *)
+
+external intOfBool : bool -> int = "%identity"
+(** [intOfBool b] returns [1] for when [b] is [true] and [0] when [b] is
     [false] *)
 
-external floatOfInt : int -> float = "%identity"  
+external floatOfInt : int -> float = "%identity"
 (** [floatOfInt i] returns the float value of [i] *)

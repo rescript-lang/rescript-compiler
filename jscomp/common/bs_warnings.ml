@@ -22,104 +22,79 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Unsafe_poly_variant_type
 
-
-type t =
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
-
-
+(* for users write code like this: {[ external f : [`a of int ] -> string =
+   ""]} Here users forget about `[@bs.string]` or `[@bs.int]` *)
 
 let to_string t =
   match t with
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+  | Unsafe_poly_variant_type ->
+      "Here a OCaml polymorphic variant type passed into JS, probably you \
+       forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
 let warning_formatter = Format.err_formatter
 
-let print_string_warning (loc : Location.t) x =   
-  if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@." 
+let print_string_warning (loc : Location.t) x =
+  if loc.loc_ghost then
+    Format.fprintf warning_formatter "File %s@."
       (Js_config.get_current_file ())
-  else 
-    Location.print warning_formatter loc ; 
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
+  else Location.print warning_formatter loc ;
+  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x
 
-let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
+let prerr_bs_ffi_warning loc x =
+  Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
 
-let unimplemented_primitive = "Unimplemented primitive used:" 
-type error = 
+let unimplemented_primitive = "Unimplemented primitive used:"
+
+type error =
   | Uninterpreted_delimiters of string
-  | Unimplemented_primitive of string 
-exception  Error of Location.t * error
+  | Unimplemented_primitive of string
+
+exception Error of Location.t * error
 
 let pp_error fmt x =
-  match x with 
-  | Unimplemented_primitive str -> 
-    Format.pp_print_string fmt unimplemented_primitive;
-    Format.pp_print_string fmt str
-  
-  | Uninterpreted_delimiters str -> 
-    Format.pp_print_string fmt "Uninterpreted delimiters" ;
-    Format.pp_print_string fmt str
+  match x with
+  | Unimplemented_primitive str ->
+      Format.pp_print_string fmt unimplemented_primitive ;
+      Format.pp_print_string fmt str
+  | Uninterpreted_delimiters str ->
+      Format.pp_print_string fmt "Uninterpreted delimiters" ;
+      Format.pp_print_string fmt str
 
+let () =
+  Location.register_error_of_exn (function
+    | Error (loc, err) -> Some (Location.error_of_printer loc pp_error err)
+    | _ -> None)
 
+let warn_missing_primitive loc txt =
+  if (not !Js_config.no_warn_unimplemented_external) && not !Clflags.bs_quiet
+  then (
+    print_string_warning loc (unimplemented_primitive ^ txt ^ " \n") ;
+    Format.pp_print_flush warning_formatter () )
 
-let () = 
-  Location.register_error_of_exn (function 
-      | Error (loc,err) -> 
-        Some (Location.error_of_printer loc pp_error err)
-      | _ -> None
-    )
+let warn_literal_overflow loc =
+  if not !Clflags.bs_quiet then (
+    print_string_warning loc
+      "Integer literal exceeds the range of representable integers of type int" ;
+    Format.pp_print_flush warning_formatter () )
 
+let error_unescaped_delimiter loc txt =
+  raise (Error (loc, Uninterpreted_delimiters txt))
 
+(** Note the standard way of reporting error in compiler:
 
+    val Location.register_error_of_exn : (exn -> Location.error option) -> unit
+    val Location.error_of_printer : Location.t -> (Format.formatter -> error ->
+    unit) -> error -> Location.error
 
-let warn_missing_primitive loc txt =      
-  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
+    Define an error type
 
-let warn_literal_overflow loc = 
-  if not !Clflags.bs_quiet then
-  begin 
-    print_string_warning loc 
-      "Integer literal exceeds the range of representable integers of type int";
-    Format.pp_print_flush warning_formatter ()  
-  end 
+    type error exception Error of Location.t * error
 
+    Provide a printer to error
 
-
-let error_unescaped_delimiter loc txt = 
-  raise (Error(loc, Uninterpreted_delimiters txt))
-
-
-
-
-
-
-(**
-   Note the standard way of reporting error in compiler:
-
-   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-   val Location.error_of_printer : Location.t ->
-   (Format.formatter -> error -> unit) -> error -> Location.error
-
-   Define an error type
-
-   type error 
-   exception Error of Location.t * error 
-
-   Provide a printer to error
-
-   {[
+    {[
      let () = 
        Location.register_error_of_exn
          (function 
@@ -127,5 +102,4 @@ let error_unescaped_delimiter loc txt =
              Some (Location.error_of_printer loc pp_error err)
            | _ -> None
          )
-   ]}
-*)
+    ]} *)

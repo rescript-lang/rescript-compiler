@@ -22,20 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Compile a special representation in OCaml when all fields are of type
+    [float] check the invariant in {!Js_of_lam_array.make_array} *)
 
+val set_double_field :
+     Lam_compat.set_field_dbg_info
+  -> J.expression
+  -> J.jsint
+  -> J.expression
+  -> J.expression
 
-
-
-
-(** Compile a special representation in OCaml when all fields are of type [float] 
-    check the invariant in {!Js_of_lam_array.make_array}
-*)
-
-val set_double_field : 
-  Lam_compat.set_field_dbg_info -> 
-  J.expression -> J.jsint -> 
-  J.expression -> J.expression
-
-val get_double_feild : 
-  Lam_compat.field_dbg_info -> 
-  J.expression -> J.jsint -> J.expression
+val get_double_feild :
+  Lam_compat.field_dbg_info -> J.expression -> J.jsint -> J.expression

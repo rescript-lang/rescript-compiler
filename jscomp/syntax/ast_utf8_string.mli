@@ -22,21 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error
+type exn += Error of int (* offset *) * error
 
-type error 
+val pp_error : Format.formatter -> error -> unit
 
-
-type exn += Error of int  (* offset *) * error 
-
-val pp_error :  Format.formatter -> error -> unit  
-
-
-  
 (* module Interp : sig *)
-(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
-(*   val transform_test : string -> segments *)
+(* val check_and_transform : int -> string -> int -> cxt -> unit *)
+(* val transform_test : string -> segments *)
 (* end *)
-val transform_test : string -> string 
-
-val transform : Location.t -> string -> string      
-
+val transform_test : string -> string
+val transform : Location.t -> string -> string

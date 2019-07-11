@@ -22,131 +22,84 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type t = 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
+type t =
+  | True
+  | False
+  | Null
+  | Flo of string
   | Str of string
-  | Arr of t array 
+  | Arr of t array
   | Obj of t String_map.t
-
 
 (** poor man's serialization *)
 
-let quot x = 
-    "\"" ^ String.escaped x ^ "\""
-
+let quot x = "\"" ^ String.escaped x ^ "\""
 let true_ = True
 let false_ = False
-let null = Null 
-let str s  = Str s 
-let flo s = Flo s 
-let arr s = Arr s 
-let obj s = Obj s 
-let kvs s = 
-  Obj (String_map.of_list s)
-  
-let rec equal 
-    (x : t)
-    (y : t) = 
-  match x with 
-  | Null  -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null  -> true
-      | _ -> false end
-  | Str str  -> 
-    begin match y with 
-      | Str str2 -> str = str2
-      | _ -> false end
-  | Flo flo 
-    ->
-    begin match y with
-      |  Flo flo2 -> 
-        flo = flo2 
-      | _ -> false
-    end
-  | True  -> 
-    begin match y with 
-      | True  -> true 
-      | _ -> false 
-    end
-  | False  -> 
-    begin match y with 
-      | False  -> true 
-      | _ -> false 
-    end     
-  | Arr content 
-    -> 
-    begin match y with 
-      | Arr content2
-        ->
-        Ext_array.for_all2_no_exn content content2 equal 
-      | _ -> false 
-    end
+let null = Null
+let str s = Str s
+let flo s = Flo s
+let arr s = Arr s
+let obj s = Obj s
+let kvs s = Obj (String_map.of_list s)
 
-  | Obj map -> 
-    begin match y with 
-      | Obj map2 -> 
-        String_map.equal map map2 equal 
-      | _ -> false 
-    end 
+let rec equal (x : t) (y : t) =
+  match x with
+  | Null -> ( (* [%p? Null _ ] *)
+              match y with Null -> true | _ -> false )
+  | Str str -> ( match y with Str str2 -> str = str2 | _ -> false )
+  | Flo flo -> ( match y with Flo flo2 -> flo = flo2 | _ -> false )
+  | True -> ( match y with True -> true | _ -> false )
+  | False -> ( match y with False -> true | _ -> false )
+  | Arr content -> (
+    match y with
+    | Arr content2 -> Ext_array.for_all2_no_exn content content2 equal
+    | _ -> false )
+  | Obj map -> (
+    match y with Obj map2 -> String_map.equal map map2 equal | _ -> false )
 
-let rec encode_aux (x : t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
-  | Null  -> a "null"
-  | Str s   -> a (quot s)
-  | Flo  s -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  content -> 
-    begin match content with 
-      | [||] -> a "[]"
-      | _ -> 
-        a "[ ";
-        encode_aux
-          (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
-          a " , ";
-          encode_aux 
-            (Array.unsafe_get content i)
-            buf
-        done;    
-        a " ]"
-    end
-  | True  -> a "true"
-  | False  -> a "false"
-  | Obj map -> 
-    if String_map.is_empty map then 
-      a "{}"
-    else 
-      begin  
-        (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
-        a "{ ";
-        let _ : int =  String_map.fold map 0 (fun  k v i -> 
-            if i <> 0 then begin
-              a " , " 
-            end; 
-            a (quot k);
-            a " : ";
-            encode_aux v buf ;
-            i + 1 
-          ) in 
-          a " }"
-      end
+let rec encode_aux (x : t) (buf : Buffer.t) : unit =
+  let a str = Buffer.add_string buf str in
+  match x with
+  | Null -> a "null"
+  | Str s -> a (quot s)
+  | Flo s ->
+      a s
+      (* since our parsing keep the original float representation, we just dump
+         it as is, there is no cases like [nan] *)
+  | Arr content -> (
+    match content with
+    | [||] -> a "[]"
+    | _ ->
+        a "[ " ;
+        encode_aux (Array.unsafe_get content 0) buf ;
+        for i = 1 to Array.length content - 1 do
+          a " , " ;
+          encode_aux (Array.unsafe_get content i) buf
+        done ;
+        a " ]" )
+  | True -> a "true"
+  | False -> a "false"
+  | Obj map ->
+      if String_map.is_empty map then a "{}"
+      else (
+        (*prerr_endline "WEIRD"; prerr_endline (string_of_int @@
+          String_map.cardinal map ); *)
+        a "{ " ;
+        let (_ : int) =
+          String_map.fold map 0 (fun k v i ->
+              if i <> 0 then a " , " ;
+              a (quot k) ;
+              a " : " ;
+              encode_aux v buf ;
+              i + 1) in
+        a " }" )
 
+let to_string x =
+  let buf = Buffer.create 1024 in
+  encode_aux x buf ; Buffer.contents buf
 
-let to_string x  = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.contents buf 
-
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.output_buffer oc buf   
+let to_channel (oc : out_channel) x =
+  let buf = Buffer.create 1024 in
+  encode_aux x buf ;
+  Buffer.output_buffer oc buf

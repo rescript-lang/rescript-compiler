@@ -22,44 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* construct array, set array, ref array,
 
+   Also make sure, don't call any primitive array method, i.e
+   [E.array_index_by_int]
 
+   We also need check primitive [caml_make_vect], i.e,
+   [Caml_primitive['caml_make_vect']] see if it's correct
 
+   [caml_make_vect] [caml_array_sub] [caml_array_append] [caml_array_concat]
+   [caml_make_float_vect] [caml_array_blit]
 
+   research:
+   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays *)
 
-
-
-(*
-   construct array,
-   set array,
-   ref array,
-
-   Also make sure, don't call any primitive array method, i.e [E.array_index_by_int] 
-
-   We also need check primitive [caml_make_vect], i.e, 
-   [Caml_primitive['caml_make_vect']] see if it's correct 
-
-   [caml_make_vect]
-   [caml_array_sub]
-   [caml_array_append]
-   [caml_array_concat]
-   [caml_make_float_vect]
-   [caml_array_blit]
-
-   research: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
-
-
- *)
-
-module E  = Js_exp_make
-
+module E = Js_exp_make
 
 (* Parrayref(u|s) *)
-let make_array mt  args = 
-  E.array ~comment:"array" mt args 
- 
-let set_array  e e0 e1 = 
-  E.assign (E.array_index e e0)  e1
-
-let ref_array  e e0 = 
-  E.array_index  e  e0
+let make_array mt args = E.array ~comment:"array" mt args
+let set_array e e0 e1 = E.assign (E.array_index e e0) e1
+let ref_array e e0 = E.array_index e e0

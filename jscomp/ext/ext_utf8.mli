@@ -22,30 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
+type byte = Single of int | Cont of int | Leading of int * int | Invalid
 
+val classify : char -> byte
+val follow : string -> int -> int -> int -> int * int
 
-val classify : char -> byte 
+val next : string -> remaining:int -> int -> int
+(** return [-1] if failed *)
 
-val follow : 
-    string -> 
-    int -> 
-    int -> 
-    int ->
-    int * int 
+exception Invalid_utf8 of string
 
-
-(** 
-  return [-1] if failed 
-*)
-val next :  string -> remaining:int -> int -> int 
-
-
-exception Invalid_utf8 of string 
- 
- 
 val decode_utf8_string : string -> int list

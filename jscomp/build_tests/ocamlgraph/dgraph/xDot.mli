@@ -29,119 +29,108 @@ open Graph
 
 (** Simple layout types *)
 
-(** 2D coordinates *)
 type pos = float * float
+(** 2D coordinates *)
 
-(** upper-left and bottom-right corners *)
 type bounding_box = pos * pos
+(** upper-left and bottom-right corners *)
 
-(**
-   Layout informations are parsed from xdot files
-   (dot files with graphviz layout).
+(** Layout informations are parsed from xdot files (dot files with graphviz
+    layout).
 
-   Each node or edge layout thus contains several lists of
-   drawing operations.
+    Each node or edge layout thus contains several lists of drawing operations.
 
-   See http://www.graphviz.org/doc/info/output.html#d:xdot
-   to understand the details of the layout informations.
+    See http://www.graphviz.org/doc/info/output.html#d:xdot to understand the
+    details of the layout informations. *)
 
-*)
-
+type node_layout =
+  { n_name: string  (** Dot label *)
+  ; n_pos: pos  (** Center position *)
+  ; n_bbox: bounding_box  (** Bounding box *)
+  ; n_draw: XDotDraw.operation list  (** Shape drawing *)
+  ; n_ldraw: XDotDraw.operation list  (** Label drawing *) }
 (** Each node has at least a position and a bounding box. *)
-type node_layout = {
-  n_name : string;                      (** Dot label *)
-  n_pos : pos;                        (** Center position *)
-  n_bbox   : bounding_box;            (** Bounding box *)
-  n_draw   : XDotDraw.operation list; (** Shape drawing *)
-  n_ldraw  : XDotDraw.operation list; (** Label drawing *)
-}
 
+type cluster_layout =
+  { c_pos: pos
+  ; c_bbox: bounding_box
+  ; c_draw: XDotDraw.operation list
+  ; c_ldraw: XDotDraw.operation list }
 
-type cluster_layout = {
-  c_pos : pos;
-  c_bbox   : bounding_box;
-  c_draw   : XDotDraw.operation list;
-  c_ldraw  : XDotDraw.operation list;
-}
+type edge_layout =
+  { e_draw: XDotDraw.operation list  (** Shapes and curves *)
+  ; e_ldraw: XDotDraw.operation list  (** Label drawing *)
+  ; e_hdraw: XDotDraw.operation list  (** Head arrowhead drawing *)
+  ; e_tdraw: XDotDraw.operation list  (** Tail arrowhead drawing *)
+  ; e_hldraw: XDotDraw.operation list  (** Head label drawing *)
+  ; e_tldraw: XDotDraw.operation list  (** Tail label drawing *) }
 
-type edge_layout = {
-  e_draw   : XDotDraw.operation list; (** Shapes and curves *)
-  e_ldraw  : XDotDraw.operation list; (** Label drawing *)
-  e_hdraw  : XDotDraw.operation list; (** Head arrowhead drawing *)
-  e_tdraw  : XDotDraw.operation list; (** Tail arrowhead drawing *)
-  e_hldraw : XDotDraw.operation list; (** Head label drawing *)
-  e_tldraw : XDotDraw.operation list; (** Tail label drawing *)
-}
-
-(** Creates a node layout *)
 val mk_node_layout :
-  name:string ->
-  pos:pos ->
-  bbox:bounding_box ->
-  draw:XDotDraw.operation list ->
-  ldraw:XDotDraw.operation list ->
-  node_layout
+     name:string
+  -> pos:pos
+  -> bbox:bounding_box
+  -> draw:XDotDraw.operation list
+  -> ldraw:XDotDraw.operation list
+  -> node_layout
+(** Creates a node layout *)
 
-(** Creates a cluster layout *)
 val mk_cluster_layout :
-  pos:pos ->
-  bbox:bounding_box ->
-  draw:XDotDraw.operation list ->
-  ldraw:XDotDraw.operation list ->
-  cluster_layout
+     pos:pos
+  -> bbox:bounding_box
+  -> draw:XDotDraw.operation list
+  -> ldraw:XDotDraw.operation list
+  -> cluster_layout
+(** Creates a cluster layout *)
 
-(** Creates an edge layout *)
 val mk_edge_layout :
-  draw:XDotDraw.operation list ->
-  ldraw:XDotDraw.operation list ->
-  hdraw:XDotDraw.operation list ->
-  tdraw:XDotDraw.operation list ->
-  hldraw:XDotDraw.operation list ->
-  tldraw:XDotDraw.operation list ->
-  edge_layout
+     draw:XDotDraw.operation list
+  -> ldraw:XDotDraw.operation list
+  -> hdraw:XDotDraw.operation list
+  -> tdraw:XDotDraw.operation list
+  -> hldraw:XDotDraw.operation list
+  -> tldraw:XDotDraw.operation list
+  -> edge_layout
+(** Creates an edge layout *)
 
 (** Parsing and reading XDot *)
 
 exception ParseError of string
 
 (** Instantiates a module which creates graph layouts from xdot files *)
-module Make(G : Graph.Graphviz.GraphWithDotAttrs) : sig
+module Make (G : Graph.Graphviz.GraphWithDotAttrs) : sig
+  module HV : Hashtbl.S with type key = G.V.t
+  module HE : Hashtbl.S with type key = G.E.t
 
-  module HV: Hashtbl.S with type key = G.V.t
-  module HE: Hashtbl.S with type key = G.E.t
-
-  (** Main layout type *)
   type graph_layout =
-    { vertex_layouts  : node_layout HV.t;
-      edge_layouts    : edge_layout HE.t;
-      cluster_layouts : (string, cluster_layout) Hashtbl.t;
-      bbox : bounding_box }
+    { vertex_layouts: node_layout HV.t
+    ; edge_layouts: edge_layout HE.t
+    ; cluster_layouts: (string, cluster_layout) Hashtbl.t
+    ; bbox: bounding_box }
+  (** Main layout type *)
 
   exception DotError of string
 
+  val layout_of_xdot : xdot_file:string -> G.t -> graph_layout
   (** Extracts a layout of an xdot file *)
-  val layout_of_xdot: xdot_file:string -> G.t -> graph_layout
 
-  (** Using the dot file and graphviz,
-      create an xdot and extracts its layout. *)
-  val layout_of_dot: ?cmd:string -> dot_file:string -> G.t -> graph_layout
-
+  val layout_of_dot : ?cmd:string -> dot_file:string -> G.t -> graph_layout
+  (** Using the dot file and graphviz, create an xdot and extracts its layout. *)
 end
 
 (** Converts and reads various layout informations *)
 
-(** [bounding_box pos w h] converts a bounding box of center [pos], 
-    width [w] and height [h] from a Dot file to a pair of corners 
-    (lower left and upper right) in the world coordinate system.
+val bounding_box : float * float -> float -> float -> bounding_box
+(** [bounding_box pos w h] converts a bounding box of center [pos], width [w]
+    and height [h] from a Dot file to a pair of corners (lower left and upper
+    right) in the world coordinate system.
     @param pos position of the center of the node
     @param w width of the node
-    @param h height of the node
-*)
-val bounding_box : (float * float) -> float -> float -> bounding_box
+    @param h height of the node *)
 
 val read_bounding_box : string -> bounding_box
 
-(** Reads xdot layouts from the dot ast *)
 val read_node_layout : Dot_ast.node_id -> Dot_ast.attr list -> node_layout
+(** Reads xdot layouts from the dot ast *)
+
 val read_edge_layout : Dot_ast.attr list -> edge_layout
 val read_cluster_layout : Dot_ast.attr list -> cluster_layout

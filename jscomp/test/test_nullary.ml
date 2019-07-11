@@ -1,1 +1,1 @@
-let f = fun _ -> print_endline "hey"
+let f _ = print_endline "hey"

@@ -22,15 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-module E = Js_exp_make 
+module E = Js_exp_make
 
 let make ?comment (args : J.expression list) =
-  E.make_block
-    ?comment E.zero_int_literal
-    (Blk_module None) args Immutable
-
+  E.make_block ?comment E.zero_int_literal (Blk_module None) args Immutable

@@ -1,48 +1,33 @@
+let ( >:: ), ( >::: ) = OUnit.(( >:: ), ( >::: ))
+let ( =~ ) = OUnit.assert_equal
 
+let test_eq x y =
+  Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
+    (fun _ groups -> match groups with x :: xs -> x | _ -> assert false)
+  =~ y
 
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-
-let test_eq x y  = 
-    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
-        (fun _ groups -> 
-            match groups with 
-            | x::xs -> x 
-            | _ -> assert false 
-        )  =~ y 
-
-
-let suites = 
-    __FILE__ 
-    >:::
-    [
-        __LOC__ >:: begin fun _ -> 
-        test_eq 
-        {| hi hi hi ${bsb:name}
+let suites =
+  __FILE__
+  >::: [ ( __LOC__
+         >:: fun _ ->
+         test_eq
+           {| hi hi hi ${bsb:name}
         ${bsb:x}
         ${bsb:u}
-        |}        
-        {| hi hi hi name
+        |}
+           {| hi hi hi name
         x
         u
-        |}
-    end;
-    __LOC__ >:: begin  fun _ ->
-    test_eq  "xx" "xx";
-    test_eq "${bsb:x}" "x";
-    test_eq "a${bsb:x}" "ax";
-    
-    end;
-
-    __LOC__ >:: begin fun _ ->
-        test_eq "${bsb:x}x" "xx"
-    end;
-
-    __LOC__ >:: begin fun _ -> 
-        test_eq {|
+        |} )
+       ; ( __LOC__
+         >:: fun _ ->
+         test_eq "xx" "xx" ; test_eq "${bsb:x}" "x" ; test_eq "a${bsb:x}" "ax"
+         )
+       ; (__LOC__ >:: fun _ -> test_eq "${bsb:x}x" "xx")
+       ; ( __LOC__
+         >:: fun _ ->
+         test_eq
+           {|
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
@@ -54,7 +39,8 @@ let suites =
       // add your bs-dependencies here 
   ]
 }
-|} {|
+|}
+           {|
 {
   "name": "name",
   "version": "proj-version",
@@ -67,11 +53,11 @@ let suites =
   ]
 }
 |}
-    end
-
-    ;
-    __LOC__ >:: begin fun _ -> 
-    test_eq {|
+         )
+       ; ( __LOC__
+         >:: fun _ ->
+         test_eq
+           {|
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
@@ -90,7 +76,8 @@ let suites =
     "bs-platform": "${bsb:bs-version}"
   }
 }
-|} {|
+|}
+           {|
 {
   "name": "name",
   "version": "proj-version",
@@ -110,9 +97,11 @@ let suites =
   }
 }
 |}
-    end;
-    __LOC__ >:: begin fun _ -> 
-    test_eq {|
+         )
+       ; ( __LOC__
+         >:: fun _ ->
+         test_eq
+           {|
 {
     "version": "0.1.0",
     "command": "${bsb:bsb}",
@@ -150,7 +139,8 @@ let suites =
         ]
     }
 }
-|} {|
+|}
+           {|
 {
     "version": "0.1.0",
     "command": "bsb",
@@ -189,5 +179,4 @@ let suites =
     }
 }
 |}
-    end
-    ]
+         ) ]

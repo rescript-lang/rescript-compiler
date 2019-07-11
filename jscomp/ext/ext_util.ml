@@ -22,22 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(**
-   {[
+(** {[
      (power_2_above 16 63 = 64)
        (power_2_above 16 76 = 128)
-   ]}
-*)
+    ]} *)
 let rec power_2_above x n =
   if x >= n then x
   else if x * 2 > Sys.max_array_length then x
   else power_2_above (x * 2) n
 
-
-let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  Printf.sprintf 
-    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
-    num_bindings 
-    num_buckets 
-    max_bucket_length
-    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
+let stats_to_string
+    ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} :
+      Hashtbl.statistics) =
+  Printf.sprintf "bindings: %d,buckets: %d, longest: %d, hist:[%s]"
+    num_bindings num_buckets max_bucket_length
+    (String.concat ","
+       (Array.to_list (Array.map string_of_int bucket_histogram)))

@@ -23,35 +23,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 module C = Belt_internalBucketsType
-  
-type ('a,'b) bucket = {
-  mutable key : 'a;
-  mutable value : 'b;
-  mutable next : ('a,'b) bucket C.opt
-}  
-and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container  
+
+type ('a, 'b) bucket =
+  {mutable key: 'a; mutable value: 'b; mutable next: ('a, 'b) bucket C.opt}
+
+and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a, 'b) bucket) C.container
 [@@bs.deriving abstract]
 
 val copy : ('hash, 'eq, 'a, 'b) t -> ('hash, 'eq, 'a, 'b) t
-
-val forEachU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c [@bs]) -> unit
-val forEach: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c) -> unit
-
-val reduceU: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
-val reduce: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c  
-
+val forEachU : (_, _, 'a, 'b) t -> (('a -> 'b -> 'c)[@bs]) -> unit
+val forEach : (_, _, 'a, 'b) t -> ('a -> 'b -> 'c) -> unit
+val reduceU : (_, _, 'a, 'b) t -> 'c -> (('c -> 'a -> 'b -> 'c)[@bs]) -> 'c
+val reduce : (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c
 val logStats : _ t -> unit
 
-  
-val keepMapInPlaceU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
-val keepMapInPlace: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
+val keepMapInPlaceU :
+  (_, _, 'a, 'b) t -> (('a -> 'b -> 'b option)[@bs]) -> unit
 
+val keepMapInPlace : (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
 val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int
-
 val keysToArray : (_, _, 'a, _) t -> 'a array
-
 val valuesToArray : (_, _, _, 'b) t -> 'b array
-
 val toArray : (_, _, 'a, 'b) t -> ('a * 'b) array
-
 val getBucketHistogram : _ t -> int array

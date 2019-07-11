@@ -23,10 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type item = Parsetree.signature_item
-type t = item list 
+type t = item list
 
 open Ast_helper
 
-let fuseAll ?(loc=Location.none)  (t : t) : item = 
+let fuseAll ?(loc = Location.none) (t : t) : item =
   Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc t))
-  

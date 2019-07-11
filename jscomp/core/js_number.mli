@@ -22,16 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-type t  = float 
-
+type t = float
 
 (* val to_string : t -> string *)
-
 
 val caml_float_literal_to_js_string : string -> string

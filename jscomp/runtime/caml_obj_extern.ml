@@ -22,22 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
+(**  *)
 
-type t 
-external tag : t -> int = "caml_obj_tag" 
+type t
+
+external tag : t -> int = "caml_obj_tag"
 external repr : 'a -> t = "%identity"
 external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
-
 external set_length : t -> int -> unit = "length" [@@bs.set]
 external length : t -> int = "#obj_length"
 
+external set_tag : t -> int -> unit = "tag"
+  [@@bs.set]
 (** The same as {!Obj.set_tag} *)
-external set_tag : t -> int -> unit = "tag" [@@bs.set]
 
-external size_of_t : t -> 'a Js.undefined =
-  "length" [@@bs.get]
-
-
+external size_of_t : t -> 'a Js.undefined = "length" [@@bs.get]
 external magic : 'a -> 'b = "%identity"

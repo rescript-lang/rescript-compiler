@@ -22,11 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type kind = String | Var of int * int
 
-
- type kind =
-  | String
-  | Var of int * int (* int records its border length *)
+(* int records its border length *)
 
 type error = private
   | Invalid_code_point
@@ -36,48 +34,31 @@ type error = private
   | Invalid_unicode_escape
   | Unterminated_variable
   | Unmatched_paren
-  | Invalid_syntax_of_var of string 
+  | Invalid_syntax_of_var of string
 
+type pos = {lnum: int; offset: int; byte_bol: int}
 (** Note the position is about code point *)
-type pos = { lnum : int ; offset : int ; byte_bol : int }
 
-type segment = {
-  start : pos;
-  finish : pos ;
-  kind : kind;
-  content : string ;
-} 
+type segment = {start: pos; finish: pos; kind: kind; content: string}
+type segments = segment list
 
-type segments = segment list  
+type cxt =
+  { mutable segment_start: pos
+  ; buf: Buffer.t
+  ; s_len: int
+  ; mutable segments: segments
+  ; mutable pos_bol: int
+  ; (* record the abs position of current beginning line *)
+    mutable byte_bol: int
+  ; mutable pos_lnum: int (* record the line number *) }
 
-type cxt = {
-  mutable segment_start : pos ;
-  buf : Buffer.t ;
-  s_len : int ;
-  mutable segments : segments;
-  mutable pos_bol : int; (* record the abs position of current beginning line *)
-  mutable byte_bol : int ; 
-  mutable pos_lnum : int ; (* record the line number *)
-}
-
-type exn += Error of pos *  pos * error 
+type exn += Error of pos * pos * error
 
 val empty_segment : segment -> bool
-
 val transform_test : string -> segment list
 
+val transform :
+  Parsetree.expression -> string -> string -> Parsetree.expression
 
-
-val transform : 
-  Parsetree.expression -> 
-  string -> 
-  string -> 
-  Parsetree.expression
-
-val is_unicode_string :   
-  string -> 
-  bool
-
-val is_unescaped :   
-  string -> 
-  bool
+val is_unicode_string : string -> bool
+val is_unescaped : string -> bool

@@ -1,2 +1,2 @@
-(* *)
+(*  *)
 val init : unit -> unit

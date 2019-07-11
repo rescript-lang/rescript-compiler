@@ -22,87 +22,77 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external getEnv : 'a -> string -> string option = "" [@@bs.get_index]
 
-
-
-
-external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
-  if Js.typeof [%raw{|process|}] = "undefined"
-     || [%raw{|process.env|}] = Caml_undefined_extern.empty 
+  if
+    Js.typeof [%raw {|process|}] = "undefined"
+    || [%raw {|process.env|}] = Caml_undefined_extern.empty
   then raise Not_found
-  else  
-    match getEnv [%raw{|process.env|}] s with 
+  else
+    match getEnv [%raw {|process.env|}] s with
     | None -> raise Not_found
-    | Some x -> x 
-
-
+    | Some x -> x
 
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
 external now : unit -> float = "" [@@bs.val "Date.now"]
 
-
-(* let caml_initial_time = now ()  *. 0.001 *)
+(* let caml_initial_time = now () *. 0.001 *)
 
 type process
+
 external uptime : process -> unit -> float = "uptime" [@@bs.send]
-external exit : process -> int -> 'a =  "exit"  [@@bs.send]
+external exit : process -> int -> 'a = "exit" [@@bs.send]
 
 let caml_sys_time () =
-  if Js.typeof [%raw{|process|}] = "undefined" 
-    || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
+  if
+    Js.typeof [%raw {|process|}] = "undefined"
+    || [%raw {|process.uptime|}] = Caml_undefined_extern.empty
   then -1.
-  else uptime [%raw{|process|}] ()
-  
+  else uptime [%raw {|process|}] ()
 
 external random : unit -> float = "Math.random" [@@bs.val]
 
-let caml_sys_random_seed () : nativeint array = 
-   [|
-     Caml_nativeint_extern.of_float 
-     ((Caml_nativeint_extern.to_float (Caml_nativeint_extern.logxor (Caml_nativeint_extern.of_float (now ()))
-                             0xffffffffn)) *. random ()) |]
+let caml_sys_random_seed () : nativeint array =
+  [| Caml_nativeint_extern.of_float
+       ( Caml_nativeint_extern.to_float
+           (Caml_nativeint_extern.logxor
+              (Caml_nativeint_extern.of_float (now ()))
+              0xffffffffn)
+       *. random () ) |]
 
 type spawnResult
 
-external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
+external spawnSync : string -> spawnResult = "spawnSync"
+  [@@bs.module "child_process"]
 
-external readAs : spawnResult -> 
-  < 
-    status : int Js.null;
-  > Js.t = 
-  "%identity"
-
-
+external readAs : spawnResult -> < status: int Js.null > Js.t = "%identity"
 
 let caml_sys_system_command _cmd = 127
 
-let caml_sys_getcwd () = 
-  if Js.typeof [%raw{|process|}] = "undefined" then "/"
-  else [%raw{|process|}]##cwd ()  
-
+let caml_sys_getcwd () =
+  if Js.typeof [%raw {|process|}] = "undefined" then "/"
+  else [%raw {|process|}]##cwd ()
 
 (* Called by {!Sys} in the toplevel, should never fail*)
-let caml_sys_get_argv () : string * string array = 
-  if Js.typeof [%raw{|process|}] = "undefined" then "",[|""|] 
-  else 
-    let argv = [%raw{|process.argv|}] in 
-    if Js.testAny argv then ("",[|""|])
-    else Caml_array_extern.unsafe_get argv 0, argv
+let caml_sys_get_argv () : string * string array =
+  if Js.typeof [%raw {|process|}] = "undefined" then ("", [|""|])
+  else
+    let argv = [%raw {|process.argv|}] in
+    if Js.testAny argv then ("", [|""|])
+    else (Caml_array_extern.unsafe_get argv 0, argv)
 
 (** {!Pervasives.sys_exit} *)
-let caml_sys_exit :int -> 'a = fun exit_code -> 
-  if Js.typeof [%raw{|process|}] <> "undefined"  then 
-    exit [%raw{|process|}] exit_code 
+let caml_sys_exit : int -> 'a =
+ fun exit_code ->
+  if Js.typeof [%raw {|process|}] <> "undefined" then
+    exit [%raw {|process|}] exit_code
 
-
-
-let caml_sys_is_directory _s = 
+let caml_sys_is_directory _s =
   raise (Failure "caml_sys_is_directory not implemented")
 
-(** Need polyfill to make cmdliner work 
-    {!Sys.is_directory} or {!Sys.file_exists} {!Sys.command} 
-*)
-let caml_sys_file_exists _s = 
-  raise ( Failure "caml_sys_file_exists not implemented")
+(** Need polyfill to make cmdliner work {!Sys.is_directory} or
+    {!Sys.file_exists} {!Sys.command} *)
+let caml_sys_file_exists _s =
+  raise (Failure "caml_sys_file_exists not implemented")

@@ -22,13 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(** *)
+(**  *)
 
 type t (* = { lo : nativeint; hi : nativeint; } *)
+
 val min_int : t
 val max_int : t
 val one : t
@@ -36,7 +33,6 @@ val zero : t
 val not : t -> t
 val of_int32 : nativeint -> t
 val to_int32 : t -> nativeint
-
 val add : t -> t -> t
 val neg : t -> t
 val sub : t -> t -> t
@@ -45,44 +41,34 @@ val lsr_ : t -> int -> t
 val asr_ : t -> int -> t
 val is_zero : t -> bool
 val mul : t -> t -> t
-val xor : t -> t -> t 
-val or_ : t -> t -> t 
-val and_ : t -> t -> t 
+val xor : t -> t -> t
+val or_ : t -> t -> t
+val and_ : t -> t -> t
 val swap : t -> t
 
-type comparison = t -> t -> bool 
+type comparison = t -> t -> bool
+
 val ge : comparison
 val eq : comparison
 val neq : comparison
 val lt : comparison
 val gt : comparison
 val le : comparison
-
-
-val equal_null : t -> t Js.null -> bool 
-val equal_undefined : t -> t Js.undefined -> bool 
-val equal_nullable : t -> t Js.nullable -> bool 
-
-val min : t -> t -> t 
+val equal_null : t -> t Js.null -> bool
+val equal_undefined : t -> t Js.undefined -> bool
+val equal_nullable : t -> t Js.nullable -> bool
+val min : t -> t -> t
 val max : t -> t -> t
-
 val to_float : t -> float
 val of_float : float -> t
 val div : t -> t -> t
 val mod_ : t -> t -> t
-
-
 val compare : t -> t -> int
-
-
-
-val float_of_bits : t -> float 
-val bits_of_float : float -> t 
+val float_of_bits : t -> float
+val bits_of_float : float -> t
 val get64 : string -> int -> t
-
-
-external unsafe_to_int64 : t -> int64 = "%identity"           
+external unsafe_to_int64 : t -> int64 = "%identity"
 external unsafe_of_int64 : int64 -> t = "%identity"
-val div_mod :  int64 -> int64 -> int64 * int64
+val div_mod : int64 -> int64 -> int64 * int64
 val to_hex : int64 -> string
-val discard_sign : int64 -> int64 
+val discard_sign : int64 -> int64

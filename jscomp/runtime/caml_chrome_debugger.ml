@@ -22,9 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type obj = Caml_obj_extern.t
+type obj = Caml_obj_extern.t
 
- let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
+let setupChromeDebugger : unit -> unit =
+  [%raw
+    fun unit ->
+      {|
  
  // I don't know how to directly refer to the classes that chrome's built-in
  // formatters use. adding "class": "foo" doesn't seem to work
@@ -186,44 +189,43 @@ if (typeof window === "undefined"){
 }
 return 0
 
-|}
+|}]
 
+let setup = ref false
 
-let setup = ref false 
-let setupOnce () = 
-  if not !setup then 
-    begin 
-      setup := true;
-      setupChromeDebugger ()
-    end 
+let setupOnce () =
+  if not !setup then (
+    setup := true ;
+    setupChromeDebugger () )
 
 type symbol
 
-
 external cacheSymbol : string -> symbol = "for"
- [@@bs.scope "Symbol"] [@@bs.val]
-external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a = 
-  "defineProperty"  [@@bs.scope "Object"] [@@bs.val]
+  [@@bs.scope "Symbol"] [@@bs.val]
+
+external addProp : 'a -> symbol -> < value: 'b > Js.t -> 'a = "defineProperty"
+  [@@bs.scope "Object"] [@@bs.val]
 
 let __ = Block.__
+
 (* It won't affect [Object.keys] using [Object.defineProperty*)
-let record  meta xs =
-  setupOnce ();
-  xs |.addProp (cacheSymbol "BsRecord") [%obj {value = meta}]
+let record meta xs =
+  setupOnce () ;
+  xs |. addProp (cacheSymbol "BsRecord") [%obj {value= meta}]
 
-let variant meta tag xs =     
-  setupOnce ();
-  xs |. Caml_obj_extern.set_tag tag;
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+let variant meta tag xs =
+  setupOnce () ;
+  xs |. Caml_obj_extern.set_tag tag ;
+  xs |. addProp (cacheSymbol "BsVariant") [%obj {value= meta}]
 
-let simpleVariant meta xs =       
-  setupOnce ();
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
-  
-let localModule meta xs =   
-  setupOnce ();
-  xs |. addProp (cacheSymbol "BsLocalModule") [%obj {value = meta}]
+let simpleVariant meta xs =
+  setupOnce () ;
+  xs |. addProp (cacheSymbol "BsVariant") [%obj {value= meta}]
 
-let polyVar meta xs =   
-  setupOnce ();
-  xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
+let localModule meta xs =
+  setupOnce () ;
+  xs |. addProp (cacheSymbol "BsLocalModule") [%obj {value= meta}]
+
+let polyVar meta xs =
+  setupOnce () ;
+  xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value= meta}]

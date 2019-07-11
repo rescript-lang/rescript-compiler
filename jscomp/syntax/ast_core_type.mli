@@ -24,9 +24,6 @@
 
 type t = Parsetree.core_type
 
-
-
-
 val lift_option_type : t -> t
 val is_any : t -> bool
 val replace_result : t -> t -> t
@@ -36,39 +33,21 @@ val replace_result : t -> t -> t
 val is_unit : t -> bool
 val is_array : t -> bool
 
+val from_labels : loc:Location.t -> int -> string Asttypes.loc list -> t
+(** return a function type [from_labels ~loc tyvars labels] example output:
+    {[
+x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t
+    ]} *)
 
-(** return a function type
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
+val make_obj : loc:Location.t -> (string * Parsetree.attributes * t) list -> t
 val is_user_option : t -> bool
-
 val is_user_bool : t -> bool
-
 val is_user_int : t -> bool
 
+val get_uncurry_arity : t -> [`Arity of int | `Not_function]
+(** returns 0 when it can not tell arity from the syntax *)
 
-
-(**
-  returns 0 when it can not tell arity from the syntax
-*)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
-
-
-
+val list_of_arrow : t -> t * Ast_compatible.param_type list
 (** fails when Ptyp_poly *)
-val list_of_arrow :
-  t ->
-  t *  
-  Ast_compatible.param_type list
 
 val is_arity_one : t -> bool

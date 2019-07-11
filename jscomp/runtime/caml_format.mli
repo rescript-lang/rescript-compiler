@@ -22,23 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-(** *)
+(**  *)
 
 val caml_format_float : string -> float -> string
-#if OCAML_VERSION =~ ">4.03.0" then
 val caml_hexstring_of_float : float -> int -> char -> string
-#end
 val caml_format_int : string -> nativeint -> string
-val caml_nativeint_format : string -> nativeint -> string     
+val caml_nativeint_format : string -> nativeint -> string
 val caml_int32_format : string -> nativeint -> string
-
-val caml_float_of_string : string -> float 
+val caml_float_of_string : string -> float
 val caml_int64_format : string -> int64 -> string
 val caml_int_of_string : string -> nativeint
 val caml_int32_of_string : string -> nativeint

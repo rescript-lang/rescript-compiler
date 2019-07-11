@@ -22,12 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 external code : char -> int = "%identity"
-  
 external unsafe_chr : int -> char = "%identity"
 
-let caml_is_printable c = 
+let caml_is_printable c =
   let code = code c in
   code > 31 && code < 127

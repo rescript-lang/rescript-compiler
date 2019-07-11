@@ -22,30 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-let log_counter = ref 0 
+let log_counter = ref 0
 
 let dump name (prog : J.program) =
-#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then
-    prog
-#else 
-  begin
-    let () = 
-      if Js_config.is_same_file ()
-      then 
-        begin
-          incr log_counter ; 
-          Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
-          Ext_pervasives.with_file_as_chan       
-            (Ext_path.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
-             (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
-            ) (fun chan -> Js_dump_program.dump_program prog chan )
-        end in
-    prog    
-  end
-#end
- 
+  let () =
+    if Js_config.is_same_file () then (
+      incr log_counter ;
+      Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.) ;
+      Ext_pervasives.with_file_as_chan
+        ( Ext_path.chop_extension ~loc:__LOC__ (Js_config.get_current_file ())
+        ^ Printf.sprintf ".%02d.%s.jsx" !log_counter name )
+        (fun chan -> Js_dump_program.dump_program prog chan) ) in
+  prog

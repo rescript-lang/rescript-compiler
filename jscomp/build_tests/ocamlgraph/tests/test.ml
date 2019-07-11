@@ -20,13 +20,14 @@ open Graph
 
 module Int = struct
   type t = int
+
   let compare = compare
   let hash = Hashtbl.hash
-  let equal = (=)
+  let equal = ( = )
   let default = 0
 end
 
-module G = Persistent.Digraph.ConcreteLabeled(Int)(Int)
+module G = Persistent.Digraph.ConcreteLabeled (Int) (Int)
 
 let g = G.empty
 let g = G.add_vertex g 1
@@ -37,34 +38,35 @@ let g = G.add_edge_e g (G.E.create 1 100 5)
 let g = G.add_edge_e g (G.E.create 3 10 5)
 let g = G.add_edge_e g (G.E.create 4 20 3)
 let g = G.add_edge_e g (G.E.create 4 60 5)
-
 let g = G.remove_vertex g 4
-
 let gc = G.add_edge_e g (G.E.create 5 10 1)
 let gc = G.add_vertex gc 6
 
 module W = struct
   type edge = G.E.t
   type t = int
+
   let weight e = G.E.label e
   let zero = 0
-  let add = (+)
-  let sub = (-)
+  let add = ( + )
+  let sub = ( - )
   let compare = compare
 end
 
-module Dij = Path.Dijkstra(G)(W)
+module Dij = Path.Dijkstra (G) (W)
 
-let p,w = Dij.shortest_path gc 1 5
+let p, w = Dij.shortest_path gc 1 5
 
 open G.E
 
-let () = List.iter (fun e -> printf "[%d -> %d]" (src e) (dst e)) p; printf "@."
+let () =
+  List.iter (fun e -> printf "[%d -> %d]" (src e) (dst e)) p ;
+  printf "@."
 
-module Comp = Components.Make(G)
+module Comp = Components.Make (G)
+
 let g = G.add_edge g 3 2
 let n, f = Comp.scc g
 let () = G.iter_edges (fun u v -> printf "%d -> %d@." u v) g
 let () = printf "%d components@." n
 let () = G.iter_vertex (fun v -> printf "  %d -> %d@." v (f v)) g
-

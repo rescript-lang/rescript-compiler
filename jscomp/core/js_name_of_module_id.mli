@@ -22,17 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(**
-   generate the mdoule path so that it can be spliced here:
-   {[
+(** generate the mdoule path so that it can be spliced here:
+    {[
      var Xx = require("package/path/to/xx.js")
-   ]}
-   Note that it has to be consistent to how it is generated
-*)  
+    ]} Note that it has to be consistent to how it is generated *)
 
-val string_of_module_id : 
-  Lam_module_ident.t ->
-  output_dir:string ->
-  Js_packages_info.module_system -> 
-  string
+val string_of_module_id :
+     Lam_module_ident.t
+  -> output_dir:string
+  -> Js_packages_info.module_system
+  -> string

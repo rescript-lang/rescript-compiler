@@ -1,1 +1,1 @@
-let v x =  Stack.is_empty  x 
+let v x = Stack.is_empty x

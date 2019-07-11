@@ -1,2 +1,2 @@
-open! Demo 
+open! Demo
 include Foo

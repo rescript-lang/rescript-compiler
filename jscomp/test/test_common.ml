@@ -1,4 +1,2 @@
-
-
-exception U of int 
+exception U of int
 exception H

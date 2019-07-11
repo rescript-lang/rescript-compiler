@@ -26,22 +26,13 @@ type id =
   | Html of string
 
 type attr = (id * id option) list
-
 type compass_pt = N | Ne | E | Se | S | Sw | W | Nw
-
-type port =
-  | PortId of id * compass_pt option
-  | PortC of compass_pt
-
+type port = PortId of id * compass_pt option | PortC of compass_pt
 type node_id = id * port option
 
-type subgraph =
-  | SubgraphId of id
-  | SubgraphDef of id option * stmt list
+type subgraph = SubgraphId of id | SubgraphDef of id option * stmt list
 
-and node =
-  | NodeId of node_id
-  | NodeSub of subgraph
+and node = NodeId of node_id | NodeSub of subgraph
 
 and stmt =
   | Node_stmt of node_id * attr list
@@ -52,8 +43,4 @@ and stmt =
   | Equal of id * id
   | Subgraph of subgraph
 
-type file =
-  { strict : bool;
-    digraph : bool;
-    id : id option;
-    stmts : stmt list }
+type file = {strict: bool; digraph: bool; id: id option; stmts: stmt list}

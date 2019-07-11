@@ -22,16 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 val handle_extension :
-  bool ref ->
-  Parsetree.expression ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.extension ->
-  Parsetree.expression
+     bool ref
+  -> Parsetree.expression
+  -> Bs_ast_mapper.mapper
+  -> Parsetree.extension
+  -> Parsetree.expression
 
+type t = {args: string list; block: string}
 
-type t = { args : string list ; block :  string }
-
-val fromString : string -> t 
-  
+val fromString : string -> t

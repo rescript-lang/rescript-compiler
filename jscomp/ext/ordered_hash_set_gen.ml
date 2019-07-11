@@ -22,117 +22,106 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module type S =
-sig
+module type S = sig
   type key
   type t
-  val create: int ->  t
-  val clear: t -> unit
-  val reset: t -> unit
-  val copy: t -> t
-  val add:  t -> key -> unit
-  val mem:  t -> key -> bool
-  val rank: t -> key -> int (* -1 if not found*)
-  val iter: (key -> int -> unit) ->  t -> unit
-  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val choose_exn: t -> key 
-  val of_array: key array -> t 
-  val to_sorted_array: t -> key array
-  val replace: t -> key -> key -> unit 
+
+  val create : int -> t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy : t -> t
+  val add : t -> key -> unit
+  val mem : t -> key -> bool
+  val rank : t -> key -> int (* -1 if not found*)
+
+  val iter : (key -> int -> unit) -> t -> unit
+  val fold : (key -> int -> 'b -> 'b) -> t -> 'b -> 'b
+  val length : t -> int
+  val stats : t -> Hashtbl.statistics
+  val choose_exn : t -> key
+  val of_array : key array -> t
+  val to_sorted_array : t -> key array
+  val replace : t -> key -> key -> unit
   val reset_to_list : t -> key list -> unit
-  exception Replace_failure of bool 
+
+  exception Replace_failure of bool
 end
 
-exception Replace_failure of bool 
+exception Replace_failure of bool
 
+(** when it is true, it means the old key does not exist , when it is false, it
+    means the new key already exist *)
 
-(** when it is true, it means the old key does not exist ,
-    when it is false, it means the new key already exist
-  *)
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-type 'a bucket = 
-  | Empty 
-  | Cons of 'a * int * 'a bucket
+(* We do dynamic hashing, and resize the table and rehash the elements when
+   buckets become too long. *)
+type 'a bucket = Empty | Cons of 'a * int * 'a bucket
 
 type 'a t =
-  { mutable size: int; (* number of entries *)
-    mutable data: 'a bucket array;  
-    mutable data_mask: int ; 
-    initial_size: int;
-  }
-(* Invariant
-   [data_mask = Array.length data - 1 ]
-   [Array.length data is power of 2]
-*)
+  { mutable size: int
+  ; (* number of entries *)
+    mutable data: 'a bucket array
+  ; mutable data_mask: int
+  ; initial_size: int }
 
+(* Invariant [data_mask = Array.length data - 1 ] [Array.length data is power
+   of 2] *)
 
-let create  initial_size =
+let create initial_size =
   let initial_size = Ext_util.power_2_above 16 initial_size in
-  { initial_size ; 
-    size = 0; 
-    data = Array.make initial_size Empty;
-    data_mask = initial_size - 1 ;  
-  }
+  { initial_size
+  ; size= 0
+  ; data= Array.make initial_size Empty
+  ; data_mask= initial_size - 1 }
 
 let clear h =
-  h.size <- 0;
-  let h_data = h.data in 
-  for i = 0 to h.data_mask  do 
-    Array.unsafe_set h_data i  Empty
+  h.size <- 0 ;
+  let h_data = h.data in
+  for i = 0 to h.data_mask do
+    Array.unsafe_set h_data i Empty
   done
 
-(** Note this function is only used internally, make sure [h_initial_size] 
-    is a power of 16 *)
-let reset_with_size h h_initial_size  =
-  h.size <- 0;
-  h.data <- Array.make h_initial_size Empty;
+(** Note this function is only used internally, make sure [h_initial_size] is a
+    power of 16 *)
+let reset_with_size h h_initial_size =
+  h.size <- 0 ;
+  h.data <- Array.make h_initial_size Empty ;
   h.data_mask <- h_initial_size - 1
 
-let reset h  =
-  reset_with_size h h.initial_size
-
-
-let copy h = { h with data = Array.copy h.data }
-
+let reset h = reset_with_size h h.initial_size
+let copy h = {h with data= Array.copy h.data}
 let length h = h.size
-
 
 let rec insert_bucket nmask ndata hash = function
   | Empty -> ()
-  | Cons(key,info,rest) ->
-    let nidx = hash key land nmask in (* so that indexfun sees the new bucket count *)
-    Array.unsafe_set ndata nidx  (Cons(key,info, (Array.unsafe_get ndata nidx)));
-    insert_bucket nmask ndata hash rest
+  | Cons (key, info, rest) ->
+      let nidx = hash key land nmask in
+      (* so that indexfun sees the new bucket count *)
+      Array.unsafe_set ndata nidx
+        (Cons (key, info, Array.unsafe_get ndata nidx)) ;
+      insert_bucket nmask ndata hash rest
 
 let resize hash h =
   let odata = h.data in
-  let odata_mask = h.data_mask in 
+  let odata_mask = h.data_mask in
   let nsize = (odata_mask + 1) * 2 in
-  if nsize < Sys.max_array_length then begin
+  if nsize < Sys.max_array_length then (
     let ndata = Array.make nsize Empty in
-    h.data <- ndata;          
+    h.data <- ndata ;
     let nmask = nsize - 1 in
-    h.data_mask <- nmask ; 
+    h.data_mask <- nmask ;
     for i = 0 to odata_mask do
-      match Array.unsafe_get odata i with 
+      match Array.unsafe_get odata i with
       | Empty -> ()
-      | Cons(key,info,rest) -> 
-        let nidx = hash key land nmask in 
-        Array.unsafe_set ndata nidx  (Cons(key,info, (Array.unsafe_get ndata nidx)));
-        insert_bucket nmask ndata hash rest 
-    done
-  end
-
+      | Cons (key, info, rest) ->
+          let nidx = hash key land nmask in
+          Array.unsafe_set ndata nidx
+            (Cons (key, info, Array.unsafe_get ndata nidx)) ;
+          insert_bucket nmask ndata hash rest
+    done )
 
 let rec do_bucket f = function
-  | Empty ->
-    ()
-  | Cons(k ,i,  rest) ->
-    f k i ; do_bucket f rest 
+  | Empty -> ()
+  | Cons (k, i, rest) -> f k i ; do_bucket f rest
 
 let iter f h =
   let d = h.data in
@@ -141,69 +130,58 @@ let iter f h =
   done
 
 (* find one element *)
-let choose_exn h = 
-  let rec aux arr offset last_index = 
-    if offset > last_index then 
-      raise Not_found (* This happens when size is 0, otherwise it is never called *)
-    else 
-      match Array.unsafe_get arr offset with 
-      | Empty -> aux arr (offset + 1) last_index 
-      | Cons (k,_,rest) -> k 
-  in
-  let h_data = h.data in 
+let choose_exn h =
+  let rec aux arr offset last_index =
+    if offset > last_index then raise Not_found
+      (* This happens when size is 0, otherwise it is never called *)
+    else
+      match Array.unsafe_get arr offset with
+      | Empty -> aux arr (offset + 1) last_index
+      | Cons (k, _, rest) -> k in
+  let h_data = h.data in
   aux h_data 0 h.data_mask
 
 let fold f h init =
   let rec do_bucket b accu =
     match b with
-      Empty ->
-      accu
-    | Cons( k , i,  rest) ->
-      do_bucket rest (f k i  accu) in
+    | Empty -> accu
+    | Cons (k, i, rest) -> do_bucket rest (f k i accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to h.data_mask do
     accu := do_bucket (Array.unsafe_get d i) !accu
-  done;
+  done ;
   !accu
 
-
-let rec set_bucket arr = function 
+let rec set_bucket arr = function
   | Empty -> ()
-  | Cons(k,i,rest) ->
-    Array.unsafe_set arr i k;
-    set_bucket arr rest 
+  | Cons (k, i, rest) -> Array.unsafe_set arr i k ; set_bucket arr rest
 
-let to_sorted_array h = 
+let to_sorted_array h =
   if h.size = 0 then [||]
-  else 
-    let v = choose_exn h in 
+  else
+    let v = choose_exn h in
     let arr = Array.make h.size v in
-    let d = h.data in 
-    for i = 0 to h.data_mask do 
-      set_bucket  arr (Array.unsafe_get d i)
-    done;
-    arr 
+    let d = h.data in
+    for i = 0 to h.data_mask do
+      set_bucket arr (Array.unsafe_get d i)
+    done ;
+    arr
 
-
-
-
-let rec bucket_length acc (x : _ bucket) = 
-  match x with 
+let rec bucket_length acc (x : _ bucket) =
+  match x with
   | Empty -> acc
-  | Cons(_,_,rest) -> bucket_length (acc + 1) rest  
+  | Cons (_, _, rest) -> bucket_length (acc + 1) rest
 
 let stats h =
   let mbl =
-    Ext_array.fold_left h.data 0 (fun m (b : _ bucket) -> max m (bucket_length 0 b)) in
+    Ext_array.fold_left h.data 0 (fun m (b : _ bucket) ->
+        max m (bucket_length 0 b)) in
   let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  { Hashtbl.num_bindings = h.size;
-    num_buckets = h.data_mask + 1 ;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
-
+  Ext_array.iter h.data (fun b ->
+      let l = bucket_length 0 b in
+      histo.(l) <- histo.(l) + 1) ;
+  { Hashtbl.num_bindings= h.size
+  ; num_buckets= h.data_mask + 1
+  ; max_bucket_length= mbl
+  ; bucket_histogram= histo }

@@ -1,3 +1,1 @@
-
-
-(* let v : string = Bytes.create 40  *)
+(* let v : string = Bytes.create 40 *)

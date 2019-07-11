@@ -1,23 +1,22 @@
-
-let count = 1_000_000 
+let count = 1_000_000
 
 module N = Belt.Set.Int
-let bench () = 
-  let data = ref N.empty in 
-  [%time for i = 0 to count do 
-    data := 
-      N.add  !data i
-  done] ;
-  [%time for i = 0 to count do  
-    assert (N.has !data i)
-  done]; 
-  [%time for i = 0 to count do 
-    data := N.remove !data i 
-  done ];
-  assert  (N.size !data = 0)
 
+let bench () =
+  let data = ref N.empty in
+  [%time
+    for i = 0 to count do
+      data := N.add !data i
+    done] ;
+  [%time
+    for i = 0 to count do
+      assert (N.has !data i)
+    done] ;
+  [%time
+    for i = 0 to count do
+      data := N.remove !data i
+    done] ;
+  assert (N.size !data = 0)
 
-
-;;  [%time bench ()]
-
-  
+;;
+[%time bench ()]

@@ -1,1 +1,1 @@
-let f x x   =  x
+let f x x = x

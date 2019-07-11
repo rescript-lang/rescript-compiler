@@ -22,74 +22,53 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(*
-   [lower, upper)
-   when [lower] = [upper], impossible
-   [upper - lower] = 1
-   [mid = lower], it should hit
-   [uper -lower > 1], [mid <> lower]
- *)
+(* [lower, upper) when [lower] = [upper], impossible [upper - lower] = 1 [mid =
+   lower], it should hit [uper -lower > 1], [mid <> lower] *)
 let rec binarySearchAux lower upper xs (k : int) =
-  if not (lower < upper) then Js_exn.raiseError "binarySearchAux";
+  if not (lower < upper) then Js_exn.raiseError "binarySearchAux" ;
   let mid = (lower + upper) / 2 in
-  let i,v = Js_array2.unsafe_get xs mid in
+  let i, v = Js_array2.unsafe_get xs mid in
   if i = k then v
-  else if i < k then
-    binarySearchAux (mid + 1) upper xs k
-  else
-    binarySearchAux lower mid  xs k  (*Invariant: mid < upper *)
+  else if i < k then binarySearchAux (mid + 1) upper xs k
+  else binarySearchAux lower mid xs k
 
+(*Invariant: mid < upper *)
 
+let binarySearch upper (id : int) array = binarySearchAux 0 upper array id
 
-let binarySearch upper (id : int) array =
-  binarySearchAux 0 upper array id
-
-let rec revSearchAux
-    i len (xs : (int * string) array) (k : string) =
+let rec revSearchAux i len (xs : (int * string) array) (k : string) =
   if i = len then None
   else
-    let (idx,s) = Js.Array2.unsafe_get xs i  in
-    if s = k then
-      Some idx
-    else
-      revSearchAux (i + 1) len xs k
+    let idx, s = Js.Array2.unsafe_get xs i in
+    if s = k then Some idx else revSearchAux (i + 1) len xs k
 
-let revSearch len array (x : string)  : int option =
-  revSearchAux 0 len array x
+let revSearch len array (x : string) : int option = revSearchAux 0 len array x
 
-let rec revSearchAssertAux len
-    i  (xs : (int * string) array) (k : string) =
-  [%assert i < len];
-  let (idx,s) = Js.Array2.unsafe_get xs i  in
-  if s = k then
-    idx
-  else
-    revSearchAssertAux len (i + 1)  xs k
+let rec revSearchAssertAux len i (xs : (int * string) array) (k : string) =
+  [%assert i < len] ;
+  let idx, s = Js.Array2.unsafe_get xs i in
+  if s = k then idx else revSearchAssertAux len (i + 1) xs k
 
-let revSearchAssert len  array (x : string) : int =
+let revSearchAssert len array (x : string) : int =
   revSearchAssertAux len 0 array x
 
-let toInt (i : int) (xs : int array) =
-  Js.Array2.unsafe_get xs i
+let toInt (i : int) (xs : int array) = Js.Array2.unsafe_get xs i
 
 let rec fromIntAux (enum : int) i len xs =
   if i = len then None
   else
     let k = Js.Array2.unsafe_get xs i in
-    if k = enum then Some i
-    else fromIntAux enum (i + 1) len xs
+    if k = enum then Some i else fromIntAux enum (i + 1) len xs
 
-let fromInt len (xs : int array) (enum : int )  : 'variant option =
+let fromInt len (xs : int array) (enum : int) : 'variant option =
   fromIntAux enum 0 len xs
 
-let rec fromIntAssertAux len (enum : int) i  xs =
-  [%assert i < len];
+let rec fromIntAssertAux len (enum : int) i xs =
+  [%assert i < len] ;
   (*TODO: replaced by [%assert i < len ]*)
   let k = Js.Array2.unsafe_get xs i in
-  if k = enum then  i
-  else fromIntAssertAux len enum (i + 1)  xs
+  if k = enum then i else fromIntAssertAux len enum (i + 1) xs
 
 (** [length] is not relevant any more *)
-let fromIntAssert  len (xs : int array) (enum : int )=
-  fromIntAssertAux len enum 0  xs
+let fromIntAssert len (xs : int array) (enum : int) =
+  fromIntAssertAux len enum 0 xs

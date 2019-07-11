@@ -24,15 +24,11 @@
 
 (* open Printf *)
 
-
-
-
-
-let () = 
-  match Sys.argv  with
-  | [|_; file |] 
-    -> 
-      let cmj,digest = (Js_cmj_format.from_file_with_digest file) in 
-      Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
+let () =
+  match Sys.argv with
+  | [|_; file|] ->
+      let cmj, digest = Js_cmj_format.from_file_with_digest file in
+      Format.fprintf Format.std_formatter "@[Digest: %s@]@."
+        (Digest.to_hex digest) ;
       Js_cmj_format.pp_cmj cmj
   | _ -> failwith "expect one argument"

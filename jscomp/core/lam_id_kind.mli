@@ -22,60 +22,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type rec_flag = Rec | Non_rec
 
-type rec_flag = 
-  | Rec 
-  | Non_rec
+(* TODO: This may contain some closure environment, check how it will interact
+   with dead code elimination *)
+type function_id =
+  {mutable arity: Lam_arity.t; lambda: (Lam.t * rec_flag) option}
 
-(* TODO: This may contain some closure environment,
-     check how it will interact with dead code elimination
-*)  
-type function_id = {
-  mutable arity : Lam_arity.t;
-  lambda  : (Lam.t * rec_flag) option ;
-}
+type element = NA | SimpleForm of Lam.t
+type boxed_nullable = Undefined | Null | Null_undefined
 
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
+(** {[
+let v/2 =  Pnull_to_opt u
+    ]}
 
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-
-
-type t = 
+    {[
+let v/2 = Pnull_to_opt exp
+    ]} can be translated into
+    {[
+         let v/1 = exp in 
+         let v/2 =a Pnull_to_opt exp 
+    ]} so that [Pfield v/2 0] will be replaced by [v/1], [Lif(v/1)] will be
+    translated into [Lif (v/2 === undefined )] *)
+type t =
   | Normal_optional of Lam.t
   | OptionalBlock of Lam.t * boxed_nullable
   | ImmutableBlock of element array
   | MutableBlock of element array
   | Constant of Lam_constant.t
-  | Module of Ident.t
-        (** TODO: static module vs first class module *)
-  | FunctionId of function_id 
-  | Exception 
+  | Module of Ident.t  (** TODO: static module vs first class module *)
+  | FunctionId of function_id
+  | Exception
   | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-        *)
-(** 
-       {[ let v/2 =  Pnull_to_opt u]} 
-
-       {[ let v/2 = Pnull_to_opt exp]}
-       can be translated into 
-       {[
-         let v/1 = exp in 
-         let v/2 =a Pnull_to_opt exp 
-       ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
-       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-*)        
-
-
+      (** For this case, it can help us determine whether it should be inlined
+          or not *)
+  | NA
+      (** Not such information is associated with an identifier, it is
+          immutable, if you only associate a property to an identifier we
+          should consider [Lassign] *)
 
 val print : Format.formatter -> t -> unit

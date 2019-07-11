@@ -22,67 +22,46 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+open Ast_helper
 
-open Ast_helper 
+(* let fun_no_label ?loc ?attrs pat body = Ast_compatible.fun_ ?loc ?attrs pat
+   body *)
 
+let discard_exp_as_unit loc e =
+  Ast_compatible.apply_simple ~loc
+    (Exp.ident ~loc {txt= Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e (Ast_literal.type_unit ~loc ())]
 
-
-(* let fun_no_label ?loc ?attrs  pat body = 
-  Ast_compatible.fun_ ?loc ?attrs  pat body *)
-
-
-let discard_exp_as_unit loc e = 
-  Ast_compatible.apply_simple ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-
-let tuple_type_pair ?loc kind arity = 
-  let prefix  = "a" in
-  if arity = 0 then 
-    let ty = Typ.var ?loc ( prefix ^ "0") in 
-    match kind with 
-    | `Run -> ty,  [], ty 
-    | `Make -> 
-      (Ast_compatible.arrow ?loc
-         (Ast_literal.type_unit ?loc ())
-         ty ,
-       [], ty)
+let tuple_type_pair ?loc kind arity =
+  let prefix = "a" in
+  if arity = 0 then
+    let ty = Typ.var ?loc (prefix ^ "0") in
+    match kind with
+    | `Run -> (ty, [], ty)
+    | `Make ->
+        (Ast_compatible.arrow ?loc (Ast_literal.type_unit ?loc ()) ty, [], ty)
   else
     let number = arity + 1 in
-    let tys = Ext_list.init number (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
-      )  in
-    match tys with 
-    | result :: rest -> 
-      Ext_list.reduce_from_left tys (fun r arg -> Ast_compatible.arrow ?loc arg r) , 
-      List.rev rest , result
+    let tys =
+      Ext_list.init number (fun i ->
+          Typ.var ?loc (prefix ^ string_of_int (number - i - 1))) in
+    match tys with
+    | result :: rest ->
+        ( Ext_list.reduce_from_left tys (fun r arg ->
+              Ast_compatible.arrow ?loc arg r)
+        , List.rev rest
+        , result )
     | [] -> assert false
-    
-    
 
-let js_obj_type_id  = 
-  Ast_literal.Lid.js_obj 
+let js_obj_type_id = Ast_literal.Lid.js_obj
+let re_id = Ast_literal.Lid.js_re_id
+let to_js_type loc x = Typ.constr ~loc {txt= js_obj_type_id; loc} [x]
+let to_js_re_type loc = Typ.constr ~loc {txt= re_id; loc} []
 
-let re_id  = 
-  Ast_literal.Lid.js_re_id 
-
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
-
-let to_js_re_type loc  =
-  Typ.constr ~loc { txt = re_id ; loc} []
-    
 let to_undefined_type loc x =
-  Typ.constr ~loc
-    {txt = Ast_literal.Lid.js_undefined ; loc}
-    [x]  
+  Typ.constr ~loc {txt= Ast_literal.Lid.js_undefined; loc} [x]
 
-let single_non_rec_value  name exp = 
-  Str.value Nonrecursive 
-    [Vb.mk (Pat.var name) exp]
+let single_non_rec_value name exp =
+  Str.value Nonrecursive [Vb.mk (Pat.var name) exp]
 
-let single_non_rec_val name ty = 
-  Sig.value 
-    (Val.mk name ty)
+let single_non_rec_val name ty = Sig.value (Val.mk name ty)

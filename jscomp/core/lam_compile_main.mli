@@ -22,31 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** BuckleScript entry point in the OCaml compiler *)
 
+(** Compile and register the hook of function to compile a lambda to JS IR *)
 
-
-
-
-
-
-(** BuckleScript entry point in the OCaml compiler *) 
-
-(** Compile and register the hook of function to compile  a lambda to JS IR 
- *)
-
+val compile :
+  filename:string -> string -> Env.t -> Lambda.lambda -> J.deps_program
 (** For toplevel, [filename] is [""] which is the same as
-    {!Env.get_unit_name ()}
- *)
-val compile :  
-  filename : string -> 
-  string -> 
-  Env.t ->   
-  Lambda.lambda -> 
-  J.deps_program
+    {!Env.get_unit_name ()} *)
 
-val lambda_as_module :  
-  Env.t ->
-  string -> 
-  string ->
-  Lambda.lambda -> 
-  unit
+val lambda_as_module : Env.t -> string -> string -> Lambda.lambda -> unit

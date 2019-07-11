@@ -22,28 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Compile ocaml external function call to JS IR. *) 
-val ocaml_to_js_eff : 
-  External_arg_spec.t -> 
-  J.expression -> 
-  Js_of_lam_variant.arg_expression * J.expression list  
+val ocaml_to_js_eff :
+     External_arg_spec.t
+  -> J.expression
+  -> Js_of_lam_variant.arg_expression * J.expression list
+(** Compile ocaml external function call to JS IR. *)
 
 val translate_ffi :
-  Location.t -> 
-  Lam_compile_context.t -> 
-  External_arg_spec.t list -> 
-  External_ffi_types.external_spec -> 
-  J.expression list -> 
-  J.expression 
-  
-(** TODO: document supported attributes
-    Attributes starting with `js` are reserved
-    examples: "bs.splice"
- *)
+     Location.t
+  -> Lam_compile_context.t
+  -> External_arg_spec.t list
+  -> External_ffi_types.external_spec
+  -> J.expression list
+  -> J.expression
+
+(** TODO: document supported attributes Attributes starting with `js` are
+    reserved examples: "bs.splice" *)

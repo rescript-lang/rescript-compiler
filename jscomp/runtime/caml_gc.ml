@@ -22,27 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(*Gc.*)
+type control
 
-
-
-type (*Gc.*)control
-
-let caml_gc_counters : unit -> (float * float * float) = fun () -> (0.,0.,0.)
-
- 
-let caml_gc_set : control -> unit = fun _ -> ();;
-
-let caml_gc_minor : unit -> unit = fun _ -> ();;
-
+let caml_gc_counters : unit -> float * float * float = fun () -> (0., 0., 0.)
+let caml_gc_set : control -> unit = fun _ -> ()
+let caml_gc_minor : unit -> unit = fun _ -> ()
 let caml_gc_major_slice : int -> int = fun _ -> 0
-
-let caml_gc_major : unit -> unit = fun  () -> ();;
-
-let caml_gc_full_major : unit -> unit = fun () -> ();;
-
-let caml_gc_compaction : unit -> unit = fun () -> ();;
-
-let caml_final_register : ('a -> unit) -> 'a -> unit = 
-  fun _ _ -> ();;
-
-let caml_final_release : unit -> unit = fun _ -> ();;
+let caml_gc_major : unit -> unit = fun () -> ()
+let caml_gc_full_major : unit -> unit = fun () -> ()
+let caml_gc_compaction : unit -> unit = fun () -> ()
+let caml_final_register : ('a -> unit) -> 'a -> unit = fun _ _ -> ()
+let caml_final_release : unit -> unit = fun _ -> ()

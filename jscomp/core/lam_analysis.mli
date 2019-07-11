@@ -22,24 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 (** A module which provides some basic analysis over lambda expression *)
 
+val no_side_effects : Lam.t -> bool
 (** No side effect, but it might depend on data store *)
-val no_side_effects : Lam.t -> bool 
 
 val size : Lam.t -> int
 
-val ok_to_inline_fun_when_app : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
-  
+val ok_to_inline_fun_when_app :
+  body:Lam.t -> Lam.ident list -> Lam.t list -> bool
 
-
-val small_inline_size : int  
-val exit_inline_size : int  
-
-
+val small_inline_size : int
+val exit_inline_size : int
 val safe_to_inline : Lam.t -> bool

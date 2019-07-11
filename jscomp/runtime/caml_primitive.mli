@@ -22,35 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a selector = 'a -> 'a -> 'a
 
-
-
-
-
-
-type 'a selector = 'a -> 'a -> 'a 
-
-
-val caml_bytes_compare: bytes -> bytes -> int
-val caml_bytes_equal : bytes -> bytes -> bool 
+val caml_bytes_compare : bytes -> bytes -> int
+val caml_bytes_equal : bytes -> bytes -> bool
 val caml_int_compare : int -> int -> int
 val caml_bool_compare : bool -> bool -> int
-val caml_float_compare : float -> float -> int 
+val caml_float_compare : float -> float -> int
 val caml_nativeint_compare : int -> int -> int
-val caml_string_compare : string -> string -> int 
+val caml_string_compare : string -> string -> int
 val caml_int32_compare : int -> int -> int
-
-
-val caml_bool_min : bool selector 
+val caml_bool_min : bool selector
 val caml_int_min : int selector
-val caml_float_min : float selector 
-val caml_string_min : string selector  
+val caml_float_min : float selector
+val caml_string_min : string selector
 val caml_nativeint_min : nativeint selector
-val caml_int32_min : int32 selector 
-
+val caml_int32_min : int32 selector
 val caml_bool_max : bool selector
 val caml_int_max : int selector
-val caml_float_max : float selector 
-val caml_string_max : string selector  
+val caml_float_max : float selector
+val caml_string_max : string selector
 val caml_nativeint_max : nativeint selector
-val caml_int32_max : int32 selector 
+val caml_int32_max : int32 selector

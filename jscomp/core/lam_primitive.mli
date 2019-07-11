@@ -22,71 +22,86 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type ident = Ident.t
 
+type record_representation = Types.record_representation =
+  | Record_regular
+  | Record_float
+  | Record_unboxed of bool (* Unboxed single-field record, inlined or not *)
+  | Record_inlined of {tag: int; name: string; num_nonconsts: int}
+  (* Inlined record *)
+  | Record_extension
 
-type ident = Ident.t 
+(* Inlined record under extension *)
 
-type record_representation = Types.record_representation =  
-    | Record_regular
-    | Record_float
-#if OCAML_VERSION =~ ">4.03.0" then
-    | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
-    | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
-    | Record_extension                    (* Inlined record under extension *)
-#end  
-
-type t = 
+type t =
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pglobal_exception of ident 
+  | Pglobal_exception of ident
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
-  | Psetfield of int  * Lambda.set_field_dbg_info
+  | Psetfield of int * Lambda.set_field_dbg_info
   | Pfloatfield of int * Lambda.field_dbg_info
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of record_representation * int
   | Plazyforce
-
-  | Pccall of  Primitive_compat.t
+  | Pccall of Primitive_compat.t
   | Pjs_call of
-    (* Location.t *  [loc] is passed down *)
-    string *  (* prim_name *)
-    External_arg_spec.t list * (* arg_types *)
-    External_ffi_types.external_spec  (* ffi *)
+      (* Location.t * [loc] is passed down *)
+      string
+      * (* prim_name *)
+      External_arg_spec.t list
+      * (* arg_types *)
+        External_ffi_types.external_spec
+  (* ffi *)
   | Pjs_object_create of External_ffi_types.obj_create
-
-  | Praise 
-  | Psequand | Psequor | Pnot
-  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
+  | Praise
+  | Psequand
+  | Psequor
+  | Pnot
+  | Pnegint
+  | Paddint
+  | Psubint
+  | Pmulint
+  | Pdivint
+  | Pmodint
+  | Pandint
+  | Porint
+  | Pxorint
+  | Plslint
+  | Plsrint
+  | Pasrint
   | Pintcomp of Lam_compat.comparison
   | Poffsetint of int
   | Poffsetref of int
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat 
+  | Pintoffloat
+  | Pfloatofint
+  | Pnegfloat
   (* | Pabsfloat *)
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Paddfloat
+  | Psubfloat
+  | Pmulfloat
+  | Pdivfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
-  | Pstringlength 
-  | Pstringrefu 
+  | Pstringlength
+  | Pstringrefu
   | Pstringrefs
-  | Pstringadd    
+  | Pstringadd
   | Pbyteslength
   | Pbytesrefu
-  | Pbytessetu 
+  | Pbytessetu
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
   | Pmakearray of Lam_compat.array_kind
-  | Parraylength 
-  | Parrayrefu 
-  | Parraysetu 
-  | Parrayrefs 
-  | Parraysets 
+  | Parraylength
+  | Parrayrefu
+  | Parraysetu
+  | Parrayrefs
+  | Parraysets
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
@@ -96,7 +111,8 @@ type t =
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
-  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
+  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer
+  (*destination*)
   | Pnegbint of Lam_compat.boxed_integer
   | Paddbint of Lam_compat.boxed_integer
   | Psubbint of Lam_compat.boxed_integer
@@ -111,8 +127,10 @@ type t =
   | Pasrbint of Lam_compat.boxed_integer
   | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
-  | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
+  | Pbigarrayref of
+      bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
+  | Pbigarrayset of
+      bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
   (* size of the nth dimension of a big array *)
   | Pbigarraydim of int
   (* load/set 16,32,64 bits from a string: (unsafe)*)
@@ -122,8 +140,8 @@ type t =
   | Pstring_set_16 of bool
   | Pstring_set_32 of bool
   | Pstring_set_64 of bool
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  (* load/set 16,32,64 bits from a (char, int8_unsigned_elt, c_layout)
+     Bigarray.Array1.t : (unsafe) *)
   | Pbigstring_load_16 of bool
   | Pbigstring_load_32 of bool
   | Pbigstring_load_64 of bool
@@ -136,42 +154,36 @@ type t =
   | Pbswap16
   | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
-
   | Pdebugger
   | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
-
-  | Praw_js_code_exp of string 
-  | Praw_js_code_stmt of string 
+  | Praw_js_code_exp of string
+  | Praw_js_code_stmt of string
   | Praw_js_function of string * string list
-  | Pjs_fn_make of int 
-  | Pjs_fn_run of int 
-  | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
+  | Pjs_fn_make of int
+  | Pjs_fn_run of int
+  | Pjs_fn_method of int
+  | Pjs_fn_runmethod of int
   | Pundefined_to_opt
   | Pnull_to_opt
-  | Pnull_undefined_to_opt 
-  
+  | Pnull_undefined_to_opt
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
-
   | Pjs_typeof
-  | Pjs_function_length 
+  | Pjs_function_length
   | Pcaml_obj_length
-  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
-
-  (* | Pcreate_exception of string  *)
-  | Pcreate_extension of string 
+  | Pwrap_exn
+  (* convert either JS exception or OCaml exception into OCaml format *)
+  (* | Pcreate_exception of string *)
+  | Pcreate_extension of string
   | Pis_not_none
   | Pval_from_option
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
-
-
   | Pfield_computed (* Mostly used in object compilation *)
   | Psetfield_computed
 
-val eq_primitive_approx : t -> t -> bool  
+val eq_primitive_approx : t -> t -> bool

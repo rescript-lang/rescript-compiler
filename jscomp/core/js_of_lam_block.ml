@@ -22,64 +22,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 module E = Js_exp_make
 
 (* TODO: it would be even better, if the [tag_info] contains more information
-   about immutablility
- *)
-let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  = 
-
+   about immutablility *)
+let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args =
   match tag_info with
-  | Blk_array -> Js_of_lam_array.make_array mutable_flag  args
-  |  _ -> E.make_block tag tag_info args mutable_flag
-  (* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
-  (*     E.arr Immutable *)
-  (*       (E.small_int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
-  (*        :: args) *)
-  (* | _, _  ->  *)
-  (*     E.arr mutable_flag *)
-  (*       (E.int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
-  (*        :: args) *)
+  | Blk_array -> Js_of_lam_array.make_array mutable_flag args
+  | _ -> E.make_block tag tag_info args mutable_flag
+
+(* | _, ( Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
+(* E.arr Immutable *)
+(* (E.small_int ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag *)
+(* :: args) *)
+(* | _, _ -> *)
+(* E.arr mutable_flag *)
+(* (E.int ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag *)
+(* :: args) *)
 
 let field (field_info : Lam_compat.field_dbg_info) e i =
-  match field_info with 
-  | Fld_na -> 
-    E.array_index_by_int e i 
-#if OCAML_VERSION =~ ">4.03.0" then 
+  match field_info with
+  | Fld_na -> E.array_index_by_int e i
   | Fld_record_inline comment
-  | Fld_record_extension comment
-#end
-  | Fld_record comment
-  | Fld_module comment
-    -> E.array_index_by_int ~comment e i
+   |Fld_record_extension comment
+   |Fld_record comment
+   |Fld_module comment ->
+      E.array_index_by_int ~comment e i
 
-let field_by_exp e i = 
-  E.array_index e i 
-
+let field_by_exp e i = E.array_index e i
 
 let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
-  let comment = 
-    match field_info with 
-    | Fld_set_na 
-      -> None
-#if OCAML_VERSION =~ ">4.03.0" then
-    | Fld_record_inline_set s
-    | Fld_record_extension_set s
-#end    
-    | Fld_record_set s -> Some (s)
-  in (* see GPR#631*)
-  E.assign_by_int ?comment e i e0 
+  let comment =
+    match field_info with
+    | Fld_set_na -> None
+    | Fld_record_inline_set s | Fld_record_extension_set s | Fld_record_set s
+      ->
+        Some s in
+  (* see GPR#631*)
+  E.assign_by_int ?comment e i e0
 
-let set_field_by_exp self index value = 
-  E.assign_by_exp self index value
-
-
-
-
+let set_field_by_exp self index value = E.assign_by_exp self index value

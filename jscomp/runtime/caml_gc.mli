@@ -22,12 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 type control
 
 val caml_gc_counters : unit -> float * float * float
-
 val caml_gc_set : control -> unit
 val caml_gc_minor : unit -> unit
 val caml_gc_major_slice : int -> int

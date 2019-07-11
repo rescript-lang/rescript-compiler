@@ -11,12 +11,12 @@
 (***********************************************************************)
 
 module M = struct
- type t = string
+  type t = string
 
- let x = 0
- let x = 1
+  let x = 0
+  let x = 1
 
- module Set = Set.Make(String)
+  module Set = Set.Make (String)
 end
 
 include M

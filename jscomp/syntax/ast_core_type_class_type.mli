@@ -22,15 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-val handle_class_type_fields :  
-  Bs_ast_mapper.mapper ->
-  Parsetree.class_type_field list -> 
-  Parsetree.class_type_field list 
+val handle_class_type_fields :
+     Bs_ast_mapper.mapper
+  -> Parsetree.class_type_field list
+  -> Parsetree.class_type_field list
 
 val typ_mapper :
-  bool ref ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.core_type ->  
-  Parsetree.core_type
+     bool ref
+  -> Bs_ast_mapper.mapper
+  -> Parsetree.core_type
+  -> Parsetree.core_type

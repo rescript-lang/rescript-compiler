@@ -1,11 +1,8 @@
-include (struct
-external to_str : 'a -> string = "JSON.stringify" [@@bs.val]
-let debug x = print_endline (to_str x )
+include (
+  struct
+    external to_str : 'a -> string = "JSON.stringify" [@@bs.val]
 
-let  () =
-  begin
-    debug @@ 2  ;
-    debug 1
-  end
-
-end : sig end)
+    let debug x = print_endline (to_str x)
+    let () = debug @@ 2 ; debug 1
+  end :
+    sig end )

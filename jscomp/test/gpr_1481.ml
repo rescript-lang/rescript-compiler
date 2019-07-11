@@ -1,9 +1,5 @@
+type moduleId = < name: string > Js.t
 
-
-type moduleId = < name : string > Js.t
-  
 external moduleId : moduleId = "#moduleid" [@@bs.module]
 
-
-let f () =
-  moduleId##name
+let f () = moduleId##name

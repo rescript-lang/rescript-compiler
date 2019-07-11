@@ -24,71 +24,61 @@
 
 type 'a t = 'a array
 
-val filterInPlace : ('a -> bool [@bs]) -> 'a t -> unit
-
+val filterInPlace : (('a -> bool)[@bs]) -> 'a t -> unit
 val empty : 'a t -> unit
-
 val pushBack : 'a -> 'a t -> unit
 
-val copy : 'a t -> 'a t 
+val copy : 'a t -> 'a t
 (** shallow copy *)
 
 val memByRef : 'a -> 'a t -> bool
-
-val iter : ('a -> unit [@bs]) -> 'a t -> unit
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
-
+val iter : (('a -> unit)[@bs]) -> 'a t -> unit
+val iteri : ((int -> 'a -> unit)[@bs]) -> 'a t -> unit
 
 (* [@@deprecated "Use Js.List.toVector instead"] *)
-(* val ofList : 'a list -> 'a t   *)
-(* removed, we choose that {!Js.List} depends on Vector to avoid cylic dependency
-*)
+(* val ofList : 'a list -> 'a t *)
+(* removed, we choose that {!Js.List} depends on Vector to avoid cylic
+   dependency *)
 
 val toList : 'a t -> 'a list
+val map : (('a -> 'b)[@bs]) -> 'a t -> 'b t
+val mapi : ((int -> 'a -> 'b)[@bs]) -> 'a t -> 'b t
+val foldLeft : (('a -> 'b -> 'a)[@bs]) -> 'a -> 'b t -> 'a
+val foldRight : (('b -> 'a -> 'a)[@bs]) -> 'b t -> 'a -> 'a
 
-val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 
-val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t 
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a 
-val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a 
 external length : 'a t -> int = "%array_length"
 (** Return the length (number of elements) of the given array. *)
 
 external get : 'a t -> int -> 'a = "%array_safe_get"
-(** [Array.get a n] returns the element number [n] of array [a].
-   The first element has number 0.
-   The last element has number [Array.length a - 1].
-   You can also write [a.(n)] instead of [Array.get a n].
+(** [Array.get a n] returns the element number [n] of array [a]. The first
+    element has number 0. The last element has number [Array.length a - 1]. You
+    can also write [a.(n)] instead of [Array.get a n].
 
-   Raise [Invalid_argument "index out of bounds"]
-   if [n] is outside the range 0 to [(Array.length a - 1)]. *)
+    Raise [Invalid_argument "index out of bounds"] if [n] is outside the range
+    0 to [(Array.length a - 1)]. *)
 
 external set : 'a t -> int -> 'a -> unit = "%array_safe_set"
-(** [Array.set a n x] modifies array [a] in place, replacing
-   element number [n] with [x].
-   You can also write [a.(n) <- x] instead of [Array.set a n x].
+(** [Array.set a n x] modifies array [a] in place, replacing element number [n]
+    with [x]. You can also write [a.(n) <- x] instead of [Array.set a n x].
 
-   Raise [Invalid_argument "index out of bounds"]
-   if [n] is outside the range 0 to [Array.length a - 1]. *)
-
+    Raise [Invalid_argument "index out of bounds"] if [n] is outside the range
+    0 to [Array.length a - 1]. *)
 
 external make : int -> 'a -> 'a t = "caml_make_vect"
-(** [Array.make n x] returns a fresh array of length [n],
-   initialized with [x].
-   All the elements of this new array are initially
-   physically equal to [x] (in the sense of the [==] predicate).
-   Consequently, if [x] is mutable, it is shared among all elements
-   of the array, and modifying [x] through one of the array entries
-   will modify all other entries at the same time.
+(** [Array.make n x] returns a fresh array of length [n], initialized with [x].
+    All the elements of this new array are initially physically equal to [x]
+    (in the sense of the [==] predicate). Consequently, if [x] is mutable, it
+    is shared among all elements of the array, and modifying [x] through one of
+    the array entries will modify all other entries at the same time.
 
-   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].
-   If the value of [x] is a floating-point number, then the maximum
-   size is only [Sys.max_array_length / 2].*)
+    Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length]. If the
+    value of [x] is a floating-point number, then the maximum size is only
+    [Sys.max_array_length / 2].*)
 
-
-val init : int -> (int -> 'a [@bs]) -> 'a t 
-(** @param n size 
+val init : int -> ((int -> 'a)[@bs]) -> 'a t
+(** @param n size
     @param fn callback
-    @raise RangeError when [n] is negative  *)
+    @raise RangeError when [n] is negative *)
 
 val append : 'a -> 'a t -> 'a t
 (** [append x a] returns a fresh array with x appended to a *)

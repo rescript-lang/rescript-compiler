@@ -22,63 +22,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 type t = Ext_path.t
 
 let cwd = lazy (Sys.getcwd ())
 
-
-
-
 (* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
+let rec find_root_filename ~cwd filename =
+  if Sys.file_exists (Filename.concat cwd filename) then cwd
+  else
+    let cwd' = Filename.dirname cwd in
+    if String.length cwd' < String.length cwd then
+      find_root_filename ~cwd:cwd' filename
+    else
+      Ext_pervasives.failwithf ~loc:__LOC__ "%s not found from %s" filename cwd
 
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
+let find_package_json_dir cwd = find_root_filename ~cwd Literals.bsconfig_json
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
-
-
-
-
-
-
-
 let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
+  if Sys.unix then fun x -> x
+  else if Sys.win32 || Sys.cygwin then Ext_string.replace_slash_backward
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
+let maybe_quote (s : string) =
+  let noneed_quote =
     Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
+      | '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_' | '+' | '-' | '.' | '/' ->
+          true
+      | _ -> false) in
+  if noneed_quote then s else Filename.quote s

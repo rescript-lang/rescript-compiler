@@ -22,38 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type path = string list
+type status = No_path | Found of Ext_json_types.t | Wrong_type of path
 
-type path = string list 
-type status = 
-  | No_path
-  | Found of Ext_json_types.t 
-  | Wrong_type of path 
+type callback =
+  [ `Str of string -> unit
+  | `Str_loc of string -> Lexing.position -> unit
+  | `Flo of string -> unit
+  | `Flo_loc of string -> Lexing.position -> unit
+  | `Bool of bool -> unit
+  | `Obj of Ext_json_types.t String_map.t -> unit
+  | `Arr of Ext_json_types.t array -> unit
+  | `Arr_loc of
+    Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit
+  | `Null of unit -> unit
+  | `Not_found of unit -> unit
+  | `Id of Ext_json_types.t -> unit ]
 
-
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Flo_loc of (string -> Lexing.position -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of 
-    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-val test:
-  ?fail:(unit -> unit) ->
-  string -> callback 
+val test :
+     ?fail:(unit -> unit)
+  -> string
+  -> callback
   -> Ext_json_types.t String_map.t
-   -> Ext_json_types.t String_map.t
+  -> Ext_json_types.t String_map.t
 
-val query : path -> Ext_json_types.t ->  status
-
+val query : path -> Ext_json_types.t -> status
 val loc_of : Ext_json_types.t -> Ext_position.t
-
-val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
+val equal : Ext_json_types.t -> Ext_json_types.t -> bool

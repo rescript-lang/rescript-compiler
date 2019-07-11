@@ -22,72 +22,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 module P = Ext_pp
-module L = Js_dump_lit 
+module L = Js_dump_lit
 
-(**
-   https://stackoverflow.com/questions/9367572/rules-for-unquoted-javascript-object-literal-keys
-   https://mathiasbynens.be/notes/javascript-properties
-   https://mathiasbynens.be/notes/javascript-identifiers
+(** https://stackoverflow.com/questions/9367572/rules-for-unquoted-javascript-object-literal-keys
+    https://mathiasbynens.be/notes/javascript-properties
+    https://mathiasbynens.be/notes/javascript-identifiers
 
-   Let's not do smart things
-   {[
+    Let's not do smart things {[
      { 003 : 1} 
-   ]}
-   becomes 
-   {[
+                              ]} becomes {[
      { 3 : 1}
-   ]}
-*)
+                                         ]} *)
 
-let obj_property_no_need_quot s = 
-  let len = String.length s in 
-  if len > 0 then 
-    match String.unsafe_get s 0 with 
-    | '$' | '_'
-    | 'a'..'z'| 'A' .. 'Z' ->
-      Ext_string.for_all_from  s
-        1 
-        (function 
-          | 'a'..'z'|'A'..'Z'
-          | '$' | '_' 
-          | '0' .. '9' -> true
-          | _ -> false)
-
-    | _ -> false
-  else 
-    false 
-(** used in printing keys 
+(** used in printing keys
     {[
       {"x" : x};;
       {x : x }
         {"50x" : 2 } GPR #1943
-]}
-    Note we can not treat it in the same way when printing
-    [x.id] vs [{id : xx}]
-    for example, id can be number in object literal
-*)
+    ]} Note we can not treat it in the same way when printing [x.id] vs
+    [{id : xx}] for example, id can be number in object literal *)
+let obj_property_no_need_quot s =
+  let len = String.length s in
+  if len > 0 then
+    match String.unsafe_get s 0 with
+    | '$' | '_' | 'a' .. 'z' | 'A' .. 'Z' ->
+        Ext_string.for_all_from s 1 (function
+          | 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' -> true
+          | _ -> false)
+    | _ -> false
+  else false
 
-(** used in property access 
-    {[
+(** used in property access {[
       f.x ;;
       f["x"];;
-    ]}
-*)
-let property_access f s = 
-  if obj_property_no_need_quot s then 
-    begin 
-      P.string f L.dot;
-      P.string f s; 
-    end
-  else
-    begin 
-      P.bracket_group f 1 @@ fun _ ->
-      Js_dump_string.pp_string f s
-    end
+                            ]} *)
+let property_access f s =
+  if obj_property_no_need_quot s then (P.string f L.dot ; P.string f s)
+  else P.bracket_group f 1 @@ fun _ -> Js_dump_string.pp_string f s
 
-let property_key f s =     
-  if obj_property_no_need_quot s then 
-    P.string f s 
-  else Js_dump_string.pp_string f s  
+let property_key f s =
+  if obj_property_no_need_quot s then P.string f s
+  else Js_dump_string.pp_string f s

@@ -22,37 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Type for collecting call site information, used in JS IR *)
 
+type arity = Full | NA
 
-
-
-
-
-
-(** Type for collecting call site information, used in JS IR *) 
-
-type arity = 
-  | Full 
-  | NA 
-
-
-type call_info = 
+type call_info =
   | Call_ml (* called by plain ocaml expression *)
   | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> f x y === f ]} when [f] is an atom     
-  *) 
+  | Call_na
 
+(* either from [@@bs.val] or not available, such calls does not follow such
+   rules {[ fun x y -> f x y === f ]} when [f] is an atom *)
 
-type t = { 
-  call_info : call_info;
-  arity : arity;
-
-}
+type t = {call_info: call_info; arity: arity}
 
 val dummy : t
 val builtin_runtime_call : t
-
-val ml_full_call : t 
+val ml_full_call : t

@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,54 +22,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 let forEachU s f action =
   for i = s to f do
-    (action i [@bs] : unit)
+    ((action i [@bs]) : unit)
   done
 
-let forEach s f action = forEachU s f (fun[@bs] a -> action a)
-    
-let rec everyU s f p =
-  if s > f then true
-  else
-    p s [@bs] &&
-    (everyU (s + 1) f p )
-  
-let every s f p = everyU s f (fun [@bs] a -> p a)
-    
-let rec everyByAux s f ~step p =
-  if s > f then true
-  else
-    p s [@bs] &&
-    (everyByAux (s + step) f ~step p )
+let forEach s f action = forEachU s f (fun [@bs] a -> action a)
 
-let everyByU s f ~step p = 
-  if step > 0 then 
-     everyByAux s f ~step p
-  else true (* return empty range [true]*)  
+let rec everyU s f p =
+  if s > f then true else (p s [@bs]) && everyU (s + 1) f p
+
+let every s f p = everyU s f (fun [@bs] a -> p a)
+
+let rec everyByAux s f ~step p =
+  if s > f then true else (p s [@bs]) && everyByAux (s + step) f ~step p
+
+let everyByU s f ~step p = if step > 0 then everyByAux s f ~step p else true
+
+(* return empty range [true]*)
 
 let everyBy s f ~step p = everyByU s f ~step (fun [@bs] a -> p a)
+let rec someU s f p = if s > f then false else (p s [@bs]) || someU (s + 1) f p
+let some s f p = someU s f (fun [@bs] a -> p a)
 
-let rec someU s f p =  
-  if s > f then false
-  else
-    p s [@bs] ||
-    (someU (s + 1) f p )
+let rec someByAux s f ~step p =
+  if s > f then false else (p s [@bs]) || someByAux (s + step) f ~step p
 
+let someByU s f ~step p = if step > 0 then someByAux s f ~step p else false
 
-let some s f p = someU s f (fun[@bs] a -> p a)
+(* return empty range, [false] *)
 
-let rec someByAux s f ~step p =  
-  if s > f then false
-  else
-    p s [@bs] ||
-    (someByAux (s + step) f ~step p )
-    
-let someByU s f ~step p = 
-    if step > 0 then 
-      someByAux s f ~step p 
-    else false  (* return empty range, [false] *) 
-
-let someBy s f ~step p = someByU s f ~step (fun[@bs] a -> p a)
+let someBy s f ~step p = someByU s f ~step (fun [@bs] a -> p a)

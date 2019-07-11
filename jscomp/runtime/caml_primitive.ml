@@ -22,99 +22,73 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let caml_int_compare (x : int) (y : int) : int =
+  if x < y then -1 else if x = y then 0 else 1
 
-let caml_int_compare (x : int) (y: int) : int =
-  if  x < y then -1 else if x = y then 0 else  1
-let caml_bool_compare (x : bool) (y : bool): int = 
-  match x,y with 
-  | true, true | false , false -> 0 
-  | true, false -> 1 
+let caml_bool_compare (x : bool) (y : bool) : int =
+  match (x, y) with
+  | true, true | false, false -> 0
+  | true, false -> 1
   | false, true -> -1
 
 let caml_int32_compare = caml_int_compare
 let caml_nativeint_compare = caml_int_compare
 
-let caml_float_compare (x : float) (y : float ) =
+let caml_float_compare (x : float) (y : float) =
   if x = y then 0
-  else if x < y then  -1
+  else if x < y then -1
   else if x > y then 1
   else if x = x then 1
   else if y = y then -1
   else 0
 
 (* Lexical order *)
-let caml_string_compare (s1 : string) (s2 : string) : int = 
-  if s1 = s2 then 0 
-  else if s1 < s2 then -1
-  else 1
+let caml_string_compare (s1 : string) (s2 : string) : int =
+  if s1 = s2 then 0 else if s1 < s2 then -1 else 1
 
-let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
-  if off < len then 
-    let a, b = Caml_bytes_extern.unsafe_get s1 off, Caml_bytes_extern.unsafe_get s2 off in  
+let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =
+  if off < len then
+    let a, b =
+      (Caml_bytes_extern.unsafe_get s1 off, Caml_bytes_extern.unsafe_get s2 off)
+    in
     if a > b then 1
-    else if a < b then -1 
-    else caml_bytes_compare_aux s1 s2 (off + 1) len def 
-  else def   
+    else if a < b then -1
+    else caml_bytes_compare_aux s1 s2 (off + 1) len def
+  else def
 
-(* code path could be using a tuple if we can eliminate the tuple allocation for code below
-  {[
-    let (len, v) = 
-        if len1 = len2 then (..,...)
-        else (.., .)
-  ]}
-  
-*)
-let caml_bytes_compare (s1 : bytes) (s2 : bytes) : int =  
-  let len1, len2 = Caml_bytes_extern.length s1, Caml_bytes_extern.length s2 in 
-  if len1 = len2 then 
-    caml_bytes_compare_aux s1 s2 0 len1 0 
-  else if len1 < len2 then   
-    caml_bytes_compare_aux s1 s2 0 len1 (-1)
+(* code path could be using a tuple if we can eliminate the tuple allocation
+   for code below {[ let (len, v) = if len1 = len2 then (..,...) else (.., .)
+   ]} *)
+let caml_bytes_compare (s1 : bytes) (s2 : bytes) : int =
+  let len1, len2 = (Caml_bytes_extern.length s1, Caml_bytes_extern.length s2) in
+  if len1 = len2 then caml_bytes_compare_aux s1 s2 0 len1 0
+  else if len1 < len2 then caml_bytes_compare_aux s1 s2 0 len1 (-1)
+  else caml_bytes_compare_aux s1 s2 0 len2 1
+
+let rec caml_bytes_equal_aux (s1 : bytes) s2 (off : int) len =
+  if off = len then true
   else
-    caml_bytes_compare_aux s1 s2 0 len2 1 
+    let a, b =
+      (Caml_bytes_extern.unsafe_get s1 off, Caml_bytes_extern.unsafe_get s2 off)
+    in
+    a = b && caml_bytes_equal_aux s1 s2 (off + 1) len
 
-let rec caml_bytes_equal_aux (s1 : bytes) s2 (off : int) len =      
-  if off = len then true 
-  else 
-    let a, b = Caml_bytes_extern.unsafe_get s1 off, Caml_bytes_extern.unsafe_get s2 off in  
-    a = b
-    && caml_bytes_equal_aux s1 s2 (off + 1) len 
+let caml_bytes_equal (s1 : bytes) (s2 : bytes) : bool =
+  let len1, len2 = (Caml_bytes_extern.length s1, Caml_bytes_extern.length s2) in
+  len1 = len2 && caml_bytes_equal_aux s1 s2 0 len1
 
-let caml_bytes_equal (s1 : bytes) (s2 : bytes) : bool = 
-  let len1, len2 = Caml_bytes_extern.length s1, Caml_bytes_extern.length s2 in 
-  len1 = len2 &&
-  caml_bytes_equal_aux s1 s2 0 len1 
-
-
-type 'a selector = 'a -> 'a -> 'a 
+type 'a selector = 'a -> 'a -> 'a
 
 (* could be replaced by [Math.min], but it seems those built-ins are slower *)
-let caml_bool_min (x : bool) y : bool =  
-    if x then y else x 
-let caml_int_min (x : int) (y : int) : int =
-  if x < y then x else y 
-let caml_float_min (x : float) y   =
-  if x < y then x else y   
-let caml_string_min (x : string) y =     
-  if x < y then x else y 
-let caml_nativeint_min (x : nativeint) y =   
-  if x < y then x else y 
-let caml_int32_min (x : int32) y   = 
-  if x < y then x else y 
-
-let caml_bool_max (x : bool) y : bool =   
-  if x then x else y
-let caml_int_max (x : int) (y : int) : int =
-  if x > y then x else y 
-let caml_float_max (x : float) y   =
-  if x > y then x else y   
-let caml_string_max (x : string) y =     
-  if x > y then x else y 
-let caml_nativeint_max (x : nativeint) y =   
-  if x > y then x else y 
-let caml_int32_max (x : int32) y   = 
-  if x > y then x else y 
-
-
-
-
+let caml_bool_min (x : bool) y : bool = if x then y else x
+let caml_int_min (x : int) (y : int) : int = if x < y then x else y
+let caml_float_min (x : float) y = if x < y then x else y
+let caml_string_min (x : string) y = if x < y then x else y
+let caml_nativeint_min (x : nativeint) y = if x < y then x else y
+let caml_int32_min (x : int32) y = if x < y then x else y
+let caml_bool_max (x : bool) y : bool = if x then x else y
+let caml_int_max (x : int) (y : int) : int = if x > y then x else y
+let caml_float_max (x : float) y = if x > y then x else y
+let caml_string_max (x : string) y = if x > y then x else y
+let caml_nativeint_max (x : nativeint) y = if x > y then x else y
+let caml_int32_max (x : int32) y = if x > y then x else y

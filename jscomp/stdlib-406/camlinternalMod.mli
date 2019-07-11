@@ -13,18 +13,10 @@
 (*                                                                        *)
 (**************************************************************************)
 
-(** Run-time support for recursive modules.
-    All functions in this module are for system use only, not for the
-    casual user. *)
+(** Run-time support for recursive modules. All functions in this module are
+    for system use only, not for the casual user. *)
 
-type shape =
-  | Function
-  | Lazy
-  | Class
-  | Module of shape array
-  | Value of Obj.t
-#if BS then 
-#else
-val init_mod: string * int * int -> shape -> Obj.t
-val update_mod: shape -> Obj.t -> Obj.t -> unit
-#end
+type shape = Function | Lazy | Class | Module of shape array | Value of Obj.t
+
+val init_mod : string * int * int -> shape -> Obj.t
+val update_mod : shape -> Obj.t -> Obj.t -> unit

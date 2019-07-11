@@ -22,77 +22,64 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functionality for dealing with values that can be both [null] and [undefined] *)
+(** Contains functionality for dealing with values that can be both [null] and
+    [undefined] *)
 
+type +'a t = 'a Js.null_undefined
 (** Local alias for ['a Js.null_undefined] *)
-type + 'a t = 'a Js.null_undefined
 
-(** Constructs a value of ['a Js.null_undefined] containing a value of ['a] *)
 external return : 'a -> 'a t = "%identity"
+(** Constructs a value of ['a Js.null_undefined] containing a value of ['a] *)
 
-external test : 'a t -> bool =  "#is_nullable"
-[@@ocaml.deprecated "Use Js.Nullable.isNullable instead"]
+external test : 'a t -> bool = "#is_nullable"
+  [@@ocaml.deprecated "Use Js.Nullable.isNullable instead"]
 
-(** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
-external isNullable : 'a t -> bool =  "#is_nullable"
+external isNullable : 'a t -> bool = "#is_nullable"
+(** Returns [true] if the given value is [null] or [undefined], [false]
+    otherwise *)
 
-(** The [null] value of type ['a Js.null_undefined]*)
 external null : 'a t = "#null"
+(** The [null] value of type ['a Js.null_undefined]*)
 
-(** The [undefined] value of type ['a Js.null_undefined] *)
 external undefined : 'a t = "#undefined"
+(** The [undefined] value of type ['a Js.null_undefined] *)
 
-
-
+val bind : 'a t -> (('a -> 'b)[@bs]) -> 'b t
 (** Maps the contained value using the given function
 
-If ['a Js.null_undefined] contains a value, that value is unwrapped, mapped to a ['b] using
-the given function [a' -> 'b], then wrapped back up and returned as ['b Js.null_undefined]
-
-@example {[
+    If ['a Js.null_undefined] contains a value, that value is unwrapped, mapped
+    to a ['b] using the given function [a' -> 'b], then wrapped back up and
+    returned as ['b Js.null_undefined]
+    @example
+    {[
 let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
   Js.Undefined.bind maybeGreeting (fun greeting -> greeting ^ " world!")
-]}
-*)
-val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
+    ]} *)
 
+val iter : 'a t -> (('a -> unit)[@bs]) -> unit
 (** Iterates over the contained value with the given function
 
-If ['a Js.null_undefined] contains a value, that value is unwrapped and applied to
-the given function.
-
-@example {[
+    If ['a Js.null_undefined] contains a value, that value is unwrapped and
+    applied to the given function.
+    @example
+    {[
 let maybeSay (maybeMessage: string Js.null_undefined) =
   Js.Null_undefined.iter maybeMessage (fun message -> Js.log message)
-]}
-*)
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
+    ]} *)
 
+val fromOption : 'a option -> 'a t
 (** Maps ['a option] to ['a Js.null_undefined]
 
-{%html:
-<table>
-<tr> <td>Some a <td>-> <td>return a
-<tr> <td>None <td>-> <td>undefined
-</table>
-%}
-*)
-val fromOption : 'a option -> 'a t
+    {%html:<table> <tr> <td>Some a <td>-> <td>return a <tr> <td>None <td>->
+    <td>undefined </table>%} *)
 
-val from_opt: 'a option -> 'a t
-[@@ocaml.deprecated "Use fromOption instead"]
+val from_opt : 'a option -> 'a t [@@ocaml.deprecated "Use fromOption instead"]
 
+external toOption : 'a t -> 'a option = "#nullable_to_opt"
 (** Maps ['a Js.null_undefined] to ['a option]
 
-{%html:
-<table>
-<tr> <td>return a <td>-> <td>Some a
-<tr> <td>undefined <td>-> <td>None
-<tr> <td>null <td>-> <td>None
-</table>
-%}
-*)
-external toOption : 'a t -> 'a option = "#nullable_to_opt"
+    {%html:<table> <tr> <td>return a <td>-> <td>Some a <tr> <td>undefined
+    <td>-> <td>None <tr> <td>null <td>-> <td>None </table>%} *)
 
 external to_opt : 'a t -> 'a option = "#nullable_to_opt"
-[@@ocaml.deprecated "Use toOption instead"]
+  [@@ocaml.deprecated "Use toOption instead"]

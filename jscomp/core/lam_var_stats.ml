@@ -22,52 +22,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Used in loop, huge punishment *)
+let loop_use = 100
 
-let loop_use = 100 (** Used in loop, huge punishment *)
+type stats =
+  { top: bool
+  ; (* all appearances are in the top, substitution is fine whether it is pure
+       or not {[ (fun x y -> x + y + (f x )) (32) (console.log('hi'), 33) ]}
+       since in ocaml, the application order is intentionally undefined, note
+       if [times] is not one, this field does not make sense *)
+    times: int }
 
-type stats = 
-  { 
-    top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    times : int ; 
-  }
-
-
-
-let fresh_stats  : stats = { top = true; times = 0 }  
-let sink_stats : stats = { top = false; times = loop_use}
+let fresh_stats : stats = {top= true; times= 0}
+let sink_stats : stats = {top= false; times= loop_use}
 let stats top times = {top; times}
-let top_and_used_zero_or_one x = 
-  match x with
-  | {top = true; times = 0 | 1} -> true
-  | _ -> false
-type position = 
+
+let top_and_used_zero_or_one x =
+  match x with {top= true; times= 0 | 1} -> true | _ -> false
+
+type position =
   | Begin (* top = true ; loop = false *)
   | Not_begin (* top = false; loop = false *)
-  | Sink (* loop = true *)
+  | Sink
 
+(* loop = true *)
 
-let update (pos : position) (v : stats) : stats =  
-  match pos with 
-  | Begin -> { v with times = v.times + 1}
-  | Not_begin -> { top = false;  times = v.times + 1}
+let update (pos : position) (v : stats) : stats =
+  match pos with
+  | Begin -> {v with times= v.times + 1}
+  | Not_begin -> {top= false; times= v.times + 1}
   | Sink -> sink_stats
-
 
 let sink : position = Sink
 let fresh_env : position = Begin
 
-
-(* no side effect, if argument has no side effect and used only once we can simply do the replacement *)
-let new_position_after_lam lam (env : position) : position = 
-  if not (env = Begin) || Lam_analysis.no_side_effects lam then env 
+(* no side effect, if argument has no side effect and used only once we can
+   simply do the replacement *)
+let new_position_after_lam lam (env : position) : position =
+  if (not (env = Begin)) || Lam_analysis.no_side_effects lam then env
   else Not_begin
-

@@ -22,26 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val read_ast : 'a Ml_binary.kind -> string -> 'a 
-
-
+val read_ast : 'a Ml_binary.kind -> string -> 'a
 val magic_sep_char : char
 
-(**
-   Check out {!Bsb_depfile_gen} for set decoding
-   The [.ml] file can be recognized as an ast directly, the format
-   is
-   {
-   magic number;
-   filename;
-   ast
-   }
-   when [fname] is "-" it means the file is from an standard input or pipe.
-   An empty name would marshallized.
+val write_ast :
+  fname:string -> output:string -> 'a Ml_binary.kind -> 'a -> unit
+(** Check out {!Bsb_depfile_gen} for set decoding The [.ml] file can be
+    recognized as an ast directly, the format is { magic number; filename; ast
+    } when [fname] is "-" it means the file is from an standard input or pipe.
+    An empty name would marshallized.
 
-   Use case cat - | fan -printer -impl -
-   redirect the standard input to fan
- *)
-val write_ast : fname:string -> output:string -> 'a Ml_binary.kind -> 'a -> unit
-
+    Use case cat - | fan -printer -impl - redirect the standard input to fan *)

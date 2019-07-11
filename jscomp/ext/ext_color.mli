@@ -22,23 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
+type color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
+type style = FG of color | BG of color | Bold | Dim
 
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
+val ansi_of_tag : string -> string
 (** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
 
 val reset_lit : string

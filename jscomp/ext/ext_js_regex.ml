@@ -22,24 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let check_from_end al =
   let rec aux l seen =
     match l with
     | [] -> false
-    | (e::r) ->
-      if e < 0 || e > 255 then false
-      else (let c = Char.chr e in
-            if c = '/' then true
-            else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
-                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-                        else false)))
-  in aux al []
+    | e :: r ->
+        if e < 0 || e > 255 then false
+        else
+          let c = Char.chr e in
+          if c = '/' then true
+          else if List.exists (fun x -> x = c) seen then false
+            (* flag should not be repeated *)
+          else if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c = 'u' then
+            aux r (c :: seen)
+          else false in
+  aux al []
 
 let js_regex_checker s =
-  match Ext_utf8.decode_utf8_string s with 
-  | [] -> false 
-  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    check_from_end (List.rev tail)       
-  | _ :: _ -> false 
-  | exception Ext_utf8.Invalid_utf8 _ -> false 
+  match Ext_utf8.decode_utf8_string s with
+  | [] -> false
+  | 47 (* [Char.code '/' = 47 ]*) :: tail -> check_from_end (List.rev tail)
+  | _ :: _ -> false
+  | exception Ext_utf8.Invalid_utf8 _ -> false

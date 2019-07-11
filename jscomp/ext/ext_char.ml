@@ -22,68 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk, backport
+    it here *)
 
-
-
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-#if OCAML_VERSION =~ ">4.03.0" then 
 let escaped = Char.escaped
-#else
-module Unsafe = struct 
-    external bytes_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-    external string_create: int -> string = "caml_create_string"
-    external unsafe_chr: int -> char = "%identity"
-end 
-let escaped ch = 
-  let open Unsafe in 
-  match ch with 
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      bytes_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      bytes_unsafe_set s 0 '\\';
-      bytes_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      bytes_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      bytes_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-#end
 
-let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
-
-
+let valid_hex x =
+  match x with '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' -> true | _ -> false
 
 let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
-  || (c >= '\248' && c <= '\254')    
-let uppercase_ascii =
-#if OCAML_VERSION =~ ">4.3.0" then
-    Char.uppercase_ascii
-#else
-    Char.uppercase
-#end      
+  || (c >= '\248' && c <= '\254')
 
-let lowercase_ascii = 
-#if OCAML_VERSION =~ ">4.3.0" then
-    Char.lowercase_ascii
-#else
-    Char.lowercase
-#end      
+let uppercase_ascii = Char.uppercase_ascii
+let lowercase_ascii = Char.lowercase_ascii

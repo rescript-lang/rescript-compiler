@@ -22,12 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
- val convertBsErrorFunction :    
-   Location.t -> 
-   Bs_ast_mapper.mapper -> 
-   Ast_helper.attrs -> 
-   Parsetree.case list ->
-   Parsetree.expression
+val convertBsErrorFunction :
+     Location.t
+  -> Bs_ast_mapper.mapper
+  -> Ast_helper.attrs
+  -> Parsetree.case list
+  -> Parsetree.expression

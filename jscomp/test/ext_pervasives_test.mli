@@ -22,39 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Extension to standard library [Pervavives] module, safe to open *)
 
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
+external reraise : exn -> 'a = "%reraise"
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
 val is_pos_pow : Int32.t -> int
-
 val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
 val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
 val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-val pp_any : Format.formatter -> 'a -> unit 
+val dump : 'a -> string
+val pp_any : Format.formatter -> 'a -> unit
 external id : 'a -> 'a = "%identity"
 
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
 val hash_variant : string -> int
+(** Copied from {!Btype.hash_variant}: need sync up and add test case *)

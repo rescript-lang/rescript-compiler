@@ -22,46 +22,39 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
+(**  *)
 
-(** TODO: check with {!String.of_char} 
-    it's quite common that we have
-    {[ Caml_string_extern.of_char x.[0] ]}
-    It would be nice to generate code as below    
-    {[ x[0]
-    ]}
-*)
+(** TODO: check with {!String.of_char} it's quite common that we have
+    {[
+Caml_string_extern.of_char x.[0]
+    ]} It would be nice to generate code as below {[
+x[0]
+                                                  ]} *)
 
 (*ATT: this relies on we encode `char' as int *)
-external of_char : char -> string = "String.fromCharCode" 
-[@@bs.val]  
-external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
+external of_char : char -> string = "String.fromCharCode" [@@bs.val]
+external toUpperCase : string -> string = "toUpperCase" [@@bs.send]
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
-external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
-external slice : string -> int -> int -> string = "slice" 
-    [@@bs.send]
-external slice_rest : string -> int -> string = "slice" 
-    [@@bs.send]
-external index_of : string -> string -> int = "indexOf"
-    [@@bs.send]
 
-external of_small_int_array :  
-    (_ [@bs.as {json|null|json}] ) -> 
-    int array -> string = 
-    "String.fromCharCode.apply" 
-[@@bs.val]
+external of_nativeint : nativeint -> base:int -> string = "toString"
+  [@@bs.send]
 
-external of_small_int32_array : 
-    int32 array -> string = 
-    "String.fromCharCode" 
-[@@bs.val] [@@bs.splice]   
+external slice : string -> int -> int -> string = "slice" [@@bs.send]
+external slice_rest : string -> int -> string = "slice" [@@bs.send]
+external index_of : string -> string -> int = "indexOf" [@@bs.send]
 
-external lastIndexOf : string -> string -> int = "lastIndexOf"
-[@@bs.send] (* used in {!Caml_io} *)
- 
+external of_small_int_array :
+  (_[@bs.as {json|null|json}]) -> int array -> string
+  = "String.fromCharCode.apply"
+  [@@bs.val]
 
+external of_small_int32_array : int32 array -> string = "String.fromCharCode"
+  [@@bs.val] [@@bs.splice]
+
+external lastIndexOf : string -> string -> int = "lastIndexOf" [@@bs.send]
+
+(* used in {!Caml_io} *)
 
 external length : string -> int = "%string_length"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-

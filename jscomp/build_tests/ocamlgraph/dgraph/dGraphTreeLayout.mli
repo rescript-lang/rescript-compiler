@@ -28,26 +28,29 @@ open Graph
 type cluster = string
 
 module Make
-    (Tree: Graphviz.GraphWithDotAttrs)
-    (TreeManipulation: sig val is_ghost_node: Tree.V.t -> bool end):
-sig
-
-  val from_tree:
+    (Tree : Graphviz.GraphWithDotAttrs) (TreeManipulation : sig
+      val is_ghost_node : Tree.V.t -> bool
+    end) : sig
+  val from_tree :
     [> `widget] Gtk.obj -> Tree.t -> Tree.V.t -> XDot.Make(Tree).graph_layout
-
 end
 
 module MakeFromDotModel
-    (Tree : Sig.G with type V.label = DGraphModel.DotG.V.t
-                   and type E.label = unit)
-    (TreeManipulation: sig val is_ghost_node: Tree.V.t -> bool end):
-sig
+    (Tree : Sig.G
+              with type V.label = DGraphModel.DotG.V.t
+               and type E.label = unit)
+    (TreeManipulation : sig
+      val is_ghost_node : Tree.V.t -> bool
+    end) : sig
+  module Tree :
+    Graphviz.GraphWithDotAttrs
+      with module V = Tree.V
+       and module E = Tree.E
+       and type t = Tree.t
 
-  module Tree: Graphviz.GraphWithDotAttrs with module V = Tree.V
-                                           and module E = Tree.E
-                                           and type t = Tree.t
-
-  val from_model:
-    Tree.t -> Tree.V.t -> DGraphModel.dotg_model -> XDot.Make(Tree).graph_layout
-
+  val from_model :
+       Tree.t
+    -> Tree.V.t
+    -> DGraphModel.dotg_model
+    -> XDot.Make(Tree).graph_layout
 end

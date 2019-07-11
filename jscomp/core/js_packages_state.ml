@@ -22,27 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let packages_info  = ref Js_packages_info.empty
-
-
+let packages_info = ref Js_packages_info.empty
 
 let set_package_name name =
-  if Js_packages_info.is_empty !packages_info then 
-      packages_info := Js_packages_info.from_name name
-  else
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+  if Js_packages_info.is_empty !packages_info then
+    packages_info := Js_packages_info.from_name name
+  else Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
-let set_package_map module_name = 
-    (* set_package_name name ; 
-    let module_name = Ext_namespace.namespace_of_package_name name  in  *)
-    Clflags.dont_record_crc_unit := Some module_name;
-    Clflags.open_modules := 
-      module_name::
-      !Clflags.open_modules
-      
-let update_npm_package_path s  = 
-  packages_info := 
-    Js_packages_info.add_npm_package_path !packages_info s 
+let set_package_map module_name =
+  (* set_package_name name ; let module_name =
+     Ext_namespace.namespace_of_package_name name in *)
+  Clflags.dont_record_crc_unit := Some module_name ;
+  Clflags.open_modules := module_name :: !Clflags.open_modules
 
-let get_packages_info () = !packages_info  
+let update_npm_package_path s =
+  packages_info := Js_packages_info.add_npm_package_path !packages_info s
+
+let get_packages_info () = !packages_info

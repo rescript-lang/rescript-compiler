@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,5 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+include Resize_array.Make (struct
+  type t = string
 
-include Resize_array.Make(struct type t = string let null = "" end)
+  let null = ""
+end)

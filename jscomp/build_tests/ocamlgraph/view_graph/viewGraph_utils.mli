@@ -18,6 +18,4 @@
 (** This file provide useful function to build windows to put the graph *)
 
 val create_scrolled_canvas : (GObj.widget -> unit) -> GnoCanvas.canvas
-
 val create_graph_win : string -> ViewGraph_select.t_env
-

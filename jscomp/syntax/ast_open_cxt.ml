@@ -22,60 +22,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type loc = Location.t 
+type loc = Location.t
 
 type whole =
   | Let_open of
-      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
-       Parsetree.attributes)
+      ( Asttypes.override_flag
+      * Longident.t Asttypes.loc
+      * loc
+      * Parsetree.attributes )
 
 type t = whole list
-
 type exp = Parsetree.expression
+type destruct_output = exp list
 
-type destruct_output =
-  exp list
-  
-(**
-   destruct such pattern
-   {[ A.B.let open C in (a,b)]}
-*)
-let rec destruct_open_tuple
-    (e : Parsetree.expression)
-    (acc : t)
-  : (t * destruct_output * _) option =
+(** destruct such pattern {[
+A.B.let open C in (a,b)
+                          ]} *)
+let rec destruct_open_tuple (e : Parsetree.expression) (acc : t) :
+    (t * destruct_output * _) option =
   match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct_open_tuple
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | Pexp_open (flag, lid, cont) ->
+      destruct_open_tuple cont
+        (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
   | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
   | _ -> None
 
-let rec destruct
-    (e : Parsetree.expression)
-    (acc : t) 
-  =
+let rec destruct (e : Parsetree.expression) (acc : t) =
   match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | _ -> e, acc
-  
+  | Pexp_open (flag, lid, cont) ->
+      destruct cont (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | _ -> (e, acc)
 
-
-let restore_exp 
-    (xs : Parsetree.expression) 
-    (qualifiers : t) : Parsetree.expression = 
-  Ext_list.fold_left qualifiers xs (fun x hole  ->
+let restore_exp (xs : Parsetree.expression) (qualifiers : t) :
+    Parsetree.expression =
+  Ext_list.fold_left qualifiers xs (fun x hole ->
       match hole with
-      | Let_open (flag, lid,loc,attrs) ->
-        ({
-          pexp_desc = Pexp_open (flag,lid,x);
-          pexp_attributes = attrs;
-          pexp_loc = loc
-        } : Parsetree.expression)
-    ) 
+      | Let_open (flag, lid, loc, attrs) ->
+          ( { pexp_desc= Pexp_open (flag, lid, x)
+            ; pexp_attributes= attrs
+            ; pexp_loc= loc }
+            : Parsetree.expression ))

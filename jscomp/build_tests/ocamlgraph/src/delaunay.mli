@@ -22,7 +22,6 @@
 (** Delaunay triangulation is available for any CCC system in the sense
     of Knuth's ``Axioms and Hulls'' *)
 module type CCC = sig
-
   type point
 
   val ccw : point -> point -> point -> bool
@@ -34,13 +33,11 @@ module type CCC = sig
   (** The relation [in_circle p q r s] states that [s] lies
       inside the circle [(p,q,r)] if [ccw p q r] is true, or outside that
       circle if [ccw p q r] is false. *)
-
 end
 
 (** The result of triangulation is an abstract value of type [triangulation].
     Then one can iterate over all edges of the triangulation. *)
 module type Triangulation = sig
-
   module S : CCC
 
   type triangulation
@@ -60,20 +57,19 @@ module type Triangulation = sig
 
   val iter_triangles :
     (S.point -> S.point -> S.point -> unit) -> triangulation -> unit
-
 end
 
+module Make (S : CCC) : Triangulation with module S = S
 (** Generic Delaunay triangulation *)
-module Make(S : CCC) : Triangulation with module S = S
 
-(** Points with integer coordinates *)
 module IntPoints : CCC with type point = int * int
+(** Points with integer coordinates *)
 
-(** Delaunay triangulation with integer coordinates *)
 module Int : Triangulation with module S = IntPoints
+(** Delaunay triangulation with integer coordinates *)
 
-(** Points with floating point coordinates *)
 module FloatPoints : CCC with type point = float * float
+(** Points with floating point coordinates *)
 
-(** Delaunay triangulation with floating point coordinates *)
 module Float : Triangulation with module S = FloatPoints
+(** Delaunay triangulation with floating point coordinates *)

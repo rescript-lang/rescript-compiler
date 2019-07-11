@@ -15,35 +15,38 @@
 (*                                                                        *)
 (**************************************************************************)
 
-(** This module can be used to add some selection feature to {!ViewGraph}. 
- * See {!ViewGraph_test} to see how to use it.
- * *)
+(** This module can be used to add some selection feature to {!ViewGraph}. *
+    See {!ViewGraph_test} to see how to use it. * *)
 
-(** object returned by [init] and used by [open_dot_file] *)
 type t_env
+(** object returned by [init] and used by [open_dot_file] *)
 
-type t_options = {
-  sel_1_color : string; (** color of the selected node (default "red") *)
-  sel_2_color : string; (** color of the selected neighbour (default "green") *)
-  center_node_when_selected :bool; 
-  (** automatically center a node when it is selected (default true) *)
-}
+type t_options =
+  { sel_1_color: string  (** color of the selected node (default "red") *)
+  ; sel_2_color: string
+        (** color of the selected neighbour (default "green") *)
+  ; center_node_when_selected: bool
+        (** automatically center a node when it is selected (default true) *)
+  }
 
-(** some default values for the options.
- * It is a good idea to use it and overwrite the one that have to be changed,
- * just in case some more options appear *)
 val default_options : t_options
+(** some default values for the options. * It is a good idea to use it and
+    overwrite the one that have to be changed, * just in case some more options
+    appear *)
 
-(** should be called only once because it creates widgets.
- * The packing function is the place to put the messages about selection.
-*)
 val init : t_options -> GnoCanvas.canvas -> (GObj.widget -> unit) -> t_env
+(** should be called only once because it creates widgets. * The packing
+    function is the place to put the messages about selection. *)
 
 (** functor to instanciate with your callbacks *)
 module VG (UserCb : ViewGraph_core.SigCb) : sig
-  val open_dot_file : UserCb.t_env -> t_env -> 
-    ?dot_cmd:string -> string -> ViewGraph_core.t_graph
+  val open_dot_file :
+       UserCb.t_env
+    -> t_env
+    -> ?dot_cmd:string
+    -> string
+    -> ViewGraph_core.t_graph
 end
 
-(** Popup a message window with some help. *)
 val show_help : unit -> unit
+(** Popup a message window with some help. *)

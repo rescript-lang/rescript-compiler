@@ -22,68 +22,58 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
+(* We do dynamic hashing, and resize the table and rehash the elements when
+   buckets become too long. *)
 module C = Belt_internalBucketsType
-(* TODO:
-   the current implementation relies on the fact that bucket 
-   empty value is [undefined] in both places,
-   in theory, it can be different 
 
-*)
-type 'a bucket = {
-  mutable key : 'a;
-  mutable next : 'a bucket C.opt
-}  
-and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
+(* TODO: the current implementation relies on the fact that bucket empty value
+   is [undefined] in both places, in theory, it can be different *)
+type 'a bucket = {mutable key: 'a; mutable next: 'a bucket C.opt}
+
+and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container
 [@@bs.deriving abstract]
 
 module A = Belt_Array
 
-let rec copy ( x : _ t) : _ t= 
-  C.container
-    ~hash:(C.hashGet x)
-    ~eq:(C.eqGet x )
-    ~size:(C.sizeGet x)
+let rec copy (x : _ t) : _ t =
+  C.container ~hash:(C.hashGet x) ~eq:(C.eqGet x) ~size:(C.sizeGet x)
     ~buckets:(copyBuckets (C.bucketsGet x))
-and copyBuckets ( buckets : _ bucket C.opt array) =  
-  let len = A.length buckets in 
-  let newBuckets = A.makeUninitializedUnsafe len in 
-  for i = 0 to len - 1 do 
-    A.setUnsafe newBuckets i 
-    (copyBucket (A.getUnsafe buckets i))
+
+and copyBuckets (buckets : _ bucket C.opt array) =
+  let len = A.length buckets in
+  let newBuckets = A.makeUninitializedUnsafe len in
+  for i = 0 to len - 1 do
+    A.setUnsafe newBuckets i (copyBucket (A.getUnsafe buckets i))
   done ;
   newBuckets
-and copyBucket c =   
-  match C.toOpt c with 
-  | None -> c 
-  | Some c -> 
-    let head = (bucket ~key:(keyGet c) 
-                  ~next:(C.emptyOpt)) in 
-    copyAuxCont (nextGet c) head;
-    C.return head
-and copyAuxCont c prec =       
-  match C.toOpt c with 
+
+and copyBucket c =
+  match C.toOpt c with
+  | None -> c
+  | Some c ->
+      let head = bucket ~key:(keyGet c) ~next:C.emptyOpt in
+      copyAuxCont (nextGet c) head ;
+      C.return head
+
+and copyAuxCont c prec =
+  match C.toOpt c with
   | None -> ()
-  | Some nc -> 
-    let ncopy = bucket ~key:(keyGet nc) ~next:C.emptyOpt in 
-    nextSet prec (C.return ncopy) ;
-    copyAuxCont (nextGet nc) ncopy
+  | Some nc ->
+      let ncopy = bucket ~key:(keyGet nc) ~next:C.emptyOpt in
+      nextSet prec (C.return ncopy) ;
+      copyAuxCont (nextGet nc) ncopy
 
-
-let rec bucketLength accu buckets = 
-  match C.toOpt buckets with 
+let rec bucketLength accu buckets =
+  match C.toOpt buckets with
   | None -> accu
   | Some cell -> bucketLength (accu + 1) (nextGet cell)
 
-
-
-let rec doBucketIter ~f buckets = 
-  match C.toOpt buckets with 
-  | None ->
-    ()
+let rec doBucketIter ~f buckets =
+  match C.toOpt buckets with
+  | None -> ()
   | Some cell ->
-    f (keyGet cell)  [@bs]; doBucketIter ~f (nextGet cell)
+      (f (keyGet cell) [@bs]) ;
+      doBucketIter ~f (nextGet cell)
 
 let forEachU h f =
   let d = C.bucketsGet h in
@@ -91,67 +81,56 @@ let forEachU h f =
     doBucketIter f (A.getUnsafe d i)
   done
 
-let forEach h f = forEachU h (fun[@bs] a -> f a )
-    
-let rec fillArray i arr cell =  
-  A.setUnsafe arr i (keyGet cell);
-  match C.toOpt (nextGet cell) with 
+let forEach h f = forEachU h (fun [@bs] a -> f a)
+
+let rec fillArray i arr cell =
+  A.setUnsafe arr i (keyGet cell) ;
+  match C.toOpt (nextGet cell) with
   | None -> i + 1
-  | Some v -> fillArray (i + 1) arr v 
+  | Some v -> fillArray (i + 1) arr v
 
-let toArray h = 
-  let d = C.bucketsGet h in 
-  let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
-  for i = 0 to A.length d - 1 do  
-    let cell = A.getUnsafe d i in 
-    match C.toOpt cell with 
+let toArray h =
+  let d = C.bucketsGet h in
+  let current = ref 0 in
+  let arr = A.makeUninitializedUnsafe (C.sizeGet h) in
+  for i = 0 to A.length d - 1 do
+    let cell = A.getUnsafe d i in
+    match C.toOpt cell with
     | None -> ()
-    | Some cell -> 
-      current := fillArray !current arr cell
-  done;
-  arr 
-
-
+    | Some cell -> current := fillArray !current arr cell
+  done ;
+  arr
 
 let rec doBucketFold ~f b accu =
   match C.toOpt b with
-  | None ->
-    accu
-  | Some cell ->
-    doBucketFold ~f (nextGet cell) (f  accu (keyGet cell) [@bs]) 
+  | None -> accu
+  | Some cell -> doBucketFold ~f (nextGet cell) (f accu (keyGet cell) [@bs])
 
 let reduceU h init f =
   let d = C.bucketsGet h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
     accu := doBucketFold ~f (A.getUnsafe d i) !accu
-  done;
+  done ;
   !accu
 
 let reduce h init f = reduceU h init (fun [@bs] a b -> f a b)
-    
+
 let getMaxBucketLength h =
-  A.reduceU (C.bucketsGet h) 0
-    (fun[@bs] m b -> 
-       let len = bucketLength 0 b in
-       Pervasives.max m len)
+  A.reduceU (C.bucketsGet h) 0 (fun [@bs] m b ->
+      let len = bucketLength 0 b in
+      Pervasives.max m len)
 
 let getBucketHistogram h =
-  let mbl = getMaxBucketLength h in 
-  let histo = A.makeByU (mbl + 1) (fun[@bs] _ -> 0) in
-  A.forEachU (C.bucketsGet h)
-    (fun[@bs] b ->
-       let l = bucketLength 0 b in
-       A.setUnsafe histo l (A.getUnsafe histo l + 1)
-    );
+  let mbl = getMaxBucketLength h in
+  let histo = A.makeByU (mbl + 1) (fun [@bs] _ -> 0) in
+  A.forEachU (C.bucketsGet h) (fun [@bs] b ->
+      let l = bucketLength 0 b in
+      A.setUnsafe histo l (A.getUnsafe histo l + 1)) ;
   histo
 
-
 let logStats h =
-  let histogram =  getBucketHistogram h in 
-  Js.log [%obj{ bindings = C.sizeGet h;
-                buckets = A.length (C.bucketsGet h);
-                histogram  }]
-
-
+  let histogram = getBucketHistogram h in
+  Js.log
+    [%obj
+      {bindings= C.sizeGet h; buckets= A.length (C.bucketsGet h); histogram}]

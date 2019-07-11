@@ -22,21 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
 (** Compile lambda primitives (note this is different external c calls) *)
 
-
-(** 
-    @return None when the primitives are not handled in  pre-processing
-*)
-val translate : 
-  Location.t ->
-  string ->
-  J.expression list -> J.expression 
+val translate : Location.t -> string -> J.expression list -> J.expression
+(** @return None when the primitives are not handled in pre-processing *)

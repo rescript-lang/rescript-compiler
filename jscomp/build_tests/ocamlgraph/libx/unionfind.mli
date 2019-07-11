@@ -15,19 +15,15 @@
 (*                                                                        *)
 (**************************************************************************)
 
-
-
 (* Unionfind structure over hash-ordered types.
 
    This module implements a unionfind data structure, given a total ordering
-   function and a hash function over the elements.
-
-*)
-
+   function and a hash function over the elements. *)
 
 module type HashedOrderedType = sig
   (* The type of the elements*)
   type t
+
   val equal : t -> t -> bool
   val hash : t -> int
   val compare : t -> t -> int
@@ -45,5 +41,3 @@ module type S = sig
 end
 
 module Make (X : HashedOrderedType) : S with type elt = X.t
-
-

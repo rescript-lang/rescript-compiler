@@ -23,44 +23,40 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type cst = private
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_int_lit of int
+  | Arg_string_lit of string
   | Arg_js_null
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
 
-
 type label = private
-  | Label of string * cst option 
+  | Label of string * cst option
   | Empty of cst option
-  | Optional of string 
-  (* it will be ignored , side effect will be recorded *)
+  | Optional of string
 
-type attr = 
+(* it will be ignored , side effect will be recorded *)
+
+type attr =
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (int * int) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+  | Fn_uncurry_arity of int
+  (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Extern_unit
   | Nothing
   | Ignore
   | Unwrap
 
-type t = 
-  {
-    arg_type : attr;
-    arg_label :label
-  }
+type t = {arg_type: attr; arg_label: label}
 
-val cst_json : Location.t -> string -> cst 
-val cst_int : int -> cst 
-val cst_string : string -> cst 
-
+val cst_json : Location.t -> string -> cst
+val cst_int : int -> cst
+val cst_string : string -> cst
 val empty_label : label
-val empty_lit : cst -> label 
-val label :  string -> cst option -> label
-val optional  : string -> label
+val empty_lit : cst -> label
+val label : string -> cst option -> label
+val optional : string -> label
 val empty_kind : attr -> t

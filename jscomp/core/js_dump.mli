@@ -17,23 +17,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
-(* Authors: Jérôme Vouillon, Hongbo Zhang  *)
+ *)
+(* Authors: Jérôme Vouillon, Hongbo Zhang *)
 
+val statement_list :
+  bool -> Ext_pp_scope.t -> Ext_pp.t -> J.block -> Ext_pp_scope.t
+(** Print JS IR to vanilla Javascript code Called by module {!Js_dump_program} *)
 
-
-(** Print JS IR to vanilla Javascript code 
-    Called by module {!Js_dump_program}
-*)
-val statement_list : 
-  bool ->
-  Ext_pp_scope.t -> 
-  Ext_pp.t -> 
-  J.block -> 
-  Ext_pp_scope.t
-
-
-(** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string
+(** 2 functions Only used for debugging *)
 
 val string_of_expression : J.expression -> string

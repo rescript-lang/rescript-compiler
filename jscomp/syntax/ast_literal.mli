@@ -22,42 +22,39 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a lit = ?loc:Location.t -> unit -> 'a
 
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-
-val predef_option : Longident.t 
-val predef_some : Longident.t 
-val predef_none : Longident.t 
+val predef_option : Longident.t
+val predef_some : Longident.t
+val predef_none : Longident.t
 
 module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val type_int : t 
-  val js_fn : t 
-  val js_meth : t 
-  val js_meth_callback : t 
-  val js_obj : t 
+  type t = Longident.t
 
-  val ignore_id : t 
-  val js_null : t 
+  val val_unit : t
+  val type_unit : t
+  val type_int : t
+  val js_fn : t
+  val js_meth : t
+  val js_meth_callback : t
+  val js_obj : t
+  val ignore_id : t
+  val js_null : t
   val js_undefined : t
-  val js_null_undefined : t 
-  val js_re_id : t 
-  val js_internal : t 
+  val js_null_undefined : t
+  val js_re_id : t
+  val js_internal : t
 end
 
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
+type expression_lit = Parsetree.expression lit
+type core_type_lit = Parsetree.core_type lit
+type pattern_lit = Parsetree.pattern lit
 
 val val_unit : expression_lit
-
 val type_unit : core_type_lit
 val type_exn : core_type_lit
 val type_string : core_type_lit
 val type_bool : core_type_lit
-val type_int : core_type_lit 
+val type_int : core_type_lit
 val type_any : core_type_lit
-
 val pat_unit : pattern_lit

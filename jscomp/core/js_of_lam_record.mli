@@ -22,15 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 (** Utilities for compiling lambda record into JS IR *)
 
 (* val make : J.mutable_flag -> (string * J.expression) list -> J.expression *)
 
-
-val field : Lam_compat.field_dbg_info -> J.expression -> J.jsint ->J.expression
-
+val field :
+  Lam_compat.field_dbg_info -> J.expression -> J.jsint -> J.expression

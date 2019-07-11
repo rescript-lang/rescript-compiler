@@ -22,14 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = {prim_name: string; prim_arity: int; prim_native_name: string}
 
- type t = {
-  prim_name : string;
-  prim_arity : int ; 
-  prim_native_name : string;
-}
-
-
-val of_primitive_description:
-  Primitive.description -> 
-  t 
+val of_primitive_description : Primitive.description -> t

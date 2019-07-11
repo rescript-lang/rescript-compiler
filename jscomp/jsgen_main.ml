@@ -22,36 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let get_files dir = 
-  let arr = 
-    Sys.readdir dir 
-    |> Ext_array.filter_map 
-      (fun  x -> 
-         if Ext_path.check_suffix_case x ".js"  then 
-           let y = Ext_path.chop_all_extensions_if_any x in 
-           if y <> "unix" &&
-              y <> "bigarray" && 
-              y <> "std_exit" &&
-              y <> "unixLabels" && 
-              y <> "node_process" (* does not work in browser*)
-           then 
-             Some ( "./stdlib/" ^ Filename.chop_extension (Filename.basename x))
-           else None
-         else None  )
-  in
+let get_files dir =
+  let arr =
+    Sys.readdir dir
+    |> Ext_array.filter_map (fun x ->
+           if Ext_path.check_suffix_case x ".js" then
+             let y = Ext_path.chop_all_extensions_if_any x in
+             if
+               y <> "unix" && y <> "bigarray" && y <> "std_exit"
+               && y <> "unixLabels" && y <> "node_process"
+               (* does not work in browser*)
+             then
+               Some
+                 ("./stdlib/" ^ Filename.chop_extension (Filename.basename x))
+             else None
+           else None) in
   (* Sort to guarantee it works the same across OSes *)
-  Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
+  Array.sort (fun (x : string) y -> Pervasives.compare x y) arr ;
   Array.to_list arr
 
-
-
-(* let () = 
-  Ext_pervasives.with_file_as_chan "./pre_load.js" 
-    (fun chan -> 
-       output_string chan 
-         (Printf.sprintf "function start(gist){require([%s], function(){loadGist(gist)})}" 
-            (String.concat "," 
-               (Ext_list.map (Printf.sprintf "%S" )
-                  (get_files "../lib/amdjs")
-               ))))   *)
+(* let () = Ext_pervasives.with_file_as_chan "./pre_load.js" (fun chan ->
+   output_string chan (Printf.sprintf "function start(gist){require([%s],
+   function(){loadGist(gist)})}" (String.concat "," (Ext_list.map
+   (Printf.sprintf "%S" ) (get_files "../lib/amdjs") )))) *)

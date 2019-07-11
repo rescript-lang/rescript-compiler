@@ -24,19 +24,17 @@
 
 (** Node Buffer API *)
 
-type t = Node.buffer 
+type t = Node.buffer
 
-external isBuffer : 'a -> bool = "Buffer.isBuffer" 
-[@@bs.val]
+external isBuffer : 'a -> bool = "Buffer.isBuffer" [@@bs.val]
+external fromString : string -> t = "Buffer.from" [@@bs.val]
 
-external fromString : string -> t = "Buffer.from"
-[@@bs.val]
+external fromStringWithEncoding :
+     string
+  -> ([`ascii | `utf8 | `utf16le | `usc2 | `base64 | `latin1 | `binary | `hex][@bs.string
+                                                                      ])
+  -> t = "from"
+  [@@bs.val] [@@bs.scope "Buffer"]
 
-external fromStringWithEncoding : string -> ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary  | `hex ] [@bs.string]) -> t = "from"
-[@@bs.val] [@@bs.scope "Buffer"]
-
-external toString : t -> string = "toString"
-[@@bs.send]
-
-external concat : t array -> t = "Buffer.concat"
-[@@bs.val]
+external toString : t -> string = "toString" [@@bs.send]
+external concat : t array -> t = "Buffer.concat" [@@bs.val]

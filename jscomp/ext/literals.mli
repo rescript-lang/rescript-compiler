@@ -22,35 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-val js_array_ctor : string 
+val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
 val js_type_boolean : string
 val js_undefined : string
 val js_prop_length : string
-
 val param : string
 val partial_arg : string
 val prim : string
 
+val tmp : string
 (**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
 
-val create : string 
+val create : string
 val runtime : string
 val stdlib : string
 val imul : string
-
 val setter_suffix : string
 val setter_suffix_len : int
-
-
 val debugger : string
 val raw_expr : string
 val raw_stmt : string
@@ -62,6 +53,7 @@ val fn_method : string
 val fn_mk : string
 
 (** callback actually, not exposed to user yet *)
+
 (* val js_fn_runmethod : string *)
 
 val bs_deriving : string
@@ -78,7 +70,6 @@ val build_ninja : string
 
 (* Name of the library file created for each external dependency. *)
 val library_file : string
-
 val suffix_a : string
 val suffix_cmj : string
 val suffix_cmo : string
@@ -87,46 +78,37 @@ val suffix_cmi : string
 val suffix_cmx : string
 val suffix_cmxa : string
 val suffix_ml : string
-val suffix_mlast : string 
+val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
-val suffix_rei : string 
-
+val suffix_rei : string
 val suffix_d : string
 val suffix_js : string
-val suffix_bs_js : string 
+val suffix_bs_js : string
+
 (* val suffix_re_js : string *)
-val suffix_gen_js : string 
-val suffix_gen_tsx: string
-
+val suffix_gen_js : string
+val suffix_gen_tsx : string
 val suffix_tsx : string
-
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
-
-val commonjs : string 
-
-val es6 : string 
+val suffix_mli : string
+val suffix_cmt : string
+val suffix_cmti : string
+val commonjs : string
+val es6 : string
 val es6_global : string
-
-val unused_attribute : string 
+val unused_attribute : string
 val dash_nostdlib : string
-
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string
+val reactjs_jsx_ppx_3_exe : string
 val native : string
 val bytecode : string
 val js : string
-
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
+val node_sep : string
+val node_parent : string
+val node_current : string
 val gentype_import : string
-
 val bsbuild_cache : string

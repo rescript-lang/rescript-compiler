@@ -22,17 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type stats
 
+val fresh_stats : stats
+val top_and_used_zero_or_one : stats -> bool
 
-type stats 
-val fresh_stats: stats  
-val top_and_used_zero_or_one : stats -> bool 
+type position
 
-type position 
-val sink : position 
-val fresh_env: position 
-val new_position_after_lam: Lam.t -> position -> position  
+val sink : position
+val fresh_env : position
+val new_position_after_lam : Lam.t -> position -> position
 
-(** The variable used stats update depend 
-    on the position of the variable*)
-val update : position -> stats -> stats 
+val update : position -> stats -> stats
+(** The variable used stats update depend on the position of the variable*)

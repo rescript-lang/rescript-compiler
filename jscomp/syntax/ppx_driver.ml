@@ -22,57 +22,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-let apply_lazy ~source ~target 
-  (impl : Parsetree.structure -> Parsetree.structure) 
-  (iface : Parsetree.signature -> Parsetree.signature) 
-  =
+let apply_lazy ~source ~target
+    (impl : Parsetree.structure -> Parsetree.structure)
+    (iface : Parsetree.signature -> Parsetree.signature) =
   let ic = open_in_bin source in
   let magic =
-    really_input_string ic (String.length Config.ast_impl_magic_number)
-  in
-  if magic <> Config.ast_impl_magic_number
-  && magic <> Config.ast_intf_magic_number then
-    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
-  Location.input_name := input_value ic;
+    really_input_string ic (String.length Config.ast_impl_magic_number) in
+  if
+    magic <> Config.ast_impl_magic_number
+    && magic <> Config.ast_intf_magic_number
+  then failwith "Bs_ast_mapper: OCaml version mismatch or malformed input" ;
+  Location.input_name := input_value ic ;
   let ast = input_value ic in
-  close_in ic;
-
+  close_in ic ;
   let ast =
-    if magic = Config.ast_impl_magic_number
-    then Obj.magic (impl (Obj.magic ast))
-    else Obj.magic (iface (Obj.magic ast))
-  in
+    if magic = Config.ast_impl_magic_number then
+      Obj.magic (impl (Obj.magic ast))
+    else Obj.magic (iface (Obj.magic ast)) in
   let oc = open_out_bin target in
-  output_string oc magic;
-  output_value oc !Location.input_name;
-  output_value oc ast;
+  output_string oc magic ;
+  output_value oc !Location.input_name ;
+  output_value oc ast ;
   close_out oc
-  
+
 let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
+
 let main impl intf =
   try
     let a = Sys.argv in
     let n = Array.length a in
-    if n > 2 then begin
-      Arg.parse_argv (Array.sub Sys.argv 0 (n-2))
-        [
-          ("-bs-jsx",
-           Arg.Int (fun i -> Js_config.jsx_version := i),
-           " Set jsx version"
-          )
-        ] ignore usage;
-      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
-        impl
-        intf
-    end else
-      begin
-        Printf.eprintf "%s" usage;
-        exit 2
-      end
+    if n > 2 then (
+      Arg.parse_argv
+        (Array.sub Sys.argv 0 (n - 2))
+        [ ( "-bs-jsx"
+          , Arg.Int (fun i -> Js_config.jsx_version := i)
+          , " Set jsx version" ) ]
+        ignore usage ;
+      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1) impl intf )
+    else (Printf.eprintf "%s" usage ; exit 2)
   with exn ->
-    begin
-      Location.report_exception Format.err_formatter exn;
-      exit 2
-    end
+    Location.report_exception Format.err_formatter exn ;
+    exit 2

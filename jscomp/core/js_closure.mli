@@ -22,23 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Define a type used in JS IR to help convert lexical scope to JS [var] based
+    scope convention *)
 
-
-
-
-
-
-
-(** Define a type used in JS IR to help convert lexical scope to JS [var] 
-    based scope convention
- *)
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t 
-}
+type t = {mutable outer_loop_mutable_values: Ident_set.t}
 
 val empty : unit -> t
-
 val get_lexical_scope : t -> Ident_set.t
-
 val set_lexical_scope : t -> Ident_set.t -> unit

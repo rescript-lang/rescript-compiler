@@ -22,15 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type 'a t = 'a list ref
 
 val create_ref_empty : unit -> 'a t
-
-val ref_top : 'a t -> 'a 
-
+val ref_top : 'a t -> 'a
 val ref_empty : 'a t -> bool
-
 val ref_push : 'a -> 'a t -> unit
-
-val ref_pop : 'a t -> 'a 
+val ref_pop : 'a t -> 'a

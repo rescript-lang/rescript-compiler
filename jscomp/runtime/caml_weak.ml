@@ -22,33 +22,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(** *)
+(**  *)
 
 type 'a t = 'a Caml_undefined_extern.t array
 
-let caml_weak_create n =
-  Caml_array_extern.new_uninitialized n 
+let caml_weak_create n = Caml_array_extern.new_uninitialized n
 
-let caml_weak_set xs i v = 
-  match v with 
-  | Some x -> 
-    Caml_array_extern.unsafe_set xs i (Caml_undefined_extern.return x)
+let caml_weak_set xs i v =
+  match v with
+  | Some x ->
+      Caml_array_extern.unsafe_set xs i (Caml_undefined_extern.return x)
   | None -> ()
 
-let caml_weak_get  xs i = 
-  Caml_undefined_extern.toOption 
-    (Caml_array_extern.unsafe_get xs i) 
+let caml_weak_get xs i =
+  Caml_undefined_extern.toOption (Caml_array_extern.unsafe_get xs i)
 
-let caml_weak_get_copy  xs i = 
-  match Caml_undefined_extern.toOption (Caml_array_extern.unsafe_get xs i) with 
-  | None -> None 
-  | Some x -> Some (Obj.magic (Caml_obj.caml_obj_dup (Caml_obj_extern.repr x) ))
+let caml_weak_get_copy xs i =
+  match Caml_undefined_extern.toOption (Caml_array_extern.unsafe_get xs i) with
+  | None -> None
+  | Some x -> Some (Obj.magic (Caml_obj.caml_obj_dup (Caml_obj_extern.repr x)))
 
-let caml_weak_check xs i = 
+let caml_weak_check xs i =
   Caml_array_extern.unsafe_get xs i <> Caml_undefined_extern.empty
 
 let caml_weak_blit = Caml_array.caml_array_blit

@@ -1,4 +1,1 @@
-
-
-module Foo = struct 
-end
+module Foo = struct end

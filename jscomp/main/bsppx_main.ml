@@ -22,7 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let () = 
+let () =
   Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
-

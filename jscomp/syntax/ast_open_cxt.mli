@@ -22,22 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type loc = Location.t 
-
-type whole 
+type loc = Location.t
+type whole
 type t = whole list
 
-val restore_exp :
-   Parsetree.expression -> 
-   t -> 
-   Parsetree.expression
+val restore_exp : Parsetree.expression -> t -> Parsetree.expression
+val destruct : Parsetree.expression -> t -> Parsetree.expression * t
 
-val destruct :    
-  Parsetree.expression -> 
-  t -> 
-  Parsetree.expression * t 
-
-val destruct_open_tuple :    
-  Parsetree.expression -> 
-  t -> 
-  (t * Parsetree.expression list * Parsetree.attributes ) option 
+val destruct_open_tuple :
+     Parsetree.expression
+  -> t
+  -> (t * Parsetree.expression list * Parsetree.attributes) option

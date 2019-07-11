@@ -22,14 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-val set_package_name : string -> unit 
-
-val set_package_map : string -> unit 
-
-val get_packages_info : 
-  unit -> Js_packages_info.t 
-
-val update_npm_package_path : 
-  string -> unit   
+val set_package_name : string -> unit
+val set_package_map : string -> unit
+val get_packages_info : unit -> Js_packages_info.t
+val update_npm_package_path : string -> unit

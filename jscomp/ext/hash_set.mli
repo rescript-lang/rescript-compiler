@@ -22,16 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
+(** Ideas are based on {!Hashtbl}, however, {!Hashtbl.add} does not really
+    optimize and has a bad semantics for {!Hash_set}, This module fixes the
+    semantics of [add]. [remove] is not optimized since it is not used too much *)
 
-
-
-
-
-module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
+module Make (H : Hashtbl.HashedType) : Hash_set_gen.S with type key = H.t
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
-

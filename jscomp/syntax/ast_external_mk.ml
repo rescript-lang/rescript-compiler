@@ -22,91 +22,78 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let local_external_apply loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
+let local_external_apply loc ?(pval_attributes = []) ~pval_prim ~pval_type
+    ?(local_module_name = "J") ?(local_fun_name = "unsafe_expr") args :
+    Parsetree.expression_desc =
   Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-      Ast_compatible.apply_simple 
-      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression) args ~loc
-    )
+    ( {txt= local_module_name; loc}
+    , { pmod_desc=
+          Pmod_structure
+            [ { pstr_desc=
+                  Pstr_primitive
+                    { pval_name= {txt= local_fun_name; loc}
+                    ; pval_type
+                    ; pval_loc= loc
+                    ; pval_prim
+                    ; pval_attributes }
+              ; pstr_loc= loc } ]
+      ; pmod_loc= loc
+      ; pmod_attributes= [] }
+    , Ast_compatible.apply_simple
+        ( { pexp_desc=
+              Pexp_ident
+                {txt= Ldot (Lident local_module_name, local_fun_name); loc}
+          ; pexp_attributes= []
+          ; pexp_loc= loc }
+          : Parsetree.expression )
+        args ~loc )
 
-let local_external_obj loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
+let local_external_obj loc ?(pval_attributes = []) ~pval_prim ~pval_type
+    ?(local_module_name = "J") ?(local_fun_name = "unsafe_expr") args :
+    Parsetree.expression_desc =
   Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-      Ast_compatible.apply_labels
-      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression) args ~loc
-    )    
+    ( {txt= local_module_name; loc}
+    , { pmod_desc=
+          Pmod_structure
+            [ { pstr_desc=
+                  Pstr_primitive
+                    { pval_name= {txt= local_fun_name; loc}
+                    ; pval_type
+                    ; pval_loc= loc
+                    ; pval_prim
+                    ; pval_attributes }
+              ; pstr_loc= loc } ]
+      ; pmod_loc= loc
+      ; pmod_attributes= [] }
+    , Ast_compatible.apply_labels
+        ( { pexp_desc=
+              Pexp_ident
+                {txt= Ldot (Lident local_module_name, local_fun_name); loc}
+          ; pexp_attributes= []
+          ; pexp_loc= loc }
+          : Parsetree.expression )
+        args ~loc )
 
-let local_extern_cont loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     (cb : Parsetree.expression -> 'a) 
-  : Parsetree.expression_desc = 
+let local_extern_cont loc ?(pval_attributes = []) ~pval_prim ~pval_type
+    ?(local_module_name = "J") ?(local_fun_name = "unsafe_expr")
+    (cb : Parsetree.expression -> 'a) : Parsetree.expression_desc =
   Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                 loc};
-         pexp_attributes = [] ;
-         pexp_loc = loc}
-)
+    ( {txt= local_module_name; loc}
+    , { pmod_desc=
+          Pmod_structure
+            [ { pstr_desc=
+                  Pstr_primitive
+                    { pval_name= {txt= local_fun_name; loc}
+                    ; pval_type
+                    ; pval_loc= loc
+                    ; pval_prim
+                    ; pval_attributes }
+              ; pstr_loc= loc } ]
+      ; pmod_loc= loc
+      ; pmod_attributes= [] }
+    , cb
+        { pexp_desc=
+            Pexp_ident
+              {txt= Ldot (Lident local_module_name, local_fun_name); loc}
+        ; pexp_attributes= []
+        ; pexp_loc= loc } )

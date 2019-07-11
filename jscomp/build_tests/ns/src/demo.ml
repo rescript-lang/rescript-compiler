@@ -1,5 +1,1 @@
-
-
-
-let () = 
-    Js.log (Hello.a + Hello.b)
+let () = Js.log (Hello.a + Hello.b)

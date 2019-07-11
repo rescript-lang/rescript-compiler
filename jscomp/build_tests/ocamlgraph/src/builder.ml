@@ -17,6 +17,7 @@
 
 module type S = sig
   module G : Sig.G
+
   val empty : unit -> G.t
   val copy : G.t -> G.t
   val add_vertex : G.t -> G.V.t -> G.t
@@ -29,8 +30,9 @@ end
 
 module type INT = S with type G.V.label = int
 
-module P(G : Sig.P) = struct
+module P (G : Sig.P) = struct
   module G = G
+
   let empty () = G.empty
   let copy g = g
   let add_vertex = G.add_vertex
@@ -41,20 +43,17 @@ module P(G : Sig.P) = struct
   let remove_edge_e = G.remove_edge_e
 end
 
-module I(G : Sig.I) = struct
+module I (G : Sig.I) = struct
   module G = G
+
   let empty () = G.create ~size:97 ()
   let copy = G.copy
-  let add_vertex g v = G.add_vertex g v; g
-  let add_edge g v1 v2 = G.add_edge g v1 v2; g
-  let add_edge_e g e = G.add_edge_e g e; g
-  let remove_vertex g v = G.remove_vertex g v; g
-  let remove_edge g v1 v2 = G.remove_edge g v1 v2; g
-  let remove_edge_e g e = G.remove_edge_e g e; g
+  let add_vertex g v = G.add_vertex g v ; g
+  let add_edge g v1 v2 = G.add_edge g v1 v2 ; g
+  let add_edge_e g e = G.add_edge_e g e ; g
+  let remove_vertex g v = G.remove_vertex g v ; g
+  let remove_edge g v1 v2 = G.remove_edge g v1 v2 ; g
+  let remove_edge_e g e = G.remove_edge_e g e ; g
 end
 
-(*
-Local Variables:
-compile-command: "make -C .."
-End:
-*)
+(* Local Variables: compile-command: "make -C .." End: *)

@@ -1,9 +1,8 @@
-
-
-open Filename 
+open Filename
 
 let v = chop_extension
+let u = v
 
-let u = v 
-open List 
+open List
+
 let v = List.length

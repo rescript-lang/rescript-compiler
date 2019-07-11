@@ -22,15 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 module E = Js_exp_make
 
 let make (args : J.expression list) =
   E.make_block E.zero_int_literal Blk_tuple args Immutable
-

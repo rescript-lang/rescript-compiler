@@ -20,7 +20,6 @@
 (** {2 Basic operations over graphs} *)
 
 module type S = sig
-
   type g
 
   val transitive_closure : ?reflexive:bool -> g -> g
@@ -64,30 +63,31 @@ module type S = sig
   (** [union g1 g2] returns a new graph which is the union of [g1] and [g2]:
       each vertex and edge present in [g1] *or* [g2] is present in the
       resulting graph. *)
-
 end
 
-module Make(B : Builder.S) : S with type g = B.G.t
+module Make (B : Builder.S) : S with type g = B.G.t
 (** Basic operations over graphs *)
 
-module P(G : Sig.P) : S with type g = G.t
+module P (G : Sig.P) : S with type g = G.t
 (** Basic operations over persistent graphs *)
 
-module I(G : Sig.I) : S with type g = G.t
+module I (G : Sig.I) : S with type g = G.t
 (** Basic operations over imperative graphs *)
 
 (** {2 Choose} *)
 
 (** Choose an element in a graph *)
-module Choose(G : sig
-    type t
-    type vertex
-    type edge
-    val iter_vertex : (vertex -> unit) -> t -> unit
-    val iter_edges_e : (edge -> unit) -> t -> unit
-  end) :
-sig
+module Choose (G : sig
+  type t
 
+  type vertex
+
+  type edge
+
+  val iter_vertex : (vertex -> unit) -> t -> unit
+
+  val iter_edges_e : (edge -> unit) -> t -> unit
+end) : sig
   val choose_vertex : G.t -> G.vertex
   (** [choose_vertex g] returns a vertex from the graph.
       @raise Invalid_argument if the graph is empty. *)
@@ -95,20 +95,20 @@ sig
   val choose_edge : G.t -> G.edge
   (** [choose_edge g] returns an edge from the graph.
       @raise Invalid_argument if the graph has no edge. *)
-
 end
 
 (** {2 Neighbourhood} *)
 
 (** Neighbourhood of vertex / vertices *)
-module Neighbourhood(G : sig
-    type t
-    module V : Sig.COMPARABLE
-    val fold_succ: (V.t -> 'a -> 'a) -> t -> V.t -> 'a -> 'a
-    val succ: t -> V.t -> V.t list
-  end) :
-sig
+module Neighbourhood (G : sig
+  type t
 
+  module V : Sig.COMPARABLE
+
+  val fold_succ : (V.t -> 'a -> 'a) -> t -> V.t -> 'a -> 'a
+
+  val succ : t -> V.t -> V.t list
+end) : sig
   module Vertex_Set : Set.S with type elt = G.V.t
 
   (** The neighbourhood of a vertex [v] is
@@ -130,5 +130,4 @@ sig
   val set_from_vertices : G.t -> G.V.t list -> Vertex_Set.t
   (** Neighbourhood of a list of vertices as a set.
       More efficient that [list_from_vertices]. *)
-
 end

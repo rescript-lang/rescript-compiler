@@ -1,6 +1,9 @@
 (library
  (name rocket_ext)
  (public_name rocket.ext)
+ (preprocess
+  (action
+   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file})))
  (modules_without_implementation hash_set hash_set_poly hashtbl_make
    ident_hash_set ident_hashtbl ident_map ident_set int_hash_set int_hashtbl
    int_map int_vec ordered_hash_map_local_ident resize_array set_int

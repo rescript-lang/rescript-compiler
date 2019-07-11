@@ -13,32 +13,32 @@
 (*                                                                        *)
 (**************************************************************************)
 
-type 'a t = { mutable c : 'a list; mutable len : int; }
+type 'a t = {mutable c: 'a list; mutable len: int}
 
 exception Empty
 
-let create () = { c = []; len = 0; }
+let create () = {c= []; len= 0}
 
-let clear s = s.c <- []; s.len <- 0
+let clear s =
+  s.c <- [] ;
+  s.len <- 0
 
-let copy s = { c = s.c; len = s.len; }
+let copy s = {c= s.c; len= s.len}
 
-let push x s = s.c <- x :: s.c; s.len <- s.len + 1
+let push x s =
+  s.c <- x :: s.c ;
+  s.len <- s.len + 1
 
 let pop s =
   match s.c with
-  | hd::tl -> s.c <- tl; s.len <- s.len - 1; hd
-  | []     -> raise Empty
+  | hd :: tl ->
+      s.c <- tl ;
+      s.len <- s.len - 1 ;
+      hd
+  | [] -> raise Empty
 
-let top s =
-  match s.c with
-  | hd::_ -> hd
-  | []     -> raise Empty
-
-let is_empty s = (s.c = [])
-
+let top s = match s.c with hd :: _ -> hd | [] -> raise Empty
+let is_empty s = s.c = []
 let length s = s.len
-
 let iter f s = List.iter f s.c
-
 let fold f acc s = List.fold_left f acc s.c

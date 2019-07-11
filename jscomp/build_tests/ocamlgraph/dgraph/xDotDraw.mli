@@ -25,15 +25,18 @@
 
 (** Parses xdot drawing operations *)
 
-(** See {{:http://www.graphviz.org/doc/info/output.html#d:xdot}dot documentation} to understand the drawing operations *)
+(** See
+    {{:http://www.graphviz.org/doc/info/output.html#d:xdot} dot documentation}
+    to understand the drawing operations *)
 
-(** {2 Types } *)
+(** {2 Types} *)
 
-(** Dot layout coordinates *)
 type pos = float * float
+(** Dot layout coordinates *)
 
-(** Dimensions *)
 type width = float
+(** Dimensions *)
+
 type height = float
 type size = int
 
@@ -67,37 +70,31 @@ type operation =
   | Font of float * string
   | Style of style_attr list
 
+val string_scale_size : string -> float -> string -> width * height
+(** [string_scale_size font font_size text]. Interpolates the font metrics we
+    have to use to draw the given [text] with the given font but preserving the
+    bounding box of the [text] even with a proportional font. For a fixed width
+    font the result is [font_size*font_size]. *)
 
-
-val string_scale_size: string -> float -> string -> width*height
-(** [string_scale_size font font_size text].
-    Interpolates the font metrics we have to use to draw the given [text]
-    with the given font but preserving the bounding box of the [text] even
-    with a proportional font.
-    For a fixed width font the result is [font_size*font_size]. *)
-
-(** {2 Parsing and drawing state } *)
+(** {2 Parsing and drawing state} *)
 
 (** Parses an xdot drawing attribute *)
 
 val parse : string -> operation list
 
-(** Some drawing operations modify the following drawing state
-    (pen_color, font and style).
-*)
+(** Some drawing operations modify the following drawing state (pen_color, font
+    and style). *)
 
-type draw_state = private {
-  mutable fill_color : string;
-  mutable pen_color : string;
-  mutable font : float * string;
-  mutable style : style_attr list;
-}
+type draw_state = private
+  { mutable fill_color: string
+  ; mutable pen_color: string
+  ; mutable font: float * string
+  ; mutable style: style_attr list }
 
-(** Iterates on the drawing operations
-    and updates the implicit drawing state *)
 val draw_with : (draw_state -> operation -> unit) -> operation list -> unit
+(** Iterates on the drawing operations and updates the implicit drawing state *)
 
 (** {3 Miscellaneous} *)
 
-(** Reads the color string and converts to rgb if in an another format *)
 val normalize_color : string -> string
+(** Reads the color string and converts to rgb if in an another format *)

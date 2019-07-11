@@ -24,73 +24,46 @@
 
 type tdcls = Parsetree.type_declaration list
 
-type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
-}
+type gen =
+  { structure_gen: tdcls -> bool -> Ast_structure.t
+  ; signature_gen: tdcls -> bool -> Ast_signature.t
+  ; expression_gen: (Parsetree.core_type -> Parsetree.expression) option }
 
-(* the first argument is [config] payload
-   {[
-     { x = {uu} }
-   ]}
-*)
-type derive_table  = 
-  (Parsetree.expression option -> gen) String_map.t
+(* the first argument is [config] payload {[ { x = {uu} } ]} *)
+type derive_table = (Parsetree.expression option -> gen) String_map.t
 
 let derive_table : derive_table ref = ref String_map.empty
+let register key value = derive_table := String_map.add !derive_table key value
 
-let register key value = 
-  derive_table := String_map.add !derive_table key value 
+(* let gen_structure (tdcls : tdcls) (actions : Ast_payload.action list )
+   (explict_nonrec : bool ) : Ast_structure.t = Ext_list.flat_map (fun action
+   -> (Ast_payload.table_dispatch !derive_table action).structure_gen tdcls
+   explict_nonrec) actions *)
 
+let gen_signature tdcls (actions : Ast_payload.action list)
+    (explict_nonrec : bool) : Ast_signature.t =
+  Ext_list.flat_map actions (fun action ->
+      (Ast_payload.table_dispatch !derive_table action).signature_gen tdcls
+        explict_nonrec)
 
-
-(* let gen_structure 
-    (tdcls : tdcls)
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_structure.t = 
-  Ext_list.flat_map
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).structure_gen 
-         tdcls explict_nonrec) actions *)
-
-let gen_signature
-    tdcls
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_signature.t = 
-  Ext_list.flat_map actions
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) 
-
-(** used for cases like [%sexp] *)         
-let gen_expression ({Asttypes.txt ; loc}) typ =
-  let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-  match (Ast_payload.table_dispatch !derive_table 
-           ({txt ; loc}, None)).expression_gen with 
-  | None ->
-    Bs_syntaxerr.err loc (Unregistered txt)
-
+(** used for cases like [%sexp] *)
+let gen_expression {Asttypes.txt; loc} typ =
+  let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in
+  match
+    (Ast_payload.table_dispatch !derive_table ({txt; loc}, None))
+      .expression_gen
+  with
+  | None -> Bs_syntaxerr.err loc (Unregistered txt)
   | Some f -> f typ
 
-open Ast_helper  
-let gen_structure_signature 
-    loc
-    (tdcls : tdcls)   
-    (action : Ast_payload.action)
-    (explicit_nonrec : bool) = 
-  let derive_table = !derive_table in  
-  let u = 
-    Ast_payload.table_dispatch derive_table action in  
+open Ast_helper
 
+let gen_structure_signature loc (tdcls : tdcls) (action : Ast_payload.action)
+    (explicit_nonrec : bool) =
+  let derive_table = !derive_table in
+  let u = Ast_payload.table_dispatch derive_table action in
   let a = u.structure_gen tdcls explicit_nonrec in
   let b = u.signature_gen tdcls explicit_nonrec in
-  Str.include_ ~loc  
-    (Incl.mk ~loc 
-       (Mod.constraint_ ~loc
-          (Mod.structure ~loc a)
-          (Mty.signature ~loc b )
-       )
-    )
+  Str.include_ ~loc
+    (Incl.mk ~loc
+       (Mod.constraint_ ~loc (Mod.structure ~loc a) (Mty.signature ~loc b)))

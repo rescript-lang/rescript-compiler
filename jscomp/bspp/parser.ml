@@ -10,7 +10,7 @@ type token =
   | BARBAR
   | BARRBRACKET
   | BEGIN
-  | CHAR of (char)
+  | CHAR of char
   | CLASS
   | COLON
   | COLONCOLON
@@ -30,7 +30,7 @@ type token =
   | EXCEPTION
   | EXTERNAL
   | FALSE
-  | FLOAT of (string)
+  | FLOAT of string
   | FOR
   | FUN
   | FUNCTION
@@ -41,17 +41,17 @@ type token =
   | IF
   | IN
   | INCLUDE
-  | INFIXOP0 of (string)
-  | INFIXOP1 of (string)
-  | INFIXOP2 of (string)
-  | INFIXOP3 of (string)
-  | INFIXOP4 of (string)
+  | INFIXOP0 of string
+  | INFIXOP1 of string
+  | INFIXOP2 of string
+  | INFIXOP3 of string
+  | INFIXOP4 of string
   | INHERIT
   | INITIALIZER
-  | INT of (int)
-  | INT32 of (int32)
-  | INT64 of (int64)
-  | LABEL of (string)
+  | INT of int
+  | INT32 of int32
+  | INT64 of int64
+  | LABEL of string
   | LAZY
   | LBRACE
   | LBRACELESS
@@ -64,7 +64,7 @@ type token =
   | LESS
   | LESSMINUS
   | LET
-  | LIDENT of (string)
+  | LIDENT of string
   | LPAREN
   | LBRACKETAT
   | LBRACKETATAT
@@ -76,19 +76,19 @@ type token =
   | MINUSGREATER
   | MODULE
   | MUTABLE
-  | NATIVEINT of (nativeint)
+  | NATIVEINT of nativeint
   | NEW
   | NONREC
   | OBJECT
   | OF
   | OPEN
-  | OPTLABEL of (string)
+  | OPTLABEL of string
   | OR
   | PERCENT
   | PLUS
   | PLUSDOT
   | PLUSEQ
-  | PREFIXOP of (string)
+  | PREFIXOP of string
   | PRIVATE
   | QUESTION
   | QUOTE
@@ -99,7 +99,7 @@ type token =
   | SEMI
   | SEMISEMI
   | SHARP
-  | SHARPOP of (string)
+  | SHARPOP of string
   | SIG
   | STAR
   | STRING of (string * string option)
@@ -110,7 +110,7 @@ type token =
   | TRUE
   | TRY
   | TYPE
-  | UIDENT of (string)
+  | UIDENT of string
   | UNDERSCORE
   | VAL
   | VIRTUAL
@@ -118,8 +118,5 @@ type token =
   | WHILE
   | WITH
   | COMMENT of (string * Location.t)
-#if HAS_DOCSTRINGS then
-  | DOCSTRING of (Docstrings.docstring)
-#end
+  | DOCSTRING of Docstrings.docstring
   | EOL
-

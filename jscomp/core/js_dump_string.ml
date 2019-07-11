@@ -25,20 +25,17 @@
 module P = Ext_pp
 
 (** Avoid to allocate single char string too many times*)
-let array_str1 =
-  Array.init 256 (fun i -> String.make 1 (Char.chr i)) 
+let array_str1 = Array.init 256 (fun i -> String.make 1 (Char.chr i))
 
-(** For conveting 
-
-*)
+(** For conveting *)
 let array_conv =
-  [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "a"; "b"; "c"; "d";
-    "e"; "f"|]
+  [| "0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "a"; "b"; "c"; "d"; "e"
+   ; "f" |]
 
- (* https://mathiasbynens.be/notes/javascript-escapes *)
+(* https://mathiasbynens.be/notes/javascript-escapes *)
 
- let pp_string f  (* ?(utf=false)*) s =
-  let pp_raw_string f (* ?(utf=false)*) s = 
+let pp_string f (* ?(utf=false)*) s =
+  let pp_raw_string f (* ?(utf=false)*) s =
     let l = String.length s in
     for i = 0 to l - 1 do
       let c = String.unsafe_get s i in
@@ -48,49 +45,36 @@ let array_conv =
       | '\n' -> P.string f "\\n"
       | '\r' -> P.string f "\\r"
       | '\t' -> P.string f "\\t"
-      (* This escape sequence is not supported by IE < 9
-               | '\011' -> "\\v"
-         IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). 
-         If cross-browser compatibility is a concern, use \x0B instead of \v.
+      (* This escape sequence is not supported by IE < 9 | '\011' -> "\\v" IE <
+         9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). If
+         cross-browser compatibility is a concern, use \x0B instead of \v.
 
-         Another thing to note is that the \v and \0 escapes are not allowed in JSON strings.
-      *)
-      | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
-        -> P.string f "\\0"
-
+         Another thing to note is that the \v and \0 escapes are not allowed in
+         JSON strings. *)
+      | '\000'
+        when i = l - 1
+             ||
+             let next = String.unsafe_get s (i + 1) in
+             next < '0' || next > '9' ->
+          P.string f "\\0"
       | '\\' (* when not utf*) -> P.string f "\\\\"
-
-
-      | '\000' .. '\031'  | '\127'->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
+      | '\000' .. '\031' | '\127' ->
+          let c = Char.code c in
+          P.string f "\\x" ;
+          P.string f (Array.unsafe_get array_conv (c lsr 4)) ;
+          P.string f (Array.unsafe_get array_conv (c land 0xf))
       | '\128' .. '\255' (* when not utf*) ->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
+          let c = Char.code c in
+          P.string f "\\x" ;
+          P.string f (Array.unsafe_get array_conv (c lsr 4)) ;
+          P.string f (Array.unsafe_get array_conv (c land 0xf))
       | '\"' -> P.string f "\\\"" (* quote*)
-      | _ ->
-        P.string f (Array.unsafe_get array_str1 (Char.code c))
-    done
-  in
-  P.string f "\"";
+      | _ -> P.string f (Array.unsafe_get array_str1 (Char.code c))
+    done in
+  P.string f "\"" ;
   pp_raw_string f (*~utf*) s ;
   P.string f "\""
-;;
 
-
-(* let _best_string_quote s =
-  let simple = ref 0 in
-  let double = ref 0 in
-  for i = 0 to String.length s - 1 do
-    match s.[i] with
-    | '\'' -> incr simple
-    | '"' -> incr double
-    | _ -> ()
-  done;
-  if !simple < !double
-  then '\''
-  else '"' *)
+(* let _best_string_quote s = let simple = ref 0 in let double = ref 0 in for i
+   = 0 to String.length s - 1 do match s.[i] with | '\'' -> incr simple | '"'
+   -> incr double | _ -> () done; if !simple < !double then '\'' else '"' *)

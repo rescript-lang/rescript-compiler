@@ -22,34 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type arity = Full | NA
 
-
-
-
-
-
-
-type arity = 
-  | Full 
-  | NA 
-
-type call_info = 
+type call_info =
   | Call_ml (* called by plain ocaml expression *)
   | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
+  | Call_na
 
-  *) 
+(* either from [@@bs.val] or not available, such calls does not follow such
+   rules {[ fun x y -> (f x y) === f ]} when [f] is an atom *)
 
-type t = { 
-  call_info : call_info;
-  arity : arity
-}
+type t = {call_info: call_info; arity: arity}
 
-let dummy = { arity = NA; call_info = Call_na }
-
-let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
-
-let ml_full_call = {arity = Full; call_info = Call_ml}
+let dummy = {arity= NA; call_info= Call_na}
+let builtin_runtime_call = {arity= Full; call_info= Call_builtin_runtime}
+let ml_full_call = {arity= Full; call_info= Call_ml}

@@ -22,22 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** {!Belt.Int}
-    Utililites for Int
-*)
+(** {!Belt.Int} Utililites for Int *)
 
-external toFloat: int -> float = "%identity"
-
-external fromFloat: float -> int = "%intoffloat"
-
-val fromString: string -> int option
-
-external toString: int -> string = "String" [@@bs.val]
-
+external toFloat : int -> float = "%identity"
+external fromFloat : float -> int = "%intoffloat"
+val fromString : string -> int option
+external toString : int -> string = "String" [@@bs.val]
 external ( + ) : int -> int -> int = "%addint"
-
 external ( - ) : int -> int -> int = "%subint"
-
 external ( * ) : int -> int -> int = "%mulint"
-
 external ( / ) : int -> int -> int = "%divint"

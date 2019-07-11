@@ -22,59 +22,56 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- let undefinedHeader = [| |]
+let undefinedHeader = [||]
 
-let some ( x : Caml_obj_extern.t) : Caml_obj_extern.t = 
-  if Obj.magic x =  None then 
-    (let block = Caml_obj_extern.repr (undefinedHeader, 0) in
-    Caml_obj_extern.set_tag block 256;
-    block)
-  else 
-    if x != Caml_obj_extern.repr Js.null && fst (Obj.magic x ) == Caml_obj_extern.repr undefinedHeader then   
-      (
-      let nid =   snd (Obj.magic x) + 1 in 
-      let block = Caml_obj_extern.repr (undefinedHeader, nid) in 
-       Caml_obj_extern.set_tag block 256;        
-       block
-      )
-    else  x 
+let some (x : Caml_obj_extern.t) : Caml_obj_extern.t =
+  if Obj.magic x = None then (
+    let block = Caml_obj_extern.repr (undefinedHeader, 0) in
+    Caml_obj_extern.set_tag block 256 ;
+    block )
+  else if
+    x != Caml_obj_extern.repr Js.null
+    && fst (Obj.magic x) == Caml_obj_extern.repr undefinedHeader
+  then (
+    let nid = snd (Obj.magic x) + 1 in
+    let block = Caml_obj_extern.repr (undefinedHeader, nid) in
+    Caml_obj_extern.set_tag block 256 ;
+    block )
+  else x
 
-let nullable_to_opt (type t) ( x : t Js.null_undefined) : t option = 
-  if (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined then 
-    None 
+let nullable_to_opt (type t) (x : t Js.null_undefined) : t option =
+  if Obj.magic x == Js.null || Obj.magic x == Js.undefined then None
   else Obj.magic (some (Obj.magic x : 'a))
 
-let undefined_to_opt (type t) ( x : t Js.undefined) : t option = 
-    if (Obj.magic x) == Js.undefined then None 
-    else Obj.magic (some (Obj.magic x : 'a))
+let undefined_to_opt (type t) (x : t Js.undefined) : t option =
+  if Obj.magic x == Js.undefined then None
+  else Obj.magic (some (Obj.magic x : 'a))
 
-let null_to_opt (type t ) ( x : t Js.null) : t option = 
-  if (Obj.magic x) == Js.null then None 
-  else Obj.magic (some (Obj.magic x : 'a) )
+let null_to_opt (type t) (x : t Js.null) : t option =
+  if Obj.magic x == Js.null then None else Obj.magic (some (Obj.magic x : 'a))
 
-(* external valFromOption : 'a option -> 'a = 
-  "#val_from_option"   *)
+(* external valFromOption : 'a option -> 'a = "#val_from_option" *)
 
+(** The input is already of [Some] form, [x] is not None, make sure [x\[0\]]
+    will not throw *)
+let valFromOption (x : Caml_obj_extern.t) : Caml_obj_extern.t =
+  if
+    x != Caml_obj_extern.repr Js.null
+    && fst (Obj.magic x) == Caml_obj_extern.repr undefinedHeader
+  then
+    let depth : int = snd (Obj.magic x) in
+    if depth = 0 then Obj.magic None else Obj.magic (undefinedHeader, depth - 1)
+  else Obj.magic x
 
-
-(** The input is already of [Some] form, [x] is not None, 
-    make sure [x[0]] will not throw *)
-let valFromOption (x : Caml_obj_extern.t) : Caml_obj_extern.t =   
-  if  x != Caml_obj_extern.repr Js.null && fst (Obj.magic x)  == Caml_obj_extern.repr undefinedHeader 
-  then 
-    let depth : int = snd  (Obj.magic x)  in 
-    if depth = 0 then Obj.magic None
-    else Obj.magic (undefinedHeader, depth - 1)
-  else Obj.magic x   
-
-
-let option_get (x : 'a option) = 
+let option_get (x : 'a option) =
   if x = None then Caml_undefined_extern.empty
   else Obj.magic (valFromOption (Caml_obj_extern.repr x))
 
-
-(** [input] is optional polymorphic variant *)  
-let option_get_unwrap (x : 'a option)  =
+(** [input] is optional polymorphic variant *)
+let option_get_unwrap (x : 'a option) =
   if x = None then Caml_undefined_extern.empty
-  else Obj.magic (Caml_obj_extern.field (Caml_obj_extern.repr (valFromOption (Caml_obj_extern.repr x))) 1 )
-
+  else
+    Obj.magic
+      (Caml_obj_extern.field
+         (Caml_obj_extern.repr (valFromOption (Caml_obj_extern.repr x)))
+         1)

@@ -22,15 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t
 
- type t 
-
-val init : int -> t 
-
-  
- 
+val init : int -> t
 val find : t -> int -> int
-
-val union : t -> int -> int -> unit 
-
+val union : t -> int -> int -> unit
 val count : t -> int

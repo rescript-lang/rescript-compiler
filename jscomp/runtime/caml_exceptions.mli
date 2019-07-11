@@ -22,18 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(** *)
+(**  *)
 
 val caml_set_oo_id :
-  Caml_builtin_exceptions.exception_block -> Caml_builtin_exceptions.exception_block
+     Caml_builtin_exceptions.exception_block
+  -> Caml_builtin_exceptions.exception_block
 
-val caml_fresh_oo_id : 
-  unit -> nativeint
-
+val caml_fresh_oo_id : unit -> nativeint
 val create : string -> Caml_builtin_exceptions.exception_block
+
 (* val makeExtension : string -> Caml_builtin_exceptions.exception_block *)
 val caml_is_extension : 'a -> bool

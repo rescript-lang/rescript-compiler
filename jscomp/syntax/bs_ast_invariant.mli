@@ -22,23 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if OCAML_VERSION =~ ">4.03.0"  then 
 type iterator = Ast_iterator.iterator
-#else
-type iterator = Bs_ast_iterator.iterator
-#end
-val mark_used_bs_attribute : 
-  Parsetree.attribute -> unit 
 
-(** [warn_discarded_unused_attributes discarded]
-  warn if [discarded] has unused bs attribute
-*)  
-val warn_discarded_unused_attributes :   
-  Parsetree.attributes -> unit 
+val mark_used_bs_attribute : Parsetree.attribute -> unit
+
+(** [warn_discarded_unused_attributes discarded] warn if [discarded] has unused
+    bs attribute *)
+val warn_discarded_unused_attributes : Parsetree.attributes -> unit
 (** Ast invariant checking for detecting errors *)
 
-val emit_external_warnings_on_structure:
-  Parsetree.structure -> unit 
-
-val emit_external_warnings_on_signature:  
-  Parsetree.signature -> unit
+val emit_external_warnings_on_structure : Parsetree.structure -> unit
+val emit_external_warnings_on_signature : Parsetree.signature -> unit

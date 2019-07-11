@@ -22,79 +22,65 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
- let pass_free_variables (l : Lam.t) : Ident_set.t =
+let pass_free_variables (l : Lam.t) : Ident_set.t =
   let fv = ref Ident_set.empty in
-  let rec 
-  free_list xs = List.iter free xs 
-  and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
-  Ext_list.iter_snd  xs free
+  let rec free_list xs = List.iter free xs
+  and free_list_snd : 'a. ('a * Lam.t) list -> unit =
+   fun xs -> Ext_list.iter_snd xs free
   and free (l : Lam.t) =
-
     match l with
     | Lvar id -> fv := Ident_set.add !fv id
-    | Lassign(id, e) ->
-      free e;
-      fv := Ident_set.add !fv id
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      free e1; free e2;
-      Ext_list.iter vars (fun id -> fv := Ident_set.remove !fv id) 
-    | Ltrywith(e1, exn, e2) ->
-      free e1; free e2;
-      fv := Ident_set.remove !fv exn 
-    | Lfunction{body;params} ->
-      free body;
-      Ext_list.iter params (fun param -> fv := Ident_set.remove !fv param) 
-    | Llet(str, id, arg, body) ->
-      free arg; free body;
-      fv := Ident_set.remove !fv id
-    | Lletrec(decl, body) ->
-      free body;
-      free_list_snd decl;
-      Ext_list.iter decl (fun (id, exp) -> fv := Ident_set.remove !fv id) 
-    | Lfor(v, e1, e2, dir, e3) ->
-      free e1; free e2; free e3;
-      fv := Ident_set.remove !fv v 
+    | Lassign (id, e) ->
+        free e ;
+        fv := Ident_set.add !fv id
+    | Lstaticcatch (e1, (_, vars), e2) ->
+        free e1 ;
+        free e2 ;
+        Ext_list.iter vars (fun id -> fv := Ident_set.remove !fv id)
+    | Ltrywith (e1, exn, e2) ->
+        free e1 ;
+        free e2 ;
+        fv := Ident_set.remove !fv exn
+    | Lfunction {body; params} ->
+        free body ;
+        Ext_list.iter params (fun param -> fv := Ident_set.remove !fv param)
+    | Llet (str, id, arg, body) ->
+        free arg ;
+        free body ;
+        fv := Ident_set.remove !fv id
+    | Lletrec (decl, body) ->
+        free body ;
+        free_list_snd decl ;
+        Ext_list.iter decl (fun (id, exp) -> fv := Ident_set.remove !fv id)
+    | Lfor (v, e1, e2, dir, e3) ->
+        free e1 ;
+        free e2 ;
+        free e3 ;
+        fv := Ident_set.remove !fv v
     | Lconst _ -> ()
-    | Lapply{fn; args; _} ->
-      free fn; free_list args
+    | Lapply {fn; args; _} -> free fn ; free_list args
     | Lglobal_module _ -> ()
-    (* according to the existing semantics:
-       [primitive] is not counted
-    *)
-    | Lprim {args; _} ->
-      free_list args
-    | Lswitch(arg, sw) ->
-      free arg;
-      free_list_snd sw.sw_consts;
-      free_list_snd sw.sw_blocks;
-      Ext_option.iter sw.sw_failaction free;
-    | Lstringswitch (arg,cases,default) ->
-      free arg ;
-      free_list_snd cases ;
-      Ext_option.iter default free
-    | Lstaticraise (_,args) ->
-      free_list args
-    | Lifthenelse(e1, e2, e3) ->
-      free e1; free e2; free e3
-    | Lsequence(e1, e2) ->
-      free e1; free e2
-    | Lwhile(e1, e2) ->
-      free e1; free e2
-    | Lsend (k, met, obj, args, _) ->
-      free met; free obj;  free_list args
-  in free l;
-  !fv
+    (* according to the existing semantics: [primitive] is not counted *)
+    | Lprim {args; _} -> free_list args
+    | Lswitch (arg, sw) ->
+        free arg ;
+        free_list_snd sw.sw_consts ;
+        free_list_snd sw.sw_blocks ;
+        Ext_option.iter sw.sw_failaction free
+    | Lstringswitch (arg, cases, default) ->
+        free arg ;
+        free_list_snd cases ;
+        Ext_option.iter default free
+    | Lstaticraise (_, args) -> free_list args
+    | Lifthenelse (e1, e2, e3) -> free e1 ; free e2 ; free e3
+    | Lsequence (e1, e2) -> free e1 ; free e2
+    | Lwhile (e1, e2) -> free e1 ; free e2
+    | Lsend (k, met, obj, args, _) -> free met ; free obj ; free_list args
+  in
+  free l ; !fv
 
-
-
-(**
-        [hit_any_variables fv l]
-        check the lambda expression [l] if has some free
-        variables captured by [fv].
-        Note it does not do any checking like below
-        [Llet(str,id,arg,body)]
-        it only check [arg] or [body] is hit or not, there
-        is a case that [id] is hit in [arg] but also exists
-        in [fv], this is ignored.
-*)
+(** [hit_any_variables fv l] check the lambda expression [l] if has some free
+    variables captured by [fv]. Note it does not do any checking like below
+    [Llet(str,id,arg,body)] it only check [arg] or [body] is hit or not, there
+    is a case that [id] is hit in [arg] but also exists in [fv], this is
+    ignored. *)

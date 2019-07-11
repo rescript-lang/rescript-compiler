@@ -24,6 +24,5 @@
 
 (** Node Module API *)
 
-external module_ :
-  < __cache : Node.node_module Js_dict.t  > Js.t
-    = "module" [@@bs.val]
+external module_ : < __cache: Node.node_module Js_dict.t > Js.t = "module"
+  [@@bs.val]

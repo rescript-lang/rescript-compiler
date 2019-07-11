@@ -1,12 +1,8 @@
 type _baseClass
-
 type animation (* Web Animations API *)
 
-(* TODO: Should we bother with this indirection?
-(* core *)
-type domString = string
-type domTimestamp = float
-*)
+(* TODO: Should we bother with this indirection? (* core *) type domString =
+   string type domTimestamp = float *)
 
 (* css *)
 type cssStyleDeclaration
@@ -56,6 +52,7 @@ type domRect
 
 (* html *)
 type dataTransfer (* Drag and Drop API *)
+
 type domStringMap
 type history
 type _htmlDocument
@@ -145,9 +142,11 @@ type domTokenList
 type domSettableTokenList
 
 (* traversal *)
-type nodeFilter = {
-  acceptNode: element -> int (* return type should be NodeFilter.action, but that would create a cycle *)
-}
+type nodeFilter =
+  { acceptNode: element -> int
+        (* return type should be NodeFilter.action, but that would create a
+           cycle *) }
+
 type nodeIterator
 type treeWalker
 
@@ -157,7 +156,6 @@ type svgPoint
 
 (* special *)
 type eventPointerId
-
 
 module Storage = Dom_storage
 module Storage2 = Dom_storage2

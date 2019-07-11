@@ -22,28 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =  
-  let ast = 
+let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
+  let ast =
     match !Js_config.jsx_version with
-    | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast 
-    | 3 -> Reactjs_jsx_ppx_v3.rewrite_signature ast 
-    | _ -> ast 
-    (* react-jsx ppx relies on built-in ones like `##` *)
-  in 
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_signature ast
+    | _ -> ast
+    (* react-jsx ppx relies on built-in ones like `##` *) in
+  if !Js_config.no_builtin_ppx_mli then ast
+  else Bs_builtin_ppx.rewrite_signature ast
 
-  if !Js_config.no_builtin_ppx_mli then ast else 
-    Bs_builtin_ppx.rewrite_signature ast 
-
-let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
-  let ast = 
-    match !Js_config.jsx_version with 
-    | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast 
-    | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast 
-    | _ -> ast 
-  in 
-  if !Js_config.no_builtin_ppx_ml then ast else
-  begin
-    Bs_builtin_ppx.rewrite_implementation ast 
-  end
-  
+let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
+  let ast =
+    match !Js_config.jsx_version with
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast
+    | _ -> ast in
+  if !Js_config.no_builtin_ppx_ml then ast
+  else Bs_builtin_ppx.rewrite_implementation ast

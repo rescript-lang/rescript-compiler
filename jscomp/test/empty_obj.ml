@@ -1,2 +1,1 @@
-let v = object 
-end
+let v = object end

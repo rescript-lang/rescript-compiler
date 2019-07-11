@@ -24,39 +24,32 @@
 
 open Ast_helper
 
-
 let predef_prefix_ident : Longident.t = Lident "*predef*"
-
-let predef_option : Longident.t =
-  Ldot (predef_prefix_ident, "option")
-
-let predef_some : Longident.t =
-  Ldot (predef_prefix_ident, "Some")
-
-let predef_none : Longident.t =
-  Ldot (predef_prefix_ident, "None")
-
+let predef_option : Longident.t = Ldot (predef_prefix_ident, "option")
+let predef_some : Longident.t = Ldot (predef_prefix_ident, "Some")
+let predef_none : Longident.t = Ldot (predef_prefix_ident, "None")
 
 module Lid = struct
   type t = Longident.t
+
   let val_unit : t = Lident "()"
   let type_unit : t = Lident "unit"
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
+
   let type_exn : t = Lident "exn" (* use *predef* *)
+
   let type_bool : t = Lident "bool" (* use *predef* *)
+
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
-  let js_fn : t =
-      Ldot (js_internal,  "fn")
-  let js_meth : t =
-      Ldot (js_internal , "meth")
-  let js_meth_callback : t =
-      Ldot (js_internal, "meth_callback")
+  let js_fn : t = Ldot (js_internal, "fn")
+  let js_meth : t = Ldot (js_internal, "meth")
+  let js_meth_callback : t = Ldot (js_internal, "meth_callback")
   let js_obj : t = Ldot (Lident "Js", "t")
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
-  let js_null  : t = Ldot (Lident "Js", "null")
+  let js_null : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
   let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
@@ -64,25 +57,27 @@ end
 
 module No_loc = struct
   let loc = Location.none
-  let val_unit =
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let val_unit = Ast_helper.Exp.construct {txt= Lid.val_unit; loc} None
 
   let type_unit =
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-  let type_exn =
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt= Lid.type_unit; loc}, []))
 
-  let type_int =
-    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
+  let type_exn =
+    Ast_helper.Typ.mk (Ptyp_constr ({txt= Lid.type_unit; loc}, []))
+
+  let type_int = Ast_helper.Typ.mk (Ptyp_constr ({txt= Lid.type_int; loc}, []))
+
   let type_string =
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt= Lid.type_string; loc}, []))
+
   let type_bool =
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt= Lid.type_bool; loc}, []))
+
   let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+  let pat_unit = Pat.construct {txt= Lid.val_unit; loc} None
 end
 
-type 'a  lit = ?loc: Location.t -> unit -> 'a
+type 'a lit = ?loc:Location.t -> unit -> 'a
 type expression_lit = Parsetree.expression lit
 type core_type_lit = Parsetree.core_type lit
 type pattern_lit = Parsetree.pattern lit
@@ -90,41 +85,37 @@ type pattern_lit = Parsetree.pattern lit
 let val_unit ?loc () =
   match loc with
   | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
+  | Some loc -> Ast_helper.Exp.construct {txt= Lid.val_unit; loc} None
 
 let type_unit ?loc () =
   match loc with
-  | None ->
-    No_loc.type_unit
+  | None -> No_loc.type_unit
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+      Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt= Lid.type_unit; loc}, []))
 
 let type_exn ?loc () =
   match loc with
-  | None ->
-    No_loc.type_exn
+  | None -> No_loc.type_exn
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_exn; loc}, []))
-
+      Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt= Lid.type_exn; loc}, []))
 
 let type_string ?loc () =
   match loc with
   | None -> No_loc.type_string
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+      Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt= Lid.type_string; loc}, []))
 
 let type_bool ?loc () =
   match loc with
   | None -> No_loc.type_bool
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
+      Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt= Lid.type_bool; loc}, []))
 
 let type_int ?loc () =
   match loc with
   | None -> No_loc.type_int
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+      Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt= Lid.type_int; loc}, []))
 
 let type_any ?loc () =
   match loc with
@@ -134,5 +125,4 @@ let type_any ?loc () =
 let pat_unit ?loc () =
   match loc with
   | None -> No_loc.pat_unit
-  | Some loc ->
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+  | Some loc -> Pat.construct ~loc {txt= Lid.val_unit; loc} None

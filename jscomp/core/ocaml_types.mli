@@ -22,29 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Utilities for quering typing information from {!Env.t}, this part relies
-    on compiler API
-*)
+(** Utilities for quering typing information from {!Env.t}, this part relies on
+    compiler API *)
 
 type t
 
-val empty : t 
-val length : t -> int 
+val empty : t
+val length : t -> int
 
-
-
-(* Input path is a global module 
-    TODO: it should be fine for local module*)
-val find_serializable_signatures_by_path :
-  Ident.t -> Env.t -> t option
-
+(* Input path is a global module TODO: it should be fine for local module*)
+val find_serializable_signatures_by_path : Ident.t -> Env.t -> t option
 val get_name : t -> int -> string
-
-val map : (string -> 'a) -> t -> 'a list 
+val map : (string -> 'a) -> t -> 'a list

@@ -22,24 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
+(** [is_closed_by map lam] return [true] if all unbound variables belongs to
+    the given [map] *)
+
 (* val is_closed_by : Ident_set.t -> Lam.t -> bool *)
 
 val is_closed : Lam.t -> bool
 
-
+val is_closed_with_map :
+     Ident_set.t
+  -> Ident.t list
+  -> Lam.t
+  -> bool * Lam_var_stats.stats Ident_map.t
 (** The output is mostly used in betat reduction *)
-val is_closed_with_map : 
-  Ident_set.t ->
-  Ident.t list -> 
-  Lam.t -> 
-  bool * Lam_var_stats.stats Ident_map.t
 
-val free_variables : 
-  Ident_set.t -> 
-  Lam_var_stats.stats Ident_map.t -> 
-  Lam.t -> 
-  Lam_var_stats.stats Ident_map.t
-
+val free_variables :
+     Ident_set.t
+  -> Lam_var_stats.stats Ident_map.t
+  -> Lam.t
+  -> Lam_var_stats.stats Ident_map.t

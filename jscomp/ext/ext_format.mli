@@ -22,49 +22,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
+(** Simplified wrapper module for the standard library [Format] module. *)
 
 type t = private Format.formatter
 
 val string : t -> string -> unit
-
 val break : t -> unit
-
 val break1 : t -> unit
-
-val space :  t -> unit
+val space : t -> unit
 
 val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
+(** [group] will record current indentation and indent futher *)
 
 val vgroup : t -> int -> (unit -> 'a) -> 'a
-
 val paren : t -> (unit -> 'a) -> 'a
-
 val paren_group : t -> int -> (unit -> 'a) -> 'a
-
 val brace_group : t -> int -> (unit -> 'a) -> 'a
-
 val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
 val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
 val newline : t -> unit
-
 val to_out_channel : out_channel -> t
-
 val flush : t -> unit -> unit
 
 val pp_print_queue :
-  ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+     ?pp_sep:(Format.formatter -> unit -> unit)
+  -> (Format.formatter -> 'a -> unit)
+  -> Format.formatter
+  -> 'a Queue.t
+  -> unit

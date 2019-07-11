@@ -24,14 +24,10 @@
 
 type error
 
-val report_error : Format.formatter -> error -> unit 
+val report_error : Format.formatter -> error -> unit
 
 exception Error of Lexing.position * Lexing.position * error
 
-val parse_json_from_string : string -> Ext_json_types.t 
-
-val parse_json_from_chan :
-  string ->  in_channel -> Ext_json_types.t 
-
-val parse_json_from_file  : string -> Ext_json_types.t
-
+val parse_json_from_string : string -> Ext_json_types.t
+val parse_json_from_chan : string -> in_channel -> Ext_json_types.t
+val parse_json_from_file : string -> Ext_json_types.t

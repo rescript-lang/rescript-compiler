@@ -22,21 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Compile single lambda IR to JS IR  *)
+(** Compile single lambda IR to JS IR *)
 
 val compile_recursive_lets :
-  Lam_compile_context.t ->
-  (Ident.t * Lam.t) list -> 
-  Js_output.t
+  Lam_compile_context.t -> (Ident.t * Lam.t) list -> Js_output.t
 
-val compile_lambda :
-  Lam_compile_context.t -> 
-  Lam.t ->
-  Js_output.t
+val compile_lambda : Lam_compile_context.t -> Lam.t -> Js_output.t

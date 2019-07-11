@@ -22,17 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities for [option] type *)
 
 val map : 'a option -> ('a -> 'b) -> 'b option
-
 val iter : 'a option -> ('a -> unit) -> unit
-
 val exists : 'a option -> ('a -> bool) -> bool

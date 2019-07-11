@@ -22,17 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(**  *)
 
+type 'a t
 
-
-
-(** *)
-
-type 'a t 
-
-val caml_weak_create : int -> 'a t 
-val caml_weak_set : 'a t -> int -> 'a option -> unit 
-val caml_weak_get : 'a t -> int -> 'a option 
-val caml_weak_get_copy : 'a t -> int -> 'a option 
-val caml_weak_check : 'a t -> int -> bool 
+val caml_weak_create : int -> 'a t
+val caml_weak_set : 'a t -> int -> 'a option -> unit
+val caml_weak_get : 'a t -> int -> 'a option
+val caml_weak_get_copy : 'a t -> int -> 'a option
+val caml_weak_check : 'a t -> int -> bool
 val caml_weak_blit : 'a t -> int -> 'a t -> int -> int -> unit

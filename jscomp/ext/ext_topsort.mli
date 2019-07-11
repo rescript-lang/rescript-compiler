@@ -22,13 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type edges = {id: int; deps: Int_vec.t}
 
-type edges = { id : int ; deps : Int_vec.t }
+module Edge_vec : Vec_gen.S with type elt = edges
 
-module Edge_vec : Vec_gen.S with type elt = edges 
+type t = Edge_vec.t
 
-type t = Edge_vec.t 
-
-(** the input will be modified ,
-*)
 val layered_dfs : t -> Set_int.t Queue.t
+(** the input will be modified , *)

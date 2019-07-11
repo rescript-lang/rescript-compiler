@@ -22,26 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Define intemediate format to be serialized for cross module optimization *)
 
+(** In this module, currently only arity information is exported,
 
+    Short term: constant literals are also exported
 
-
-
-
-
-(** Define intemediate format to be serialized for cross module optimization
- *)
-
-(** In this module, 
-    currently only arity information is  exported, 
-
-    Short term: constant literals are also exported 
-
-    Long term:
-    Benefit? since Google Closure Compiler already did such huge amount of work
-    TODO: simple expression, literal small function  can be stored, 
-    but what would happen if small function captures other environment
-    for example 
+    Long term: Benefit? since Google Closure Compiler already did such huge
+    amount of work TODO: simple expression, literal small function can be
+    stored, but what would happen if small function captures other environment
+    for example
 
     {[
       let f  = fun x -> g x 
@@ -49,64 +39,37 @@
 
     {[
       let f = g 
-    ]}
-*)
+    ]} *)
 
-type arity = 
-  | Single of Lam_arity.t
-  | Submodule of Lam_arity.t array
+type arity = Single of Lam_arity.t | Submodule of Lam_arity.t array
 
-type cmj_value = {
-  arity : arity ; 
-  persistent_closed_lambda : Lam.t option ; 
-  (* Either constant or closed functor *)
-}
+type cmj_value =
+  { arity: arity
+  ; persistent_closed_lambda: Lam.t option
+        (* Either constant or closed functor *) }
 
 type effect = string option
+type cmj_case = Ext_namespace.file_kind
+type t
 
-type cmj_case = Ext_namespace.file_kind 
+val mk :
+     values:cmj_value String_map.t
+  -> effect:effect
+  -> npm_package_path:Js_packages_info.t
+  -> cmj_case:cmj_case
+  -> t
 
-type t 
-
-
-val mk:
-  values: cmj_value String_map.t -> 
-  effect: effect -> 
-  npm_package_path: Js_packages_info.t ->
-  cmj_case:cmj_case -> 
-  t
-
-val query_by_name : 
-  t ->
-  string -> 
-  arity * Lam.t option 
-
-val is_pure : 
-  t -> bool 
-
-val get_npm_package_path :  
-  t -> 
-  Js_packages_info.t  
-
-val get_cmj_case :   
-  t ->
-  cmj_case 
-
+val query_by_name : t -> string -> arity * Lam.t option
+val is_pure : t -> bool
+val get_npm_package_path : t -> Js_packages_info.t
+val get_cmj_case : t -> cmj_case
 val single_na : arity
 val pure_dummy : t
 val no_pure_dummy : t
-
-
 val from_file : string -> t
-
-val from_file_with_digest :
-   string -> t * Digest.t
-
+val from_file_with_digest : string -> t * Digest.t
 val from_string : string -> t
 
-(* Note writing the file if its content is not chnaged  
-*)
-val to_file : 
-  string -> check_exists:bool -> t -> unit
-
-val pp_cmj: t -> unit 
+(* Note writing the file if its content is not chnaged *)
+val to_file : string -> check_exists:bool -> t -> unit
+val pp_cmj : t -> unit

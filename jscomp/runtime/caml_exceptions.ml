@@ -22,65 +22,53 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
+(**  *)
 
-
-
-
-(** 
-   Could be exported for better inlining
-   It's common that we have 
-   {[ a = caml_set_oo_id([248,"string",0]) ]}
-   This can be inlined as 
-   {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
-*)
+(** Could be exported for better inlining It's common that we have
+    {[
+a = caml_set_oo_id([248,"string",0])
+    ]} This can be inlined as
+    {[
+a = caml_set_oo_id([248,"tag", caml_oo_last_id++])
+    ]} *)
 
 let id = ref 0n
 
-
-(* see  #251
-   {[
-     CAMLprim value caml_set_oo_id (value obj) {
-       Field(obj, 1) = oo_last_id;
-       oo_last_id += 2;
-       return obj;
-     }
+(* see #251 {[ CAMLprim value caml_set_oo_id (value obj) { Field(obj, 1) =
+   oo_last_id; oo_last_id += 2; return obj; }
 
    ]}*)
-let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
-  Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr !id);
-  id := Caml_nativeint_extern.add !id  1n; 
+let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block) =
+  Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1
+    (Caml_obj_extern.repr !id) ;
+  id := Caml_nativeint_extern.add !id 1n ;
   b
 
-
-let caml_fresh_oo_id () = 
-  id := Caml_nativeint_extern.add !id 1n; !id
+let caml_fresh_oo_id () =
+  id := Caml_nativeint_extern.add !id 1n ;
+  !id
 
 let object_tag = 248
 
-let create (str : string) : Caml_builtin_exceptions.exception_block = 
-  let v = ( str, caml_fresh_oo_id ()) in 
-  Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag;
-  v 
+let create (str : string) : Caml_builtin_exceptions.exception_block =
+  let v = (str, caml_fresh_oo_id ()) in
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag ;
+  v
 
-(* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
-(*   let v = ( str, get_id ()) in  *)
-(*   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag; *)
-(*   v  *)
+(* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block = *)
+(* let v = ( str, get_id ()) in *)
+(* Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag; *)
+(* v *)
 
+(** This function should never throw It could be either customized exception or
+    built in exception Note due to that in OCaml extensible variants have the
+    same runtime representation as exception, so we can not really tell the
+    difference.
 
+    However, if we make a false alarm, classified extensible variant as
+    exception, it will be OKAY for nested pattern match
 
-(**
-   This function should never throw
-   It could be either customized exception or built in exception 
-   Note due to that in OCaml extensible variants have the same 
-   runtime representation as exception, so we can not 
-   really tell the difference. 
-
-   However, if we make a false alarm, classified extensible variant 
-   as exception, it will be OKAY for nested pattern match
-
-   {[
+    {[
      match toExn x : exn option with 
      | Some _ 
        -> Js.log "Could be an OCaml exception or an open variant"
@@ -89,25 +77,24 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
 
      *)
      | None -> Js.log "Not an OCaml exception for sure"
-   ]}
+    ]}
 
-   However, there is still something wrong, since if user write such code
-   {[
+    However, there is still something wrong, since if user write such code
+    {[
      match toExn x with 
      | Some _ -> (* assert it is indeed an exception *)
        (* This assertion is wrong, since it could be an open variant *)
      | None -> (* assert it is not an exception *)
-   ]}
+    ]}
 
-   This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
-*)
-let caml_is_extension e = 
-  if  Obj.magic e = Js.undefined then false 
-  else 
-    Caml_obj_extern.tag (Caml_obj_extern.repr e) = object_tag  (* nullary exception *)
+    This is not a problem in `try .. with` since the logic above is not
+    expressible, see more design in [destruct_exn.md] *)
+let caml_is_extension e =
+  if Obj.magic e = Js.undefined then false
+  else
+    Caml_obj_extern.tag (Caml_obj_extern.repr e) = object_tag
+    (* nullary exception *)
     ||
-    let slot = Caml_obj_extern.field (Caml_obj_extern.repr e) 0 in 
-    not (Obj.magic slot = Js.undefined) &&
-    (Caml_obj_extern.tag slot = object_tag)
-
-
+    let slot = Caml_obj_extern.field (Caml_obj_extern.repr e) 0 in
+    (not (Obj.magic slot = Js.undefined))
+    && Caml_obj_extern.tag slot = object_tag

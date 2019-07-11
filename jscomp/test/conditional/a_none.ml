@@ -1,10 +1,1 @@
-module A
-= struct
-#1 "a.ml"
-
-let u =
- 
-  assert false
-
-
-end
+module A = struct let u = assert false end

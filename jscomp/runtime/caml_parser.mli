@@ -22,18 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type parse_tables  (**  *)
 
-
-
-(** *)
-type parse_tables 
 type parser_env
 
-val  caml_parse_engine :     
-  parse_tables -> parser_env -> 
-  Caml_obj_extern.t (* Parsing.parser_input *) -> Caml_obj_extern.t -> 
-  (* parser_output *)  Caml_obj_extern.t
-
-
+val caml_parse_engine :
+     parse_tables
+  -> parser_env
+  -> Caml_obj_extern.t (* Parsing.parser_input *)
+  -> Caml_obj_extern.t
+  -> (* parser_output *) Caml_obj_extern.t
 
 val caml_set_parser_trace : bool -> bool

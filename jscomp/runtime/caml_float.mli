@@ -22,25 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external floor : float -> float = "Math.floor" [@@bs.val]
+(**  *)
 
-
-
-
-(** *)
-external floor : float -> float = "Math.floor" [@@bs.val] 
 external int_of_float : float -> int = "%intoffloat"
 external float_of_int : int -> float = "%floatofint"
 val caml_int32_float_of_bits : int32 -> float
 val caml_int32_bits_of_float : float -> int32
-
 val caml_modf_float : float -> float * float
-
 val caml_ldexp_float : float -> int -> float
 val caml_frexp_float : float -> float * int
-
 val caml_copysign_float : float -> float -> float
 val caml_expm1_float : float -> float
-
 val caml_hypot_float : float -> float -> float
-
 val caml_log10_float : float -> float

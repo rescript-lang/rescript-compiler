@@ -28,4 +28,3 @@ open XDot
 open Printf
 
 exception DotError of string
-

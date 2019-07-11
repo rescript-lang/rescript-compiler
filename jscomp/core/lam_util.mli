@@ -22,65 +22,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 val kind_of_lambda_block : Lam.t list -> Lam_id_kind.t
 
-
-(** [field_flattern_get cb v i tbl]
-    try to remove the indirection of [v.(i)] by inlining when [v]
-    is a known block, 
-    if not, it will call [cb ()].
-    
-    Note due to different control flow, a constant block
-    may result in out-of bound access, in that case, we should
-    just ignore it. This does not mean our
-    optimization is wrong, it means we hit an unreachable branch.
-    for example
-    {{
-      let myShape = A 10 in 
-      match myShape with 
-      | A x -> x  (* only access field [0]*)
-      | B (x,y) -> x + y (* Here it will try to access field [1] *)
-    }}
-*)
-val field_flatten_get : 
+val field_flatten_get :
   (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
+(** [field_flattern_get cb v i tbl] try to remove the indirection of [v.(i)] by
+    inlining when [v] is a known block, if not, it will call [cb ()].
 
+    Note due to different control flow, a constant block may result in out-of
+    bound access, in that case, we should just ignore it. This does not mean
+    our optimization is wrong, it means we hit an unreachable branch. for
+    example {{ let myShape = A 10 in match myShape with | A x -> x (* only
+    access field [0]*) | B (x,y) -> x + y (* Here it will try to access field
+    [1] *) }} *)
 
+val alias_ident_or_global :
+     Lam_stats.t
+  -> Ident.t
+  -> Ident.t
+  -> Lam_id_kind.t
+  -> Lam_compat.let_kind
+  -> unit
 
+val refine_let : kind:Lam_compat.let_kind -> Ident.t -> Lam.t -> Lam.t -> Lam.t
+val generate_label : ?name:string -> unit -> J.label
 
-
-val alias_ident_or_global : Lam_stats.t ->
-  Ident.t -> Ident.t -> Lam_id_kind.t -> Lam_compat.let_kind -> unit 
-
-
-val refine_let : 
-    kind:Lam_compat.let_kind  ->
-      Ident.t -> Lam.t -> Lam.t -> Lam.t
-
-
-
-val generate_label : ?name:string -> unit -> J.label 
-
-
-
+val dump : Env.t -> string -> Lam.t -> unit
 (** [dump] when {!Js_config.is_same_file}*)
-val dump : Env.t   -> string -> Lam.t -> unit
 
-
-val not_function : Lam.t -> bool 
-val is_function : Lam.t -> bool 
-
-
-
-
-
-
-
-
+val not_function : Lam.t -> bool
+val is_function : Lam.t -> bool

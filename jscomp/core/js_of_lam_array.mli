@@ -22,21 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities for creating Array of JS IR *)
 
 val make_array : J.mutable_flag -> J.expression list -> J.expression
 (** create an array *)
 
 val set_array : J.expression -> J.expression -> J.expression -> J.expression
-(** Here we don't care about [array_kind],  
-    In the future, we might used TypedArray for FloatArray
- *)
+(** Here we don't care about [array_kind], In the future, we might used
+    TypedArray for FloatArray *)
 
-val ref_array :  J.expression -> J.expression -> J.expression
+val ref_array : J.expression -> J.expression -> J.expression

@@ -22,83 +22,69 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a t = {mutable root: 'a opt_cell}
 
-type  'a t = { mutable root : 'a opt_cell}
 and 'a opt_cell = 'a cell Js.null
-and 'a cell = {
-  head : 'a ; 
-  tail : 'a opt_cell
-} [@@bs.deriving abstract]
 
+and 'a cell = {head: 'a; tail: 'a opt_cell} [@@bs.deriving abstract]
 
 let make () = t ~root:Js.null
-
 let clear s = rootSet s Js.null
-
 let copy (s : _ t) : _ t = t ~root:(rootGet s)
+let push s x = rootSet s (Js_null.return @@ cell ~head:x ~tail:(rootGet s))
 
-let push s x = 
-  rootSet s (Js_null.return @@ cell ~head:x ~tail:(rootGet s))
+let topUndefined (s : 'a t) =
+  match Js.nullToOption (rootGet s) with
+  | None -> Js.undefined
+  | Some x -> Js.Undefined.return (headGet x)
 
-let topUndefined (s : 'a t) = 
-   match Js.nullToOption (rootGet s) with  
-   | None -> Js.undefined
-   | Some x -> Js.Undefined.return (headGet x) 
-
-let top s = 
-  match Js.nullToOption (rootGet s) with 
-  | None -> None 
+let top s =
+  match Js.nullToOption (rootGet s) with
+  | None -> None
   | Some x -> Some (headGet x)
 
 let isEmpty s = rootGet s = Js.null
 
-let popUndefined s =   
-  match Js.nullToOption (rootGet s) with 
+let popUndefined s =
+  match Js.nullToOption (rootGet s) with
   | None -> Js.undefined
-  | Some x -> 
-    rootSet s (tailGet x);    
-    Js.Undefined.return (headGet x)
+  | Some x ->
+      rootSet s (tailGet x) ;
+      Js.Undefined.return (headGet x)
 
-let pop s =     
-    match Js.nullToOption (rootGet s) with 
+let pop s =
+  match Js.nullToOption (rootGet s) with
   | None -> None
-  | Some x -> 
-    rootSet s (tailGet x);
-    Some (headGet x)
+  | Some x ->
+      rootSet s (tailGet x) ;
+      Some (headGet x)
 
-
-
-let rec lengthAux (x : _ cell) acc = 
-  match Js.nullToOption (tailGet x ) with 
-  | None -> acc + 1 
+let rec lengthAux (x : _ cell) acc =
+  match Js.nullToOption (tailGet x) with
+  | None -> acc + 1
   | Some x -> lengthAux x (acc + 1)
 
-let size s =   
-  match Js.nullToOption (rootGet s) with 
-  | None -> 0 
-  | Some x -> lengthAux x 0
+let size s =
+  match Js.nullToOption (rootGet s) with None -> 0 | Some x -> lengthAux x 0
 
-let rec iterAux (s : _ opt_cell) f =  
-  match Js.nullToOption s with 
+let rec iterAux (s : _ opt_cell) f =
+  match Js.nullToOption s with
   | None -> ()
-  | Some x -> 
-    f (headGet x) [@bs];
-    iterAux (tailGet x) f 
+  | Some x ->
+      (f (headGet x) [@bs]) ;
+      iterAux (tailGet x) f
 
-let forEachU s f =   
-  iterAux (rootGet s) f 
-
+let forEachU s f = iterAux (rootGet s) f
 let forEach s f = forEachU s (fun [@bs] x -> f x)
-    
-let dynamicPopIterU s f =    
-  let cursor = ref (rootGet s) in 
-  while !cursor != Js.null do 
-    let v = Js_null.getUnsafe !cursor in 
-    rootSet s (tailGet v);
-    f (headGet v) [@bs];
-    cursor := rootGet s (* using root, [f] may change it*)
+
+let dynamicPopIterU s f =
+  let cursor = ref (rootGet s) in
+  while !cursor != Js.null do
+    let v = Js_null.getUnsafe !cursor in
+    rootSet s (tailGet v) ;
+    (f (headGet v) [@bs]) ;
+    cursor := rootGet s
+    (* using root, [f] may change it*)
   done
 
 let dynamicPopIter s f = dynamicPopIterU s (fun [@bs] x -> f x)
-
-

@@ -21,50 +21,54 @@ open Sig
 
 (** Signature of imperative graphs. *)
 module type S = sig
-
-  (** <b>Edges may be labeled or not</b>:
+  (** {b Edges may be labeled or not}:
       - Unlabeled: there is no label on edges
       - Labeled: you have to provide a label implementation as a functor
-      parameter.
+        parameter.
 
-      <b>Vertices may be concrete or abstract</b>:
+      {b Vertices may be concrete or abstract}:
       - Concrete: type of vertex labels and type of vertices are identified.
       - Abstract: type of vertices is abstract (in particular it is not equal
-      to type of vertex labels
+        to type of vertex labels
 
-      <b>How to choose between concrete and abstract vertices for my graph
-      implementation</b>?
+      {b
+      How to choose between concrete and abstract vertices for my graph
+      implementation} ?
 
       Usually, if you fall into one of the following cases, use abstract
       vertices:
       - you cannot provide efficient comparison/hash functions for vertices; or
       - you wish to get two different vertices with the same label.
 
-      In other cases, it is certainly easier to use concrete vertices.  *)
+      In other cases, it is certainly easier to use concrete vertices. *)
 
   (** Imperative Unlabeled Graphs. *)
-  module Concrete (V: COMPARABLE) :
-    Sig.I with type V.t = V.t and type V.label = V.t and type E.t = V.t * V.t
-                                                     and type E.label = unit
+  module Concrete (V : COMPARABLE) :
+    Sig.I
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * V.t
+       and type E.label = unit
 
   (** Abstract Imperative Unlabeled Graphs. *)
-  module Abstract(V: ANY_TYPE) :
+  module Abstract (V : ANY_TYPE) :
     Sig.IM with type V.label = V.t and type E.label = unit
 
   (** Imperative Labeled Graphs. *)
-  module ConcreteLabeled (V: COMPARABLE)(E: ORDERED_TYPE_DFT) :
-    Sig.I with type V.t = V.t and type V.label = V.t
-                              and type E.t = V.t * E.t * V.t and type E.label = E.t
+  module ConcreteLabeled (V : COMPARABLE) (E : ORDERED_TYPE_DFT) :
+    Sig.I
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * E.t * V.t
+       and type E.label = E.t
 
   (** Abstract Imperative Labeled Graphs. *)
-  module AbstractLabeled (V: ANY_TYPE)(E: ORDERED_TYPE_DFT) :
+  module AbstractLabeled (V : ANY_TYPE) (E : ORDERED_TYPE_DFT) :
     Sig.IM with type V.label = V.t and type E.label = E.t
-
 end
 
 (** Imperative Directed Graphs. *)
 module Digraph : sig
-
   include S
 
   (** {2 Bidirectional graphs}
@@ -72,43 +76,43 @@ module Digraph : sig
       Bidirectional graphs use more memory space (at worse the double) that
       standard concrete directional graphs. But accessing predecessors is in
       O(1) amortized instead of O(max(|V|,|E|)) and removing a vertex is in
-      O(D*ln(D)) instead of O(|V|*ln(D)). D is the maximal degree of the
-      graph. *)
+      O(D*ln(D)) instead of O(|V|*ln(D)). D is the maximal degree of the graph. *)
 
   (** Imperative Unlabeled, bidirectional graph. *)
-  module ConcreteBidirectional (V: COMPARABLE) :
-    Sig.I with type V.t = V.t and type V.label = V.t and type E.t = V.t * V.t
-                                                     and type E.label = unit
+  module ConcreteBidirectional (V : COMPARABLE) :
+    Sig.I
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * V.t
+       and type E.label = unit
 
   (** Imperative Labeled and bidirectional graph. *)
-  module ConcreteBidirectionalLabeled(V:COMPARABLE)(E:ORDERED_TYPE_DFT) :
-    Sig.I with type V.t = V.t and type V.label = V.t
-                              and type E.t = V.t * E.t * V.t and type E.label = E.t
-
+  module ConcreteBidirectionalLabeled (V : COMPARABLE) (E : ORDERED_TYPE_DFT) :
+    Sig.I
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * E.t * V.t
+       and type E.label = E.t
 end
 
-(** Imperative Undirected Graphs. *)
 module Graph : S
+(** Imperative Undirected Graphs. *)
 
 (** Imperative graphs implemented as adjacency matrices. *)
 module Matrix : sig
-
   module type S = sig
-
-    (** Vertices are integers in [0..n-1].
-        A vertex label is the vertex itself.
+    (** Vertices are integers in [0..n-1]. A vertex label is the vertex itself.
         Edges are unlabeled. *)
 
-    include Sig.I with type V.t = int and type V.label = int
-                                      and type E.t = int * int
+    include
+      Sig.I with type V.t = int and type V.label = int and type E.t = int * int
 
+    val make : int -> t
     (** Creation. graphs are not resizeable: size is given at creation time.
         Thus [make] must be used instead of [create]. *)
-    val make : int -> t
 
-    (** Note: [add_vertex] and [remove_vertex] have no effect.
-        [clear] only removes edges, not vertices. *)
-
+    (** Note: [add_vertex] and [remove_vertex] have no effect. [clear] only
+        removes edges, not vertices. *)
   end
 
   module Digraph : S
@@ -116,7 +120,6 @@ module Matrix : sig
 
   module Graph : S
   (** Imperative Undirected Graphs implemented with adjacency matrices. *)
-
 end
 
 (****
@@ -152,8 +155,4 @@ end
    end
  ****)
 
-(*
-Local Variables:
-compile-command: "make -C .."
-End:
-*)
+(* Local Variables: compile-command: "make -C .." End: *)

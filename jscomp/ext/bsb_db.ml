@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -27,46 +26,28 @@ type case = bool
 (** true means upper case*)
 
 type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_source of bool * case (* Ml_source(is_re, case) default to false *)
   | Ml_empty
-type mli_info = 
-  | Mli_source of  bool  * case  
-  | Mli_empty
 
-type module_info = 
-  {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string  ;
-  }
+type mli_info = Mli_source of bool * case | Mli_empty
 
+type module_info =
+  {mli_info: mli_info; ml_info: ml_info; name_sans_extension: string}
 
-type t = module_info String_map.t 
+type t = module_info String_map.t
 
-type ts = t array 
+type ts = t array
 (** indexed by the group *)
-
-
-
-
 
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
-
-
-
-let has_reason_files (map  : t ) = 
+let has_reason_files (map : t) =
   String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
-
-
-
+      match module_info with
+      | {ml_info= Ml_source (is_re, _); mli_info= Mli_source (is_rei, _)} ->
+          is_re || is_rei
+      | {ml_info= Ml_source (is_re, _); mli_info= Mli_empty}
+       |{mli_info= Mli_source (is_re, _); ml_info= Ml_empty} ->
+          is_re
+      | {ml_info= Ml_empty; mli_info= Mli_empty} -> false)

@@ -20,24 +20,23 @@
  * Florian Pichlmeier <florian.pichlmeier@in.tum.de>
  * All rights reserved. *)
 
-(** The leader list algorithm; it generates a list of basic blocks from
-    a directed graph. A basic block is a forward path of nodes that requires
-    neither branching from nor into.
-*)
+(** The leader list algorithm; it generates a list of basic blocks from a
+    directed graph. A basic block is a forward path of nodes that requires
+    neither branching from nor into. *)
 
 (** Minimal graph signature for leader list algorithm *)
 module type G = sig
   type t
+
   module V : Sig.COMPARABLE
+
   val fold_vertex : (V.t -> 'a -> 'a) -> t -> 'a -> 'a
   val succ : t -> V.t -> V.t list
   val pred : t -> V.t -> V.t list
 end
 
-module Make
-    (G : G) :
-sig
+module Make (G : G) : sig
   val leader_lists : G.t -> G.V.t -> G.V.t list list
-  (** [leader_lists graph root] computes the leader lists or basic blocks
-      of the given graph. The node [root] is always a leader of a basic block. *)
+  (** [leader_lists graph root] computes the leader lists or basic blocks of
+      the given graph. The node [root] is always a leader of a basic block. *)
 end

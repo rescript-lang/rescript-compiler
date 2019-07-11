@@ -22,10 +22,8 @@
 
     So if you bother functors, you can use this module. *)
 
-(** Directed imperative graphs with edges and vertices labeled with integer. *)
 module Digraph : Sig_pack.S
+(** Directed imperative graphs with edges and vertices labeled with integer. *)
 
-(** Undirected imperative graphs with edges and vertices labeled with
-    integer. *)
 module Graph : Sig_pack.S
-
+(** Undirected imperative graphs with edges and vertices labeled with integer. *)

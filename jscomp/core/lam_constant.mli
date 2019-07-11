@@ -29,7 +29,7 @@ type t =
   | Const_js_false
   | Const_int of int
   | Const_char of char
-  | Const_string of string  (* use record later *)
+  | Const_string of string (* use record later *)
   | Const_unicode of string
   | Const_float of string
   | Const_int32 of int32
@@ -39,9 +39,8 @@ type t =
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
   | Const_immstring of string
-  | Const_some of t 
-    (* eventually we can remove it, since we know
-      [constant] is [undefined] or not 
-    *) 
+  | Const_some of t
+
+(* eventually we can remove it, since we know [constant] is [undefined] or not *)
 val eq_approx : t -> t -> bool
-val lam_none : t   
+val lam_none : t

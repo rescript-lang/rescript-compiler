@@ -22,50 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a logging = ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
+let err str f = Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str
 
+let ierr b str f =
+  if b then Format.fprintf Format.err_formatter ("%s " ^^ f) str
+  else Format.ifprintf Format.err_formatter ("%s " ^^ f) str
 
+let warn str f =
+  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str
 
-
-
-
-
-
-type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
-
-let err str f  =
-  Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str  
-
-let ierr b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("%s " ^^ f) str  
-  else
-    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  
-
-let warn str f  =
-  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-
-
-
-let iwarn b str f  = 
-  if b then 
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
+let iwarn b str f =
+  if b then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str
+  else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str
 
 (* TODO: add {[@.]} later for all *)
-(* let dwarn str f  =  *)
-(*   if Js_config.is_same_file () then    *)
-(*     Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str   *)
-(*   else  *)
-(*     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str   *)
+(* let dwarn str f = *)
+(* if Js_config.is_same_file () then *)
+(* Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str *)
+(* else *)
+(* Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str *)
 
-let info str f  =
-  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
+let info str f = Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
 
-let iinfo b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-  else
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-
+let iinfo b str f =
+  if b then Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+  else Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str

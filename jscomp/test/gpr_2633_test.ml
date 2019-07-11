@@ -1,15 +1,11 @@
 type foo
 
 external on :
-  foo ->
-  ([`bar of unit -> unit
-   | `foo of string -> unit ] [@bs.string]) ->
-   unit = "on" [@@bs.send]
+  foo -> ([`bar of unit -> unit | `foo of string -> unit][@bs.string]) -> unit
+  = "on"
+  [@@bs.send]
 
-let on1 foo event =
-  on foo event
+let on1 foo event = on foo event
 
 (* FIXME *)
-let on2 foo h event =
-  on foo (h event)
-
+let on2 foo h event = on foo (h event)

@@ -1,3 +1,4 @@
 /* Wrong constructor argument */
-type x = X(int, float);
+type x =
+  | X(int, float);
 X(10, 10);

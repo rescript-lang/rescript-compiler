@@ -22,51 +22,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(**  *)
 
-
-
-
-(** *)
-
-type exception_block = string * nativeint 
+type exception_block = string * nativeint
 
 let object_tag = 248
-
-let out_of_memory =  "Out_of_memory", 0n 
-let sys_error = "Sys_error", -1n
-let failure =  "Failure", -2n
-let invalid_argument =  "Invalid_argument", -3n
-let end_of_file = "End_of_file",-4n
-let division_by_zero =  "Division_by_zero", -5n
-let not_found = "Not_found", -6n
-let match_failure =  "Match_failure", -7n
-let stack_overflow =  "Stack_overflow",-8n
-let sys_blocked_io =  "Sys_blocked_io", -9n
-let assert_failure =  "Assert_failure", -10n
-let undefined_recursive_module =  "Undefined_recursive_module", -11n
+let out_of_memory = ("Out_of_memory", 0n)
+let sys_error = ("Sys_error", -1n)
+let failure = ("Failure", -2n)
+let invalid_argument = ("Invalid_argument", -3n)
+let end_of_file = ("End_of_file", -4n)
+let division_by_zero = ("Division_by_zero", -5n)
+let not_found = ("Not_found", -6n)
+let match_failure = ("Match_failure", -7n)
+let stack_overflow = ("Stack_overflow", -8n)
+let sys_blocked_io = ("Sys_blocked_io", -9n)
+let assert_failure = ("Assert_failure", -10n)
+let undefined_recursive_module = ("Undefined_recursive_module", -11n)
 
 let () =
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr out_of_memory ) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_error) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr invalid_argument) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr end_of_file) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr division_by_zero) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr not_found) object_tag ; 
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr match_failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr stack_overflow) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_blocked_io) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr assert_failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr undefined_recursive_module) object_tag
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr out_of_memory) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_error) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr failure) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr invalid_argument) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr end_of_file) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr division_by_zero) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr not_found) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr match_failure) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr stack_overflow) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_blocked_io) object_tag ;
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr assert_failure) object_tag ;
+  Caml_obj_extern.set_tag
+    (Caml_obj_extern.repr undefined_recursive_module)
+    object_tag
 
-(**: 
-   1. Is it necessary to tag [248] here
-   For compatibility reasons: tag [248] will make 
-   `Printexc.to_string` happy see #1501
-   2. Is it okay to remove the negative value
-   For marshalling? 
-   3. Global exception is encoded the same as user defined exception 
-   (for nullary and non-nullary), except
+(**: 1. Is it necessary to tag [248] here For compatibility reasons: tag [248]
+   will make `Printexc.to_string` happy see #1501 2. Is it okay to remove the
+   negative value For marshalling? 3. Global exception is encoded the same as
+   user defined exception (for nullary and non-nullary),
+   except
    - time stamp
-   - its name is not qualified
-*)
+   - its name is not qualified *)

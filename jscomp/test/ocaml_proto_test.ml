@@ -1,6329 +1,4502 @@
-module 
-Pbpt
-= struct
-#1 "pbpt.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+module Pbpt = struct
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-(** Protobuffer Parse tree *)
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-(** field constant *) 
-type constant = 
-  | Constant_string of string 
-  | Constant_bool of bool 
-  | Constant_int of int 
-  | Constant_float of float 
-  | Constant_litteral of string 
+  (** Protobuffer Parse tree *)
 
-(** field can have a list of options attached to 
-    them, for example the most widely used is [default]:
+  (** field constant *)
+  type constant =
+    | Constant_string of string
+    | Constant_bool of bool
+    | Constant_int of int
+    | Constant_float of float
+    | Constant_litteral of string
 
-    [required int32 my_field = [default=1]]
-  *) 
-type field_option = string * constant 
+  type field_option = string * constant
+  (** field can have a list of options attached to them, for example the most
+      widely used is [default]:
 
-type field_options = field_option list 
+      [required int32 my_field = \[default=1\]] *)
 
-type file_option = field_option 
+  type field_options = field_option list
+  type file_option = field_option
 
-(** A field property defining its occurence
- *)
-type field_label = [ 
-  | `Optional 
-  | `Required 
-  | `Repeated 
-]
+  type field_label = [`Optional | `Required | `Repeated]
+  (** A field property defining its occurence *)
 
-type oneof_label = [ `Oneof ] 
+  type oneof_label = [`Oneof]
 
-(** message field. 
-    
-   Note this field is parametrized with the label type 
-   so that it can be used both by normal field and one of 
-   field since the only difference between the 2 is 
-   the label.
- *)
-type 'a field = {
-  field_name : string; 
-  field_number : int; 
-  field_label : 'a ; 
-  field_type : string; 
-  field_options : field_options; 
-}
+  type 'a field =
+    { field_name: string
+    ; field_number: int
+    ; field_label: 'a
+    ; field_type: string
+    ; field_options: field_options }
+  (** message field.
 
-type map = {
-  map_name : string;
-  map_number : int;
-  map_key_type : string;
-  map_value_type : string;
-  map_options : field_options;
-}
+      Note this field is parametrized with the label type so that it can be
+      used both by normal field and one of field since the only difference
+      between the 2 is the label. *)
 
-(** oneof entity *)
-type oneof = {
-  oneof_name : string; 
-  oneof_fields : oneof_label field list; 
-}
+  type map =
+    { map_name: string
+    ; map_number: int
+    ; map_key_type: string
+    ; map_value_type: string
+    ; map_options: field_options }
 
-type enum_value = {
-  enum_value_name : string; 
-  enum_value_int : int;
-}
+  type oneof = {oneof_name: string; oneof_fields: oneof_label field list}
+  (** oneof entity *)
 
-type enum = {
-  enum_id  : int; 
-  enum_name : string; 
-  enum_values : enum_value list; 
-} 
+  type enum_value = {enum_value_name: string; enum_value_int: int}
+  type enum = {enum_id: int; enum_name: string; enum_values: enum_value list}
+  type extension_range_to = To_max | To_number of int
+  type extension_range_from = int
 
-type extension_range_to = 
-  | To_max 
-  | To_number of int
+  type extension_range =
+    | Extension_single_number of int
+    | Extension_range of extension_range_from * extension_range_to
 
-type extension_range_from = int
+  (** Body content defines all the possible consituant of a message. *)
+  type message_body_content =
+    | Message_field of field_label field
+    | Message_map_field of map
+    | Message_oneof_field of oneof
+    | Message_sub of message
+    | Message_enum of enum
+    | Message_extension of extension_range list
 
-type extension_range = 
-  | Extension_single_number of int 
-  | Extension_range of extension_range_from * extension_range_to
+  and message =
+    {id: int; message_name: string; message_body: message_body_content list}
+  (** Message entity.
 
-(** Body content defines all the possible consituant 
-    of a message. 
-  *)
-type message_body_content = 
-  | Message_field of field_label field 
-  | Message_map_field of map
-  | Message_oneof_field of oneof 
-  | Message_sub of message 
-  | Message_enum of enum 
-  | Message_extension of extension_range list 
+      Note the ID is simply for uniquely (and easily) identifying a type. It is
+      expected to be generated by a parser. The later compilation functions
+      expects this id to be unique. *)
 
-(** Message entity. 
- 
-    Note the ID is simply for uniquely (and easily) identifying a type. It is
-    expected to be generated by a parser. The later compilation 
-    functions expects this id to be unique.
-  *)
-and message = {
-  id : int; 
-  message_name : string; 
-  message_body : message_body_content list; 
-}
+  type extend =
+    {id: int; extend_name: string; extend_body: field_label field list}
 
-type extend  = {
-  id : int; 
-  extend_name : string; 
-  extend_body : field_label field list;
-}
+  type import = {file_name: string; public: bool}
 
-type import = {
-  file_name : string; 
-  public : bool; 
-}
-
-(** Definition of a protobuffer message file. 
- *)
-type proto = {
-  syntax : string option;
-  imports : import list; 
-  file_options : file_option list; 
-  package : string option; 
-  messages : message list; 
-  enums : enum list; 
-  extends : extend list;
-}
-
+  type proto =
+    { syntax: string option
+    ; imports: import list
+    ; file_options: file_option list
+    ; package: string option
+    ; messages: message list
+    ; enums: enum list
+    ; extends: extend list }
+  (** Definition of a protobuffer message file. *)
 end
-module Pbpt_util : sig 
-#1 "pbpt_util.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Pbpt_util : sig
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-(** This module defines convenient function to create and manipulate
-    the types define in the Ast module.
-  *)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-(** {2 Creators } *) 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-val field : 
-  ?options:Pbpt.field_options ->
-  label:Pbpt.field_label-> 
-  number:int -> 
-  type_:string -> 
-  string -> 
-  Pbpt.field_label Pbpt.field
+  (** This module defines convenient function to create and manipulate the
+      types define in the Ast module. *)
 
-val map :
-  ?options:Pbpt.field_options ->
-  number:int ->
-  key_type:string ->
-  value_type:string ->
-  string ->
-  Pbpt.map
+  (** {2 Creators} *)
 
-val oneof_field : 
-  ?options:Pbpt.field_options ->
-  number:int -> 
-  type_:string -> 
-  string -> 
-  Pbpt.oneof_label Pbpt.field
+  val field :
+       ?options:Pbpt.field_options
+    -> label:Pbpt.field_label
+    -> number:int
+    -> type_:string
+    -> string
+    -> Pbpt.field_label Pbpt.field
 
-val oneof :
-  fields:Pbpt.oneof_label Pbpt.field list -> 
-  string -> 
-  Pbpt.oneof 
+  val map :
+       ?options:Pbpt.field_options
+    -> number:int
+    -> key_type:string
+    -> value_type:string
+    -> string
+    -> Pbpt.map
 
-val message_body_field : 
-  Pbpt.field_label Pbpt.field  -> 
-  Pbpt.message_body_content  
+  val oneof_field :
+       ?options:Pbpt.field_options
+    -> number:int
+    -> type_:string
+    -> string
+    -> Pbpt.oneof_label Pbpt.field
 
-val message_body_map_field : 
-  Pbpt.map ->
-  Pbpt.message_body_content  
+  val oneof : fields:Pbpt.oneof_label Pbpt.field list -> string -> Pbpt.oneof
 
-val message_body_oneof_field  : 
-  Pbpt.oneof -> 
-  Pbpt.message_body_content 
+  val message_body_field :
+    Pbpt.field_label Pbpt.field -> Pbpt.message_body_content
 
-val enum_value :
-  int_value:int -> 
-  string -> 
-  Pbpt.enum_value 
+  val message_body_map_field : Pbpt.map -> Pbpt.message_body_content
+  val message_body_oneof_field : Pbpt.oneof -> Pbpt.message_body_content
+  val enum_value : int_value:int -> string -> Pbpt.enum_value
+  val enum : ?enum_values:Pbpt.enum_value list -> string -> Pbpt.enum
+  val extension_range_single_number : int -> Pbpt.extension_range
 
-val enum : 
-  ?enum_values:Pbpt.enum_value list -> 
-  string -> 
-  Pbpt.enum 
+  val extension_range_range :
+    int -> [`Max | `Number of int] -> Pbpt.extension_range
 
-val extension_range_single_number : int -> Pbpt.extension_range
+  val message_body_sub : Pbpt.message -> Pbpt.message_body_content
+  val message_body_enum : Pbpt.enum -> Pbpt.message_body_content
 
-val extension_range_range : int -> [ `Max | `Number of int ] -> Pbpt.extension_range 
+  val message_body_extension :
+    Pbpt.extension_range list -> Pbpt.message_body_content
 
-val message_body_sub : 
-  Pbpt.message -> 
-  Pbpt.message_body_content
+  val message :
+    content:Pbpt.message_body_content list -> string -> Pbpt.message
 
-val message_body_enum: 
-  Pbpt.enum -> 
-  Pbpt.message_body_content
+  val import : ?public:unit -> string -> Pbpt.import
+  val extend : string -> Pbpt.field_label Pbpt.field list -> Pbpt.extend
 
-val message_body_extension: 
-  Pbpt.extension_range list  -> 
-  Pbpt.message_body_content
+  val proto :
+       ?syntax:string
+    -> ?file_option:Pbpt.file_option
+    -> ?package:string
+    -> ?import:Pbpt.import
+    -> ?message:Pbpt.message
+    -> ?enum:Pbpt.enum
+    -> ?proto:Pbpt.proto
+    -> ?extend:Pbpt.extend
+    -> unit
+    -> Pbpt.proto
 
-val message : 
-  content:Pbpt.message_body_content list -> 
-  string -> 
-  Pbpt.message
+  (** {2 Miscellaneous functionality} *)
 
-val import : ?public:unit -> string -> Pbpt.import 
+  val message_printer : ?level:int -> Pbpt.message -> unit
 
-val extend : string -> Pbpt.field_label Pbpt.field list -> Pbpt.extend  
-
-val proto: 
-  ?syntax:string ->
-  ?file_option:Pbpt.file_option -> 
-  ?package:string -> 
-  ?import:Pbpt.import -> 
-  ?message:Pbpt.message ->
-  ?enum:Pbpt.enum ->
-  ?proto:Pbpt.proto -> 
-  ?extend:Pbpt.extend -> 
-  unit -> 
-  Pbpt.proto
-
-(** {2 Miscellaneous functionality } *)
-
-val message_printer :?level:int -> Pbpt.message -> unit 
-
-val file_option : Pbpt.file_option list -> string -> Pbpt.constant option 
-(** [file_option file_options name] return [Some file_option] for the given
-    [name]
- *)
-
+  val file_option : Pbpt.file_option list -> string -> Pbpt.constant option
+  (** [file_option file_options name] return [Some file_option] for the given
+      [name] *)
 end = struct
-#1 "pbpt_util.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-let field ?options:(options =[]) ~label ~number ~type_ name = {
-  Pbpt.field_name = name; 
-  Pbpt.field_number = number;
-  Pbpt.field_type = type_; 
-  Pbpt.field_label = label;
-  Pbpt.field_options = options;
-} 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-let map ?options:(map_options = []) ~number ~key_type ~value_type name = {
-  Pbpt.map_name = name;
-  Pbpt.map_number = number;
-  Pbpt.map_key_type = key_type;
-  Pbpt.map_value_type = value_type;
-  Pbpt.map_options;
-}
+  let field ?(options = []) ~label ~number ~type_ name =
+    { Pbpt.field_name= name
+    ; Pbpt.field_number= number
+    ; Pbpt.field_type= type_
+    ; Pbpt.field_label= label
+    ; Pbpt.field_options= options }
 
-let oneof_field ?options:(options =[]) ~number ~type_ name = {
-  Pbpt.field_name = name; 
-  Pbpt.field_number = number;
-  Pbpt.field_type = type_; 
-  Pbpt.field_options = options;
-  Pbpt.field_label = `Oneof
-} 
+  let map ?options:(map_options = []) ~number ~key_type ~value_type name =
+    { Pbpt.map_name= name
+    ; Pbpt.map_number= number
+    ; Pbpt.map_key_type= key_type
+    ; Pbpt.map_value_type= value_type
+    ; Pbpt.map_options }
 
-let oneof ~fields name = {
-  Pbpt.oneof_name = name;
-  Pbpt.oneof_fields = fields;
-}
+  let oneof_field ?(options = []) ~number ~type_ name =
+    { Pbpt.field_name= name
+    ; Pbpt.field_number= number
+    ; Pbpt.field_type= type_
+    ; Pbpt.field_options= options
+    ; Pbpt.field_label= `Oneof }
 
-let message_counter = ref 0
+  let oneof ~fields name = {Pbpt.oneof_name= name; Pbpt.oneof_fields= fields}
+  let message_counter = ref 0
 
-let enum_value ~int_value name = { 
-  Pbpt.enum_value_name = name; 
-  Pbpt.enum_value_int = int_value; 
-}
+  let enum_value ~int_value name =
+    {Pbpt.enum_value_name= name; Pbpt.enum_value_int= int_value}
 
-let enum ?enum_values:(enum_values = []) enum_name =
-  incr message_counter; 
-  {
-    Pbpt.enum_id  = !message_counter; 
-    Pbpt.enum_name; 
-    Pbpt.enum_values; 
-  } 
+  let enum ?(enum_values = []) enum_name =
+    incr message_counter ;
+    {Pbpt.enum_id= !message_counter; Pbpt.enum_name; Pbpt.enum_values}
 
-let extension_range_single_number number = 
-  Pbpt.Extension_single_number number 
+  let extension_range_single_number number =
+    Pbpt.Extension_single_number number
 
-let extension_range_range from to_ = 
-  let to_ = match to_ with
-    | `Max      -> Pbpt.To_max 
-    | `Number i -> Pbpt.To_number i  
-  in 
-  Pbpt.Extension_range (from, to_)
+  let extension_range_range from to_ =
+    let to_ =
+      match to_ with `Max -> Pbpt.To_max | `Number i -> Pbpt.To_number i in
+    Pbpt.Extension_range (from, to_)
 
-let message_body_field field =  Pbpt.Message_field field  
-let message_body_map_field field = Pbpt.Message_map_field field
-let message_body_oneof_field field =  Pbpt.Message_oneof_field   field  
-let message_body_sub message  =  Pbpt.Message_sub message 
-let message_body_enum enum = Pbpt.Message_enum enum
-let message_body_extension extension_ranges = Pbpt.Message_extension extension_ranges 
+  let message_body_field field = Pbpt.Message_field field
+  let message_body_map_field field = Pbpt.Message_map_field field
+  let message_body_oneof_field field = Pbpt.Message_oneof_field field
+  let message_body_sub message = Pbpt.Message_sub message
+  let message_body_enum enum = Pbpt.Message_enum enum
 
-let message ~content message_name = 
-  incr message_counter;
-  Pbpt.({
-    id = !message_counter;
-    message_name;
-    message_body = content;
-  }) 
+  let message_body_extension extension_ranges =
+    Pbpt.Message_extension extension_ranges
 
-let import ?public file_name = {
-  Pbpt.public = (match public with | Some _ -> true | None -> false); 
-  Pbpt.file_name; 
-}
+  let message ~content message_name =
+    incr message_counter ;
+    Pbpt.{id= !message_counter; message_name; message_body= content}
 
-let extend extend_name extend_body = 
-  incr message_counter; 
-  Pbpt.({
-    id = !message_counter; 
-    extend_name; 
-    extend_body;
-  }) 
+  let import ?public file_name =
+    { Pbpt.public= (match public with Some _ -> true | None -> false)
+    ; Pbpt.file_name }
 
-let rec message_printer ?level:(level = 0) {
-  Pbpt.message_name; 
-  Pbpt.message_body; _ } = 
+  let extend extend_name extend_body =
+    incr message_counter ;
+    Pbpt.{id= !message_counter; extend_name; extend_body}
 
-  let prefix () = 
-    for _ =0 to level  - 1 do 
-      Printf.printf " ";
-    done; 
-  in 
-  prefix (); print_endline message_name; 
-  List.iter (function 
-    | Pbpt.Message_field {Pbpt.field_name; _ } -> 
-        prefix (); Printf.printf "- field [%s]\n" field_name
-    | Pbpt.Message_map_field {Pbpt.map_name; _ } -> 
-        prefix (); Printf.printf "- map [%s]\n" map_name
-    | Pbpt.Message_oneof_field {Pbpt.oneof_name ; _ } ->
-        prefix (); Printf.printf "- one of field [%s]\n" oneof_name
-    | Pbpt.Message_enum {Pbpt.enum_name; _ } ->
-        prefix (); Printf.printf "- enum type [%s]\n" enum_name 
-    | Pbpt.Message_sub m -> message_printer ~level:(level + 2) m
-    | Pbpt.Message_extension _ -> () 
-  ) message_body 
+  let rec message_printer ?(level = 0) {Pbpt.message_name; Pbpt.message_body; _}
+      =
+    let prefix () =
+      for _ = 0 to level - 1 do
+        Printf.printf " "
+      done in
+    prefix () ;
+    print_endline message_name ;
+    List.iter
+      (function
+        | Pbpt.Message_field {Pbpt.field_name; _} ->
+            prefix () ;
+            Printf.printf "- field [%s]\n" field_name
+        | Pbpt.Message_map_field {Pbpt.map_name; _} ->
+            prefix () ;
+            Printf.printf "- map [%s]\n" map_name
+        | Pbpt.Message_oneof_field {Pbpt.oneof_name; _} ->
+            prefix () ;
+            Printf.printf "- one of field [%s]\n" oneof_name
+        | Pbpt.Message_enum {Pbpt.enum_name; _} ->
+            prefix () ;
+            Printf.printf "- enum type [%s]\n" enum_name
+        | Pbpt.Message_sub m -> message_printer ~level:(level + 2) m
+        | Pbpt.Message_extension _ -> ())
+      message_body
 
-let proto ?syntax ?file_option ?package ?import ?message ?enum ?proto ?extend () = 
+  let proto ?syntax ?file_option ?package ?import ?message ?enum ?proto ?extend
+      () =
+    let ({Pbpt.messages; imports; file_options; enums; extends; _} as proto) =
+      match proto with
+      | None ->
+          Pbpt.
+            { syntax
+            ; imports= []
+            ; package= None
+            ; messages= []
+            ; file_options= []
+            ; enums= []
+            ; extends= [] }
+      | Some proto -> proto in
+    let proto =
+      match syntax with None -> proto | Some _ -> Pbpt.{proto with syntax}
+    in
+    let proto =
+      match package with None -> proto | Some _ -> Pbpt.{proto with package}
+    in
+    let proto =
+      match message with
+      | None -> proto
+      | Some m -> Pbpt.{proto with messages= m :: messages} in
+    let proto =
+      match enum with
+      | None -> proto
+      | Some m -> Pbpt.{proto with enums= m :: enums} in
+    let proto =
+      match import with
+      | None -> proto
+      | Some i -> Pbpt.{proto with imports= i :: imports} in
+    let proto =
+      match file_option with
+      | None -> proto
+      | Some i -> Pbpt.{proto with file_options= i :: file_options} in
+    let proto =
+      match extend with
+      | None -> proto
+      | Some e -> Pbpt.{proto with extends= e :: extends} in
+    proto
 
-  let {Pbpt.messages; imports; file_options; enums; extends; _ } as proto = match proto with 
-    | None -> Pbpt.({
-      syntax;
-      imports = [];
-      package = None; 
-      messages = []; 
-      file_options = []; 
-      enums = []; 
-      extends = []; 
-    }) 
-    | Some proto -> proto
-  in 
-  
-  let proto = match syntax with 
-    | None   -> proto
-    | Some _ -> Pbpt.({proto with syntax; })  
-  in 
-
-  let proto = match package with 
-    | None   -> proto
-    | Some _ -> Pbpt.({proto with package; })  
-  in 
-
-  let proto = match message with 
-    | None   -> proto 
-    | Some m -> Pbpt.({proto with messages = m :: messages})
-  in 
-  
-  let proto = match enum with 
-    | None   -> proto 
-    | Some m -> Pbpt.({proto with enums = m :: enums})
-  in 
-  
-  let proto = match import with 
-    | None   -> proto 
-    | Some i -> Pbpt.({proto with imports = i :: imports})
-  in 
-
-  let proto = match file_option with 
-    | None   -> proto 
-    | Some i -> Pbpt.({proto with file_options = i :: file_options})
-  in 
-  
-  let proto = match extend with 
-    | None   -> proto 
-    | Some e -> Pbpt.({proto with extends = e :: extends })
-  in 
-  proto 
-   
-let file_option (file_options:Pbpt.file_option list) (name:string) =
-  match List.assoc name file_options with
-  | x -> Some x 
-  | exception Not_found -> None  
-
+  let file_option (file_options : Pbpt.file_option list) (name : string) =
+    match List.assoc name file_options with
+    | x -> Some x
+    | exception Not_found -> None
 end
-module Util : sig 
-#1 "util.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Util : sig
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-(** Miscellaneous functionality *)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-val rev_split_by_char : char -> string -> string list 
-(** [rev_split_by_char c s] will split the string [s] using the delimieter [c]
-    and return the component in reverse order (ie from right to left). 
-    
-    For instance when splitting a filename with the '.' character, the file
-    extension will be the head of the returned list. 
- *)
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-val concat : string list -> string 
-(** [concat l] concatenate a string list without delimited between the given string
- *)
+  (** Miscellaneous functionality *)
 
-val pop_last : 'a list -> 'a list 
-(** [pop_last l] removes the last element from the list *)
+  val rev_split_by_char : char -> string -> string list
+  (** [rev_split_by_char c s] will split the string [s] using the delimieter
+      [c] and return the component in reverse order (ie from right to left).
 
-val apply_until : ('a -> 'b option) -> 'a list -> 'b option 
-(** [apply_until f l] applies [f ei] until it returns [Some x] 
-    
-    If [f] returns [None] then [None] is returned. 
- *)
+      For instance when splitting a filename with the '.' character, the file
+      extension will be the head of the returned list. *)
 
-val is_list_empty : 'a list -> bool
-(** [is_list_empty l] returns true is the list is empty, false otherwise *)
+  val concat : string list -> string
+  (** [concat l] concatenate a string list without delimited between the given
+      string *)
 
-val string_of_string_list : string list -> string 
-(** [string_of_string_list l] returns a debug string of [l] *)
+  val pop_last : 'a list -> 'a list
+  (** [pop_last l] removes the last element from the list *)
 
-val string_fold_lefti : ('a -> int -> char -> 'a) -> 'a -> string -> 'a 
-(** [string_fold_lefti f e0 s] will fold over each string character *)
+  val apply_until : ('a -> 'b option) -> 'a list -> 'b option
+  (** [apply_until f l] applies [f ei] until it returns [Some x]
 
-val option_default : 'a -> 'a option -> 'a 
-(** [option_default x o] returns [x] is [o] is [None] otherwise [y] when [o] is
-    [Some y]. 
- *)
+      If [f] returns [None] then [None] is returned. *)
 
+  val is_list_empty : 'a list -> bool
+  (** [is_list_empty l] returns true is the list is empty, false otherwise *)
+
+  val string_of_string_list : string list -> string
+  (** [string_of_string_list l] returns a debug string of [l] *)
+
+  val string_fold_lefti : ('a -> int -> char -> 'a) -> 'a -> string -> 'a
+  (** [string_fold_lefti f e0 s] will fold over each string character *)
+
+  val option_default : 'a -> 'a option -> 'a
+  (** [option_default x o] returns [x] is [o] is [None] otherwise [y] when [o]
+      is [Some y]. *)
 end = struct
-#1 "util.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-let rev_split_by_char c s = 
-  let rec loop i l = 
-    try 
-      let i' = String.index_from s i c  in 
-      let s' = String.sub s i (i' - i)  in 
-      loop (i'+1) (if s' = "" then l else s'::l)  
-    with Not_found -> (String.sub s i (String.length s - i) ):: l 
-  in 
-  loop 0 []
-  
-(** [concat l] concatenate a string list *)
-let concat = String.concat ""
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-let rec pop_last = function 
-  | [] -> failwith "Invalid argument [] for pop_last"
-  | hd::[] -> []
-  | hd::tl -> hd :: (pop_last tl)
+  let rev_split_by_char c s =
+    let rec loop i l =
+      try
+        let i' = String.index_from s i c in
+        let s' = String.sub s i (i' - i) in
+        loop (i' + 1) (if s' = "" then l else s' :: l)
+      with Not_found -> String.sub s i (String.length s - i) :: l in
+    loop 0 []
 
-let rec apply_until f = function 
-  | []  -> None 
-  | hd::tl -> (match f hd with 
-    | None -> apply_until f tl 
-    | x    -> x
-  )  
+  (** [concat l] concatenate a string list *)
+  let concat = String.concat ""
 
-let is_list_empty = function | [] -> true | _ -> false 
+  let rec pop_last = function
+    | [] -> failwith "Invalid argument [] for pop_last"
+    | [hd] -> []
+    | hd :: tl -> hd :: pop_last tl
 
-let string_of_string_list l = 
-  Printf.sprintf "[%s]" (String.concat "," l)
+  let rec apply_until f = function
+    | [] -> None
+    | hd :: tl -> ( match f hd with None -> apply_until f tl | x -> x )
 
-let string_fold_lefti f e0 s =
-  let len = String.length s in 
-  let rec loop acc = function
-    | i when i = len -> acc 
-    | i -> loop (f acc i (String.unsafe_get s i))  (i + 1) 
-  in 
-  loop e0 0 
+  let is_list_empty = function [] -> true | _ -> false
+  let string_of_string_list l = Printf.sprintf "[%s]" (String.concat "," l)
 
-let option_default x = function
-  | Some y -> y 
-  | None -> x 
+  let string_fold_lefti f e0 s =
+    let len = String.length s in
+    let rec loop acc = function
+      | i when i = len -> acc
+      | i -> loop (f acc i (String.unsafe_get s i)) (i + 1) in
+    loop e0 0
 
-
+  let option_default x = function Some y -> y | None -> x
 end
-module Loc : sig 
-#1 "loc.mli"
-(** File Location utilities *)
 
-type t 
-(** Location type *)
+module Loc : sig
+  (** File Location utilities *)
 
-(** {2 Creators} *)
+  type t
+  (** Location type *)
 
-val from_lexbuf : Lexing.lexbuf -> t 
-(** [from_lexbuf lexbuf] create a location from the current lexbuf location *)
+  (** {2 Creators} *)
 
-(** {2 Accessors} *) 
+  val from_lexbuf : Lexing.lexbuf -> t
+  (** [from_lexbuf lexbuf] create a location from the current lexbuf location *)
 
-val file_name : t -> string option
-(** [file_name loc] returns the file name *)
+  (** {2 Accessors} *)
 
-val line : t -> int 
-(** [line loc] returns the line *)
+  val file_name : t -> string option
+  (** [file_name loc] returns the file name *)
 
+  val line : t -> int
+  (** [line loc] returns the line *)
 
-(** {2 Utilities} *)
+  (** {2 Utilities} *)
 
-val to_string : t -> string 
-(** [to_string loc] convert to the compiler error string *) 
-
+  val to_string : t -> string
+  (** [to_string loc] convert to the compiler error string *)
 end = struct
-#1 "loc.ml"
-type t = {
-  file_name : string option; 
-  line : int; 
-} 
+  type t = {file_name: string option; line: int}
 
-let from_lexbuf lexbuf = 
-  let file_name = match lexbuf.Lexing.lex_curr_p.Lexing.pos_fname with
-    | "" -> None
-    | x  -> Some x 
-  in 
+  let from_lexbuf lexbuf =
+    let file_name =
+      match lexbuf.Lexing.lex_curr_p.Lexing.pos_fname with
+      | "" -> None
+      | x -> Some x in
+    let line = lexbuf.Lexing.lex_curr_p.Lexing.pos_lnum in
+    {file_name; line}
 
-  let line = lexbuf.Lexing.lex_curr_p.Lexing.pos_lnum in 
+  let file_name {file_name; _} = file_name
+  let line {line; _} = line
 
-  {file_name; line} 
-
-let file_name {file_name; _ } = file_name 
-
-let line {line; _ } = line 
-
-let to_string {file_name; line} = 
-  Printf.sprintf "File %s, line %i:\n" (Util.option_default "" file_name) line 
-
+  let to_string {file_name; line} =
+    Printf.sprintf "File %s, line %i:\n"
+      (Util.option_default "" file_name)
+      line
 end
-module Exception : sig 
-#1 "exception.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Exception : sig
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-(** Compiler exception *) 
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-(** {2 Types} *)
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-type programmatic_error =
-  | Invalid_string_split 
-  | Unexpected_field_type 
-  | No_type_found_for_id 
-  | One_of_should_be_inlined_in_message
+  (** Compiler exception *)
 
-type error
+  (** {2 Types} *)
 
-exception Compilation_error of error  
-(** Exception raised when a compilation error occurs *)
+  type programmatic_error =
+    | Invalid_string_split
+    | Unexpected_field_type
+    | No_type_found_for_id
+    | One_of_should_be_inlined_in_message
 
+  type error
 
-val add_loc : Loc.t -> exn  -> exn 
+  exception Compilation_error of error
+  (** Exception raised when a compilation error occurs *)
 
-(** {2 Raise Functions} *)
+  val add_loc : Loc.t -> exn -> exn
 
-val unresolved_type : 
-  field_name:string -> 
-  type_:string  ->
-  message_name:string -> 
-  unit -> 'a
+  (** {2 Raise Functions} *)
 
-val duplicated_field_number : 
-  field_name:string ->
-  previous_field_name:string -> 
-  message_name:string -> 
-  unit -> 'a 
+  val unresolved_type :
+    field_name:string -> type_:string -> message_name:string -> unit -> 'a
 
-val invalid_default_value : 
-  ?field_name:string -> 
-  info:string ->
-  unit -> 'a
+  val duplicated_field_number :
+       field_name:string
+    -> previous_field_name:string
+    -> message_name:string
+    -> unit
+    -> 'a
 
-val unsupported_field_type : 
-  ?field_name:string ->
-  field_type:string -> 
-  backend_name:string ->
-  unit -> 'a
+  val invalid_default_value : ?field_name:string -> info:string -> unit -> 'a
 
-val import_file_not_found : string -> 'a 
+  val unsupported_field_type :
+       ?field_name:string
+    -> field_type:string
+    -> backend_name:string
+    -> unit
+    -> 'a
 
-val programmatic_error : programmatic_error -> 'a
-
-val invalid_import_qualifier : Loc.t -> 'a
-
-val invalid_file_name : string -> 'a 
-
-val invalid_packed_option : string -> 'a 
-
-val missing_semicolon_for_enum_value : string -> Loc.t -> 'a 
-
-val invalid_enum_specification : string -> Loc.t -> 'a 
-
-val invalid_mutable_option : ?field_name:string -> unit -> 'a
-
-val missing_one_of_name : Loc.t -> 'a 
-
-val invalid_field_label : Loc.t -> 'a 
-
-val missing_field_label : Loc.t -> 'a 
-
-val syntax_error : unit  -> 'a 
-
+  val import_file_not_found : string -> 'a
+  val programmatic_error : programmatic_error -> 'a
+  val invalid_import_qualifier : Loc.t -> 'a
+  val invalid_file_name : string -> 'a
+  val invalid_packed_option : string -> 'a
+  val missing_semicolon_for_enum_value : string -> Loc.t -> 'a
+  val invalid_enum_specification : string -> Loc.t -> 'a
+  val invalid_mutable_option : ?field_name:string -> unit -> 'a
+  val missing_one_of_name : Loc.t -> 'a
+  val invalid_field_label : Loc.t -> 'a
+  val missing_field_label : Loc.t -> 'a
+  val syntax_error : unit -> 'a
 end = struct
-#1 "exception.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-(** {2 Compilation errors } *)
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-module P = Printf
+  (** {2 Compilation errors} *)
 
-type programmatic_error =
-  | Invalid_string_split 
-  | Unexpected_field_type 
-  | No_type_found_for_id 
-  | One_of_should_be_inlined_in_message
+  module P = Printf
 
-let string_of_programmatic_error e =  
-  "Programatic_error" ^ match e with
-  | Invalid_string_split -> "string split error"
-  | Unexpected_field_type -> "unexpected field type"
-  | No_type_found_for_id  -> "no type was found for type id" 
-  | One_of_should_be_inlined_in_message -> "one of variant encoding must be inlined in message"
+  type programmatic_error =
+    | Invalid_string_split
+    | Unexpected_field_type
+    | No_type_found_for_id
+    | One_of_should_be_inlined_in_message
 
-type unresolved_type = {
-  field_name: string; 
-  type_:string; 
-  message_name:string 
-}
+  let string_of_programmatic_error e =
+    "Programatic_error"
+    ^
+    match e with
+    | Invalid_string_split -> "string split error"
+    | Unexpected_field_type -> "unexpected field type"
+    | No_type_found_for_id -> "no type was found for type id"
+    | One_of_should_be_inlined_in_message ->
+        "one of variant encoding must be inlined in message"
 
-type duplicate_field_number = {
-  field_name: string; 
-  previous_field_name  : string;
-  message_name: string; 
-}
+  type unresolved_type =
+    {field_name: string; type_: string; message_name: string}
 
-type invalid_default_value = {
-  field_name: string option; 
-  info: string; 
-}
+  type duplicate_field_number =
+    {field_name: string; previous_field_name: string; message_name: string}
 
-type unsupported_field_type = {
-  field_name: string option; 
-  field_type: string; 
-  backend_name:string;
-}
+  type invalid_default_value = {field_name: string option; info: string}
 
-type error = 
-  | Unresolved_type of unresolved_type 
-    (** When the type of a field could not be resolved *) 
-  | Duplicated_field_number of duplicate_field_number 
-    (** When there are 2 field with either identical number or name *)
-  | Invalid_default_value of invalid_default_value 
-    (** When a default value type type does not match the field type *)
-  | Unsupported_field_type of unsupported_field_type 
-  | Programatic_error of programmatic_error 
-  | Invalid_import_qualifier of Loc.t  
-  | Invalid_file_name of string  
-  | Import_file_not_found of string 
-  | Invalid_packed_option of string 
-  | Missing_semicolon_for_enum_value of string * Loc.t
-  | Invalid_enum_specification of string * Loc.t 
-  | Invalid_mutable_option of string option  
-  | Missing_one_of_name of Loc.t 
-  | Invalid_field_label of Loc.t 
-  | Missing_field_label of Loc.t 
-  | Parsing_error of string * int * string 
-  | Syntax_error
+  type unsupported_field_type =
+    {field_name: string option; field_type: string; backend_name: string}
 
+  type error =
+    | Unresolved_type of unresolved_type
+        (** When the type of a field could not be resolved *)
+    | Duplicated_field_number of duplicate_field_number
+        (** When there are 2 field with either identical number or name *)
+    | Invalid_default_value of invalid_default_value
+        (** When a default value type type does not match the field type *)
+    | Unsupported_field_type of unsupported_field_type
+    | Programatic_error of programmatic_error
+    | Invalid_import_qualifier of Loc.t
+    | Invalid_file_name of string
+    | Import_file_not_found of string
+    | Invalid_packed_option of string
+    | Missing_semicolon_for_enum_value of string * Loc.t
+    | Invalid_enum_specification of string * Loc.t
+    | Invalid_mutable_option of string option
+    | Missing_one_of_name of Loc.t
+    | Invalid_field_label of Loc.t
+    | Missing_field_label of Loc.t
+    | Parsing_error of string * int * string
+    | Syntax_error
 
-exception Compilation_error of error  
-(** Exception raised when a compilation error occurs *)
+  exception Compilation_error of error
+  (** Exception raised when a compilation error occurs *)
 
-let prepare_error = function 
-  | Unresolved_type { field_name; type_; message_name} -> 
-    P.sprintf 
-      "unresolved type for field name : %s (type:%s, in message: %s)" 
-      field_name type_ message_name
+  let prepare_error = function
+    | Unresolved_type {field_name; type_; message_name} ->
+        P.sprintf
+          "unresolved type for field name : %s (type:%s, in message: %s)"
+          field_name type_ message_name
+    | Duplicated_field_number {field_name; previous_field_name; message_name}
+      ->
+        P.sprintf
+          "duplicated field number for field name: %s (previous field \
+           name:%s, message: %s)"
+          field_name previous_field_name message_name
+    | Invalid_default_value {field_name; info} ->
+        P.sprintf "invalid default value for field name:%s (info: %s)"
+          (Util.option_default "" field_name)
+          info
+    | Unsupported_field_type {field_name; field_type; backend_name} ->
+        P.sprintf
+          "unsupported field type for field name:%s with type:%s in bakend: %s"
+          (Util.option_default "" field_name)
+          field_type backend_name
+    | Programatic_error e ->
+        P.sprintf "programmatic error: %s" (string_of_programmatic_error e)
+    | Invalid_import_qualifier loc ->
+        P.sprintf "%sInvalid import qualified, only 'public' supported"
+          (Loc.to_string loc)
+    | Invalid_file_name file_name ->
+        P.sprintf
+          ("Invalid file name: %s, " ^^ "format must <name>.proto")
+          file_name
+    | Import_file_not_found file_name ->
+        P.sprintf ("File: %s, " ^^ "could not be found.") file_name
+    | Invalid_packed_option field_name ->
+        P.sprintf "Invalid packed option for field: %s" field_name
+    | Missing_semicolon_for_enum_value (enum_value, loc) ->
+        P.sprintf "%sMissing semicolon for enum value: %s" (Loc.to_string loc)
+          enum_value
+    | Missing_one_of_name loc ->
+        P.sprintf "%sMissing oneof name" (Loc.to_string loc)
+    | Invalid_field_label loc ->
+        P.sprintf
+          "%sInvalid field label. [required|repeated|optional] expected"
+          (Loc.to_string loc)
+    | Missing_field_label loc ->
+        P.sprintf
+          "%sMissing field label. [required|repeated|optional] expected"
+          (Loc.to_string loc)
+    | Parsing_error (file_name, line, detail) ->
+        Printf.sprintf "File %s, line %i:\n%s" file_name line detail
+    | Syntax_error -> P.sprintf "Syntax error"
+    | Invalid_enum_specification (enum_name, loc) ->
+        P.sprintf
+          "%sMissing enum specification (<identifier> = <id>;) for enum \
+           value: %s"
+          (Loc.to_string loc) enum_name
+    | Invalid_mutable_option field_name ->
+        P.sprintf "Invalid mutable option for field %s"
+          (Util.option_default "" field_name)
 
-  | Duplicated_field_number {field_name; previous_field_name; message_name} -> 
-    P.sprintf 
-      "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-      field_name previous_field_name message_name
-
-  | Invalid_default_value {field_name; info}  -> 
-    P.sprintf "invalid default value for field name:%s (info: %s)"
-      (Util.option_default "" field_name) info
-
-  | Unsupported_field_type {field_name; field_type; backend_name} -> 
-    P.sprintf "unsupported field type for field name:%s with type:%s in bakend: %s"
-      (Util.option_default "" field_name) field_type backend_name
-
-  | Programatic_error e -> 
-    P.sprintf "programmatic error: %s" (string_of_programmatic_error e)
-
-  | Invalid_import_qualifier loc ->
-    P.sprintf "%sInvalid import qualified, only 'public' supported" (Loc.to_string loc) 
-
-  | Invalid_file_name file_name -> 
-    P.sprintf 
-      ("Invalid file name: %s, " ^^ 
-       "format must <name>.proto") file_name  
-
-  | Import_file_not_found file_name -> 
-    P.sprintf 
-      ("File: %s, " ^^ 
-       "could not be found.") file_name  
-
-  | Invalid_packed_option field_name ->
-    P.sprintf "Invalid packed option for field: %s" field_name
-
-  | Missing_semicolon_for_enum_value (enum_value, loc)-> 
-    P.sprintf "%sMissing semicolon for enum value: %s" (Loc.to_string loc) enum_value
-
-  | Missing_one_of_name loc -> 
-    P.sprintf "%sMissing oneof name" (Loc.to_string loc) 
-
-  | Invalid_field_label loc -> 
-    P.sprintf "%sInvalid field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-  
-  | Missing_field_label loc -> 
-    P.sprintf "%sMissing field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-
-  | Parsing_error (file_name, line, detail) -> 
-    Printf.sprintf "File %s, line %i:\n%s" file_name line detail 
-
-  | Syntax_error -> 
-    P.sprintf "Syntax error"
-
-  | Invalid_enum_specification (enum_name, loc) -> 
-    P.sprintf 
-      "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-      (Loc.to_string loc) enum_name
-  
-  | Invalid_mutable_option field_name -> 
-    P.sprintf "Invalid mutable option for field %s" (Util.option_default ""
-    field_name) 
-
-
-let add_loc loc exn  = 
-  match exn with 
-  | Compilation_error (Missing_one_of_name _ ) -> exn 
-  | Compilation_error (Invalid_field_label _ ) -> exn 
-  | Compilation_error (Missing_field_label _ ) -> exn 
-  | Compilation_error (Invalid_import_qualifier _ ) -> exn 
-  | Compilation_error (Missing_semicolon_for_enum_value _ ) -> exn 
-  | Compilation_error (Invalid_enum_specification _ ) -> exn 
-  | _ -> (
-    let file_name = Util.option_default "" (Loc.file_name loc) in 
-    let line      = Loc.line loc in 
-    let detail    = Printexc.to_string exn in  
-    Compilation_error (Parsing_error (file_name, line, detail))
-  )
-
-let () =
-  Printexc.register_printer (fun exn ->
+  let add_loc loc exn =
     match exn with
-    | Compilation_error e -> Some (prepare_error e)
-    | _                   -> None
-    )
+    | Compilation_error (Missing_one_of_name _) -> exn
+    | Compilation_error (Invalid_field_label _) -> exn
+    | Compilation_error (Missing_field_label _) -> exn
+    | Compilation_error (Invalid_import_qualifier _) -> exn
+    | Compilation_error (Missing_semicolon_for_enum_value _) -> exn
+    | Compilation_error (Invalid_enum_specification _) -> exn
+    | _ ->
+        let file_name = Util.option_default "" (Loc.file_name loc) in
+        let line = Loc.line loc in
+        let detail = Printexc.to_string exn in
+        Compilation_error (Parsing_error (file_name, line, detail))
 
-let unresolved_type ~field_name ~type_ ~message_name () = 
-  raise (Compilation_error (Unresolved_type {
-    field_name; 
-    type_; 
-    message_name
-  }))
+  let () =
+    Printexc.register_printer (fun exn ->
+        match exn with
+        | Compilation_error e -> Some (prepare_error e)
+        | _ -> None)
 
-let duplicated_field_number ~field_name ~previous_field_name ~message_name  () = 
-  raise (Compilation_error (Duplicated_field_number {
-    field_name; 
-    previous_field_name; 
-    message_name;
-  }))
+  let unresolved_type ~field_name ~type_ ~message_name () =
+    raise
+      (Compilation_error (Unresolved_type {field_name; type_; message_name}))
 
-let invalid_default_value ?field_name ~info () = 
-  raise (Compilation_error (Invalid_default_value {field_name; info} ))
+  let duplicated_field_number ~field_name ~previous_field_name ~message_name ()
+      =
+    raise
+      (Compilation_error
+         (Duplicated_field_number
+            {field_name; previous_field_name; message_name}))
 
-let unsupported_field_type ?field_name ~field_type ~backend_name () = 
-  raise (Compilation_error (Unsupported_field_type {
-    field_name;
-    field_type;
-    backend_name;
-  }))
+  let invalid_default_value ?field_name ~info () =
+    raise (Compilation_error (Invalid_default_value {field_name; info}))
 
-let import_file_not_found file_name = 
-  raise (Compilation_error (Import_file_not_found file_name)) 
+  let unsupported_field_type ?field_name ~field_type ~backend_name () =
+    raise
+      (Compilation_error
+         (Unsupported_field_type {field_name; field_type; backend_name}))
 
-let programmatic_error e = 
-  raise (Compilation_error (Programatic_error e)) 
+  let import_file_not_found file_name =
+    raise (Compilation_error (Import_file_not_found file_name))
 
-let invalid_import_qualifier loc  = 
-  raise (Compilation_error (Invalid_import_qualifier loc))
+  let programmatic_error e = raise (Compilation_error (Programatic_error e))
 
-let invalid_file_name file_name = 
-  raise (Compilation_error (Invalid_file_name file_name)) 
+  let invalid_import_qualifier loc =
+    raise (Compilation_error (Invalid_import_qualifier loc))
 
-let invalid_packed_option field_name = 
-  raise (Compilation_error (Invalid_packed_option field_name)) 
+  let invalid_file_name file_name =
+    raise (Compilation_error (Invalid_file_name file_name))
 
-let missing_semicolon_for_enum_value enum_value loc = 
-  raise (Compilation_error (Missing_semicolon_for_enum_value (enum_value, loc)))
+  let invalid_packed_option field_name =
+    raise (Compilation_error (Invalid_packed_option field_name))
 
-let invalid_enum_specification enum_name loc = 
-  raise (Compilation_error (Invalid_enum_specification (enum_name, loc)))
-  
-let invalid_mutable_option ?field_name () = 
-  raise (Compilation_error (Invalid_mutable_option field_name))
+  let missing_semicolon_for_enum_value enum_value loc =
+    raise
+      (Compilation_error (Missing_semicolon_for_enum_value (enum_value, loc)))
 
-let missing_one_of_name loc = 
-  raise (Compilation_error (Missing_one_of_name loc))
+  let invalid_enum_specification enum_name loc =
+    raise (Compilation_error (Invalid_enum_specification (enum_name, loc)))
 
-let invalid_field_label loc = 
-  raise (Compilation_error (Invalid_field_label loc))
+  let invalid_mutable_option ?field_name () =
+    raise (Compilation_error (Invalid_mutable_option field_name))
 
-let missing_field_label loc = 
-  raise (Compilation_error (Missing_field_label loc))
+  let missing_one_of_name loc =
+    raise (Compilation_error (Missing_one_of_name loc))
 
-let syntax_error () = 
-  raise (Compilation_error Syntax_error) 
+  let invalid_field_label loc =
+    raise (Compilation_error (Invalid_field_label loc))
 
+  let missing_field_label loc =
+    raise (Compilation_error (Missing_field_label loc))
 
+  let syntax_error () = raise (Compilation_error Syntax_error)
 end
-module Pbparser : sig 
-#1 "pbparser.mli"
-type token =
-  | REQUIRED
-  | OPTIONAL
-  | REPEATED
-  | ONE_OF of (Loc.t)
-  | MESSAGE
-  | ENUM
-  | PACKAGE
-  | IMPORT of (Loc.t)
-  | PUBLIC
-  | OPTION
-  | EXTENSIONS
-  | EXTEND
-  | SYNTAX
-  | TO
-  | MAX
-  | MAP
-  | RBRACE
-  | LBRACE
-  | RBRACKET
-  | LBRACKET
-  | RPAREN
-  | LPAREN
-  | RANGLEB
-  | LANGLEB
-  | EQUAL
-  | SEMICOLON
-  | COMMA
-  | STRING of (string)
-  | INT of (int)
-  | FLOAT of (float)
-  | IDENT of (Loc.t * string)
-  | EOF
 
-val field_options_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.field_options
-val normal_field_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.field_label Pbpt.field
-val enum_value_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.enum_value
-val enum_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.enum
-val oneof_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.oneof
-val message_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.message
-val proto_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.proto
-val import_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.import
-val file_option_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.file_option
-val extension_range_list_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.extension_range list
-val extension_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.extension_range list
-val extend_ :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.extend
+module Pbparser : sig
+  type token =
+    | REQUIRED
+    | OPTIONAL
+    | REPEATED
+    | ONE_OF of Loc.t
+    | MESSAGE
+    | ENUM
+    | PACKAGE
+    | IMPORT of Loc.t
+    | PUBLIC
+    | OPTION
+    | EXTENSIONS
+    | EXTEND
+    | SYNTAX
+    | TO
+    | MAX
+    | MAP
+    | RBRACE
+    | LBRACE
+    | RBRACKET
+    | LBRACKET
+    | RPAREN
+    | LPAREN
+    | RANGLEB
+    | LANGLEB
+    | EQUAL
+    | SEMICOLON
+    | COMMA
+    | STRING of string
+    | INT of int
+    | FLOAT of float
+    | IDENT of (Loc.t * string)
+    | EOF
 
+  val field_options_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.field_options
+
+  val normal_field_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.field_label Pbpt.field
+
+  val enum_value_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.enum_value
+
+  val enum_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.enum
+  val oneof_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.oneof
+  val message_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.message
+  val proto_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.proto
+  val import_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.import
+
+  val file_option_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.file_option
+
+  val extension_range_list_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.extension_range list
+
+  val extension_ :
+    (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.extension_range list
+
+  val extend_ : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> Pbpt.extend
 end = struct
-#1 "pbparser.ml"
-type token =
-  | REQUIRED
-  | OPTIONAL
-  | REPEATED
-  | ONE_OF of (Loc.t)
-  | MESSAGE
-  | ENUM
-  | PACKAGE
-  | IMPORT of (Loc.t)
-  | PUBLIC
-  | OPTION
-  | EXTENSIONS
-  | EXTEND
-  | SYNTAX
-  | TO
-  | MAX
-  | MAP
-  | RBRACE
-  | LBRACE
-  | RBRACKET
-  | LBRACKET
-  | RPAREN
-  | LPAREN
-  | RANGLEB
-  | LANGLEB
-  | EQUAL
-  | SEMICOLON
-  | COMMA
-  | STRING of (string)
-  | INT of (int)
-  | FLOAT of (float)
-  | IDENT of (Loc.t * string)
-  | EOF
+  type token =
+    | REQUIRED
+    | OPTIONAL
+    | REPEATED
+    | ONE_OF of Loc.t
+    | MESSAGE
+    | ENUM
+    | PACKAGE
+    | IMPORT of Loc.t
+    | PUBLIC
+    | OPTION
+    | EXTENSIONS
+    | EXTEND
+    | SYNTAX
+    | TO
+    | MAX
+    | MAP
+    | RBRACE
+    | LBRACE
+    | RBRACKET
+    | LBRACKET
+    | RPAREN
+    | LPAREN
+    | RANGLEB
+    | LANGLEB
+    | EQUAL
+    | SEMICOLON
+    | COMMA
+    | STRING of string
+    | INT of int
+    | FLOAT of float
+    | IDENT of (Loc.t * string)
+    | EOF
 
-open Parsing;;
-let _ = parse_error;;
-let yytransl_const = [|
-  257 (* REQUIRED *);
-  258 (* OPTIONAL *);
-  259 (* REPEATED *);
-  261 (* MESSAGE *);
-  262 (* ENUM *);
-  263 (* PACKAGE *);
-  265 (* PUBLIC *);
-  266 (* OPTION *);
-  267 (* EXTENSIONS *);
-  268 (* EXTEND *);
-  269 (* SYNTAX *);
-  270 (* TO *);
-  271 (* MAX *);
-  272 (* MAP *);
-  273 (* RBRACE *);
-  274 (* LBRACE *);
-  275 (* RBRACKET *);
-  276 (* LBRACKET *);
-  277 (* RPAREN *);
-  278 (* LPAREN *);
-  279 (* RANGLEB *);
-  280 (* LANGLEB *);
-  281 (* EQUAL *);
-  282 (* SEMICOLON *);
-  283 (* COMMA *);
-    0 (* EOF *);
-    0|]
+  open Parsing
 
-let yytransl_block = [|
-  260 (* ONE_OF *);
-  264 (* IMPORT *);
-  284 (* STRING *);
-  285 (* INT *);
-  286 (* FLOAT *);
-  287 (* IDENT *);
-    0|]
+  let _ = parse_error
 
-let yylhs = "\255\255\
-\001\000\002\000\003\000\004\000\005\000\006\000\008\000\009\000\
-\010\000\011\000\012\000\007\000\024\000\024\000\026\000\026\000\
-\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\
-\026\000\026\000\025\000\019\000\019\000\019\000\027\000\018\000\
-\018\000\029\000\029\000\031\000\031\000\031\000\031\000\031\000\
-\031\000\031\000\023\000\023\000\033\000\033\000\022\000\021\000\
-\021\000\034\000\034\000\034\000\017\000\017\000\035\000\035\000\
-\036\000\036\000\032\000\032\000\014\000\014\000\014\000\014\000\
-\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-\037\000\038\000\038\000\038\000\038\000\013\000\013\000\039\000\
-\039\000\040\000\040\000\042\000\042\000\043\000\043\000\020\000\
-\041\000\041\000\041\000\041\000\016\000\044\000\044\000\015\000\
-\015\000\015\000\015\000\015\000\015\000\028\000\028\000\030\000\
-\030\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000"
+  let yytransl_const =
+    [| 257 (* REQUIRED *); 258 (* OPTIONAL *); 259 (* REPEATED *)
+     ; 261 (* MESSAGE *); 262 (* ENUM *); 263 (* PACKAGE *); 265 (* PUBLIC *)
+     ; 266 (* OPTION *); 267 (* EXTENSIONS *); 268 (* EXTEND *)
+     ; 269 (* SYNTAX *); 270 (* TO *); 271 (* MAX *); 272 (* MAP *)
+     ; 273 (* RBRACE *); 274 (* LBRACE *); 275 (* RBRACKET *)
+     ; 276 (* LBRACKET *); 277 (* RPAREN *); 278 (* LPAREN *)
+     ; 279 (* RANGLEB *); 280 (* LANGLEB *); 281 (* EQUAL *)
+     ; 282 (* SEMICOLON *); 283 (* COMMA *); 0 (* EOF *); 0 |]
 
-let yylen = "\002\000\
-\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\
-\002\000\002\000\002\000\002\000\002\000\001\000\001\000\001\000\
-\001\000\001\000\001\000\001\000\002\000\002\000\002\000\002\000\
-\002\000\002\000\004\000\003\000\004\000\004\000\003\000\005\000\
-\004\000\001\000\002\000\001\000\001\000\001\000\001\000\001\000\
-\001\000\001\000\005\000\004\000\001\000\002\000\003\000\001\000\
-\003\000\001\000\003\000\003\000\005\000\004\000\000\000\002\000\
-\006\000\005\000\010\000\011\000\007\000\006\000\006\000\005\000\
-\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\
-\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\
-\001\000\001\000\001\000\001\000\001\000\003\000\002\000\001\000\
-\003\000\003\000\005\000\001\000\003\000\001\000\002\000\005\000\
-\001\000\001\000\001\000\001\000\005\000\000\000\002\000\004\000\
-\003\000\004\000\002\000\002\000\001\000\001\000\002\000\001\000\
-\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\
-\002\000\002\000\002\000\002\000\002\000"
+  let yytransl_block =
+    [| 260 (* ONE_OF *); 264 (* IMPORT *); 284 (* STRING *); 285 (* INT *)
+     ; 286 (* FLOAT *); 287 (* IDENT *); 0 |]
 
-let yydefred = "\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\114\000\000\000\
-\082\000\084\000\083\000\000\000\115\000\000\000\000\000\000\000\
-\116\000\000\000\000\000\117\000\000\000\000\000\118\000\000\000\
-\000\000\119\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\120\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\014\000\000\000\121\000\000\000\122\000\000\000\000\000\123\000\
-\000\000\000\000\000\000\124\000\000\000\125\000\000\000\087\000\
-\000\000\000\000\000\000\000\000\001\000\066\000\067\000\068\000\
-\069\000\078\000\070\000\071\000\072\000\073\000\074\000\075\000\
-\076\000\077\000\079\000\080\000\081\000\065\000\000\000\002\000\
-\000\000\000\000\108\000\107\000\003\000\000\000\004\000\000\000\
-\000\000\005\000\000\000\006\000\000\000\000\000\000\000\000\000\
-\000\000\092\000\094\000\000\000\000\000\000\000\025\000\024\000\
-\021\000\022\000\026\000\012\000\013\000\023\000\007\000\008\000\
-\000\000\009\000\000\000\000\000\010\000\011\000\000\000\000\000\
-\086\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\110\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\095\000\000\000\000\000\052\000\051\000\049\000\
-\000\000\000\000\100\000\097\000\098\000\099\000\090\000\089\000\
-\000\000\000\000\106\000\000\000\000\000\000\000\000\000\112\000\
-\000\000\056\000\000\000\042\000\000\000\036\000\040\000\038\000\
-\039\000\041\000\000\000\000\000\000\000\037\000\111\000\000\000\
-\000\000\093\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\103\000\000\000\000\000\113\000\000\000\
-\000\000\000\000\035\000\000\000\046\000\000\000\091\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000"
+  let yylhs =
+    "\255\255\001\000\002\000\003\000\004\000\005\000\006\000\008\000\009\000\010\000\011\000\012\000\007\000\024\000\024\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\025\000\019\000\019\000\019\000\027\000\018\000\018\000\029\000\029\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\023\000\023\000\033\000\033\000\022\000\021\000\021\000\034\000\034\000\034\000\017\000\017\000\035\000\035\000\036\000\036\000\032\000\032\000\014\000\014\000\014\000\014\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\038\000\038\000\038\000\038\000\013\000\013\000\039\000\039\000\040\000\040\000\042\000\042\000\043\000\043\000\020\000\041\000\041\000\041\000\041\000\016\000\044\000\044\000\015\000\015\000\015\000\015\000\015\000\015\000\028\000\028\000\030\000\030\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
 
-let yydgoto = "\013\000\
-\015\000\021\000\025\000\028\000\031\000\034\000\041\000\051\000\
-\053\000\056\000\060\000\062\000\016\000\174\000\165\000\042\000\
-\176\000\043\000\044\000\045\000\057\000\178\000\046\000\047\000\
-\048\000\049\000\050\000\141\000\179\000\169\000\181\000\182\000\
-\190\000\058\000\136\000\137\000\087\000\023\000\067\000\068\000\
-\159\000\107\000\108\000\166\000"
+  let yylen =
+    "\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\002\000\002\000\002\000\002\000\002\000\002\000\004\000\003\000\004\000\004\000\003\000\005\000\004\000\001\000\002\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\005\000\004\000\001\000\002\000\003\000\001\000\003\000\001\000\003\000\003\000\005\000\004\000\000\000\002\000\006\000\005\000\010\000\011\000\007\000\006\000\006\000\005\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\001\000\003\000\002\000\001\000\003\000\003\000\005\000\001\000\003\000\001\000\002\000\005\000\001\000\001\000\001\000\001\000\005\000\000\000\002\000\004\000\003\000\004\000\002\000\002\000\001\000\001\000\002\000\001\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000\002\000"
 
-let yysindex = "\210\000\
-\245\254\019\255\237\254\010\255\030\255\052\255\137\255\058\255\
-\070\255\053\255\086\255\091\255\000\000\024\255\000\000\098\000\
-\000\000\000\000\000\000\225\255\000\000\105\000\075\255\066\255\
-\000\000\107\000\077\255\000\000\122\000\006\255\000\000\123\000\
-\093\255\000\000\127\000\097\255\254\254\013\255\100\255\108\255\
-\000\000\137\255\137\255\137\255\137\255\137\255\134\000\160\255\
-\000\000\137\255\000\000\136\000\000\000\139\000\134\255\000\000\
-\151\000\125\255\053\255\000\000\154\000\000\000\156\000\000\000\
-\126\255\151\255\159\255\150\255\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\154\255\000\000\
-\225\255\152\255\000\000\000\000\000\000\164\255\000\000\156\255\
-\167\255\000\000\170\255\000\000\165\255\162\255\165\255\179\255\
-\161\255\000\000\000\000\005\255\191\255\195\255\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\255\254\000\000\053\255\165\255\000\000\000\000\203\255\057\255\
-\000\000\031\255\218\255\223\255\044\255\237\254\225\255\232\255\
-\156\255\156\255\073\255\000\000\226\255\165\255\226\255\165\255\
-\230\255\057\255\000\000\016\255\165\255\000\000\000\000\000\000\
-\226\255\228\255\000\000\000\000\000\000\000\000\000\000\000\000\
-\041\255\237\255\000\000\226\255\237\254\232\255\229\255\000\000\
-\245\255\000\000\232\255\000\000\231\255\000\000\000\000\000\000\
-\000\000\000\000\232\255\245\255\194\255\000\000\000\000\226\255\
-\226\255\000\000\165\255\019\255\245\255\232\255\226\255\057\255\
-\165\255\226\255\041\255\000\000\245\255\243\255\000\000\245\255\
-\244\255\245\255\000\000\226\255\000\000\245\255\000\000\226\255\
-\165\255\226\255\041\255\249\255\226\255\165\255\226\255\246\255\
-\226\255\019\000\225\255\253\255\014\000\041\255\165\255\226\255\
-\226\255"
+  let yydefred =
+    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\114\000\000\000\082\000\084\000\083\000\000\000\115\000\000\000\000\000\000\000\116\000\000\000\000\000\117\000\000\000\000\000\118\000\000\000\000\000\119\000\000\000\000\000\000\000\000\000\000\000\000\000\120\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\014\000\000\000\121\000\000\000\122\000\000\000\000\000\123\000\000\000\000\000\000\000\124\000\000\000\125\000\000\000\087\000\000\000\000\000\000\000\000\000\001\000\066\000\067\000\068\000\069\000\078\000\070\000\071\000\072\000\073\000\074\000\075\000\076\000\077\000\079\000\080\000\081\000\065\000\000\000\002\000\000\000\000\000\108\000\107\000\003\000\000\000\004\000\000\000\000\000\005\000\000\000\006\000\000\000\000\000\000\000\000\000\000\000\092\000\094\000\000\000\000\000\000\000\025\000\024\000\021\000\022\000\026\000\012\000\013\000\023\000\007\000\008\000\000\000\009\000\000\000\000\000\010\000\011\000\000\000\000\000\086\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\110\000\000\000\000\000\000\000\000\000\000\000\000\000\095\000\000\000\000\000\052\000\051\000\049\000\000\000\000\000\100\000\097\000\098\000\099\000\090\000\089\000\000\000\000\000\106\000\000\000\000\000\000\000\000\000\112\000\000\000\056\000\000\000\042\000\000\000\036\000\040\000\038\000\039\000\041\000\000\000\000\000\000\000\037\000\111\000\000\000\000\000\093\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\103\000\000\000\000\000\113\000\000\000\000\000\000\000\035\000\000\000\046\000\000\000\091\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
 
-let yyrindex = "\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\042\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\044\001\060\001\070\001\071\001\072\001\000\000\000\000\
-\000\000\078\001\000\000\000\000\000\000\000\000\011\000\000\000\
-\000\000\015\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\069\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\073\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\058\000\076\000\000\000\000\000\
-\073\000\073\000\000\000\000\000\101\000\000\000\119\000\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\063\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\060\000\076\000\000\000\000\000\000\000\
-\081\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\001\000\078\000\000\000\000\000\137\000\
-\155\000\000\000\000\000\079\000\173\000\000\000\196\255\000\000\
-\000\000\099\000\000\000\000\000\023\000\000\000\000\000\117\000\
-\000\000\045\000\000\000\184\000\000\000\193\000\000\000\135\000\
-\000\000\153\000\000\000\000\000\171\000\000\000\252\254\000\000\
-\008\255\000\000\000\000\000\000\000\000\000\000\000\000\109\255\
-\158\255"
+  let yydgoto =
+    "\013\000\015\000\021\000\025\000\028\000\031\000\034\000\041\000\051\000\053\000\056\000\060\000\062\000\016\000\174\000\165\000\042\000\176\000\043\000\044\000\045\000\057\000\178\000\046\000\047\000\048\000\049\000\050\000\141\000\179\000\169\000\181\000\182\000\190\000\058\000\136\000\137\000\087\000\023\000\067\000\068\000\159\000\107\000\108\000\166\000"
 
-let yygindex = "\000\000\
-\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-\000\000\000\000\000\000\000\000\099\255\254\255\190\001\255\255\
-\199\001\002\000\187\001\198\001\202\255\197\001\200\001\200\000\
-\000\000\161\001\000\000\163\255\029\001\149\255\000\000\000\000\
-\023\001\000\000\214\255\000\000\169\255\000\000\083\001\000\000\
-\116\255\000\000\000\000\049\001"
+  let yysindex =
+    "\210\000\245\254\019\255\237\254\010\255\030\255\052\255\137\255\058\255\070\255\053\255\086\255\091\255\000\000\024\255\000\000\098\000\000\000\000\000\000\000\225\255\000\000\105\000\075\255\066\255\000\000\107\000\077\255\000\000\122\000\006\255\000\000\123\000\093\255\000\000\127\000\097\255\254\254\013\255\100\255\108\255\000\000\137\255\137\255\137\255\137\255\137\255\134\000\160\255\000\000\137\255\000\000\136\000\000\000\139\000\134\255\000\000\151\000\125\255\053\255\000\000\154\000\000\000\156\000\000\000\126\255\151\255\159\255\150\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\154\255\000\000\225\255\152\255\000\000\000\000\000\000\164\255\000\000\156\255\167\255\000\000\170\255\000\000\165\255\162\255\165\255\179\255\161\255\000\000\000\000\005\255\191\255\195\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\254\000\000\053\255\165\255\000\000\000\000\203\255\057\255\000\000\031\255\218\255\223\255\044\255\237\254\225\255\232\255\156\255\156\255\073\255\000\000\226\255\165\255\226\255\165\255\230\255\057\255\000\000\016\255\165\255\000\000\000\000\000\000\226\255\228\255\000\000\000\000\000\000\000\000\000\000\000\000\041\255\237\255\000\000\226\255\237\254\232\255\229\255\000\000\245\255\000\000\232\255\000\000\231\255\000\000\000\000\000\000\000\000\000\000\232\255\245\255\194\255\000\000\000\000\226\255\226\255\000\000\165\255\019\255\245\255\232\255\226\255\057\255\165\255\226\255\041\255\000\000\245\255\243\255\000\000\245\255\244\255\245\255\000\000\226\255\000\000\245\255\000\000\226\255\165\255\226\255\041\255\249\255\226\255\165\255\226\255\246\255\226\255\019\000\225\255\253\255\014\000\041\255\165\255\226\255\226\255"
 
-let yytablesize = 470
-let yytable = "\022\000\
-\033\000\132\000\029\000\193\000\124\000\187\000\102\000\035\000\
-\014\000\143\000\050\000\024\000\058\000\150\000\048\000\027\000\
-\017\000\018\000\019\000\017\000\018\000\019\000\101\000\096\000\
-\057\000\103\000\058\000\151\000\104\000\146\000\153\000\180\000\
-\168\000\030\000\105\000\147\000\097\000\209\000\057\000\164\000\
-\189\000\109\000\064\000\106\000\032\000\065\000\020\000\167\000\
-\184\000\020\000\185\000\207\000\065\000\214\000\066\000\191\000\
-\033\000\105\000\197\000\104\000\014\000\066\000\047\000\200\000\
-\223\000\037\000\140\000\194\000\152\000\140\000\163\000\202\000\
-\172\000\017\000\018\000\019\000\030\000\033\000\027\000\038\000\
-\054\000\055\000\206\000\059\000\155\000\156\000\157\000\158\000\
-\173\000\168\000\090\000\091\000\092\000\204\000\170\000\171\000\
-\059\000\069\000\064\000\208\000\031\000\210\000\039\000\020\000\
-\088\000\089\000\093\000\094\000\059\000\059\000\059\000\059\000\
-\059\000\059\000\059\000\213\000\053\000\215\000\028\000\059\000\
-\217\000\095\000\098\000\099\000\059\000\059\000\100\000\101\000\
-\224\000\225\000\109\000\220\000\110\000\116\000\063\000\119\000\
-\029\000\175\000\120\000\059\000\177\000\033\000\027\000\036\000\
-\037\000\188\000\038\000\121\000\039\000\040\000\122\000\123\000\
-\062\000\125\000\030\000\126\000\127\000\060\000\060\000\060\000\
-\060\000\060\000\060\000\060\000\033\000\027\000\036\000\037\000\
-\060\000\038\000\061\000\039\000\044\000\060\000\060\000\128\000\
-\130\000\129\000\131\000\175\000\133\000\134\000\177\000\096\000\
-\138\000\188\000\135\000\139\000\060\000\142\000\140\000\145\000\
-\043\000\172\000\017\000\018\000\019\000\030\000\033\000\027\000\
-\027\000\027\000\027\000\027\000\059\000\027\000\144\000\027\000\
-\148\000\173\000\001\000\002\000\003\000\004\000\005\000\006\000\
-\007\000\008\000\009\000\010\000\011\000\012\000\149\000\154\000\
-\020\000\070\000\071\000\072\000\073\000\074\000\075\000\076\000\
-\077\000\078\000\079\000\080\000\081\000\082\000\083\000\084\000\
-\085\000\111\000\112\000\113\000\114\000\115\000\161\000\162\000\
-\168\000\118\000\186\000\183\000\192\000\198\000\201\000\086\000\
-\033\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
-\033\000\195\000\033\000\033\000\033\000\033\000\199\000\211\000\
-\033\000\033\000\212\000\216\000\218\000\221\000\101\000\101\000\
-\101\000\101\000\101\000\101\000\101\000\101\000\101\000\033\000\
-\101\000\101\000\101\000\101\000\050\000\050\000\101\000\101\000\
-\048\000\219\000\222\000\019\000\032\000\032\000\032\000\032\000\
-\032\000\032\000\032\000\032\000\032\000\101\000\032\000\032\000\
-\032\000\032\000\109\000\018\000\032\000\032\000\047\000\047\000\
-\047\000\047\000\047\000\047\000\047\000\015\000\016\000\020\000\
-\109\000\047\000\105\000\032\000\104\000\017\000\047\000\047\000\
-\054\000\054\000\054\000\054\000\054\000\054\000\054\000\088\000\
-\105\000\055\000\104\000\054\000\102\000\047\000\034\000\045\000\
-\054\000\054\000\064\000\064\000\064\000\064\000\064\000\064\000\
-\064\000\031\000\031\000\031\000\031\000\064\000\031\000\054\000\
-\031\000\031\000\064\000\064\000\053\000\053\000\053\000\053\000\
-\053\000\053\000\053\000\028\000\028\000\028\000\028\000\053\000\
-\028\000\064\000\028\000\028\000\053\000\053\000\063\000\063\000\
-\063\000\063\000\063\000\063\000\063\000\029\000\029\000\029\000\
-\029\000\063\000\029\000\053\000\029\000\029\000\063\000\063\000\
-\062\000\062\000\062\000\062\000\062\000\062\000\062\000\030\000\
-\030\000\030\000\030\000\062\000\030\000\063\000\030\000\030\000\
-\062\000\062\000\061\000\061\000\061\000\061\000\061\000\061\000\
-\061\000\044\000\044\000\044\000\044\000\061\000\044\000\062\000\
-\044\000\044\000\061\000\061\000\096\000\096\000\096\000\096\000\
-\026\000\096\000\052\000\096\000\096\000\043\000\043\000\043\000\
-\043\000\061\000\043\000\032\000\043\000\043\000\054\000\061\000\
-\117\000\203\000\205\000\063\000\160\000\196\000"
+  let yyrindex =
+    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\042\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\044\001\060\001\070\001\071\001\072\001\000\000\000\000\000\000\078\001\000\000\000\000\000\000\000\000\011\000\000\000\000\000\015\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\069\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\073\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\058\000\076\000\000\000\000\000\073\000\073\000\000\000\000\000\101\000\000\000\119\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\063\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\060\000\076\000\000\000\000\000\000\000\081\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\001\000\078\000\000\000\000\000\137\000\155\000\000\000\000\000\079\000\173\000\000\000\196\255\000\000\000\000\099\000\000\000\000\000\023\000\000\000\000\000\117\000\000\000\045\000\000\000\184\000\000\000\193\000\000\000\135\000\000\000\153\000\000\000\000\000\171\000\000\000\252\254\000\000\008\255\000\000\000\000\000\000\000\000\000\000\000\000\109\255\158\255"
 
-let yycheck = "\002\000\
-\000\000\089\000\004\000\161\000\059\000\146\000\009\001\006\000\
-\020\001\103\000\000\000\031\001\017\001\015\001\000\000\006\001\
-\001\001\002\001\003\001\001\001\002\001\003\001\000\000\018\001\
-\017\001\028\001\031\001\029\001\031\001\025\001\124\000\139\000\
-\017\001\004\001\022\001\031\001\031\001\195\000\031\001\133\000\
-\148\000\000\000\019\001\031\001\000\000\022\001\031\001\135\000\
-\142\000\031\001\144\000\192\000\022\001\211\000\031\001\149\000\
-\005\001\000\000\166\000\000\000\020\001\031\001\000\000\171\000\
-\222\000\008\001\026\001\161\000\123\000\026\001\027\001\179\000\
-\000\001\001\001\002\001\003\001\004\001\005\001\006\001\010\001\
-\000\000\029\001\190\000\011\001\028\001\029\001\030\001\031\001\
-\016\001\017\001\025\001\026\001\027\001\187\000\137\000\138\000\
-\011\001\000\000\000\000\193\000\000\000\195\000\012\001\031\001\
-\000\000\031\001\000\000\031\001\000\001\001\001\002\001\003\001\
-\004\001\005\001\006\001\209\000\000\000\211\000\000\000\011\001\
-\214\000\000\000\000\000\031\001\016\001\017\001\000\000\031\001\
-\222\000\223\000\031\001\219\000\025\001\000\000\000\000\000\000\
-\000\000\139\000\000\000\031\001\139\000\005\001\006\001\007\001\
-\008\001\148\000\010\001\014\001\012\001\013\001\000\000\027\001\
-\000\000\000\000\000\000\000\000\031\001\000\001\001\001\002\001\
-\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\
-\011\001\010\001\000\000\012\001\000\000\016\001\017\001\025\001\
-\027\001\019\001\025\001\181\000\029\001\018\001\181\000\000\000\
-\018\001\188\000\031\001\018\001\031\001\028\001\026\001\031\001\
-\000\000\000\001\001\001\002\001\003\001\004\001\005\001\006\001\
-\005\001\006\001\007\001\008\001\011\001\010\001\028\001\012\001\
-\018\001\016\001\001\000\002\000\003\000\004\000\005\000\006\000\
-\007\000\008\000\009\000\010\000\011\000\012\000\028\001\021\001\
-\031\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\
-\008\001\009\001\010\001\011\001\012\001\013\001\014\001\015\001\
-\016\001\042\000\043\000\044\000\045\000\046\000\029\001\025\001\
-\017\001\050\000\021\001\026\001\025\001\025\001\024\001\031\001\
-\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\
-\008\001\029\001\010\001\011\001\012\001\013\001\026\001\029\001\
-\016\001\017\001\031\001\027\001\031\001\025\001\000\001\001\001\
-\002\001\003\001\004\001\005\001\006\001\007\001\008\001\031\001\
-\010\001\011\001\012\001\013\001\026\001\027\001\016\001\017\001\
-\026\001\023\001\029\001\000\000\000\001\001\001\002\001\003\001\
-\004\001\005\001\006\001\007\001\008\001\031\001\010\001\011\001\
-\012\001\013\001\017\001\000\000\016\001\017\001\000\001\001\001\
-\002\001\003\001\004\001\005\001\006\001\000\000\000\000\000\000\
-\031\001\011\001\017\001\031\001\017\001\000\000\016\001\017\001\
-\000\001\001\001\002\001\003\001\004\001\005\001\006\001\019\001\
-\031\001\017\001\031\001\011\001\017\001\031\001\017\001\017\001\
-\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\
-\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\
-\012\001\013\001\016\001\017\001\000\001\001\001\002\001\003\001\
-\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\
-\010\001\031\001\012\001\013\001\016\001\017\001\000\001\001\001\
-\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\
-\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\
-\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\
-\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\
-\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\
-\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\
-\012\001\013\001\016\001\017\001\005\001\006\001\007\001\008\001\
-\003\000\010\001\008\000\012\001\013\001\005\001\006\001\007\001\
-\008\001\031\001\010\001\005\000\012\001\013\001\009\000\011\000\
-\048\000\181\000\188\000\012\000\130\000\165\000"
+  let yygindex =
+    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\099\255\254\255\190\001\255\255\199\001\002\000\187\001\198\001\202\255\197\001\200\001\200\000\000\000\161\001\000\000\163\255\029\001\149\255\000\000\000\000\023\001\000\000\214\255\000\000\169\255\000\000\083\001\000\000\116\255\000\000\000\000\049\001"
 
-let yynames_const = "\
-  REQUIRED\000\
-  OPTIONAL\000\
-  REPEATED\000\
-  MESSAGE\000\
-  ENUM\000\
-  PACKAGE\000\
-  PUBLIC\000\
-  OPTION\000\
-  EXTENSIONS\000\
-  EXTEND\000\
-  SYNTAX\000\
-  TO\000\
-  MAX\000\
-  MAP\000\
-  RBRACE\000\
-  LBRACE\000\
-  RBRACKET\000\
-  LBRACKET\000\
-  RPAREN\000\
-  LPAREN\000\
-  RANGLEB\000\
-  LANGLEB\000\
-  EQUAL\000\
-  SEMICOLON\000\
-  COMMA\000\
-  EOF\000\
-  "
+  let yytablesize = 470
 
-let yynames_block = "\
-  ONE_OF\000\
-  IMPORT\000\
-  STRING\000\
-  INT\000\
-  FLOAT\000\
-  IDENT\000\
-  "
+  let yytable =
+    "\022\000\033\000\132\000\029\000\193\000\124\000\187\000\102\000\035\000\014\000\143\000\050\000\024\000\058\000\150\000\048\000\027\000\017\000\018\000\019\000\017\000\018\000\019\000\101\000\096\000\057\000\103\000\058\000\151\000\104\000\146\000\153\000\180\000\168\000\030\000\105\000\147\000\097\000\209\000\057\000\164\000\189\000\109\000\064\000\106\000\032\000\065\000\020\000\167\000\184\000\020\000\185\000\207\000\065\000\214\000\066\000\191\000\033\000\105\000\197\000\104\000\014\000\066\000\047\000\200\000\223\000\037\000\140\000\194\000\152\000\140\000\163\000\202\000\172\000\017\000\018\000\019\000\030\000\033\000\027\000\038\000\054\000\055\000\206\000\059\000\155\000\156\000\157\000\158\000\173\000\168\000\090\000\091\000\092\000\204\000\170\000\171\000\059\000\069\000\064\000\208\000\031\000\210\000\039\000\020\000\088\000\089\000\093\000\094\000\059\000\059\000\059\000\059\000\059\000\059\000\059\000\213\000\053\000\215\000\028\000\059\000\217\000\095\000\098\000\099\000\059\000\059\000\100\000\101\000\224\000\225\000\109\000\220\000\110\000\116\000\063\000\119\000\029\000\175\000\120\000\059\000\177\000\033\000\027\000\036\000\037\000\188\000\038\000\121\000\039\000\040\000\122\000\123\000\062\000\125\000\030\000\126\000\127\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\033\000\027\000\036\000\037\000\060\000\038\000\061\000\039\000\044\000\060\000\060\000\128\000\130\000\129\000\131\000\175\000\133\000\134\000\177\000\096\000\138\000\188\000\135\000\139\000\060\000\142\000\140\000\145\000\043\000\172\000\017\000\018\000\019\000\030\000\033\000\027\000\027\000\027\000\027\000\027\000\059\000\027\000\144\000\027\000\148\000\173\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\010\000\011\000\012\000\149\000\154\000\020\000\070\000\071\000\072\000\073\000\074\000\075\000\076\000\077\000\078\000\079\000\080\000\081\000\082\000\083\000\084\000\085\000\111\000\112\000\113\000\114\000\115\000\161\000\162\000\168\000\118\000\186\000\183\000\192\000\198\000\201\000\086\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\195\000\033\000\033\000\033\000\033\000\199\000\211\000\033\000\033\000\212\000\216\000\218\000\221\000\101\000\101\000\101\000\101\000\101\000\101\000\101\000\101\000\101\000\033\000\101\000\101\000\101\000\101\000\050\000\050\000\101\000\101\000\048\000\219\000\222\000\019\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\101\000\032\000\032\000\032\000\032\000\109\000\018\000\032\000\032\000\047\000\047\000\047\000\047\000\047\000\047\000\047\000\015\000\016\000\020\000\109\000\047\000\105\000\032\000\104\000\017\000\047\000\047\000\054\000\054\000\054\000\054\000\054\000\054\000\054\000\088\000\105\000\055\000\104\000\054\000\102\000\047\000\034\000\045\000\054\000\054\000\064\000\064\000\064\000\064\000\064\000\064\000\064\000\031\000\031\000\031\000\031\000\064\000\031\000\054\000\031\000\031\000\064\000\064\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\028\000\028\000\028\000\028\000\053\000\028\000\064\000\028\000\028\000\053\000\053\000\063\000\063\000\063\000\063\000\063\000\063\000\063\000\029\000\029\000\029\000\029\000\063\000\029\000\053\000\029\000\029\000\063\000\063\000\062\000\062\000\062\000\062\000\062\000\062\000\062\000\030\000\030\000\030\000\030\000\062\000\030\000\063\000\030\000\030\000\062\000\062\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\044\000\044\000\044\000\044\000\061\000\044\000\062\000\044\000\044\000\061\000\061\000\096\000\096\000\096\000\096\000\026\000\096\000\052\000\096\000\096\000\043\000\043\000\043\000\043\000\061\000\043\000\032\000\043\000\043\000\054\000\061\000\117\000\203\000\205\000\063\000\160\000\196\000"
 
-let yyact = [|
-  (fun _ -> failwith "parser")
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
-    Obj.repr(
-# 111 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 389 "src/compilerlib/pbparser.ml"
-               : Pbpt.field_options))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
-    Obj.repr(
-# 112 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 396 "src/compilerlib/pbparser.ml"
-               : Pbpt.field_label Pbpt.field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
-    Obj.repr(
-# 113 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 403 "src/compilerlib/pbparser.ml"
-               : Pbpt.enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
-    Obj.repr(
-# 114 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 410 "src/compilerlib/pbparser.ml"
-               : Pbpt.enum))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof) in
-    Obj.repr(
-# 115 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 417 "src/compilerlib/pbparser.ml"
-               : Pbpt.oneof))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
-    Obj.repr(
-# 116 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 424 "src/compilerlib/pbparser.ml"
-               : Pbpt.message))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
-    Obj.repr(
-# 117 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 431 "src/compilerlib/pbparser.ml"
-               : Pbpt.import))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
-    Obj.repr(
-# 118 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 438 "src/compilerlib/pbparser.ml"
-               : Pbpt.file_option))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
-    Obj.repr(
-# 119 "src/compilerlib/pbparser.mly"
-                                                 (_1)
-# 445 "src/compilerlib/pbparser.ml"
-               : Pbpt.extension_range list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extension) in
-    Obj.repr(
-# 120 "src/compilerlib/pbparser.mly"
-                                    (_1)
-# 452 "src/compilerlib/pbparser.ml"
-               : Pbpt.extension_range list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
-    Obj.repr(
-# 121 "src/compilerlib/pbparser.mly"
-                                    (_1)
-# 459 "src/compilerlib/pbparser.ml"
-               : Pbpt.extend))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'proto) in
-    Obj.repr(
-# 125 "src/compilerlib/pbparser.mly"
-                                     (_1)
-# 466 "src/compilerlib/pbparser.ml"
-               : Pbpt.proto))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'syntax) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
-    Obj.repr(
-# 128 "src/compilerlib/pbparser.mly"
-                         (Pbpt_util.proto ~syntax:_1 ~proto:_2 ())
-# 474 "src/compilerlib/pbparser.ml"
-               : 'proto))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
-    Obj.repr(
-# 129 "src/compilerlib/pbparser.mly"
-                         (_1)
-# 481 "src/compilerlib/pbparser.ml"
-               : 'proto))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'import) in
-    Obj.repr(
-# 132 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~import:_1  ())
-# 488 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'file_option) in
-    Obj.repr(
-# 133 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~file_option:_1  ())
-# 495 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'package_declaration) in
-    Obj.repr(
-# 134 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~package:_1 ())
-# 502 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
-    Obj.repr(
-# 135 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~message:_1 ())
-# 509 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
-    Obj.repr(
-# 136 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~enum:_1 ())
-# 516 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extend) in
-    Obj.repr(
-# 137 "src/compilerlib/pbparser.mly"
-                        (Pbpt_util.proto ~extend:_1 ())
-# 523 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 139 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~import:_1  ~proto:_2 ())
-# 531 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 140 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~file_option:_1  ~proto:_2 ())
-# 539 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'package_declaration) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 141 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~package:_1 ~proto:_2 ())
-# 547 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 142 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~message:_1 ~proto:_2 ())
-# 555 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 143 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~enum:_1 ~proto:_2 ())
-# 563 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
-    Obj.repr(
-# 144 "src/compilerlib/pbparser.mly"
-                              (Pbpt_util.proto ~extend:_1 ~proto:_2 ())
-# 571 "src/compilerlib/pbparser.ml"
-               : 'proto_content))
-; (fun __caml_parser_env ->
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 147 "src/compilerlib/pbparser.mly"
-                                  ( _3 )
-# 579 "src/compilerlib/pbparser.ml"
-               : 'syntax))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t) in
-    let _2 = (Parsing.peek_val __caml_parser_env 1 : string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 150 "src/compilerlib/pbparser.mly"
-                                    ( Pbpt_util.import _2)
-# 588 "src/compilerlib/pbparser.ml"
-               : 'import))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 151 "src/compilerlib/pbparser.mly"
-                                    ( Pbpt_util.import ~public:() _3 )
-# 597 "src/compilerlib/pbparser.ml"
-               : 'import))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
-    let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 152 "src/compilerlib/pbparser.mly"
-                                    ( Exception.invalid_import_qualifier _1 )
-# 607 "src/compilerlib/pbparser.ml"
-               : 'import))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 155 "src/compilerlib/pbparser.mly"
-                            (snd _2)
-# 615 "src/compilerlib/pbparser.ml"
-               : 'package_declaration))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : 'message_body_content_list) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 158 "src/compilerlib/pbparser.mly"
-                                                          ( 
-    Pbpt_util.message ~content:_4 (snd _2)
-  )
-# 626 "src/compilerlib/pbparser.ml"
-               : 'message))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 161 "src/compilerlib/pbparser.mly"
-                                ( 
-    Pbpt_util.message ~content:[]  (snd _2)
-  )
-# 636 "src/compilerlib/pbparser.ml"
-               : 'message))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message_body_content) in
-    Obj.repr(
-# 166 "src/compilerlib/pbparser.mly"
-                          ( [_1] )
-# 643 "src/compilerlib/pbparser.ml"
-               : 'message_body_content_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message_body_content) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'message_body_content_list) in
-    Obj.repr(
-# 167 "src/compilerlib/pbparser.mly"
-                                                   ( _1::_2 )
-# 651 "src/compilerlib/pbparser.ml"
-               : 'message_body_content_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
-    Obj.repr(
-# 170 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_field  _1 )
-# 658 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'map) in
-    Obj.repr(
-# 171 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_map_field _1 )
-# 665 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'oneof) in
-    Obj.repr(
-# 172 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_oneof_field _1 )
-# 672 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
-    Obj.repr(
-# 173 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_sub _1 )
-# 679 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
-    Obj.repr(
-# 174 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_enum _1 )
-# 686 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension) in
-    Obj.repr(
-# 175 "src/compilerlib/pbparser.mly"
-                 ( Pbpt_util.message_body_extension _1 )
-# 693 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 176 "src/compilerlib/pbparser.mly"
-                 ( Exception.syntax_error ())
-# 699 "src/compilerlib/pbparser.ml"
-               : 'message_body_content))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field_list) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 179 "src/compilerlib/pbparser.mly"
-                                                 (
-    Pbpt_util.extend (snd _2) _4 
-  )
-# 710 "src/compilerlib/pbparser.ml"
-               : 'extend))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 182 "src/compilerlib/pbparser.mly"
-                               (
-    Pbpt_util.extend (snd _2) [] 
-  )
-# 720 "src/compilerlib/pbparser.ml"
-               : 'extend))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
-    Obj.repr(
-# 187 "src/compilerlib/pbparser.mly"
-                                   (_1 :: [])
-# 727 "src/compilerlib/pbparser.ml"
-               : 'normal_field_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field_list) in
-    Obj.repr(
-# 188 "src/compilerlib/pbparser.mly"
-                                   (_1 :: _2)
-# 735 "src/compilerlib/pbparser.ml"
-               : 'normal_field_list))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 191 "src/compilerlib/pbparser.mly"
-                                              (_2)
-# 743 "src/compilerlib/pbparser.ml"
-               : 'extension))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension_range) in
-    Obj.repr(
-# 194 "src/compilerlib/pbparser.mly"
-                                               (_1 :: [])
-# 750 "src/compilerlib/pbparser.ml"
-               : 'extension_range_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : 'extension_range) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'extension_range_list) in
-    Obj.repr(
-# 195 "src/compilerlib/pbparser.mly"
-                                               (_1 :: _3)
-# 758 "src/compilerlib/pbparser.ml"
-               : 'extension_range_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
-    Obj.repr(
-# 198 "src/compilerlib/pbparser.mly"
-                   ( Pbpt_util.extension_range_single_number _1)
-# 765 "src/compilerlib/pbparser.ml"
-               : 'extension_range))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
-    Obj.repr(
-# 199 "src/compilerlib/pbparser.mly"
-                   ( Pbpt_util.extension_range_range _1 (`Number _3) )
-# 773 "src/compilerlib/pbparser.ml"
-               : 'extension_range))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    Obj.repr(
-# 200 "src/compilerlib/pbparser.mly"
-                   ( Pbpt_util.extension_range_range _1 `Max )
-# 780 "src/compilerlib/pbparser.ml"
-               : 'extension_range))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t) in
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 203 "src/compilerlib/pbparser.mly"
-                                                ( 
-    Pbpt_util.oneof ~fields:_4 (snd _2) 
-  )
-# 792 "src/compilerlib/pbparser.ml"
-               : 'oneof))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 206 "src/compilerlib/pbparser.mly"
-                                          ( 
-    Exception.missing_one_of_name _1
-  )
-# 803 "src/compilerlib/pbparser.ml"
-               : 'oneof))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 211 "src/compilerlib/pbparser.mly"
-                                        ( []   )
-# 809 "src/compilerlib/pbparser.ml"
-               : 'oneof_field_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'oneof_field_list) in
-    Obj.repr(
-# 212 "src/compilerlib/pbparser.mly"
-                                        ( _1::_2 )
-# 817 "src/compilerlib/pbparser.ml"
-               : 'oneof_field_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
-    let _2 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
-    let _4 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
-    let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 215 "src/compilerlib/pbparser.mly"
-                                                       ( 
-    Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 ~options:_5 _2  
-  )
-# 830 "src/compilerlib/pbparser.ml"
-               : 'oneof_field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 218 "src/compilerlib/pbparser.mly"
-                                         ( 
-    Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 _2  
-  )
-# 842 "src/compilerlib/pbparser.ml"
-               : 'oneof_field))
-; (fun __caml_parser_env ->
-    let _3 = (Parsing.peek_val __caml_parser_env 7 : Loc.t * string) in
-    let _5 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
-    let _7 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
-    let _9 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    let _10 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 223 "src/compilerlib/pbparser.mly"
-                                                                         (
-    Pbpt_util.map ~key_type:(snd _3) ~value_type:(snd _5) ~number:_9 _7
-  )
-# 855 "src/compilerlib/pbparser.ml"
-               : 'map))
-; (fun __caml_parser_env ->
-    let _3 = (Parsing.peek_val __caml_parser_env 8 : Loc.t * string) in
-    let _5 = (Parsing.peek_val __caml_parser_env 6 : Loc.t * string) in
-    let _7 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
-    let _9 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    let _10 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
-    let _11 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 226 "src/compilerlib/pbparser.mly"
-                                                                                       (
-    Pbpt_util.map ~options:_10 ~key_type:(snd _3) ~value_type:(snd _5) ~number:_9 _7
-  )
-# 869 "src/compilerlib/pbparser.ml"
-               : 'map))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 6 : 'label) in
-    let _2 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
-    let _5 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    let _6 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
-    let _7 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 231 "src/compilerlib/pbparser.mly"
-                                                             ( 
-    Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 ~options:_6 _3
-  )
-# 883 "src/compilerlib/pbparser.ml"
-               : 'normal_field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 5 : 'label) in
-    let _2 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
-    let _5 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 234 "src/compilerlib/pbparser.mly"
-                                               ( 
-    Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 _3 
-  )
-# 896 "src/compilerlib/pbparser.ml"
-               : 'normal_field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
-    let _2 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
-    let _4 = (Parsing.peek_val __caml_parser_env 2 : int) in
-    let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
-    let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 237 "src/compilerlib/pbparser.mly"
-                                                       ( 
-    Exception.missing_field_label (fst _1) 
-  )
-# 909 "src/compilerlib/pbparser.ml"
-               : 'normal_field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 240 "src/compilerlib/pbparser.mly"
-                                         ( 
-    Exception.missing_field_label (fst _1) 
-  )
-# 921 "src/compilerlib/pbparser.ml"
-               : 'normal_field))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 245 "src/compilerlib/pbparser.mly"
-              (snd _1)
-# 928 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 246 "src/compilerlib/pbparser.mly"
-              ("required")
-# 934 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 247 "src/compilerlib/pbparser.mly"
-              ("optional")
-# 940 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 248 "src/compilerlib/pbparser.mly"
-              ("repeated")
-# 946 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
-    Obj.repr(
-# 249 "src/compilerlib/pbparser.mly"
-              ("oneof")
-# 953 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 250 "src/compilerlib/pbparser.mly"
-              ("enum")
-# 959 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 251 "src/compilerlib/pbparser.mly"
-              ("package")
-# 965 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
-    Obj.repr(
-# 252 "src/compilerlib/pbparser.mly"
-              ("import")
-# 972 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 253 "src/compilerlib/pbparser.mly"
-              ("public")
-# 978 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 254 "src/compilerlib/pbparser.mly"
-              ("option")
-# 984 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 255 "src/compilerlib/pbparser.mly"
-              ("extensions")
-# 990 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 256 "src/compilerlib/pbparser.mly"
-              ("extend")
-# 996 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 257 "src/compilerlib/pbparser.mly"
-              ("syntax")
-# 1002 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 258 "src/compilerlib/pbparser.mly"
-              ("message")
-# 1008 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 259 "src/compilerlib/pbparser.mly"
-              ("to")
-# 1014 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 260 "src/compilerlib/pbparser.mly"
-              ("max")
-# 1020 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 261 "src/compilerlib/pbparser.mly"
-              ("map")
-# 1026 "src/compilerlib/pbparser.ml"
-               : 'field_name))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 264 "src/compilerlib/pbparser.mly"
-             ( `Required )
-# 1032 "src/compilerlib/pbparser.ml"
-               : 'label))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 265 "src/compilerlib/pbparser.mly"
-             ( `Repeated )
-# 1038 "src/compilerlib/pbparser.ml"
-               : 'label))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 266 "src/compilerlib/pbparser.mly"
-             ( `Optional )
-# 1044 "src/compilerlib/pbparser.ml"
-               : 'label))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 267 "src/compilerlib/pbparser.mly"
-             ( Exception.invalid_field_label (fst _1) )
-# 1051 "src/compilerlib/pbparser.ml"
-               : 'label))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 1 : 'field_option_list) in
-    Obj.repr(
-# 270 "src/compilerlib/pbparser.mly"
-                                        ( _2 )
-# 1058 "src/compilerlib/pbparser.ml"
-               : 'field_options))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 271 "src/compilerlib/pbparser.mly"
-                                        ( [] )
-# 1064 "src/compilerlib/pbparser.ml"
-               : 'field_options))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'field_option) in
-    Obj.repr(
-# 274 "src/compilerlib/pbparser.mly"
-                                          ( [_1] )
-# 1071 "src/compilerlib/pbparser.ml"
-               : 'field_option_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : 'field_option) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'field_option_list) in
-    Obj.repr(
-# 275 "src/compilerlib/pbparser.mly"
-                                          ( _1::_3 )
-# 1079 "src/compilerlib/pbparser.ml"
-               : 'field_option_list))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
-    Obj.repr(
-# 278 "src/compilerlib/pbparser.mly"
-                                       ( (snd _1, _3) )
-# 1087 "src/compilerlib/pbparser.ml"
-               : 'field_option))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
-    Obj.repr(
-# 279 "src/compilerlib/pbparser.mly"
-                                       ( (snd _2, _5))
-# 1095 "src/compilerlib/pbparser.ml"
-               : 'field_option))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 282 "src/compilerlib/pbparser.mly"
-                            (snd _1)
-# 1102 "src/compilerlib/pbparser.ml"
-               : 'file_option_identifier_item))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
-    Obj.repr(
-# 283 "src/compilerlib/pbparser.mly"
-                            (snd _2)
-# 1109 "src/compilerlib/pbparser.ml"
-               : 'file_option_identifier_item))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : 'file_option_identifier_item) in
-    Obj.repr(
-# 286 "src/compilerlib/pbparser.mly"
-                                   (_1)
-# 1116 "src/compilerlib/pbparser.ml"
-               : 'file_option_identifier))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option_identifier) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 287 "src/compilerlib/pbparser.mly"
-                                   (_1 ^ (snd _2))
-# 1124 "src/compilerlib/pbparser.ml"
-               : 'file_option_identifier))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : 'file_option_identifier) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : 'constant) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 290 "src/compilerlib/pbparser.mly"
-                                                           ( (_2, _4) )
-# 1133 "src/compilerlib/pbparser.ml"
-               : 'file_option))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
-    Obj.repr(
-# 293 "src/compilerlib/pbparser.mly"
-               ( Pbpt.Constant_int _1 )
-# 1140 "src/compilerlib/pbparser.ml"
-               : 'constant))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : float) in
-    Obj.repr(
-# 294 "src/compilerlib/pbparser.mly"
-               ( Pbpt.Constant_float _1 )
-# 1147 "src/compilerlib/pbparser.ml"
-               : 'constant))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 295 "src/compilerlib/pbparser.mly"
-               ( 
-    match (snd _1) with 
-    | "true"   -> Pbpt.Constant_bool true 
-    | "false"  -> Pbpt.Constant_bool false 
-    | litteral -> Pbpt.Constant_litteral litteral 
-  )
-# 1159 "src/compilerlib/pbparser.ml"
-               : 'constant))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
-    Obj.repr(
-# 301 "src/compilerlib/pbparser.mly"
-               ( Pbpt.Constant_string _1 )
-# 1166 "src/compilerlib/pbparser.ml"
-               : 'constant))
-; (fun __caml_parser_env ->
-    let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _4 = (Parsing.peek_val __caml_parser_env 1 : 'enum_values) in
-    let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
-    Obj.repr(
-# 304 "src/compilerlib/pbparser.mly"
-                                         (Pbpt_util.enum ~enum_values:_4 (snd _2) )
-# 1175 "src/compilerlib/pbparser.ml"
-               : 'enum))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 307 "src/compilerlib/pbparser.mly"
-                                 ( [] )
-# 1181 "src/compilerlib/pbparser.ml"
-               : 'enum_values))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
-    let _2 = (Parsing.peek_val __caml_parser_env 0 : 'enum_values) in
-    Obj.repr(
-# 308 "src/compilerlib/pbparser.mly"
-                                 ( _1::_2 )
-# 1189 "src/compilerlib/pbparser.ml"
-               : 'enum_values))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
-    Obj.repr(
-# 311 "src/compilerlib/pbparser.mly"
-                               ( Pbpt_util.enum_value ~int_value:_3 (snd _1) )
-# 1198 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
-    Obj.repr(
-# 312 "src/compilerlib/pbparser.mly"
-                    ( 
-    Exception.missing_semicolon_for_enum_value (snd _1) (fst _1) 
-  )
-# 1208 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
-    let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
-    Obj.repr(
-# 315 "src/compilerlib/pbparser.mly"
-                          ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1216 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
-    Obj.repr(
-# 316 "src/compilerlib/pbparser.mly"
-                          ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1223 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
-    Obj.repr(
-# 317 "src/compilerlib/pbparser.mly"
-                          ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1230 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
-    Obj.repr(
-# 318 "src/compilerlib/pbparser.mly"
-                          ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1237 "src/compilerlib/pbparser.ml"
-               : 'enum_value))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 321 "src/compilerlib/pbparser.mly"
-                        (())
-# 1243 "src/compilerlib/pbparser.ml"
-               : 'semicolon))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'semicolon) in
-    Obj.repr(
-# 322 "src/compilerlib/pbparser.mly"
-                        (())
-# 1250 "src/compilerlib/pbparser.ml"
-               : 'semicolon))
-; (fun __caml_parser_env ->
-    Obj.repr(
-# 325 "src/compilerlib/pbparser.mly"
-                     ( () )
-# 1256 "src/compilerlib/pbparser.ml"
-               : 'rbrace))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 1 : 'rbrace) in
-    Obj.repr(
-# 326 "src/compilerlib/pbparser.mly"
-                     ( () )
-# 1263 "src/compilerlib/pbparser.ml"
-               : 'rbrace))
-(* Entry field_options_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry normal_field_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry enum_value_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry enum_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry oneof_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry message_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry proto_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry import_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry file_option_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry extension_range_list_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry extension_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-(* Entry extend_ *)
-; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
-|]
-let yytables =
-  { Parsing.actions=yyact;
-    Parsing.transl_const=yytransl_const;
-    Parsing.transl_block=yytransl_block;
-    Parsing.lhs=yylhs;
-    Parsing.len=yylen;
-    Parsing.defred=yydefred;
-    Parsing.dgoto=yydgoto;
-    Parsing.sindex=yysindex;
-    Parsing.rindex=yyrindex;
-    Parsing.gindex=yygindex;
-    Parsing.tablesize=yytablesize;
-    Parsing.table=yytable;
-    Parsing.check=yycheck;
-    Parsing.error_function=parse_error;
-    Parsing.names_const=yynames_const;
-    Parsing.names_block=yynames_block }
-let field_options_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 1 lexfun lexbuf : Pbpt.field_options)
-let normal_field_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 2 lexfun lexbuf : Pbpt.field_label Pbpt.field)
-let enum_value_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 3 lexfun lexbuf : Pbpt.enum_value)
-let enum_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 4 lexfun lexbuf : Pbpt.enum)
-let oneof_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 5 lexfun lexbuf : Pbpt.oneof)
-let message_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 6 lexfun lexbuf : Pbpt.message)
-let proto_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 7 lexfun lexbuf : Pbpt.proto)
-let import_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 8 lexfun lexbuf : Pbpt.import)
-let file_option_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 9 lexfun lexbuf : Pbpt.file_option)
-let extension_range_list_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 10 lexfun lexbuf : Pbpt.extension_range list)
-let extension_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 11 lexfun lexbuf : Pbpt.extension_range list)
-let extend_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
-   (Parsing.yyparse yytables 12 lexfun lexbuf : Pbpt.extend)
-;;
+  let yycheck =
+    "\002\000\000\000\089\000\004\000\161\000\059\000\146\000\009\001\006\000\020\001\103\000\000\000\031\001\017\001\015\001\000\000\006\001\001\001\002\001\003\001\001\001\002\001\003\001\000\000\018\001\017\001\028\001\031\001\029\001\031\001\025\001\124\000\139\000\017\001\004\001\022\001\031\001\031\001\195\000\031\001\133\000\148\000\000\000\019\001\031\001\000\000\022\001\031\001\135\000\142\000\031\001\144\000\192\000\022\001\211\000\031\001\149\000\005\001\000\000\166\000\000\000\020\001\031\001\000\000\171\000\222\000\008\001\026\001\161\000\123\000\026\001\027\001\179\000\000\001\001\001\002\001\003\001\004\001\005\001\006\001\010\001\000\000\029\001\190\000\011\001\028\001\029\001\030\001\031\001\016\001\017\001\025\001\026\001\027\001\187\000\137\000\138\000\011\001\000\000\000\000\193\000\000\000\195\000\012\001\031\001\000\000\031\001\000\000\031\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\209\000\000\000\211\000\000\000\011\001\214\000\000\000\000\000\031\001\016\001\017\001\000\000\031\001\222\000\223\000\031\001\219\000\025\001\000\000\000\000\000\000\000\000\139\000\000\000\031\001\139\000\005\001\006\001\007\001\008\001\148\000\010\001\014\001\012\001\013\001\000\000\027\001\000\000\000\000\000\000\000\000\031\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\000\000\012\001\000\000\016\001\017\001\025\001\027\001\019\001\025\001\181\000\029\001\018\001\181\000\000\000\018\001\188\000\031\001\018\001\031\001\028\001\026\001\031\001\000\000\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\028\001\012\001\018\001\016\001\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\010\000\011\000\012\000\028\001\021\001\031\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\001\010\001\011\001\012\001\013\001\014\001\015\001\016\001\042\000\043\000\044\000\045\000\046\000\029\001\025\001\017\001\050\000\021\001\026\001\025\001\025\001\024\001\031\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\029\001\010\001\011\001\012\001\013\001\026\001\029\001\016\001\017\001\031\001\027\001\031\001\025\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\031\001\010\001\011\001\012\001\013\001\026\001\027\001\016\001\017\001\026\001\023\001\029\001\000\000\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\031\001\010\001\011\001\012\001\013\001\017\001\000\000\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\000\000\000\000\000\000\031\001\011\001\017\001\031\001\017\001\000\000\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\019\001\031\001\017\001\031\001\011\001\017\001\031\001\017\001\017\001\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\005\001\006\001\007\001\008\001\011\001\010\001\031\001\012\001\013\001\016\001\017\001\005\001\006\001\007\001\008\001\003\000\010\001\008\000\012\001\013\001\005\001\006\001\007\001\008\001\031\001\010\001\005\000\012\001\013\001\009\000\011\000\048\000\181\000\188\000\012\000\130\000\165\000"
 
+  let yynames_const =
+    "REQUIRED\000OPTIONAL\000REPEATED\000MESSAGE\000ENUM\000PACKAGE\000PUBLIC\000OPTION\000EXTENSIONS\000EXTEND\000SYNTAX\000TO\000MAX\000MAP\000RBRACE\000LBRACE\000RBRACKET\000LBRACKET\000RPAREN\000LPAREN\000RANGLEB\000LANGLEB\000EQUAL\000SEMICOLON\000COMMA\000EOF\000"
+
+  let yynames_block = "ONE_OF\000IMPORT\000STRING\000INT\000FLOAT\000IDENT\000"
+
+  let yyact =
+    [| (fun _ -> failwith "parser")
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
+         Obj.repr (_1 : Pbpt.field_options))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
+         Obj.repr (_1 : Pbpt.field_label Pbpt.field))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
+         Obj.repr (_1 : Pbpt.enum_value))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
+         Obj.repr (_1 : Pbpt.enum))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof) in
+         Obj.repr (_1 : Pbpt.oneof))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
+         Obj.repr (_1 : Pbpt.message))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
+         Obj.repr (_1 : Pbpt.import))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
+         Obj.repr (_1 : Pbpt.file_option))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
+         Obj.repr (_1 : Pbpt.extension_range list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extension) in
+         Obj.repr (_1 : Pbpt.extension_range list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
+         Obj.repr (_1 : Pbpt.extend))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'proto) in
+         Obj.repr (_1 : Pbpt.proto))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'syntax) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
+         Obj.repr (Pbpt_util.proto ~syntax:_1 ~proto:_2 () : 'proto))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
+         Obj.repr (_1 : 'proto))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'import) in
+         Obj.repr (Pbpt_util.proto ~import:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'file_option) in
+         Obj.repr (Pbpt_util.proto ~file_option:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 0 : 'package_declaration) in
+         Obj.repr (Pbpt_util.proto ~package:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
+         Obj.repr (Pbpt_util.proto ~message:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
+         Obj.repr (Pbpt_util.proto ~enum:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extend) in
+         Obj.repr (Pbpt_util.proto ~extend:_1 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr (Pbpt_util.proto ~import:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr
+           (Pbpt_util.proto ~file_option:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 1 : 'package_declaration) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr (Pbpt_util.proto ~package:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr (Pbpt_util.proto ~message:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr (Pbpt_util.proto ~enum:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
+         Obj.repr (Pbpt_util.proto ~extend:_1 ~proto:_2 () : 'proto_content))
+     ; (fun __caml_parser_env ->
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (_3 : 'syntax))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t) in
+         let _2 = (Parsing.peek_val __caml_parser_env 1 : string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Pbpt_util.import _2 : 'import))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Pbpt_util.import ~public:() _3 : 'import))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
+         let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Exception.invalid_import_qualifier _1 : 'import))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (snd _2 : 'package_declaration))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _4 =
+           (Parsing.peek_val __caml_parser_env 1 : 'message_body_content_list)
+         in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.message ~content:_4 (snd _2) : 'message))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.message ~content:[] (snd _2) : 'message))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 0 : 'message_body_content) in
+         Obj.repr ([_1] : 'message_body_content_list))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 1 : 'message_body_content) in
+         let _2 =
+           (Parsing.peek_val __caml_parser_env 0 : 'message_body_content_list)
+         in
+         Obj.repr (_1 :: _2 : 'message_body_content_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
+         Obj.repr (Pbpt_util.message_body_field _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'map) in
+         Obj.repr (Pbpt_util.message_body_map_field _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'oneof) in
+         Obj.repr
+           (Pbpt_util.message_body_oneof_field _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
+         Obj.repr (Pbpt_util.message_body_sub _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
+         Obj.repr (Pbpt_util.message_body_enum _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension) in
+         Obj.repr (Pbpt_util.message_body_extension _1 : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         Obj.repr (Exception.syntax_error () : 'message_body_content))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field_list) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.extend (snd _2) _4 : 'extend))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.extend (snd _2) [] : 'extend))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
+         Obj.repr ([_1] : 'normal_field_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field_list) in
+         Obj.repr (_1 :: _2 : 'normal_field_list))
+     ; (fun __caml_parser_env ->
+         let _2 =
+           (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (_2 : 'extension))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension_range) in
+         Obj.repr ([_1] : 'extension_range_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : 'extension_range) in
+         let _3 =
+           (Parsing.peek_val __caml_parser_env 0 : 'extension_range_list) in
+         Obj.repr (_1 :: _3 : 'extension_range_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
+         Obj.repr
+           (Pbpt_util.extension_range_single_number _1 : 'extension_range))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
+         Obj.repr
+           (Pbpt_util.extension_range_range _1 (`Number _3) : 'extension_range))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         Obj.repr (Pbpt_util.extension_range_range _1 `Max : 'extension_range))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t) in
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.oneof ~fields:_4 (snd _2) : 'oneof))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Exception.missing_one_of_name _1 : 'oneof))
+     ; (fun __caml_parser_env -> Obj.repr ([] : 'oneof_field_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'oneof_field_list) in
+         Obj.repr (_1 :: _2 : 'oneof_field_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
+         let _2 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
+         let _4 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
+         let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           ( Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 ~options:_5 _2
+             : 'oneof_field ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           (Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 _2 : 'oneof_field))
+     ; (fun __caml_parser_env ->
+         let _3 = (Parsing.peek_val __caml_parser_env 7 : Loc.t * string) in
+         let _5 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
+         let _7 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
+         let _9 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         let _10 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           ( Pbpt_util.map ~key_type:(snd _3) ~value_type:(snd _5) ~number:_9 _7
+             : 'map ))
+     ; (fun __caml_parser_env ->
+         let _3 = (Parsing.peek_val __caml_parser_env 8 : Loc.t * string) in
+         let _5 = (Parsing.peek_val __caml_parser_env 6 : Loc.t * string) in
+         let _7 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
+         let _9 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         let _10 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
+         let _11 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           ( Pbpt_util.map ~options:_10 ~key_type:(snd _3) ~value_type:(snd _5)
+               ~number:_9 _7
+             : 'map ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 6 : 'label) in
+         let _2 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
+         let _5 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         let _6 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
+         let _7 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           ( Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 ~options:_6 _3
+             : 'normal_field ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 5 : 'label) in
+         let _2 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
+         let _5 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr
+           ( Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 _3
+             : 'normal_field ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
+         let _2 = (Parsing.peek_val __caml_parser_env 4 : 'field_name) in
+         let _4 = (Parsing.peek_val __caml_parser_env 2 : int) in
+         let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
+         let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Exception.missing_field_label (fst _1) : 'normal_field))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : 'field_name) in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Exception.missing_field_label (fst _1) : 'normal_field))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr (snd _1 : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("required" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("optional" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("repeated" : 'field_name))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
+         Obj.repr ("oneof" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("enum" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("package" : 'field_name))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
+         Obj.repr ("import" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("public" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("option" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("extensions" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("extend" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("syntax" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("message" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("to" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("max" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr ("map" : 'field_name))
+     ; (fun __caml_parser_env -> Obj.repr (`Required : 'label))
+     ; (fun __caml_parser_env -> Obj.repr (`Repeated : 'label))
+     ; (fun __caml_parser_env -> Obj.repr (`Optional : 'label))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr (Exception.invalid_field_label (fst _1) : 'label))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 1 : 'field_option_list) in
+         Obj.repr (_2 : 'field_options))
+     ; (fun __caml_parser_env -> Obj.repr ([] : 'field_options))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : 'field_option) in
+         Obj.repr ([_1] : 'field_option_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : 'field_option) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : 'field_option_list) in
+         Obj.repr (_1 :: _3 : 'field_option_list))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
+         Obj.repr ((snd _1, _3) : 'field_option))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
+         Obj.repr ((snd _2, _5) : 'field_option))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr (snd _1 : 'file_option_identifier_item))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
+         Obj.repr (snd _2 : 'file_option_identifier_item))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 0 : 'file_option_identifier_item)
+         in
+         Obj.repr (_1 : 'file_option_identifier))
+     ; (fun __caml_parser_env ->
+         let _1 =
+           (Parsing.peek_val __caml_parser_env 1 : 'file_option_identifier)
+         in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr (_1 ^ snd _2 : 'file_option_identifier))
+     ; (fun __caml_parser_env ->
+         let _2 =
+           (Parsing.peek_val __caml_parser_env 3 : 'file_option_identifier)
+         in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : 'constant) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr ((_2, _4) : 'file_option))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
+         Obj.repr (Pbpt.Constant_int _1 : 'constant))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : float) in
+         Obj.repr (Pbpt.Constant_float _1 : 'constant))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr
+           ( match snd _1 with
+             | "true" -> Pbpt.Constant_bool true
+             | "false" -> Pbpt.Constant_bool false
+             | litteral -> Pbpt.Constant_litteral litteral
+             : 'constant ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
+         Obj.repr (Pbpt.Constant_string _1 : 'constant))
+     ; (fun __caml_parser_env ->
+         let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _4 = (Parsing.peek_val __caml_parser_env 1 : 'enum_values) in
+         let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
+         Obj.repr (Pbpt_util.enum ~enum_values:_4 (snd _2) : 'enum))
+     ; (fun __caml_parser_env -> Obj.repr ([] : 'enum_values))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
+         let _2 = (Parsing.peek_val __caml_parser_env 0 : 'enum_values) in
+         Obj.repr (_1 :: _2 : 'enum_values))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
+         Obj.repr (Pbpt_util.enum_value ~int_value:_3 (snd _1) : 'enum_value))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
+         Obj.repr
+           ( Exception.missing_semicolon_for_enum_value (snd _1) (fst _1)
+             : 'enum_value ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
+         let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
+         Obj.repr
+           ( Exception.invalid_enum_specification (snd _1) (fst _1)
+             : 'enum_value ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
+         Obj.repr
+           ( Exception.invalid_enum_specification (snd _1) (fst _1)
+             : 'enum_value ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
+         Obj.repr
+           ( Exception.invalid_enum_specification (snd _1) (fst _1)
+             : 'enum_value ))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
+         Obj.repr
+           ( Exception.invalid_enum_specification (snd _1) (fst _1)
+             : 'enum_value ))
+     ; (fun __caml_parser_env -> Obj.repr (() : 'semicolon))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'semicolon) in
+         Obj.repr (() : 'semicolon))
+     ; (fun __caml_parser_env -> Obj.repr (() : 'rbrace))
+     ; (fun __caml_parser_env ->
+         let _1 = (Parsing.peek_val __caml_parser_env 1 : 'rbrace) in
+         Obj.repr (() : 'rbrace))
+       (* Entry field_options_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry normal_field_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry enum_value_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry enum_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry oneof_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry message_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry proto_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry import_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry file_option_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry extension_range_list_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry extension_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
+       (* Entry extend_ *)
+     ; (fun __caml_parser_env ->
+         raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0))) |]
+
+  let yytables =
+    { Parsing.actions= yyact
+    ; Parsing.transl_const= yytransl_const
+    ; Parsing.transl_block= yytransl_block
+    ; Parsing.lhs= yylhs
+    ; Parsing.len= yylen
+    ; Parsing.defred= yydefred
+    ; Parsing.dgoto= yydgoto
+    ; Parsing.sindex= yysindex
+    ; Parsing.rindex= yyrindex
+    ; Parsing.gindex= yygindex
+    ; Parsing.tablesize= yytablesize
+    ; Parsing.table= yytable
+    ; Parsing.check= yycheck
+    ; Parsing.error_function= parse_error
+    ; Parsing.names_const= yynames_const
+    ; Parsing.names_block= yynames_block }
+
+  let field_options_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf)
+      =
+    (Parsing.yyparse yytables 1 lexfun lexbuf : Pbpt.field_options)
+
+  let normal_field_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf)
+      =
+    (Parsing.yyparse yytables 2 lexfun lexbuf : Pbpt.field_label Pbpt.field)
+
+  let enum_value_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 3 lexfun lexbuf : Pbpt.enum_value)
+
+  let enum_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 4 lexfun lexbuf : Pbpt.enum)
+
+  let oneof_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 5 lexfun lexbuf : Pbpt.oneof)
+
+  let message_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 6 lexfun lexbuf : Pbpt.message)
+
+  let proto_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 7 lexfun lexbuf : Pbpt.proto)
+
+  let import_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 8 lexfun lexbuf : Pbpt.import)
+
+  let file_option_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 9 lexfun lexbuf : Pbpt.file_option)
+
+  let extension_range_list_ (lexfun : Lexing.lexbuf -> token)
+      (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 10 lexfun lexbuf : Pbpt.extension_range list)
+
+  let extension_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 11 lexfun lexbuf : Pbpt.extension_range list)
+
+  let extend_ (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
+    (Parsing.yyparse yytables 12 lexfun lexbuf : Pbpt.extend)
 end
-module 
-Pblexer
-= struct
-#1 "pblexer.ml"
-# 25 "src/compilerlib/pblexer.mll"
- 
-open Pbparser 
 
-let create_hashtable size init =
-  let tbl = Hashtbl.create size in
-  List.iter (fun (key, data) -> 
-    Hashtbl.add tbl key data
-  ) init;
-  tbl
+module Pblexer = struct
+  open Pbparser
 
+  let create_hashtable size init =
+    let tbl = Hashtbl.create size in
+    List.iter (fun (key, data) -> Hashtbl.add tbl key data) init ;
+    tbl
 
-let resolve_identifier loc ident = 
-  match ident, loc with 
-  | "message"    , _   -> MESSAGE 
-  | "required"   , _   -> REQUIRED 
-  | "optional"   , _   -> OPTIONAL 
-  | "repeated"   , _   -> REPEATED
-  | "oneof"      , loc -> ONE_OF loc
-  | "enum"       , _   -> ENUM
-  | "package"    , _   -> PACKAGE
-  | "import"     , loc -> IMPORT loc 
-  | "option"     , _   -> OPTION
-  | "extensions" , _   -> EXTENSIONS
-  | "extend"     , _   -> EXTEND
-  | "syntax"     , _   -> SYNTAX
-  | "public"     , _   -> PUBLIC
-  | "to"         , _   -> TO
-  | "max"        , _   -> MAX
-  | "map"        , _   -> MAP
-  | x            , loc -> IDENT (loc, ident) 
+  let resolve_identifier loc ident =
+    match (ident, loc) with
+    | "message", _ -> MESSAGE
+    | "required", _ -> REQUIRED
+    | "optional", _ -> OPTIONAL
+    | "repeated", _ -> REPEATED
+    | "oneof", loc -> ONE_OF loc
+    | "enum", _ -> ENUM
+    | "package", _ -> PACKAGE
+    | "import", loc -> IMPORT loc
+    | "option", _ -> OPTION
+    | "extensions", _ -> EXTENSIONS
+    | "extend", _ -> EXTEND
+    | "syntax", _ -> SYNTAX
+    | "public", _ -> PUBLIC
+    | "to", _ -> TO
+    | "max", _ -> MAX
+    | "map", _ -> MAP
+    | x, loc -> IDENT (loc, ident)
+
   (* Note than when updating the list of keywords, 
    * the [field_name] rule in pbparser.mly should 
    * also be updated to allow field name of the 
    * keyword.
    *)
 
-type comment =
-  | Comment_value of string  
-  | Comment_eof  
+  type comment = Comment_value of string | Comment_eof
 
-let comment_value s = Comment_value s 
+  let comment_value s = Comment_value s
+  let comment_eof = Comment_eof
 
-let comment_eof     = Comment_eof
+  type string_ = String_value of string | String_eof
 
-type string_ = 
-  | String_value of string 
-  | String_eof
+  let string_value s = String_value s
+  let string_eof = String_eof
 
-let string_value s = String_value s 
+  let update_loc lexbuf =
+    let pos = lexbuf.Lexing.lex_curr_p in
+    lexbuf.Lexing.lex_curr_p <-
+      Lexing.{pos with pos_lnum= pos.pos_lnum + 1; pos_bol= pos.pos_cnum}
 
-let string_eof     = String_eof 
+  let __ocaml_lex_tables =
+    { Lexing.lex_base=
+        "\000\000\234\255\235\255\078\000\237\255\238\255\001\000\160\000\240\000\059\001\136\001\158\001\242\255\016\000\245\255\246\255\247\255\248\255\249\255\250\255\251\255\252\255\253\255\254\255\255\255\243\255\244\255\026\000\190\001\200\001\146\001\168\001\035\000\239\255\237\001\058\002\135\002\212\002\033\003\110\003\005\000\018\001\253\255\254\255\255\255\006\000\007\000\033\001\252\255\253\255\017\000\255\255\011\000\012\000\254\255\194\001\252\255\253\255\254\255\201\003\255\255"
+    ; Lexing.lex_backtrk=
+        "\015\000\255\255\255\255\019\000\255\255\255\255\021\000\019\000\019\000\015\000\014\000\015\000\255\255\021\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\015\000\015\000\255\255\255\255\255\255\255\255\019\000\015\000\019\000\019\000\016\000\255\255\255\255\255\255\255\255\255\255\001\000\255\255\255\255\255\255\255\255\002\000\255\255\002\000\255\255\255\255\255\255\255\255\255\255\255\255\002\000\255\255"
+    ; Lexing.lex_default=
+        "\001\000\000\000\000\000\255\255\000\000\000\000\255\255\255\255\255\255\255\255\255\255\255\255\000\000\255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\255\255\255\255\255\255\000\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\043\000\000\000\000\000\000\000\255\255\255\255\049\000\000\000\000\000\255\255\000\000\255\255\255\255\000\000\057\000\000\000\000\000\000\000\255\255\000\000"
+    ; Lexing.lex_trans=
+        "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\004\000\005\000\005\000\004\000\006\000\040\000\005\000\044\000\044\000\040\000\046\000\046\000\051\000\051\000\000\000\053\000\053\000\000\000\000\000\000\000\000\000\000\000\000\000\004\000\000\000\012\000\000\000\000\000\000\000\000\000\000\000\019\000\020\000\000\000\011\000\014\000\011\000\009\000\013\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\025\000\015\000\018\000\016\000\017\000\026\000\054\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\022\000\000\000\021\000\000\000\000\000\000\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\003\000\007\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\024\000\034\000\023\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\032\000\033\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\003\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\000\000\034\000\000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\003\000\002\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\038\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\031\000\044\000\031\000\034\000\045\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\000\000\051\000\000\000\000\000\052\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\050\000\000\000\000\000\000\000\003\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\000\000\000\000\000\000\000\000\000\000\000\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\029\000\000\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\029\000\028\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\000\000\028\000\058\000\000\000\000\000\000\000\000\000\031\000\000\000\031\000\000\000\028\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\000\000\028\000\000\000\000\000\000\000\027\000\000\000\000\000\000\000\000\000\000\000\028\000\000\000\000\000\000\000\000\000\042\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\034\000\000\000\000\000\059\000\000\000\000\000\048\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\028\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\000\000\000\000\000\000\000\000\000\000\000\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\034\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\035\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\034\000\000\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\000\000\056\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\003\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\034\000\000\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\000\000\000\000\000\000\000\000\037\000\000\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\034\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\035\000\000\000\035\000\035\000\035\000\035\000\035\000\039\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\034\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\035\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\060\000\000\000\060\000\000\000\000\000\000\000\000\000\060\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\060\000\000\000\000\000\000\000\000\000\000\000\060\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\060\000\000\000\000\000\000\000\060\000\000\000\060\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+    ; Lexing.lex_check=
+        "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\000\000\000\000\006\000\000\000\000\000\006\000\040\000\045\000\046\000\040\000\045\000\046\000\052\000\053\000\255\255\052\000\053\000\255\255\255\255\255\255\255\255\255\255\255\255\000\000\255\255\000\000\255\255\255\255\255\255\255\255\255\255\000\000\000\000\255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\013\000\000\000\000\000\000\000\000\000\013\000\050\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\000\000\255\255\255\255\255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\003\000\000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\027\000\032\000\255\255\255\255\255\255\255\255\255\255\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\255\255\255\255\255\255\255\255\003\000\255\255\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\255\255\255\255\255\255\255\255\255\255\007\000\255\255\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\255\255\255\255\255\255\255\255\007\000\000\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\008\000\041\000\008\000\008\000\041\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\255\255\047\000\255\255\255\255\047\000\255\255\255\255\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\047\000\255\255\255\255\255\255\008\000\255\255\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\255\255\255\255\255\255\255\255\255\255\255\255\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\010\000\255\255\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\011\000\010\000\011\000\011\000\011\000\011\000\011\000\011\000\011\000\011\000\011\000\011\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\255\255\011\000\055\000\255\255\255\255\255\255\255\255\028\000\255\255\028\000\255\255\010\000\028\000\028\000\028\000\028\000\028\000\028\000\028\000\028\000\028\000\028\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\255\255\011\000\255\255\255\255\255\255\011\000\255\255\255\255\255\255\255\255\255\255\029\000\255\255\255\255\255\255\255\255\041\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\034\000\255\255\255\255\055\000\255\255\255\255\047\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\029\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\255\255\255\255\255\255\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\035\000\255\255\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\255\255\255\255\255\255\255\255\035\000\255\255\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\036\000\255\255\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\055\000\255\255\255\255\255\255\255\255\255\255\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\255\255\255\255\255\255\036\000\255\255\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\037\000\255\255\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\255\255\255\255\255\255\255\255\037\000\255\255\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\038\000\255\255\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\255\255\255\255\255\255\255\255\038\000\255\255\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\039\000\255\255\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\255\255\255\255\255\255\255\255\039\000\255\255\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\059\000\255\255\059\000\255\255\255\255\255\255\255\255\059\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\059\000\255\255\255\255\255\255\255\255\255\255\059\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\059\000\255\255\255\255\255\255\059\000\255\255\059\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255"
+    ; Lexing.lex_base_code= ""
+    ; Lexing.lex_backtrk_code= ""
+    ; Lexing.lex_default_code= ""
+    ; Lexing.lex_trans_code= ""
+    ; Lexing.lex_check_code= ""
+    ; Lexing.lex_code= "" }
 
-let update_loc lexbuf =
-  let pos = lexbuf.Lexing.lex_curr_p in
-  lexbuf.Lexing.lex_curr_p <- Lexing.({ pos with
-    pos_lnum = pos.pos_lnum + 1;
-    pos_bol = pos.pos_cnum;
-  })
+  let rec lexer lexbuf = __ocaml_lex_lexer_rec lexbuf 0
 
+  and __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state =
+    match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+    | 0 -> LBRACE
+    | 1 -> RBRACE
+    | 2 -> LBRACKET
+    | 3 -> RBRACKET
+    | 4 -> RPAREN
+    | 5 -> LPAREN
+    | 6 -> LANGLEB
+    | 7 -> RANGLEB
+    | 8 -> EQUAL
+    | 9 -> SEMICOLON
+    | 10 -> COMMA
+    | 11 -> (
+      match comment [] lexbuf with
+      | Comment_eof -> EOF
+      | Comment_value _ -> lexer lexbuf )
+    | 12 -> (
+      match multi_line_comment [] lexbuf with
+      | Comment_eof -> EOF
+      | Comment_value _ -> lexer lexbuf )
+    | 13 -> (
+      match string [] lexbuf with
+      | String_eof -> EOF
+      | String_value s -> STRING s )
+    | 14 -> INT (int_of_string @@ Lexing.lexeme lexbuf)
+    | 15 -> FLOAT (float_of_string @@ Lexing.lexeme lexbuf)
+    | 16 -> FLOAT nan
+    | 17 -> update_loc lexbuf ; lexer lexbuf
+    | 18 -> lexer lexbuf
+    | 19 -> resolve_identifier (Loc.from_lexbuf lexbuf) (Lexing.lexeme lexbuf)
+    | 20 -> EOF
+    | 21 ->
+        failwith
+        @@ Printf.sprintf "Unknown character found %s"
+        @@ Lexing.lexeme lexbuf
+    | __ocaml_lex_state ->
+        lexbuf.Lexing.refill_buff lexbuf ;
+        __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state
 
-# 63 "js/pblexer.ml"
-let __ocaml_lex_tables = {
-  Lexing.lex_base = 
-   "\000\000\234\255\235\255\078\000\237\255\238\255\001\000\160\000\
-    \240\000\059\001\136\001\158\001\242\255\016\000\245\255\246\255\
-    \247\255\248\255\249\255\250\255\251\255\252\255\253\255\254\255\
-    \255\255\243\255\244\255\026\000\190\001\200\001\146\001\168\001\
-    \035\000\239\255\237\001\058\002\135\002\212\002\033\003\110\003\
-    \005\000\018\001\253\255\254\255\255\255\006\000\007\000\033\001\
-    \252\255\253\255\017\000\255\255\011\000\012\000\254\255\194\001\
-    \252\255\253\255\254\255\201\003\255\255";
-  Lexing.lex_backtrk = 
-   "\015\000\255\255\255\255\019\000\255\255\255\255\021\000\019\000\
-    \019\000\015\000\014\000\015\000\255\255\021\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\015\000\015\000\255\255\
-    \255\255\255\255\255\255\019\000\015\000\019\000\019\000\016\000\
-    \255\255\255\255\255\255\255\255\255\255\001\000\255\255\255\255\
-    \255\255\255\255\002\000\255\255\002\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\002\000\255\255";
-  Lexing.lex_default = 
-   "\001\000\000\000\000\000\255\255\000\000\000\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\000\000\255\255\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\043\000\000\000\000\000\000\000\255\255\255\255\049\000\
-    \000\000\000\000\255\255\000\000\255\255\255\255\000\000\057\000\
-    \000\000\000\000\000\000\255\255\000\000";
-  Lexing.lex_trans = 
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\004\000\005\000\005\000\004\000\006\000\040\000\005\000\
-    \044\000\044\000\040\000\046\000\046\000\051\000\051\000\000\000\
-    \053\000\053\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \004\000\000\000\012\000\000\000\000\000\000\000\000\000\000\000\
-    \019\000\020\000\000\000\011\000\014\000\011\000\009\000\013\000\
-    \010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\
-    \010\000\010\000\025\000\015\000\018\000\016\000\017\000\026\000\
-    \054\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\022\000\000\000\021\000\000\000\000\000\
-    \000\000\003\000\003\000\003\000\003\000\008\000\003\000\003\000\
-    \003\000\007\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\024\000\034\000\023\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \032\000\033\000\000\000\000\000\000\000\000\000\000\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\000\000\000\000\000\000\000\000\003\000\000\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\000\000\000\000\000\000\000\000\000\000\034\000\000\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\000\000\000\000\000\000\000\000\003\000\
-    \002\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\038\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\031\000\044\000\031\000\034\000\045\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\000\000\051\000\000\000\000\000\052\000\000\000\
-    \000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\050\000\000\000\000\000\000\000\003\000\
-    \000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\029\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\029\000\029\000\029\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\003\000\003\000\003\000\003\000\
-    \008\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\003\000\003\000\003\000\003\000\
-    \008\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\029\000\000\000\
-    \010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\
-    \010\000\010\000\030\000\030\000\030\000\030\000\030\000\030\000\
-    \030\000\030\000\030\000\030\000\029\000\028\000\010\000\010\000\
-    \010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\
-    \030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\
-    \030\000\030\000\000\000\028\000\058\000\000\000\000\000\000\000\
-    \000\000\031\000\000\000\031\000\000\000\028\000\030\000\030\000\
-    \030\000\030\000\030\000\030\000\030\000\030\000\030\000\030\000\
-    \029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\000\000\028\000\000\000\000\000\000\000\027\000\
-    \000\000\000\000\000\000\000\000\000\000\028\000\000\000\000\000\
-    \000\000\000\000\042\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\034\000\000\000\000\000\059\000\000\000\
-    \000\000\048\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\028\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \034\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\000\000\000\000\000\000\
-    \000\000\035\000\000\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\034\000\000\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\000\000\056\000\000\000\000\000\000\000\000\000\000\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\000\000\000\000\000\000\000\000\003\000\000\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\034\000\000\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\000\000\
-    \000\000\000\000\000\000\037\000\000\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\034\000\
-    \000\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\000\000\000\000\000\000\000\000\
-    \035\000\000\000\035\000\035\000\035\000\035\000\035\000\039\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\034\000\000\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\000\000\000\000\000\000\000\000\035\000\000\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\060\000\000\000\060\000\000\000\000\000\000\000\000\000\
-    \060\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\060\000\000\000\000\000\
-    \000\000\000\000\000\000\060\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\060\000\
-    \000\000\000\000\000\000\060\000\000\000\060\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000";
-  Lexing.lex_check = 
-   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\006\000\000\000\000\000\006\000\040\000\
-    \045\000\046\000\040\000\045\000\046\000\052\000\053\000\255\255\
-    \052\000\053\000\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\255\255\255\255\255\255\
-    \000\000\000\000\255\255\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\013\000\000\000\000\000\000\000\000\000\013\000\
-    \050\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\255\255\000\000\255\255\255\255\
-    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\003\000\000\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \027\000\032\000\255\255\255\255\255\255\255\255\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\255\255\255\255\255\255\255\255\003\000\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\255\255\255\255\255\255\255\255\255\255\007\000\255\255\
-    \007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\255\255\255\255\255\255\255\255\007\000\
-    \000\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\007\000\007\000\007\000\007\000\007\000\
-    \007\000\007\000\007\000\008\000\041\000\008\000\008\000\041\000\
-    \008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\255\255\047\000\255\255\255\255\047\000\255\255\
-    \255\255\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\047\000\255\255\255\255\255\255\008\000\
-    \255\255\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\008\000\008\000\008\000\008\000\008\000\
-    \008\000\008\000\008\000\009\000\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\009\000\009\000\
-    \009\000\009\000\009\000\009\000\009\000\009\000\010\000\255\255\
-    \010\000\010\000\010\000\010\000\010\000\010\000\010\000\010\000\
-    \010\000\010\000\030\000\030\000\030\000\030\000\030\000\030\000\
-    \030\000\030\000\030\000\030\000\011\000\010\000\011\000\011\000\
-    \011\000\011\000\011\000\011\000\011\000\011\000\011\000\011\000\
-    \031\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\
-    \031\000\031\000\255\255\011\000\055\000\255\255\255\255\255\255\
-    \255\255\028\000\255\255\028\000\255\255\010\000\028\000\028\000\
-    \028\000\028\000\028\000\028\000\028\000\028\000\028\000\028\000\
-    \029\000\029\000\029\000\029\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\255\255\011\000\255\255\255\255\255\255\011\000\
-    \255\255\255\255\255\255\255\255\255\255\029\000\255\255\255\255\
-    \255\255\255\255\041\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\034\000\255\255\255\255\055\000\255\255\
-    \255\255\047\000\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\029\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \035\000\255\255\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\255\255\255\255\255\255\
-    \255\255\035\000\255\255\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\035\000\035\000\036\000\255\255\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\255\255\055\000\255\255\255\255\255\255\255\255\255\255\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\255\255\255\255\255\255\255\255\036\000\255\255\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\037\000\255\255\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\255\255\
-    \255\255\255\255\255\255\037\000\255\255\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\038\000\
-    \255\255\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\255\255\255\255\255\255\255\255\
-    \038\000\255\255\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\039\000\255\255\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\255\255\255\255\255\255\255\255\039\000\255\255\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\059\000\255\255\059\000\255\255\255\255\255\255\255\255\
-    \059\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\059\000\255\255\255\255\
-    \255\255\255\255\255\255\059\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\059\000\
-    \255\255\255\255\255\255\059\000\255\255\059\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255";
-  Lexing.lex_base_code = 
-   "";
-  Lexing.lex_backtrk_code = 
-   "";
-  Lexing.lex_default_code = 
-   "";
-  Lexing.lex_trans_code = 
-   "";
-  Lexing.lex_check_code = 
-   "";
-  Lexing.lex_code = 
-   "";
-}
+  and comment l lexbuf = __ocaml_lex_comment_rec l lexbuf 41
 
-let rec lexer lexbuf =
-    __ocaml_lex_lexer_rec lexbuf 0
-and __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 105 "src/compilerlib/pblexer.mll"
-                ( LBRACE )
-# 423 "js/pblexer.ml"
+  and __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state =
+    match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+    | 0 ->
+        update_loc lexbuf ;
+        comment_value @@ String.concat "" (List.rev l)
+    | 1 -> comment (Lexing.lexeme lexbuf :: l) lexbuf
+    | 2 -> comment_eof
+    | __ocaml_lex_state ->
+        lexbuf.Lexing.refill_buff lexbuf ;
+        __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state
 
-  | 1 ->
-# 106 "src/compilerlib/pblexer.mll"
-                ( RBRACE )
-# 428 "js/pblexer.ml"
-
-  | 2 ->
-# 107 "src/compilerlib/pblexer.mll"
-                ( LBRACKET)
-# 433 "js/pblexer.ml"
-
-  | 3 ->
-# 108 "src/compilerlib/pblexer.mll"
-                ( RBRACKET)
-# 438 "js/pblexer.ml"
-
-  | 4 ->
-# 109 "src/compilerlib/pblexer.mll"
-                ( RPAREN )
-# 443 "js/pblexer.ml"
-
-  | 5 ->
-# 110 "src/compilerlib/pblexer.mll"
-                ( LPAREN )
-# 448 "js/pblexer.ml"
-
-  | 6 ->
-# 111 "src/compilerlib/pblexer.mll"
-                ( LANGLEB )
-# 453 "js/pblexer.ml"
-
-  | 7 ->
-# 112 "src/compilerlib/pblexer.mll"
-                ( RANGLEB )
-# 458 "js/pblexer.ml"
-
-  | 8 ->
-# 113 "src/compilerlib/pblexer.mll"
-                ( EQUAL )
-# 463 "js/pblexer.ml"
-
-  | 9 ->
-# 114 "src/compilerlib/pblexer.mll"
-                ( SEMICOLON )
-# 468 "js/pblexer.ml"
-
-  | 10 ->
-# 115 "src/compilerlib/pblexer.mll"
-                ( COMMA )
-# 473 "js/pblexer.ml"
-
-  | 11 ->
-# 116 "src/compilerlib/pblexer.mll"
-                ( match comment [] lexbuf with 
-    | Comment_eof     -> EOF 
-    | Comment_value _ -> lexer lexbuf  
-  )
-# 481 "js/pblexer.ml"
-
-  | 12 ->
-# 120 "src/compilerlib/pblexer.mll"
-                ( match multi_line_comment [] lexbuf with 
-    | Comment_eof     -> EOF 
-    | Comment_value _ -> lexer lexbuf  
-  )
-# 489 "js/pblexer.ml"
-
-  | 13 ->
-# 124 "src/compilerlib/pblexer.mll"
-                  ( match string [] lexbuf with 
-    | String_eof     -> EOF
-    | String_value s -> STRING s
-  )
-# 497 "js/pblexer.ml"
-
-  | 14 ->
-# 128 "src/compilerlib/pblexer.mll"
-                  ( INT (int_of_string @@ Lexing.lexeme lexbuf) )
-# 502 "js/pblexer.ml"
-
-  | 15 ->
-# 129 "src/compilerlib/pblexer.mll"
-                  ( FLOAT (float_of_string @@ Lexing.lexeme lexbuf) )
-# 507 "js/pblexer.ml"
-
-  | 16 ->
-# 130 "src/compilerlib/pblexer.mll"
-                  ( FLOAT nan )
-# 512 "js/pblexer.ml"
-
-  | 17 ->
-# 131 "src/compilerlib/pblexer.mll"
-                  ( update_loc lexbuf; lexer lexbuf )
-# 517 "js/pblexer.ml"
-
-  | 18 ->
-# 132 "src/compilerlib/pblexer.mll"
-                  ( lexer lexbuf )
-# 522 "js/pblexer.ml"
-
-  | 19 ->
-# 133 "src/compilerlib/pblexer.mll"
-                  ( resolve_identifier (Loc.from_lexbuf lexbuf) (Lexing.lexeme lexbuf) )
-# 527 "js/pblexer.ml"
-
-  | 20 ->
-# 134 "src/compilerlib/pblexer.mll"
-                  ( EOF )
-# 532 "js/pblexer.ml"
-
-  | 21 ->
-# 135 "src/compilerlib/pblexer.mll"
-                  ( failwith @@ Printf.sprintf "Unknown character found %s" @@
-  Lexing.lexeme lexbuf)
-# 538 "js/pblexer.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state
-
-and comment l lexbuf =
-    __ocaml_lex_comment_rec l lexbuf 41
-and __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 139 "src/compilerlib/pblexer.mll"
-            (update_loc lexbuf ; comment_value @@ String.concat "" (List.rev l))
-# 550 "js/pblexer.ml"
-
-  | 1 ->
-# 140 "src/compilerlib/pblexer.mll"
-            (comment ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 555 "js/pblexer.ml"
-
-  | 2 ->
-# 141 "src/compilerlib/pblexer.mll"
-            (comment_eof )
-# 560 "js/pblexer.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state
-
-and multi_line_comment l lexbuf =
+  and multi_line_comment l lexbuf =
     __ocaml_lex_multi_line_comment_rec l lexbuf 47
-and __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 144 "src/compilerlib/pblexer.mll"
-            (update_loc lexbuf ; multi_line_comment l lexbuf )
-# 572 "js/pblexer.ml"
 
-  | 1 ->
-# 145 "src/compilerlib/pblexer.mll"
-         (
-      ignore @@ Lexing.lexeme lexbuf; 
-      comment_value @@ String.concat "" (List.rev l)
-  )
-# 580 "js/pblexer.ml"
+  and __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state =
+    match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+    | 0 ->
+        update_loc lexbuf ;
+        multi_line_comment l lexbuf
+    | 1 ->
+        ignore @@ Lexing.lexeme lexbuf ;
+        comment_value @@ String.concat "" (List.rev l)
+    | 2 -> multi_line_comment (Lexing.lexeme lexbuf :: l) lexbuf
+    | 3 -> comment_eof
+    | __ocaml_lex_state ->
+        lexbuf.Lexing.refill_buff lexbuf ;
+        __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state
 
-  | 2 ->
-# 149 "src/compilerlib/pblexer.mll"
-            (multi_line_comment ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 585 "js/pblexer.ml"
+  and string l lexbuf = __ocaml_lex_string_rec l lexbuf 55
 
-  | 3 ->
-# 150 "src/compilerlib/pblexer.mll"
-            ( comment_eof )
-# 590 "js/pblexer.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state
-
-and string l lexbuf =
-    __ocaml_lex_string_rec l lexbuf 55
-and __ocaml_lex_string_rec l lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 153 "src/compilerlib/pblexer.mll"
-                                             ( 
-    let c = Lexing.lexeme_char lexbuf 1 in 
-    string ((Char.escaped c)::l) lexbuf 
-  )
-# 605 "js/pblexer.ml"
-
-  | 1 ->
-# 157 "src/compilerlib/pblexer.mll"
-            (string_value  @@ String.concat "" (List.rev l))
-# 610 "js/pblexer.ml"
-
-  | 2 ->
-# 158 "src/compilerlib/pblexer.mll"
-            (string ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 615 "js/pblexer.ml"
-
-  | 3 ->
-# 159 "src/compilerlib/pblexer.mll"
-            (string_eof)
-# 620 "js/pblexer.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_string_rec l lexbuf __ocaml_lex_state
-
-;;
-
-
+  and __ocaml_lex_string_rec l lexbuf __ocaml_lex_state =
+    match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+    | 0 ->
+        let c = Lexing.lexeme_char lexbuf 1 in
+        string (Char.escaped c :: l) lexbuf
+    | 1 -> string_value @@ String.concat "" (List.rev l)
+    | 2 -> string (Lexing.lexeme lexbuf :: l) lexbuf
+    | 3 -> string_eof
+    | __ocaml_lex_state ->
+        lexbuf.Lexing.refill_buff lexbuf ;
+        __ocaml_lex_string_rec l lexbuf __ocaml_lex_state
 end
-module 
-Ocaml_types
-= struct
-#1 "ocaml_types.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Ocaml_types = struct
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-(** Generated OCaml type for protobuf messages *) 
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-type payload_kind = 
-  | Pk_varint of bool (** zigzag *)  
-  | Pk_bits32
-  | Pk_bits64
-  | Pk_bytes 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-type user_defined_type = {
-  udt_module : string option; 
-  udt_type_name : string; 
-  udt_nested : bool; 
-    (* The nested property indicate whether this [user_defined_type] requires 
-     * a nested decoder. For types which serialize to a message it will be 
-     * true (ie message in protobuf) but for enum types it won't. 
-     *)
-}
+  (** Generated OCaml type for protobuf messages *)
 
-type basic_type = 
-  | Bt_string 
-  | Bt_float 
-  | Bt_int 
-  | Bt_int32 
-  | Bt_int64
-  | Bt_bytes
-  | Bt_bool
+  type payload_kind =
+    | Pk_varint of bool  (** zigzag *)
+    | Pk_bits32
+    | Pk_bits64
+    | Pk_bytes
 
-type field_type = 
-  | Ft_unit
-  | Ft_basic_type        of basic_type
-  | Ft_user_defined_type of user_defined_type
+  type user_defined_type =
+    { udt_module: string option
+    ; udt_type_name: string
+    ; udt_nested: bool
+          (* The nested property indicate whether this [user_defined_type] requires 
+           * a nested decoder. For types which serialize to a message it will be 
+           * true (ie message in protobuf) but for enum types it won't. 
+           *) }
 
-type default_value = Pbpt.constant option 
+  type basic_type =
+    | Bt_string
+    | Bt_float
+    | Bt_int
+    | Bt_int32
+    | Bt_int64
+    | Bt_bytes
+    | Bt_bool
 
-type associative_type  = 
-  | At_list
-  | At_hashtable
-  (* Future work can include the following OCaml associative containers
-  | Al_map
-  *)
+  type field_type =
+    | Ft_unit
+    | Ft_basic_type of basic_type
+    | Ft_user_defined_type of user_defined_type
 
-type repeated_type = 
-  | Rt_list
-  | Rt_repeated_field
+  type default_value = Pbpt.constant option
+  type associative_type = At_list | At_hashtable
 
-type encoding_number = int 
+  (* Future work can include the following OCaml associative containers |
+     Al_map *)
 
-type is_packed = bool 
+  type repeated_type = Rt_list | Rt_repeated_field
+  type encoding_number = int
+  type is_packed = bool
 
-type record_field_type = 
-  | Rft_required        of (field_type * encoding_number * payload_kind * default_value)  
-  
-  | Rft_optional        of (field_type * encoding_number * payload_kind * default_value) 
+  type record_field_type =
+    | Rft_required of
+        (field_type * encoding_number * payload_kind * default_value)
+    | Rft_optional of
+        (field_type * encoding_number * payload_kind * default_value)
+    | Rft_repeated_field of
+        ( repeated_type
+        * field_type
+        * encoding_number
+        * payload_kind
+        * is_packed )
+    | Rft_associative_field of
+        ( associative_type
+        * encoding_number
+        * (basic_type * payload_kind)
+        * (field_type * payload_kind) )
+    | Rft_variant_field of variant
 
-  | Rft_repeated_field  of (repeated_type* field_type * encoding_number * payload_kind * is_packed)  
+  and variant_constructor =
+    { vc_constructor: string
+    ; vc_field_type: variant_constructor_type
+    ; vc_encoding_number: encoding_number
+    ; vc_payload_kind: payload_kind }
 
-  | Rft_associative_field of (associative_type           * 
-                              encoding_number            * 
-                             (basic_type * payload_kind) * 
-                             (field_type * payload_kind))
+  and variant_constructor_type =
+    | Vct_nullary
+    | Vct_non_nullary_constructor of field_type
 
-  | Rft_variant_field     of variant 
+  and variant = {v_name: string; v_constructors: variant_constructor list}
 
-and variant_constructor = {
-  vc_constructor : string ; 
-  vc_field_type : variant_constructor_type; 
-  vc_encoding_number : encoding_number; 
-  vc_payload_kind: payload_kind; 
-}
+  and record_field =
+    {rf_label: string; rf_field_type: record_field_type; rf_mutable: bool}
 
-and variant_constructor_type = 
-  | Vct_nullary 
-  | Vct_non_nullary_constructor of field_type 
+  and record = {r_name: string; r_fields: record_field list}
 
-and variant = {
-  v_name : string; 
-  v_constructors : variant_constructor list; 
-}
+  and const_variant = {cv_name: string; cv_constructors: (string * int) list}
 
-and record_field = {
-  rf_label : string; 
-  rf_field_type : record_field_type;
-  rf_mutable : bool;
-}
+  and type_spec =
+    | Record of record
+    | Variant of variant
+    | Const_variant of const_variant
 
-and record = {
-  r_name : string; 
-  r_fields : record_field list; 
-}
-
-and const_variant = {
-  cv_name : string; 
-  cv_constructors : (string * int) list;
-}
-
-and type_spec = 
-  | Record of record 
-  | Variant of variant
-  | Const_variant of const_variant 
-
-type type_ = {
-  module_ : string; (* For now limit to a single module *)  
-  spec : type_spec; 
-}
-
+  type type_ =
+    {module_: string; (* For now limit to a single module *)
+                      spec: type_spec}
 end
-module Codegen_util : sig 
-#1 "codegen_util.mli"
-(** Common utility functions for OCaml code generation *)
 
-val sp : ('a, unit, string) format -> 'a
-(** [sp x] same as sprintf but prefixed with new line *)
+module Codegen_util : sig
+  (** Common utility functions for OCaml code generation *)
 
-val let_decl_of_and : 'a option -> string
-(** [let_decl_of_and and_] returns the function declaration ["let"] (when ?and_
-   is [None]), ["and"] otherwise.
- *)
+  val sp : ('a, unit, string) format -> 'a
+  (** [sp x] same as sprintf but prefixed with new line *)
 
-val string_of_record_field_type : Ocaml_types.record_field_type -> string 
+  val let_decl_of_and : 'a option -> string
+  (** [let_decl_of_and and_] returns the function declaration ["let"] (when
+      ?and_ is [None]), ["and"] otherwise. *)
 
-val string_of_field_type : Ocaml_types.field_type -> string 
+  val string_of_record_field_type : Ocaml_types.record_field_type -> string
+  val string_of_field_type : Ocaml_types.field_type -> string
 
-val function_name_of_user_defined : string -> Ocaml_types.user_defined_type -> string
-(** [function_name_of_user_defined prefix user_defined] returns the function
-    name of the form `(module'.'?)prefix_(type_name)`. 
+  val function_name_of_user_defined :
+    string -> Ocaml_types.user_defined_type -> string
+  (** [function_name_of_user_defined prefix user_defined] returns the function
+      name of the form `(module'.'?)prefix_(type_name)`.
 
-    This pattern is common since a generated function for a type
-    (encode/decode/to_string) will call the same generated function for each 
-    user defined field type. 
- *)
+      This pattern is common since a generated function for a type
+      (encode/decode/to_string) will call the same generated function for each
+      user defined field type. *)
 
-val caml_file_name_of_proto_file_name : string -> string
-(** [caml_file_name_of_proto_file_name filename] returns the OCaml file name from
-    the protobuf file name
- *)
+  val caml_file_name_of_proto_file_name : string -> string
+  (** [caml_file_name_of_proto_file_name filename] returns the OCaml file name
+      from the protobuf file name *)
 
-val mutable_record_name : string -> string 
-(** [mutable_record_name record_name] returns the type name of the `mutable`
-    type name. We use mutable types when decoding for better performance, 
-    this function encapsulate the nameing convention for this additional
-    type. 
- *) 
+  val mutable_record_name : string -> string
+  (** [mutable_record_name record_name] returns the type name of the `mutable`
+      type name. We use mutable types when decoding for better performance,
+      this function encapsulate the nameing convention for this additional
+      type. *)
 
-val string_of_payload_kind : ?capitalize:unit -> Ocaml_types.payload_kind -> bool -> string 
-(** [string_of_payload_kind ~capitalize:() payload_kind packed] will return the
-    string corresponding to the payload kind. 
- *)
-
-
+  val string_of_payload_kind :
+    ?capitalize:unit -> Ocaml_types.payload_kind -> bool -> string
+  (** [string_of_payload_kind ~capitalize:() payload_kind packed] will return
+      the string corresponding to the payload kind. *)
 end = struct
-#1 "codegen_util.ml"
-module T = Ocaml_types
+  module T = Ocaml_types
 
-let sp x =  Printf.sprintf x 
-(** [sp x] same as sprintf but prefixed with new line *)
+  (** [sp x] same as sprintf but prefixed with new line *)
+  let sp x = Printf.sprintf x
 
-let let_decl_of_and = function | Some _ -> "and" | None -> "let rec" 
+  let let_decl_of_and = function Some _ -> "and" | None -> "let rec"
 
-let string_of_basic_type = function 
-  | T.Bt_string -> "string"
-  | T.Bt_float  -> "float"
-  | T.Bt_int    -> "int"
-  | T.Bt_int32  -> "int32"
-  | T.Bt_int64  -> "int64"
-  | T.Bt_bytes  -> "bytes"
-  | T.Bt_bool   -> "bool"
+  let string_of_basic_type = function
+    | T.Bt_string -> "string"
+    | T.Bt_float -> "float"
+    | T.Bt_int -> "int"
+    | T.Bt_int32 -> "int32"
+    | T.Bt_int64 -> "int64"
+    | T.Bt_bytes -> "bytes"
+    | T.Bt_bool -> "bool"
 
-let string_of_user_defined = function 
-  | {T.udt_module = None; T.udt_type_name} -> udt_type_name 
-  | {T.udt_module = Some module_; T.udt_type_name} -> module_ ^ "." ^ udt_type_name 
+  let string_of_user_defined = function
+    | {T.udt_module= None; T.udt_type_name} -> udt_type_name
+    | {T.udt_module= Some module_; T.udt_type_name} ->
+        module_ ^ "." ^ udt_type_name
 
-let string_of_field_type = function 
-  | T.Ft_unit -> "unit"
-  | T.Ft_basic_type bt -> string_of_basic_type bt 
-  | T.Ft_user_defined_type ud -> string_of_user_defined ud  
+  let string_of_field_type = function
+    | T.Ft_unit -> "unit"
+    | T.Ft_basic_type bt -> string_of_basic_type bt
+    | T.Ft_user_defined_type ud -> string_of_user_defined ud
 
-let string_of_repeated_type = function
-  | T.Rt_list -> "list"
-  | T.Rt_repeated_field -> "Pbrt.Repeated_field.t"
+  let string_of_repeated_type = function
+    | T.Rt_list -> "list"
+    | T.Rt_repeated_field -> "Pbrt.Repeated_field.t"
 
-let string_of_associative_type = function
-  | T.At_list -> "list"
-  | T.At_hashtable -> "Hashtbl.t"
+  let string_of_associative_type = function
+    | T.At_list -> "list"
+    | T.At_hashtable -> "Hashtbl.t"
 
-let string_of_record_field_type = function
-  | T.Rft_required (field_type, _, _, _) -> 
-      string_of_field_type field_type
-  | T.Rft_optional (field_type, _, _, _) -> 
-      (string_of_field_type field_type) ^ " option"
-  | T.Rft_repeated_field (rt, field_type, _, _,_) -> 
-      (string_of_field_type field_type) ^ " " ^ (string_of_repeated_type rt)
-  | T.Rft_associative_field (T.At_list, _, (key_type, _), (value_type, _)) -> 
-      Printf.sprintf "(%s * %s) %s" 
-        (string_of_basic_type key_type)
-        (string_of_field_type value_type) 
-        (string_of_associative_type T.At_list) 
-  | T.Rft_associative_field (T.At_hashtable, _, (key_type, _), (value_type, _)) -> 
-      Printf.sprintf "(%s, %s) %s" 
-        (string_of_basic_type key_type)
-        (string_of_field_type value_type) 
-        (string_of_associative_type T.At_hashtable) 
-  | T.Rft_variant_field {T.v_name; _ } -> v_name
- 
-(** [function_name_of_user_defined prefix user_defined] returns the function
-    name of the form `(module'.'?)prefix_(type_name)`. 
+  let string_of_record_field_type = function
+    | T.Rft_required (field_type, _, _, _) -> string_of_field_type field_type
+    | T.Rft_optional (field_type, _, _, _) ->
+        string_of_field_type field_type ^ " option"
+    | T.Rft_repeated_field (rt, field_type, _, _, _) ->
+        string_of_field_type field_type ^ " " ^ string_of_repeated_type rt
+    | T.Rft_associative_field (T.At_list, _, (key_type, _), (value_type, _)) ->
+        Printf.sprintf "(%s * %s) %s"
+          (string_of_basic_type key_type)
+          (string_of_field_type value_type)
+          (string_of_associative_type T.At_list)
+    | T.Rft_associative_field
+        (T.At_hashtable, _, (key_type, _), (value_type, _)) ->
+        Printf.sprintf "(%s, %s) %s"
+          (string_of_basic_type key_type)
+          (string_of_field_type value_type)
+          (string_of_associative_type T.At_hashtable)
+    | T.Rft_variant_field {T.v_name; _} -> v_name
 
-    This pattern is common since a generated function for a type
-    (encode/decode/to_string) will call the same generated function for each 
-    user defined field type. 
- *)
-let function_name_of_user_defined prefix = function 
-  | {T.udt_module = Some module_; T.udt_type_name} -> 
-    sp "%s.%s_%s" module_ prefix udt_type_name 
-  | {T.udt_module = None; T.udt_type_name} -> 
-    sp "%s_%s" prefix udt_type_name 
+  (** [function_name_of_user_defined prefix user_defined] returns the function
+      name of the form `(module'.'?)prefix_(type_name)`.
 
-let caml_file_name_of_proto_file_name proto = 
-  let splitted = Util.rev_split_by_char '.' proto in 
-  if List.length splitted < 2 || 
-     List.hd splitted <> "proto" 
-  then failwith "Proto file has no valid extension"
-  else 
-    String.concat "_" @@ List.rev @@ ("pb" :: (List.tl splitted)) 
+      This pattern is common since a generated function for a type
+      (encode/decode/to_string) will call the same generated function for each
+      user defined field type. *)
+  let function_name_of_user_defined prefix = function
+    | {T.udt_module= Some module_; T.udt_type_name} ->
+        sp "%s.%s_%s" module_ prefix udt_type_name
+    | {T.udt_module= None; T.udt_type_name} -> sp "%s_%s" prefix udt_type_name
 
-let mutable_record_name s = s ^ "_mutable" 
+  let caml_file_name_of_proto_file_name proto =
+    let splitted = Util.rev_split_by_char '.' proto in
+    if List.length splitted < 2 || List.hd splitted <> "proto" then
+      failwith "Proto file has no valid extension"
+    else String.concat "_" @@ List.rev @@ ("pb" :: List.tl splitted)
 
-let string_of_payload_kind ?capitalize payload_kind packed = 
-  let s = match payload_kind,  packed with
-  | Ocaml_types.Pk_varint _ , false -> "varint"
-  | Ocaml_types.Pk_bits32   , false -> "bits32"
-  | Ocaml_types.Pk_bits64   , false -> "bits64"
-  | Ocaml_types.Pk_bytes    , _ -> "bytes"
-  | Ocaml_types.Pk_varint _ , true 
-  | Ocaml_types.Pk_bits32   , true
-  | Ocaml_types.Pk_bits64   , true  -> "bytes"
-  in 
-  match capitalize with
-  | None -> s 
-  | Some () -> String.capitalize s 
+  let mutable_record_name s = s ^ "_mutable"
 
-
+  let string_of_payload_kind ?capitalize payload_kind packed =
+    let s =
+      match (payload_kind, packed) with
+      | Ocaml_types.Pk_varint _, false -> "varint"
+      | Ocaml_types.Pk_bits32, false -> "bits32"
+      | Ocaml_types.Pk_bits64, false -> "bits64"
+      | Ocaml_types.Pk_bytes, _ -> "bytes"
+      | Ocaml_types.Pk_varint _, true
+       |Ocaml_types.Pk_bits32, true
+       |Ocaml_types.Pk_bits64, true ->
+          "bytes" in
+    match capitalize with None -> s | Some () -> String.capitalize s
 end
-module Fmt : sig 
-#1 "fmt.mli"
-(** Formatting utilities for code generation *)
 
-(** {2 types} *) 
+module Fmt : sig
+  (** Formatting utilities for code generation *)
 
-type scope 
-(** A scope is a formatting container which can contains line of text as well 
-    as other nested scopes
+  (** {2 types} *)
 
-    In other word a scope define an indentation section.
- *)
+  type scope
+  (** A scope is a formatting container which can contains line of text as well
+      as other nested scopes
 
-(** {2 Creation} *) 
+      In other word a scope define an indentation section. *)
 
-val empty_scope : unit -> scope 
-(** [empty_scope ()] returns a brand new scope *)
+  (** {2 Creation} *)
 
-val line : scope -> string -> unit 
-(** [line scope s] adds [s] to [scope] *)
+  val empty_scope : unit -> scope
+  (** [empty_scope ()] returns a brand new scope *)
 
-val empty_line : scope -> unit 
-(** [empty_line scope] adds an empty line to [scope] *)
+  val line : scope -> string -> unit
+  (** [line scope s] adds [s] to [scope] *)
 
-val scope : scope -> (scope -> unit) -> unit 
-(** [scope scope f] adds a sub scope and apply [f] to it. *)
+  val empty_line : scope -> unit
+  (** [empty_line scope] adds an empty line to [scope] *)
 
-(** {2 Printing} *) 
+  val scope : scope -> (scope -> unit) -> unit
+  (** [scope scope f] adds a sub scope and apply [f] to it. *)
 
-val print : scope -> string 
-(** [print scope] returns the formatted scops with a 2 character 
-    indentation for each scope. 
- *)
+  (** {2 Printing} *)
 
+  val print : scope -> string
+  (** [print scope] returns the formatted scops with a 2 character indentation
+      for each scope. *)
 end = struct
-#1 "fmt.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-type scope = {
-  mutable items : item list; 
-} 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-and item = 
-  | Line of string 
-  | Scope of scope 
+  type scope = {mutable items: item list}
 
-let empty_scope () = 
-  {items = []} 
+  and item = Line of string | Scope of scope
 
-let line scope s =
-  scope.items <- (Line s)::scope.items  
+  let empty_scope () = {items= []}
+  let line scope s = scope.items <- Line s :: scope.items
+  let empty_line scope = line scope ""
 
-let empty_line scope = 
-  line scope "" 
+  let scope scope f =
+    let sub_scope = empty_scope () in
+    f sub_scope ;
+    scope.items <- Scope sub_scope :: scope.items
 
-let scope scope f = 
-  let sub_scope = empty_scope () in 
-  f sub_scope; 
-  scope.items <- (Scope sub_scope)::scope.items  
+  let indentation_prefix = function
+    | 0 -> ""
+    | 1 -> "  "
+    | 2 -> "    "
+    | 3 -> "      "
+    | 4 -> "        "
+    | 5 -> "          "
+    | 6 -> "            "
+    | 7 -> "              "
+    | 8 -> "                "
+    | n -> String.make n ' '
 
-let indentation_prefix = function 
-  | 0 -> ""
-  | 1 -> "  "
-  | 2 -> "    "
-  | 3 -> "      "
-  | 4 -> "        "
-  | 5 -> "          "
-  | 6 -> "            "
-  | 7 -> "              "
-  | 8 -> "                "
-  | n -> (String.make n ' ')
-
-let print scope = 
-
-  let rec loop acc i = function
-    | (Line s)::tl -> 
-      loop ((indentation_prefix i ^ s)::acc) i tl  
-    | (Scope {items})::tl -> 
-      let sub = loop [] (i + 1) items in  
-      loop (sub @ acc) i tl  
-    | [] -> acc
-  in 
-
-  String.concat "\n" @@ loop [] 0 scope.items 
-
+  let print scope =
+    let rec loop acc i = function
+      | Line s :: tl -> loop ((indentation_prefix i ^ s) :: acc) i tl
+      | Scope {items} :: tl ->
+          let sub = loop [] (i + 1) items in
+          loop (sub @ acc) i tl
+      | [] -> acc in
+    String.concat "\n" @@ loop [] 0 scope.items
 end
-module Codegen : sig 
-#1 "codegen.mli"
-(** Module to define the signature for code generator 
-  *) 
 
-module type S = sig 
-  
-  val gen_sig : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
-  (** [gen_sig t] generates the code for the module signature *)
+module Codegen : sig
+  (** Module to define the signature for code generator *)
 
-  val gen_struct : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
-  (** [gen_struct t] generates the code for the module structure *)
+  module type S = sig
+    val gen_sig : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
+    (** [gen_sig t] generates the code for the module signature *)
 
-  val ocamldoc_title : string 
-  (** OCamldoc title *)
+    val gen_struct : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
+    (** [gen_struct t] generates the code for the module structure *)
 
-end (* S *)  
+    val ocamldoc_title : string
+    (** OCamldoc title *)
+  end
 
+  (* S *)
 end = struct
-#1 "codegen.ml"
-module type S = sig 
-  
-  val gen_sig : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
+  module type S = sig
+    val gen_sig : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
+    val gen_struct : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
+    val ocamldoc_title : string
+  end
 
-  val gen_struct : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
-  
-  val ocamldoc_title : string 
-
-end (* S *)  
-
+  (* S *)
 end
-module 
-Backend_ocaml_static
-= struct
-#1 "backend_ocaml_static.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Backend_ocaml_static = struct
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-let runtime_function = function 
-  | `Decode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int   -> "Pbrt.Decoder.int_as_varint" 
-  | `Decode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int   -> "Pbrt.Decoder.int_as_zigzag" 
-  | `Decode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int32 -> "Pbrt.Decoder.int32_as_varint" 
-  | `Decode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int32 -> "Pbrt.Decoder.int32_as_zigzag" 
-  | `Decode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int64 -> "Pbrt.Decoder.int64_as_varint" 
-  | `Decode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int64 -> "Pbrt.Decoder.int64_as_zigzag" 
-  | `Decode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_int32 -> "Pbrt.Decoder.int32_as_bits32" 
-  | `Decode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_int64 -> "Pbrt.Decoder.int64_as_bits64" 
-  | `Decode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_bool -> "Pbrt.Decoder.bool" 
-  | `Decode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_float -> "Pbrt.Decoder.float_as_bits32" 
-  | `Decode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_float -> "Pbrt.Decoder.float_as_bits64" 
-  | `Decode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_int -> "Pbrt.Decoder.int_as_bits32" 
-  | `Decode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_int -> "Pbrt.Decoder.int_as_bits64" 
-  | `Decode , Ocaml_types.Pk_bytes, Ocaml_types.Bt_string -> "Pbrt.Decoder.string" 
-  | `Decode , Ocaml_types.Pk_bytes, Ocaml_types.Bt_bytes -> "Pbrt.Decoder.bytes" 
-  | `Encode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int   -> "Pbrt.Encoder.int_as_varint" 
-  | `Encode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int   -> "Pbrt.Encoder.int_as_zigzag" 
-  | `Encode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int32 -> "Pbrt.Encoder.int32_as_varint" 
-  | `Encode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int32 -> "Pbrt.Encoder.int32_as_zigzag" 
-  | `Encode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_int64 -> "Pbrt.Encoder.int64_as_varint" 
-  | `Encode , Ocaml_types.Pk_varint true , Ocaml_types.Bt_int64 -> "Pbrt.Encoder.int64_as_zigzag" 
-  | `Encode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_int32 -> "Pbrt.Encoder.int32_as_bits32" 
-  | `Encode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_int64 -> "Pbrt.Encoder.int64_as_bits64" 
-  | `Encode , Ocaml_types.Pk_varint false, Ocaml_types.Bt_bool -> "Pbrt.Encoder.bool" 
-  | `Encode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_float -> "Pbrt.Encoder.float_as_bits32" 
-  | `Encode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_float -> "Pbrt.Encoder.float_as_bits64" 
-  | `Encode , Ocaml_types.Pk_bits32, Ocaml_types.Bt_int -> "Pbrt.Encoder.int_as_bits32" 
-  | `Encode , Ocaml_types.Pk_bits64, Ocaml_types.Bt_int -> "Pbrt.Encoder.int_as_bits64" 
-  | `Encode , Ocaml_types.Pk_bytes, Ocaml_types.Bt_string -> "Pbrt.Encoder.string" 
-  | `Encode , Ocaml_types.Pk_bytes, Ocaml_types.Bt_bytes -> "Pbrt.Encoder.bytes" 
-  | _ -> failwith "Invalid encoding/OCaml type combination"
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  let runtime_function = function
+    | `Decode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int ->
+        "Pbrt.Decoder.int_as_varint"
+    | `Decode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int ->
+        "Pbrt.Decoder.int_as_zigzag"
+    | `Decode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int32 ->
+        "Pbrt.Decoder.int32_as_varint"
+    | `Decode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int32 ->
+        "Pbrt.Decoder.int32_as_zigzag"
+    | `Decode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int64 ->
+        "Pbrt.Decoder.int64_as_varint"
+    | `Decode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int64 ->
+        "Pbrt.Decoder.int64_as_zigzag"
+    | `Decode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_int32 ->
+        "Pbrt.Decoder.int32_as_bits32"
+    | `Decode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_int64 ->
+        "Pbrt.Decoder.int64_as_bits64"
+    | `Decode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_bool ->
+        "Pbrt.Decoder.bool"
+    | `Decode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_float ->
+        "Pbrt.Decoder.float_as_bits32"
+    | `Decode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_float ->
+        "Pbrt.Decoder.float_as_bits64"
+    | `Decode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_int ->
+        "Pbrt.Decoder.int_as_bits32"
+    | `Decode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_int ->
+        "Pbrt.Decoder.int_as_bits64"
+    | `Decode, Ocaml_types.Pk_bytes, Ocaml_types.Bt_string ->
+        "Pbrt.Decoder.string"
+    | `Decode, Ocaml_types.Pk_bytes, Ocaml_types.Bt_bytes ->
+        "Pbrt.Decoder.bytes"
+    | `Encode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int ->
+        "Pbrt.Encoder.int_as_varint"
+    | `Encode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int ->
+        "Pbrt.Encoder.int_as_zigzag"
+    | `Encode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int32 ->
+        "Pbrt.Encoder.int32_as_varint"
+    | `Encode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int32 ->
+        "Pbrt.Encoder.int32_as_zigzag"
+    | `Encode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_int64 ->
+        "Pbrt.Encoder.int64_as_varint"
+    | `Encode, Ocaml_types.Pk_varint true, Ocaml_types.Bt_int64 ->
+        "Pbrt.Encoder.int64_as_zigzag"
+    | `Encode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_int32 ->
+        "Pbrt.Encoder.int32_as_bits32"
+    | `Encode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_int64 ->
+        "Pbrt.Encoder.int64_as_bits64"
+    | `Encode, Ocaml_types.Pk_varint false, Ocaml_types.Bt_bool ->
+        "Pbrt.Encoder.bool"
+    | `Encode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_float ->
+        "Pbrt.Encoder.float_as_bits32"
+    | `Encode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_float ->
+        "Pbrt.Encoder.float_as_bits64"
+    | `Encode, Ocaml_types.Pk_bits32, Ocaml_types.Bt_int ->
+        "Pbrt.Encoder.int_as_bits32"
+    | `Encode, Ocaml_types.Pk_bits64, Ocaml_types.Bt_int ->
+        "Pbrt.Encoder.int_as_bits64"
+    | `Encode, Ocaml_types.Pk_bytes, Ocaml_types.Bt_string ->
+        "Pbrt.Encoder.string"
+    | `Encode, Ocaml_types.Pk_bytes, Ocaml_types.Bt_bytes ->
+        "Pbrt.Encoder.bytes"
+    | _ -> failwith "Invalid encoding/OCaml type combination"
 end
-module Codegen_decode : sig 
-#1 "codegen_decode.mli"
 
-
-include Codegen.S
-
+module Codegen_decode : sig
+  include Codegen.S
 end = struct
-#1 "codegen_decode.ml"
+  module T = Ocaml_types
+  module E = Exception
+  module F = Fmt
+  open Codegen_util
 
-module T   = Ocaml_types 
-module E   = Exception 
-module F   = Fmt
+  let decode_basic_type bt pk =
+    Backend_ocaml_static.runtime_function (`Decode, pk, bt)
 
-open Codegen_util 
+  let decode_field_f field_type pk =
+    match field_type with
+    | T.Ft_user_defined_type t ->
+        let f_name = function_name_of_user_defined "decode" t in
+        if t.T.udt_nested then f_name ^ " (Pbrt.Decoder.nested d)"
+        else f_name ^ " d"
+    | T.Ft_unit -> "Pbrt.Decoder.empty_nested d"
+    | T.Ft_basic_type bt -> decode_basic_type bt pk ^ " d"
 
-let decode_basic_type bt pk = 
-  Backend_ocaml_static.runtime_function (`Decode, pk, bt)
-  
-let decode_field_f field_type pk = 
-  match field_type with 
-  | T.Ft_user_defined_type t -> 
-      let f_name = function_name_of_user_defined "decode" t in
-      if t.T.udt_nested 
-      then (f_name ^ " (Pbrt.Decoder.nested d)")
-      else (f_name ^ " d") 
-  | T.Ft_unit -> 
-      "Pbrt.Decoder.empty_nested d"
-  | T.Ft_basic_type bt -> (decode_basic_type bt pk) ^ " d" 
-
-let gen_decode_record ?and_ {T.r_name; r_fields} sc = 
-
-  (* list fields have a special treatement when decoding since each new element
-     of a repeated field is appended to the front of the list. In order
-     to retreive the right order efficiently we reverse all the repeated field
-     lists values when the message is done being decoded. 
-   *) 
-  let all_lists = List.fold_left (fun acc {T.rf_label; rf_field_type; _ } -> 
-    match rf_field_type with
-    | T.Rft_repeated_field (T.Rt_list, _, _ , _, _ ) -> rf_label :: acc 
-    | T.Rft_associative_field (T.At_list, _, _, _) -> rf_label :: acc
-    | _ -> acc  
-  ) [] r_fields in  
-
-  (* let all_lists = [] in
-   *)
-
-  let string_of_nonpacked_pk pk = 
-    Codegen_util.string_of_payload_kind ~capitalize:() pk false 
-  in 
-
-  let process_field_common sc encoding_number pk_as_string f = 
-    F.line sc @@ sp "| Some (%i, Pbrt.%s) -> (" encoding_number pk_as_string; 
-    F.scope sc (fun sc -> 
-      f sc;
-      F.line sc "loop ()";
-    );
-    F.line sc ")";
-    F.line sc @@ sp "| Some (%i, pk) -> raise (" encoding_number;
-    F.scope sc (fun sc ->
-      F.line sc @@ sp "Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (%s, pk))" 
-        (sp "\"Message(%s), field(%i)\"" r_name encoding_number)
-    );
-    F.line sc ")"
-  in
-
-  let process_required_field sc rf_label (field_type, encoding_number, pk, _) = 
-    process_field_common sc encoding_number (string_of_nonpacked_pk pk) (fun sc -> 
-      F.line sc @@ sp "v.%s <- %s;" rf_label (decode_field_f field_type pk); 
-    ) 
-  in
-
-  let process_optional_field sc rf_label (field_type, encoding_number, pk, _) = 
-    process_field_common sc encoding_number (string_of_nonpacked_pk pk) (fun sc -> 
-      F.line sc @@ sp "v.%s <- Some (%s);" rf_label (decode_field_f field_type pk); 
-    )
-  in
-
-  let process_repeated_field sc rf_label (rt, field_type, encoding_number, pk, is_packed) = 
-    match rt, is_packed with
-    | T.Rt_list, false -> 
-      process_field_common sc encoding_number (string_of_nonpacked_pk pk) (fun sc -> 
-        F.line sc @@ sp "v.%s <- (%s) :: v.%s;" rf_label (decode_field_f field_type pk) rf_label; 
-      ) 
-    | T.Rt_repeated_field, false -> (
-      process_field_common sc encoding_number (string_of_nonpacked_pk pk) (fun sc -> 
-        F.line sc @@ sp "Pbrt.Repeated_field.add (%s) v.%s; " (decode_field_f field_type pk) rf_label; 
-      ) 
-    ) 
-    | T.Rt_list, true -> (
-      process_field_common sc encoding_number "Bytes" (fun sc -> 
-        F.line sc @@ sp "v.%s <- Pbrt.Decoder.packed_fold (fun l d -> (%s)::l) [] d;" 
-          rf_label (decode_field_f field_type pk) 
-      ) 
-    ) 
-    | T.Rt_repeated_field, true -> (
-      process_field_common sc encoding_number "Bytes" (fun sc -> 
-        F.line sc "Pbrt.Decoder.packed_fold (fun () d -> ";
-        F.scope sc (fun sc -> 
-          F.line sc @@ sp "Pbrt.Repeated_field.add (%s) v.%s;" (decode_field_f field_type pk) rf_label;
-        );
-        F.line sc       ") () d;";
-      ) 
-    ) 
-  in
-
-  let process_associative_field sc rf_label (at, encoding_number, (key_type, key_pk), (value_type, value_pk)) = 
-    let decode_key_f   = decode_basic_type key_type key_pk in 
+  let gen_decode_record ?and_ {T.r_name; r_fields} sc =
+    (* list fields have a special treatement when decoding since each new
+       element of a repeated field is appended to the front of the list. In
+       order to retreive the right order efficiently we reverse all the
+       repeated field lists values when the message is done being decoded. *)
+    let all_lists =
+      List.fold_left
+        (fun acc {T.rf_label; rf_field_type; _} ->
+          match rf_field_type with
+          | T.Rft_repeated_field (T.Rt_list, _, _, _, _) -> rf_label :: acc
+          | T.Rft_associative_field (T.At_list, _, _, _) -> rf_label :: acc
+          | _ -> acc)
+        [] r_fields in
+    (* let all_lists = [] in *)
+    let string_of_nonpacked_pk pk =
+      Codegen_util.string_of_payload_kind ~capitalize:() pk false in
+    let process_field_common sc encoding_number pk_as_string f =
+      F.line sc @@ sp "| Some (%i, Pbrt.%s) -> (" encoding_number pk_as_string ;
+      F.scope sc (fun sc -> f sc ; F.line sc "loop ()") ;
+      F.line sc ")" ;
+      F.line sc @@ sp "| Some (%i, pk) -> raise (" encoding_number ;
+      F.scope sc (fun sc ->
+          F.line sc
+          @@ sp
+               "Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload \
+                (%s, pk))"
+               (sp "\"Message(%s), field(%i)\"" r_name encoding_number)) ;
+      F.line sc ")" in
+    let process_required_field sc rf_label (field_type, encoding_number, pk, _)
+        =
+      process_field_common sc encoding_number (string_of_nonpacked_pk pk)
+        (fun sc ->
+          F.line sc @@ sp "v.%s <- %s;" rf_label (decode_field_f field_type pk))
+    in
+    let process_optional_field sc rf_label (field_type, encoding_number, pk, _)
+        =
+      process_field_common sc encoding_number (string_of_nonpacked_pk pk)
+        (fun sc ->
+          F.line sc
+          @@ sp "v.%s <- Some (%s);" rf_label (decode_field_f field_type pk))
+    in
+    let process_repeated_field sc rf_label
+        (rt, field_type, encoding_number, pk, is_packed) =
+      match (rt, is_packed) with
+      | T.Rt_list, false ->
+          process_field_common sc encoding_number (string_of_nonpacked_pk pk)
+            (fun sc ->
+              F.line sc
+              @@ sp "v.%s <- (%s) :: v.%s;" rf_label
+                   (decode_field_f field_type pk)
+                   rf_label)
+      | T.Rt_repeated_field, false ->
+          process_field_common sc encoding_number (string_of_nonpacked_pk pk)
+            (fun sc ->
+              F.line sc
+              @@ sp "Pbrt.Repeated_field.add (%s) v.%s; "
+                   (decode_field_f field_type pk)
+                   rf_label)
+      | T.Rt_list, true ->
+          process_field_common sc encoding_number "Bytes" (fun sc ->
+              F.line sc
+              @@ sp
+                   "v.%s <- Pbrt.Decoder.packed_fold (fun l d -> (%s)::l) [] d;"
+                   rf_label
+                   (decode_field_f field_type pk))
+      | T.Rt_repeated_field, true ->
+          process_field_common sc encoding_number "Bytes" (fun sc ->
+              F.line sc "Pbrt.Decoder.packed_fold (fun () d -> " ;
+              F.scope sc (fun sc ->
+                  F.line sc
+                  @@ sp "Pbrt.Repeated_field.add (%s) v.%s;"
+                       (decode_field_f field_type pk)
+                       rf_label) ;
+              F.line sc ") () d;") in
+    let process_associative_field sc rf_label
+        (at, encoding_number, (key_type, key_pk), (value_type, value_pk)) =
+      let decode_key_f = decode_basic_type key_type key_pk in
       (* Because key can never be nested we can assign the decoding function 
        * directly rather wrapping up in a closure like for the value 
        * below
        *)
-       (* TODO enhancement
-        * For the value decoding function passed as an argument to [Pbrt.Decoder.map_entry] 
-        * it's not always the case that it would require nesting. In the 
-        * case it does not neeed a nested decoder we can avoid creating 
-        * a closure and therefore improving the performance. 
-        *)
-    process_field_common sc encoding_number "Bytes" (fun sc -> 
-      F.line sc "let decode_value = (fun d ->";
-      F.scope sc (fun sc ->
-        F.line sc @@ decode_field_f value_type value_pk;
-      ); 
-      F.line sc ") in"; 
-      let decode_expression = 
-        sp "(Pbrt.Decoder.map_entry d ~decode_key:%s ~decode_value)" decode_key_f in
-
-      begin match at with
-      | T.At_list -> ( 
-        F.line sc @@ sp "v.%s <- (" rf_label; 
-        F.scope sc (fun sc -> 
-          F.line sc @@ sp "%s::v.%s;"
-            decode_expression rf_label
-        ); 
-        F.line sc ");" 
-      )
-      | T.At_hashtable -> (
-        F.line sc @@ sp "let a, b = %s in" decode_expression;
-        F.line sc @@ sp "Hashtbl.add v.%s a b;" rf_label;
-      )
-      end;
-    )
-  in
-
-  let process_variant_field sc rf_label {T.v_constructors; _} = 
-    List.iter (fun {T.vc_constructor; vc_field_type; vc_encoding_number; vc_payload_kind = pk; } -> 
-      process_field_common sc vc_encoding_number (string_of_nonpacked_pk pk) (fun sc->  
-        match vc_field_type  with
-        | T.Vct_nullary -> (
-          F.line sc "Pbrt.Decoder.empty_nested d;";
-          F.line sc @@ sp "v.%s <- %s;" rf_label vc_constructor; 
-        ) 
-        | T.Vct_non_nullary_constructor field_type -> (
-          F.line sc @@ sp "v.%s <- %s (%s);" 
-            rf_label vc_constructor (decode_field_f field_type pk)
-        ) 
-      )
-    ) v_constructors
-  in 
-
-  let mutable_record_name = Codegen_util.mutable_record_name r_name in 
-
-  F.line sc @@ sp "%s decode_%s d =" (let_decl_of_and and_) r_name; 
-  F.scope sc (fun sc -> 
-    F.line sc @@ sp "let v = default_%s () in" mutable_record_name;
-    F.line sc "let rec loop () = "; 
-    F.scope sc (fun sc -> 
-      F.line sc "match Pbrt.Decoder.key d with";
-      F.line sc "| None -> (";
-      F.scope sc (fun sc -> 
-        List.iter (fun field_name -> 
-          F.line sc @@ sp "v.%s <- List.rev v.%s;" field_name field_name
-        ) all_lists;   
-      );
-      F.line sc ")";
-      List.iter (fun {T.rf_label; rf_field_type; _ } -> 
-        match rf_field_type with
-        | T.Rft_required x -> process_required_field sc rf_label x 
-        | T.Rft_optional x -> process_optional_field sc rf_label x 
-        | T.Rft_repeated_field x -> process_repeated_field sc rf_label x 
-        | T.Rft_associative_field x-> process_associative_field sc rf_label x 
-        | T.Rft_variant_field x -> process_variant_field sc rf_label x 
-      ) r_fields; 
-      F.line sc "| Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()";
-    ); 
-    F.line sc "in"; 
-    F.line sc "loop ();";
-    F.line sc @@ sp "let v:%s = Obj.magic v in" r_name; 
-    F.line sc "v";
-  )
-
-let gen_decode_variant ?and_ {T.v_name; v_constructors;} sc = 
-
-  let process_ctor sc {T.vc_constructor; vc_field_type; vc_encoding_number; vc_payload_kind = pk ; } = 
-    match vc_field_type with 
-    | T.Vct_nullary -> (
-      F.line sc @@ sp "| Some (%i, _) -> (Pbrt.Decoder.empty_nested d ; %s)" 
-        vc_encoding_number vc_constructor
-    ) 
-    | T.Vct_non_nullary_constructor field_type -> 
-      F.line sc @@ sp "| Some (%i, _) -> %s (%s)" 
-        vc_encoding_number vc_constructor (decode_field_f field_type pk) 
-  in 
-
-  F.line sc @@ sp "%s decode_%s d = " (let_decl_of_and and_) v_name;
-  F.scope sc (fun sc ->
-    F.line sc @@ sp "let rec loop () = "; 
-    F.scope sc (fun sc ->
-      F.line sc @@ sp "let ret:%s = match Pbrt.Decoder.key d with" v_name;
-      F.scope sc (fun sc -> 
-        F.line sc "| None -> failwith \"None of the known key is found\"";
-        List.iter (fun ctor -> process_ctor sc ctor) v_constructors; 
-        F.line sc "| Some (n, payload_kind) -> (";
-        F.line sc "  Pbrt.Decoder.skip d payload_kind; ";
-        F.line sc "  loop () ";
-        F.line sc ")";
-      );
-      F.line sc "in";
-      F.line sc "ret";
-    ); 
-    F.line sc "in"; 
-    F.line sc "loop ()";
-  )
-
-let gen_decode_const_variant ?and_ {T.cv_name; cv_constructors; } sc = 
-
-  F.line sc @@ sp "%s decode_%s d = " (let_decl_of_and and_) cv_name; 
-  F.scope sc (fun sc -> 
-    F.line sc "match Pbrt.Decoder.int_as_varint d with";
-    List.iter (fun (name, value) -> 
-      F.line sc @@ sp "| %i -> (%s:%s)" value name cv_name
-    ) cv_constructors; 
-    F.line sc @@ sp "| _ -> failwith \"Unknown value for enum %s\"" cv_name
-  )
-
-let gen_struct ?and_ t sc = 
-  let (), has_encoded =  match t with 
-    | {T.spec = T.Record r; _ }  -> gen_decode_record ?and_ r sc, true
-    | {T.spec = T.Variant v; _ } -> gen_decode_variant ?and_ v sc, true
-    | {T.spec = T.Const_variant v; _ } -> gen_decode_const_variant ?and_ v sc, true
-  in
-  has_encoded
-
-let gen_sig ?and_ t sc = 
-
-  let f type_name = 
-    F.line sc @@ sp "val decode_%s : Pbrt.Decoder.t -> %s" type_name type_name ; 
-    F.line sc @@ sp "(** [decode_%s decoder] decodes a [%s] value from [decoder] *)" type_name type_name; 
-  in 
-
-  let (), has_encoded = match t with 
-    | {T.spec = T.Record {T.r_name; _ } } -> f r_name, true
-    | {T.spec = T.Variant {T.v_name; _ }} -> f v_name, true 
-    | {T.spec = T.Const_variant {T.cv_name; _ }} -> f cv_name, true
-  in
-  has_encoded
-
-let ocamldoc_title = "Protobuf Decoding"
-
-end
-module Logger : sig 
-#1 "logger.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-(** Logging functionality allow printing debugging information
- *)
-
-
-val setup_from_out_channel : out_channel -> unit 
-(** [setup_from_out_channel oc] will configure the logger to print all 
-    logging statement to [oc]. 
-
-    Function can be called multiple times, each call will disable (override) the 
-    previously setup out channel
- *)
-
-val log : ('a, out_channel, unit) format -> 'a
-(** [log format x y ] same as [Printf.printf] except that the message will 
-    get printed to the previously setup [out_channel] in the
-    [setup_from_out_channel] function. 
- *) 
-
-val endline : string -> unit 
-(** [endline format x y ] same as [Pervasives.print_endline] except that the message will 
-    get printed to the previously setup [out_channel] in the
-    [setup_from_out_channel] function. 
- *) 
-
-end = struct
-#1 "logger.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-let __log__ = ref None 
-
-let setup_from_out_channel oc = 
-  __log__ := Some oc 
-
-let log (x:('a, out_channel, unit) format) = 
-  match !__log__ with
-  | None    -> Printf.ifprintf stdout x 
-  | Some oc -> Printf.fprintf  oc     x 
-
-
-let endline s = log "%s\n" s 
-
-end
-module Codegen_pp : sig 
-#1 "codegen_pp.mli"
-
-
-include Codegen.S
-
-end = struct
-#1 "codegen_pp.ml"
-module T = Ocaml_types 
-module F = Fmt
-module L = Logger
-module E = Exception
-
-open Codegen_util
-
-let gen_pp_field field_type = 
-  match field_type with 
-  | T.Ft_user_defined_type t -> function_name_of_user_defined "pp" t 
-  | _ ->  sp "Pbrt.Pp.pp_%s" (string_of_field_type field_type) 
-
-
-let gen_pp_record  ?and_ {T.r_name; r_fields} sc = 
-  L.log "gen_pp, record_name: %s\n" r_name; 
-
-  F.line sc @@ sp "%s pp_%s fmt (v:%s) = " (let_decl_of_and and_) r_name r_name;
-  F.scope sc (fun sc ->
-    F.line sc "let pp_i fmt () ="; 
-    F.scope sc (fun sc -> 
-      F.line sc "Format.pp_open_vbox fmt 1;";
-      List.iter (fun record_field -> 
-
-        let {T.rf_label; rf_field_type; _ } = record_field in 
-
-        let var_name = sp "v.%s" rf_label in 
-        match rf_field_type with 
-
-        | T.Rft_required (field_type, _, _, _) -> ( 
-          let field_string_of = gen_pp_field field_type in 
-          F.line sc @@ sp 
-            "Pbrt.Pp.pp_record_field \"%s\" %s fmt %s;" 
-            rf_label field_string_of var_name
-        ) (* Rft_required *)
-
-        | T.Rft_optional (field_type, _, _, _) -> (
-          let field_string_of = gen_pp_field field_type in 
-          F.line sc @@ sp 
-            "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_option %s) fmt %s;" 
-            rf_label field_string_of var_name
-        ) (* Rft_optional *) 
-
-        | T.Rft_repeated_field (rt, field_type, _, _, _) ->  (
-          let field_string_of = gen_pp_field field_type in 
-          begin match rt with 
-          | T.Rt_list -> (
-            F.line sc @@ sp 
-              "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_list %s) fmt %s;" 
-              rf_label field_string_of var_name
-          ) 
-          | T.Rt_repeated_field -> (
-            F.line sc @@ sp 
-              "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_list %s) fmt (Pbrt.Repeated_field.to_list %s);" 
-              rf_label field_string_of var_name
-          ) 
-          end
-        ) (* Rft_repeated_field *)
-
-        | T.Rft_variant_field {T.v_name; v_constructors = _ } -> (
-          (* constructors are ignored because the pretty printing is completely 
-           * delegated to the pretty print function associated with that variant. 
-           * This is indeed different from the [decode]/[encode] functions which 
-           * requires `inlining` the decoding/encoding logic within the record (This 
-           * requirement is indeed comming from the imposed Protobuf format) 
-           *)
-          F.line sc @@ sp 
-            "Pbrt.Pp.pp_record_field \"%s\" %s fmt %s;" 
-            rf_label ("pp_" ^ v_name) var_name
-        ) (* Rft_variant_field *)
-
-        | T.Rft_associative_field (at, _, (key_type,_), (value_type, _)) -> (
-
-          let pp_runtime_function = match at with
-            | T.At_list -> "pp_associative_list"
-            | T.At_hashtable -> "pp_hastable"
-          in
-          let pp_key = gen_pp_field (T.Ft_basic_type key_type) in 
-          let pp_value = gen_pp_field value_type in 
-          F.line sc @@ sp "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.%s %s %s) fmt %s;"
-            rf_label pp_runtime_function pp_key pp_value var_name  
-        ) (* Associative_list *)
-
-      ) r_fields; 
-      F.line sc "Format.pp_close_box fmt ()";
-    );
-    F.line sc "in";
-    F.line sc "Pbrt.Pp.pp_brk pp_i fmt ()";
-  )
-
-let gen_pp_variant ?and_ {T.v_name; T.v_constructors; } sc = 
-  F.line sc @@ sp "%s pp_%s fmt (v:%s) =" (let_decl_of_and and_) v_name v_name; 
-  F.scope sc (fun sc -> 
-    F.line sc "match v with";
-    List.iter (fun {T.vc_constructor;vc_field_type; _ } ->  
-      match vc_field_type with
-      | T.Vct_nullary -> ( 
-        F.line sc @@ sp 
-          "| %s  -> Format.fprintf fmt \"%s\"" 
-          vc_constructor vc_constructor 
-      )
-      | T.Vct_non_nullary_constructor field_type -> (  
-        let field_string_of = gen_pp_field field_type in 
-        F.line sc @@ sp  
-          "| %s x -> Format.fprintf fmt \"@[%s(%%a)@]\" %s x" 
-          vc_constructor vc_constructor field_string_of 
-      )
-    ) v_constructors;
-  )
-
-let gen_pp_const_variant ?and_ {T.cv_name; T.cv_constructors; } sc = 
-  F.line sc @@ sp "%s pp_%s fmt (v:%s) =" (let_decl_of_and and_) cv_name cv_name; 
-  F.scope sc (fun sc -> 
-    F.line sc "match v with";
-    List.iter (fun (name, _ ) -> 
-      F.line sc @@ sp "| %s -> Format.fprintf fmt \"%s\"" name name
-    ) cv_constructors; 
-  )
-
-let gen_struct ?and_ t sc = 
-  begin 
-    match t with
-    | {T.spec = T.Record r  } -> gen_pp_record ?and_ r sc
-    | {T.spec = T.Variant v } -> gen_pp_variant ?and_ v sc
-    | {T.spec = T.Const_variant v } -> gen_pp_const_variant ?and_ v sc
-  end; 
-  true
-
-let gen_sig ?and_ t sc = 
-  let f type_name =  
-    F.line sc @@ sp "val pp_%s : Format.formatter -> %s -> unit " type_name type_name;
-    F.line sc @@ sp "(** [pp_%s v] formats v] *)" type_name;
-  in 
-  begin
-    match t with 
-    | {T.spec = T.Record {T.r_name; _ } } -> f r_name
-    | {T.spec = T.Variant v } -> f v.T.v_name
-    | {T.spec = T.Const_variant {T.cv_name; _ ; } } -> f cv_name
-  end;
-  true
-
-let ocamldoc_title = "Formatters" 
-
-end
-module 
-Pbtt
-= struct
-#1 "pbtt.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-(** Protobuffer Typed tree. 
-
-    The typetree type is parametrized to allow for 2 phase compilation. 
- *)
-
-(** scope of the field type when the field is a message type. 
-    
-    For instance in the following field definition:
-
-    [required foo.bar.Msg1 f = 1]
-
-    The [field_scope] would be [["foo"; "bar"]]
-  *)
-type field_scope = string list 
-
-
-(** In the first phase of the compilation 
-    the field of message type are not resolved but only 
-    properly parsed. 
-    
-    The following type summarizes the information of a field
-    type. 
-
-    In the following field definition:
-    
-    [required foo.bar.Msg1 f = 1] 
-
-    The unresolved type would be {
-      scope=["foo";"bar"]; 
-      type_name="Msg1"; 
-      from_root = false
-    }
- *)
-type unresolved = {
-  scope     : field_scope; 
-  type_name : string; 
-  from_root : bool;  (** from_root indicates that the scope for the type is
-                         from the root of the type system. (ie starts with '.')
-                      *) 
-}
-
-(** After phase 2 compilation the field type is resolved to an 
-    known message which can be uniquely identified by its id.
-  *)
-type resolved = int 
-
-(** field type. 
-    
-    The ['a] type is for re-using the same type 
-    definition for the 2 compilation phases. 
-    
-    After Phase 1 ['a] is [unresolved] while after Phase2
-    ['a] is [resolved].
-  *)
-type 'a field_type = 
-  | Field_type_double 
-  | Field_type_float 
-  | Field_type_int32 
-  | Field_type_int64 
-  | Field_type_uint32 
-  | Field_type_uint64
-  | Field_type_sint32 
-  | Field_type_sint64 
-  | Field_type_fixed32 
-  | Field_type_fixed64 
-  | Field_type_sfixed32 
-  | Field_type_sfixed64
-  | Field_type_bool 
-  | Field_type_string 
-  | Field_type_bytes 
-  | Field_type_type of 'a 
-
-(** field definition. 
-    
-    ['a] is for [unresolved] or [resolved]
-    ['b] is for [field_label] to account for both normal and one of fields. 
-  *)
-type ('a, 'b) field = {
-  field_parsed : 'b Pbpt.field; 
-  field_type : 'a field_type; 
-  field_default : Pbpt.constant option; 
-  field_options : Pbpt.field_options; 
-}
-
-(** oneof definition *)
-type 'a oneof = {
-  oneof_name : string; 
-  oneof_fields : ('a, Pbpt.oneof_label) field list; 
-}
-
-type 'a map = {
-  map_name : string;
-  map_number : int;
-  map_key_type : 'a field_type;
-  map_value_type : 'a field_type;
-  map_options : Pbpt.field_options;
-}
-
-(** type scope 
-    
-    The scope of a type (message or enum) is defined by the package (defined in the 
-    top of the proto file as well as the messages above it since a 
-    message definition can be nested
- *)
-type type_scope = {
-  packages : string list; 
-  message_names : string list; 
-}
-
-(** item for the message body
- *)
-type 'a message_body_content = 
-  | Message_field       of ('a, Pbpt.field_label) field 
-  | Message_oneof_field of 'a oneof 
-  | Message_map_field   of 'a map
-
-and 'a message = {
-  extensions : Pbpt.extension_range list;
-  message_name : string; 
-  message_body : 'a message_body_content list; 
-}
-
-type enum_value = {
-  enum_value_name: string; 
-  enum_value_int : int;
-}
-
-type enum = {
-  enum_name : string; 
-  enum_values: enum_value list; 
-}
-
-type 'a proto_type_spec = 
-  | Enum    of enum 
-  | Message of 'a message
-
-type 'a proto_type  = {
-  scope : type_scope;
-  id :  int; 
-  file_name : string; 
-  file_options : Pbpt.file_option list;
-  spec : 'a proto_type_spec;
-}
-
-type 'a proto = 'a proto_type list 
-
-end
-module Graph : sig 
-#1 "graph.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-(** Basicgraph utilities to produce strongly connected component from 
-    a graph using Tarjan algorithm once.
-  *)
-
-(** {2 Types} *)
-
-type node 
-(** Node in a graph, each node is identified using a unique [int] id *)
-
-type graph 
-(** Graph. *)
-
-(** {2 Creators } *) 
-
-val create_node : int -> int list -> node 
-(** [create_node id sub] create a node uniquely identified with [id] 
-    and connections to other nodes in [sub]. 
-
-    The client application is responsible to ensure that the graph is
-    consistent, by adding all nodes identified in [sub] to the same 
-    graph later. 
-  *)
-
-val empty_graph : graph 
-(** [empty_graph ()] create a new empty graph.*)
-
-val add_node : node -> graph -> graph 
-(** [add_node node graph] add [node] to [graph] 
- *)
-
-(** {2 Algorithms} *)
-
-val tarjan : graph -> int list list  
-(** [tarjan graph] compute the ordered list of strongly connected components of
-    a graph. 
-
-    The returned list is order in decreasing order of dependencies. This means
-    the last component of the list does not link to any other components. 
- *)
-
-end = struct
-#1 "graph.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-module Int_map = Map.Make(struct 
-  type t = int 
-  let  compare = Pervasives.compare
-end)
-
-type node = {
-  id  : int ;
-  sub : int list; 
-} 
-
-let create_node id sub = {
-  id; sub; 
-} 
-
-type graph = node Int_map.t
-
-let empty_graph = Int_map.empty
-
-let add_node ({id; _ } as n) g = 
-  Int_map.add id n g 
-
-(** Options utilities 
-  *)
-module Option = struct 
-  
-  let some x = Some x 
-  
-  let min_value = function 
-    | None   , None 
-    | Some _ , None 
-    | None   , Some _ -> failwith "min_value error"
-    | Some x , Some y -> some @@ min x y  
-
-  let eq_value = function 
-    | None   , None 
-    | Some _ , None 
-    | None   , Some _ -> failwith "eq_value error"
-    | Some x , Some y -> x = y
-
-  let string_of_option f = function 
-    | None -> "None"
-    | Some x -> Printf.sprintf "Some(%s)" (f x)
-end
-
-
-module Tarjan = struct 
-
-  type tnode = {
-    core: node; 
-    mutable index : int option; 
-    mutable lowlink : int option; 
-    mutable on_stack: bool
-  }
-
-  type tgraph = tnode Int_map.t 
-
-  let reset g = 
-    Int_map.map (fun core -> {
-      core; 
-      index  = None;
-      lowlink = None; 
-      on_stack = false;
-    }) g 
-
-  let rec strong_connect (g:tgraph) sccs stack (index:int) (v:tnode)  = 
-  
-    Logger.log "[Graph] processing v [%i], index: %i\n" v.core.id index; 
-    
-    v.index   <- Some index; 
-    v.lowlink <- Some index; 
-    let stack = v::stack in 
-    v.on_stack <- true; 
-  
-    let sccs, stack, index = List.fold_left (fun (sccs, stack, index) id -> 
-      let (w:tnode)  = Int_map.find id g in 
-  
-      Logger.log "[Graph] sub w [%i], w.index: %s\n" 
-        w.core.id (Option.string_of_option string_of_int w.index);
-      match w.index with 
-      | Some _ -> ( 
-        (if w.on_stack 
-        then v.lowlink <- Option.min_value (v.lowlink, w.index) 
-        else ()
-        );
-        (sccs, stack, index) 
-      )
-      | None -> ( 
-          let sccs, stack, index = strong_connect g sccs stack (index + 1) w in  
-          v.lowlink <- Option.min_value (v.lowlink, w.lowlink);
-          (sccs, stack, index) 
-      )
-    ) (sccs, stack, index) v.core.sub 
-    in 
-  
-    Logger.log "[Graph] after sub for v [%i], lowlink: %s, index: %s\n" 
-      v.core.id 
-      (Option.string_of_option string_of_int v.lowlink)
-      (Option.string_of_option string_of_int v.index);
-  
-    Logger.log "[Graph]   -> stack : %s\n" 
-      ("[" ^ (String.concat ";" (List.map (fun {core = {id; _ } ; _ } -> string_of_int id) stack)) ^ "]");
-    if Option.eq_value (v.lowlink, v.index) 
-    then (
-      let scc, stack, _ = List.fold_left (fun (scc, stack, splitted) n -> 
-        if splitted 
-        then scc, n::stack, splitted
-        else (
-          n.on_stack <- false; 
-          if n.core.id = v.core.id 
-          then n.core.id::scc, stack, true
-          else n.core.id::scc, stack, false 
-        )
-      ) ([], [], false) stack in 
-      (scc::sccs, (List.rev stack), index) 
-    )
-    else (sccs, stack, index) 
-
-  let tarjan g = 
-    let g = reset g in 
-    let sccs, _, _ = Int_map.fold (fun _ n (sccs, stack, index) -> 
-      match n.index with 
-      | Some _ -> (sccs, stack, index) 
-      | None   -> strong_connect g sccs stack index n
-    ) g ([], [], 0) in  
-    sccs
-end 
-
-let tarjan = Tarjan.tarjan 
-
-end
-module Pbtt_util : sig 
-#1 "pbtt_util.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-(** Type compilation. 
- 
-    This module is responsible for the typing of the parsed tree. 
-    All field types are eventually resolved. 
-
-    Additionally this module provide convenient function
-    to manipulate the typed tree. 
-  *)
-
-(** {2 Accessors for Pbtt.field type} *)
-
-val field_name   : ('a, 'b)  Pbtt.field -> string 
-(** [field_name field] returns the name [field] *)
-
-val field_number : ('a, 'b)  Pbtt.field -> int
-(** [field_number field] returns the number of [field] *)
-
-val field_type   : ('a, 'b)  Pbtt.field -> 'a Pbtt.field_type
-(** [field_type field] returns the type of [field] *)
-
-val field_label  : ('a, 'b)  Pbtt.field -> 'b 
-(** [field_label field] returns the label of [field] *)
-
-val field_default : ('a, 'b)  Pbtt.field -> Pbpt.constant option
-(** [field_default field] returns the default value of [field] *)
-
-val field_options : ('a, 'b) Pbtt.field -> Pbpt.field_options
-
-val find_field_option : Pbpt.field_options -> string -> Pbpt.constant option 
-
-val field_option : ('a, 'b) Pbtt.field -> string -> Pbpt.constant option
-(** [field_option field option_name] returns the constant associated with 
-    [option_name]. If the fields options does not contain [option_name] [None]
-    is returned.
-  *)
-
-val type_of_id : 'a Pbtt.proto -> int -> 'a Pbtt.proto_type 
-(** [type_of_id all_types id] returns the type associated with the given id, 
-    @raise [Not_found] if the type is not in the all_types. 
-  *)
-
-val string_of_message : int -> Pbtt.type_scope -> 'a Pbtt.message -> string 
-
-(** {2 Accessor for Pbtt.type *) 
-
-val type_id_of_type : 'a Pbtt.proto_type -> int 
-(** [type_id_of_type t] returns the type unique identifier. *)
-
-val type_name_of_type : 'a Pbtt.proto_type -> string
-(** [type_name_of_type t] returns the type name (as defined in the message file) 
-    of [t].
- *)
-
-val type_scope_of_type : 'a Pbtt.proto_type -> Pbtt.type_scope
-(** [type_scope_of_type t] returns the scope of type [t]. *)
-
-val is_empty_message : 'a Pbtt.proto_type -> bool 
-(** [is_empty_message t] returns true if [t] is a message type and 
-    has no fields defined. 
- *)
-
-(** {2 Creator} *) 
-
-val empty_scope : Pbtt.type_scope 
-
-val scope_of_package : string option -> Pbtt.type_scope
-
-(** {2 Compilation routines} *) 
-
-(** Compilation is done in 2 phases. 
-    {ul 
-    {- Phase 1 focuses on flattenning the nested messages and doing a first round
-    of type checking for the various message field. The field type will be
-    either matched with a basic type or parsed into the [unresolved] data
-    structure. This step simply verify that the type definition is well formed
-    but does not check the field type is pointing to an existing type. }
-
-    {- Phase 2 focuses on type resolution. This phase implement the scoping
-    rules defined in the protocol buffer specification to resolve a field type 
-    to a previously defined message. This phase additionally check that field
-    numbers and field names are unique within a message but this logic should be
-    moved to Phase 1}
-    }
-    (** TODO add the grouping phase *)
- *)
-
-val compile_proto_p1  : 
-  string -> 
-  Pbpt.proto ->
-  Pbtt.unresolved Pbtt.proto
-(** [compile_proto_p1 file_name proto] makes a first phase compilation of the 
-    parsed tree. 
- *)
-
-val compile_proto_p2: 
-  Pbtt.unresolved Pbtt.proto -> 
-  Pbtt.unresolved Pbtt.proto_type -> 
-  Pbtt.resolved Pbtt.proto_type
-
-val group: Pbtt.resolved Pbtt.proto -> Pbtt.resolved Pbtt.proto list 
-(** TODO *)
-
-(** {2 For testing only} *) 
-
-val compile_message_p2: 
-  Pbtt.unresolved Pbtt.proto -> 
-  Pbtt.type_scope -> 
-  Pbtt.unresolved Pbtt.message -> 
-  Pbtt.resolved Pbtt.message 
-
-val compile_message_p1 : 
-  string -> 
-  Pbpt.file_option list ->
-  Pbtt.type_scope -> 
-  Pbpt.message ->
-  Pbtt.unresolved Pbtt.proto
-
-val compile_oneof_p1: Pbpt.oneof -> Pbtt.unresolved Pbtt.oneof
-
-val compile_field_p1: 'a Pbpt.field -> (Pbtt.unresolved, 'a ) Pbtt.field 
-
-val find_all_types_in_field_scope : 
-  'a Pbtt.proto -> 
-  Pbtt.field_scope-> 
-  'a Pbtt.proto
-
-end = struct
-#1 "pbtt_util.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-*)
-
-module E = Exception 
-module L = Logger 
-
-let field_name {Pbtt.field_parsed; _ } = 
-  let {Pbpt.field_name; _ } = field_parsed in 
-  field_name 
-
-let field_number {Pbtt.field_parsed = {Pbpt.field_number;_}; _ } = 
-  field_number 
-
-let field_type {Pbtt.field_type; _ } = 
-  field_type
-
-let field_label {Pbtt.field_parsed = {Pbpt.field_label; _ }; _ } = 
-  field_label 
-
-let field_default {Pbtt.field_default; _ } = field_default 
-
-let field_options {Pbtt.field_options; _ } = field_options 
-
-let find_field_option field_options option_name = 
-  match List.assoc option_name field_options with
-  | x -> Some x 
-  | exception Not_found -> None  
-
-let field_option {Pbtt.field_options; _ } option_name = 
-  find_field_option field_options option_name 
-  
-let empty_scope  = { 
-  Pbtt.packages = []; 
-  message_names = [] 
-} 
-
-let type_id_of_type {Pbtt.id; _ } = id 
-
-let type_of_id all_types id  = 
-  List.find (fun t -> type_id_of_type t = id) all_types 
-
-let string_of_unresolved { Pbtt.scope; type_name; from_root }  =
-    Printf.sprintf "unresolved:{scope %s, type_name: %s, from_root: %b}"
-    (Util.string_of_string_list scope) 
-    type_name 
-    from_root  
-
-let string_of_type_scope {Pbtt.packages; message_names}  = 
-  Printf.sprintf "scope:{packages:%s, message_names:%s}" 
-    (Util.string_of_string_list packages)
-    (Util.string_of_string_list message_names) 
-
-let string_of_message id scope {Pbtt.message_name; message_body} = 
-  Printf.sprintf "message: {id:%i, message_scope:%s, name:%s, field nb:%i}" 
-    id 
-    (string_of_type_scope scope) 
-    message_name
-    (List.length message_body)
-
-let scope_of_package = function
-  | Some s -> {empty_scope with 
-    Pbtt.packages = List.rev @@ Util.rev_split_by_char '.' s
-  }
-  | None -> empty_scope 
-
-let unresolved_of_string s = 
-  match Util.rev_split_by_char '.' s with 
-  | [] -> E.programmatic_error E.Invalid_string_split
-  | hd :: tl -> {
-    Pbtt.scope = (List.rev tl); 
-    Pbtt.type_name = hd;
-    Pbtt.from_root = String.get s 0 = '.';
-  }
-
-let field_type_of_string = function
- | "double"    -> Pbtt.Field_type_double 
- | "float"     -> Pbtt.Field_type_float 
- | "int32"     -> Pbtt.Field_type_int32 
- | "int64"     -> Pbtt.Field_type_int64 
- | "uint32"    -> Pbtt.Field_type_uint32 
- | "uint64"    -> Pbtt.Field_type_uint64
- | "sint32"    -> Pbtt.Field_type_sint32 
- | "sint64"    -> Pbtt.Field_type_sint64 
- | "fixed32"   -> Pbtt.Field_type_fixed32 
- | "fixed64"   -> Pbtt.Field_type_fixed64 
- | "sfixed32"  -> Pbtt.Field_type_sfixed32 
- | "sfixed64"  -> Pbtt.Field_type_sfixed64
- | "bool"      -> Pbtt.Field_type_bool 
- | "string"    -> Pbtt.Field_type_string 
- | "bytes"     -> Pbtt.Field_type_bytes 
- | s  -> Pbtt.Field_type_type  (unresolved_of_string s) 
-
-let map_field_type : 'a Pbtt.field_type  -> 'b Pbtt.field_type = function  
- | Pbtt.Field_type_double     -> Pbtt.Field_type_double    
- | Pbtt.Field_type_float      -> Pbtt.Field_type_float 
- | Pbtt.Field_type_int32      -> Pbtt.Field_type_int32 
- | Pbtt.Field_type_int64      -> Pbtt.Field_type_int64 
- | Pbtt.Field_type_uint32     -> Pbtt.Field_type_uint32 
- | Pbtt.Field_type_uint64     -> Pbtt.Field_type_uint64
- | Pbtt.Field_type_sint32     -> Pbtt.Field_type_sint32 
- | Pbtt.Field_type_sint64     -> Pbtt.Field_type_sint64 
- | Pbtt.Field_type_fixed32    -> Pbtt.Field_type_fixed32 
- | Pbtt.Field_type_fixed64    -> Pbtt.Field_type_fixed64 
- | Pbtt.Field_type_sfixed32   -> Pbtt.Field_type_sfixed32 
- | Pbtt.Field_type_sfixed64   -> Pbtt.Field_type_sfixed64
- | Pbtt.Field_type_bool       -> Pbtt.Field_type_bool 
- | Pbtt.Field_type_string     -> Pbtt.Field_type_string 
- | Pbtt.Field_type_bytes      -> Pbtt.Field_type_bytes 
- | Pbtt.Field_type_type _ -> E.programmatic_error E.Unexpected_field_type 
-
-let compile_default_p2 all_types field = 
-  let field_name = field_name field in 
-  let field_type = field_type field in 
-  let field_default = field_default field in  
-  match field_default with
-  | None -> None
-  | Some constant -> (
-    match field_type with  
-    | Pbtt.Field_type_double 
-    | Pbtt.Field_type_float -> (
-      match constant with 
-      | Pbpt.Constant_int i   -> Some (Pbpt.Constant_float (float_of_int i))
-      | Pbpt.Constant_float _ -> Some constant 
-      | _  -> 
-        E.invalid_default_value 
-          ~field_name ~info:"invalid default type (float/int expected)" ()
-    )
-    | Pbtt.Field_type_int32 
-    | Pbtt.Field_type_int64 
-    | Pbtt.Field_type_sint32 
-    | Pbtt.Field_type_sint64 
-    | Pbtt.Field_type_fixed32 
-    | Pbtt.Field_type_fixed64 
-    | Pbtt.Field_type_sfixed32 
-    | Pbtt.Field_type_sfixed64 -> (
-      match constant with 
-      | Pbpt.Constant_int _ -> Some constant
-      | _ -> E.invalid_default_value ~field_name ~info:"invalid default type (int expected)" ()
-    )
-    | Pbtt.Field_type_uint32 
-    | Pbtt.Field_type_uint64 -> (
-      match constant with 
-      | Pbpt.Constant_int i -> if i >=0 
-        then Some constant 
-        else E.invalid_default_value 
-          ~field_name ~info:"negative default value for unsigned int" () 
-      | _ -> E.invalid_default_value
-          ~field_name ~info:"invalid default type (int expected)" ()
-    )
-    | Pbtt.Field_type_bool -> (
-      match constant with 
-      | Pbpt.Constant_bool _ -> Some constant
-      | _  -> E.invalid_default_value 
-        ~field_name ~info:"invalid default type (bool expected)" ()
-    ) 
-    | Pbtt.Field_type_string -> (
-      match constant with 
-      | Pbpt.Constant_string _ -> Some constant 
-      | _  -> E.invalid_default_value ~field_name ~info:"invalid default type (string expected)" ()
-    ) 
-    | Pbtt.Field_type_bytes -> E.invalid_default_value 
-      ~field_name ~info:"default value not supported for bytes" ()
-    | Pbtt.Field_type_type (id:Pbtt.resolved) -> (
-      match constant with 
-      | Pbpt.Constant_litteral default_enum_value -> (
-        let {Pbtt.spec; _ } = type_of_id all_types id in 
-        match spec with 
-        | Pbtt.Message _ -> E.invalid_default_value 
-          ~field_name ~info:"field of type message cannot have a default litteral value" ()
-        | Pbtt.Enum {Pbtt.enum_values; _ } -> ( 
-          let default_enum_value = Util.apply_until (fun {Pbtt.enum_value_name; _ } -> 
-            if enum_value_name = default_enum_value 
-            then Some enum_value_name 
-            else None
-          ) enum_values 
-          in
-          match default_enum_value with
-          | Some _ -> Some constant
-          | None   -> E.invalid_default_value 
-            ~field_name ~info:"Invalid default enum value" () 
-        )
-      ) 
-      | _ -> E.invalid_default_value 
-        ~field_name ~info:"default value not supported for message" ()
-    )
-  )
-
-let get_default field_name field_options field_type = 
-  match List.assoc "default" field_options with
-  | constant -> Some constant (* (compile_default field_name constant field_type) *)
-  | exception Not_found -> None 
-
-let compile_field_p1 ({
-    Pbpt.field_name;
-    Pbpt.field_number = _ ;
-    Pbpt.field_label  = _ ;
-    Pbpt.field_type;
-    Pbpt.field_options;
-  } as field_parsed) = 
-
-  let field_type    = field_type_of_string field_type in 
-  let field_default = get_default field_name field_options field_type in 
-  {
-    Pbtt.field_parsed;
-    Pbtt.field_type;
-    Pbtt.field_default;
-    Pbtt.field_options;
-  }
-
-let compile_map_p1 ({
-    Pbpt.map_name;
-    Pbpt.map_number;
-    Pbpt.map_key_type;
-    Pbpt.map_value_type;
-    Pbpt.map_options;
-  }) = 
-
-  Pbtt.({
-    map_name; 
-    map_number;
-    map_key_type = field_type_of_string map_key_type;
-    map_value_type = field_type_of_string map_value_type;
-    map_options;
-  })
-
-let compile_oneof_p1 ({
-    Pbpt.oneof_name; 
-    Pbpt.oneof_fields;
-  }) = 
-  {
-    Pbtt.oneof_name; 
-    Pbtt.oneof_fields = List.map compile_field_p1 oneof_fields; 
-  }
-  
-let not_found f : bool = 
-  try f () ; false 
-  with | Not_found -> true 
-
-let rec list_assoc2 x = function
-    [] -> raise Not_found
-  | (a,b)::l -> if compare b x = 0 then a else list_assoc2 x l
-
-(** type creation function *)
-let type_of_spec file_name file_options id scope spec = { 
-  Pbtt.id; 
-  Pbtt.scope;
-  Pbtt.file_name;
-  Pbtt.file_options;
-  Pbtt.spec; 
-}
-
-(** compile a [Pbpt] enum to a [Pbtt] type *) 
-let compile_enum_p1 file_name file_options scope {Pbpt.enum_id; enum_name; enum_values } : 'a Pbtt.proto_type =  
-  let enum_values = List.map (fun enum_value -> {
-    Pbtt.enum_value_name = enum_value.Pbpt.enum_value_name;
-    Pbtt.enum_value_int = enum_value.Pbpt.enum_value_int;
-  }) enum_values in 
-
-  type_of_spec file_name file_options enum_id scope (Pbtt.Enum {
-    Pbtt.enum_name;
-    Pbtt.enum_values
-  })
-
-(** compile a [Pbpt] message a list of [Pbtt] types (ie messages can 
-    defined more than one type). 
-  *)
-let rec compile_message_p1 file_name file_options message_scope ({
-  Pbpt.id;
-  Pbpt.message_name; 
-  Pbpt.message_body; 
-})  = 
-  
-  let {Pbtt.message_names; _ } = message_scope in  
-  let sub_scope = {message_scope with 
-    Pbtt.message_names = message_names @ [message_name] 
-  } in 
-
-  let message_body, extensions, all_sub = List.fold_left (fun (message_body, extensions, all_types) -> function  
-    | Pbpt.Message_field f -> 
-        let field = Pbtt.Message_field (compile_field_p1 f) in 
-        (field  :: message_body, extensions, all_types)
-    | Pbpt.Message_map_field m ->
-        let field = Pbtt.Message_map_field (compile_map_p1 m) in
-        (* 
-        let field = Pbtt.Message_field field in
-        let extra_types = compile_message_p1 file_name file_options sub_scope extra_type in
-        *)
-        (field  :: message_body, extensions, all_types) 
-    | Pbpt.Message_oneof_field o -> 
-        let field = Pbtt.Message_oneof_field (compile_oneof_p1 o) in 
-        (field :: message_body, extensions, all_types)
-    | Pbpt.Message_sub m -> 
-        let all_sub_types = compile_message_p1 file_name file_options sub_scope m in 
-        (message_body,  extensions, all_types @ all_sub_types)
-    | Pbpt.Message_enum ({Pbpt.enum_id; _ } as enum)-> 
-        (
-          message_body,  
-          extensions, 
-          all_types @ [compile_enum_p1 file_name file_options sub_scope enum]
-        )
-    | Pbpt.Message_extension extension_ranges -> 
-        (message_body,  extensions @ extension_ranges , all_types)
-  ) ([], [], []) message_body in
-  
-  let message_body = List.rev message_body in 
-  
-  (* Both field name and field number must be unique 
-     within a message scope. This includes the field in a 
-     oneof field inside the message. 
-
-     This function verifies this constrain and raises
-     the corresponding Duplicated_field_number exception in 
-     case it is violated. 
-  *)
-  let validate_duplicate (number_index:(int*string) list) field = 
-    let number = field_number field in 
-    let name   = field_name   field in 
-    if not_found (fun () -> ignore @@ List.assoc  number number_index) && 
-       not_found (fun () -> ignore @@ list_assoc2 name   number_index)
-    then 
-      (number, name)::number_index
-    else 
-      E.duplicated_field_number 
-        ~field_name:name ~previous_field_name:"" ~message_name ()
-  in
-
-  ignore @@ List.fold_left (fun number_index -> function 
-    | Pbtt.Message_field f -> validate_duplicate number_index f
-    | Pbtt.Message_oneof_field {Pbtt.oneof_fields; _ } ->
-       List.fold_left validate_duplicate number_index oneof_fields
-    (* TODO: add support for map *) | _ -> number_index 
-  ) [] message_body ;  
-
-  all_sub @ [type_of_spec file_name file_options id message_scope Pbtt.(Message {
-    extensions; 
-    message_name; 
-    message_body;
-  })] 
-
-let compile_proto_p1 file_name {Pbpt.package; messages; enums; file_options; _ } =  
-  let scope = scope_of_package package in 
-  let pbtt_msgs = List.fold_right (fun e pbtt_msgs -> 
-    (compile_enum_p1 file_name file_options scope e) :: pbtt_msgs 
-  ) enums [] in
-  List.fold_left (fun pbtt_msgs pbpt_msg -> 
-    pbtt_msgs @ compile_message_p1 file_name file_options scope pbpt_msg
-  ) pbtt_msgs messages 
-
-let type_scope_of_type {Pbtt.scope; _ } = scope 
-
-let is_empty_message = function 
-  | {Pbtt.spec = Pbtt.Message {Pbtt.message_body;_} } -> 
-    0 = List.length message_body 
-  | _ -> false
-
-let type_name_of_type = function
-  | {Pbtt.spec = Pbtt.Enum {Pbtt.enum_name; _ } } -> enum_name 
-  | {Pbtt.spec = Pbtt.Message {Pbtt.message_name; _ } } -> message_name
-
-let find_all_types_in_field_scope all_types (scope:Pbtt.field_scope) = 
-  List.filter (fun t -> 
-    let {Pbtt.packages; Pbtt.message_names; } = type_scope_of_type t in 
-    let dec_scope = packages @ message_names in 
-    dec_scope = scope
-  ) all_types
-
-
-let compile_message_p2 types {Pbtt.packages; Pbtt.message_names; } ({
-  Pbtt.message_name; 
-  Pbtt.message_body} as message)  = 
-
-  (* stringify the message scope so that it can 
-     be used with the field scope. 
-     
-     see `Note on scoping` in the README.md file
-   *)
-  let message_scope = packages @ message_names @ [message_name] in 
-
-  let process_field_in_scope types scope type_name = 
-    let types = find_all_types_in_field_scope types scope in 
-    try 
-      let t =  List.find (fun t -> 
-        type_name = type_name_of_type t 
-      ) types in
-      Some (type_id_of_type t)  
-     with | Not_found -> None 
-  in 
-
-  (* this method returns all the scope to search for a type starting 
-     by the most innner one first. 
-
-     if [message_scope] = ['Msg1'; 'Msg2'] and [field_scope] = ['Msg3'] then 
-     the following scopes will be returned:
-     [
-       ['Msg1'; 'Msg2'; 'Msg3'];  // This would be the scope of the current msg
-       ['Msg1'; 'Msg3'; ];        // Outer message scope
-       ['Msg3'; ]                 // Top level scope
-     ]
-  *)
-  let search_scopes (field_scope:string list) from_root : (string list) list = 
-    if from_root
-    then [field_scope]
-    else 
-      let rec loop scopes = function
-        | [] -> field_scope::scopes 
-        | l  -> 
-          loop ((l @ field_scope)::scopes) (Util.pop_last l)
-      in 
-      List.rev @@ loop [] message_scope 
-  in 
-    
-  let compile_field_p2 field_name field_type = 
-    L.log "[pbtt] field_name: %s\n" field_name; 
-    match field_type with 
-    | Pbtt.Field_type_type ({Pbtt.scope; type_name; from_root} as unresolved) -> ( 
-
-      L.endline @@ "[pbtt] " ^ string_of_unresolved unresolved ; 
-      
-      let search_scopes = search_scopes scope from_root in 
-
-      L.log "[pbtt] message scope: %s\n" @@ Util.string_of_string_list message_scope;
-      List.iteri (fun i scope -> 
-        L.log "[pbtt] search_scope[%2i] : %s\n" i @@ Util.string_of_string_list scope 
-      ) search_scopes;
-
-      let id = Util.apply_until (fun scope -> 
-        process_field_in_scope types scope type_name
-      ) search_scopes in 
-      (* TODO this is where we are resolving and potentially where we 
-         could keep track of the whether it's a message or enum 
+      (* TODO enhancement
+       * For the value decoding function passed as an argument to [Pbrt.Decoder.map_entry] 
+       * it's not always the case that it would require nesting. In the 
+       * case it does not neeed a nested decoder we can avoid creating 
+       * a closure and therefore improving the performance. 
        *)
-      
-      match id with 
-      | Some id -> (Pbtt.Field_type_type id:Pbtt.resolved Pbtt.field_type) 
-      | None    -> 
-        E.unresolved_type ~field_name ~type_:type_name ~message_name () 
-    )
-    | field_type -> map_field_type field_type
-  in
-
-  let message_body = List.fold_left (fun message_body  -> function
-
-    | Pbtt.Message_field field->
-      let field_name = field_name field in 
-      let field_type = field_type field in  
-      let field      = {field with Pbtt.field_type = compile_field_p2 field_name field_type} in  
-      let field      = {field with Pbtt.field_default = compile_default_p2 types field} in  
-      Pbtt.Message_field field :: message_body
-
-    | Pbtt.Message_oneof_field ({Pbtt.oneof_fields; _ } as oneof )  -> 
-      let oneof_fields = List.fold_left (fun oneof_fields field -> 
-        let field_name = field_name field in
-        let field_type = field_type field in 
-        let field_type = compile_field_p2 field_name field_type in  
-        {field with Pbtt.field_type }:: oneof_fields 
-      ) [] oneof_fields in  
-      let oneof_fields = List.rev oneof_fields in 
-      Pbtt.Message_oneof_field {oneof with Pbtt.oneof_fields } :: message_body 
-
-    | Pbtt.Message_map_field map -> 
-      let {
-        Pbtt.map_name; 
-        map_number; 
-        map_key_type; 
-        map_value_type; 
-        map_options; } = map in 
-      let map_key_type = compile_field_p2 map_name map_key_type in 
-        (* TODO: add validation about the key type which in protobuf is limited 
-         * to basic types. 
-         *) 
-      let map_value_type = compile_field_p2 map_name map_value_type in 
-      let resolved_map   = Pbtt.(Message_map_field  {
-        map_name;
-        map_number;
-        map_key_type;
-        map_value_type;
-        map_options;
-      }) in 
-      resolved_map :: message_body 
-       
-  ) [] message_body in 
-  let message_body = List.rev message_body in 
-  {message with Pbtt.message_body; }
-
-let compile_proto_p2 all_types t = 
-  match t with 
-  | {Pbtt.file_name; file_options; id; scope; spec = Pbtt.Message  m } -> {
-    Pbtt.file_name; 
-    Pbtt.file_options;
-    Pbtt.scope;
-    Pbtt.id; 
-    Pbtt.spec = Pbtt.Message (compile_message_p2 all_types scope m) 
-  }
-  | {Pbtt.file_name; file_options; id; scope; spec = (Pbtt.Enum _ ) as spec ; } ->  { 
-    Pbtt.file_name; 
-    Pbtt.file_options; 
-    Pbtt.id;
-    Pbtt.scope;
-    Pbtt.spec; 
-  } 
-
-let node_of_proto_type = function 
-  | {Pbtt.id; Pbtt.spec = Pbtt.Enum _ ; _ }  -> Graph.create_node id [] 
-  | {Pbtt.id; Pbtt.spec = Pbtt.Message {Pbtt.message_body; _ }; _ } -> 
-    let sub = List.flatten @@ List.map (function
-      | Pbtt.Message_field {Pbtt.field_type; _ } -> (
-        match field_type with
-        | Pbtt.Field_type_type x -> [x]
-        | _                      -> []
-      )
-
-      | Pbtt.Message_oneof_field {Pbtt.oneof_fields; _ } -> 
-        List.flatten @@ List.map (fun {Pbtt.field_type; _ } -> (
-         match field_type with
-         | Pbtt.Field_type_type x -> [x]
-         | _ -> []
-        )
-        ) oneof_fields  
-
-      | Pbtt.Message_map_field {Pbtt.map_value_type; _ } -> 
-         begin match map_value_type with
-         | Pbtt.Field_type_type x -> [x]
-         | _ -> []
-         end
-
-    ) message_body in 
-    Graph.create_node id sub
-
-let is_id input_id {Pbtt.id; _ } = (input_id = id) 
-
-let group proto = 
-  let g    = List.map node_of_proto_type proto  in 
-  let g    = List.fold_left (fun m n -> 
-    Graph.add_node n m 
-  ) Graph.empty_graph g in 
-  let sccs = Graph.tarjan g in 
-  List.map (fun l -> 
-    List.map (fun id -> List.find (is_id id) proto) l 
-  ) sccs 
-
-end
-module Codegen_type : sig 
-#1 "codegen_type.mli"
-  
-
-include Codegen.S
-
-end = struct
-#1 "codegen_type.ml"
-
-module T = Ocaml_types
-module F = Fmt
-
-open Codegen_util
-
-let type_decl_of_and = function | Some () -> "and" | None -> "type" 
-
-let gen_type_record ?mutable_ ?and_ {T.r_name; r_fields } sc = 
-
-  let mutable_ = match mutable_ with
-    | Some () -> true
-    | None    -> false 
-  in 
-
-  let is_imperative_type = function
-    | T.Rft_required _ 
-    | T.Rft_optional _ 
-    | T.Rft_variant_field _ 
-    | T.Rft_repeated_field (T.Rt_list, _, _, _, _) 
-    | T.Rft_associative_field (T.At_list, _, _, _) -> false 
-
-    | T.Rft_repeated_field (T.Rt_repeated_field,_, _, _, _) 
-    | T.Rft_associative_field (T.At_hashtable, _, _, _) -> true
-  in
-    
-  let field_prefix field_type field_mutable = 
-    if field_mutable 
-    then "mutable "
-    else 
-      if is_imperative_type field_type 
-      then "" 
-      else if mutable_ then "mutable " else ""
-  in
-
-  let r_name = 
-    if mutable_ 
-    then Codegen_util.mutable_record_name r_name 
-    else r_name 
-  in 
-
-  F.line sc @@ sp "%s %s = {" (type_decl_of_and and_) r_name;
-  F.scope sc (fun sc -> 
-    List.iter (fun {T.rf_label; rf_field_type; rf_mutable;} ->  
-      let prefix = field_prefix rf_field_type rf_mutable in 
-      let type_string = Codegen_util.string_of_record_field_type rf_field_type in 
-      F.line sc @@ sp "%s%s : %s;" prefix rf_label type_string 
-    ) r_fields;
-  ); 
-  F.line sc "}"
-
-let gen_type_variant ?and_ variant sc =  
-  let {T.v_name; v_constructors; } = variant in
-
-  F.line sc @@ sp "%s %s =" (type_decl_of_and and_) v_name; 
-
-  F.scope sc (fun sc -> 
-    List.iter (fun {T.vc_constructor; vc_field_type; _} ->
-      match vc_field_type with
-      | T.Vct_nullary -> F.line sc @@ sp "| %s" vc_constructor
-      | T.Vct_non_nullary_constructor  field_type -> (
-        let type_string = string_of_field_type field_type in 
-        F.line sc @@ sp "| %s of %s" vc_constructor type_string 
-      )
-    ) v_constructors;
-  )
-
-let gen_type_const_variant ?and_ {T.cv_name; cv_constructors} sc = 
-  F.line sc @@ sp "%s %s =" (type_decl_of_and and_) cv_name; 
-  F.scope sc (fun sc -> 
-    List.iter (fun (name, _ ) -> 
-      F.line sc @@ sp "| %s " name
-    ) cv_constructors;
-  )
-
-let gen_struct ?and_ t scope = 
-  begin
-    match t with 
-    | {T.spec = T.Record r; _ } -> (
-      gen_type_record  ?and_ r scope; 
-      F.empty_line scope;
-      gen_type_record ~mutable_:() ~and_:() r scope 
-    ) 
-    | {T.spec = T.Variant v; _ } -> gen_type_variant  ?and_ v scope  
-    | {T.spec = T.Const_variant v; _ } -> gen_type_const_variant ?and_ v scope 
-  end; 
-  true
-
-let gen_sig ?and_ t scope = 
-  begin
-    match t with 
-    | {T.spec = T.Record r; _ } -> (
-      gen_type_record  ?and_ r scope 
-    ) 
-    | {T.spec = T.Variant v; _ } -> gen_type_variant  ?and_ v scope  
-    | {T.spec = T.Const_variant v; _ } -> gen_type_const_variant ?and_ v scope 
-  end; 
-  true
-
-let ocamldoc_title = "Types"
-
-end
-module Codegen_encode : sig 
-#1 "codegen_encode.mli"
-
-
-include Codegen.S
-
-end = struct
-#1 "codegen_encode.ml"
-
-module T = Ocaml_types
-module F = Fmt 
-module E = Exception
-module L = Logger
-
-open Codegen_util
-
-let constructor_name s =
-  String.capitalize @@ String.lowercase s 
-
-let gen_encode_field_key sc number pk is_packed = 
-  F.line sc @@ sp "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; " 
-    number (constructor_name @@ Codegen_util.string_of_payload_kind pk is_packed)
-  
-let encode_basic_type bt pk = 
-  Backend_ocaml_static.runtime_function (`Encode, pk, bt) 
-
-let gen_encode_field_type ?with_key sc var_name encoding_number pk is_packed field_type = 
-
-  let encode_key sc = 
-    match with_key with
-    | Some () -> gen_encode_field_key sc encoding_number pk is_packed 
-    | None -> ()
-  in 
-
-  match field_type with 
-  | T.Ft_user_defined_type ud -> (
-    encode_key sc;
-    let f_name = function_name_of_user_defined "encode" ud in 
-    if ud.T.udt_nested 
-    then F.line sc @@ sp "Pbrt.Encoder.nested (%s %s) encoder;" f_name var_name
-    else F.line sc @@ sp "%s %s encoder;" f_name var_name
-  )
-  | T.Ft_unit -> (
-    encode_key sc;
-    F.line sc "Pbrt.Encoder.empty_nested encoder;" 
-  )
-  | T.Ft_basic_type bt -> ( 
-    encode_key sc;
-    let rt = encode_basic_type bt pk in 
-    F.line sc @@ sp "%s %s encoder;" rt var_name
-  )
-
-let gen_encode_record ?and_ {T.r_name; r_fields } sc = 
-  L.log "gen_encode_record record_name: %s\n" r_name;
-
-  let rn = r_name in 
-  F.line sc @@ sp "%s encode_%s (v:%s) encoder = " (let_decl_of_and and_) rn rn;
-  F.scope sc (fun sc -> 
-    List.iter (fun record_field -> 
-      let {T.rf_label; rf_field_type; _ } = record_field in  
-
-      match rf_field_type with 
-      | T.Rft_required (field_type, encoding_number, pk, _) -> ( 
-        let var_name = sp "v.%s" rf_label in 
-        gen_encode_field_type ~with_key:() sc var_name encoding_number pk false (* packed *) field_type
-      )
-      | T.Rft_optional (field_type, encoding_number, pk, _) -> (
-        F.line sc "(";
-        F.scope sc (fun sc -> 
-          F.line sc @@ sp "match v.%s with " rf_label;
-          F.line sc @@ sp "| Some x -> (";
+      process_field_common sc encoding_number "Bytes" (fun sc ->
+          F.line sc "let decode_value = (fun d ->" ;
           F.scope sc (fun sc ->
-            gen_encode_field_type ~with_key:() sc "x" encoding_number pk false field_type;
-          ); 
-          F.line sc ")";
-          F.line sc "| None -> ();";
-        );
-        F.line sc ");";
-      )
-      | T.Rft_repeated_field (rt, field_type, encoding_number, pk, is_packed) -> (
-        match rt, is_packed with
-        | T.Rt_list, false -> (
-          F.line sc "List.iter (fun x -> ";
-          F.scope sc (fun sc -> 
-            gen_encode_field_type ~with_key:() sc "x" encoding_number pk is_packed field_type;
-          );
-          F.line sc @@ sp ") v.%s;" rf_label; 
-        ) 
-        | T.Rt_repeated_field, false -> ( 
-          F.line sc "Pbrt.Repeated_field.iter (fun x -> ";
-          F.scope sc (fun sc -> 
-            gen_encode_field_type ~with_key:() sc "x" encoding_number pk is_packed field_type;
-          );
-          F.line sc @@ sp ") v.%s;" rf_label; 
-        ) 
-        | T.Rt_list, true -> (
-          gen_encode_field_key sc encoding_number pk is_packed;
-            (* When packed the key is encoded once. 
-             *)
-          F.line sc "Pbrt.Encoder.nested (fun encoder ->";
-          F.scope sc (fun sc -> 
-            F.line sc "List.iter (fun x -> ";
-            F.scope sc (fun sc -> 
-              gen_encode_field_type sc "x" encoding_number pk is_packed field_type;
-            );
-            F.line sc @@ sp ") v.%s;" rf_label; 
-          );
-          F.line sc ") encoder;";
-        ) 
-        | T.Rt_repeated_field, true -> (
-          gen_encode_field_key sc encoding_number pk is_packed;
-            (* When packed the key is encoded once. 
-             *)
-          F.line sc "Pbrt.Encoder.nested (fun encoder ->";
-          F.scope sc (fun sc -> 
-            F.line sc "Pbrt.Repeated_field.iter (fun x -> ";
-            F.scope sc (fun sc -> 
-              gen_encode_field_type sc "x" encoding_number pk is_packed field_type;
-            );
-            F.line sc @@ sp ") v.%s;" rf_label; 
-          );
-          F.line sc") encoder;";
-        ) 
-      ) 
-      | T.Rft_variant_field {T.v_name; v_constructors; } -> (
-        F.line sc  "(";
-        F.scope sc (fun sc -> 
-          F.line sc @@ sp "match v.%s with" rf_label;
-          List.iter (fun {T.vc_constructor; vc_field_type; vc_encoding_number; vc_payload_kind} -> 
-            begin match vc_field_type with
-            | T.Vct_nullary -> ( 
-              F.line sc @@ sp "| %s -> (" vc_constructor; 
-              F.scope sc (fun sc -> 
-                gen_encode_field_key sc vc_encoding_number vc_payload_kind false;
-                F.line sc "Pbrt.Encoder.empty_nested encoder";
-              );
-              F.line sc ")";
-            )
-            | T.Vct_non_nullary_constructor field_type -> (
-              F.line sc @@ sp "| %s x -> (" vc_constructor;
-              F.scope sc (fun sc -> 
-                gen_encode_field_type sc ~with_key:() "x" vc_encoding_number vc_payload_kind false field_type  
-              ); 
-              F.line sc  ")";
-            )
-            end;
-          ) v_constructors;
-        );
-        F.line sc ");"
-      ) 
-      | T.Rft_associative_field (at, encoding_number, (key_type, key_pk), (value_type, value_pk)) -> (
-        F.line sc @@ sp "let encode_key = %s in" (encode_basic_type key_type key_pk);
-        F.line sc "let encode_value = (fun x encoder ->";
-        F.scope sc (fun sc -> 
-          gen_encode_field_type sc "x" (-1 (* TODO *)) value_pk false value_type;
-        );
-        F.line sc ") in";
-
-        begin match at with
-        | T.At_list -> (
-           F.line sc "List.iter (fun (k, v) ->"; 
-        )
-        | T.At_hashtable -> (
-          F.line sc "Hashtbl.iter (fun k v ->";
-        )
-        end; 
-        F.scope sc (fun sc ->
-          gen_encode_field_key sc encoding_number T.Pk_bytes false;
-          F.line sc @@ sp "let map_entry = (k, Pbrt.%s), (v, Pbrt.%s) in"
-            (Codegen_util.string_of_payload_kind ~capitalize:() key_pk false) 
-            (Codegen_util.string_of_payload_kind ~capitalize:() value_pk false); 
-          F.line sc "Pbrt.Encoder.map_entry ~encode_key ~encode_value map_entry encoder"
-        );
-        F.line sc @@ sp ") v.%s;" rf_label;
-      ) 
-      
-    ) r_fields (* List.iter *); 
-    F.line sc "()";
-  ) (* encode function *)
-
-let gen_encode_variant ?and_ variant sc = 
-  let {T.v_name; T.v_constructors} = variant in 
-  let vn = v_name in  
-  F.line sc @@ sp "%s encode_%s (v:%s) encoder = " (let_decl_of_and and_) vn vn;
-  F.scope sc (fun sc -> 
-    F.line sc "match v with";
-    List.iter (fun {T.vc_constructor; vc_field_type; vc_encoding_number; vc_payload_kind} -> 
-      begin match vc_field_type with
-      | T.Vct_nullary -> ( 
-        F.line sc @@ sp "| %s -> (" vc_constructor; 
-        F.scope sc (fun sc -> 
-          gen_encode_field_key sc vc_encoding_number vc_payload_kind false;
-          F.line sc "Pbrt.Encoder.empty_nested encoder";
-        );
-        F.line sc ")";
-      )
-      | T.Vct_non_nullary_constructor field_type -> (
-        F.line sc @@ sp "| %s x -> (" vc_constructor;
-        F.scope sc (fun sc -> 
-          gen_encode_field_type sc ~with_key:() "x" vc_encoding_number vc_payload_kind false field_type  
-        ); 
-        F.line sc  ")";
-      )
-      end;
-    ) v_constructors;
-  ) 
-
-let gen_encode_const_variant ?and_ {T.cv_name; T.cv_constructors; } sc = 
-  F.line sc @@ sp "%s encode_%s (v:%s) encoder =" (let_decl_of_and and_) cv_name cv_name; 
-  F.scope sc (fun sc -> 
-    F.line sc "match v with";
-    List.iter (fun (name, value) -> 
-      F.line sc (
-        if value > 0 
-        then sp "| %s -> Pbrt.Encoder.int_as_varint %i encoder" name value
-        else sp "| %s -> Pbrt.Encoder.int_as_varint (%i) encoder" name value
-      )
-    ) cv_constructors; 
-  )
-
-let gen_struct ?and_ t sc  = 
-  let (), has_encoded = match t with 
-    | {T.spec = T.Record r } -> gen_encode_record  ?and_ r sc, true
-    | {T.spec = T.Variant v } -> gen_encode_variant ?and_ v sc, true 
-    | {T.spec = T.Const_variant v } ->
-      gen_encode_const_variant ?and_ v sc, true
-  in 
-  has_encoded
-
-let gen_sig ?and_ t sc = 
-  let f type_name = 
-    F.line sc @@ sp "val encode_%s : %s -> Pbrt.Encoder.t -> unit" type_name type_name;
-    F.line sc @@ sp "(** [encode_%s v encoder] encodes [v] with the given [encoder] *)" type_name; 
-  in 
-  let (), has_encoded = match t with 
-    | {T.spec = T.Record {T.r_name; _ } }-> f r_name, true
-    | {T.spec = T.Variant v } -> f v.T.v_name, true 
-    | {T.spec = T.Const_variant {T.cv_name; _ } } -> f cv_name, true
-  in
-  has_encoded
-
-let ocamldoc_title = "Protobuf Toding"
-
-end
-module Codegen_default : sig 
-#1 "codegen_default.mli"
-
-
-include Codegen.S
-
-end = struct
-#1 "codegen_default.ml"
-module T = Ocaml_types
-module F = Fmt 
-module E = Exception 
-module L = Logger 
-
-open Codegen_util
-
-let default_value_of_basic_type ?field_name basic_type field_default = 
-  match basic_type, field_default with 
-  | T.Bt_string, None -> "\"\""
-  | T.Bt_string, Some (Pbpt.Constant_string s) -> sp "\"%s\"" s 
-  | T.Bt_float , None -> "0." 
-  | T.Bt_float , Some (Pbpt.Constant_float f) -> string_of_float f
-  | T.Bt_int   , None -> "0"
-  | T.Bt_int   , Some (Pbpt.Constant_int i) -> string_of_int i
-  | T.Bt_int32 , None -> "0l"
-  | T.Bt_int32 , Some (Pbpt.Constant_int i) -> sp "%il" i
-  | T.Bt_int64 , None -> "0L"
-  | T.Bt_int64 , Some (Pbpt.Constant_int i) -> sp "%iL" i
-  | T.Bt_bytes , None -> "Bytes.create 64"  
-  | T.Bt_bytes , Some (Pbpt.Constant_string s) -> sp "Bytes.of_string \"%s\"" s  
-  | T.Bt_bool  , None -> "false"
-  | T.Bt_bool  , Some (Pbpt.Constant_bool b) -> string_of_bool b
-  | _ -> E.invalid_default_value 
-    ?field_name ~info:"invalid default type" ()
-
-(* Generate the string which is the default value for a given field
-   type and default information.
- *)
-let default_value_of_field_type ?field_name field_type field_default = 
-  match field_type with 
-  | T.Ft_user_defined_type t -> 
-    function_name_of_user_defined "default" t  ^ " ()"
-  | T.Ft_unit          -> "()"
-  | T.Ft_basic_type bt -> default_value_of_basic_type ?field_name bt field_default
-
-
-(* This function returns [(field_name, field_default_value, field_type)] for 
-   a record field.
- *)
-let record_field_default_info record_field : (string * string * string) =  
-  let { T.rf_label; T.rf_field_type; _ } = record_field in 
-  let type_string = Codegen_util.string_of_record_field_type rf_field_type in  
-  let field_name  = rf_label in 
-
-  let dfvft field_type defalut_value = 
-    default_value_of_field_type ~field_name field_type defalut_value 
-  in
-
-  let default_value = match rf_field_type with
-    | T.Rft_required (field_type, _, _, default_value) ->
-      dfvft field_type default_value 
-    | T.Rft_optional (field_type, _, _, default_value) -> 
-      begin match default_value with
-      | None   -> "None"
-      | Some _ -> sp "Some (%s)" @@ dfvft field_type default_value   
-      end 
-    | T.Rft_repeated_field (rt, field_type, _, _, _) -> 
-      begin match rt with
-      | T.Rt_list -> "[]"
-      | T.Rt_repeated_field -> sp "Pbrt.Repeated_field.make (%s)" (dfvft field_type None) 
-      end
-    | T.Rft_associative_field (at, _, _, _) -> 
-      begin match at with
-      | T.At_list -> "[]"
-      | T.At_hashtable -> "Hashtbl.create 128"
-        (* TODO 
-         * This initial value could be configurable either via 
-         * the default function or via a protobuf option.
-         *)
-      end
-    | T.Rft_variant_field {T.v_name; v_constructors} -> 
-       begin match v_constructors with
-       | [] -> assert(false)
-       | {T.vc_constructor; vc_field_type; _ }::_ -> 
-         begin match vc_field_type with
-         | T.Vct_nullary -> vc_constructor
-         | T.Vct_non_nullary_constructor field_type -> 
-           sp "%s (%s)" vc_constructor (dfvft field_type None) 
-         end
-       end 
-  in
-  (field_name, default_value, type_string)
-
-let gen_default_record  ?mutable_ ?and_ {T.r_name; r_fields} sc = 
-
-  let fields_default_info = List.map (fun r_field ->
-    record_field_default_info r_field 
-  ) r_fields in (* List.map *) 
-
-  begin
-  match mutable_ with
-  | Some () -> ( 
-    let rn = Codegen_util.mutable_record_name r_name in 
-    F.line sc @@ sp "%s default_%s () : %s = {" (let_decl_of_and and_) rn rn;
-    F.scope sc (fun sc -> 
-      List.iter (fun (fname, fvalue, _ ) -> 
-        F.line sc @@ sp "%s = %s;" fname fvalue
-      ) fields_default_info; 
-    );
-  )
-  | None -> (
-    F.line sc @@ sp "%s default_%s " (let_decl_of_and and_) r_name;
+              F.line sc @@ decode_field_f value_type value_pk) ;
+          F.line sc ") in" ;
+          let decode_expression =
+            sp "(Pbrt.Decoder.map_entry d ~decode_key:%s ~decode_value)"
+              decode_key_f in
+          match at with
+          | T.At_list ->
+              F.line sc @@ sp "v.%s <- (" rf_label ;
+              F.scope sc (fun sc ->
+                  F.line sc @@ sp "%s::v.%s;" decode_expression rf_label) ;
+              F.line sc ");"
+          | T.At_hashtable ->
+              F.line sc @@ sp "let a, b = %s in" decode_expression ;
+              F.line sc @@ sp "Hashtbl.add v.%s a b;" rf_label) in
+    let process_variant_field sc rf_label {T.v_constructors; _} =
+      List.iter
+        (fun { T.vc_constructor
+             ; vc_field_type
+             ; vc_encoding_number
+             ; vc_payload_kind= pk } ->
+          process_field_common sc vc_encoding_number
+            (string_of_nonpacked_pk pk) (fun sc ->
+              match vc_field_type with
+              | T.Vct_nullary ->
+                  F.line sc "Pbrt.Decoder.empty_nested d;" ;
+                  F.line sc @@ sp "v.%s <- %s;" rf_label vc_constructor
+              | T.Vct_non_nullary_constructor field_type ->
+                  F.line sc
+                  @@ sp "v.%s <- %s (%s);" rf_label vc_constructor
+                       (decode_field_f field_type pk)))
+        v_constructors in
+    let mutable_record_name = Codegen_util.mutable_record_name r_name in
+    F.line sc @@ sp "%s decode_%s d =" (let_decl_of_and and_) r_name ;
     F.scope sc (fun sc ->
-      List.iter (fun (fname, fvalue, ftype) ->
-        F.line sc @@ sp "?%s:((%s:%s) = %s)" fname fname ftype fvalue; 
-      ) fields_default_info;
-      F.line sc @@ sp "() : %s  = {" r_name;
-    );
-    F.scope sc (fun sc -> 
-      List.iter (fun (fname, _, _ ) -> 
-        F.line sc @@ sp "%s;" fname
-      ) fields_default_info; 
-    );
-  )
-  end; 
-  F.line sc "}"
+        F.line sc @@ sp "let v = default_%s () in" mutable_record_name ;
+        F.line sc "let rec loop () = " ;
+        F.scope sc (fun sc ->
+            F.line sc "match Pbrt.Decoder.key d with" ;
+            F.line sc "| None -> (" ;
+            F.scope sc (fun sc ->
+                List.iter
+                  (fun field_name ->
+                    F.line sc
+                    @@ sp "v.%s <- List.rev v.%s;" field_name field_name)
+                  all_lists) ;
+            F.line sc ")" ;
+            List.iter
+              (fun {T.rf_label; rf_field_type; _} ->
+                match rf_field_type with
+                | T.Rft_required x -> process_required_field sc rf_label x
+                | T.Rft_optional x -> process_optional_field sc rf_label x
+                | T.Rft_repeated_field x ->
+                    process_repeated_field sc rf_label x
+                | T.Rft_associative_field x ->
+                    process_associative_field sc rf_label x
+                | T.Rft_variant_field x -> process_variant_field sc rf_label x)
+              r_fields ;
+            F.line sc
+              "| Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; \
+               loop ()") ;
+        F.line sc "in" ;
+        F.line sc "loop ();" ;
+        F.line sc @@ sp "let v:%s = Obj.magic v in" r_name ;
+        F.line sc "v")
 
-let gen_default_variant ?and_ {T.v_name; T.v_constructors; } sc = 
-  match v_constructors with
-  | []     -> failwith "programmatic TODO error" 
-  | {T.vc_constructor; vc_field_type; _ }::_ ->  
-    let decl = let_decl_of_and and_ in 
-    begin match vc_field_type with
-    | T.Vct_nullary -> F.line sc @@ sp "%s default_%s (): %s = %s" decl v_name v_name vc_constructor 
-    | T.Vct_non_nullary_constructor field_type -> 
-      let default_value = default_value_of_field_type ~field_name:v_name field_type None in
-        (* TODO need to fix the deault value *)
-      F.line sc @@ sp "%s default_%s () : %s = %s (%s)" 
-         decl v_name v_name vc_constructor default_value 
-    end 
+  let gen_decode_variant ?and_ {T.v_name; v_constructors} sc =
+    let process_ctor sc
+        { T.vc_constructor
+        ; vc_field_type
+        ; vc_encoding_number
+        ; vc_payload_kind= pk } =
+      match vc_field_type with
+      | T.Vct_nullary ->
+          F.line sc
+          @@ sp "| Some (%i, _) -> (Pbrt.Decoder.empty_nested d ; %s)"
+               vc_encoding_number vc_constructor
+      | T.Vct_non_nullary_constructor field_type ->
+          F.line sc
+          @@ sp "| Some (%i, _) -> %s (%s)" vc_encoding_number vc_constructor
+               (decode_field_f field_type pk) in
+    F.line sc @@ sp "%s decode_%s d = " (let_decl_of_and and_) v_name ;
+    F.scope sc (fun sc ->
+        F.line sc @@ sp "let rec loop () = " ;
+        F.scope sc (fun sc ->
+            F.line sc @@ sp "let ret:%s = match Pbrt.Decoder.key d with" v_name ;
+            F.scope sc (fun sc ->
+                F.line sc
+                  "| None -> failwith \"None of the known key is found\"" ;
+                List.iter (fun ctor -> process_ctor sc ctor) v_constructors ;
+                F.line sc "| Some (n, payload_kind) -> (" ;
+                F.line sc "  Pbrt.Decoder.skip d payload_kind; " ;
+                F.line sc "  loop () " ;
+                F.line sc ")") ;
+            F.line sc "in" ;
+            F.line sc "ret") ;
+        F.line sc "in" ;
+        F.line sc "loop ()")
 
-let gen_default_const_variant ?and_ {T.cv_name; T.cv_constructors; } sc = 
-  let first_constructor_name = match cv_constructors with
-    | []            -> failwith "programmatic TODO error"
-    | (name, _) ::_ -> name 
-  in  
-  F.line sc @@ sp "%s default_%s () = (%s:%s)" 
-    (let_decl_of_and and_) cv_name first_constructor_name cv_name
+  let gen_decode_const_variant ?and_ {T.cv_name; cv_constructors} sc =
+    F.line sc @@ sp "%s decode_%s d = " (let_decl_of_and and_) cv_name ;
+    F.scope sc (fun sc ->
+        F.line sc "match Pbrt.Decoder.int_as_varint d with" ;
+        List.iter
+          (fun (name, value) ->
+            F.line sc @@ sp "| %i -> (%s:%s)" value name cv_name)
+          cv_constructors ;
+        F.line sc @@ sp "| _ -> failwith \"Unknown value for enum %s\"" cv_name)
 
-let gen_struct ?and_ t sc = 
-  let (), has_encoded = match t with 
-    | {T.spec = T.Record r  } ->
-      (
-        gen_default_record ?and_ r sc; 
-        F.empty_line sc;
-        gen_default_record ~mutable_:() ~and_:() r sc
-      ), true 
-    | {T.spec = T.Variant v } -> gen_default_variant ?and_ v sc, true 
-    | {T.spec = T.Const_variant v } -> gen_default_const_variant v sc, true
-  in
-  has_encoded
+  let gen_struct ?and_ t sc =
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record r; _} -> (gen_decode_record ?and_ r sc, true)
+      | {T.spec= T.Variant v; _} -> (gen_decode_variant ?and_ v sc, true)
+      | {T.spec= T.Const_variant v; _} ->
+          (gen_decode_const_variant ?and_ v sc, true) in
+    has_encoded
 
- 
-let gen_sig_record sc {T.r_name; r_fields; } = 
+  let gen_sig ?and_ t sc =
+    let f type_name =
+      F.line sc
+      @@ sp "val decode_%s : Pbrt.Decoder.t -> %s" type_name type_name ;
+      F.line sc
+      @@ sp "(** [decode_%s decoder] decodes a [%s] value from [decoder] *)"
+           type_name type_name in
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record {T.r_name; _}} -> (f r_name, true)
+      | {T.spec= T.Variant {T.v_name; _}} -> (f v_name, true)
+      | {T.spec= T.Const_variant {T.cv_name; _}} -> (f cv_name, true) in
+    has_encoded
 
-  F.line sc @@ sp "val default_%s : " r_name;
-  
-  let fields_default_info = List.map record_field_default_info r_fields in 
-  F.scope sc (fun sc -> 
-    List.iter (fun (field_name, _, field_type) -> 
-      F.line sc @@ sp "?%s:%s ->" field_name field_type
-    ) fields_default_info;
-    F.line sc "unit ->";
-    F.line sc r_name;
-  ); 
-  let rn = r_name in 
-  F.line sc @@ sp "(** [default_%s ()] is the default value for type [%s] *)" rn rn;
-  ()
-
-
-let gen_sig ?and_ t sc = 
-  let f type_name =  
-    F.line sc @@ sp "val default_%s : unit -> %s" type_name type_name;
-    F.line sc @@ sp "(** [default_%s ()] is the default value for type [%s] *)" type_name type_name;
-  in 
-  let (), has_encoded = match t with 
-    | {T.spec = T.Record r } -> gen_sig_record sc r, true
-    | {T.spec = T.Variant v } -> f v.T.v_name, true 
-    | {T.spec = T.Const_variant {T.cv_name; _ ; } } -> f cv_name, true
-  in
-  has_encoded
-
-let ocamldoc_title = "Default values" 
-
+  let ocamldoc_title = "Protobuf Decoding"
 end
-module Backend_ocaml : sig 
-#1 "backend_ocaml.mli"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+module Logger : sig
+  (* The MIT License (MIT)
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-*)
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-(** Backend for compiling Protobuf messages to OCaml 
- *)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-(** This module focuses on the compilation steps which transforms a 
-    fully resolved Protobuf message into an OCaml representation. 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-    After compilation this module also expose code generation 
-    functionality. 
- *)
+  (** Logging functionality allow printing debugging information *)
 
-(** {2 Compilation } *) 
+  val setup_from_out_channel : out_channel -> unit
+  (** [setup_from_out_channel oc] will configure the logger to print all
+      logging statement to [oc].
 
-val compile :
-  Pbtt.resolved Pbtt.proto ->
-  Pbtt.resolved Pbtt.proto_type -> 
-  Ocaml_types.type_ list 
+      Function can be called multiple times, each call will disable (override)
+      the previously setup out channel *)
 
+  val log : ('a, out_channel, unit) format -> 'a
+  (** [log format x y] same as [Printf.printf] except that the message will get
+      printed to the previously setup [out_channel] in the
+      [setup_from_out_channel] function. *)
+
+  val endline : string -> unit
+  (** [endline format x y] same as [Pervasives.print_endline] except that the
+      message will get printed to the previously setup [out_channel] in the
+      [setup_from_out_channel] function. *)
 end = struct
-#1 "backend_ocaml.ml"
-(*
-  The MIT License (MIT)
-  
-  Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
+  (* The MIT License (MIT)
 
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
 
-*)
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
 
-module E  = Exception 
-module L  = Logger 
-module OCaml_types = Ocaml_types 
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
 
-(* [rev_split_by_naming_convention s] will split [s] according to the protobuf
- *  coding style convention. The rule split are 
- *  {ul
- *  {- character ['_'] is a separator}
- *  {- the first uppercase letter after a lower case is a separator (ie FooBar will be split into [ ["Bar";"Foo"] ]}  
- *  }
- *)
-let rev_split_by_naming_convention s =
-  let is_uppercase c = 
-    (64 < (Char.code c) && (Char.code c) < 91)
-  in 
+  let __log__ = ref None
+  let setup_from_out_channel oc = __log__ := Some oc
 
-  let add_sub_string start_i end_i l  = 
-    if start_i = end_i 
-    then l 
-    else (String.sub s start_i (end_i - start_i)) :: l
-  in 
-  
-  let l, start_i, _ = Util.string_fold_lefti (fun (l, start_i, uppercase_run) i c ->
-    match c, uppercase_run with 
-    | '_', _ -> 
-      (add_sub_string start_i i l, i + 1, false)
-    | c , false  when (is_uppercase c) -> 
-      (add_sub_string start_i i l, i, true) 
-    | _ -> 
-      (l, start_i, is_uppercase c) 
-  ) ([], 0, false) s in 
+  let log (x : ('a, out_channel, unit) format) =
+    match !__log__ with
+    | None -> Printf.ifprintf stdout x
+    | Some oc -> Printf.fprintf oc x
 
-  let len = String.length s in 
-  add_sub_string start_i len l 
+  let endline s = log "%s\n" s
+end
 
+module Codegen_pp : sig
+  include Codegen.S
+end = struct
+  module T = Ocaml_types
+  module F = Fmt
+  module L = Logger
+  module E = Exception
+  open Codegen_util
 
-let fix_ocaml_keyword_conflict s = 
-  match s with 
-  | "and"
-  | "as"
-  | "assert"
-  | "begin"
-  | "class"
-  | "constraint"
-  | "do"
-  | "done"
-  | "downto"
-  | "else"
-  | "end"
-  | "exception"
-  | "external"
-  | "false"
-  | "for"
-  | "fun"
-  | "function"
-  | "functor"
-  | "if"
-  | "in"
-  | "include"
-  | "inherit"
-  | "initializer"
-  | "lazy"
-  | "let"
-  | "match"
-  | "method"
-  | "module"
-  | "mutable"
-  | "new"
-  | "nonrec"
-  | "object"
-  | "of"
-  | "open"
-  | "or"
-  | "private"
-  | "rec"
-  | "sig"
-  | "struct"
-  | "then"
-  | "to"
-  | "true"
-  | "try"
-  | "type"
-  | "val"
-  | "virtual"
-  | "when"
-  | "while"
-  | "with"
-  | "mod"
-  | "land"
-  | "lor"
-  | "lxor"
-  | "lsl"
-  | "lsr"
-  | "asr" -> s ^ "_"
-  | _     -> s 
+  let gen_pp_field field_type =
+    match field_type with
+    | T.Ft_user_defined_type t -> function_name_of_user_defined "pp" t
+    | _ -> sp "Pbrt.Pp.pp_%s" (string_of_field_type field_type)
 
-let constructor_name s =
-  rev_split_by_naming_convention s
-  |> List.rev
-  |> String.concat "_"
-  |> String.lowercase 
-  |> String.capitalize
+  let gen_pp_record ?and_ {T.r_name; r_fields} sc =
+    L.log "gen_pp, record_name: %s\n" r_name ;
+    F.line sc
+    @@ sp "%s pp_%s fmt (v:%s) = " (let_decl_of_and and_) r_name r_name ;
+    F.scope sc (fun sc ->
+        F.line sc "let pp_i fmt () =" ;
+        F.scope sc (fun sc ->
+            F.line sc "Format.pp_open_vbox fmt 1;" ;
+            List.iter
+              (fun record_field ->
+                let {T.rf_label; rf_field_type; _} = record_field in
+                let var_name = sp "v.%s" rf_label in
+                match rf_field_type with
+                | T.Rft_required (field_type, _, _, _) ->
+                    let field_string_of = gen_pp_field field_type in
+                    F.line sc
+                    @@ sp "Pbrt.Pp.pp_record_field \"%s\" %s fmt %s;" rf_label
+                         field_string_of var_name
+                    (* Rft_required *)
+                | T.Rft_optional (field_type, _, _, _) ->
+                    let field_string_of = gen_pp_field field_type in
+                    F.line sc
+                    @@ sp
+                         "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_option \
+                          %s) fmt %s;"
+                         rf_label field_string_of var_name
+                    (* Rft_optional *)
+                | T.Rft_repeated_field (rt, field_type, _, _, _) -> (
+                    let field_string_of = gen_pp_field field_type in
+                    match rt with
+                    | T.Rt_list ->
+                        F.line sc
+                        @@ sp
+                             "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_list \
+                              %s) fmt %s;"
+                             rf_label field_string_of var_name
+                    | T.Rt_repeated_field ->
+                        F.line sc
+                        @@ sp
+                             "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.pp_list \
+                              %s) fmt (Pbrt.Repeated_field.to_list %s);"
+                             rf_label field_string_of var_name
+                    (* Rft_repeated_field *) )
+                | T.Rft_variant_field {T.v_name; v_constructors= _} ->
+                    (* constructors are ignored because the pretty printing is completely 
+                     * delegated to the pretty print function associated with that variant. 
+                     * This is indeed different from the [decode]/[encode] functions which 
+                     * requires `inlining` the decoding/encoding logic within the record (This 
+                     * requirement is indeed comming from the imposed Protobuf format) 
+                     *)
+                    F.line sc
+                    @@ sp "Pbrt.Pp.pp_record_field \"%s\" %s fmt %s;" rf_label
+                         ("pp_" ^ v_name) var_name
+                    (* Rft_variant_field *)
+                | T.Rft_associative_field
+                    (at, _, (key_type, _), (value_type, _)) ->
+                    let pp_runtime_function =
+                      match at with
+                      | T.At_list -> "pp_associative_list"
+                      | T.At_hashtable -> "pp_hastable" in
+                    let pp_key = gen_pp_field (T.Ft_basic_type key_type) in
+                    let pp_value = gen_pp_field value_type in
+                    F.line sc
+                    @@ sp
+                         "Pbrt.Pp.pp_record_field \"%s\" (Pbrt.Pp.%s %s %s) \
+                          fmt %s;"
+                         rf_label pp_runtime_function pp_key pp_value var_name
+                (* Associative_list *))
+              r_fields ;
+            F.line sc "Format.pp_close_box fmt ()") ;
+        F.line sc "in" ;
+        F.line sc "Pbrt.Pp.pp_brk pp_i fmt ()")
 
-let module_name = constructor_name 
+  let gen_pp_variant ?and_ {T.v_name; T.v_constructors} sc =
+    F.line sc
+    @@ sp "%s pp_%s fmt (v:%s) =" (let_decl_of_and and_) v_name v_name ;
+    F.scope sc (fun sc ->
+        F.line sc "match v with" ;
+        List.iter
+          (fun {T.vc_constructor; vc_field_type; _} ->
+            match vc_field_type with
+            | T.Vct_nullary ->
+                F.line sc
+                @@ sp "| %s  -> Format.fprintf fmt \"%s\"" vc_constructor
+                     vc_constructor
+            | T.Vct_non_nullary_constructor field_type ->
+                let field_string_of = gen_pp_field field_type in
+                F.line sc
+                @@ sp "| %s x -> Format.fprintf fmt \"@[%s(%%a)@]\" %s x"
+                     vc_constructor vc_constructor field_string_of)
+          v_constructors)
 
-let label_name_of_field_name s =
-  rev_split_by_naming_convention s
-  |> List.rev
-  |> String.concat "_"
-  |> String.lowercase 
-  |> fix_ocaml_keyword_conflict 
+  let gen_pp_const_variant ?and_ {T.cv_name; T.cv_constructors} sc =
+    F.line sc
+    @@ sp "%s pp_%s fmt (v:%s) =" (let_decl_of_and and_) cv_name cv_name ;
+    F.scope sc (fun sc ->
+        F.line sc "match v with" ;
+        List.iter
+          (fun (name, _) ->
+            F.line sc @@ sp "| %s -> Format.fprintf fmt \"%s\"" name name)
+          cv_constructors)
 
-let module_of_file_name file_name = 
-  let file_name = Filename.basename file_name in 
-  match String.rindex file_name '.' with 
-  | dot_index -> 
-    module_name @@ (String.sub file_name 0 dot_index ^ "_pb") 
-  | exception Not_found -> E.invalid_file_name file_name  
+  let gen_struct ?and_ t sc =
+    ( match t with
+    | {T.spec= T.Record r} -> gen_pp_record ?and_ r sc
+    | {T.spec= T.Variant v} -> gen_pp_variant ?and_ v sc
+    | {T.spec= T.Const_variant v} -> gen_pp_const_variant ?and_ v sc ) ;
+    true
 
-let type_name message_scope name = 
-  let module S = String in  
-  let all_names =  message_scope @ [name] in 
-  let all_names = List.map (fun s -> 
+  let gen_sig ?and_ t sc =
+    let f type_name =
+      F.line sc
+      @@ sp "val pp_%s : Format.formatter -> %s -> unit " type_name type_name ;
+      F.line sc @@ sp "(** [pp_%s v] formats v] *)" type_name in
+    ( match t with
+    | {T.spec= T.Record {T.r_name; _}} -> f r_name
+    | {T.spec= T.Variant v} -> f v.T.v_name
+    | {T.spec= T.Const_variant {T.cv_name; _}} -> f cv_name ) ;
+    true
+
+  let ocamldoc_title = "Formatters"
+end
+
+module Pbtt = struct
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  (** Protobuffer Typed tree.
+
+      The typetree type is parametrized to allow for 2 phase compilation. *)
+
+  type field_scope = string list
+  (** scope of the field type when the field is a message type.
+
+      For instance in the following field definition:
+
+      [required foo.bar.Msg1 f = 1]
+
+      The [field_scope] would be [\["foo"; "bar"\]] *)
+
+  type unresolved =
+    { scope: field_scope
+    ; type_name: string
+    ; from_root: bool
+          (** from_root indicates that the scope for the type is from the root
+              of the type system. (ie starts with '.') *) }
+  (** In the first phase of the compilation the field of message type are not
+      resolved but only properly parsed.
+
+      The following type summarizes the information of a field type.
+
+      In the following field definition:
+
+      [required foo.bar.Msg1 f = 1]
+
+      The unresolved type would be { scope=["foo";"bar"]; type_name="Msg1";
+      from_root = false } *)
+
+  type resolved = int
+  (** After phase 2 compilation the field type is resolved to an known message
+      which can be uniquely identified by its id. *)
+
+  (** field type.
+
+      The ['a] type is for re-using the same type definition for the 2
+      compilation phases.
+
+      After Phase 1 ['a] is [unresolved] while after Phase2 ['a] is [resolved]. *)
+  type 'a field_type =
+    | Field_type_double
+    | Field_type_float
+    | Field_type_int32
+    | Field_type_int64
+    | Field_type_uint32
+    | Field_type_uint64
+    | Field_type_sint32
+    | Field_type_sint64
+    | Field_type_fixed32
+    | Field_type_fixed64
+    | Field_type_sfixed32
+    | Field_type_sfixed64
+    | Field_type_bool
+    | Field_type_string
+    | Field_type_bytes
+    | Field_type_type of 'a
+
+  type ('a, 'b) field =
+    { field_parsed: 'b Pbpt.field
+    ; field_type: 'a field_type
+    ; field_default: Pbpt.constant option
+    ; field_options: Pbpt.field_options }
+  (** field definition.
+
+      ['a] is for [unresolved] or [resolved] ['b] is for [field_label] to
+      account for both normal and one of fields. *)
+
+  type 'a oneof =
+    {oneof_name: string; oneof_fields: ('a, Pbpt.oneof_label) field list}
+  (** oneof definition *)
+
+  type 'a map =
+    { map_name: string
+    ; map_number: int
+    ; map_key_type: 'a field_type
+    ; map_value_type: 'a field_type
+    ; map_options: Pbpt.field_options }
+
+  type type_scope = {packages: string list; message_names: string list}
+  (** type scope
+
+      The scope of a type (message or enum) is defined by the package (defined
+      in the top of the proto file as well as the messages above it since a
+      message definition can be nested *)
+
+  (** item for the message body *)
+  type 'a message_body_content =
+    | Message_field of ('a, Pbpt.field_label) field
+    | Message_oneof_field of 'a oneof
+    | Message_map_field of 'a map
+
+  and 'a message =
+    { extensions: Pbpt.extension_range list
+    ; message_name: string
+    ; message_body: 'a message_body_content list }
+
+  type enum_value = {enum_value_name: string; enum_value_int: int}
+  type enum = {enum_name: string; enum_values: enum_value list}
+  type 'a proto_type_spec = Enum of enum | Message of 'a message
+
+  type 'a proto_type =
+    { scope: type_scope
+    ; id: int
+    ; file_name: string
+    ; file_options: Pbpt.file_option list
+    ; spec: 'a proto_type_spec }
+
+  type 'a proto = 'a proto_type list
+end
+
+module Graph : sig
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  (** Basicgraph utilities to produce strongly connected component from a graph
+      using Tarjan algorithm once. *)
+
+  (** {2 Types} *)
+
+  type node
+  (** Node in a graph, each node is identified using a unique [int] id *)
+
+  type graph
+  (** Graph. *)
+
+  (** {2 Creators} *)
+
+  val create_node : int -> int list -> node
+  (** [create_node id sub] create a node uniquely identified with [id] and
+      connections to other nodes in [sub].
+
+      The client application is responsible to ensure that the graph is
+      consistent, by adding all nodes identified in [sub] to the same graph
+      later. *)
+
+  val empty_graph : graph
+  (** [empty_graph ()] create a new empty graph.*)
+
+  val add_node : node -> graph -> graph
+  (** [add_node node graph] add [node] to [graph] *)
+
+  (** {2 Algorithms} *)
+
+  val tarjan : graph -> int list list
+  (** [tarjan graph] compute the ordered list of strongly connected components
+      of a graph.
+
+      The returned list is order in decreasing order of dependencies. This
+      means the last component of the list does not link to any other
+      components. *)
+end = struct
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  module Int_map = Map.Make (struct
+    type t = int
+
+    let compare = Pervasives.compare
+  end)
+
+  type node = {id: int; sub: int list}
+
+  let create_node id sub = {id; sub}
+
+  type graph = node Int_map.t
+
+  let empty_graph = Int_map.empty
+  let add_node ({id; _} as n) g = Int_map.add id n g
+
+  (** Options utilities *)
+  module Option = struct
+    let some x = Some x
+
+    let min_value = function
+      | None, None | Some _, None | None, Some _ -> failwith "min_value error"
+      | Some x, Some y -> some @@ min x y
+
+    let eq_value = function
+      | None, None | Some _, None | None, Some _ -> failwith "eq_value error"
+      | Some x, Some y -> x = y
+
+    let string_of_option f = function
+      | None -> "None"
+      | Some x -> Printf.sprintf "Some(%s)" (f x)
+  end
+
+  module Tarjan = struct
+    type tnode =
+      { core: node
+      ; mutable index: int option
+      ; mutable lowlink: int option
+      ; mutable on_stack: bool }
+
+    type tgraph = tnode Int_map.t
+
+    let reset g =
+      Int_map.map
+        (fun core -> {core; index= None; lowlink= None; on_stack= false})
+        g
+
+    let rec strong_connect (g : tgraph) sccs stack (index : int) (v : tnode) =
+      Logger.log "[Graph] processing v [%i], index: %i\n" v.core.id index ;
+      v.index <- Some index ;
+      v.lowlink <- Some index ;
+      let stack = v :: stack in
+      v.on_stack <- true ;
+      let sccs, stack, index =
+        List.fold_left
+          (fun (sccs, stack, index) id ->
+            let (w : tnode) = Int_map.find id g in
+            Logger.log "[Graph] sub w [%i], w.index: %s\n" w.core.id
+              (Option.string_of_option string_of_int w.index) ;
+            match w.index with
+            | Some _ ->
+                if w.on_stack then
+                  v.lowlink <- Option.min_value (v.lowlink, w.index)
+                else () ;
+                (sccs, stack, index)
+            | None ->
+                let sccs, stack, index =
+                  strong_connect g sccs stack (index + 1) w in
+                v.lowlink <- Option.min_value (v.lowlink, w.lowlink) ;
+                (sccs, stack, index))
+          (sccs, stack, index) v.core.sub in
+      Logger.log "[Graph] after sub for v [%i], lowlink: %s, index: %s\n"
+        v.core.id
+        (Option.string_of_option string_of_int v.lowlink)
+        (Option.string_of_option string_of_int v.index) ;
+      Logger.log "[Graph]   -> stack : %s\n"
+        ( "["
+        ^ String.concat ";"
+            (List.map (fun {core= {id; _}; _} -> string_of_int id) stack)
+        ^ "]" ) ;
+      if Option.eq_value (v.lowlink, v.index) then
+        let scc, stack, _ =
+          List.fold_left
+            (fun (scc, stack, splitted) n ->
+              if splitted then (scc, n :: stack, splitted)
+              else (
+                n.on_stack <- false ;
+                if n.core.id = v.core.id then (n.core.id :: scc, stack, true)
+                else (n.core.id :: scc, stack, false) ))
+            ([], [], false) stack in
+        (scc :: sccs, List.rev stack, index)
+      else (sccs, stack, index)
+
+    let tarjan g =
+      let g = reset g in
+      let sccs, _, _ =
+        Int_map.fold
+          (fun _ n (sccs, stack, index) ->
+            match n.index with
+            | Some _ -> (sccs, stack, index)
+            | None -> strong_connect g sccs stack index n)
+          g ([], [], 0) in
+      sccs
+  end
+
+  let tarjan = Tarjan.tarjan
+end
+
+module Pbtt_util : sig
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  (** Type compilation.
+
+      This module is responsible for the typing of the parsed tree. All field
+      types are eventually resolved.
+
+      Additionally this module provide convenient function to manipulate the
+      typed tree. *)
+
+  (** {2 Accessors for Pbtt.field type} *)
+
+  val field_name : ('a, 'b) Pbtt.field -> string
+  (** [field_name field] returns the name [field] *)
+
+  val field_number : ('a, 'b) Pbtt.field -> int
+  (** [field_number field] returns the number of [field] *)
+
+  val field_type : ('a, 'b) Pbtt.field -> 'a Pbtt.field_type
+  (** [field_type field] returns the type of [field] *)
+
+  val field_label : ('a, 'b) Pbtt.field -> 'b
+  (** [field_label field] returns the label of [field] *)
+
+  val field_default : ('a, 'b) Pbtt.field -> Pbpt.constant option
+  (** [field_default field] returns the default value of [field] *)
+
+  val field_options : ('a, 'b) Pbtt.field -> Pbpt.field_options
+  val find_field_option : Pbpt.field_options -> string -> Pbpt.constant option
+
+  val field_option : ('a, 'b) Pbtt.field -> string -> Pbpt.constant option
+  (** [field_option field option_name] returns the constant associated with
+      [option_name]. If the fields options does not contain [option_name] 
+      [None] is returned. *)
+
+  val type_of_id : 'a Pbtt.proto -> int -> 'a Pbtt.proto_type
+  (** [type_of_id all_types id] returns the type associated with the given id,
+      @raise [Not_found] if the type is not in the all_types. *)
+
+  val string_of_message : int -> Pbtt.type_scope -> 'a Pbtt.message -> string
+
+  (** {2 Accessor for Pbtt.type *)
+
+  val type_id_of_type : 'a Pbtt.proto_type -> int
+  (** [type_id_of_type t] returns the type unique identifier. *)
+
+  val type_name_of_type : 'a Pbtt.proto_type -> string
+  (** [type_name_of_type t] returns the type name (as defined in the message
+      file) of [t]. *)
+
+  val type_scope_of_type : 'a Pbtt.proto_type -> Pbtt.type_scope
+  (** [type_scope_of_type t] returns the scope of type [t]. *)
+
+  val is_empty_message : 'a Pbtt.proto_type -> bool
+  (** [is_empty_message t] returns true if [t] is a message type and has no
+      fields defined. *)
+
+  (** {2 Creator} *)
+
+  val empty_scope : Pbtt.type_scope
+  val scope_of_package : string option -> Pbtt.type_scope
+
+  (** {2 Compilation routines} *)
+
+  (** Compilation is done in 2
+      phases.
+      {ul
+       {- Phase 1 focuses on flattenning the nested messages and doing a first
+          round of type checking for the various message field. The field type
+          will be either matched with a basic type or parsed into the
+          [unresolved] data structure. This step simply verify that the type
+          definition is well formed but does not check the field type is
+          pointing to an existing type.}
+       {- Phase 2 focuses on type resolution. This phase implement the scoping
+          rules defined in the protocol buffer specification to resolve a field
+          type to a previously defined message. This phase additionally check
+          that field numbers and field names are unique within a message but
+          this logic should be moved to Phase 1}}
+
+      (** TODO add the grouping phase *) *)
+
+  val compile_proto_p1 : string -> Pbpt.proto -> Pbtt.unresolved Pbtt.proto
+  (** [compile_proto_p1 file_name proto] makes a first phase compilation of the
+      parsed tree. *)
+
+  val compile_proto_p2 :
+       Pbtt.unresolved Pbtt.proto
+    -> Pbtt.unresolved Pbtt.proto_type
+    -> Pbtt.resolved Pbtt.proto_type
+
+  val group : Pbtt.resolved Pbtt.proto -> Pbtt.resolved Pbtt.proto list
+  (** TODO *)
+
+  (** {2 For testing only} *)
+
+  val compile_message_p2 :
+       Pbtt.unresolved Pbtt.proto
+    -> Pbtt.type_scope
+    -> Pbtt.unresolved Pbtt.message
+    -> Pbtt.resolved Pbtt.message
+
+  val compile_message_p1 :
+       string
+    -> Pbpt.file_option list
+    -> Pbtt.type_scope
+    -> Pbpt.message
+    -> Pbtt.unresolved Pbtt.proto
+
+  val compile_oneof_p1 : Pbpt.oneof -> Pbtt.unresolved Pbtt.oneof
+  val compile_field_p1 : 'a Pbpt.field -> (Pbtt.unresolved, 'a) Pbtt.field
+
+  val find_all_types_in_field_scope :
+    'a Pbtt.proto -> Pbtt.field_scope -> 'a Pbtt.proto
+end = struct
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  module E = Exception
+  module L = Logger
+
+  let field_name {Pbtt.field_parsed; _} =
+    let {Pbpt.field_name; _} = field_parsed in
+    field_name
+
+  let field_number {Pbtt.field_parsed= {Pbpt.field_number; _}; _} =
+    field_number
+
+  let field_type {Pbtt.field_type; _} = field_type
+  let field_label {Pbtt.field_parsed= {Pbpt.field_label; _}; _} = field_label
+  let field_default {Pbtt.field_default; _} = field_default
+  let field_options {Pbtt.field_options; _} = field_options
+
+  let find_field_option field_options option_name =
+    match List.assoc option_name field_options with
+    | x -> Some x
+    | exception Not_found -> None
+
+  let field_option {Pbtt.field_options; _} option_name =
+    find_field_option field_options option_name
+
+  let empty_scope = {Pbtt.packages= []; message_names= []}
+  let type_id_of_type {Pbtt.id; _} = id
+
+  let type_of_id all_types id =
+    List.find (fun t -> type_id_of_type t = id) all_types
+
+  let string_of_unresolved {Pbtt.scope; type_name; from_root} =
+    Printf.sprintf "unresolved:{scope %s, type_name: %s, from_root: %b}"
+      (Util.string_of_string_list scope)
+      type_name from_root
+
+  let string_of_type_scope {Pbtt.packages; message_names} =
+    Printf.sprintf "scope:{packages:%s, message_names:%s}"
+      (Util.string_of_string_list packages)
+      (Util.string_of_string_list message_names)
+
+  let string_of_message id scope {Pbtt.message_name; message_body} =
+    Printf.sprintf "message: {id:%i, message_scope:%s, name:%s, field nb:%i}"
+      id
+      (string_of_type_scope scope)
+      message_name (List.length message_body)
+
+  let scope_of_package = function
+    | Some s ->
+        { empty_scope with
+          Pbtt.packages= List.rev @@ Util.rev_split_by_char '.' s }
+    | None -> empty_scope
+
+  let unresolved_of_string s =
+    match Util.rev_split_by_char '.' s with
+    | [] -> E.programmatic_error E.Invalid_string_split
+    | hd :: tl ->
+        { Pbtt.scope= List.rev tl
+        ; Pbtt.type_name= hd
+        ; Pbtt.from_root= s.[0] = '.' }
+
+  let field_type_of_string = function
+    | "double" -> Pbtt.Field_type_double
+    | "float" -> Pbtt.Field_type_float
+    | "int32" -> Pbtt.Field_type_int32
+    | "int64" -> Pbtt.Field_type_int64
+    | "uint32" -> Pbtt.Field_type_uint32
+    | "uint64" -> Pbtt.Field_type_uint64
+    | "sint32" -> Pbtt.Field_type_sint32
+    | "sint64" -> Pbtt.Field_type_sint64
+    | "fixed32" -> Pbtt.Field_type_fixed32
+    | "fixed64" -> Pbtt.Field_type_fixed64
+    | "sfixed32" -> Pbtt.Field_type_sfixed32
+    | "sfixed64" -> Pbtt.Field_type_sfixed64
+    | "bool" -> Pbtt.Field_type_bool
+    | "string" -> Pbtt.Field_type_string
+    | "bytes" -> Pbtt.Field_type_bytes
+    | s -> Pbtt.Field_type_type (unresolved_of_string s)
+
+  let map_field_type : 'a Pbtt.field_type -> 'b Pbtt.field_type = function
+    | Pbtt.Field_type_double -> Pbtt.Field_type_double
+    | Pbtt.Field_type_float -> Pbtt.Field_type_float
+    | Pbtt.Field_type_int32 -> Pbtt.Field_type_int32
+    | Pbtt.Field_type_int64 -> Pbtt.Field_type_int64
+    | Pbtt.Field_type_uint32 -> Pbtt.Field_type_uint32
+    | Pbtt.Field_type_uint64 -> Pbtt.Field_type_uint64
+    | Pbtt.Field_type_sint32 -> Pbtt.Field_type_sint32
+    | Pbtt.Field_type_sint64 -> Pbtt.Field_type_sint64
+    | Pbtt.Field_type_fixed32 -> Pbtt.Field_type_fixed32
+    | Pbtt.Field_type_fixed64 -> Pbtt.Field_type_fixed64
+    | Pbtt.Field_type_sfixed32 -> Pbtt.Field_type_sfixed32
+    | Pbtt.Field_type_sfixed64 -> Pbtt.Field_type_sfixed64
+    | Pbtt.Field_type_bool -> Pbtt.Field_type_bool
+    | Pbtt.Field_type_string -> Pbtt.Field_type_string
+    | Pbtt.Field_type_bytes -> Pbtt.Field_type_bytes
+    | Pbtt.Field_type_type _ -> E.programmatic_error E.Unexpected_field_type
+
+  let compile_default_p2 all_types field =
+    let field_name = field_name field in
+    let field_type = field_type field in
+    let field_default = field_default field in
+    match field_default with
+    | None -> None
+    | Some constant -> (
+      match field_type with
+      | Pbtt.Field_type_double | Pbtt.Field_type_float -> (
+        match constant with
+        | Pbpt.Constant_int i -> Some (Pbpt.Constant_float (float_of_int i))
+        | Pbpt.Constant_float _ -> Some constant
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"invalid default type (float/int expected)" () )
+      | Pbtt.Field_type_int32 | Pbtt.Field_type_int64
+       |Pbtt.Field_type_sint32 | Pbtt.Field_type_sint64
+       |Pbtt.Field_type_fixed32 | Pbtt.Field_type_fixed64
+       |Pbtt.Field_type_sfixed32 | Pbtt.Field_type_sfixed64 -> (
+        match constant with
+        | Pbpt.Constant_int _ -> Some constant
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"invalid default type (int expected)" () )
+      | Pbtt.Field_type_uint32 | Pbtt.Field_type_uint64 -> (
+        match constant with
+        | Pbpt.Constant_int i ->
+            if i >= 0 then Some constant
+            else
+              E.invalid_default_value ~field_name
+                ~info:"negative default value for unsigned int" ()
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"invalid default type (int expected)" () )
+      | Pbtt.Field_type_bool -> (
+        match constant with
+        | Pbpt.Constant_bool _ -> Some constant
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"invalid default type (bool expected)" () )
+      | Pbtt.Field_type_string -> (
+        match constant with
+        | Pbpt.Constant_string _ -> Some constant
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"invalid default type (string expected)" () )
+      | Pbtt.Field_type_bytes ->
+          E.invalid_default_value ~field_name
+            ~info:"default value not supported for bytes" ()
+      | Pbtt.Field_type_type (id : Pbtt.resolved) -> (
+        match constant with
+        | Pbpt.Constant_litteral default_enum_value -> (
+            let {Pbtt.spec; _} = type_of_id all_types id in
+            match spec with
+            | Pbtt.Message _ ->
+                E.invalid_default_value ~field_name
+                  ~info:
+                    "field of type message cannot have a default litteral value"
+                  ()
+            | Pbtt.Enum {Pbtt.enum_values; _} -> (
+                let default_enum_value =
+                  Util.apply_until
+                    (fun {Pbtt.enum_value_name; _} ->
+                      if enum_value_name = default_enum_value then
+                        Some enum_value_name
+                      else None)
+                    enum_values in
+                match default_enum_value with
+                | Some _ -> Some constant
+                | None ->
+                    E.invalid_default_value ~field_name
+                      ~info:"Invalid default enum value" () ) )
+        | _ ->
+            E.invalid_default_value ~field_name
+              ~info:"default value not supported for message" () ) )
+
+  let get_default field_name field_options field_type =
+    match List.assoc "default" field_options with
+    | constant ->
+        Some constant (* (compile_default field_name constant field_type) *)
+    | exception Not_found -> None
+
+  let compile_field_p1
+      ( { Pbpt.field_name
+        ; Pbpt.field_number= _
+        ; Pbpt.field_label= _
+        ; Pbpt.field_type
+        ; Pbpt.field_options } as field_parsed ) =
+    let field_type = field_type_of_string field_type in
+    let field_default = get_default field_name field_options field_type in
+    {Pbtt.field_parsed; Pbtt.field_type; Pbtt.field_default; Pbtt.field_options}
+
+  let compile_map_p1
+      { Pbpt.map_name
+      ; Pbpt.map_number
+      ; Pbpt.map_key_type
+      ; Pbpt.map_value_type
+      ; Pbpt.map_options } =
+    Pbtt.
+      { map_name
+      ; map_number
+      ; map_key_type= field_type_of_string map_key_type
+      ; map_value_type= field_type_of_string map_value_type
+      ; map_options }
+
+  let compile_oneof_p1 {Pbpt.oneof_name; Pbpt.oneof_fields} =
+    {Pbtt.oneof_name; Pbtt.oneof_fields= List.map compile_field_p1 oneof_fields}
+
+  let not_found f : bool = try f () ; false with Not_found -> true
+
+  let rec list_assoc2 x = function
+    | [] -> raise Not_found
+    | (a, b) :: l -> if compare b x = 0 then a else list_assoc2 x l
+
+  (** type creation function *)
+  let type_of_spec file_name file_options id scope spec =
+    {Pbtt.id; Pbtt.scope; Pbtt.file_name; Pbtt.file_options; Pbtt.spec}
+
+  (** compile a [Pbpt] enum to a [Pbtt] type *)
+  let compile_enum_p1 file_name file_options scope
+      {Pbpt.enum_id; enum_name; enum_values} : 'a Pbtt.proto_type =
+    let enum_values =
+      List.map
+        (fun enum_value ->
+          { Pbtt.enum_value_name= enum_value.Pbpt.enum_value_name
+          ; Pbtt.enum_value_int= enum_value.Pbpt.enum_value_int })
+        enum_values in
+    type_of_spec file_name file_options enum_id scope
+      (Pbtt.Enum {Pbtt.enum_name; Pbtt.enum_values})
+
+  (** compile a [Pbpt] message a list of [Pbtt] types (ie messages can defined
+      more than one type). *)
+  let rec compile_message_p1 file_name file_options message_scope
+      {Pbpt.id; Pbpt.message_name; Pbpt.message_body} =
+    let {Pbtt.message_names; _} = message_scope in
+    let sub_scope =
+      {message_scope with Pbtt.message_names= message_names @ [message_name]}
+    in
+    let message_body, extensions, all_sub =
+      List.fold_left
+        (fun (message_body, extensions, all_types) -> function
+          | Pbpt.Message_field f ->
+              let field = Pbtt.Message_field (compile_field_p1 f) in
+              (field :: message_body, extensions, all_types)
+          | Pbpt.Message_map_field m ->
+              let field = Pbtt.Message_map_field (compile_map_p1 m) in
+              (* let field = Pbtt.Message_field field in let extra_types =
+                 compile_message_p1 file_name file_options sub_scope extra_type
+                 in *)
+              (field :: message_body, extensions, all_types)
+          | Pbpt.Message_oneof_field o ->
+              let field = Pbtt.Message_oneof_field (compile_oneof_p1 o) in
+              (field :: message_body, extensions, all_types)
+          | Pbpt.Message_sub m ->
+              let all_sub_types =
+                compile_message_p1 file_name file_options sub_scope m in
+              (message_body, extensions, all_types @ all_sub_types)
+          | Pbpt.Message_enum ({Pbpt.enum_id; _} as enum) ->
+              ( message_body
+              , extensions
+              , all_types
+                @ [compile_enum_p1 file_name file_options sub_scope enum] )
+          | Pbpt.Message_extension extension_ranges ->
+              (message_body, extensions @ extension_ranges, all_types))
+        ([], [], []) message_body in
+    let message_body = List.rev message_body in
+    (* Both field name and field number must be unique within a message scope.
+       This includes the field in a oneof field inside the message.
+
+       This function verifies this constrain and raises the corresponding
+       Duplicated_field_number exception in case it is violated. *)
+    let validate_duplicate (number_index : (int * string) list) field =
+      let number = field_number field in
+      let name = field_name field in
+      if
+        not_found (fun () -> ignore @@ List.assoc number number_index)
+        && not_found (fun () -> ignore @@ list_assoc2 name number_index)
+      then (number, name) :: number_index
+      else
+        E.duplicated_field_number ~field_name:name ~previous_field_name:""
+          ~message_name () in
+    ignore
+    @@ List.fold_left
+         (fun number_index -> function
+           | Pbtt.Message_field f -> validate_duplicate number_index f
+           | Pbtt.Message_oneof_field {Pbtt.oneof_fields; _} ->
+               List.fold_left validate_duplicate number_index oneof_fields
+           (* TODO: add support for map *) | _ -> number_index)
+         [] message_body ;
+    all_sub
+    @ [ type_of_spec file_name file_options id message_scope
+          Pbtt.(Message {extensions; message_name; message_body}) ]
+
+  let compile_proto_p1 file_name
+      {Pbpt.package; messages; enums; file_options; _} =
+    let scope = scope_of_package package in
+    let pbtt_msgs =
+      List.fold_right
+        (fun e pbtt_msgs ->
+          compile_enum_p1 file_name file_options scope e :: pbtt_msgs)
+        enums [] in
+    List.fold_left
+      (fun pbtt_msgs pbpt_msg ->
+        pbtt_msgs @ compile_message_p1 file_name file_options scope pbpt_msg)
+      pbtt_msgs messages
+
+  let type_scope_of_type {Pbtt.scope; _} = scope
+
+  let is_empty_message = function
+    | {Pbtt.spec= Pbtt.Message {Pbtt.message_body; _}} ->
+        0 = List.length message_body
+    | _ -> false
+
+  let type_name_of_type = function
+    | {Pbtt.spec= Pbtt.Enum {Pbtt.enum_name; _}} -> enum_name
+    | {Pbtt.spec= Pbtt.Message {Pbtt.message_name; _}} -> message_name
+
+  let find_all_types_in_field_scope all_types (scope : Pbtt.field_scope) =
+    List.filter
+      (fun t ->
+        let {Pbtt.packages; Pbtt.message_names} = type_scope_of_type t in
+        let dec_scope = packages @ message_names in
+        dec_scope = scope)
+      all_types
+
+  let compile_message_p2 types {Pbtt.packages; Pbtt.message_names}
+      ({Pbtt.message_name; Pbtt.message_body} as message) =
+    (* stringify the message scope so that it can be used with the field scope.
+
+       see `Note on scoping` in the README.md file *)
+    let message_scope = packages @ message_names @ [message_name] in
+    let process_field_in_scope types scope type_name =
+      let types = find_all_types_in_field_scope types scope in
+      try
+        let t = List.find (fun t -> type_name = type_name_of_type t) types in
+        Some (type_id_of_type t)
+      with Not_found -> None in
+    (* this method returns all the scope to search for a type starting by the
+       most innner one first.
+
+       if [message_scope] = ['Msg1'; 'Msg2'] and [field_scope] = ['Msg3'] then
+       the following scopes will be returned: [ ['Msg1'; 'Msg2'; 'Msg3']; //
+       This would be the scope of the current msg ['Msg1'; 'Msg3'; ]; // Outer
+       message scope ['Msg3'; ] // Top level scope ] *)
+    let search_scopes (field_scope : string list) from_root : string list list
+        =
+      if from_root then [field_scope]
+      else
+        let rec loop scopes = function
+          | [] -> field_scope :: scopes
+          | l -> loop ((l @ field_scope) :: scopes) (Util.pop_last l) in
+        List.rev @@ loop [] message_scope in
+    let compile_field_p2 field_name field_type =
+      L.log "[pbtt] field_name: %s\n" field_name ;
+      match field_type with
+      | Pbtt.Field_type_type ({Pbtt.scope; type_name; from_root} as unresolved)
+        -> (
+          L.endline @@ "[pbtt] " ^ string_of_unresolved unresolved ;
+          let search_scopes = search_scopes scope from_root in
+          L.log "[pbtt] message scope: %s\n"
+          @@ Util.string_of_string_list message_scope ;
+          List.iteri
+            (fun i scope ->
+              L.log "[pbtt] search_scope[%2i] : %s\n" i
+              @@ Util.string_of_string_list scope)
+            search_scopes ;
+          let id =
+            Util.apply_until
+              (fun scope -> process_field_in_scope types scope type_name)
+              search_scopes in
+          (* TODO this is where we are resolving and potentially where we could
+             keep track of the whether it's a message or enum *)
+          match id with
+          | Some id -> (Pbtt.Field_type_type id : Pbtt.resolved Pbtt.field_type)
+          | None ->
+              E.unresolved_type ~field_name ~type_:type_name ~message_name () )
+      | field_type -> map_field_type field_type in
+    let message_body =
+      List.fold_left
+        (fun message_body -> function
+          | Pbtt.Message_field field ->
+              let field_name = field_name field in
+              let field_type = field_type field in
+              let field =
+                { field with
+                  Pbtt.field_type= compile_field_p2 field_name field_type }
+              in
+              let field =
+                {field with Pbtt.field_default= compile_default_p2 types field}
+              in
+              Pbtt.Message_field field :: message_body
+          | Pbtt.Message_oneof_field ({Pbtt.oneof_fields; _} as oneof) ->
+              let oneof_fields =
+                List.fold_left
+                  (fun oneof_fields field ->
+                    let field_name = field_name field in
+                    let field_type = field_type field in
+                    let field_type = compile_field_p2 field_name field_type in
+                    {field with Pbtt.field_type} :: oneof_fields)
+                  [] oneof_fields in
+              let oneof_fields = List.rev oneof_fields in
+              Pbtt.Message_oneof_field {oneof with Pbtt.oneof_fields}
+              :: message_body
+          | Pbtt.Message_map_field map ->
+              let { Pbtt.map_name
+                  ; map_number
+                  ; map_key_type
+                  ; map_value_type
+                  ; map_options } =
+                map in
+              let map_key_type = compile_field_p2 map_name map_key_type in
+              (* TODO: add validation about the key type which in protobuf is limited 
+               * to basic types. 
+               *)
+              let map_value_type = compile_field_p2 map_name map_value_type in
+              let resolved_map =
+                Pbtt.(
+                  Message_map_field
+                    { map_name
+                    ; map_number
+                    ; map_key_type
+                    ; map_value_type
+                    ; map_options }) in
+              resolved_map :: message_body)
+        [] message_body in
+    let message_body = List.rev message_body in
+    {message with Pbtt.message_body}
+
+  let compile_proto_p2 all_types t =
+    match t with
+    | {Pbtt.file_name; file_options; id; scope; spec= Pbtt.Message m} ->
+        { Pbtt.file_name
+        ; Pbtt.file_options
+        ; Pbtt.scope
+        ; Pbtt.id
+        ; Pbtt.spec= Pbtt.Message (compile_message_p2 all_types scope m) }
+    | {Pbtt.file_name; file_options; id; scope; spec= Pbtt.Enum _ as spec} ->
+        {Pbtt.file_name; Pbtt.file_options; Pbtt.id; Pbtt.scope; Pbtt.spec}
+
+  let node_of_proto_type = function
+    | {Pbtt.id; Pbtt.spec= Pbtt.Enum _; _} -> Graph.create_node id []
+    | {Pbtt.id; Pbtt.spec= Pbtt.Message {Pbtt.message_body; _}; _} ->
+        let sub =
+          List.flatten
+          @@ List.map
+               (function
+                 | Pbtt.Message_field {Pbtt.field_type; _} -> (
+                   match field_type with
+                   | Pbtt.Field_type_type x -> [x]
+                   | _ -> [] )
+                 | Pbtt.Message_oneof_field {Pbtt.oneof_fields; _} ->
+                     List.flatten
+                     @@ List.map
+                          (fun {Pbtt.field_type; _} ->
+                            match field_type with
+                            | Pbtt.Field_type_type x -> [x]
+                            | _ -> [])
+                          oneof_fields
+                 | Pbtt.Message_map_field {Pbtt.map_value_type; _} -> (
+                   match map_value_type with
+                   | Pbtt.Field_type_type x -> [x]
+                   | _ -> [] ))
+               message_body in
+        Graph.create_node id sub
+
+  let is_id input_id {Pbtt.id; _} = input_id = id
+
+  let group proto =
+    let g = List.map node_of_proto_type proto in
+    let g =
+      List.fold_left (fun m n -> Graph.add_node n m) Graph.empty_graph g in
+    let sccs = Graph.tarjan g in
+    List.map (fun l -> List.map (fun id -> List.find (is_id id) proto) l) sccs
+end
+
+module Codegen_type : sig
+  include Codegen.S
+end = struct
+  module T = Ocaml_types
+  module F = Fmt
+  open Codegen_util
+
+  let type_decl_of_and = function Some () -> "and" | None -> "type"
+
+  let gen_type_record ?mutable_ ?and_ {T.r_name; r_fields} sc =
+    let mutable_ = match mutable_ with Some () -> true | None -> false in
+    let is_imperative_type = function
+      | T.Rft_required _ | T.Rft_optional _ | T.Rft_variant_field _
+       |T.Rft_repeated_field (T.Rt_list, _, _, _, _)
+       |T.Rft_associative_field (T.At_list, _, _, _) ->
+          false
+      | T.Rft_repeated_field (T.Rt_repeated_field, _, _, _, _)
+       |T.Rft_associative_field (T.At_hashtable, _, _, _) ->
+          true in
+    let field_prefix field_type field_mutable =
+      if field_mutable then "mutable "
+      else if is_imperative_type field_type then ""
+      else if mutable_ then "mutable "
+      else "" in
+    let r_name =
+      if mutable_ then Codegen_util.mutable_record_name r_name else r_name
+    in
+    F.line sc @@ sp "%s %s = {" (type_decl_of_and and_) r_name ;
+    F.scope sc (fun sc ->
+        List.iter
+          (fun {T.rf_label; rf_field_type; rf_mutable} ->
+            let prefix = field_prefix rf_field_type rf_mutable in
+            let type_string =
+              Codegen_util.string_of_record_field_type rf_field_type in
+            F.line sc @@ sp "%s%s : %s;" prefix rf_label type_string)
+          r_fields) ;
+    F.line sc "}"
+
+  let gen_type_variant ?and_ variant sc =
+    let {T.v_name; v_constructors} = variant in
+    F.line sc @@ sp "%s %s =" (type_decl_of_and and_) v_name ;
+    F.scope sc (fun sc ->
+        List.iter
+          (fun {T.vc_constructor; vc_field_type; _} ->
+            match vc_field_type with
+            | T.Vct_nullary -> F.line sc @@ sp "| %s" vc_constructor
+            | T.Vct_non_nullary_constructor field_type ->
+                let type_string = string_of_field_type field_type in
+                F.line sc @@ sp "| %s of %s" vc_constructor type_string)
+          v_constructors)
+
+  let gen_type_const_variant ?and_ {T.cv_name; cv_constructors} sc =
+    F.line sc @@ sp "%s %s =" (type_decl_of_and and_) cv_name ;
+    F.scope sc (fun sc ->
+        List.iter
+          (fun (name, _) -> F.line sc @@ sp "| %s " name)
+          cv_constructors)
+
+  let gen_struct ?and_ t scope =
+    ( match t with
+    | {T.spec= T.Record r; _} ->
+        gen_type_record ?and_ r scope ;
+        F.empty_line scope ;
+        gen_type_record ~mutable_:() ~and_:() r scope
+    | {T.spec= T.Variant v; _} -> gen_type_variant ?and_ v scope
+    | {T.spec= T.Const_variant v; _} -> gen_type_const_variant ?and_ v scope ) ;
+    true
+
+  let gen_sig ?and_ t scope =
+    ( match t with
+    | {T.spec= T.Record r; _} -> gen_type_record ?and_ r scope
+    | {T.spec= T.Variant v; _} -> gen_type_variant ?and_ v scope
+    | {T.spec= T.Const_variant v; _} -> gen_type_const_variant ?and_ v scope ) ;
+    true
+
+  let ocamldoc_title = "Types"
+end
+
+module Codegen_encode : sig
+  include Codegen.S
+end = struct
+  module T = Ocaml_types
+  module F = Fmt
+  module E = Exception
+  module L = Logger
+  open Codegen_util
+
+  let constructor_name s = String.capitalize @@ String.lowercase s
+
+  let gen_encode_field_key sc number pk is_packed =
+    F.line sc
+    @@ sp "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; " number
+         (constructor_name @@ Codegen_util.string_of_payload_kind pk is_packed)
+
+  let encode_basic_type bt pk =
+    Backend_ocaml_static.runtime_function (`Encode, pk, bt)
+
+  let gen_encode_field_type ?with_key sc var_name encoding_number pk is_packed
+      field_type =
+    let encode_key sc =
+      match with_key with
+      | Some () -> gen_encode_field_key sc encoding_number pk is_packed
+      | None -> () in
+    match field_type with
+    | T.Ft_user_defined_type ud ->
+        encode_key sc ;
+        let f_name = function_name_of_user_defined "encode" ud in
+        if ud.T.udt_nested then
+          F.line sc
+          @@ sp "Pbrt.Encoder.nested (%s %s) encoder;" f_name var_name
+        else F.line sc @@ sp "%s %s encoder;" f_name var_name
+    | T.Ft_unit ->
+        encode_key sc ;
+        F.line sc "Pbrt.Encoder.empty_nested encoder;"
+    | T.Ft_basic_type bt ->
+        encode_key sc ;
+        let rt = encode_basic_type bt pk in
+        F.line sc @@ sp "%s %s encoder;" rt var_name
+
+  let gen_encode_record ?and_ {T.r_name; r_fields} sc =
+    L.log "gen_encode_record record_name: %s\n" r_name ;
+    let rn = r_name in
+    F.line sc
+    @@ sp "%s encode_%s (v:%s) encoder = " (let_decl_of_and and_) rn rn ;
+    F.scope sc (fun sc ->
+        List.iter
+          (fun record_field ->
+            let {T.rf_label; rf_field_type; _} = record_field in
+            match rf_field_type with
+            | T.Rft_required (field_type, encoding_number, pk, _) ->
+                let var_name = sp "v.%s" rf_label in
+                gen_encode_field_type ~with_key:() sc var_name encoding_number
+                  pk false (* packed *) field_type
+            | T.Rft_optional (field_type, encoding_number, pk, _) ->
+                F.line sc "(" ;
+                F.scope sc (fun sc ->
+                    F.line sc @@ sp "match v.%s with " rf_label ;
+                    F.line sc @@ sp "| Some x -> (" ;
+                    F.scope sc (fun sc ->
+                        gen_encode_field_type ~with_key:() sc "x"
+                          encoding_number pk false field_type) ;
+                    F.line sc ")" ;
+                    F.line sc "| None -> ();") ;
+                F.line sc ");"
+            | T.Rft_repeated_field
+                (rt, field_type, encoding_number, pk, is_packed) -> (
+              match (rt, is_packed) with
+              | T.Rt_list, false ->
+                  F.line sc "List.iter (fun x -> " ;
+                  F.scope sc (fun sc ->
+                      gen_encode_field_type ~with_key:() sc "x" encoding_number
+                        pk is_packed field_type) ;
+                  F.line sc @@ sp ") v.%s;" rf_label
+              | T.Rt_repeated_field, false ->
+                  F.line sc "Pbrt.Repeated_field.iter (fun x -> " ;
+                  F.scope sc (fun sc ->
+                      gen_encode_field_type ~with_key:() sc "x" encoding_number
+                        pk is_packed field_type) ;
+                  F.line sc @@ sp ") v.%s;" rf_label
+              | T.Rt_list, true ->
+                  gen_encode_field_key sc encoding_number pk is_packed ;
+                  (* When packed the key is encoded once. *)
+                  F.line sc "Pbrt.Encoder.nested (fun encoder ->" ;
+                  F.scope sc (fun sc ->
+                      F.line sc "List.iter (fun x -> " ;
+                      F.scope sc (fun sc ->
+                          gen_encode_field_type sc "x" encoding_number pk
+                            is_packed field_type) ;
+                      F.line sc @@ sp ") v.%s;" rf_label) ;
+                  F.line sc ") encoder;"
+              | T.Rt_repeated_field, true ->
+                  gen_encode_field_key sc encoding_number pk is_packed ;
+                  (* When packed the key is encoded once. *)
+                  F.line sc "Pbrt.Encoder.nested (fun encoder ->" ;
+                  F.scope sc (fun sc ->
+                      F.line sc "Pbrt.Repeated_field.iter (fun x -> " ;
+                      F.scope sc (fun sc ->
+                          gen_encode_field_type sc "x" encoding_number pk
+                            is_packed field_type) ;
+                      F.line sc @@ sp ") v.%s;" rf_label) ;
+                  F.line sc ") encoder;" )
+            | T.Rft_variant_field {T.v_name; v_constructors} ->
+                F.line sc "(" ;
+                F.scope sc (fun sc ->
+                    F.line sc @@ sp "match v.%s with" rf_label ;
+                    List.iter
+                      (fun { T.vc_constructor
+                           ; vc_field_type
+                           ; vc_encoding_number
+                           ; vc_payload_kind } ->
+                        match vc_field_type with
+                        | T.Vct_nullary ->
+                            F.line sc @@ sp "| %s -> (" vc_constructor ;
+                            F.scope sc (fun sc ->
+                                gen_encode_field_key sc vc_encoding_number
+                                  vc_payload_kind false ;
+                                F.line sc "Pbrt.Encoder.empty_nested encoder") ;
+                            F.line sc ")"
+                        | T.Vct_non_nullary_constructor field_type ->
+                            F.line sc @@ sp "| %s x -> (" vc_constructor ;
+                            F.scope sc (fun sc ->
+                                gen_encode_field_type sc ~with_key:() "x"
+                                  vc_encoding_number vc_payload_kind false
+                                  field_type) ;
+                            F.line sc ")")
+                      v_constructors) ;
+                F.line sc ");"
+            | T.Rft_associative_field
+                ( at
+                , encoding_number
+                , (key_type, key_pk)
+                , (value_type, value_pk) ) ->
+                F.line sc
+                @@ sp "let encode_key = %s in"
+                     (encode_basic_type key_type key_pk) ;
+                F.line sc "let encode_value = (fun x encoder ->" ;
+                F.scope sc (fun sc ->
+                    gen_encode_field_type sc "x" (-1) (* TODO *) value_pk false
+                      value_type) ;
+                F.line sc ") in" ;
+                ( match at with
+                | T.At_list -> F.line sc "List.iter (fun (k, v) ->"
+                | T.At_hashtable -> F.line sc "Hashtbl.iter (fun k v ->" ) ;
+                F.scope sc (fun sc ->
+                    gen_encode_field_key sc encoding_number T.Pk_bytes false ;
+                    F.line sc
+                    @@ sp "let map_entry = (k, Pbrt.%s), (v, Pbrt.%s) in"
+                         (Codegen_util.string_of_payload_kind ~capitalize:()
+                            key_pk false)
+                         (Codegen_util.string_of_payload_kind ~capitalize:()
+                            value_pk false) ;
+                    F.line sc
+                      "Pbrt.Encoder.map_entry ~encode_key ~encode_value \
+                       map_entry encoder") ;
+                F.line sc @@ sp ") v.%s;" rf_label)
+          r_fields
+        (* List.iter *) ;
+        F.line sc "()")
+
+  (* encode function *)
+
+  let gen_encode_variant ?and_ variant sc =
+    let {T.v_name; T.v_constructors} = variant in
+    let vn = v_name in
+    F.line sc
+    @@ sp "%s encode_%s (v:%s) encoder = " (let_decl_of_and and_) vn vn ;
+    F.scope sc (fun sc ->
+        F.line sc "match v with" ;
+        List.iter
+          (fun { T.vc_constructor
+               ; vc_field_type
+               ; vc_encoding_number
+               ; vc_payload_kind } ->
+            match vc_field_type with
+            | T.Vct_nullary ->
+                F.line sc @@ sp "| %s -> (" vc_constructor ;
+                F.scope sc (fun sc ->
+                    gen_encode_field_key sc vc_encoding_number vc_payload_kind
+                      false ;
+                    F.line sc "Pbrt.Encoder.empty_nested encoder") ;
+                F.line sc ")"
+            | T.Vct_non_nullary_constructor field_type ->
+                F.line sc @@ sp "| %s x -> (" vc_constructor ;
+                F.scope sc (fun sc ->
+                    gen_encode_field_type sc ~with_key:() "x"
+                      vc_encoding_number vc_payload_kind false field_type) ;
+                F.line sc ")")
+          v_constructors)
+
+  let gen_encode_const_variant ?and_ {T.cv_name; T.cv_constructors} sc =
+    F.line sc
+    @@ sp "%s encode_%s (v:%s) encoder =" (let_decl_of_and and_) cv_name
+         cv_name ;
+    F.scope sc (fun sc ->
+        F.line sc "match v with" ;
+        List.iter
+          (fun (name, value) ->
+            F.line sc
+              ( if value > 0 then
+                sp "| %s -> Pbrt.Encoder.int_as_varint %i encoder" name value
+              else
+                sp "| %s -> Pbrt.Encoder.int_as_varint (%i) encoder" name value
+              ))
+          cv_constructors)
+
+  let gen_struct ?and_ t sc =
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record r} -> (gen_encode_record ?and_ r sc, true)
+      | {T.spec= T.Variant v} -> (gen_encode_variant ?and_ v sc, true)
+      | {T.spec= T.Const_variant v} ->
+          (gen_encode_const_variant ?and_ v sc, true) in
+    has_encoded
+
+  let gen_sig ?and_ t sc =
+    let f type_name =
+      F.line sc
+      @@ sp "val encode_%s : %s -> Pbrt.Encoder.t -> unit" type_name type_name ;
+      F.line sc
+      @@ sp "(** [encode_%s v encoder] encodes [v] with the given [encoder] *)"
+           type_name in
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record {T.r_name; _}} -> (f r_name, true)
+      | {T.spec= T.Variant v} -> (f v.T.v_name, true)
+      | {T.spec= T.Const_variant {T.cv_name; _}} -> (f cv_name, true) in
+    has_encoded
+
+  let ocamldoc_title = "Protobuf Toding"
+end
+
+module Codegen_default : sig
+  include Codegen.S
+end = struct
+  module T = Ocaml_types
+  module F = Fmt
+  module E = Exception
+  module L = Logger
+  open Codegen_util
+
+  let default_value_of_basic_type ?field_name basic_type field_default =
+    match (basic_type, field_default) with
+    | T.Bt_string, None -> "\"\""
+    | T.Bt_string, Some (Pbpt.Constant_string s) -> sp "\"%s\"" s
+    | T.Bt_float, None -> "0."
+    | T.Bt_float, Some (Pbpt.Constant_float f) -> string_of_float f
+    | T.Bt_int, None -> "0"
+    | T.Bt_int, Some (Pbpt.Constant_int i) -> string_of_int i
+    | T.Bt_int32, None -> "0l"
+    | T.Bt_int32, Some (Pbpt.Constant_int i) -> sp "%il" i
+    | T.Bt_int64, None -> "0L"
+    | T.Bt_int64, Some (Pbpt.Constant_int i) -> sp "%iL" i
+    | T.Bt_bytes, None -> "Bytes.create 64"
+    | T.Bt_bytes, Some (Pbpt.Constant_string s) ->
+        sp "Bytes.of_string \"%s\"" s
+    | T.Bt_bool, None -> "false"
+    | T.Bt_bool, Some (Pbpt.Constant_bool b) -> string_of_bool b
+    | _ -> E.invalid_default_value ?field_name ~info:"invalid default type" ()
+
+  (* Generate the string which is the default value for a given field type and
+     default information. *)
+  let default_value_of_field_type ?field_name field_type field_default =
+    match field_type with
+    | T.Ft_user_defined_type t ->
+        function_name_of_user_defined "default" t ^ " ()"
+    | T.Ft_unit -> "()"
+    | T.Ft_basic_type bt ->
+        default_value_of_basic_type ?field_name bt field_default
+
+  (* This function returns [(field_name, field_default_value, field_type)] for
+     a record field. *)
+  let record_field_default_info record_field : string * string * string =
+    let {T.rf_label; T.rf_field_type; _} = record_field in
+    let type_string = Codegen_util.string_of_record_field_type rf_field_type in
+    let field_name = rf_label in
+    let dfvft field_type defalut_value =
+      default_value_of_field_type ~field_name field_type defalut_value in
+    let default_value =
+      match rf_field_type with
+      | T.Rft_required (field_type, _, _, default_value) ->
+          dfvft field_type default_value
+      | T.Rft_optional (field_type, _, _, default_value) -> (
+        match default_value with
+        | None -> "None"
+        | Some _ -> sp "Some (%s)" @@ dfvft field_type default_value )
+      | T.Rft_repeated_field (rt, field_type, _, _, _) -> (
+        match rt with
+        | T.Rt_list -> "[]"
+        | T.Rt_repeated_field ->
+            sp "Pbrt.Repeated_field.make (%s)" (dfvft field_type None) )
+      | T.Rft_associative_field (at, _, _, _) -> (
+        match at with
+        | T.At_list -> "[]"
+        | T.At_hashtable ->
+            "Hashtbl.create 128"
+            (* TODO 
+             * This initial value could be configurable either via 
+             * the default function or via a protobuf option.
+             *) )
+      | T.Rft_variant_field {T.v_name; v_constructors} -> (
+        match v_constructors with
+        | [] -> assert false
+        | {T.vc_constructor; vc_field_type; _} :: _ -> (
+          match vc_field_type with
+          | T.Vct_nullary -> vc_constructor
+          | T.Vct_non_nullary_constructor field_type ->
+              sp "%s (%s)" vc_constructor (dfvft field_type None) ) ) in
+    (field_name, default_value, type_string)
+
+  let gen_default_record ?mutable_ ?and_ {T.r_name; r_fields} sc =
+    let fields_default_info =
+      List.map (fun r_field -> record_field_default_info r_field) r_fields
+    in
+    (* List.map *)
+    ( match mutable_ with
+    | Some () ->
+        let rn = Codegen_util.mutable_record_name r_name in
+        F.line sc
+        @@ sp "%s default_%s () : %s = {" (let_decl_of_and and_) rn rn ;
+        F.scope sc (fun sc ->
+            List.iter
+              (fun (fname, fvalue, _) ->
+                F.line sc @@ sp "%s = %s;" fname fvalue)
+              fields_default_info)
+    | None ->
+        F.line sc @@ sp "%s default_%s " (let_decl_of_and and_) r_name ;
+        F.scope sc (fun sc ->
+            List.iter
+              (fun (fname, fvalue, ftype) ->
+                F.line sc @@ sp "?%s:((%s:%s) = %s)" fname fname ftype fvalue)
+              fields_default_info ;
+            F.line sc @@ sp "() : %s  = {" r_name) ;
+        F.scope sc (fun sc ->
+            List.iter
+              (fun (fname, _, _) -> F.line sc @@ sp "%s;" fname)
+              fields_default_info) ) ;
+    F.line sc "}"
+
+  let gen_default_variant ?and_ {T.v_name; T.v_constructors} sc =
+    match v_constructors with
+    | [] -> failwith "programmatic TODO error"
+    | {T.vc_constructor; vc_field_type; _} :: _ -> (
+        let decl = let_decl_of_and and_ in
+        match vc_field_type with
+        | T.Vct_nullary ->
+            F.line sc
+            @@ sp "%s default_%s (): %s = %s" decl v_name v_name vc_constructor
+        | T.Vct_non_nullary_constructor field_type ->
+            let default_value =
+              default_value_of_field_type ~field_name:v_name field_type None
+            in
+            (* TODO need to fix the deault value *)
+            F.line sc
+            @@ sp "%s default_%s () : %s = %s (%s)" decl v_name v_name
+                 vc_constructor default_value )
+
+  let gen_default_const_variant ?and_ {T.cv_name; T.cv_constructors} sc =
+    let first_constructor_name =
+      match cv_constructors with
+      | [] -> failwith "programmatic TODO error"
+      | (name, _) :: _ -> name in
+    F.line sc
+    @@ sp "%s default_%s () = (%s:%s)" (let_decl_of_and and_) cv_name
+         first_constructor_name cv_name
+
+  let gen_struct ?and_ t sc =
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record r} ->
+          ( ( gen_default_record ?and_ r sc ;
+              F.empty_line sc ;
+              gen_default_record ~mutable_:() ~and_:() r sc )
+          , true )
+      | {T.spec= T.Variant v} -> (gen_default_variant ?and_ v sc, true)
+      | {T.spec= T.Const_variant v} -> (gen_default_const_variant v sc, true)
+    in
+    has_encoded
+
+  let gen_sig_record sc {T.r_name; r_fields} =
+    F.line sc @@ sp "val default_%s : " r_name ;
+    let fields_default_info = List.map record_field_default_info r_fields in
+    F.scope sc (fun sc ->
+        List.iter
+          (fun (field_name, _, field_type) ->
+            F.line sc @@ sp "?%s:%s ->" field_name field_type)
+          fields_default_info ;
+        F.line sc "unit ->" ;
+        F.line sc r_name) ;
+    let rn = r_name in
+    F.line sc
+    @@ sp "(** [default_%s ()] is the default value for type [%s] *)" rn rn ;
+    ()
+
+  let gen_sig ?and_ t sc =
+    let f type_name =
+      F.line sc @@ sp "val default_%s : unit -> %s" type_name type_name ;
+      F.line sc
+      @@ sp "(** [default_%s ()] is the default value for type [%s] *)"
+           type_name type_name in
+    let (), has_encoded =
+      match t with
+      | {T.spec= T.Record r} -> (gen_sig_record sc r, true)
+      | {T.spec= T.Variant v} -> (f v.T.v_name, true)
+      | {T.spec= T.Const_variant {T.cv_name; _}} -> (f cv_name, true) in
+    has_encoded
+
+  let ocamldoc_title = "Default values"
+end
+
+module Backend_ocaml : sig
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  (** Backend for compiling Protobuf messages to OCaml *)
+
+  (** This module focuses on the compilation steps which transforms a fully
+      resolved Protobuf message into an OCaml representation.
+
+      After compilation this module also expose code generation functionality. *)
+
+  (** {2 Compilation} *)
+
+  val compile :
+       Pbtt.resolved Pbtt.proto
+    -> Pbtt.resolved Pbtt.proto_type
+    -> Ocaml_types.type_ list
+end = struct
+  (* The MIT License (MIT)
+
+     Copyright (c) 2016 Maxime Ransan <maxime.ransan@gmail.com>
+
+     Permission is hereby granted, free of charge, to any person obtaining a
+     copy of this software and associated documentation files (the "Software"),
+     to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+     and/or sell copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in
+     all copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+     DEALINGS IN THE SOFTWARE. *)
+
+  module E = Exception
+  module L = Logger
+  module OCaml_types = Ocaml_types
+
+  (* [rev_split_by_naming_convention s] will split [s] according to the protobuf
+   *  coding style convention. The rule split are 
+   *  {ul
+   *  {- character ['_'] is a separator}
+   *  {- the first uppercase letter after a lower case is a separator (ie FooBar will be split into [ ["Bar";"Foo"] ]}  
+   *  }
+   *)
+  let rev_split_by_naming_convention s =
+    let is_uppercase c = 64 < Char.code c && Char.code c < 91 in
+    let add_sub_string start_i end_i l =
+      if start_i = end_i then l
+      else String.sub s start_i (end_i - start_i) :: l in
+    let l, start_i, _ =
+      Util.string_fold_lefti
+        (fun (l, start_i, uppercase_run) i c ->
+          match (c, uppercase_run) with
+          | '_', _ -> (add_sub_string start_i i l, i + 1, false)
+          | c, false when is_uppercase c ->
+              (add_sub_string start_i i l, i, true)
+          | _ -> (l, start_i, is_uppercase c))
+        ([], 0, false) s in
+    let len = String.length s in
+    add_sub_string start_i len l
+
+  let fix_ocaml_keyword_conflict s =
+    match s with
+    | "and" | "as" | "assert" | "begin" | "class" | "constraint" | "do"
+     |"done" | "downto" | "else" | "end" | "exception" | "external" | "false"
+     |"for" | "fun" | "function" | "functor" | "if" | "in" | "include"
+     |"inherit" | "initializer" | "lazy" | "let" | "match" | "method"
+     |"module" | "mutable" | "new" | "nonrec" | "object" | "of" | "open"
+     |"or" | "private" | "rec" | "sig" | "struct" | "then" | "to" | "true"
+     |"try" | "type" | "val" | "virtual" | "when" | "while" | "with" | "mod"
+     |"land" | "lor" | "lxor" | "lsl" | "lsr" | "asr" ->
+        s ^ "_"
+    | _ -> s
+
+  let constructor_name s =
     rev_split_by_naming_convention s
-    |> List.rev 
-    |> List.map String.lowercase 
-  ) all_names in 
-  let all_names = List.flatten all_names in 
+    |> List.rev |> String.concat "_" |> String.lowercase |> String.capitalize
 
-  match all_names with 
-  | []     -> failwith "Programmatic error"
-  | hd::[] -> fix_ocaml_keyword_conflict hd 
-  | _      -> S.concat "_" all_names 
+  let module_name = constructor_name
 
-(** [user_defined_type_of_id module_ all_types i] returns the field type name 
-    for the type identied by [i] and which is expected to be in [all_types]. 
+  let label_name_of_field_name s =
+    rev_split_by_naming_convention s
+    |> List.rev |> String.concat "_" |> String.lowercase
+    |> fix_ocaml_keyword_conflict
 
-    [module_] is the module of the type that this field belong to. If [module_]
-    is the same as the type [i] module then it won't be added to the field type
-    name. However if the field type belongs to a different module then it will 
-    be included. This distinction is necessary as OCaml will fail to compile
-    if the type of a field which is defined within the same module is prefix 
-    with the module name. (This is essentially expecting (rightly) a sub module 
-    with the same name. 
- *)
-let user_defined_type_of_id all_types file_name i = 
-  let module_ = module_of_file_name file_name in 
-  match Pbtt_util.type_of_id all_types i with
-  | exception Not_found -> 
-    E.programmatic_error E.No_type_found_for_id 
-  | {Pbtt.file_name; spec; _ } as t -> 
-      if Pbtt_util.is_empty_message t 
-      then OCaml_types.Ft_unit 
-      else 
-        let udt_nested = begin match spec with 
-          | Pbtt.Enum _ -> false 
-          | Pbtt.Message _ -> true 
-        end in 
-        let field_type_module = module_of_file_name file_name in  
-        let {Pbtt.message_names; _ } = Pbtt_util.type_scope_of_type t in 
-        let udt_type_name = type_name message_names (Pbtt_util.type_name_of_type t) in 
-        if field_type_module = module_ 
-        then OCaml_types.(Ft_user_defined_type {udt_nested; udt_module = None; udt_type_name}) 
-        else OCaml_types.(Ft_user_defined_type {udt_nested; udt_module = Some field_type_module; udt_type_name}) 
+  let module_of_file_name file_name =
+    let file_name = Filename.basename file_name in
+    match String.rindex file_name '.' with
+    | dot_index -> module_name @@ String.sub file_name 0 dot_index ^ "_pb"
+    | exception Not_found -> E.invalid_file_name file_name
 
-let encoding_info_of_field_type all_types field_type = 
-  match field_type with 
-    | Pbtt.Field_type_double     -> Ocaml_types.Pk_bits64
-    | Pbtt.Field_type_float      -> Ocaml_types.Pk_bits32 
-    | Pbtt.Field_type_int32      -> Ocaml_types.Pk_varint false
-    | Pbtt.Field_type_int64      -> Ocaml_types.Pk_varint false
-    | Pbtt.Field_type_uint32     -> Ocaml_types.Pk_varint false
-    | Pbtt.Field_type_uint64     -> Ocaml_types.Pk_varint false
-    | Pbtt.Field_type_sint32     -> Ocaml_types.Pk_varint true
-    | Pbtt.Field_type_sint64     -> Ocaml_types.Pk_varint true 
-    | Pbtt.Field_type_fixed32    -> Ocaml_types.Pk_bits32
-    | Pbtt.Field_type_fixed64    -> Ocaml_types.Pk_bits64
-    | Pbtt.Field_type_sfixed32   -> Ocaml_types.Pk_bits32
-    | Pbtt.Field_type_sfixed64   -> Ocaml_types.Pk_bits64
-    | Pbtt.Field_type_bool       -> Ocaml_types.Pk_varint false 
-    | Pbtt.Field_type_string     -> Ocaml_types.Pk_bytes
-    | Pbtt.Field_type_bytes      -> Ocaml_types.Pk_bytes
-    | Pbtt.Field_type_type id -> 
-      begin match Pbtt_util.type_of_id all_types id with 
-      | {Pbtt.spec = Pbtt.Enum    {Pbtt.enum_name; _ } ;Pbtt.file_name; _ }   -> Ocaml_types.Pk_varint false
-      | {Pbtt.spec = Pbtt.Message {Pbtt.message_name; _ } ;Pbtt.file_name; _} -> Ocaml_types.Pk_bytes
-      end 
+  let type_name message_scope name =
+    let module S = String in
+    let all_names = message_scope @ [name] in
+    let all_names =
+      List.map
+        (fun s ->
+          rev_split_by_naming_convention s
+          |> List.rev |> List.map String.lowercase)
+        all_names in
+    let all_names = List.flatten all_names in
+    match all_names with
+    | [] -> failwith "Programmatic error"
+    | [hd] -> fix_ocaml_keyword_conflict hd
+    | _ -> S.concat "_" all_names
 
-let encoding_of_field all_types (field:(Pbtt.resolved, 'a) Pbtt.field)  = 
+  (** [user_defined_type_of_id module_ all_types i] returns the field type name
+      for the type identied by [i] and which is expected to be in [all_types].
 
-  let packed = match Pbtt_util.field_option field "packed" with 
-    | Some (Pbpt.Constant_bool x) -> x 
-    | Some _ -> E.invalid_packed_option (Pbtt_util.field_name field)  
-    | None -> false 
-  in 
+      [module_] is the module of the type that this field belong to. If
+      [module_] is the same as the type [i] module then it won't be added to
+      the field type name. However if the field type belongs to a different
+      module then it will be included. This distinction is necessary as OCaml
+      will fail to compile if the type of a field which is defined within the
+      same module is prefix with the module name. (This is essentially
+      expecting (rightly) a sub module with the same name. *)
+  let user_defined_type_of_id all_types file_name i =
+    let module_ = module_of_file_name file_name in
+    match Pbtt_util.type_of_id all_types i with
+    | exception Not_found -> E.programmatic_error E.No_type_found_for_id
+    | {Pbtt.file_name; spec; _} as t ->
+        if Pbtt_util.is_empty_message t then OCaml_types.Ft_unit
+        else
+          let udt_nested =
+            match spec with Pbtt.Enum _ -> false | Pbtt.Message _ -> true in
+          let field_type_module = module_of_file_name file_name in
+          let {Pbtt.message_names; _} = Pbtt_util.type_scope_of_type t in
+          let udt_type_name =
+            type_name message_names (Pbtt_util.type_name_of_type t) in
+          if field_type_module = module_ then
+            OCaml_types.(
+              Ft_user_defined_type {udt_nested; udt_module= None; udt_type_name})
+          else
+            OCaml_types.(
+              Ft_user_defined_type
+                {udt_nested; udt_module= Some field_type_module; udt_type_name})
 
-  let pk = encoding_info_of_field_type all_types (Pbtt_util.field_type field) in 
+  let encoding_info_of_field_type all_types field_type =
+    match field_type with
+    | Pbtt.Field_type_double -> Ocaml_types.Pk_bits64
+    | Pbtt.Field_type_float -> Ocaml_types.Pk_bits32
+    | Pbtt.Field_type_int32 -> Ocaml_types.Pk_varint false
+    | Pbtt.Field_type_int64 -> Ocaml_types.Pk_varint false
+    | Pbtt.Field_type_uint32 -> Ocaml_types.Pk_varint false
+    | Pbtt.Field_type_uint64 -> Ocaml_types.Pk_varint false
+    | Pbtt.Field_type_sint32 -> Ocaml_types.Pk_varint true
+    | Pbtt.Field_type_sint64 -> Ocaml_types.Pk_varint true
+    | Pbtt.Field_type_fixed32 -> Ocaml_types.Pk_bits32
+    | Pbtt.Field_type_fixed64 -> Ocaml_types.Pk_bits64
+    | Pbtt.Field_type_sfixed32 -> Ocaml_types.Pk_bits32
+    | Pbtt.Field_type_sfixed64 -> Ocaml_types.Pk_bits64
+    | Pbtt.Field_type_bool -> Ocaml_types.Pk_varint false
+    | Pbtt.Field_type_string -> Ocaml_types.Pk_bytes
+    | Pbtt.Field_type_bytes -> Ocaml_types.Pk_bytes
+    | Pbtt.Field_type_type id -> (
+      match Pbtt_util.type_of_id all_types id with
+      | {Pbtt.spec= Pbtt.Enum {Pbtt.enum_name; _}; Pbtt.file_name; _} ->
+          Ocaml_types.Pk_varint false
+      | {Pbtt.spec= Pbtt.Message {Pbtt.message_name; _}; Pbtt.file_name; _} ->
+          Ocaml_types.Pk_bytes )
 
-  (pk, Pbtt_util.field_number field, packed, Pbtt_util.field_default field)
+  let encoding_of_field all_types (field : (Pbtt.resolved, 'a) Pbtt.field) =
+    let packed =
+      match Pbtt_util.field_option field "packed" with
+      | Some (Pbpt.Constant_bool x) -> x
+      | Some _ -> E.invalid_packed_option (Pbtt_util.field_name field)
+      | None -> false in
+    let pk =
+      encoding_info_of_field_type all_types (Pbtt_util.field_type field) in
+    (pk, Pbtt_util.field_number field, packed, Pbtt_util.field_default field)
 
-let compile_field_type ?field_name all_types file_options field_options file_name field_type = 
+  let compile_field_type ?field_name all_types file_options field_options
+      file_name field_type =
+    let ocaml_type =
+      match Pbtt_util.find_field_option field_options "ocaml_type" with
+      | Some (Pbpt.Constant_litteral "int_t") -> `Int_t
+      | _ -> `None in
+    let int32_type =
+      match Pbpt_util.file_option file_options "int32_type" with
+      | Some (Pbpt.Constant_litteral "int_t") ->
+          OCaml_types.(Ft_basic_type Bt_int)
+      | _ -> OCaml_types.(Ft_basic_type Bt_int32) in
+    let int64_type =
+      match Pbpt_util.file_option file_options "int64_type" with
+      | Some (Pbpt.Constant_litteral "int_t") ->
+          OCaml_types.(Ft_basic_type Bt_int)
+      | _ -> OCaml_types.(Ft_basic_type Bt_int64) in
+    match (field_type, ocaml_type) with
+    | Pbtt.Field_type_double, _ -> OCaml_types.(Ft_basic_type Bt_float)
+    | Pbtt.Field_type_float, _ -> OCaml_types.(Ft_basic_type Bt_float)
+    | Pbtt.Field_type_int32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_int64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_uint32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_uint64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_sint32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_sint64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_fixed32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_fixed64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
+    | Pbtt.Field_type_int32, _ -> int32_type
+    | Pbtt.Field_type_int64, _ -> int64_type
+    | Pbtt.Field_type_uint32, _ -> int32_type
+    | Pbtt.Field_type_uint64, _ -> int64_type
+    | Pbtt.Field_type_sint32, _ -> int32_type
+    | Pbtt.Field_type_sint64, _ -> int64_type
+    | Pbtt.Field_type_fixed32, _ -> int32_type
+    | Pbtt.Field_type_fixed64, _ -> int64_type
+    | Pbtt.Field_type_sfixed32, _ ->
+        E.unsupported_field_type ?field_name ~field_type:"sfixed32"
+          ~backend_name:"OCaml" ()
+    | Pbtt.Field_type_sfixed64, _ ->
+        E.unsupported_field_type ?field_name ~field_type:"sfixed64"
+          ~backend_name:"OCaml" ()
+    | Pbtt.Field_type_bool, _ -> OCaml_types.(Ft_basic_type Bt_bool)
+    | Pbtt.Field_type_string, _ -> OCaml_types.(Ft_basic_type Bt_string)
+    | Pbtt.Field_type_bytes, _ -> OCaml_types.(Ft_basic_type Bt_bytes)
+    | Pbtt.Field_type_type id, _ ->
+        user_defined_type_of_id all_types file_name id
 
-  let ocaml_type = match Pbtt_util.find_field_option field_options "ocaml_type" with
-    | Some (Pbpt.Constant_litteral "int_t") -> `Int_t
-    | _ -> `None  
-  in 
+  let is_mutable ?field_name field_options =
+    match Pbtt_util.find_field_option field_options "ocaml_mutable" with
+    | Some (Pbpt.Constant_bool v) -> v
+    | Some _ -> Exception.invalid_mutable_option ?field_name ()
+    | None -> false
 
-  let int32_type = match Pbpt_util.file_option file_options "int32_type" with
-    | Some (Pbpt.Constant_litteral "int_t") -> OCaml_types.(Ft_basic_type Bt_int) 
-    | _ -> OCaml_types.(Ft_basic_type Bt_int32)
-  in 
-  
-  let int64_type = match Pbpt_util.file_option file_options "int64_type" with
-    | Some (Pbpt.Constant_litteral "int_t") -> OCaml_types.(Ft_basic_type Bt_int) 
-    | _ -> OCaml_types.(Ft_basic_type Bt_int64)
-  in 
+  let ocaml_container field_options =
+    match Pbtt_util.find_field_option field_options "ocaml_container" with
+    | None -> None
+    | Some (Pbpt.Constant_litteral container_name) -> Some container_name
+    | Some _ -> None
 
-  match field_type, ocaml_type with
-  | Pbtt.Field_type_double, _ -> OCaml_types.(Ft_basic_type Bt_float)
-  | Pbtt.Field_type_float, _ ->  OCaml_types.(Ft_basic_type Bt_float)
-  | Pbtt.Field_type_int32, `Int_t ->  OCaml_types.(Ft_basic_type Bt_int) 
-  | Pbtt.Field_type_int64, `Int_t ->  OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_uint32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_uint64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_sint32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_sint64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_fixed32, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)  
-  | Pbtt.Field_type_fixed64, `Int_t -> OCaml_types.(Ft_basic_type Bt_int)
-  | Pbtt.Field_type_int32, _ ->  int32_type
-  | Pbtt.Field_type_int64, _ ->  int64_type
-  | Pbtt.Field_type_uint32, _ -> int32_type
-  | Pbtt.Field_type_uint64, _ -> int64_type
-  | Pbtt.Field_type_sint32, _ -> int32_type
-  | Pbtt.Field_type_sint64, _ -> int64_type
-  | Pbtt.Field_type_fixed32, _ -> int32_type
-  | Pbtt.Field_type_fixed64, _ -> int64_type
-  | Pbtt.Field_type_sfixed32, _ -> 
-      E.unsupported_field_type ?field_name ~field_type:"sfixed32" ~backend_name:"OCaml" () 
-  | Pbtt.Field_type_sfixed64, _ -> 
-      E.unsupported_field_type ?field_name ~field_type:"sfixed64" ~backend_name:"OCaml" () 
-  | Pbtt.Field_type_bool, _   -> OCaml_types.(Ft_basic_type Bt_bool)
-  | Pbtt.Field_type_string, _ -> OCaml_types.(Ft_basic_type Bt_string)
-  | Pbtt.Field_type_bytes, _  -> OCaml_types.(Ft_basic_type Bt_bytes)
-  | Pbtt.Field_type_type id, _ -> 
-    user_defined_type_of_id all_types file_name id
+  let variant_of_oneof ?include_oneof_name ~outer_message_names all_types
+      file_options file_name oneof_field =
+    let v_constructors =
+      List.map
+        (fun field ->
+          let pbtt_field_type = Pbtt_util.field_type field in
+          let field_type =
+            compile_field_type
+              ~field_name:(Pbtt_util.field_name field)
+              all_types file_options
+              (Pbtt_util.field_options field)
+              file_name pbtt_field_type in
+          let vc_payload_kind, vc_encoding_number, _, _ =
+            encoding_of_field all_types field in
+          let vc_constructor = constructor_name (Pbtt_util.field_name field) in
+          OCaml_types.
+            { vc_constructor
+            ; vc_encoding_number
+            ; vc_payload_kind
+            ; vc_field_type=
+                ( match field_type with
+                | Ft_unit -> Vct_nullary
+                | _ -> Vct_non_nullary_constructor field_type ) })
+        oneof_field.Pbtt.oneof_fields in
+    let v_name =
+      match include_oneof_name with
+      | None -> type_name outer_message_names ""
+      | Some () -> type_name outer_message_names oneof_field.Pbtt.oneof_name
+    in
+    OCaml_types.{v_name; v_constructors}
 
-let is_mutable ?field_name field_options = 
-  match Pbtt_util.find_field_option field_options "ocaml_mutable"  with
-  | Some (Pbpt.Constant_bool v) -> v 
-  | Some _ -> Exception.invalid_mutable_option ?field_name () 
-  | None -> false
-            
-let ocaml_container field_options = 
-  match Pbtt_util.find_field_option field_options "ocaml_container" with
-  | None -> None 
-  | Some (Pbpt.Constant_litteral container_name) -> Some container_name
-  | Some _ -> None
+  let compile_message (file_options : Pbpt.file_option list)
+      (all_types : Pbtt.resolved Pbtt.proto) (file_name : string)
+      (scope : Pbtt.type_scope) (message : Pbtt.resolved Pbtt.message) :
+      OCaml_types.type_ list =
+    let module_ = module_of_file_name file_name in
+    (* TODO maybe module_ should be resolved before `compile_message` since it
+       is common with compile_enum *)
+    let {Pbtt.message_name; Pbtt.message_body} = message in
+    let {Pbtt.message_names; _} = scope in
+    (* In case a message is only made of a `one of` field then we generate a
+       only a variant rather than both a variant and a message with a single
+       field. This is an optimization which makes the generated OCaml code much
+       easier. *)
+    match message_body with
+    | [] -> []
+    | [Pbtt.Message_oneof_field f] ->
+        let outer_message_names = message_names @ [message_name] in
+        let variant =
+          variant_of_oneof ~outer_message_names all_types file_options
+            file_name f in
+        [OCaml_types.{module_; spec= Variant variant}]
+    | _ ->
+        let variants, fields =
+          List.fold_left
+            (fun (variants, fields) -> function
+              | Pbtt.Message_field field ->
+                  let pk, encoding_number, packed, defaul =
+                    encoding_of_field all_types field in
+                  let field_name = Pbtt_util.field_name field in
+                  let field_options = Pbtt_util.field_options field in
+                  let field_type =
+                    compile_field_type ~field_name all_types file_options
+                      field_options file_name
+                      (Pbtt_util.field_type field) in
+                  let field_default = Pbtt_util.field_default field in
+                  let mutable_ = is_mutable ~field_name field_options in
+                  let record_field_type =
+                    match Pbtt_util.field_label field with
+                    | `Required ->
+                        OCaml_types.Rft_required
+                          (field_type, encoding_number, pk, field_default)
+                    | `Optional ->
+                        OCaml_types.Rft_optional
+                          (field_type, encoding_number, pk, field_default)
+                    | `Repeated ->
+                        let repeated_type =
+                          match ocaml_container field_options with
+                          | None -> OCaml_types.Rt_list
+                          | Some "repeated_field" ->
+                              OCaml_types.Rt_repeated_field
+                          | Some _ ->
+                              failwith
+                                "Invalid ocaml_container attribute value" in
+                        OCaml_types.Rft_repeated_field
+                          ( repeated_type
+                          , field_type
+                          , encoding_number
+                          , pk
+                          , packed ) in
+                  let record_field =
+                    OCaml_types.
+                      { rf_label= label_name_of_field_name field_name
+                      ; rf_field_type= record_field_type
+                      ; rf_mutable= mutable_ } in
+                  (variants, record_field :: fields)
+                  (* Message_field *)
+              | Pbtt.Message_oneof_field field ->
+                  let outer_message_names = message_names @ [message_name] in
+                  let variant =
+                    variant_of_oneof ~include_oneof_name:()
+                      ~outer_message_names all_types file_options file_name
+                      field in
+                  let record_field =
+                    OCaml_types.
+                      { rf_label= label_name_of_field_name field.Pbtt.oneof_name
+                      ; rf_mutable= false
+                      ; (* TODO feature: 
+                         * Currently the field option of a oneof field is not being parsed at all. This 
+                         * enhancement should essentially propage from the parser all the way down 
+                         * to here. 
+                         *)
+                        rf_field_type= Rft_variant_field variant } in
+                  let variants =
+                    OCaml_types.{module_; spec= Variant variant} :: variants
+                  in
+                  let fields = record_field :: fields in
+                  (variants, fields)
+                  (* Message_oneof_field *)
+              | Pbtt.Message_map_field mf ->
+                  let { Pbtt.map_name
+                      ; map_number
+                      ; map_key_type
+                      ; map_value_type
+                      ; map_options } =
+                    mf in
+                  let key_type =
+                    compile_field_type
+                      ~field_name:(Printf.sprintf "key of %s" map_name)
+                      all_types file_options map_options file_name map_key_type
+                  in
+                  let key_pk =
+                    encoding_info_of_field_type all_types map_key_type in
+                  let key_type =
+                    match key_type with
+                    | OCaml_types.Ft_basic_type bt -> bt
+                    | _ ->
+                        failwith "Only Basic Types are supported for map keys"
+                  in
+                  let value_type =
+                    compile_field_type
+                      ~field_name:(Printf.sprintf "value of %s" map_name)
+                      all_types file_options map_options file_name
+                      map_value_type in
+                  let value_pk =
+                    encoding_info_of_field_type all_types map_value_type in
+                  let associative_type =
+                    match ocaml_container map_options with
+                    | None -> OCaml_types.At_list
+                    | Some "hashtbl" -> OCaml_types.At_hashtable
+                    | Some _ ->
+                        failwith
+                          "Invalid ocaml_container attribute value for map"
+                  in
+                  let record_field_type =
+                    OCaml_types.(
+                      Rft_associative_field
+                        ( associative_type
+                        , map_number
+                        , (key_type, key_pk)
+                        , (value_type, value_pk) )) in
+                  let record_field =
+                    OCaml_types.
+                      { rf_label= label_name_of_field_name map_name
+                      ; rf_field_type= record_field_type
+                      ; rf_mutable= is_mutable ~field_name:map_name map_options
+                      } in
+                  (variants, record_field :: fields) (* Message_map_field *))
+            ([], []) message_body in
+        (* fold_left body *)
+        let record =
+          OCaml_types.
+            { r_name= type_name message_names message_name
+            ; r_fields= List.rev fields } in
+        let type_ = OCaml_types.{module_; spec= Record record} in
+        List.rev (type_ :: variants)
 
-let variant_of_oneof ?include_oneof_name ~outer_message_names all_types file_options file_name oneof_field = 
+  let compile_enum file_name scope {Pbtt.enum_name; Pbtt.enum_values} =
+    let module_ = module_of_file_name file_name in
+    let {Pbtt.message_names; Pbtt.packages= _} = scope in
+    let cv_constructors =
+      List.map
+        (fun {Pbtt.enum_value_name; Pbtt.enum_value_int} ->
+          (constructor_name enum_value_name, enum_value_int))
+        enum_values in
+    OCaml_types.
+      { module_
+      ; spec=
+          Const_variant
+            {cv_name= type_name message_names enum_name; cv_constructors} }
 
-  let v_constructors = List.map (fun field -> 
-    let pbtt_field_type =  Pbtt_util.field_type field in 
-    let field_type = compile_field_type 
-      ~field_name:(Pbtt_util.field_name field) 
-      all_types 
-      file_options 
-      (Pbtt_util.field_options field) 
-      file_name 
-      pbtt_field_type
-    in 
-    let (vc_payload_kind, vc_encoding_number, _, _) = encoding_of_field all_types field in 
-    let vc_constructor = constructor_name (Pbtt_util.field_name field) in  
-    OCaml_types.({
-      vc_constructor; 
-      vc_encoding_number; 
-      vc_payload_kind; 
-      vc_field_type = match field_type with
-        | Ft_unit -> Vct_nullary
-        | _       -> Vct_non_nullary_constructor field_type; 
-    })
-  ) oneof_field.Pbtt.oneof_fields in 
-
-  let v_name = match include_oneof_name with
-    | None    -> type_name outer_message_names "" 
-    | Some () -> type_name outer_message_names oneof_field.Pbtt.oneof_name
-  in
-  OCaml_types.({v_name; v_constructors})
-  
-
-let compile_message  
-  (file_options: Pbpt.file_option list)
-  (all_types: Pbtt.resolved Pbtt.proto) 
-  (file_name:string) 
-  (scope:Pbtt.type_scope) 
-  (message: Pbtt.resolved Pbtt.message ) :
-  OCaml_types.type_ list   = 
-
-  let module_ = module_of_file_name file_name in 
-  (* TODO maybe module_ should be resolved before `compile_message` since 
-     it is common with compile_enum
-   *)
-
-  let {Pbtt.message_name; Pbtt.message_body;} = message in 
-
-  let {Pbtt.message_names; _ } = scope in  
-  
-
-  (* In case a message is only made of a `one of` field then we 
-     generate a only a variant rather than both a variant and a message with 
-     a single field. This is an optimization which makes the generated
-     OCaml code much easier. 
-   *)
-  match message_body with 
-  | []  -> [] 
-
-  | Pbtt.Message_oneof_field f :: [] -> (
-    let outer_message_names = message_names @ [message_name] in 
-    let variant = variant_of_oneof ~outer_message_names all_types file_options file_name f in
-    [OCaml_types.({ module_; spec = Variant variant;})]
-  ) 
-
-  | _ -> 
-    let variants, fields = List.fold_left (fun (variants, fields) -> function
-      | Pbtt.Message_field field -> (
-
-        let (pk, encoding_number, packed, defaul) = encoding_of_field all_types field in    
-
-        let field_name = Pbtt_util.field_name field in 
-
-        let field_options = Pbtt_util.field_options field in 
-
-        let field_type = compile_field_type 
-          ~field_name
-          all_types 
-          file_options 
-          field_options 
-          file_name
-          (Pbtt_util.field_type field) in  
-
-        let field_default = Pbtt_util.field_default field in 
-
-        let mutable_  = is_mutable ~field_name field_options in 
-
-        let record_field_type = match Pbtt_util.field_label field with
-          | `Required -> OCaml_types.Rft_required (field_type, encoding_number, pk, field_default) 
-          | `Optional -> OCaml_types.Rft_optional (field_type, encoding_number, pk, field_default) 
-          | `Repeated -> 
-            let repeated_type = begin match ocaml_container field_options with 
-              | None -> OCaml_types.Rt_list 
-              | Some "repeated_field" -> OCaml_types.Rt_repeated_field 
-              | Some _ -> failwith "Invalid ocaml_container attribute value" 
-            end in 
-            OCaml_types.Rft_repeated_field (repeated_type, field_type, encoding_number, pk, packed) 
-        in
-
-        let record_field = OCaml_types.({
-          rf_label = label_name_of_field_name field_name; 
-          rf_field_type = record_field_type; 
-          rf_mutable = mutable_; 
-        }) in
-
-        (variants, record_field::fields)
-      ) (* Message_field *)
-
-      | Pbtt.Message_oneof_field field -> (
-        let outer_message_names = message_names @ [message_name] in 
-        let variant = variant_of_oneof ~include_oneof_name:() ~outer_message_names all_types file_options file_name field in
-
-        let record_field = OCaml_types.({
-          rf_label = label_name_of_field_name field.Pbtt.oneof_name; 
-          rf_mutable = false; 
-            (* TODO feature: 
-             * Currently the field option of a oneof field is not being parsed at all. This 
-             * enhancement should essentially propage from the parser all the way down 
-             * to here. 
-             *)
-          rf_field_type = Rft_variant_field variant; 
-        }) in 
-        
-        let variants = OCaml_types.({ module_; spec = Variant variant;})::variants in 
-
-        let fields   = record_field::fields in 
-
-        (variants, fields)
-        
-      ) (* Message_oneof_field *)
-      
-      | Pbtt.Message_map_field mf -> (
-        let {
-          Pbtt.map_name; 
-          map_number; 
-          map_key_type; 
-          map_value_type; 
-          map_options} = mf in 
-
-        let key_type = compile_field_type 
-          ~field_name:(Printf.sprintf "key of %s" map_name)
-          all_types 
-          file_options 
-          map_options
-          file_name
-          map_key_type in  
-
-        let key_pk = encoding_info_of_field_type all_types map_key_type in 
-
-        let key_type = match key_type with
-          | OCaml_types.Ft_basic_type bt -> bt 
-          | _ -> failwith "Only Basic Types are supported for map keys" 
-        in
-        
-        let value_type = compile_field_type 
-          ~field_name:(Printf.sprintf "value of %s" map_name)
-          all_types 
-          file_options 
-          map_options
-          file_name
-          map_value_type in  
-        
-        let value_pk = encoding_info_of_field_type all_types map_value_type in 
-            
-        let associative_type = match ocaml_container map_options with 
-          | None -> OCaml_types.At_list 
-          | Some "hashtbl" -> OCaml_types.At_hashtable
-          | Some _ -> failwith "Invalid ocaml_container attribute value for map" 
-        in 
-
-        let record_field_type = OCaml_types.(Rft_associative_field 
-          (associative_type, map_number, (key_type, key_pk), (value_type, value_pk)) 
-        ) in 
-
-        let record_field = OCaml_types.({
-          rf_label = label_name_of_field_name map_name; 
-          rf_field_type = record_field_type;
-          rf_mutable = is_mutable ~field_name:map_name map_options;
-        }) in 
-
-        (variants, record_field::fields) 
-        
-      ) (* Message_map_field *)
-
-    ) ([], []) message_body in (* fold_left body *) 
-
-    let record = OCaml_types.({
-      r_name = type_name message_names message_name; 
-      r_fields = List.rev fields; 
-    }) in 
-
-    let type_ = OCaml_types.({
-      module_; 
-      spec = Record record;
-    }) in 
-
-    List.rev (type_ :: variants)  
-
-let compile_enum file_name scope {Pbtt.enum_name; Pbtt.enum_values; } = 
-  let module_ = module_of_file_name file_name in 
-  let {Pbtt.message_names; Pbtt.packages = _ } = scope in 
-  let cv_constructors = List.map (fun {Pbtt.enum_value_name; Pbtt.enum_value_int} -> 
-    (constructor_name enum_value_name,  enum_value_int)
-  ) enum_values in 
-  OCaml_types.({
-    module_; 
-    spec = Const_variant {
-      cv_name = type_name message_names enum_name; 
-      cv_constructors;
-  }})
-
-let compile all_types = function 
-  | {Pbtt.spec = Pbtt.Message m ; file_name; file_options; scope; _ } -> 
-    compile_message file_options all_types file_name scope m 
-  | {Pbtt.spec = Pbtt.Enum    e ; file_name; scope; _ } -> 
-    [compile_enum file_name scope e] 
-
-
+  let compile all_types = function
+    | {Pbtt.spec= Pbtt.Message m; file_name; file_options; scope; _} ->
+        compile_message file_options all_types file_name scope m
+    | {Pbtt.spec= Pbtt.Enum e; file_name; scope; _} ->
+        [compile_enum file_name scope e]
 end
-module Ocaml_protoc_compiler : sig 
-#1 "ocaml_protoc_compiler.mli"
 
-
-
-
-
-val compile : string -> string * string 
-
+module Ocaml_protoc_compiler : sig
+  val compile : string -> string * string
 end = struct
-#1 "ocaml_protoc_compiler.ml"
+  type codegen_f = ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
 
-type codegen_f = ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool 
+  let all_code_gen =
+    [ (module Codegen_type : Codegen.S)
+    ; (module Codegen_default : Codegen.S)
+    ; (module Codegen_decode : Codegen.S)
+    ; (module Codegen_encode : Codegen.S)
+    ; (module Codegen_pp : Codegen.S) ]
 
-let all_code_gen = [
-  (module Codegen_type: Codegen.S);
-  (module Codegen_default: Codegen.S);
-  (module Codegen_decode: Codegen.S);
-  (module Codegen_encode: Codegen.S);
-  (module Codegen_pp: Codegen.S);
-]
+  let generate_code otypes proto_file_name =
+    (* -- `.ml` file -- *)
+    let gen otypes sc (fs : (codegen_f * string option) list) =
+      List.iter
+        (fun ((f : codegen_f), ocamldoc_title) ->
+          ( match ocamldoc_title with
+          | None -> ()
+          | Some ocamldoc_title ->
+              Fmt.empty_line sc ;
+              Fmt.line sc @@ Codegen_util.sp "(** {2 %s} *)" ocamldoc_title ;
+              Fmt.empty_line sc ) ;
+          List.iter
+            (fun types ->
+              let (_ : bool) =
+                List.fold_left
+                  (fun first type_ ->
+                    let has_encoded =
+                      if first then f type_ sc else f ~and_:() type_ sc in
+                    Fmt.empty_line sc ; first && not has_encoded)
+                  true types in
+              ())
+            otypes)
+        fs in
+    let sc = Fmt.empty_scope () in
+    Fmt.line sc "[@@@ocaml.warning \"-30\"]" ;
+    Fmt.empty_line sc ;
+    gen otypes sc
+      (List.map
+         (fun m ->
+           let module C = (val m : Codegen.S) in
+           (C.gen_struct, None))
+         all_code_gen) ;
+    let struct_string = Fmt.print sc in
+    (* -- `.mli` file -- *)
+    let sc = Fmt.empty_scope () in
+    Fmt.line sc
+    @@ Codegen_util.sp "(** %s Generated Types and Encoding *)"
+         (Filename.basename proto_file_name) ;
+    gen otypes sc
+      (List.map
+         (fun m ->
+           let module C = (val m : Codegen.S) in
+           (C.gen_sig, Some C.ocamldoc_title))
+         all_code_gen) ;
+    let sig_string = Fmt.print sc in
+    (sig_string, struct_string)
 
-let generate_code otypes proto_file_name = 
-  (* -- `.ml` file -- *)
-
-  let gen otypes sc (fs:(codegen_f*string option) list)  = 
-    List.iter (fun ((f:codegen_f), ocamldoc_title)-> 
-      begin
-        match ocamldoc_title with
-        | None -> () 
-        | Some ocamldoc_title -> ( 
-            Fmt.empty_line sc;
-            Fmt.line sc @@ Codegen_util.sp "(** {2 %s} *)" ocamldoc_title;  
-            Fmt.empty_line sc;
-        )
-      end;
-
-      List.iter (fun types -> 
-        let _:bool = List.fold_left (fun first  type_ -> 
-          let has_encoded = if first 
-            then f type_ sc 
-            else f ~and_:() type_ sc
-          in 
-          Fmt.empty_line sc;
-          first && (not has_encoded) 
-        ) true types in 
-        ()
-      ) otypes 
-    ) fs 
-  in
-
-  let sc = Fmt.empty_scope () in 
-  Fmt.line sc "[@@@ocaml.warning \"-30\"]";
-  Fmt.empty_line sc;
-  gen otypes  sc (List.map (fun m -> 
-    let module C = (val m:Codegen.S) in 
-    C.gen_struct, None
-  ) all_code_gen);
-
-  let struct_string = (Fmt.print sc) in 
-
-  (* -- `.mli` file -- *)
-
-  let sc = Fmt.empty_scope () in 
-  Fmt.line sc @@ 
-    Codegen_util.sp "(** %s Generated Types and Encoding *)" (Filename.basename proto_file_name); 
-  gen otypes  sc (List.map (fun m -> 
-    let module C = (val m:Codegen.S) in 
-    C.gen_sig, Some C.ocamldoc_title
-  ) all_code_gen);
-
-  let sig_string = Fmt.print sc in
-  (sig_string, struct_string)
-
-
-let compile proto_definition = 
-  let lexbuf = Lexing.from_string proto_definition in 
-  let proto  = 
-    try 
-      Pbparser.proto_ Pblexer.lexer lexbuf 
-    with exn -> 
-      raise (Exception.add_loc (Loc.from_lexbuf lexbuf) exn)
-  in  
-
-  let all_pbtt_msgs = Pbtt_util.compile_proto_p1 "tmp.proto" proto in 
-  let all_pbtt_msgs = List.map (Pbtt_util.compile_proto_p2 all_pbtt_msgs) all_pbtt_msgs in 
-  let grouped_pbtt_msgs = List.rev @@ Pbtt_util.group all_pbtt_msgs in 
-  let grouped_ocaml_types = List.map (fun pbtt_msgs -> 
-    List.map (fun pbtt_msg -> 
-      Backend_ocaml.compile all_pbtt_msgs pbtt_msg 
-    ) pbtt_msgs
-  ) grouped_pbtt_msgs in 
-  let all_ocaml_types = List.flatten grouped_ocaml_types in
-  
-  generate_code all_ocaml_types "tmp.proto" 
-
-  
-
-
+  let compile proto_definition =
+    let lexbuf = Lexing.from_string proto_definition in
+    let proto =
+      try Pbparser.proto_ Pblexer.lexer lexbuf
+      with exn -> raise (Exception.add_loc (Loc.from_lexbuf lexbuf) exn) in
+    let all_pbtt_msgs = Pbtt_util.compile_proto_p1 "tmp.proto" proto in
+    let all_pbtt_msgs =
+      List.map (Pbtt_util.compile_proto_p2 all_pbtt_msgs) all_pbtt_msgs in
+    let grouped_pbtt_msgs = List.rev @@ Pbtt_util.group all_pbtt_msgs in
+    let grouped_ocaml_types =
+      List.map
+        (fun pbtt_msgs ->
+          List.map
+            (fun pbtt_msg -> Backend_ocaml.compile all_pbtt_msgs pbtt_msg)
+            pbtt_msgs)
+        grouped_pbtt_msgs in
+    let all_ocaml_types = List.flatten grouped_ocaml_types in
+    generate_code all_ocaml_types "tmp.proto"
 end
-module 
-Ocaml_protc_test
-= struct
-#1 "ocaml_protc_test.ml"
-let (a,b) = Ocaml_protoc_compiler.compile "message T {required int32 j = 1; }"
-let suites :  Mt.pair_suites ref  = ref []
-let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
-    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-let () =
-  eq __LOC__ a  {|(** tmp.proto Generated Types and Encoding *)
+module Ocaml_protc_test = struct
+  let a, b = Ocaml_protoc_compiler.compile "message T {required int32 j = 1; }"
+  let suites : Mt.pair_suites ref = ref []
+  let test_id = ref 0
+
+  let eq loc x y =
+    incr test_id ;
+    suites :=
+      (loc ^ " id " ^ string_of_int !test_id, fun _ -> Mt.Eq (x, y)) :: !suites
+
+  let () =
+    eq __LOC__ a
+      {|(** tmp.proto Generated Types and Encoding *)
 
 (** {2 Types} *)
 
@@ -6357,9 +4530,9 @@ val encode_t : t -> Pbrt.Encoder.t -> unit
 
 val pp_t : Format.formatter -> t -> unit 
 (** [pp_t v] formats v] *)
-|};
-
-  eq __LOC__ b  {|[@@@ocaml.warning "-30"]
+|} ;
+    eq __LOC__ b
+      {|[@@@ocaml.warning "-30"]
 
 type t = {
   j : int32;
@@ -6410,8 +4583,6 @@ let rec pp_t fmt (v:t) =
     Format.pp_close_box fmt ()
   in
   Pbrt.Pp.pp_brk pp_i fmt ()
-|};
-Mt.from_pair_suites __MODULE__ !suites
-
-
+|} ;
+    Mt.from_pair_suites __MODULE__ !suites
 end

@@ -22,21 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type item = Parsetree.structure_item
+type t = item list
 
-type t = item list 
+val fuseAll : ?loc:Ast_helper.loc -> t -> item
 
-
-val fuseAll: ?loc:Ast_helper.loc ->  t -> item
-
-(* val fuse_with_constraint:
-  ?loc:Ast_helper.loc ->
-  Parsetree.type_declaration list ->
-  t   ->
-  Ast_signature.t -> 
-  item *)
+(* val fuse_with_constraint: ?loc:Ast_helper.loc -> Parsetree.type_declaration
+   list -> t -> Ast_signature.t -> item *)
 
 val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
-
-val dummy_item : Location.t -> item 
+val dummy_item : Location.t -> item

@@ -1,4 +1,3 @@
-exception M of int 
-module M = struct 
-  let x = 3 
-end
+exception M of int
+
+module M = struct let x = 3 end

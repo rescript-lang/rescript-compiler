@@ -22,37 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module E = Js_exp_make
 
+let get_double_feild (field_info : Lam_compat.field_dbg_info) e i =
+  match field_info with
+  | Fld_na -> E.array_index_by_int e i
+  | Fld_record_inline s | Fld_record_extension s | Fld_record s | Fld_module s
+    ->
+      E.array_index_by_int ~comment:s e i
 
-
-
-
-module E = Js_exp_make 
-
-let get_double_feild (field_info : Lam_compat.field_dbg_info) e i = 
-  match field_info with 
-  | Fld_na -> 
-    E.array_index_by_int e i 
-#if OCAML_VERSION =~ ">4.03.0" then 
-  | Fld_record_inline s
-  | Fld_record_extension s
-#end
-  | Fld_record s 
-  | Fld_module s 
-    -> E.array_index_by_int ~comment:s e i
-
-let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 = 
-  let v = 
-    match field_info with 
-    | Fld_set_na 
-      -> 
-      E.array_index_by_int e i 
-#if OCAML_VERSION =~ ">4.03.0" then 
-    | Fld_record_inline_set s
-    | Fld_record_extension_set s 
-#end      
-    | Fld_record_set s -> 
-      E.array_index_by_int ~comment:s e i 
-  in 
-  E.assign v  e0
-
+let set_double_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
+  let v =
+    match field_info with
+    | Fld_set_na -> E.array_index_by_int e i
+    | Fld_record_inline_set s | Fld_record_extension_set s | Fld_record_set s
+      ->
+        E.array_index_by_int ~comment:s e i in
+  E.assign v e0

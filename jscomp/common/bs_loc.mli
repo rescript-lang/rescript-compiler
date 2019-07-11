@@ -22,13 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
+type t = Location.t =
+  {loc_start: Lexing.position; loc_end: Lexing.position; loc_ghost: bool}
 
 val is_ghost : t -> bool
-val merge : t -> t -> t 
-val none : t 
-
+val merge : t -> t -> t
+val none : t

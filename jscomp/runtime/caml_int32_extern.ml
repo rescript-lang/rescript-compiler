@@ -1,5 +1,3 @@
-
-
 external to_int : int32 -> int = "%int32_to_int"
 external add : int32 -> int32 -> int32 = "%int32_add"
 external shift_left : int32 -> int -> int32 = "%int32_lsl"
@@ -11,13 +9,13 @@ external logor : int32 -> int32 -> int32 = "%int32_or"
 external of_int : int -> int32 = "%int32_of_int"
 external mul : int32 -> int32 -> int32 = "%int32_mul"
 
-module Ops = struct 
-  external (+~) : int32 -> int32 -> int32 = "%int32_add"
-  external (<<~) : int32 -> int -> int32 = "%int32_lsl"
-  external (>>>~) : int32 -> int -> int32 = "%int32_lsr"
-  external (>>~) : int32 -> int -> int32 = "%int32_asr"
-  external (&~) : int32 -> int32 -> int32 = "%int32_and"
-  external (^~) : int32 -> int32 -> int32 = "%int32_xor"
-  external (|~) : int32 -> int32 -> int32 = "%int32_or"
+module Ops = struct
+  external ( +~ ) : int32 -> int32 -> int32 = "%int32_add"
+  external ( <<~ ) : int32 -> int -> int32 = "%int32_lsl"
+  external ( >>>~ ) : int32 -> int -> int32 = "%int32_lsr"
+  external ( >>~ ) : int32 -> int -> int32 = "%int32_asr"
+  external ( &~ ) : int32 -> int32 -> int32 = "%int32_and"
+  external ( ^~ ) : int32 -> int32 -> int32 = "%int32_xor"
+  external ( |~ ) : int32 -> int32 -> int32 = "%int32_or"
   external ( *~ ) : int32 -> int32 -> int32 = "%int32_mul"
-end 
+end

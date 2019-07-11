@@ -22,18 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 (* the same as Lexing *)
-type lex_tables 
+type lex_tables
 type lexbuf
 
-val caml_lex_engine : 
-  lex_tables -> int -> lexbuf -> int
-
-
-val caml_new_lex_engine : 
-  lex_tables -> int -> lexbuf -> int
+val caml_lex_engine : lex_tables -> int -> lexbuf -> int
+val caml_new_lex_engine : lex_tables -> int -> lexbuf -> int

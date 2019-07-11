@@ -1,5 +1,3 @@
-
-# 2 "others/sort.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,34 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** This is a specialized module for {!Belt_SortArray}, the docs in that module also
     applies here, except the comparator is fixed and inlined
 *)
 
-# 34 "others/sort.cppo.mli"
 type element = string
 
-# 39 "others/sort.cppo.mli"
-val strictlySortedLength: element array -> int 
+val strictlySortedLength : element array -> int
 (**
   The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
   @return [+n] means increasing order  [-n] means negative order
 *)
 
-
-val isSorted: element array  -> bool
+val isSorted : element array -> bool
 (** [sorted xs] return true if [xs] is in non strict increasing order *)
 
-val stableSortInPlace: element array -> unit
+val stableSortInPlace : element array -> unit
 (**
    The same as {!Belt_SortArray.stableSortInPlaceBy} except the comparator is fixed 
 *)
-  
-val stableSort: element array -> element array
+
+val stableSort : element array -> element array
 (** The same as {!Belt_SortArray.stableSortBy} except the comparator is fixed *)
-    
-val binarySearch: element array -> element -> int 
+
+val binarySearch : element array -> element -> int
 (**
 
   If value is not found and value is less than one or more elements in array, 
@@ -65,30 +59,47 @@ val binarySearch: element array -> element -> int
   for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
   if [key] is larger than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
 
-*)  
+*)
 
 (**/**)
-val union:   
-  element array -> int -> int -> 
-  element array -> int -> int -> 
-  element array -> int 
+
+val union :
+     element array
+  -> int
+  -> int
+  -> element array
+  -> int
+  -> int
+  -> element array
+  -> int
   -> int
 (**
   [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
   assume [src] and [src2] is strictly sorted.
   for equivalent elements, it is picked from [src]
   also assume that [dst] is large enough to store all elements
-*)  
+*)
 
-val intersect:
-  element array -> int -> int -> 
-  element array -> int -> int -> 
-  element array -> int 
+val intersect :
+     element array
   -> int
-  
-val diff:  
-  element array -> int -> int -> 
-  element array -> int -> int -> 
-  element array -> int 
   -> int
+  -> element array
+  -> int
+  -> int
+  -> element array
+  -> int
+  -> int
+
+val diff :
+     element array
+  -> int
+  -> int
+  -> element array
+  -> int
+  -> int
+  -> element array
+  -> int
+  -> int
+
 (**/**)

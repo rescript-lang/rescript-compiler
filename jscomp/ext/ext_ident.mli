@@ -22,44 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** A wrapper around [Ident] module in compiler-libs*)
 
- val is_js : Ident.t -> bool 
-
+val is_js : Ident.t -> bool
 val is_js_object : Ident.t -> bool
 
-(** create identifiers for predefined [js] global variables *)
 val create_js : string -> Ident.t
+(** create identifiers for predefined [js] global variables *)
 
 val create : string -> Ident.t
-
- val make_js_object : Ident.t -> unit 
-
+val make_js_object : Ident.t -> unit
 val reset : unit -> unit
+val create_tmp : ?name:string -> unit -> Ident.t
+val make_unused : unit -> Ident.t
 
-val create_tmp :  ?name:string -> unit -> Ident.t
-
-val make_unused : unit -> Ident.t 
-
-
-
-(**
-   Invariant: if name is not converted, the reference should be equal
-*)
 val convert : string -> string
-
-
+(** Invariant: if name is not converted, the reference should be equal *)
 
 val is_js_or_global : Ident.t -> bool
-
-
-
 val compare : Ident.t -> Ident.t -> int
-val equal : Ident.t -> Ident.t -> bool 
+val equal : Ident.t -> Ident.t -> bool

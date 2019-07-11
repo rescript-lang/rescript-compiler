@@ -22,33 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** High level compilation module *)
 
-
-
-
-
-
-
-(** High level compilation module *) 
-
-(** This module defines a function to compile the program directly into [js]
-    given [filename] and [outputprefix], 
-    it will be useful if we don't care about bytecode output(generating js only).
- *)
 val interface : Format.formatter -> string -> string -> unit
+(** This module defines a function to compile the program directly into [js]
+    given [filename] and [outputprefix], it will be useful if we don't care
+    about bytecode output(generating js only). *)
 
-val interface_mliast : Format.formatter -> string -> string  -> unit
-  
-val after_parsing_sig : Format.formatter -> string -> string -> Parsetree.signature -> unit
+val interface_mliast : Format.formatter -> string -> string -> unit
 
-val after_parsing_impl : Format.formatter -> string -> string -> Parsetree.structure -> unit
-(** [after_parsing_impl ppf sourcefile outputprefix ast ]
-    Make sure you need run {!Compmisc.init_path} for set up
-*)
+val after_parsing_sig :
+  Format.formatter -> string -> string -> Parsetree.signature -> unit
+
+val after_parsing_impl :
+  Format.formatter -> string -> string -> Parsetree.structure -> unit
+(** [after_parsing_impl ppf sourcefile outputprefix ast] Make sure you need run
+    {!Compmisc.init_path} for set up *)
 
 val implementation : Format.formatter -> string -> string -> unit
-(** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
+(** [implementation ppf sourcefile outprefix] compiles to JS directly *)
 
 val implementation_mlast : Format.formatter -> string -> string -> unit
-
 val implementation_map : Format.formatter -> string -> string -> unit

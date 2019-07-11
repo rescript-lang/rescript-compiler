@@ -10,10 +10,9 @@
 (*                                                                     *)
 (***********************************************************************)
 
-type t = float;;
+type t = float
 
-let make f = f;;
+let make f = f
+let from t = t
 
-let from t = t;;
-
-type s = {f : t};;
+type s = {f: t}

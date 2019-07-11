@@ -23,24 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type 'a opt = 'a Js.undefined
+
 type ('hash, 'eq, 'c) container =
-   { 
-    mutable size: int;                        (* number of entries *)
-    mutable buckets: 'c opt array;  (* the buckets *)
-    hash: 'hash;
-    eq: 'eq;
-  } [@@bs.deriving abstract]
+  { mutable size: int
+  ; (* number of entries *)
+    mutable buckets: 'c opt array
+  ; (* the buckets *)
+    hash: 'hash
+  ; eq: 'eq }
+[@@bs.deriving abstract]
 
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"
-
 val emptyOpt : 'a Js.undefined
-val make :
-  hash:'hash ->
-  eq:'eq -> 
-  hintSize:int ->
-  ('hash, 'eq, _) container
-  
+val make : hash:'hash -> eq:'eq -> hintSize:int -> ('hash, 'eq, _) container
 val clear : _ container -> unit
-
-val isEmpty: _ container -> bool
+val isEmpty : _ container -> bool

@@ -15,54 +15,48 @@
 
 (** Graph information required by Graphml *)
 module type G = sig
-
   type t
   type vertex
+
   module E : sig
     type t
-    val src: t -> vertex
+
+    val src : t -> vertex
     val dst : t -> vertex
   end
+
   val is_directed : bool
   val iter_vertex : (vertex -> unit) -> t -> unit
   val iter_edges_e : (E.t -> unit) -> t -> unit
-
 end
 
 (** Graphml Printer given a graph and required info *)
 module Print
-    (G: G)
-    (L : sig
-       val vertex_properties : (string * string * string option) list
-       (** List of the type of the vertex proprierties.
-           The format is (id,type,default). *)
+    (G : G) (L : sig
+      val vertex_properties : (string * string * string option) list
+      (** List of the type of the vertex proprierties. The format is
+          (id,type,default). *)
 
-       val edge_properties : (string * string * string option) list
-       (** List of the type of the edge proprierties. *)
+      val edge_properties : (string * string * string option) list
+      (** List of the type of the edge proprierties. *)
 
-       val map_vertex : G.vertex -> (string * string) list
-       (** Associates to each vertex a key/value list where
-           the key is the id of a vertex attribute and the value is the value
-           associated to this vertex *)
+      val map_vertex : G.vertex -> (string * string) list
+      (** Associates to each vertex a key/value list where the key is the id of
+          a vertex attribute and the value is the value associated to this
+          vertex *)
 
-       val map_edge : G.E.t -> (string * string) list
-       (** Associates to each edge a key/value list *)
+      val map_edge : G.E.t -> (string * string) list
+      (** Associates to each edge a key/value list *)
 
-       val vertex_uid : G.vertex -> int
-       (** @return a unique integer identifier for the vertex *)
+      val vertex_uid : G.vertex -> int
+      (** @return a unique integer identifier for the vertex *)
 
-       val edge_uid : G.E.t -> int
-       (** @return a unique integer identifier for the edge *)
-     end) :
-sig
+      val edge_uid : G.E.t -> int
+      (** @return a unique integer identifier for the edge *)
+    end) : sig
   val print : Format.formatter -> G.t -> unit
-  (** [print fmt graph] print the GraphMl representation of the given graph
-      on the given formatter *)
+  (** [print fmt graph] print the GraphMl representation of the given graph on
+      the given formatter *)
 end
 
-
-(*
-Local Variables:
-compile-command: "make -C .."
-End:
-*)
+(* Local Variables: compile-command: "make -C .." End: *)

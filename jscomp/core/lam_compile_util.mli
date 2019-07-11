@@ -22,18 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
 (** Some utilities for lambda compilation*)
 
 val jsop_of_comp : Lam_compat.comparison -> Js_op.binop
-
 val comment_of_tag_info : Lam_tag_info.t -> string option
-
 val comment_of_pointer_info : Lam_pointer_info.t -> string option

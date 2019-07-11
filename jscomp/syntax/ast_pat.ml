@@ -22,41 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = Parsetree.pattern
 
-
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
+let is_unit_cont ~yes ~no (p : t) =
+  match p with
+  | {ppat_desc= Ppat_construct ({txt= Lident "()"}, None)} -> yes
   | _ -> no
 
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
+(** [arity_of_fun pat e] tells the arity of expression [fun pat -> e] *)
+let arity_of_fun (pat : Parsetree.pattern) (e : Parsetree.expression) =
+  let rec aux (e : Parsetree.expression) =
     match e.pexp_desc with
-    | Pexp_fun (arg_label, _, pat, e) 
+    | Pexp_fun (arg_label, _, pat, e)
       when Ast_compatible.is_arg_label_simple arg_label ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Label is not allowed in JS object"
+        1 + aux e
+    | Pexp_fun _ ->
+        Location.raise_errorf ~loc:e.pexp_loc
+          "Label is not allowed in JS object"
     | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
+  is_unit_cont ~yes:0 ~no:1 pat + aux e
 
-
-let rec is_single_variable_pattern_conservative  (p : t ) =
-  match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
-  | Parsetree.Ppat_alias (p,_) 
-  | Parsetree.Ppat_constraint (p, _) -> 
-    is_single_variable_pattern_conservative p 
-  
+let rec is_single_variable_pattern_conservative (p : t) =
+  match p.ppat_desc with
+  | Parsetree.Ppat_any | Parsetree.Ppat_var _ -> true
+  | Parsetree.Ppat_alias (p, _) | Parsetree.Ppat_constraint (p, _) ->
+      is_single_variable_pattern_conservative p
   | _ -> false

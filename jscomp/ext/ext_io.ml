@@ -22,30 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
+  Ext_pervasives.finally (open_in_bin f) close_in (fun ic ->
+      let n = in_channel_length ic in
+      let s = Bytes.create n in
+      really_input ic s 0 n ; Bytes.unsafe_to_string s)
 
+let rev_lines_of_chann chan =
+  let rec loop acc chan =
+    match input_line chan with
+    | line -> loop (line :: acc) chan
+    | exception End_of_file -> close_in chan ; acc in
+  loop [] chan
 
-let  rev_lines_of_chann chan = 
-    let rec loop acc chan = 
-      match input_line chan with
-      | line -> loop (line :: acc) chan
-      | exception End_of_file -> close_in chan ; acc in
-    loop [] chan
-
-
-let rev_lines_of_file file = 
+let rev_lines_of_file file =
   Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
-  
 
-let write_file f content = 
-  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
-    output_string oc content
-  end
+let write_file f content =
+  Ext_pervasives.finally (open_out_bin f) close_out (fun oc ->
+      output_string oc content)

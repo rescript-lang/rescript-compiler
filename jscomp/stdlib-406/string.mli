@@ -57,7 +57,6 @@ external get : string -> int -> char = "%string_safe_get"
 
    Raise [Invalid_argument] if [n] not a valid index in [s]. *)
 
-
 external set : bytes -> int -> char -> unit = "%string_safe_set"
   [@@ocaml.deprecated "Use Bytes.set instead."]
 (** [String.set s n c] modifies byte sequence [s] in place,
@@ -93,7 +92,8 @@ val init : int -> (int -> char) -> string
     @since 4.02.0
 *)
 
-val copy : string -> string [@@ocaml.deprecated]
+val copy : string -> string
+  [@@ocaml.deprecated]
 (** Return a copy of the given string.
 
     @deprecated Because strings are immutable, it doesn't make much
@@ -181,7 +181,7 @@ val index : string -> char -> int
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: string -> char -> int option
+val index_opt : string -> char -> int option
 (** [String.index_opt s c] returns the index of the first
     occurrence of character [c] in string [s], or
     [None] if [c] does not occur in [s].
@@ -193,7 +193,7 @@ val rindex : string -> char -> int
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: string -> char -> int option
+val rindex_opt : string -> char -> int option
 (** [String.rindex_opt s c] returns the index of the last occurrence
     of character [c] in string [s], or [None] if [c] does not occur in
     [s].
@@ -207,7 +207,7 @@ val index_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: string -> int -> char -> int option
+val index_from_opt : string -> int -> char -> int option
 (** [String.index_from_opt s i c] returns the index of the
     first occurrence of character [c] in string [s] after position [i]
     or [None] if [c] does not occur in [s] after position [i].
@@ -227,7 +227,7 @@ val rindex_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i+1] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: string -> int -> char -> int option
+val rindex_from_opt : string -> int -> char -> int option
 (** [String.rindex_from_opt s i c] returns the index of the
    last occurrence of character [c] in string [s] before position [i+1]
    or [None] if [c] does not occur in [s] before position [i+1].
@@ -308,17 +308,17 @@ val uncapitalize_ascii : string -> string
 type t = string
 (** An alias for the type of strings. *)
 
-val compare: t -> t -> int
+val compare : t -> t -> int
 (** The comparison function for strings, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [String] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal : t -> t -> bool
 (** The equal function for strings.
     @since 4.03.0 *)
 
-val split_on_char: char -> string -> string list
+val split_on_char : char -> string -> string list
 (** [String.split_on_char sep s] returns the list of all (possibly empty)
     substrings of [s] that are delimited by the [sep] character.
 
@@ -338,11 +338,13 @@ val split_on_char: char -> string -> string list
 (* The following is for system use only. Do not call directly. *)
 
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
+
 external unsafe_set : bytes -> int -> char -> unit = "%string_unsafe_set"
   [@@ocaml.deprecated]
-external unsafe_blit :
-  string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" [@@noalloc]
-external unsafe_fill :
-  bytes -> int -> int -> char -> unit = "caml_fill_string" [@@noalloc]
-  [@@ocaml.deprecated]
+
+external unsafe_blit : string -> int -> bytes -> int -> int -> unit
+  = "caml_blit_string"
+  [@@noalloc]
+
+external unsafe_fill : bytes -> int -> int -> char -> unit = "caml_fill_string"
+  [@@noalloc] [@@ocaml.deprecated]

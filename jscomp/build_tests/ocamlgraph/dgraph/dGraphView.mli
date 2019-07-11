@@ -34,105 +34,113 @@
 
 open DGraphViewItem
 
-(** Graph widget derived from [GnoCanvas.canvas].
-    Support zooming and scrolling. *)
-class type ['vertex, 'edge, 'cluster] view = object
+(** Graph widget derived from [GnoCanvas.canvas]. Support zooming and
+    scrolling. *)
+class type ['vertex, 'edge, 'cluster] view =
+  object
+    inherit GnoCanvas.canvas
 
-  inherit GnoCanvas.canvas
+    method model : ('vertex, 'edge, 'cluster) DGraphModel.abstract_model
 
-  method model : ('vertex, 'edge, 'cluster) DGraphModel.abstract_model
+    (** {2 Getters} *)
 
-  (** {2 Getters} *)
+    method get_node : 'vertex -> 'vertex view_item
 
-  method get_node : 'vertex -> 'vertex view_item
-  method get_edge : 'edge -> 'edge view_item
-  method get_cluster : 'cluster -> 'cluster view_item
+    method get_edge : 'edge -> 'edge view_item
 
-  (** {2 Iterators} *)
+    method get_cluster : 'cluster -> 'cluster view_item
 
-  method iter_nodes:  ('vertex view_item -> unit) -> unit
-  method iter_edges: ('vertex view_item -> 'vertex view_item -> unit) -> unit
-  method iter_edges_e:  ('edge view_item -> unit) -> unit
-  method iter_clusters: ('cluster view_item -> unit) -> unit
+    (** {2 Iterators} *)
 
-  method iter_succ: ('vertex view_item -> unit) -> 'vertex view_item -> unit
-  method iter_pred: ('vertex view_item -> unit) -> 'vertex view_item -> unit
-  method iter_succ_e: ('edge view_item -> unit) -> 'vertex view_item -> unit
-  method iter_pred_e: ('edge view_item -> unit) -> 'vertex view_item -> unit
+    method iter_nodes : ('vertex view_item -> unit) -> unit
 
-  (* Benoit Bataille's method: is it really useful? *)
-  method iter_associated_vertex:
-    ('vertex view_item -> unit) -> 'vertex view_item -> unit
+    method iter_edges :
+      ('vertex view_item -> 'vertex view_item -> unit) -> unit
 
-  (** {2 Membership functions} *)
+    method iter_edges_e : ('edge view_item -> unit) -> unit
 
-  method mem_edge: 'vertex view_item -> 'vertex view_item -> bool
-  method find_edge: 'vertex view_item -> 'vertex view_item -> 'edge view_item
-  method src: 'edge view_item -> 'vertex view_item
-  method dst: 'edge view_item -> 'vertex view_item
+    method iter_clusters : ('cluster view_item -> unit) -> unit
 
-  (** {2 Zooming} *)
+    method iter_succ : ('vertex view_item -> unit) -> 'vertex view_item -> unit
 
-  method zoom_factor : float
-  (** The current zoom factor.*)
+    method iter_pred : ('vertex view_item -> unit) -> 'vertex view_item -> unit
 
-  method zoom_to : float -> unit
-  (** Set an absolute zoom factor.*)
+    method iter_succ_e : ('edge view_item -> unit) -> 'vertex view_item -> unit
 
-  method zoom_in : unit -> unit
-  (** Increase [zoom_factor] by [zoom_factor*zoom_padding].*)
+    method iter_pred_e : ('edge view_item -> unit) -> 'vertex view_item -> unit
 
-  method zoom_out : unit -> unit
-  (** Decrease [zoom_factor] by [zoom_factor*zoom_padding].*)
+    (* Benoit Bataille's method: is it really useful? *)
+    method iter_associated_vertex :
+      ('vertex view_item -> unit) -> 'vertex view_item -> unit
 
-  method adapt_zoom : unit -> unit
-  (** Zoom in order to view the whole graph (bird eye view). *)
+    (** {2 Membership functions} *)
 
-  method set_zoom_padding: float -> unit
-  (** Set the zoom padding used by [zoom_in] and [zoom_out]. 
-      It defaults to 0.1. *)
+    method mem_edge : 'vertex view_item -> 'vertex view_item -> bool
 
-  method center_node: 'vertex view_item -> unit
-  (** Center canvas on a node. *)
+    method find_edge :
+      'vertex view_item -> 'vertex view_item -> 'edge view_item
 
-  (** {2 Highlighting} *)
+    method src : 'edge view_item -> 'vertex view_item
 
-  method connect_highlighting_event: unit -> unit
+    method dst : 'edge view_item -> 'vertex view_item
 
-  method highlight: ?color: int32 * int32 -> 'vertex view_item -> unit
-  (** Change the color of the given vertex item.
-      May be cancelled by [dehighlight].
-      If [color] is [primary,secondary], then
-      [primary] is used except if the current color is [primary]. In this
-      case, [secondary] is used. *)
+    (** {2 Zooming} *)
 
-  method dehighlight: 'vertex view_item -> unit
-  (** Cancel [highlight]. *)
+    (** The current zoom factor.*)
+    method zoom_factor : float
 
-end
+    (** Set an absolute zoom factor.*)
+    method zoom_to : float -> unit
+
+    (** Increase [zoom_factor] by [zoom_factor*zoom_padding].*)
+    method zoom_in : unit -> unit
+
+    (** Decrease [zoom_factor] by [zoom_factor*zoom_padding].*)
+    method zoom_out : unit -> unit
+
+    (** Zoom in order to view the whole graph (bird eye view). *)
+    method adapt_zoom : unit -> unit
+
+    (** Set the zoom padding used by [zoom_in] and [zoom_out]. It defaults to
+        0.1. *)
+    method set_zoom_padding : float -> unit
+
+    (** Center canvas on a node. *)
+    method center_node : 'vertex view_item -> unit
+
+    (** {2 Highlighting} *)
+
+    method connect_highlighting_event : unit -> unit
+
+    (** Change the color of the given vertex item. May be cancelled by
+        [dehighlight]. If [color] is [primary,secondary], then [primary] is
+        used except if the current color is [primary]. In this case,
+        [secondary] is used. *)
+    method highlight : ?color:int32 * int32 -> 'vertex view_item -> unit
+
+    (** Cancel [highlight]. *)
+    method dehighlight : 'vertex view_item -> unit
+  end
 
 module type S = sig
-
   type vertex
   type edge
   type cluster
 
-  val view:
-    ?aa:bool (** Anti-aliasing *) ->
-    ?delay_node:(vertex -> bool) ->
-    ?delay_edge:(edge -> bool) ->
-    ?delay_cluster:(cluster -> bool) ->
-    ?border_width:int ->
-    ?width:int ->
-    ?height:int ->
-    ?packing:(GObj.widget -> unit) ->
-    ?show:bool ->
-    (vertex, edge, cluster) DGraphModel.abstract_model ->
-    (vertex, edge, cluster) view
-    (** View as a Gnome Canvas.
-        Support zooming and scrolling. *)
-
+  val view :
+       ?aa:bool (** Anti-aliasing *)
+    -> ?delay_node:(vertex -> bool)
+    -> ?delay_edge:(edge -> bool)
+    -> ?delay_cluster:(cluster -> bool)
+    -> ?border_width:int
+    -> ?width:int
+    -> ?height:int
+    -> ?packing:(GObj.widget -> unit)
+    -> ?show:bool
+    -> (vertex, edge, cluster) DGraphModel.abstract_model
+    -> (vertex, edge, cluster) view
+  (** View as a Gnome Canvas. Support zooming and scrolling. *)
 end
 
-module Make(V: Sig.HASHABLE)(E: Sig.HASHABLE)(C: Sig.HASHABLE) :
+module Make (V : Sig.HASHABLE) (E : Sig.HASHABLE) (C : Sig.HASHABLE) :
   S with type vertex = V.t and type edge = E.t and type cluster = C.t

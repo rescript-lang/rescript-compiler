@@ -22,36 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities for creating block of lambda expression in JS IR *)
 
-val make_block : 
-  Js_op.mutable_flag -> Lam_tag_info.t ->
-  J.expression -> J.expression list -> J.expression
+val make_block :
+     Js_op.mutable_flag
+  -> Lam_tag_info.t
+  -> J.expression
+  -> J.expression list
+  -> J.expression
 
-val field : 
-  Lam_compat.field_dbg_info -> 
-  J.expression -> 
-  J.jsint -> 
-  J.expression
+val field :
+  Lam_compat.field_dbg_info -> J.expression -> J.jsint -> J.expression
 
-val field_by_exp : 
-  J.expression -> 
-  J.expression -> 
-  J.expression  
+val field_by_exp : J.expression -> J.expression -> J.expression
 
-val set_field : 
-  Lam_compat.set_field_dbg_info -> 
-  J.expression -> J.jsint -> J.expression -> J.expression
+val set_field :
+     Lam_compat.set_field_dbg_info
+  -> J.expression
+  -> J.jsint
+  -> J.expression
+  -> J.expression
 
 val set_field_by_exp :
-  J.expression -> 
-  J.expression -> 
-  J.expression -> 
-  J.expression
+  J.expression -> J.expression -> J.expression -> J.expression

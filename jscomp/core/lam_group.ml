@@ -22,28 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 (** This is not a recursive type definition *)
 type t =
-  | Single of Lam_compat.let_kind  * Ident.t * Lam.t
+  | Single of Lam_compat.let_kind * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t
 
 let single (kind : Lam_compat.let_kind) id (body : Lam.t) =
-  match kind, body with
-  | (Strict | StrictOpt),
-    (Lvar _ | Lconst _) ->
-    Single(Alias, id,body)
-  | _ -> Single(kind,id,body)
+  match (kind, body) with
+  | (Strict | StrictOpt), (Lvar _ | Lconst _) -> Single (Alias, id, body)
+  | _ -> Single (kind, id, body)
 
 let nop_cons (x : Lam.t) acc =
-  match x with
-  | Lvar _ | Lconst _ | Lfunction _
-    ->  acc
-  | _ -> Nop x :: acc
+  match x with Lvar _ | Lconst _ | Lfunction _ -> acc | _ -> Nop x :: acc
 
 let pp = Format.fprintf
 
@@ -54,17 +45,15 @@ let str_of_kind (kind : Lam_compat.let_kind) =
   | StrictOpt -> "o"
   | Variable -> "v"
 
-let pp_group env fmt ( x : t) =
+let pp_group env fmt (x : t) =
   match x with
   | Single (kind, id, lam) ->
-    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind)
-      (Lam_print.env_lambda env) lam
+      Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id
+        (str_of_kind kind) (Lam_print.env_lambda env) lam
   | Recursive lst ->
-    List.iter (fun (id,lam) ->
-        Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
-      ) lst
+      List.iter
+        (fun (id, lam) ->
+          Format.fprintf fmt "@[let %a@ =r@ %a@ @]" Ident.print id
+            (Lam_print.env_lambda env) lam)
+        lst
   | Nop lam -> Lam_print.env_lambda env fmt lam
-
-
-

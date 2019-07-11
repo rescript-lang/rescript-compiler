@@ -22,153 +22,133 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 let reverse_range a i len =
   if len = 0 then ()
   else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
+    for k = 0 to (len - 1) / 2 do
+      let t = Array.unsafe_get a (i + k) in
+      Array.unsafe_set a (i + k) (Array.unsafe_get a (i + len - 1 - k)) ;
+      Array.unsafe_set a (i + len - 1 - k) t
     done
 
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
+let reverse_in_place a = reverse_range a 0 (Array.length a)
 
 let reverse a =
   let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-    done;
-    b  
+  if b_len = 0 then [||]
+  else
+    let b = Array.copy a in
+    for i = 0 to b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 - i))
+    done ;
+    b
 
-let reverse_of_list =  function
+let reverse_of_list = function
   | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
+  | hd :: tl as l ->
+      let len = List.length l in
+      let a = Array.make len hd in
+      let rec fill i = function
+        | [] -> a
+        | hd :: tl ->
+            Array.unsafe_set a (len - i - 2) hd ;
+            fill (i + 1) tl in
+      fill 0 tl
 
 let filter f a =
   let arr_len = Array.length a in
   let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
+    if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
+      if f v then aux (v :: acc) (i + 1) else aux acc (i + 1) in
+  aux [] 0
 
 let filter_map (f : _ -> _ option) a =
   let arr_len = Array.length a in
   let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
+    if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
+      match f v with
+      | Some v -> aux (v :: acc) (i + 1)
+      | None -> aux acc (i + 1) in
+  aux [] 0
 
 let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
+  if from > to_ then invalid_arg "Ext_array.range"
   else Array.init (to_ - from + 1) (fun i -> i + from)
 
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
+let map2i f a b =
+  let len = Array.length a in
+  if len <> Array.length b then invalid_arg "Ext_array.map2i"
+  else Array.mapi (fun i a -> f i a (Array.unsafe_get b i)) a
+
+let rec tolist_f_aux a f i res =
+  if i < 0 then res
   else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
     let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
-       
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+    tolist_f_aux a f (i - 1) (f v :: res)
 
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
+let to_list_f f a = tolist_f_aux a f (Array.length a - 1) []
+
+let rec tolist_aux a f i res =
+  if i < 0 then res
+  else
     let v = Array.unsafe_get a i in
-    tolist_aux a f  (i - 1)
-      (match f v with
-       | Some v -> v :: res
-       | None -> res) 
+    tolist_aux a f (i - 1) (match f v with Some v -> v :: res | None -> res)
 
-let to_list_map f a = 
-  tolist_aux a f (Array.length a - 1) []
+let to_list_map f a = tolist_aux a f (Array.length a - 1) []
+let to_list_map_acc a acc f = tolist_aux a f (Array.length a - 1) acc
 
-let to_list_map_acc a acc f = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-let of_list_map a f = 
-  match a with 
+let of_list_map a f =
+  match a with
   | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
-  | [a0;a1] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    [|b0;b1|]
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
+  | [a0] ->
+      let b0 = f a0 in
+      [|b0|]
+  | [a0; a1] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      [|b0; b1|]
+  | [a0; a1; a2] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      [|b0; b1; b2|]
+  | [a0; a1; a2; a3] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      [|b0; b1; b2; b3|]
+  | [a0; a1; a2; a3; a4] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      [|b0; b1; b2; b3; b4|]
+  | a0 :: a1 :: a2 :: a3 :: a4 :: tl ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      let len = List.length tl + 5 in
+      let arr = Array.make len b0 in
+      Array.unsafe_set arr 1 b1 ;
+      Array.unsafe_set arr 2 b2 ;
+      Array.unsafe_set arr 3 b3 ;
+      Array.unsafe_set arr 4 b4 ;
+      let rec fill i = function
+        | [] -> arr
+        | hd :: tl ->
+            Array.unsafe_set arr i (f hd) ;
+            fill (i + 1) tl in
+      fill 5 tl
 
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
-
-(**
-   {[
+(** {[
      # rfind_with_index [|1;2;3|] (=) 2;;
      - : int = 1
                # rfind_with_index [|1;2;3|] (=) 1;;
@@ -177,39 +157,36 @@ let of_list_map a f =
      - : int = 2
                # rfind_with_index [|1;2;3|] (=) 4;;
      - : int = -1
-   ]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
+    ]} *)
+let rfind_with_index arr cmp v =
+  let len = Array.length arr in
+  let rec aux i =
     if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
+    else if cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in
   aux (len - 1)
 
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+type 'a split = [`No_split | `Split of 'a array * 'a array]
 
+let rfind_and_split arr cmp v : _ split =
+  let i = rfind_with_index arr cmp v in
+  if i < 0 then `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1) (Array.length arr - i - 1))
 
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
+let find_with_index arr cmp v =
+  let len = Array.length arr in
+  let rec aux i len =
+    if i >= len then -1
+    else if cmp (Array.unsafe_get arr i) v then i
+    else aux (i + 1) len in
   aux 0 len
 
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    `No_split
+let find_and_split arr cmp v : _ split =
+  let i = find_with_index arr cmp v in
+  if i < 0 then `No_split
   else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1) (Array.length arr - i - 1))
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
@@ -221,47 +198,40 @@ let exists p a =
     else loop (succ i) in
   loop 0
 
+let is_empty arr = Array.length arr = 0
 
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
+let rec unsafe_loop index len p xs ys =
   if index >= len then true
-  else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
+  else
+    p (Array.unsafe_get xs index) (Array.unsafe_get ys index)
+    && unsafe_loop (succ index) len p xs ys
 
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
+let for_all2_no_exn xs ys p =
+  let len_xs = Array.length xs in
+  let len_ys = Array.length ys in
+  len_xs = len_ys && unsafe_loop 0 len_xs p xs ys
 
 let map a f =
-  let open Array in 
+  let open Array in
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
+  if l = 0 then [||]
+  else
+    let r = make l (f (unsafe_get a 0)) in
     for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
-    done;
+      unsafe_set r i (f (unsafe_get a i))
+    done ;
     r
-  end
 
 let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
+  let open Array in
+  for i = 0 to length a - 1 do
+    f (unsafe_get a i)
+  done
 
-
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
+let fold_left a x f =
+  let open Array in
+  let r = ref x in
+  for i = 0 to length a - 1 do
+    r := f !r (unsafe_get a i)
+  done ;
+  !r

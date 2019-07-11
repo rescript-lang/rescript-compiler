@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 val handleTdclsInSigi :
-  Bs_ast_mapper.mapper ->
-  Parsetree.signature_item ->
-  Parsetree.type_declaration list -> Ast_signature.item
-
+     Bs_ast_mapper.mapper
+  -> Parsetree.signature_item
+  -> Parsetree.type_declaration list
+  -> Ast_signature.item
 
 val handleTdclsInStru :
-  Bs_ast_mapper.mapper ->
-  Parsetree.structure_item ->
-  Parsetree.type_declaration list -> Ast_structure.item
+     Bs_ast_mapper.mapper
+  -> Parsetree.structure_item
+  -> Parsetree.type_declaration list
+  -> Ast_structure.item

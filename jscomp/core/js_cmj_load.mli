@@ -22,12 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** This module is platform dependent, on browser environment, it depends on
+    {!Js_cmj_datasets}, for non-browser environment, it fails *)
 
- (** This module is platform dependent, on browser environment, 
-    it depends on {!Js_cmj_datasets}, for non-browser environment, it fails
- *)
-
-
-
-(** return path and meta data *)
 val find_cmj : string -> string * Js_cmj_format.t
+(** return path and meta data *)

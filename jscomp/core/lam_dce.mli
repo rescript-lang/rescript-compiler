@@ -22,15 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
-(** Dead code eliminatiion on the lambda layer 
-*)
+(** Dead code eliminatiion on the lambda layer *)
 
 val remove : Ident.t list -> Lam_group.t list -> Lam_group.t list

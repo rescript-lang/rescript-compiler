@@ -1,9 +1,5 @@
+type orientation =
+  [`Horizontal[@bs.as "horizontal"] | `Vertical[@bs.as "vertical"]]
+[@@bs.deriving jsConverter]
 
-
-type orientation = [
- | `Horizontal[@bs.as "horizontal"] 
- | `Vertical  [@bs.as "vertical"] 
-] [@@bs.deriving jsConverter]
-
-
-let () = Js.log (orientationToJs(`Horizontal))
+let () = Js.log (orientationToJs `Horizontal)

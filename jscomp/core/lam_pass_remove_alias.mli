@@ -22,29 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Keep track of the global module Aliases *)
 
+(** One way: guarantee that all global aliases *would be removed* , it will not
+    be aliased
 
+    So the only remaining place for globals is either just Pgetglobal in
+    functor application or `Lprim (Pfield( i ), [Pgetglobal])`
 
+    This pass does not change meta data *)
 
-
-
-
-(** Keep track of the global module Aliases *) 
-
-(**
-    One way:  guarantee that all global aliases *would be removed* ,
-    it will not be aliased 
-    
-    So the only remaining place for globals is either 
-    just  Pgetglobal in functor application or 
-    `Lprim (Pfield( i ), [Pgetglobal])`
-
-    This pass does not change meta  data
-*)
-
-val simplify_alias : 
-  Lam_stats.t -> 
-  Lam.t ->
-  Lam.t
-
-
+val simplify_alias : Lam_stats.t -> Lam.t -> Lam.t

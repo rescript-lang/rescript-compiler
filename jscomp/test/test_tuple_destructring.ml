@@ -1,11 +1,8 @@
-module N = struct
-  let b = 3
-end
+module N = struct let b = 3 end
 
 let v = N.b
 
-(** TODO: 
-    (3,4) belongs to ImmutableBlock
- *)
-let (u,h) = (3,4)
-let (g,gg) = (u,h)
+(** TODO: (3,4) belongs to ImmutableBlock *)
+let u, h = (3, 4)
+
+let g, gg = (u, h)

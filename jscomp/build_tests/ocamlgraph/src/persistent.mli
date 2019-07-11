@@ -21,50 +21,54 @@ open Sig
 
 (** Signature of persistent graphs. *)
 module type S = sig
-
-  (** <b>Edges may be labeled or not</b>:
+  (** {b Edges may be labeled or not}:
       - Unlabeled: there is no label on edges
       - Labeled: you have to provide a label implementation as a functor
-      parameter.
+        parameter.
 
-      <b>Vertices may be concrete or abstract</b>:
+      {b Vertices may be concrete or abstract}:
       - Concrete: type of vertex labels and type of vertices are identified.
       - Abstract: type of vertices is abstract (in particular it is not equal
-      to type of vertex labels
+        to type of vertex labels
 
-      <b>How to choose between concrete and abstract vertices for my graph
-      implementation</b>?
+      {b
+      How to choose between concrete and abstract vertices for my graph
+      implementation} ?
 
       Usually, if you fall into one of the following cases, use abstract
       vertices:
       - you cannot provide efficient comparison/hash functions for vertices; or
       - you wish to get two different vertices with the same label.
 
-      In other cases, it is certainly easier to use concrete vertices.  *)
+      In other cases, it is certainly easier to use concrete vertices. *)
 
   (** Persistent Unlabeled Graphs. *)
-  module Concrete (V: COMPARABLE) :
-    Sig.P with type V.t = V.t and type V.label = V.t and type E.t = V.t * V.t
-                                                     and type E.label = unit
+  module Concrete (V : COMPARABLE) :
+    Sig.P
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * V.t
+       and type E.label = unit
 
   (** Abstract Persistent Unlabeled Graphs. *)
-  module Abstract(V: ANY_TYPE) : Sig.P with type V.label = V.t
-                                        and type E.label = unit
+  module Abstract (V : ANY_TYPE) :
+    Sig.P with type V.label = V.t and type E.label = unit
 
   (** Persistent Labeled Graphs. *)
-  module ConcreteLabeled (V: COMPARABLE)(E: ORDERED_TYPE_DFT) :
-    Sig.P with type V.t = V.t and type V.label = V.t
-                              and type E.t = V.t * E.t * V.t and type E.label = E.t
+  module ConcreteLabeled (V : COMPARABLE) (E : ORDERED_TYPE_DFT) :
+    Sig.P
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * E.t * V.t
+       and type E.label = E.t
 
   (** Abstract Persistent Labeled Graphs. *)
-  module AbstractLabeled (V: ANY_TYPE)(E: ORDERED_TYPE_DFT) :
+  module AbstractLabeled (V : ANY_TYPE) (E : ORDERED_TYPE_DFT) :
     Sig.P with type V.label = V.t and type E.label = E.t
-
 end
 
 (** Persistent Directed Graphs. *)
 module Digraph : sig
-
   include S
 
   (** {2 Bidirectional graphs}
@@ -74,22 +78,23 @@ module Digraph : sig
       removing a vertex are faster. *)
 
   (** Imperative Unlabeled, bidirectional graph. *)
-  module ConcreteBidirectional (V: COMPARABLE) :
-    Sig.P with type V.t = V.t and type V.label = V.t and type E.t = V.t * V.t
-                                                     and type E.label = unit
+  module ConcreteBidirectional (V : COMPARABLE) :
+    Sig.P
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * V.t
+       and type E.label = unit
 
   (** Imperative Labeled and bidirectional graph. *)
-  module ConcreteBidirectionalLabeled(V:COMPARABLE)(E:ORDERED_TYPE_DFT) :
-    Sig.P with type V.t = V.t and type V.label = V.t
-                              and type E.t = V.t * E.t * V.t and type E.label = E.t
-
+  module ConcreteBidirectionalLabeled (V : COMPARABLE) (E : ORDERED_TYPE_DFT) :
+    Sig.P
+      with type V.t = V.t
+       and type V.label = V.t
+       and type E.t = V.t * E.t * V.t
+       and type E.label = E.t
 end
 
-(** Persistent Undirected Graphs. *)
 module Graph : S
+(** Persistent Undirected Graphs. *)
 
-(*
-Local Variables:
-compile-command: "make -C .."
-End:
-*)
+(* Local Variables: compile-command: "make -C .." End: *)

@@ -22,43 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = private
-  | Arity_info of int list  * bool
-    (**
-      when the first argument is true, it is for sure 
-      the last one means it can take any params later, 
-      for an exception: it is (Arity_info([], true))
-       approximation sound but not complete       
-   *)
-  | Arity_na 
+  | Arity_info of int list * bool
+      (** when the first argument is true, it is for sure the last one means it
+          can take any params later, for an exception: it is (Arity_info([],
+          true)) approximation sound but not complete *)
+  | Arity_na
 
-val equal : t -> t -> bool  
-val print : Format.formatter -> t -> unit   
-
-val print_arities_tbl : 
-  Format.formatter -> 
-  (Ident.t, t ref) Hashtbl.t -> 
-  unit 
-
-val merge : int -> t -> t   
-
+val equal : t -> t -> bool
+val print : Format.formatter -> t -> unit
+val print_arities_tbl : Format.formatter -> (Ident.t, t ref) Hashtbl.t -> unit
+val merge : int -> t -> t
 val non_function_arity_info : t
-
-val raise_arity_info : t 
-
+val raise_arity_info : t
 val na : t
-val info : int list -> bool -> t 
+val info : int list -> bool -> t
+val first_arity_na : t -> bool
+val get_first_arity : t -> int option
 
-val first_arity_na :  t -> bool
-val get_first_arity : t -> int option 
+val extract_arity : t -> int list
+(** when [NA] return empty list*)
 
-(** when [NA] return  empty list*)
-val extract_arity : t -> int list 
-
-val merge_arities : 
-  int list -> 
-  int list -> 
-  bool -> 
-  bool -> 
-  t
+val merge_arities : int list -> int list -> bool -> bool -> t

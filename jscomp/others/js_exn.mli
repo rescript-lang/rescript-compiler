@@ -22,33 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t 
+type t
+type exn += private Error of t
 
-type exn += private Error of t 
+external asJsExn : exn -> t option = "caml_as_js_exn"
+external stack : t -> string option = "stack" [@@bs.get]
+external message : t -> string option = "message" [@@bs.get]
+external name : t -> string option = "name" [@@bs.get]
+external fileName : t -> string option = "fileName" [@@bs.get]
 
-external asJsExn : exn -> t option = 
-  "caml_as_js_exn"
-
-external stack : t -> string option = "stack"
-  [@@bs.get] 
-external message : t -> string option = "message"
-  [@@bs.get] 
-external name : t -> string option = "name"
-  [@@bs.get] 
-external fileName : t -> string option = "fileName"
-  [@@bs.get] 
-
-
-external isCamlExceptionOrOpenVariant:
-  'a -> bool = "caml_is_extension"
+external isCamlExceptionOrOpenVariant : 'a -> bool = "caml_is_extension"
 (** internal use only *)
 
-
-(** Raise Js exception Error object with stacktrace *)
 val raiseError : string -> 'a
+(** Raise Js exception Error object with stacktrace *)
+
 val raiseEvalError : string -> 'a
 val raiseRangeError : string -> 'a
-val raiseReferenceError :  string -> 'a
+val raiseReferenceError : string -> 'a
 val raiseSyntaxError : string -> 'a
 val raiseTypeError : string -> 'a
-val raiseUriError :  string -> 'a
+val raiseUriError : string -> 'a

@@ -22,35 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let p = Format.fprintf 
+let p = Format.fprintf
 
-let () = 
-  match Sys.argv with 
-  | [|_; file|]
-    -> 
-    let ic = open_in_bin file in 
-
-    let arrs = 
-      Bsb_helper_depfile_gen.deps_of_channel ic 
-    in
-    p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
-      (Format.pp_print_list ~pp_sep:(fun fmt () ->
-           p fmt "@ ;"
-         ) Format.pp_print_string) 
-      (Array.to_list arrs);
-    p Format.std_formatter "@.==============================@.";
-    if Ext_path.check_suffix_case file ".mlast" then 
-      begin
+let () =
+  match Sys.argv with
+  | [|_; file|] ->
+      let ic = open_in_bin file in
+      let arrs = Bsb_helper_depfile_gen.deps_of_channel ic in
+      p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
+        (Format.pp_print_list
+           ~pp_sep:(fun fmt () -> p fmt "@ ;")
+           Format.pp_print_string)
+        (Array.to_list arrs) ;
+      p Format.std_formatter "@.==============================@." ;
+      if Ext_path.check_suffix_case file ".mlast" then (
         Pprintast.structure Format.std_formatter
-          (Ml_binary.read_ast Ml_binary.Ml ic );
-        close_in ic 
-      end
-    else if Ext_path.check_suffix_case file ".mliast" then 
-      begin
+          (Ml_binary.read_ast Ml_binary.Ml ic) ;
+        close_in ic )
+      else if Ext_path.check_suffix_case file ".mliast" then (
         Pprintast.signature Format.std_formatter
-          (Ml_binary.read_ast Ml_binary.Mli ic);
-        close_in ic
-      end
-    else assert false
-
+          (Ml_binary.read_ast Ml_binary.Mli ic) ;
+        close_in ic )
+      else assert false
   | _ -> failwith "expect one argument"

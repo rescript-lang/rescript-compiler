@@ -16,9 +16,6 @@
 (* Module [StdLabels]: meta-module for labelled libraries *)
 
 module Array = ArrayLabels
-
 module List = ListLabels
-
 module String = StringLabels
-
 module Bytes = BytesLabels

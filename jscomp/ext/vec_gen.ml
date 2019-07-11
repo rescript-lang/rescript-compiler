@@ -22,66 +22,69 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module type ResizeType = sig
+  type t
 
-module type ResizeType = 
-sig 
-  type t 
-  val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
+  val null : t
+
+  (* used to populate new allocated array checkout {!Obj.new_block} for more
+     performance *)
 end
 
-module type S = 
-sig 
-  type elt 
+module type S = sig
+  type elt
   type t
-  val length : t -> int 
+
+  val length : t -> int
   val compact : t -> unit
-  val singleton : elt -> t 
-  val empty : unit -> t 
-  val make : int -> t 
+  val singleton : elt -> t
+  val empty : unit -> t
+  val make : int -> t
   val init : int -> (int -> elt) -> t
   val is_empty : t -> bool
   val of_array : elt array -> t
   val of_sub_array : elt array -> int -> int -> t
 
-  (** Exposed for some APIs which only take array as input, 
-      when exposed   
-  *)
   val unsafe_internal_array : t -> elt array
+  (** Exposed for some APIs which only take array as input, when exposed *)
+
   val reserve : t -> int -> unit
-  val push :  t -> elt -> unit
-  val delete : t -> int -> unit 
+  val push : t -> elt -> unit
+  val delete : t -> int -> unit
   val pop : t -> unit
   val get_last_and_pop : t -> elt
-  val delete_range : t -> int -> int -> unit 
+  val delete_range : t -> int -> int -> unit
   val get_and_delete_range : t -> int -> int -> t
-  val clear : t -> unit 
-  val reset : t -> unit 
-  val to_list : t -> elt list 
+  val clear : t -> unit
+  val reset : t -> unit
+  val to_list : t -> elt list
   val of_list : elt list -> t
-  val to_array : t -> elt array 
+  val to_array : t -> elt array
   val of_array : elt array -> t
-  val copy : t -> t 
+  val copy : t -> t
   val reverse_in_place : t -> unit
-  val iter : t -> (elt -> unit) -> unit 
-  val iteri : t -> (int -> elt -> unit ) -> unit 
-  val iter_range : t -> from:int -> to_:int -> (elt -> unit) -> unit 
+  val iter : t -> (elt -> unit) -> unit
+  val iteri : t -> (int -> elt -> unit) -> unit
+  val iter_range : t -> from:int -> to_:int -> (elt -> unit) -> unit
   val iteri_range : t -> from:int -> to_:int -> (int -> elt -> unit) -> unit
-  val map : (elt -> elt) -> t ->  t
+  val map : (elt -> elt) -> t -> t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
-  val map_into_list : (elt -> 'f) -> t -> 'f list 
+  val map_into_list : (elt -> 'f) -> t -> 'f list
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
-  val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
-  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
-  val equal : (elt -> elt -> bool) -> t -> t -> bool 
+
+  val inplace_filter_with :
+    (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a
+
+  val inplace_filter_from : int -> (elt -> bool) -> t -> unit
+  val equal : (elt -> elt -> bool) -> t -> t -> bool
   val get : t -> int -> elt
   val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
   val exists : (elt -> bool) -> t -> bool
-  val sub : t -> int -> int  -> t 
+  val sub : t -> int -> int -> t
 end
-

@@ -1,15 +1,8 @@
+let f str =
+  match Node.test str with
+  | Node.String, s -> Js.log ("string", s)
+  | Node.Buffer, s -> Js.log ("buffer", Node.Buffer.isBuffer s)
 
-
-
-
-let f  str = 
-  match Node.test str with 
-  | (Node.String, s) -> Js.log ("string", s)
-  | (Node.Buffer, s) -> Js.log ("buffer", Node.Buffer.isBuffer s)
-
-
-let () = 
-  begin 
-    f [%bs.raw {|"xx"|}];
-    f [%bs.raw {|Buffer.from ('xx')|}]
-  end
+let () =
+  f [%bs.raw {|"xx"|}] ;
+  f [%bs.raw {|Buffer.from ('xx')|}]

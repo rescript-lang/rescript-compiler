@@ -1,1 +1,1 @@
-(* val v : int  *)
+(* val v : int *)

@@ -14,6 +14,4 @@ external to_int : nativeint -> int = "%nativeint_to_int"
 external to_int32 : nativeint -> int32 = "%nativeint_to_int32"
 external of_int : int -> nativeint = "%nativeint_of_int"
 external neg : nativeint -> nativeint = "%nativeint_neg"
-
 external to_string : nativeint -> string = "String" [@@bs.val]
-

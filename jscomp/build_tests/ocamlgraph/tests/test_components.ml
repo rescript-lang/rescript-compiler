@@ -17,20 +17,14 @@
 
 open Format
 open Graph
-
-module C = Components.Undirected(Pack.Graph)
-
+module C = Components.Undirected (Pack.Graph)
 open Pack.Graph
 
 let () =
   let g = Rand.graph ~v:10 ~e:3 () in
   let n, f = C.components g in
-  printf "%d components@." n;
+  printf "%d components@." n ;
   iter_vertex (fun v -> printf "%d -> %d@." (V.label v) (f v)) g
 
-
-(*
-Local Variables:
-compile-command: "ocaml -I .. graph.cma test_components.ml"
-End:
-*)
+(* Local Variables: compile-command: "ocaml -I .. graph.cma test_components.ml"
+   End: *)

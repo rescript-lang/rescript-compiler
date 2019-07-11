@@ -12,14 +12,12 @@
 
 (* Empty string oddities *)
 
-let rec tst01 s = match s with
-| "" -> 0
-| _ -> 1
+let rec tst01 s = match s with "" -> 0 | _ -> 1
 
 let () =
   assert (tst01 "" = 0) ;
-  assert (tst01  "\000\000\000\003" = 1) ;
-  assert (tst01  "\000\000\000\000\000\000\000\007" = 1) ;
+  assert (tst01 "\000\000\000\003" = 1) ;
+  assert (tst01 "\000\000\000\000\000\000\000\007" = 1) ;
   ()
 
 (* A few when clauses *)
@@ -92,32 +90,33 @@ let t22 = "sen_denv"
 let s23 = "send_meth"
 let t23 = "tend_mesh"
 
-let tst03 s = match s with
-| "get_const" -> 0
-| "get_var" -> 1
-| "get_env" -> 2
-| "get_meth" -> 3
-| "set_var" -> 4
-| "app_const" -> 5
-| "app_var" -> 6
-| "app_env" -> 7
-| "app_meth" -> 8
-| "app_const_const" -> 9
-| "app_const_var" -> 10
-| "app_const_env" -> 11
-| "app_const_meth" -> 12
-| "app_var_const" -> 13
-| "app_env_const" -> 14
-| "app_meth_const" -> 15
-| "meth_app_const" -> 16
-| "meth_app_var" -> 17
-| "meth_app_env" -> 18
-| "meth_app_meth" -> 19
-| "send_const" -> 20
-| "send_var" -> 21
-| "send_env" -> 22
-| "send_meth" -> 23
-| _ -> -1
+let tst03 s =
+  match s with
+  | "get_const" -> 0
+  | "get_var" -> 1
+  | "get_env" -> 2
+  | "get_meth" -> 3
+  | "set_var" -> 4
+  | "app_const" -> 5
+  | "app_var" -> 6
+  | "app_env" -> 7
+  | "app_meth" -> 8
+  | "app_const_const" -> 9
+  | "app_const_var" -> 10
+  | "app_const_env" -> 11
+  | "app_const_meth" -> 12
+  | "app_var_const" -> 13
+  | "app_env_const" -> 14
+  | "app_meth_const" -> 15
+  | "meth_app_const" -> 16
+  | "meth_app_var" -> 17
+  | "meth_app_env" -> 18
+  | "meth_app_meth" -> 19
+  | "send_const" -> 20
+  | "send_var" -> 21
+  | "send_env" -> 22
+  | "send_meth" -> 23
+  | _ -> -1
 
 let () =
   assert (tst03 s00 = 0) ;
@@ -185,20 +184,21 @@ let s09 = "CCCCCCCCCCCCCCCC"
 let s10 = "CCCCCCCCCCCCCCCCCCCCCCCC"
 let s11 = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
 
-let tst04 s = match s with
-| "AAAAAAAA" -> 0
-| "AAAAAAAAAAAAAAAA" -> 1
-| "AAAAAAAAAAAAAAAAAAAAAAAA" -> 2
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 3
-| "BBBBBBBB" -> 4
-| "BBBBBBBBBBBBBBBB" -> 5
-| "BBBBBBBBBBBBBBBBBBBBBBBB" -> 6
-| "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 7
-| "CCCCCCCC" -> 8
-| "CCCCCCCCCCCCCCCC" -> 9
-| "CCCCCCCCCCCCCCCCCCCCCCCC" -> 10
-| "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" -> 11
-| _ -> -1
+let tst04 s =
+  match s with
+  | "AAAAAAAA" -> 0
+  | "AAAAAAAAAAAAAAAA" -> 1
+  | "AAAAAAAAAAAAAAAAAAAAAAAA" -> 2
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 3
+  | "BBBBBBBB" -> 4
+  | "BBBBBBBBBBBBBBBB" -> 5
+  | "BBBBBBBBBBBBBBBBBBBBBBBB" -> 6
+  | "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 7
+  | "CCCCCCCC" -> 8
+  | "CCCCCCCCCCCCCCCC" -> 9
+  | "CCCCCCCCCCCCCCCCCCCCCCCC" -> 10
+  | "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" -> 11
+  | _ -> -1
 
 let () =
   assert (tst04 s00 = 0) ;
@@ -238,21 +238,22 @@ let s10 = "BBBBB"
 let s11 = "BBBBBB"
 let s12 = "BBBBBBB"
 
-let tst05 s = match s with
-| "AAA" -> 0
-| "AAAA" -> 1
-| "AAAAA" -> 2
-| "AAAAAA" -> 3
-| "AAAAAAA" -> 4
-| "AAAAAAAAAAAA" -> 5
-| "AAAAAAAAAAAAAAAA" -> 6
-| "AAAAAAAAAAAAAAAAAAAA" -> 7
-| "BBB" -> 8
-| "BBBB" -> 9
-| "BBBBB" -> 10
-| "BBBBBB" -> 11
-| "BBBBBBB" -> 12
-| _ -> -1
+let tst05 s =
+  match s with
+  | "AAA" -> 0
+  | "AAAA" -> 1
+  | "AAAAA" -> 2
+  | "AAAAAA" -> 3
+  | "AAAAAAA" -> 4
+  | "AAAAAAAAAAAA" -> 5
+  | "AAAAAAAAAAAAAAAA" -> 6
+  | "AAAAAAAAAAAAAAAAAAAA" -> 7
+  | "BBB" -> 8
+  | "BBBB" -> 9
+  | "BBBBB" -> 10
+  | "BBBBBB" -> 11
+  | "BBBBBBB" -> 12
+  | _ -> -1
 
 let () =
   assert (tst05 s00 = 0) ;
@@ -466,100 +467,101 @@ let t90 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 let s91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 let t91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 
-let tst06 s = match s with
-| "and" -> 0
-| "as" -> 1
-| "assert" -> 2
-| "begin" -> 3
-| "class" -> 4
-| "constraint" -> 5
-| "do" -> 6
-| "done" -> 7
-| "downto" -> 8
-| "else" -> 9
-| "end" -> 10
-| "exception" -> 11
-| "external" -> 12
-| "false" -> 13
-| "for" -> 14
-| "fun" -> 15
-| "function" -> 16
-| "functor" -> 17
-| "if" -> 18
-| "in" -> 19
-| "include" -> 20
-| "inherit" -> 21
-| "initializer" -> 22
-| "lazy" -> 23
-| "let" -> 24
-| "match" -> 25
-| "method" -> 26
-| "module" -> 27
-| "mutable" -> 28
-| "new" -> 29
-| "object" -> 30
-| "of" -> 31
-| "open" -> 32
-| "or" -> 33
-| "private" -> 34
-| "rec" -> 35
-| "sig" -> 36
-| "struct" -> 37
-| "then" -> 38
-| "to" -> 39
-| "true" -> 40
-| "try" -> 41
-| "type" -> 42
-| "val" -> 43
-| "virtual" -> 44
-| "when" -> 45
-| "while" -> 46
-| "with" -> 47
-| "mod" -> 48
-| "land" -> 49
-| "lor" -> 50
-| "lxor" -> 51
-| "lsl" -> 52
-| "lsr" -> 53
-| "asr" -> 54
-| "A" -> 55
-| "AA" -> 56
-| "AAA" -> 57
-| "AAAA" -> 58
-| "AAAAA" -> 59
-| "AAAAAA" -> 60
-| "AAAAAAA" -> 61
-| "AAAAAAAA" -> 62
-| "AAAAAAAAA" -> 63
-| "AAAAAAAAAA" -> 64
-| "AAAAAAAAAAA" -> 65
-| "AAAAAAAAAAAA" -> 66
-| "AAAAAAAAAAAAA" -> 67
-| "AAAAAAAAAAAAAA" -> 68
-| "AAAAAAAAAAAAAAA" -> 69
-| "AAAAAAAAAAAAAAAA" -> 70
-| "AAAAAAAAAAAAAAAAA" -> 71
-| "AAAAAAAAAAAAAAAAAA" -> 72
-| "AAAAAAAAAAAAAAAAAAA" -> 73
-| "AAAAAAAAAAAAAAAAAAAA" -> 74
-| "AAAAAAAAAAAAAAAAAAAAA" -> 75
-| "AAAAAAAAAAAAAAAAAAAAAA" -> 76
-| "AAAAAAAAAAAAAAAAAAAAAAA" -> 77
-| "AAAAAAAAAAAAAAAAAAAAAAAA" -> 78
-| "AAAAAAAAAAAAAAAAAAAAAAAAA" -> 79
-| "AAAAAAAAAAAAAAAAAAAAAAAAAA" -> 80
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 81
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 82
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 83
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 84
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 85
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 86
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 87
-| "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 88
-| "BBBBBBBBBBBBBBB" -> 89
-| "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 90
-| "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 91
-| _ -> -1
+let tst06 s =
+  match s with
+  | "and" -> 0
+  | "as" -> 1
+  | "assert" -> 2
+  | "begin" -> 3
+  | "class" -> 4
+  | "constraint" -> 5
+  | "do" -> 6
+  | "done" -> 7
+  | "downto" -> 8
+  | "else" -> 9
+  | "end" -> 10
+  | "exception" -> 11
+  | "external" -> 12
+  | "false" -> 13
+  | "for" -> 14
+  | "fun" -> 15
+  | "function" -> 16
+  | "functor" -> 17
+  | "if" -> 18
+  | "in" -> 19
+  | "include" -> 20
+  | "inherit" -> 21
+  | "initializer" -> 22
+  | "lazy" -> 23
+  | "let" -> 24
+  | "match" -> 25
+  | "method" -> 26
+  | "module" -> 27
+  | "mutable" -> 28
+  | "new" -> 29
+  | "object" -> 30
+  | "of" -> 31
+  | "open" -> 32
+  | "or" -> 33
+  | "private" -> 34
+  | "rec" -> 35
+  | "sig" -> 36
+  | "struct" -> 37
+  | "then" -> 38
+  | "to" -> 39
+  | "true" -> 40
+  | "try" -> 41
+  | "type" -> 42
+  | "val" -> 43
+  | "virtual" -> 44
+  | "when" -> 45
+  | "while" -> 46
+  | "with" -> 47
+  | "mod" -> 48
+  | "land" -> 49
+  | "lor" -> 50
+  | "lxor" -> 51
+  | "lsl" -> 52
+  | "lsr" -> 53
+  | "asr" -> 54
+  | "A" -> 55
+  | "AA" -> 56
+  | "AAA" -> 57
+  | "AAAA" -> 58
+  | "AAAAA" -> 59
+  | "AAAAAA" -> 60
+  | "AAAAAAA" -> 61
+  | "AAAAAAAA" -> 62
+  | "AAAAAAAAA" -> 63
+  | "AAAAAAAAAA" -> 64
+  | "AAAAAAAAAAA" -> 65
+  | "AAAAAAAAAAAA" -> 66
+  | "AAAAAAAAAAAAA" -> 67
+  | "AAAAAAAAAAAAAA" -> 68
+  | "AAAAAAAAAAAAAAA" -> 69
+  | "AAAAAAAAAAAAAAAA" -> 70
+  | "AAAAAAAAAAAAAAAAA" -> 71
+  | "AAAAAAAAAAAAAAAAAA" -> 72
+  | "AAAAAAAAAAAAAAAAAAA" -> 73
+  | "AAAAAAAAAAAAAAAAAAAA" -> 74
+  | "AAAAAAAAAAAAAAAAAAAAA" -> 75
+  | "AAAAAAAAAAAAAAAAAAAAAA" -> 76
+  | "AAAAAAAAAAAAAAAAAAAAAAA" -> 77
+  | "AAAAAAAAAAAAAAAAAAAAAAAA" -> 78
+  | "AAAAAAAAAAAAAAAAAAAAAAAAA" -> 79
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAA" -> 80
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 81
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 82
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 83
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 84
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 85
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 86
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 87
+  | "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -> 88
+  | "BBBBBBBBBBBBBBB" -> 89
+  | "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 90
+  | "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" -> 91
+  | _ -> -1
 
 let () =
   assert (tst06 s00 = 0) ;

@@ -22,83 +22,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Type definition to keep track of compilation state *)
 
+(** Some types are defined in this module to help avoiding generating
+    unnecessary symbols (generating too many symbols will make the output code
+    unreadable) *)
 
+type jbl_label = int
 
+type return_label =
+  { id: Ident.t
+  ; label: J.label
+  ; params: Ident.t list
+  ; immutable_mask: bool array
+  ; mutable new_params: Ident.t Ident_map.t
+  ; mutable triggered: bool }
 
-
-
-
-(** Type definition to keep track of compilation state 
-  *)
-
-(** Some types are defined in this module to help avoiding generating unnecessary symbols 
-    (generating too many symbols will make the output code unreadable)
-*)
-
-type jbl_label = int 
-
-type return_label = {
-  id : Ident.t;
-  label : J.label;
-  params : Ident.t list;
-  immutable_mask : bool array;
-  mutable new_params : Ident.t Ident_map.t ;
-  mutable triggered : bool
-}
-
-
-
-type value = {
-    exit_id : Ident.t ; 
-    bindings : Ident.t list ;
-    order_id : int
-  }
-
+type value = {exit_id: Ident.t; bindings: Ident.t list; order_id: int}
 type let_kind = Lam_compat.let_kind
+type return_type = ReturnFalse | ReturnTrue of return_label option
 
-type return_type = 
-  | ReturnFalse 
-  | ReturnTrue of return_label option (* anonoymous function does not have identifier *)
+(* anonoymous function does not have identifier *)
 
-(* delegate to the callee to generate expression 
-      Invariant: [output] should return a trailing expression
-  *)
+(* delegate to the callee to generate expression Invariant: [output] should
+   return a trailing expression *)
 
-type continuation = 
+type continuation =
   | EffectCall of return_type
   | NeedValue of return_type
   | Declare of let_kind * J.ident (* bound value *)
-  | Assign of J.ident 
-  (** when use [Assign], var is not needed, since it's already declared 
-      make sure all [Assign] are declared first, otherwise you are creating global variables
-   *)
+  | Assign of J.ident
+      (** when use [Assign], var is not needed, since it's already declared
+          make sure all [Assign] are declared first, otherwise you are creating
+          global variables *)
 
+type jmp_table
 
+val continuation_is_return : continuation -> bool
 
-type jmp_table 
+type t = {continuation: continuation; jmp_table: jmp_table; meta: Lam_stats.t}
 
-val continuation_is_return:
-  continuation -> 
-  bool 
-type t = {
-  continuation : continuation ;
-  jmp_table : jmp_table;
-  meta : Lam_stats.t ;
-}
+val empty_handler_map : jmp_table
 
- val empty_handler_map : jmp_table  
-
-type handler = {
-  label : jbl_label ; 
-  handler : Lam.t;
-  bindings : Ident.t list; 
-} 
+type handler = {label: jbl_label; handler: Lam.t; bindings: Ident.t list}
 
 val add_jmps :
-    jmp_table -> 
-    Ident.t ->
-    handler list ->
-    jmp_table * (jbl_label * Lam.t) list
+  jmp_table -> Ident.t -> handler list -> jmp_table * (jbl_label * Lam.t) list
 
 val find_exn : jbl_label -> t -> value

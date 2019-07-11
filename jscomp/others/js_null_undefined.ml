@@ -22,30 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functionality for dealing with values that can be both [null] and [undefined] *)
+(** Contains functionality for dealing with values that can be both [null] and
+    [undefined] *)
 
-type + 'a t = 'a Js.nullable
+type +'a t = 'a Js.nullable
+
 external toOption : 'a t -> 'a option = "#nullable_to_opt"
 external to_opt : 'a t -> 'a option = "#nullable_to_opt"
 external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "#is_nullable"
-external isNullable : 'a t -> bool =  "#is_nullable"
+external test : 'a t -> bool = "#is_nullable"
+external isNullable : 'a t -> bool = "#is_nullable"
 external null : 'a t = "#null"
 external undefined : 'a t = "#undefined"
 
 let bind x f =
   match to_opt x with
-  | None -> (Obj.magic (x: 'a t): 'b t)
+  | None -> (Obj.magic (x : 'a t) : 'b t)
   | Some x -> return (f x [@bs])
 
-let iter x f =
-  match to_opt x with
-  | None -> ()
-  | Some x -> f x [@bs]
-
-let fromOption x =
-  match x with
-  | None -> undefined
-  | Some x -> return x
-
+let iter x f = match to_opt x with None -> () | Some x -> ( f x [@bs] )
+let fromOption x = match x with None -> undefined | Some x -> return x
 let from_opt = fromOption

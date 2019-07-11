@@ -22,15 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type t = {
-   prim_name : string;
-   prim_arity : int ; 
-   prim_native_name : string
- }
-    
-let of_primitive_description (x : Primitive.description) =  
-  {
-    prim_name = x.prim_name;
-    prim_arity = x.prim_arity;
-    prim_native_name = x.prim_native_name
-  }
+type t = {prim_name: string; prim_arity: int; prim_native_name: string}
+
+let of_primitive_description (x : Primitive.description) =
+  { prim_name= x.prim_name
+  ; prim_arity= x.prim_arity
+  ; prim_native_name= x.prim_native_name }

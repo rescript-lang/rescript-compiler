@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,15 +32,9 @@ module String = Belt_SortArrayString
 (** Specalized when key type is [string], more efficient
     than the generic type *)
 
+val strictlySortedLengthU : 'a array -> (('a -> 'a -> bool)[@bs]) -> int
 
-val strictlySortedLengthU:
-  'a array ->
-  ('a -> 'a -> bool [@bs]) ->
-  int
-val strictlySortedLength:
-  'a array ->
-  ('a -> 'a -> bool) ->
-  int
+val strictlySortedLength : 'a array -> ('a -> 'a -> bool) -> int
 (**
   [strictlySortedLenght xs cmp]
   return [+n] means increasing order
@@ -55,8 +48,9 @@ val strictlySortedLength:
   ]}
 *)
 
-val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
-val isSorted: 'a array -> ('a -> 'a -> int) -> bool
+val isSortedU : 'a array -> (('a -> 'a -> int)[@bs]) -> bool
+
+val isSorted : 'a array -> ('a -> 'a -> int) -> bool
 (** [isSorted arr cmp]
     @return true if array is increasingly sorted (equal is okay )
     @example {[
@@ -64,28 +58,27 @@ val isSorted: 'a array -> ('a -> 'a -> int) -> bool
    ]}
 *)
 
-val stableSortInPlaceByU: 'a array -> ('a -> 'a -> int [@bs]) -> unit
-val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
+val stableSortInPlaceByU : 'a array -> (('a -> 'a -> int)[@bs]) -> unit
+
+val stableSortInPlaceBy : 'a array -> ('a -> 'a -> int) -> unit
 (** [stableSortBy xs cmp]
 
     Sort xs in place using comparator [cmp], the stable means if the elements
     are equal, their order will be preserved
 *)
 
-val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
-val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
+val stableSortByU : 'a array -> (('a -> 'a -> int)[@bs]) -> 'a array
+
+val stableSortBy : 'a array -> ('a -> 'a -> int) -> 'a array
 (** [stableSort xs cmp]
     @return a fresh array
 
     The same as {!stableSortInPlaceBy} except that [xs] is  not modified
 *)
 
+val binarySearchByU : 'a array -> 'a -> (('a -> 'a -> int)[@bs]) -> int
 
-
-val binarySearchByU:
-  'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int
-val binarySearchBy:
-  'a array -> 'a -> ('a -> 'a -> int ) -> int
+val binarySearchBy : 'a array -> 'a -> ('a -> 'a -> int) -> int
 (**
 
   If value is not found and value is less than one or more elements in array,
@@ -106,15 +99,29 @@ val binarySearchBy:
 *)
 
 (**/**)
-val unionU:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int [@bs])
+
+val unionU :
+     'a array
   -> int
-val union:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int )
+  -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> (('a -> 'a -> int)[@bs])
+  -> int
+
+val union :
+     'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> ('a -> 'a -> int)
   -> int
 (**
   [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
@@ -123,28 +130,55 @@ val union:
   also assume that [dst] is large enough to store all elements
 *)
 
-val intersectU:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int [@bs])
+val intersectU :
+     'a array
   -> int
-val intersect:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int )
+  -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> (('a -> 'a -> int)[@bs])
+  -> int
+
+val intersect :
+     'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> ('a -> 'a -> int)
   -> int
 (** [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
   return the [offset] in the output array
 *)
 
-val diffU:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int [@bs])
+val diffU :
+     'a array
   -> int
-val diff:
-  'a array -> int -> int ->
-  'a array -> int -> int ->
-  'a array -> int -> ('a -> 'a -> int)
   -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> (('a -> 'a -> int)[@bs])
+  -> int
+
+val diff :
+     'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> int
+  -> 'a array
+  -> int
+  -> ('a -> 'a -> int)
+  -> int
+
 (**/**)

@@ -24,63 +24,50 @@
 
 (** poor man's serialization *)
 
-let quot x = 
-    "\"" ^ String.escaped x ^ "\""
+let quot x = "\"" ^ String.escaped x ^ "\""
 
-let rec encode_aux (x : Ext_json_types.t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
+let rec encode_aux (x : Ext_json_types.t) (buf : Buffer.t) : unit =
+  let a str = Buffer.add_string buf str in
+  match x with
   | Null _ -> a "null"
-  | Str {str = s }  -> a (quot s)
-  | Flo {flo = s} -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  {content} -> 
-    begin match content with 
-      | [||] -> a "[]"
-      | _ -> 
-        a "[ ";
-        encode_aux
-          (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
-          a " , ";
-          encode_aux 
-            (Array.unsafe_get content i)
-            buf
-        done;    
-        a " ]"
-    end
+  | Str {str= s} -> a (quot s)
+  | Flo {flo= s} ->
+      a s
+      (* since our parsing keep the original float representation, we just dump
+         it as is, there is no cases like [nan] *)
+  | Arr {content} -> (
+    match content with
+    | [||] -> a "[]"
+    | _ ->
+        a "[ " ;
+        encode_aux (Array.unsafe_get content 0) buf ;
+        for i = 1 to Array.length content - 1 do
+          a " , " ;
+          encode_aux (Array.unsafe_get content i) buf
+        done ;
+        a " ]" )
   | True _ -> a "true"
   | False _ -> a "false"
-  | Obj {map} -> 
-    if String_map.is_empty map then 
-      a "{}"
-    else 
-      begin  
-        (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
-        a "{ ";
-        let _ : int =  String_map.fold map 0  (fun  k v i -> 
-            if i <> 0 then begin
-              a " , " 
-            end; 
-            a (quot k);
-            a " : ";
-            encode_aux v buf ;
-            i + 1 
-          ) in 
-          a " }"
-      end
+  | Obj {map} ->
+      if String_map.is_empty map then a "{}"
+      else (
+        (*prerr_endline "WEIRD"; prerr_endline (string_of_int @@
+          String_map.cardinal map ); *)
+        a "{ " ;
+        let (_ : int) =
+          String_map.fold map 0 (fun k v i ->
+              if i <> 0 then a " , " ;
+              a (quot k) ;
+              a " : " ;
+              encode_aux v buf ;
+              i + 1) in
+        a " }" )
 
+let to_string (x : Ext_json_types.t) =
+  let buf = Buffer.create 1024 in
+  encode_aux x buf ; Buffer.contents buf
 
-let to_string (x : Ext_json_types.t) = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.contents buf 
-
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.output_buffer oc buf 
+let to_channel (oc : out_channel) x =
+  let buf = Buffer.create 1024 in
+  encode_aux x buf ;
+  Buffer.output_buffer oc buf

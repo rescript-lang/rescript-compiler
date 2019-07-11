@@ -1,5 +1,3 @@
-
-# 2 "others/hashset.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,50 +22,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module is {!Belt.HashSet} specialized with key type to be a primitive type.
+(** This module is {!Belt.HashSet} specialized with key type to be a primitive
+    type.
 
-    It is more efficient in general, the  API is the same with {!Belt.HashSet} except its key type is fixed,
-    and identity is not needed(using the built-in one)
+    It is more efficient in general, the API is the same with {!Belt.HashSet}
+    except its key type is fixed, and identity is not needed(using the built-in
+    one)
 
-    {b See} {!Belt.HashSet}
-*)
+    {b See} {!Belt.HashSet} *)
 
-
-# 38 "others/hashset.cppo.mli"
 type key = int
-
-
-# 44 "others/hashset.cppo.mli"
 type t
 
-val make: hintSize:int -> t 
-
-val clear: t -> unit
-
-val isEmpty: t -> bool
-  
-val add:  t -> key -> unit
-
-val copy: t -> t
-  
-val has: t -> key -> bool
-  
-val remove: t -> key -> unit
-
-val forEachU: t -> (key  -> unit [@bs]) ->  unit
-val forEach: t -> (key  -> unit) ->  unit
-  
-val reduceU: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
-val reduce: t -> 'c -> ( 'c -> key -> 'c) ->   'c
-  
-val size: t -> int  
-
-val logStats: t -> unit
-
-val toArray: t -> key array 
-
-val fromArray: key array -> t 
-
-val mergeMany: t -> key array -> unit
-
-val getBucketHistogram: t -> int array
+val make : hintSize:int -> t
+val clear : t -> unit
+val isEmpty : t -> bool
+val add : t -> key -> unit
+val copy : t -> t
+val has : t -> key -> bool
+val remove : t -> key -> unit
+val forEachU : t -> ((key -> unit)[@bs]) -> unit
+val forEach : t -> (key -> unit) -> unit
+val reduceU : t -> 'c -> (('c -> key -> 'c)[@bs]) -> 'c
+val reduce : t -> 'c -> ('c -> key -> 'c) -> 'c
+val size : t -> int
+val logStats : t -> unit
+val toArray : t -> key array
+val fromArray : key array -> t
+val mergeMany : t -> key array -> unit
+val getBucketHistogram : t -> int array

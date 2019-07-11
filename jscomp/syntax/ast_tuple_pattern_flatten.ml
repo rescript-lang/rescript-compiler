@@ -23,71 +23,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type loc = Location.t
-
 type exp = Parsetree.expression
-
 type pat = Parsetree.pattern
-
-
 
 let rec is_simple_pattern (p : Parsetree.pattern) =
   match p.ppat_desc with
   | Ppat_any -> true
   | Ppat_var _ -> true
-  | Ppat_constraint(p,_) -> is_simple_pattern p
+  | Ppat_constraint (p, _) -> is_simple_pattern p
   | _ -> false
 
-
-(*
-  [let (a,b) = M.N.(c,d) ]
-  =>
-  [ let a = M.N.c
-    and b = M.N.d ]
-*)
-let flattern_tuple_pattern_vb
-    (self : Bs_ast_mapper.mapper)
-    (vb :  Parsetree.value_binding)
-    (acc : Parsetree.value_binding list) 
-  : Parsetree.value_binding list =
+(* [let (a,b) = M.N.(c,d) ] => [ let a = M.N.c and b = M.N.d ] *)
+let flattern_tuple_pattern_vb (self : Bs_ast_mapper.mapper)
+    (vb : Parsetree.value_binding) (acc : Parsetree.value_binding list) :
+    Parsetree.value_binding list =
   let pvb_pat = self.pat self vb.pvb_pat in
   let pvb_expr = self.expr self vb.pvb_expr in
   let pvb_attributes = self.attributes self vb.pvb_attributes in
   match pvb_pat.ppat_desc with
-  | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
-    begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
-      | Some (wholes, es, tuple_attributes)
-        when
-          Ext_list.for_all xs is_simple_pattern &&
-          Ext_list.same_length es xs
-        ->
-        Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
-        Ext_list.fold_right2 xs es acc (fun pat exp acc->
-            {
-              pvb_pat =
-                pat;
-              pvb_expr =                 
-                Ast_open_cxt.restore_exp  exp wholes ;
-              pvb_attributes;
-              pvb_loc = vb.pvb_loc ;
-            } :: acc
-          ) 
-      | _ ->
-        {pvb_pat ;
-         pvb_expr ;
-         pvb_loc = vb.pvb_loc;
-         pvb_attributes} :: acc
-    end
-  | _ ->
-    {pvb_pat ;
-     pvb_expr ;
-     pvb_loc = vb.pvb_loc ;
-     pvb_attributes} :: acc
+  | Ppat_tuple xs when List.for_all is_simple_pattern xs -> (
+    match Ast_open_cxt.destruct_open_tuple pvb_expr [] with
+    | Some (wholes, es, tuple_attributes)
+      when Ext_list.for_all xs is_simple_pattern && Ext_list.same_length es xs
+      ->
+        Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ;
+        (* will be dropped*)
+        Ext_list.fold_right2 xs es acc (fun pat exp acc ->
+            { pvb_pat= pat
+            ; pvb_expr= Ast_open_cxt.restore_exp exp wholes
+            ; pvb_attributes
+            ; pvb_loc= vb.pvb_loc }
+            :: acc)
+    | _ -> {pvb_pat; pvb_expr; pvb_loc= vb.pvb_loc; pvb_attributes} :: acc )
+  | _ -> {pvb_pat; pvb_expr; pvb_loc= vb.pvb_loc; pvb_attributes} :: acc
 
-
-let value_bindings_mapper 
-    (self : Bs_ast_mapper.mapper) 
+let value_bindings_mapper (self : Bs_ast_mapper.mapper)
     (vbs : Parsetree.value_binding list) =
-  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+  (* Bs_ast_mapper.default_mapper.value_bindings self vbs *)
   Ext_list.fold_right vbs [] (fun vb acc ->
-      flattern_tuple_pattern_vb self vb acc
-    ) 
+      flattern_tuple_pattern_vb self vb acc)

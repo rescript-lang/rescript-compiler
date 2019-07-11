@@ -22,27 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Some basic utilties around {!Js_op} module *)
 
 val op_prec : Js_op.binop -> int * int * int
-
 val op_str : Js_op.binop -> string
-
 val op_int_prec : Js_op.int_op -> int * int * int
-
 val op_int_str : Js_op.int_op -> string
-
 val str_of_used_stats : Js_op.used_stats -> string
-
 val update_used_stats : J.ident_info -> Js_op.used_stats -> unit
-
 val same_vident : J.vident -> J.vident -> bool
-
-val of_lam_mutable_flag : Asttypes.mutable_flag -> Js_op.mutable_flag 
+val of_lam_mutable_flag : Asttypes.mutable_flag -> Js_op.mutable_flag

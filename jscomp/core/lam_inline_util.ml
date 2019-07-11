@@ -22,24 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* TODO: add a context, like [args] [Lfunction(params,body)] *)
 
+let maybe_functor (name : string) = name.[0] >= 'A' && name.[0] <= 'Z'
 
-
-
-
-
-(* TODO: add a context, like 
-    [args]
-    [Lfunction(params,body)]
- *)
-
-
-let maybe_functor (name : string) = 
-  name.[0] >= 'A' && name.[0] <= 'Z'
-
-
-let should_be_functor (name : string) (lam : Lam.t) = 
-  maybe_functor name  &&
-  (match lam with Lfunction _ -> true | _ -> false)
-
-
+let should_be_functor (name : string) (lam : Lam.t) =
+  maybe_functor name && match lam with Lfunction _ -> true | _ -> false

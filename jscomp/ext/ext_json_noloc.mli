@@ -22,19 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t
 
-type t 
-
-val true_  : t 
-val false_ : t 
-val null : t 
-val str : string -> t 
-val flo : string -> t 
-val arr : t array -> t 
-val obj : t String_map.t -> t 
-val kvs : (string * t) list -> t 
-val equal : t -> t -> bool 
-val to_string : t -> string 
-
-
+val true_ : t
+val false_ : t
+val null : t
+val str : string -> t
+val flo : string -> t
+val arr : t array -> t
+val obj : t String_map.t -> t
+val kvs : (string * t) list -> t
+val equal : t -> t -> bool
+val to_string : t -> string
 val to_channel : out_channel -> t -> unit

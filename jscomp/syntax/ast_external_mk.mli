@@ -22,44 +22,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(**
-  [local_module loc ~pval_prim ~pval_type args]
-  generate such code 
-  {[
+val local_external_apply :
+     Location.t
+  -> ?pval_attributes:Parsetree.attributes
+  -> pval_prim:string list
+  -> pval_type:Parsetree.core_type
+  -> ?local_module_name:string
+  -> ?local_fun_name:string
+  -> Parsetree.expression list
+  -> Parsetree.expression_desc
+(** [local_module loc ~pval_prim ~pval_type args] generate such code
+    {[
     let module J = struct 
        external unsafe_expr : pval_type = pval_prim 
     end in 
     J.unssafe_expr args
-  ]}
-*)
-val local_external_apply :
-   Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  Parsetree.expression list -> 
-  Parsetree.expression_desc
-
+    ]} *)
 
 val local_external_obj :
-   Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (string * Parsetree.expression) list ->  (* [ (label, exp )]*)  
-  Parsetree.expression_desc
+     Location.t
+  -> ?pval_attributes:Parsetree.attributes
+  -> pval_prim:string list
+  -> pval_type:Parsetree.core_type
+  -> ?local_module_name:string
+  -> ?local_fun_name:string
+  -> (string * Parsetree.expression) list
+  -> (* [ (label, exp )]*)
+     Parsetree.expression_desc
 
-
-
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
+val local_extern_cont :
+     Location.t
+  -> ?pval_attributes:Parsetree.attributes
+  -> pval_prim:string list
+  -> pval_type:Parsetree.core_type
+  -> ?local_module_name:string
+  -> ?local_fun_name:string
+  -> (Parsetree.expression -> Parsetree.expression)
+  -> Parsetree.expression_desc

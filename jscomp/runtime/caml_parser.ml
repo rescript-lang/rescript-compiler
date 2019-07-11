@@ -1,5 +1,3 @@
-
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,13 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-(** *)
+(**  *)
 
 [@@@ocaml.warning "-22"]
 
-[%%bs.raw{|
+[%%bs.raw
+{|
 
 /***********************************************************************/
 /*                                                                     */
@@ -96,67 +93,45 @@ var Result = {
 var PARSER_TRACE = false;
 |}]
 
-(**
- * external parse_engine : parse_tables -> parser_env -> parser_input -> Caml_obj_extern.t -> parser_output
- * parsing.ml
- *
- * type parse_tables = {
- *   actions : (parser_env -> Caml_obj_extern.t) array
- *   transl_const : int array;
- *   transl_block : int array;
- *   lhs : string;
- *   len : string;
- *   defred : string;
- *   dgoto : string;
- *   sindex : string;
- *   rindex : string;
- *   gindex : string;
- *   tablesize : int;
- *   table : string;
- *   check : string;
- *   error_function : string -> unit;
- *   names_const : string;
- *   names_block : string
- * }
- *
- * type parser_env =
- * { mutable s_stack : int array;        (* States *)
- *  mutable v_stack : Caml_obj_extern.t array;      (* Semantic attributes *)
- *  mutable symb_start_stack : position array; (* Start positions *)
- *  mutable symb_end_stack : position array;   (* End positions *)
- *  mutable stacksize : int;            (* Size of the stacks *)
- *  mutable stackbase : int;            (* Base sp for current parse *)
- *  mutable curr_char : int;            (* Last token read *)
- *  mutable lval : Caml_obj_extern.t;               (* Its semantic attribute *)
- *  mutable symb_start : position;      (* Start pos. of the current symbol*)
- *  mutable symb_end : position;        (* End pos. of the current symbol *)
- *  mutable asp : int;                  (* The stack pointer for attributes *)
- *  mutable rule_len : int;             (* Number of rhs items in the rule *)
- *  mutable rule_number : int;          (* Rule number to reduce by *)
- *  mutable sp : int;                   (* Saved sp for parse_engine *)
- *  mutable state : int;                (* Saved state for parse_engine *)
- *  mutable errflag : int }             (* Saved error flag for parse_engine *)
- *
- *  type parser_input =
- *   | Start
- *   | Token_read
- *   | Stacks_grown_1
- *   | Stacks_grown_2
- *   | Semantic_action_computed
- *   | Error_detected
+(** * external parse_engine : parse_tables -> parser_env -> parser_input ->
+    Caml_obj_extern.t -> parser_output * parsing.ml * * type parse_tables = { *
+    actions : (parser_env -> Caml_obj_extern.t) array * transl_const : int
+    array; * transl_block : int array; * lhs : string; * len : string; * defred
+    : string; * dgoto : string; * sindex : string; * rindex : string; * gindex
+    : string; * tablesize : int; * table : string; * check : string; *
+    error_function : string -> unit; * names_const : string; * names_block :
+    string * } * * type parser_env = * { mutable s_stack : int array; (* States
+    *) * mutable v_stack : Caml_obj_extern.t array; (* Semantic attributes *) *
+    mutable symb_start_stack : position array; (* Start positions *) * mutable
+    symb_end_stack : position array; (* End positions *) * mutable stacksize :
+    int; (* Size of the stacks *) * mutable stackbase : int; (* Base sp for
+    current parse *) * mutable curr_char : int; (* Last token read *) * mutable
+    lval : Caml_obj_extern.t; (* Its semantic attribute *) * mutable symb_start
+    : position; (* Start pos. of the current symbol*) * mutable symb_end :
+    position; (* End pos. of the current symbol *) * mutable asp : int; (* The
+    stack pointer for attributes *) * mutable rule_len : int; (* Number of rhs
+    items in the rule *) * mutable rule_number : int; (* Rule number to reduce
+    by *) * mutable sp : int; (* Saved sp for parse_engine *) * mutable state :
+    int; (* Saved state for parse_engine *) * mutable errflag : int } (* Saved
+    error flag for parse_engine *) * * type parser_input = * | Start * |
+    Token_read * | Stacks_grown_1 * | Stacks_grown_2 * |
+    Semantic_action_computed * | Error_detected
 
- * @param tables
- * @param env
- * @param cmd
- * @param arg
- * @returns {number}
- *)
+    * @param tables * @param env * @param cmd * @param arg * @returns {number} *)
 
-type parse_tables 
-type parser_env 
+type parse_tables
+type parser_env
 
-
-let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Caml_obj_extern.t -> Caml_obj_extern.t -> Caml_obj_extern.t = fun%raw tables (* parser_table *) env (* parser_env *) cmd (* parser_input*) arg (* Caml_obj_extern.t*) -> {|
+let caml_parse_engine :
+       parse_tables
+    -> parser_env
+    -> (*Parsing.parser_input *) Caml_obj_extern.t
+    -> Caml_obj_extern.t
+    -> Caml_obj_extern.t =
+  [%raw
+    fun tables (* parser_table *) env (* parser_env *) cmd
+        (* parser_input*) arg (* Caml_obj_extern.t*) ->
+      {|
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -378,17 +353,15 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)C
     env[env_state] = state;
     env[env_errflag] = errflag;
     return res;
-|} 
+|}]
 
-
-(**
- * external set_trace: bool -> bool = "caml_set_parser_trace"
- * parsing.ml
- * @param {boolean}
- * @returns {boolean}
- *)
-let caml_set_parser_trace : bool -> bool = fun%raw v ->  {|
+(** * external set_trace: bool -> bool = "caml_set_parser_trace" * parsing.ml *
+    @param {boolean} * @returns {boolean} *)
+let caml_set_parser_trace : bool -> bool =
+  [%raw
+    fun v ->
+      {|
     var old = PARSER_TRACE;
     PARSER_TRACE = v;
     return old;
-|}
+|}]

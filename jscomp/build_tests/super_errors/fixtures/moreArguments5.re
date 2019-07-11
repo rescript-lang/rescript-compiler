@@ -1,4 +1,4 @@
-let module Sub = {
+module Sub = {
   type a = {a: int};
 };
 let x = (a, b, c, d) => {Sub.a: 2};

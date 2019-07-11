@@ -22,22 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** A pass converting nested js statement into a flatten visual appearance
 
+    Note this module is used to convert some nested expressions to flat
+    statements, in general, it's more human readable, and since it generate
+    flat statements, we can spot some inline opportunities for the produced
+    statemetns, (inline) expressions inside a nested expression would generate
+    ugly code.
 
-
-
-
-
-
-(** A pass converting nested js statement into a flatten visual appearance 
-
-    Note this module is used to convert some nested expressions to flat statements, 
-    in general, it's more human readable, and since it generate flat statements, we can spot
-    some inline opportunities for the produced statemetns, 
-    (inline) expressions inside a nested expression would generate ugly code.
-
-    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!Js_helper}, 
-    it  tries to spit out expression istead of statements if it can
-*)
+    Since we are aiming to flatten expressions, we should avoid some smart
+    constructors in {!Js_helper}, it tries to spit out expression istead of
+    statements if it can *)
 
 val program : J.program -> J.program

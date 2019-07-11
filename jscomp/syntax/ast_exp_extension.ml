@@ -23,264 +23,212 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Ast_helper
 
-
-let rec unroll_function_aux 
-  (acc : string list)
-  (body : Parsetree.expression) : string list * string =
+let rec unroll_function_aux (acc : string list) (body : Parsetree.expression) :
+    string list * string =
   match body.pexp_desc with
-  | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then 
-    Pconst_string
-#else    
-    Const_string
-#end    
-    (block,_)) -> acc, block
-  | Pexp_fun(arg_label,_,pat,cont)
-    when Ast_compatible.is_arg_label_simple arg_label -> 
-    (match pat.ppat_desc with 
-    | Ppat_var s -> 
-      unroll_function_aux (s.txt::acc) cont
-    | Ppat_any -> 
-      unroll_function_aux ("_"::acc) cont
-    | Ppat_constraint _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "type annotation around bs.raw arguments is invalid, please put in this form: let f : t1 -> t2 = fun%%raw param1 param2 -> .."
-    | _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "bs.raw can only be applied to a string or a special function form "
+  | Pexp_constant (Pconst_string (block, _)) -> (acc, block)
+  | Pexp_fun (arg_label, _, pat, cont)
+    when Ast_compatible.is_arg_label_simple arg_label -> (
+    match pat.ppat_desc with
+    | Ppat_var s -> unroll_function_aux (s.txt :: acc) cont
+    | Ppat_any -> unroll_function_aux ("_" :: acc) cont
+    | Ppat_constraint _ ->
+        Location.raise_errorf ~loc:body.pexp_loc
+          "type annotation around bs.raw arguments is invalid, please put in \
+           this form: let f : t1 -> t2 = fun%%raw param1 param2 -> .."
+    | _ ->
+        Location.raise_errorf ~loc:body.pexp_loc
+          "bs.raw can only be applied to a string or a special function form "
     )
-  | _ -> 
-    Location.raise_errorf ~loc:body.pexp_loc  
-    "bs.raw can only be applied to a string or a special function form "
+  | _ ->
+      Location.raise_errorf ~loc:body.pexp_loc
+        "bs.raw can only be applied to a string or a special function form "
 
-type t = { args : string list ; block :  string }
+type t = {args: string list; block: string}
 
-let toString (x : t) = 
-  Bs_version.version ^ Marshal.to_string x []
+let toString (x : t) = Bs_version.version ^ Marshal.to_string x []
 
 (* exception handling*)
-let fromString (x : string) : t = 
-  if Ext_string.starts_with x Bs_version.version then 
+let fromString (x : string) : t =
+  if Ext_string.starts_with x Bs_version.version then
     Marshal.from_string x (String.length Bs_version.version)
-  else 
-     Ext_pervasives.failwithf
-        ~loc:__LOC__
-        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
+  else
+    Ext_pervasives.failwithf ~loc:__LOC__
+      "Compiler version mismatch. The project might have been built with one \
+       version of BuckleScript, and then with another. Please wipe the \
+       artifacts and do a clean build."
 
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
-    (({txt ; loc} as lid , payload) : Parsetree.extension) = 
-  begin match txt with
-    | "bs.raw" | "raw" -> 
-      begin match payload with 
-      | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(arg_label,_,pat,body)},_)}]
-        when Ast_compatible.is_arg_label_simple arg_label
-         -> 
-         begin match pat.ppat_desc, body.pexp_desc with 
-         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then
-          Pconst_string
-#else          
-           Const_string
-#end           
-           (block,_))
-           -> 
-            Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
-            (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
-         | ppat_desc, _ -> 
-            let txt = 
-              match ppat_desc with 
-              | Ppat_var {txt} -> txt 
-              | Ppat_any -> "_"
-              | _ -> 
-                Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
-            in 
-            let acc, block = unroll_function_aux [txt] body in 
-            Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
-              (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
-         end 
-      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
-      end
-    | "bs.re" | "re" ->
+    ((({txt; loc} as lid), payload) : Parsetree.extension) =
+  match txt with
+  | "bs.raw" | "raw" -> (
+    match payload with
+    | PStr
+        [ { pstr_desc=
+              Pstr_eval ({pexp_desc= Pexp_fun (arg_label, _, pat, body)}, _) }
+        ]
+      when Ast_compatible.is_arg_label_simple arg_label -> (
+      match (pat.ppat_desc, body.pexp_desc) with
+      | ( Ppat_construct ({txt= Lident "()"}, None)
+        , Pexp_constant (Pconst_string (block, _)) ) ->
+          Ast_compatible.app1 ~loc
+            (Exp.ident ~loc
+               { txt= Ldot (Ast_literal.Lid.js_internal, Literals.raw_function)
+               ; loc })
+            (Ast_compatible.const_exp_string ~loc (toString {args= []; block}))
+      | ppat_desc, _ ->
+          let txt =
+            match ppat_desc with
+            | Ppat_var {txt} -> txt
+            | Ppat_any -> "_"
+            | _ ->
+                Location.raise_errorf ~loc
+                  "bs.raw can only be applied to a string or a special \
+                   function form " in
+          let acc, block = unroll_function_aux [txt] body in
+          Ast_compatible.app1 ~loc
+            (Exp.ident ~loc
+               { txt= Ldot (Ast_literal.Lid.js_internal, Literals.raw_function)
+               ; loc })
+            (Ast_compatible.const_exp_string ~loc
+               (toString {args= List.rev acc; block})) )
+    | _ -> Ast_util.handle_raw ~check_js_regex:false loc payload )
+  | "bs.re" | "re" ->
       Exp.constraint_ ~loc
         (Ast_util.handle_raw ~check_js_regex:true loc payload)
         (Ast_comb.to_js_re_type loc)
-    | "bs.external" | "external" ->
-      begin match Ast_payload.as_ident payload with 
-        | Some {txt = Lident x}
-          -> Ast_util.handle_external loc x
-        (* do we need support [%external gg.xx ] 
+  | "bs.external" | "external" -> (
+    match Ast_payload.as_ident payload with
+    | Some {txt= Lident x} -> Ast_util.handle_external loc x
+    (* do we need support [%external gg.xx ]
 
-           {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-        *)
-
-        | None | Some _ -> 
-          Location.raise_errorf ~loc 
-            "external expects a single identifier"
-      end
-    | "bs.time"| "time" ->
-      (
-        match payload with 
-        | PStr [{pstr_desc = Pstr_eval (e,_)}] -> 
-          let locString = 
-            if loc.loc_ghost then 
-              "GHOST LOC"
-            else 
-              let loc_start = loc.loc_start in 
-              let (file, lnum, __) = Location.get_pos_info loc_start in                  
-              Printf.sprintf "%s %d"
-                file lnum in   
-          let e = self.expr self e in 
-          Exp.sequence ~loc
-            (Ast_compatible.app1 ~loc     
-               (Exp.ident ~loc {loc; 
-                                txt = 
-                                  Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
-                               })
-               (Ast_compatible.const_exp_string ~loc locString)
-            )     
-            ( Exp.let_ ~loc Nonrecursive
-                [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
-                ]
-                (Exp.sequence ~loc
-                   (Ast_compatible.app1 ~loc     
-                      (Exp.ident ~loc {loc; 
-                                       txt = 
-                                         Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
-                                      })
-                      (Ast_compatible.const_exp_string ~loc locString)
-                   )    
-                   (Exp.ident ~loc {loc; txt = Lident "timed"})
-                )
-            )
-        | _ -> 
-          Location.raise_errorf 
-            ~loc "expect a boolean expression in the payload"
-      )
-    | "bs.assert" | "assert" ->
-      (
-        match payload with 
-        | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
-
-          let locString = 
-            if loc.loc_ghost then 
-              "ASSERT FAILURE"
-            else 
-              let loc_start = loc.loc_start in 
-              let (file, lnum, cnum) = Location.get_pos_info loc_start in
-              let file = Filename.basename file in 
-              let enum = 
-                loc.Location.loc_end.Lexing.pos_cnum -
-                loc_start.Lexing.pos_cnum + cnum in
-              Printf.sprintf "File %S, line %d, characters %d-%d"
-                file lnum cnum enum in   
-          let raiseWithString  locString =      
-              Ast_compatible.app1 ~loc 
-               (Exp.ident ~loc {loc; txt = 
-                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
-                (Ast_compatible.const_exp_string locString)               
-          in 
-          (match e.pexp_desc with
-           | Pexp_construct({txt = Lident "false"},None) -> 
-             (* The backend will convert [assert false] into a nop later *)
-             if !Clflags.no_assert_false  then 
-               Exp.assert_ ~loc 
-                 (Exp.construct ~loc {txt = Lident "false";loc} None)
-             else 
-               (raiseWithString locString)
-           | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then 
-    Pconst_string
-#else    
-    Const_string
-#end              
-              (r, _)) -> 
-             if !Clflags.noassert then 
-               Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
-               (* Need special handling to make it type check*)
-             else   
-               raiseWithString r
-           | _ ->    
-             let e = self.expr self  e in 
-             if !Clflags.noassert then 
-               (* pass down so that it still type check, but the backend will
-                  make it a nop
-               *)
-               Exp.assert_ ~loc e
-             else 
-               Exp.ifthenelse ~loc
-                 (Ast_compatible.app1 ~loc
-                    (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                    e
-                 )
-                 (raiseWithString locString)
-                 None
-          )
-        | _ -> 
-          Location.raise_errorf 
-            ~loc "expect a boolean expression in the payload"
-      )
-    | "bs.node" | "node" ->
-      let strip s =
-        match s with 
-        | "_module" -> "module" 
-        | x -> x  in 
-      begin match Ast_payload.as_ident payload with
-        | Some {txt = Lident
-                    ( "__filename"
-                    | "__dirname"
-                    | "_module"
-                    | "require" as name); loc}
-          ->
-          let exp =
-            Ast_util.handle_external loc (strip name)  in
+       {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else
+       Js.Undefined.empty ) ]} *)
+    | None | Some _ ->
+        Location.raise_errorf ~loc "external expects a single identifier" )
+  | "bs.time" | "time" -> (
+    match payload with
+    | PStr [{pstr_desc= Pstr_eval (e, _)}] ->
+        let locString =
+          if loc.loc_ghost then "GHOST LOC"
+          else
+            let loc_start = loc.loc_start in
+            let file, lnum, __ = Location.get_pos_info loc_start in
+            Printf.sprintf "%s %d" file lnum in
+        let e = self.expr self e in
+        Exp.sequence ~loc
+          (Ast_compatible.app1 ~loc
+             (Exp.ident ~loc
+                {loc; txt= Ldot (Ldot (Lident "Js", "Console"), "timeStart")})
+             (Ast_compatible.const_exp_string ~loc locString))
+          (Exp.let_ ~loc Nonrecursive
+             [Vb.mk ~loc (Pat.var ~loc {loc; txt= "timed"}) e]
+             (Exp.sequence ~loc
+                (Ast_compatible.app1 ~loc
+                   (Exp.ident ~loc
+                      { loc
+                      ; txt= Ldot (Ldot (Lident "Js", "Console"), "timeEnd") })
+                   (Ast_compatible.const_exp_string ~loc locString))
+                (Exp.ident ~loc {loc; txt= Lident "timed"})))
+    | _ ->
+        Location.raise_errorf ~loc "expect a boolean expression in the payload"
+    )
+  | "bs.assert" | "assert" -> (
+    match payload with
+    | PStr [{pstr_desc= Pstr_eval (e, _)}] -> (
+        let locString =
+          if loc.loc_ghost then "ASSERT FAILURE"
+          else
+            let loc_start = loc.loc_start in
+            let file, lnum, cnum = Location.get_pos_info loc_start in
+            let file = Filename.basename file in
+            let enum =
+              loc.Location.loc_end.Lexing.pos_cnum - loc_start.Lexing.pos_cnum
+              + cnum in
+            Printf.sprintf "File %S, line %d, characters %d-%d" file lnum cnum
+              enum in
+        let raiseWithString locString =
+          Ast_compatible.app1 ~loc
+            (Exp.ident ~loc
+               {loc; txt= Ldot (Ldot (Lident "Js", "Exn"), "raiseError")})
+            (Ast_compatible.const_exp_string locString) in
+        match e.pexp_desc with
+        | Pexp_construct ({txt= Lident "false"}, None) ->
+            (* The backend will convert [assert false] into a nop later *)
+            if !Clflags.no_assert_false then
+              Exp.assert_ ~loc
+                (Exp.construct ~loc {txt= Lident "false"; loc} None)
+            else raiseWithString locString
+        | Pexp_constant (Pconst_string (r, _)) ->
+            if !Clflags.noassert then
+              Exp.assert_ ~loc
+                (Exp.construct ~loc {txt= Lident "true"; loc} None)
+              (* Need special handling to make it type check*)
+            else raiseWithString r
+        | _ ->
+            let e = self.expr self e in
+            if !Clflags.noassert then
+              (* pass down so that it still type check, but the backend will
+                 make it a nop *)
+              Exp.assert_ ~loc e
+            else
+              Exp.ifthenelse ~loc
+                (Ast_compatible.app1 ~loc
+                   (Exp.ident {loc; txt= Ldot (Lident "Pervasives", "not")})
+                   e)
+                (raiseWithString locString)
+                None )
+    | _ ->
+        Location.raise_errorf ~loc "expect a boolean expression in the payload"
+    )
+  | "bs.node" | "node" -> (
+      let strip s = match s with "_module" -> "module" | x -> x in
+      match Ast_payload.as_ident payload with
+      | Some
+          { txt=
+              Lident
+                (("__filename" | "__dirname" | "_module" | "require") as name)
+          ; loc } ->
+          let exp = Ast_util.handle_external loc (strip name) in
           let typ =
-            Ast_core_type.lift_option_type  
-            @@                 
+            Ast_core_type.lift_option_type
+            @@
             if name = "_module" then
               Typ.constr ~loc
-                { txt = Ldot (Lident "Node", "node_module") ;
-                  loc} []   
+                {txt= Ldot (Lident "Node", "node_module"); loc}
+                []
             else if name = "require" then
-              (Typ.constr ~loc
-                 { txt = Ldot (Lident "Node", "node_require") ;
-                   loc} [] )  
-            else
-              Ast_literal.type_string ~loc () in                  
-          Exp.constraint_ ~loc exp typ                
-        | Some _ | None ->
-          begin match payload with 
-            | PTyp _ -> 
-              Location.raise_errorf 
-                ~loc "Illegal payload, expect an expression payload instead of type payload"              
-            | PPat _ ->
-              Location.raise_errorf 
-                ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
-            | _ -> 
-              Location.raise_errorf 
-                ~loc "Illegal payload"
-          end
-
-      end             
-    | "bs.debugger"|"debugger" ->
-      {e with pexp_desc = Ast_util.handle_debugger loc payload}
-    | "bs.obj" | "obj" ->
-      begin match payload with 
-        | PStr [{pstr_desc = Pstr_eval (e,_)}]
-          -> 
-          Ext_ref.non_exn_protect record_as_js_object true
-            (fun () -> self.expr self e ) 
-        | _ -> Location.raise_errorf ~loc "Expect an expression here"
-      end
-    | _ ->
-      match payload with
-      | PTyp typ when Ext_string.starts_with txt Literals.bs_deriving_dot ->
+              Typ.constr ~loc
+                {txt= Ldot (Lident "Node", "node_require"); loc}
+                []
+            else Ast_literal.type_string ~loc () in
+          Exp.constraint_ ~loc exp typ
+      | Some _ | None -> (
+        match payload with
+        | PTyp _ ->
+            Location.raise_errorf ~loc
+              "Illegal payload, expect an expression payload instead of type \
+               payload"
+        | PPat _ ->
+            Location.raise_errorf ~loc
+              "Illegal payload, expect an expression payload instead of \
+               pattern  payload"
+        | _ -> Location.raise_errorf ~loc "Illegal payload" ) )
+  | "bs.debugger" | "debugger" ->
+      {e with pexp_desc= Ast_util.handle_debugger loc payload}
+  | "bs.obj" | "obj" -> (
+    match payload with
+    | PStr [{pstr_desc= Pstr_eval (e, _)}] ->
+        Ext_ref.non_exn_protect record_as_js_object true (fun () ->
+            self.expr self e)
+    | _ -> Location.raise_errorf ~loc "Expect an expression here" )
+  | _ -> (
+    match payload with
+    | PTyp typ when Ext_string.starts_with txt Literals.bs_deriving_dot ->
         self.expr self (Ast_derive.gen_expression lid typ)
-      | _ ->  
-        e (* For an unknown extension, we don't really need to process further*)
-        (* Exp.extension ~loc ~attrs:e.pexp_attributes (
-            self.extension self extension) *)
-        (* Bs_ast_mapper.default_mapper.expr self e   *)
-  end 
+    | _ ->
+        e
+        (* For an unknown extension, we don't really need to process further*)
+        (* Exp.extension ~loc ~attrs:e.pexp_attributes ( self.extension self
+           extension) *)
+        (* Bs_ast_mapper.default_mapper.expr self e *) )

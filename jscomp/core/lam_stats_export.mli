@@ -22,19 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val get_dependent_module_effect :
+  Lam_stats.t -> string option -> Lam_module_ident.t list -> string option
 
-
-
-val get_dependent_module_effect:
-  Lam_stats.t -> 
-  string option ->
-  Lam_module_ident.t list ->
-  string option
-
-val export_to_cmj : 
-  Lam_stats.t ->
-  Js_cmj_format.effect ->
-  Lam.t Ident_map.t ->
-  Js_cmj_format.cmj_case ->
-  Js_cmj_format.t
-
+val export_to_cmj :
+     Lam_stats.t
+  -> Js_cmj_format.effect
+  -> Lam.t Ident_map.t
+  -> Js_cmj_format.cmj_case
+  -> Js_cmj_format.t

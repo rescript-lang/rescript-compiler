@@ -22,21 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 val caml_sys_getenv : string -> string
-
-val caml_sys_time : unit -> float 
-
-val  caml_sys_random_seed : unit -> nativeint array
-
+val caml_sys_time : unit -> float
+val caml_sys_random_seed : unit -> nativeint array
 val caml_sys_system_command : string -> int
-
-val caml_sys_getcwd : unit -> string 
-
+val caml_sys_getcwd : unit -> string
 val caml_sys_get_argv : unit -> string * string array
-
-val caml_sys_exit : int -> unit 
-
-val caml_sys_is_directory : string -> bool 
-val caml_sys_file_exists : string -> bool 
+val caml_sys_exit : int -> unit
+val caml_sys_is_directory : string -> bool
+val caml_sys_file_exists : string -> bool

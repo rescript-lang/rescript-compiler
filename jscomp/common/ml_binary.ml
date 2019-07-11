@@ -22,30 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type _ kind = Ml : Parsetree.structure kind | Mli : Parsetree.signature kind
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind
-
-(** [read_ast kind ic] assume [ic] channel is 
-    in the right position *)
-let read_ast (type t ) (kind : t  kind) ic : t  =
+(** [read_ast kind ic] assume [ic] channel is in the right position *)
+let read_ast (type t) (kind : t kind) ic : t =
   let magic =
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in 
-  let buffer = really_input_string ic (String.length magic) in
-  assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.input_name := input_value ic;
-  input_value ic 
-
-let write_ast (type t) (kind : t kind) 
-    (fname : string)
-    (pt : t) oc = 
-  let magic = 
-    match kind with 
+    match kind with
     | Ml -> Config.ast_impl_magic_number
     | Mli -> Config.ast_intf_magic_number in
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt
+  let buffer = really_input_string ic (String.length magic) in
+  assert (buffer = magic) ;
+  (* already checked by apply_rewriter *)
+  Location.input_name := input_value ic ;
+  input_value ic
+
+let write_ast (type t) (kind : t kind) (fname : string) (pt : t) oc =
+  let magic =
+    match kind with
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in
+  output_string oc magic ; output_value oc fname ; output_value oc pt

@@ -22,21 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Primitive compilation *)
 
+(* The entry point of compile primitives Note it will call
+   {!Lam_compile_external_call.translate} for c stubs compilation *)
 
-
-
-
-
-
-(** Primitive compilation  *) 
-
-(* The entry point of compile primitives
-   Note it will call {!Lam_compile_external_call.translate} for c stubs compilation
-*)
-
-val translate : 
-  Location.t -> 
-  Lam_compile_context.t  ->
-  Lam_primitive.t ->
-  J.expression list -> J.expression
+val translate :
+     Location.t
+  -> Lam_compile_context.t
+  -> Lam_primitive.t
+  -> J.expression list
+  -> J.expression

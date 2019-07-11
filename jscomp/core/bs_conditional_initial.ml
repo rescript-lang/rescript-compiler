@@ -22,27 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let setup_env () =
-#if undefined BS_RELEASE_BUILD then
-    (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 
-     | None -> 
-       Js_config.set_debug_file "caml_obj.ml"
-     | Some s -> 
-       Js_config.set_debug_file s 
-    );
-    (if Ext_sys.getenv_opt "BS_DEBUG_CHROME" <> None then 
-      Js_config.debug := true);
-#end
-  Lexer.replace_directive_bool "BS" true;
-  Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
-#if false then
-  ; Switch.cut := 100 (* tweakable but not very useful *)
-#end  
+  ( match Ext_sys.getenv_opt "BS_DEBUG_FILE" with
+  | None -> Js_config.set_debug_file "caml_obj.ml"
+  | Some s -> Js_config.set_debug_file s ) ;
+  if Ext_sys.getenv_opt "BS_DEBUG_CHROME" <> None then Js_config.debug := true ;
+  Lexer.replace_directive_bool "BS" true ;
+  Lexer.replace_directive_string "BS_VERSION" Bs_version.version
 
 let standard_library =
-#if undefined BS_RELEASE_BUILD then
-  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
-#else
-  Config.standard_library
-#end
+  Filename.concat (Filename.dirname Sys.executable_name) "ocaml"

@@ -24,15 +24,12 @@
 
 (* module E = Js_exp_make *)
 
-type arg_expression = 
+type arg_expression =
   | Splice0
-  | Splice1 of J.expression 
+  | Splice1 of J.expression
   | Splice2 of J.expression * J.expression
-  
-val eval :
-   J.expression -> (int * string) list -> J.expression
-val eval_as_event : 
-  J.expression -> (int * string) list -> arg_expression
-val eval_as_int : 
-  J.expression -> (int * int) list -> J.expression
+
+val eval : J.expression -> (int * string) list -> J.expression
+val eval_as_event : J.expression -> (int * string) list -> arg_expression
+val eval_as_int : J.expression -> (int * int) list -> J.expression
 val eval_as_unwrap : J.expression -> J.expression

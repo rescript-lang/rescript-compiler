@@ -22,195 +22,125 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if OCAML_VERSION =~ ">4.3.0" then 
 type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
-external convert: arg_label -> label = "%identity"
-#else
-type poly_var_label = string 
-type arg_label = string 
-type label = 
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-val convert: arg_label -> label
-#end
 
+external convert : arg_label -> label = "%identity"
+val no_label : arg_label
 
+type loc = Location.t
+type attrs = Parsetree.attribute list
 
-val no_label: arg_label
-
-type loc = Location.t 
-type attrs = Parsetree.attribute list 
 open Parsetree
 
+val const_exp_string :
+  ?loc:Location.t -> ?attrs:attrs -> ?delimiter:string -> string -> expression
 
-val const_exp_string:
-  ?loc:Location.t -> 
-  ?attrs:attrs ->    
-  ?delimiter:string -> 
-  string -> 
-  expression
+val const_exp_int : ?loc:Location.t -> ?attrs:attrs -> int -> expression
+val const_exp_int_list_as_array : int list -> expression
+val const_exp_string_list_as_array : string list -> expression
 
-val const_exp_int:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  int -> 
-  expression 
+val apply_simple :
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> expression
+  -> expression list
+  -> expression
 
-val const_exp_int_list_as_array:  
-  int list -> 
-  expression 
+val app1 :
+  ?loc:Location.t -> ?attrs:attrs -> expression -> expression -> expression
 
-val const_exp_string_list_as_array:  
-  string list -> 
-  expression 
+val app2 :
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> expression
+  -> expression
+  -> expression
+  -> expression
 
-  
-val apply_simple:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression list -> 
-  expression 
+val app3 :
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> expression
+  -> expression
+  -> expression
+  -> expression
+  -> expression
 
-val app1:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression 
+val apply_labels :
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> expression
+  -> (string * expression) list
+  -> (* [(label,e)] [label] is strictly interpreted as label *)
+     expression
+(** Note this function would slightly change its semantics depending on
+    compiler versions for newer version: it means always label for older
+    version: it could be optional (which we should avoid) *)
 
-val app2:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression -> 
-  expression 
-
-val app3:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression -> 
-  expression ->   
-  expression 
-
-(** Note this function would slightly 
-  change its semantics depending on compiler versions
-  for newer version: it means always label
-  for older version: it could be optional (which we should avoid)
-*)  
-val apply_labels:  
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  (string * expression) list -> 
-  (* [(label,e)] [label] is strictly interpreted as label *)
-  expression 
-
-val fun_ :  
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  pattern -> 
-  expression -> 
-  expression
+val fun_ :
+  ?loc:Location.t -> ?attrs:attrs -> pattern -> expression -> expression
 
 val opt_label : string -> arg_label
 
 val label_fun :
-  ?loc:Location.t ->
-  ?attrs:attrs ->
-  label:arg_label ->
-  pattern ->
-  expression ->
-  expression
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> label:arg_label
+  -> pattern
+  -> expression
+  -> expression
 
-val is_arg_label_simple :
-  arg_label -> bool
+val is_arg_label_simple : arg_label -> bool
 
 val arrow :
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  core_type -> 
-  core_type ->
-  core_type
+  ?loc:Location.t -> ?attrs:attrs -> core_type -> core_type -> core_type
 
 val label_arrow :
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  core_type -> 
-  core_type ->
-  core_type
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> string
+  -> core_type
+  -> core_type
+  -> core_type
 
-val opt_arrow:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  core_type -> 
-  core_type ->
-  core_type
+val opt_arrow :
+     ?loc:Location.t
+  -> ?attrs:attrs
+  -> string
+  -> core_type
+  -> core_type
+  -> core_type
 
-val object_: 
-  ?loc:loc -> 
-  ?attrs:attrs ->
-  (string * attributes * core_type) list -> 
-  (*FIXME shall we use [string loc] instead?*)
-  Asttypes.closed_flag ->
-  core_type  
+val object_ :
+     ?loc:loc
+  -> ?attrs:attrs
+  -> (string * attributes * core_type) list
+  -> (*FIXME shall we use [string loc] instead?*)
+     Asttypes.closed_flag
+  -> core_type
 
-val rec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
+val rec_type_str : ?loc:loc -> type_declaration list -> structure_item
+val nonrec_type_str : ?loc:loc -> type_declaration list -> structure_item
+val rec_type_str : ?loc:loc -> type_declaration list -> structure_item
+val nonrec_type_sig : ?loc:loc -> type_declaration list -> signature_item
+val rec_type_sig : ?loc:loc -> type_declaration list -> signature_item
 
-val nonrec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
+type param_type =
+  { label: arg_label
+  ; ty: Parsetree.core_type
+  ; attr: Parsetree.attributes
+  ; loc: loc }
 
-val rec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
+val mk_fn_type : param_type list -> core_type -> core_type
 
-val nonrec_type_sig:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  signature_item 
+type object_field = Parsetree.object_field
 
-val rec_type_sig:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  signature_item
+val object_field :
+  Asttypes.label Asttypes.loc -> attributes -> core_type -> object_field
 
-type param_type = 
-  {label : arg_label ;
-   ty :  Parsetree.core_type ; 
-   attr :Parsetree.attributes;
-   loc : loc
-  }
+val hash_label : poly_var_label -> int
+val label_of_name : poly_var_label -> string
 
-val mk_fn_type:  
-  param_type list -> 
-  core_type -> 
-  core_type
-
-type object_field = 
-#if OCAML_VERSION =~ ">4.03.0" then 
-  Parsetree.object_field 
-val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
-#else   
-  string * attributes * core_type
-val object_field : string ->  attributes -> core_type -> object_field  
-#end  
-
-val hash_label : poly_var_label -> int 
-val label_of_name : poly_var_label -> string 
-
-type args  = 
-  (arg_label * Parsetree.expression) list 
+type args = (arg_label * Parsetree.expression) list

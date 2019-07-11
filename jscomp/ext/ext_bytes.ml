@@ -22,52 +22,56 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
+external char_code : char -> int = "%identity"
+external char_chr : int -> char = "%identity"
 
 let escaped s =
   let n = Pervasives.ref 0 in
   for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
+    n :=
+      !n
+      +
+      match Bytes.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+      | ' ' .. '~' -> 1
+      | _ -> 4
+  done ;
+  if !n = Bytes.length s then Bytes.copy s
+  else
     let s' = Bytes.create !n in
-    n := 0;
+    n := 0 ;
     for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
+      ( match Bytes.unsafe_get s i with
       | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n c
       | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n 'n'
       | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n 't'
       | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n 'r'
       | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n 'b'
+      | ' ' .. '~' as c -> Bytes.unsafe_set s' !n c
       | c ->
           let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
+          Bytes.unsafe_set s' !n '\\' ;
+          incr n ;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 100))) ;
+          incr n ;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10 mod 10))) ;
+          incr n ;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a mod 10))) ) ;
       incr n
-    done;
+    done ;
     s'
-  end

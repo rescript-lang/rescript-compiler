@@ -16,10 +16,9 @@
 (* Registering OCaml values with the C runtime for later callbacks *)
 
 external register_named_value : string -> Obj.t -> unit
-                              = "caml_register_named_value"
+  = "caml_register_named_value"
 
-let register name v =
-  register_named_value name (Obj.repr v)
+let register name v = register_named_value name (Obj.repr v)
 
 let register_exception name (exn : exn) =
   let exn = Obj.repr exn in

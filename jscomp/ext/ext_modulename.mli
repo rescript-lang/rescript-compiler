@@ -22,21 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 val module_name_of_file : string -> string
-
-
 val module_name_of_file_if_any : string -> string
 
-(** [modulename, upper]
-  if [upper = true] then it means it is indeed uppercase
-*)
 val module_name_of_file_if_any_with_upper : string -> string * bool
+(** [modulename, upper] if [upper = true] then it means it is indeed uppercase *)
 
-
-(** Given an JS bundle name, generate a meaningful
-  bounded module name
-*)
-val js_id_name_of_hint_name : string -> string 
+val js_id_name_of_hint_name : string -> string
+(** Given an JS bundle name, generate a meaningful bounded module name *)

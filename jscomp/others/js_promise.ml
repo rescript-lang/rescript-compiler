@@ -22,48 +22,60 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Specialized bindings to Promise. Note: For simplicity,
-    this binding does not track the error type, it treat it as an opaque type
-    {[
+(** Specialized bindings to Promise. Note: For simplicity, this binding does
+    not track the error type, it treat it as an opaque type {[
 
-    ]}
-*)
+                                                            ]} *)
 
-type + 'a t 
-type error 
+type +'a t
+type error
 
+external make :
+     ((resolve:(('a -> unit)[@bs]) -> reject:((exn -> unit)[@bs]) -> unit)[@bs.uncurry
+                                                                      ])
+  -> 'a t = "Promise"
+  [@@bs.new]
 
-external make : (resolve:('a -> unit [@bs]) ->
-                 reject:(exn -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
 (* [make (fun resolve reject -> .. )] *)
 external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
 external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
-external all : 'a t array -> 'a array t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all2 : 'a0 t * 'a1 t -> ('a0 * 'a1) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all3 : 'a0 t * 'a1 t * 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all4 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all5 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all6 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t * 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+
+external all : 'a t array -> 'a array t = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
+
+external all2 : 'a0 t * 'a1 t -> ('a0 * 'a1) t = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
+
+external all3 : 'a0 t * 'a1 t * 'a2 t -> ('a0 * 'a1 * 'a2) t = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
+
+external all4 : 'a0 t * 'a1 t * 'a2 t * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3) t
+  = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
+
+external all5 :
+  'a0 t * 'a1 t * 'a2 t * 'a3 t * 'a4 t -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) t
+  = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
+
+external all6 :
+     'a0 t * 'a1 t * 'a2 t * 'a3 t * 'a4 t * 'a5 t
+  -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5) t = "all"
+  [@@bs.val] [@@bs.scope "Promise"]
 
 external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
 
-external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
+external then_ : (('a -> 'b t)[@bs.uncurry]) -> 'b t = "then"
+  [@@bs.send.pipe: 'a t]
 
+external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
+  [@@bs.send.pipe: 'a t]
 
+(* [ p|> catch handler] Note in JS the returned promise type is actually
+   runtime dependent, if promise is rejected, it will pick the [handler]
+   otherwise the original promise, to make it strict we enforce reject handler
+   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch *)
 
-external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
-(* [ p|> catch handler]
-    Note in JS the returned promise type is actually runtime dependent,
-    if promise is rejected, it will pick the [handler] otherwise the original promise,
-    to make it strict we enforce reject handler
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
- *)
-
-
-(*
-let errorAsExn (x :  error) (e  : (exn ->'a option))=
-  if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then
-     e (Obj.magic x)
-  else None
-[%bs.error?  ]
-*)
+(* let errorAsExn (x : error) (e : (exn ->'a option))= if
+   Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then e
+   (Obj.magic x) else None [%bs.error? ] *)

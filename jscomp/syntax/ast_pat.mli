@@ -26,9 +26,7 @@ type t = Parsetree.pattern
 
 val is_unit_cont : yes:'a -> no:'a -> t -> 'a
 
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]*)
 val arity_of_fun : t -> Parsetree.expression -> int
-
+(** [arity_of_fun pat e] tells the arity of expression [fun pat -> e]*)
 
 val is_single_variable_pattern_conservative : t -> bool

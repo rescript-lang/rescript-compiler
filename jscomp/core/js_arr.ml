@@ -22,15 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 module E = Js_exp_make
- 
-let set_array  e e0 e1 = 
-  E.assign (E.array_index e e0)  e1
 
-let ref_array  e e0 = 
-  E.array_index  e  e0
+let set_array e e0 e1 = E.assign (E.array_index e e0) e1
+let ref_array e e0 = E.array_index e e0
