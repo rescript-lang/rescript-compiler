@@ -4623,6 +4623,14 @@ let write_file name  (buf : Ext_buffer.t) =
   else 
     write_buf name buf 
     
+(* return an non-decoded string *)
+let extract_dep_raw_string (fn : string) : string =   
+  let ic = open_in_bin fn in 
+  let size = input_binary_int ic in 
+  let s = really_input_string ic size in
+  close_in ic;
+  s
+
 (* Make sure it is the same as {!Binary_ast.magic_sep_char}*)
 let magic_sep_char = '\n'
 
@@ -4722,18 +4730,23 @@ let oc_impl
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
-  let (dependent_module_set : string list) = read_deps mlast in
-  Ext_list.iter dependent_module_set (fun dependent_module ->
-      match  
-        find_module db dependent_module is_not_lib_dir index  
-      with      
-      | None -> ()
-      | Some module_info -> 
-        begin 
-          Lazy.force at_most_once;
-          handle_module_info module_info input_file namespace rhs_suffix buf
-        end     
-    );
+  let s = extract_dep_raw_string mlast in 
+  let offset = ref 1 in 
+  let size = String.length s in 
+  while !offset < size do 
+    let next_tab = String.index_from s !offset magic_sep_char in
+    let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (match  
+      find_module db dependent_module is_not_lib_dir index  
+    with      
+    | None -> ()
+    | Some module_info -> 
+      begin 
+        Lazy.force at_most_once;
+        handle_module_info module_info input_file namespace rhs_suffix buf
+      end);     
+    offset := next_tab + 1  
+  done ;
   if !has_deps then  
     Ext_buffer.add_char buf '\n'
 
@@ -4761,9 +4774,13 @@ let oc_intf
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
-  let (dependent_module_set : string list) = read_deps mliast in
-  Ext_list.iter dependent_module_set begin fun dependent_module ->
-    match  find_module db dependent_module is_not_lib_dir index 
+  let s = extract_dep_raw_string mliast in 
+  let offset = ref 1 in 
+  let size = String.length s in 
+  while !offset < size do 
+    let next_tab = String.index_from s !offset magic_sep_char in
+    let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (match  find_module db dependent_module is_not_lib_dir index 
     with     
     | None -> ()
     | Some module_info -> 
@@ -4772,8 +4789,9 @@ let oc_intf
         begin 
           Lazy.force at_most_once; 
           oc_cmi buf namespace source             
-        end
-  end;
+        end);
+     offset := next_tab + 1   
+  done;  
   if !has_deps then
     Ext_buffer.add_char buf '\n'
 
