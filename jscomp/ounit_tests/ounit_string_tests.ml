@@ -467,5 +467,31 @@ let suites =
         string_eq (Ext_filename.chop_all_extensions_maybe ".a.b.x") "";
         string_eq (Ext_filename.chop_all_extensions_maybe "abx") "abx";
     end;
+    __LOC__ >:: begin fun _ ->
+        string_eq 
+          (Ext_filename.module_name "a/b/c.d")
+          "C";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.re")
+          "Xc";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.ml")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.mli")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.cppo.mli")
+          "Xc";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.cppo.")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc..")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.")
+          "Xc"  ;
+      end
   ]
 

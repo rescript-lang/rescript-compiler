@@ -56,3 +56,8 @@ val new_extension:
 val chop_all_extensions_maybe:
   string -> 
   string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string

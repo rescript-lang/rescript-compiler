@@ -33798,6 +33798,11 @@ val new_extension:
 val chop_all_extensions_maybe:
   string -> 
   string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -33884,19 +33889,24 @@ let new_extension name (ext : string) =
   search_dot name (String.length name - 1) ext
 
 
-let generic_basename  name =
-  let rec find_end n =
-    if n < 0 then String.sub name 0 1
-    else if is_dir_sep name.[n] then find_end (n - 1)
-    else find_beg n (n + 1)
-  and find_beg n p =
-    if n < 0 then String.sub name 0 p
-    else if is_dir_sep name.[n] then String.sub name (n + 1) (p - n - 1)
-    else find_beg (n - 1) p
-  in
-  if name = ""
-  then "."
-  else find_end (String.length name - 1)
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name *)
+let module_name name = 
+  let rec search_dot i last name =
+    if i < 0  then 
+      (match last with 
+       | None -> Ext_string.capitalize_ascii name
+       | Some i -> Ext_string.capitalize_sub name  i)        
+    else 
+      search_dot (i - 1) 
+        (if String.unsafe_get name i = '.' then Some i else last)
+        name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1) None name 
+
+
 end
 module Ext_option : sig 
 #1 "ext_option.mli"
