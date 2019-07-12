@@ -143,9 +143,9 @@ let check_suffix  name  =
   if Ext_path.check_suffix_case name ".ml"
   || Ext_path.check_suffix_case name ".mlt" then 
     `Ml,
-    Ext_path.chop_extension_if_any  name 
+    Ext_filename.chop_extension_maybe  name 
   else if Ext_path.check_suffix_case name !Config.interface_suffix then 
-    `Mli,   Ext_path.chop_extension_if_any  name 
+    `Mli,   Ext_filename.chop_extension_maybe  name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))
 

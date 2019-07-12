@@ -59,7 +59,8 @@ let chop_extension_maybe name =
 
 let new_extension name (ext : string) = 
   let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
     else if String.unsafe_get name i = '.' then 
       let ext_len = String.length ext in
       let buf = Bytes.create (i + ext_len) in 
@@ -68,3 +69,4 @@ let new_extension name (ext : string) =
       Bytes.unsafe_to_string buf
     else search_dot name (i - 1) ext  in
   search_dot name (String.length name - 1) ext
+

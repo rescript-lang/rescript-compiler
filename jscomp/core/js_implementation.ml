@@ -200,7 +200,7 @@ let implementation_map ppf sourcefile outputprefix =
   close_in ichan;
   let ns = 
     Ext_string.capitalize_ascii
-      (Filename.chop_extension (Filename.basename sourcefile)) in
+      (Ext_filename.chop_extension_maybe (Filename.basename sourcefile)) in
   let ml_ast = Ext_list.fold_left list_of_modules [] (fun acc line -> 
       if Ext_string.is_empty line then acc 
       else make_structure_item ~ns line :: acc 

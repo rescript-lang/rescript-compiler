@@ -212,7 +212,7 @@ let compile
     Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
       let f =
-        Ext_path.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+        Ext_filename.new_extension filename  ".lambda" in
       Ext_pervasives.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
           (Lam_group.pp_group env) fmt (coerced_input.groups) 

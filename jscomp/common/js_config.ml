@@ -76,9 +76,6 @@ let debug_file = ref ""
 
 let set_current_file f  = current_file := f
 let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (Ext_string.uncapitalize_ascii !current_file))
 
 let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f

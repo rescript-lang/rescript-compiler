@@ -230,7 +230,7 @@ let emit_d mlast
   in 
   
   let buf = Ext_buffer.create 2048 in 
-  let input_file = Filename.chop_extension mlast in 
+  let input_file = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   

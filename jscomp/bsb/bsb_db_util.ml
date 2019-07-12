@@ -118,7 +118,7 @@ let collect_module_by_filename
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
   let name_sans_extension = 
-    Ext_path.chop_extension (Filename.concat dir file_name) in 
+     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
   String_map.adjust 
     map
     module_name 

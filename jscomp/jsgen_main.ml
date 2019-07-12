@@ -36,7 +36,7 @@ let get_files dir =
               y <> "unixLabels" && 
               y <> "node_process" (* does not work in browser*)
            then 
-             Some ( "./stdlib/" ^ Filename.chop_extension (Filename.basename x))
+             Some ( "./stdlib/" ^ Ext_filename.chop_extension_maybe (Filename.basename x))
            else None
          else None  )
   in

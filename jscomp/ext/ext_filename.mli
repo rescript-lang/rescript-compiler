@@ -45,9 +45,9 @@ val maybe_quote:
   string
 
 val chop_extension_maybe:
-  stirng -> 
+  string -> 
   string
-  
+
 val new_extension:  
   string -> 
   string -> 

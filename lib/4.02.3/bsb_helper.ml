@@ -4286,6 +4286,9 @@ val maybe_quote:
   string -> 
   string
 
+val chop_extension_maybe:
+  string -> 
+  string
 
 val new_extension:  
   string -> 
@@ -4346,16 +4349,17 @@ let maybe_quote ( s : string) =
 
 let chop_extension_maybe name =
   let rec search_dot i =
-    if i < 0 || is_dir_sep name.[i] then name
-    else if name.[i] = '.' then String.sub name 0 i
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
 
 
 let new_extension name (ext : string) = 
   let rec search_dot name i ext =
-    if i < 0 || is_dir_sep name.[i] then name
-    else if name.[i] = '.' then 
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
       let ext_len = String.length ext in
       let buf = Bytes.create (i + ext_len) in 
       Bytes.blit_string name 0 buf 0 i;
@@ -4363,6 +4367,7 @@ let new_extension name (ext : string) =
       Bytes.unsafe_to_string buf
     else search_dot name (i - 1) ext  in
   search_dot name (String.length name - 1) ext
+
 
 end
 module Ext_namespace : sig 
@@ -4932,7 +4937,7 @@ let emit_d mlast
   in 
   
   let buf = Ext_buffer.create 2048 in 
-  let input_file = Filename.chop_extension mlast in 
+  let input_file = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   

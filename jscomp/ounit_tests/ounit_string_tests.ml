@@ -458,8 +458,10 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
         string_eq (Ext_filename.new_extension "a.c" ".xx")  "a.xx";
-        string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx"
+        string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx";
+        string_eq (Ext_filename.new_extension ".c" ".xx")  ".xx";
+        string_eq (Ext_filename.new_extension "a/b" ".xx")  "a/b.xx";
+        string_eq (Ext_filename.new_extension "a/b." ".xx")  "a/b.xx";
     end;
   ]
 
-;; string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx"  |> ignore

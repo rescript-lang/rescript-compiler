@@ -25,14 +25,14 @@
 
 let module_name_of_file file =
   Ext_string.capitalize_ascii 
-    (Filename.chop_extension @@ Filename.basename file)  
+    (Ext_filename.chop_extension_maybe @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in
   Ext_string.capitalize_ascii v 
 
 let module_name_of_file_if_any_with_upper file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in
   let res = Ext_string.capitalize_ascii v in 
   res, res == v 
 
