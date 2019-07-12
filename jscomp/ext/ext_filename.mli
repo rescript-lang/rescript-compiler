@@ -52,3 +52,7 @@ val new_extension:
   string -> 
   string -> 
   string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  

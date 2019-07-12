@@ -7242,6 +7242,10 @@ val new_extension:
   string -> 
   string -> 
   string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7302,6 +7306,17 @@ let chop_extension_maybe name =
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
 
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
 
 let new_extension name (ext : string) = 
   let rec search_dot name i ext =
@@ -7317,6 +7332,19 @@ let new_extension name (ext : string) =
   search_dot name (String.length name - 1) ext
 
 
+let generic_basename  name =
+  let rec find_end n =
+    if n < 0 then String.sub name 0 1
+    else if is_dir_sep name.[n] then find_end (n - 1)
+    else find_beg n (n + 1)
+  and find_beg n p =
+    if n < 0 then String.sub name 0 p
+    else if is_dir_sep name.[n] then String.sub name (n + 1) (p - n - 1)
+    else find_beg (n - 1) p
+  in
+  if name = ""
+  then "."
+  else find_end (String.length name - 1)
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
@@ -7794,13 +7822,6 @@ val combine :
 
 
 
-
-
-
-
-val chop_all_extensions_if_any : 
-  string -> string 
-
 (**
    {[
      get_extension "a.txt" = ".txt"
@@ -7988,10 +8009,7 @@ let combine path1 path2 =
 
 
 
-let rec chop_all_extensions_if_any fname =
-  match Filename.chop_extension fname with 
-  | x -> chop_all_extensions_if_any x 
-  | exception _ -> fname
+
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -17631,10 +17649,10 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       let (=~) = OUnit.assert_equal ~printer:printer_string in 
-      Ext_path.chop_all_extensions_if_any "a.bs.js" =~ "a" ; 
-      Ext_path.chop_all_extensions_if_any "a.js" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
+      Ext_filename.chop_all_extensions_maybe "a.bs.js" =~ "a" ; 
+      Ext_filename.chop_all_extensions_maybe "a.js" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a.x.bs.js" =~ "a"
     end;
     (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
@@ -17688,6 +17706,10 @@ let suites =
         string_eq (Ext_filename.new_extension ".c" ".xx")  ".xx";
         string_eq (Ext_filename.new_extension "a/b" ".xx")  "a/b.xx";
         string_eq (Ext_filename.new_extension "a/b." ".xx")  "a/b.xx";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b.x") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe ".a.b.x") "";
+        string_eq (Ext_filename.chop_all_extensions_maybe "abx") "abx";
     end;
   ]
 

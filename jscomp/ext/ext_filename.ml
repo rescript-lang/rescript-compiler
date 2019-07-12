@@ -56,6 +56,17 @@ let chop_extension_maybe name =
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
 
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
 
 let new_extension name (ext : string) = 
   let rec search_dot name i ext =
@@ -70,3 +81,17 @@ let new_extension name (ext : string) =
     else search_dot name (i - 1) ext  in
   search_dot name (String.length name - 1) ext
 
+
+let generic_basename  name =
+  let rec find_end n =
+    if n < 0 then String.sub name 0 1
+    else if is_dir_sep name.[n] then find_end (n - 1)
+    else find_beg n (n + 1)
+  and find_beg n p =
+    if n < 0 then String.sub name 0 p
+    else if is_dir_sep name.[n] then String.sub name (n + 1) (p - n - 1)
+    else find_beg (n - 1) p
+  in
+  if name = ""
+  then "."
+  else find_end (String.length name - 1)

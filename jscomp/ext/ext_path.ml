@@ -132,10 +132,7 @@ let combine path1 path2 =
 
 
 
-let rec chop_all_extensions_if_any fname =
-  match Filename.chop_extension fname with 
-  | x -> chop_all_extensions_if_any x 
-  | exception _ -> fname
+
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 

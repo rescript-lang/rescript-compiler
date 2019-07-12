@@ -405,10 +405,10 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       let (=~) = OUnit.assert_equal ~printer:printer_string in 
-      Ext_path.chop_all_extensions_if_any "a.bs.js" =~ "a" ; 
-      Ext_path.chop_all_extensions_if_any "a.js" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
+      Ext_filename.chop_all_extensions_maybe "a.bs.js" =~ "a" ; 
+      Ext_filename.chop_all_extensions_maybe "a.js" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a.x.bs.js" =~ "a"
     end;
     (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
@@ -462,6 +462,10 @@ let suites =
         string_eq (Ext_filename.new_extension ".c" ".xx")  ".xx";
         string_eq (Ext_filename.new_extension "a/b" ".xx")  "a/b.xx";
         string_eq (Ext_filename.new_extension "a/b." ".xx")  "a/b.xx";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b.x") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe ".a.b.x") "";
+        string_eq (Ext_filename.chop_all_extensions_maybe "abx") "abx";
     end;
   ]
 

@@ -29,7 +29,7 @@ let get_files dir =
     |> Ext_array.filter_map 
       (fun  x -> 
          if Ext_path.check_suffix_case x ".js"  then 
-           let y = Ext_path.chop_all_extensions_if_any x in 
+           let y = Ext_filename.chop_all_extensions_maybe x in 
            if y <> "unix" &&
               y <> "bigarray" && 
               y <> "std_exit" &&
