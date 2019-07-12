@@ -15897,6 +15897,14 @@ module Ext_path : sig
 type t 
 
 
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+*)
+val simple_convert_node_path_to_os_path : string -> string
 
 
 
@@ -16002,6 +16010,11 @@ type t =
   | Dir of string 
 
 
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
 let cwd = lazy (Sys.getcwd())

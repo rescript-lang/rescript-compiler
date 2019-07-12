@@ -26,11 +26,6 @@
 
 
 
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
 let maybe_quote ( s : string) = 
