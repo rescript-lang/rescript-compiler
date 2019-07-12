@@ -329,7 +329,7 @@ let lambda_as_module
              (* #913 only generate little-case js file *)
             else _path // basename) output_chan )
 #else
-            (Lazy.force Ext_filename.package_dir //
+            (Lazy.force Ext_path.package_dir //
              _path //
              basename
              (* #913 only generate little-case js file *)

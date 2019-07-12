@@ -47,11 +47,6 @@
     just treat it as a library instead
 *)
 
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
 
 val simple_convert_node_path_to_os_path : string -> string
 

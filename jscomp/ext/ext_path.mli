@@ -82,7 +82,8 @@ val rel_normalized_absolute_path : from:string -> string -> string
 
 val normalize_absolute_path : string -> string 
 
-val absolute_path : string Lazy.t -> string -> string
+
+val absolute_cwd_path : string -> string 
 
 (** [concat dirname filename]
     The same as {!Filename.concat} except a tiny optimization 
@@ -92,3 +93,8 @@ val concat : string -> string -> string
 
 val check_suffix_case : 
   string -> string -> bool
+
+
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t

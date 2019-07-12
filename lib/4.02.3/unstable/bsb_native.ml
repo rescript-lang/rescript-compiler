@@ -6094,7 +6094,8 @@ val rel_normalized_absolute_path : from:string -> string -> string
 
 val normalize_absolute_path : string -> string 
 
-val absolute_path : string Lazy.t -> string -> string
+
+val absolute_cwd_path : string -> string 
 
 (** [concat dirname filename]
     The same as {!Filename.concat} except a tiny optimization 
@@ -6104,6 +6105,12 @@ val concat : string -> string -> string
 
 val check_suffix_case : 
   string -> string -> bool
+
+
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
 end = struct
 #1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6137,7 +6144,7 @@ type t =
 
 
 
-
+let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
@@ -6405,6 +6412,8 @@ let absolute_path cwd s =
     in aux s  in 
   process s 
 
+let absolute_cwd_path s = 
+  absolute_path cwd  s 
 
 let absolute cwd s =   
   match s with 
@@ -6419,6 +6428,25 @@ let concat dirname filename =
 
 let check_suffix_case =
   Ext_string.ends_with
+
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
+
+
+let find_package_json_dir cwd  = 
+  find_root_filename ~cwd  Literals.bsconfig_json
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
 end
 module Bs_hash_stubs
 = struct
@@ -9355,11 +9383,6 @@ module Ext_filename : sig
     just treat it as a library instead
 *)
 
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
 
 val simple_convert_node_path_to_os_path : string -> string
 
@@ -9396,41 +9419,6 @@ end = struct
 
 
 
-
-
-
-type t = Ext_path.t
-
-let cwd = lazy (Sys.getcwd ())
-
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-
-
-
-
-
 let simple_convert_node_path_to_os_path =
   if Sys.unix then fun x -> x 
   else if Sys.win32 || Sys.cygwin then 
@@ -9452,6 +9440,15 @@ let maybe_quote ( s : string) =
   if noneed_quote then
     s
   else Filename.quote s 
+
+(*   
+let new_extension name = 
+  let rec search_dot i =
+    if i < 0 || Filename.is_dir_sep name i then invalid_arg "Filename.chop_extension"
+    else if name.[i] = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1) *)
+
 end
 module Ext_option : sig 
 #1 "ext_option.mli"

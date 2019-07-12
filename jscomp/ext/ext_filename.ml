@@ -26,41 +26,6 @@
 
 
 
-
-
-
-type t = Ext_path.t
-
-let cwd = lazy (Sys.getcwd ())
-
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-
-
-
-
-
 let simple_convert_node_path_to_os_path =
   if Sys.unix then fun x -> x 
   else if Sys.win32 || Sys.cygwin then 
@@ -82,3 +47,11 @@ let maybe_quote ( s : string) =
   if noneed_quote then
     s
   else Filename.quote s 
+
+(*   
+let new_extension name = 
+  let rec search_dot i =
+    if i < 0 || Filename.is_dir_sep name i then invalid_arg "Filename.chop_extension"
+    else if name.[i] = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1) *)
