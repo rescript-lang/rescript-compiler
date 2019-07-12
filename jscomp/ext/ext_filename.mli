@@ -43,3 +43,12 @@
 val maybe_quote:
   string -> 
   string
+
+val chop_extension_maybe:
+  stirng -> 
+  string
+  
+val new_extension:  
+  string -> 
+  string -> 
+  string

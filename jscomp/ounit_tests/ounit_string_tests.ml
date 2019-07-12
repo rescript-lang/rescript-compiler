@@ -5,6 +5,7 @@ let (=~) = OUnit.assert_equal
 
 let printer_string = fun x -> x 
 
+let string_eq = OUnit.assert_equal ~printer:(fun id -> id)
 
 let suites = 
   __FILE__ >::: 
@@ -453,5 +454,12 @@ let suites =
       print_endline bench; *)
       OUnit.assert_bool
       __LOC__ (not (Ext_buffer.not_equal buf bench))
-    end 
+    end ;
+
+    __LOC__ >:: begin fun _ -> 
+        string_eq (Ext_filename.new_extension "a.c" ".xx")  "a.xx";
+        string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx"
+    end;
   ]
+
+;; string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx"  |> ignore

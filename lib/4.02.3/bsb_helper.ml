@@ -4238,6 +4238,133 @@ let not_equal  (b : t) (s : string) =
 
 
 end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+
+val maybe_quote:
+  string -> 
+  string
+
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep name.[i] then name
+    else if name.[i] = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep name.[i] then name
+    else if name.[i] = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -4806,7 +4933,8 @@ let emit_d mlast
   
   let buf = Ext_buffer.create 2048 in 
   let input_file = Filename.chop_extension mlast in 
-  let filename = input_file ^ Literals.suffix_d in   
+  let filename = 
+      Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
   oc_impl 
