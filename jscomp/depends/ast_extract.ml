@@ -155,7 +155,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     (fun acc source_file ->
       match check_suffix source_file with
       | `Ml, opref ->
-        let module_name = Ext_modulename.module_name_of_file source_file in
+        let module_name = Ext_filename.module_name source_file in
         begin match String_map.find_exn acc module_name with
           | exception Not_found ->
             String_map.add acc module_name
@@ -182,7 +182,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                module_name} 
         end
       | `Mli, opref ->
-        let module_name = Ext_modulename.module_name_of_file source_file in
+        let module_name = Ext_filename.module_name source_file in
         begin match String_map.find_exn acc module_name with
           | exception Not_found ->
             String_map.add acc module_name

@@ -7412,20 +7412,24 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name *)
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
 let module_name name = 
-  let rec search_dot i last name =
+  let rec search_dot i  name =
     if i < 0  then 
-      (match last with 
-       | None -> Ext_string.capitalize_ascii name
-       | Some i -> Ext_string.capitalize_sub name  i)        
+      Ext_string.capitalize_ascii name
     else 
-      search_dot (i - 1) 
-        (if String.unsafe_get name i = '.' then Some i else last)
-        name in  
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
   let name = Filename.basename  name in 
   let name_len = String.length name in 
-  search_dot (name_len - 1) None name 
+  search_dot (name_len - 1)  name 
 
 
 end
@@ -7456,12 +7460,6 @@ module Ext_modulename : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-val module_name_of_file : string -> string
-
-
-val module_name_of_file_if_any : string -> string
 
 (** [modulename, upper]
   if [upper = true] then it means it is indeed uppercase
@@ -7500,13 +7498,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let module_name_of_file file =
-  Ext_string.capitalize_ascii 
-    (Ext_filename.chop_extension_maybe @@ Filename.basename file)  
 
-let module_name_of_file_if_any file = 
-  let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in
-  Ext_string.capitalize_ascii v 
 
 let module_name_of_file_if_any_with_upper file = 
   let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in

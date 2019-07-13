@@ -33,14 +33,14 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
   let module_to_filepath = Ext_list.fold_left batch_files String_map.empty
     (fun m v ->
       String_map.add m
-      (Ext_modulename.module_name_of_file_if_any v)
+      (Ext_filename.module_name v)
       (Ext_filename.chop_extension_maybe v)
       )    
   in
   let dependency_graph = Ext_list.fold_left batch_files String_map.empty
     (fun m file ->
       String_map.add m
-        (Ext_modulename.module_name_of_file_if_any file)
+        (Ext_filename.module_name file)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_filename.chop_extension_maybe file) ^ Literals.suffix_mlast))
         )    
   in

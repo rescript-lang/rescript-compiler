@@ -23,13 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let module_name_of_file file =
-  Ext_string.capitalize_ascii 
-    (Ext_filename.chop_extension_maybe @@ Filename.basename file)  
 
-let module_name_of_file_if_any file = 
-  let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in
-  Ext_string.capitalize_ascii v 
 
 let module_name_of_file_if_any_with_upper file = 
   let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in

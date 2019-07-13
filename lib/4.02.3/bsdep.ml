@@ -33891,20 +33891,24 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name *)
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
 let module_name name = 
-  let rec search_dot i last name =
+  let rec search_dot i  name =
     if i < 0  then 
-      (match last with 
-       | None -> Ext_string.capitalize_ascii name
-       | Some i -> Ext_string.capitalize_sub name  i)        
+      Ext_string.capitalize_ascii name
     else 
-      search_dot (i - 1) 
-        (if String.unsafe_get name i = '.' then Some i else last)
-        name in  
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
   let name = Filename.basename  name in 
   let name_len = String.length name in 
-  search_dot (name_len - 1) None name 
+  search_dot (name_len - 1)  name 
 
 
 end

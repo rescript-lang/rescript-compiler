@@ -482,16 +482,19 @@ let suites =
           "Xc"  ;
         string_eq 
           (Ext_filename.module_name "a/b/xc.cppo.mli")
-          "Xc";
+          "Xc.cppo";
         string_eq 
           (Ext_filename.module_name "a/b/xc.cppo.")
-          "Xc"  ;
+          "Xc.cppo"  ;
         string_eq 
           (Ext_filename.module_name "a/b/xc..")
-          "Xc"  ;
+          "Xc."  ;
         string_eq 
-          (Ext_filename.module_name "a/b/xc.")
-          "Xc"  ;
-      end
+          (Ext_filename.module_name "a/b/Xc..")
+          "Xc."  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/.")
+          ""  ;  
+    end
   ]
 
