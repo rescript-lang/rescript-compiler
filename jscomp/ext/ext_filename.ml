@@ -25,47 +25,12 @@
 
 
 
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
 
-
-
-
-type t = Ext_path.t
-
-let cwd = lazy (Sys.getcwd ())
-
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-
-
-
-
-
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
 let maybe_quote ( s : string) = 
@@ -82,3 +47,75 @@ let maybe_quote ( s : string) =
   if noneed_quote then
     s
   else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+
+let module_name_with_case name =  
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name, 
+  (name_len > 0 &&
+    let first_char = String.unsafe_get name 0 in
+    (first_char >= 'A' && first_char <= 'Z'))

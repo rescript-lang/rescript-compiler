@@ -27,9 +27,14 @@ type t =
   | Dir of string 
 
 
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-
+let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
@@ -125,19 +130,9 @@ let combine path1 path2 =
     path2
 
 
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
 
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
 
-let rec chop_all_extensions_if_any fname =
-  match Filename.chop_extension fname with 
-  | x -> chop_all_extensions_if_any x 
-  | exception _ -> fname
+
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -297,6 +292,8 @@ let absolute_path cwd s =
     in aux s  in 
   process s 
 
+let absolute_cwd_path s = 
+  absolute_path cwd  s 
 
 let absolute cwd s =   
   match s with 
@@ -311,3 +308,21 @@ let concat dirname filename =
 
 let check_suffix_case =
   Ext_string.ends_with
+
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
+
+
+let find_package_json_dir cwd  = 
+  find_root_filename ~cwd  Literals.bsconfig_json
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))

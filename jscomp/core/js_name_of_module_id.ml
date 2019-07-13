@@ -81,7 +81,7 @@ let get_runtime_module_path
           ~from:(
             Js_packages_info.get_output_dir 
               current_package_info
-              ~package_dir:(Lazy.force Ext_filename.package_dir)
+              ~package_dir:(Lazy.force Ext_path.package_dir)
               module_system )
           (Lazy.force runtime_package_path // dep_path // js_file)  
 
@@ -172,7 +172,7 @@ let string_of_module_id
                     ~from:(
                       Js_packages_info.get_output_dir 
                         current_package_info
-                        ~package_dir:(Lazy.force Ext_filename.package_dir)
+                        ~package_dir:(Lazy.force Ext_path.package_dir)
                         module_system 
                     )
                     ((Filename.dirname 
@@ -187,11 +187,11 @@ let string_of_module_id
             let dirname = Filename.dirname file in 
             Ext_path.node_rebase_file
               ~from:(
-                Ext_path.absolute_path 
-                  Ext_filename.cwd output_dir)
+                Ext_path.absolute_cwd_path 
+                output_dir)
               ~to_:(
-                Ext_path.absolute_path 
-                  Ext_filename.cwd
+                Ext_path.absolute_cwd_path 
+                
                   dirname)
               basename  
           | None -> 

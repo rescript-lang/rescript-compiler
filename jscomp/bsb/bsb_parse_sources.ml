@@ -390,7 +390,7 @@ let rec
                   parsing_source_dir_map
                     {cxt with 
                      cwd = Ext_path.concat cxt.cwd 
-                         (Ext_filename.simple_convert_node_path_to_os_path x);
+                         (Ext_path.simple_convert_node_path_to_os_path x);
                      traverse = true
                     } String_map.empty)  origin               
             else origin  
@@ -423,7 +423,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
     else 
       parsing_source_dir_map 
         {cxt with 
-         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+         cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
@@ -438,7 +438,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       let dir = 
         match String_map.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
-          Ext_filename.simple_convert_node_path_to_os_path str 
+          Ext_path.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
         | None -> 
           Bsb_exception.config_error x
@@ -501,13 +501,13 @@ and walk_single_source cxt (x : Ext_json_types.t) =
   match x with 
   | Str {str = dir} 
     -> 
-    let dir = Ext_filename.simple_convert_node_path_to_os_path dir in
+    let dir = Ext_path.simple_convert_node_path_to_os_path dir in
     walk_source_dir_map 
     {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
     begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
-      let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
+      let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
       {cxt with cwd = Ext_path.concat cxt.cwd dir} (String_map.find_opt map Bsb_build_schemas.subdirs)
     | _ -> ()
@@ -535,7 +535,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
               {cxt with 
                cwd = 
                  Ext_path.concat cxt.cwd
-                   (Ext_filename.simple_convert_node_path_to_os_path f);
+                   (Ext_path.simple_convert_node_path_to_os_path f);
                traverse = true
               } None 
         end   

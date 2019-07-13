@@ -25,6 +25,14 @@
 type t 
 
 
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+*)
+val simple_convert_node_path_to_os_path : string -> string
 
 
 
@@ -39,14 +47,6 @@ val combine :
   string    
 
 
-
-val chop_extension : ?loc:string -> string -> string 
-
-
-val chop_extension_if_any : string -> string
-
-val chop_all_extensions_if_any : 
-  string -> string 
 
 (**
    {[
@@ -82,7 +82,8 @@ val rel_normalized_absolute_path : from:string -> string -> string
 
 val normalize_absolute_path : string -> string 
 
-val absolute_path : string Lazy.t -> string -> string
+
+val absolute_cwd_path : string -> string 
 
 (** [concat dirname filename]
     The same as {!Filename.concat} except a tiny optimization 
@@ -92,3 +93,8 @@ val concat : string -> string -> string
 
 val check_suffix_case : 
   string -> string -> bool
+
+
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t

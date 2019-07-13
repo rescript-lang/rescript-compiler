@@ -23,18 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let module_name_of_file file =
-  Ext_string.capitalize_ascii 
-    (Filename.chop_extension @@ Filename.basename file)  
 
-let module_name_of_file_if_any file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
-  Ext_string.capitalize_ascii v 
 
-let module_name_of_file_if_any_with_upper file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
-  let res = Ext_string.capitalize_ascii v in 
-  res, res == v 
 
 
 
@@ -59,11 +49,11 @@ let rec collect_start buf s off len =
     let next = succ off in 
     match String.unsafe_get  s off with     
     | 'a' .. 'z' as c ->
-    Buffer.add_char buf (Ext_char.uppercase_ascii c)
+    Ext_buffer.add_char buf (Ext_char.uppercase_ascii c)
     ;
       collect_next buf s next len
     | 'A' .. 'Z' as c -> 
-      Buffer.add_char buf c ;
+      Ext_buffer.add_char buf c ;
       collect_next buf s next len
     | _ -> collect_start buf s next len
 and collect_next buf s off len = 
@@ -76,7 +66,7 @@ and collect_next buf s off len =
     | '0' .. '9'
     | '_'
     as c ->
-      Buffer.add_char buf c ;
+      Ext_buffer.add_char buf c ;
       collect_next buf s next len 
     | '.'
     | '-' -> 
@@ -101,19 +91,17 @@ let js_id_name_of_hint_name module_name =
         (Ext_string.tail_from module_name offset)
     else 
       let str_len = String.length module_name in 
-      let buf = Buffer.create str_len in 
+      let buf = Ext_buffer.create str_len in 
       collect_start buf module_name offset str_len ;
-      let res = Buffer.contents buf in 
-      if Ext_string.is_empty res then 
+      if Ext_buffer.is_empty buf then 
         Ext_string.capitalize_ascii module_name
-      else res 
+      else Ext_buffer.contents buf 
   else 
   if good_hint_name module_name 0 then
     Ext_string.capitalize_ascii module_name
   else 
     let str_len = (String.length module_name) in 
-    let buf = Buffer.create str_len in 
-    collect_start buf module_name 0 str_len ;
-    let res = Buffer.contents buf in 
-    if Ext_string.is_empty res then module_name
-    else res   
+    let buf = Ext_buffer.create str_len in 
+    collect_start buf module_name 0 str_len ;    
+    if Ext_buffer.is_empty buf then module_name
+    else  Ext_buffer.contents buf 

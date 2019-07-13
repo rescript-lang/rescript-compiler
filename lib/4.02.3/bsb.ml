@@ -6037,6 +6037,14 @@ module Ext_path : sig
 type t 
 
 
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+*)
+val simple_convert_node_path_to_os_path : string -> string
 
 
 
@@ -6051,14 +6059,6 @@ val combine :
   string    
 
 
-
-val chop_extension : ?loc:string -> string -> string 
-
-
-val chop_extension_if_any : string -> string
-
-val chop_all_extensions_if_any : 
-  string -> string 
 
 (**
    {[
@@ -6094,7 +6094,8 @@ val rel_normalized_absolute_path : from:string -> string -> string
 
 val normalize_absolute_path : string -> string 
 
-val absolute_path : string Lazy.t -> string -> string
+
+val absolute_cwd_path : string -> string 
 
 (** [concat dirname filename]
     The same as {!Filename.concat} except a tiny optimization 
@@ -6104,6 +6105,12 @@ val concat : string -> string -> string
 
 val check_suffix_case : 
   string -> string -> bool
+
+
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
 end = struct
 #1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6135,9 +6142,14 @@ type t =
   | Dir of string 
 
 
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-
+let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
@@ -6233,19 +6245,9 @@ let combine path1 path2 =
     path2
 
 
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
 
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
 
-let rec chop_all_extensions_if_any fname =
-  match Filename.chop_extension fname with 
-  | x -> chop_all_extensions_if_any x 
-  | exception _ -> fname
+
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -6405,6 +6407,8 @@ let absolute_path cwd s =
     in aux s  in 
   process s 
 
+let absolute_cwd_path s = 
+  absolute_path cwd  s 
 
 let absolute cwd s =   
   match s with 
@@ -6419,6 +6423,25 @@ let concat dirname filename =
 
 let check_suffix_case =
   Ext_string.ends_with
+
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
+
+
+let find_package_json_dir cwd  = 
+  find_root_filename ~cwd  Literals.bsconfig_json
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
 end
 module Bs_hash_stubs
 = struct
@@ -7236,9 +7259,9 @@ let has_reason_files (map  : t ) =
 
 
 end
-module Ext_modulename : sig 
-#1 "ext_modulename.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7265,24 +7288,51 @@ module Ext_modulename : sig
 
 
 
-val module_name_of_file : string -> string
 
-
-val module_name_of_file_if_any : string -> string
-
-(** [modulename, upper]
-  if [upper = true] then it means it is indeed uppercase
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
 *)
-val module_name_of_file_if_any_with_upper : string -> string * bool
 
 
-(** Given an JS bundle name, generate a meaningful
-  bounded module name
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
 *)
-val js_id_name_of_hint_name : string -> string 
+
+
+val maybe_quote:
+  string -> 
+  string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+(** return [true] if upper case *)
+val module_name_with_case:  
+  string -> 
+  string * bool
+  
 end = struct
-#1 "ext_modulename.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7307,100 +7357,102 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let module_name_of_file file =
-  Ext_string.capitalize_ascii 
-    (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
-  Ext_string.capitalize_ascii v 
-
-let module_name_of_file_if_any_with_upper file = 
-  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
-  let res = Ext_string.capitalize_ascii v in 
-  res, res == v 
 
 
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
 
 
-let good_hint_name module_name offset =
-  let len = String.length module_name in 
-  len > offset && 
-  (function | 'a' .. 'z' | 'A' .. 'Z' -> true | _ -> false) 
-    (String.unsafe_get module_name offset) &&
-  Ext_string.for_all_from module_name (offset + 1) 
-    (function 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9' 
-      | '_' 
-         -> true
-      | _ -> false)
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
 
-let rec collect_start buf s off len = 
-  if off >= len then ()
-  else 
-    let next = succ off in 
-    match String.unsafe_get  s off with     
-    | 'a' .. 'z' as c ->
-    Buffer.add_char buf (Ext_char.uppercase_ascii c)
-    ;
-      collect_next buf s next len
-    | 'A' .. 'Z' as c -> 
-      Buffer.add_char buf c ;
-      collect_next buf s next len
-    | _ -> collect_start buf s next len
-and collect_next buf s off len = 
-  if off >= len then ()  
-  else 
-    let next = off + 1 in 
-    match String.unsafe_get s off with 
-    | 'a' .. 'z'
-    | 'A' .. 'Z'
-    | '0' .. '9'
-    | '_'
-    as c ->
-      Buffer.add_char buf c ;
-      collect_next buf s next len 
-    | '.'
-    | '-' -> 
-      collect_start buf s next len      
-    | _ -> 
-      collect_next buf s next len 
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
 
-(** This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-     var React$1 = require('react');
-     React$1.render(..)
-   ]}
-   Given a name, if duplicated, they should  have the same id
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
 *)
-let js_id_name_of_hint_name module_name =       
-  let i = Ext_string.rindex_neg module_name '/' in 
-  if i >= 0 then
-    let offset = succ i in 
-    if good_hint_name module_name offset then 
-      Ext_string.capitalize_ascii
-        (Ext_string.tail_from module_name offset)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
     else 
-      let str_len = String.length module_name in 
-      let buf = Buffer.create str_len in 
-      collect_start buf module_name offset str_len ;
-      let res = Buffer.contents buf in 
-      if Ext_string.is_empty res then 
-        Ext_string.capitalize_ascii module_name
-      else res 
-  else 
-  if good_hint_name module_name 0 then
-    Ext_string.capitalize_ascii module_name
-  else 
-    let str_len = (String.length module_name) in 
-    let buf = Buffer.create str_len in 
-    collect_start buf module_name 0 str_len ;
-    let res = Buffer.contents buf in 
-    if Ext_string.is_empty res then module_name
-    else res   
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+
+let module_name_with_case name =  
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name, 
+  (name_len > 0 &&
+    let first_char = String.unsafe_get name 0 in
+    (first_char >= 'A' && first_char <= 'Z'))
 
 end
 module Bsb_db_util : sig 
@@ -7569,10 +7621,10 @@ let adjust_module_info
 let collect_module_by_filename 
   ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
-    Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
+    Ext_filename.module_name_with_case file_name in 
   let suffix = Ext_path.get_extension file_name in 
   let name_sans_extension = 
-    Ext_path.chop_extension (Filename.concat dir file_name) in 
+     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
   String_map.adjust 
     map
     module_name 
@@ -9304,155 +9356,6 @@ let is_empty (x : file_group) =
   x.resources = [] &&
   x.generators = []    
 end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
-*)
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-
-val simple_convert_node_path_to_os_path : string -> string
-
-val maybe_quote:
-  string -> 
-  string
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type t = Ext_path.t
-
-let cwd = lazy (Sys.getcwd ())
-
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-
-
-
-
-
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
-
-(* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
-    Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9985,7 +9888,7 @@ let rec
                   parsing_source_dir_map
                     {cxt with 
                      cwd = Ext_path.concat cxt.cwd 
-                         (Ext_filename.simple_convert_node_path_to_os_path x);
+                         (Ext_path.simple_convert_node_path_to_os_path x);
                      traverse = true
                     } String_map.empty)  origin               
             else origin  
@@ -10018,7 +9921,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
     else 
       parsing_source_dir_map 
         {cxt with 
-         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+         cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
@@ -10033,7 +9936,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       let dir = 
         match String_map.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
-          Ext_filename.simple_convert_node_path_to_os_path str 
+          Ext_path.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
         | None -> 
           Bsb_exception.config_error x
@@ -10096,13 +9999,13 @@ and walk_single_source cxt (x : Ext_json_types.t) =
   match x with 
   | Str {str = dir} 
     -> 
-    let dir = Ext_filename.simple_convert_node_path_to_os_path dir in
+    let dir = Ext_path.simple_convert_node_path_to_os_path dir in
     walk_source_dir_map 
     {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
     begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
-      let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
+      let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
       {cxt with cwd = Ext_path.concat cxt.cwd dir} (String_map.find_opt map Bsb_build_schemas.subdirs)
     | _ -> ()
@@ -10130,7 +10033,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
               {cxt with 
                cwd = 
                  Ext_path.concat cxt.cwd
-                   (Ext_filename.simple_convert_node_path_to_os_path f);
+                   (Ext_path.simple_convert_node_path_to_os_path f);
                traverse = true
               } None 
         end   
@@ -12839,6 +12742,8 @@ val contents : t -> string
 val length : t -> int
 (** Return the number of characters currently contained in the buffer. *)
 
+val is_empty : t -> bool
+
 val clear : t -> unit
 (** Empty the buffer. *)
 
@@ -12932,7 +12837,7 @@ let blit src srcoff dst dstoff len =
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len
 
 let length b = b.position
-
+let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 let reset b =

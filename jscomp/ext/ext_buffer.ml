@@ -47,7 +47,7 @@ let blit src srcoff dst dstoff len =
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len
 
 let length b = b.position
-
+let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 let reset b =

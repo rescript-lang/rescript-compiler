@@ -25,17 +25,6 @@
 
 
 
-val module_name_of_file : string -> string
-
-
-val module_name_of_file_if_any : string -> string
-
-(** [modulename, upper]
-  if [upper = true] then it means it is indeed uppercase
-*)
-val module_name_of_file_if_any_with_upper : string -> string * bool
-
-
 (** Given an JS bundle name, generate a meaningful
   bounded module name
 *)

@@ -39,22 +39,31 @@
     TODO : this short name will have to change upon renaming the file.
 *)
 
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
-*)
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-
-val simple_convert_node_path_to_os_path : string -> string
 
 val maybe_quote:
   string -> 
   string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+(** return [true] if upper case *)
+val module_name_with_case:  
+  string -> 
+  string * bool
+  

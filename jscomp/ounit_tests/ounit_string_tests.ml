@@ -5,6 +5,7 @@ let (=~) = OUnit.assert_equal
 
 let printer_string = fun x -> x 
 
+let string_eq = OUnit.assert_equal ~printer:(fun id -> id)
 
 let suites = 
   __FILE__ >::: 
@@ -404,10 +405,10 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       let (=~) = OUnit.assert_equal ~printer:printer_string in 
-      Ext_path.chop_all_extensions_if_any "a.bs.js" =~ "a" ; 
-      Ext_path.chop_all_extensions_if_any "a.js" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a" =~ "a";
-      Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
+      Ext_filename.chop_all_extensions_maybe "a.bs.js" =~ "a" ; 
+      Ext_filename.chop_all_extensions_maybe "a.js" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a" =~ "a";
+      Ext_filename.chop_all_extensions_maybe "a.x.bs.js" =~ "a"
     end;
     (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
@@ -453,5 +454,47 @@ let suites =
       print_endline bench; *)
       OUnit.assert_bool
       __LOC__ (not (Ext_buffer.not_equal buf bench))
-    end 
+    end ;
+
+    __LOC__ >:: begin fun _ -> 
+        string_eq (Ext_filename.new_extension "a.c" ".xx")  "a.xx";
+        string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx";
+        string_eq (Ext_filename.new_extension ".c" ".xx")  ".xx";
+        string_eq (Ext_filename.new_extension "a/b" ".xx")  "a/b.xx";
+        string_eq (Ext_filename.new_extension "a/b." ".xx")  "a/b.xx";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b.x") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe "a.b") "a";
+        string_eq (Ext_filename.chop_all_extensions_maybe ".a.b.x") "";
+        string_eq (Ext_filename.chop_all_extensions_maybe "abx") "abx";
+    end;
+    __LOC__ >:: begin fun _ ->
+        string_eq 
+          (Ext_filename.module_name "a/b/c.d")
+          "C";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.re")
+          "Xc";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.ml")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.mli")
+          "Xc"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.cppo.mli")
+          "Xc.cppo";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.cppo.")
+          "Xc.cppo"  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/xc..")
+          "Xc."  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/Xc..")
+          "Xc."  ;
+        string_eq 
+          (Ext_filename.module_name "a/b/.")
+          ""  ;  
+    end
   ]
+
