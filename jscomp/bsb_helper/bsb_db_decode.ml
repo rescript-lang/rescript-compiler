@@ -73,8 +73,8 @@ let read_build_cache ~dir  : t =
   let len = in_channel_length ic in 
   let all_content = really_input_string ic len in 
   let offset = ref 0 in 
-  let cur_module_info_magic_number = extract_line all_content offset in 
-  assert (cur_module_info_magic_number = Bs_version.version); 
+  let _cur_module_info_magic_number = extract_line all_content offset in 
+  (* assert (cur_module_info_magic_number = Bs_version.version);  *)
   decode_internal all_content offset, all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
@@ -110,16 +110,18 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-type module_info = Bsb_db.module_info = {
+type ml_info = Ml_source of bool * Bsb_db.case
+
+type module_info =  {
   mli_info : Bsb_db.mli_info;
-  ml_info : Bsb_db.ml_info;
+  ml_info : ml_info;
   name_sans_extension : string
 } 
 
 
 let find_opt 
-  ((sorteds,whole) : t )  i key 
-    : Bsb_db.module_info option = 
+  ((sorteds,whole) : t )  i (key : string) 
+    : module_info option = 
   let group = sorteds.(i) in 
   let i = find_opt_aux group.modules key in 
   match i with 

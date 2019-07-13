@@ -42,9 +42,9 @@ val emit_dep_file:
   unit
 #end
 
-val emit_d:
-  string ->
+val emit_d:  
   Bsb_dir_index.t ->  
   string  option ->
+  string ->
   string -> (* empty string means no mliast *)
   unit

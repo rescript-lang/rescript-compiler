@@ -43,9 +43,11 @@ val decode_internal :
 val read_build_cache : 
   dir:string -> t
 
+type ml_info = Ml_source of bool * Bsb_db.case
+
 type module_info = {
   mli_info : Bsb_db.mli_info;
-  ml_info : Bsb_db.ml_info;
+  ml_info : ml_info;
   name_sans_extension : string
 } 
 
