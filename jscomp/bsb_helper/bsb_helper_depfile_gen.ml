@@ -108,18 +108,15 @@ let oc_cmi buf namespace source =
 
 
 let handle_module_info 
-    (module_info : Bsb_db.module_info)
+    module_info 
     input_file 
     namespace rhs_suffix buf = 
-  let source = module_info.name_sans_extension in 
+  let source = module_info.Bsb_db_decode.name_sans_extension in 
   if source <> input_file then 
     begin 
-      if module_info.ml_info <> Ml_empty then 
-        begin
-          Ext_buffer.add_char buf ' ';  
-          output_file buf source namespace;
-          Ext_buffer.add_string buf rhs_suffix
-        end;
+      Ext_buffer.add_char buf ' ';  
+      output_file buf source namespace;
+      Ext_buffer.add_string buf rhs_suffix;
       (* #3260 cmj changes does not imply cmi change anymore *)
       oc_cmi buf namespace source
     end
@@ -221,14 +218,12 @@ let oc_intf
     Ext_buffer.add_char buf '\n'
 
 
-let emit_d mlast 
+let emit_d 
   (index : Bsb_dir_index.t) 
-  (namespace : string option) has_intf = 
+  (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name
-  in 
-  
+      ~dir:Filename.current_dir_name in   
   let buf = Ext_buffer.create 2048 in 
   let input_file = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
@@ -244,9 +239,9 @@ let emit_d mlast
     buf 
     lhs_suffix 
     rhs_suffix ;      
-  if has_intf <> "" then begin
+  if mliast <> "" then begin
     oc_intf 
-      has_intf
+      mliast
       input_file 
       index 
       data 

@@ -37,33 +37,6 @@ type t = group array * string (* string is whole content*)
 let bool buf b =   
   Buffer.add_char buf (if b then '1' else '0')
 
-
-
-let decode_ml_info (x : char ) : Bsb_db.ml_info =   
-  match x with 
-  | '0' -> Ml_empty 
-  | '1' -> Ml_source(false,false) 
-  | '2' -> Ml_source(false,true) 
-  | '3' -> Ml_source(true, false) 
-  | '4' -> Ml_source(true, true) 
-  | _ -> assert false
-
-
-let decode_mli_info (x : char ) : Bsb_db.mli_info =   
-  match x with 
-  | '0' -> Mli_empty 
-  | '1' -> Mli_source(false,false) 
-  | '2' -> Mli_source(false,true) 
-  | '3' -> Mli_source(true, false)
-  | '4' -> Mli_source(true, true) 
-  | _ -> assert false
-
-
-
-
-
-
-
 type cursor = int ref 
 
 let extract_line (x : string) (cur : cursor) : string =
@@ -74,7 +47,7 @@ let next_mdoule_info (s : string) (cur : int) ~count  =
   else 
     Ext_string.index_count s cur '\n' count  + 1
 
-let rec decode (x : string) (offset : cursor) =   
+let rec decode_internal (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single x (offset : cursor) : group = 
@@ -100,9 +73,9 @@ let read_build_cache ~dir  : t =
   let len = in_channel_length ic in 
   let all_content = really_input_string ic len in 
   let offset = ref 0 in 
-  let cur_module_info_magic_number = extract_line all_content offset in 
-  assert (cur_module_info_magic_number = Bs_version.version); 
-  decode all_content offset, all_content
+  let _cur_module_info_magic_number = extract_line all_content offset in 
+  (* assert (cur_module_info_magic_number = Bs_version.version);  *)
+  decode_internal all_content offset, all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -137,9 +110,18 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
+type ml_info = Ml_source of bool * Bsb_db.case
+
+type module_info =  {
+  mli_info : Bsb_db.mli_info;
+  ml_info : ml_info;
+  name_sans_extension : string
+} 
+
+
 let find_opt 
-  ((sorteds,whole) : t )  i key 
-    : Bsb_db.module_info option = 
+  ((sorteds,whole) : t )  i (key : string) 
+    : module_info option = 
   let group = sorteds.(i) in 
   let i = find_opt_aux group.modules key in 
   match i with 
@@ -150,6 +132,148 @@ let find_opt
     in 
     let name_sans_extension = 
         Ext_string.extract_until whole cursor ',' in 
-    let mli_info =  decode_mli_info whole.[!cursor] in 
-    let ml_info = decode_ml_info whole.[!cursor + 1] in
-    Some {mli_info ; ml_info; name_sans_extension}
+    Some (match whole.[!cursor] with
+        | 'f'
+          -> 
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_empty
+          }
+        | 'g'
+          -> 
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(false,false)
+          }
+        | 'h'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(false,true)
+          }
+        | 'i'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(true,false)}
+
+        | 'j'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,false);
+            mli_info = Mli_source(true,true)}
+
+        (* another group *)
+        | 'k'
+          -> {
+              name_sans_extension;
+              ml_info = Ml_source(false,true) ;
+              mli_info = Mli_empty
+            } 
+        | 'l'
+          -> {
+              name_sans_extension;
+              ml_info = Ml_source(false,true) ;
+              mli_info = Mli_source(false,false)
+            } 
+        | 'm'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(false,true)
+          }
+        | 'n'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(true,false)
+          }
+        | 'o'
+          ->
+          {
+            name_sans_extension;
+            ml_info = Ml_source(false,true) ;
+            mli_info = Mli_source(true,true)
+          }
+        (* another group*)
+        | 'p'
+          -> 
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_empty
+          }
+
+
+        | 'q'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(false,false)
+          }
+        | 'r'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(false,true)
+          }
+        | 's'
+          ->
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(true,false)
+          }
+        | 't'
+          -> 
+          {name_sans_extension;
+           ml_info = Ml_source(true, false);
+           mli_info = Mli_source(true,true)
+          }
+        (* another group *)
+        | 'u'
+          -> 
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_empty
+          }
+        | 'v'
+          ->
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(false,false)
+          }
+        | 'w'
+          ->
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(false,true)
+          }
+        | 'x' -> 
+
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(true,false)
+          }
+        | 'y' 
+          -> 
+          {name_sans_extension ; 
+           ml_info = Ml_source(true, true);
+           mli_info = Mli_source(true,true)
+          }
+        | 'a'
+
+        | 'b'
+
+        | 'c'
+
+        | 'd'
+
+        | 'e' 
+          -> assert false    
+        | _ -> assert false)

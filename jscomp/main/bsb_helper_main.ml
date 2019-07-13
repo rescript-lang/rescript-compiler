@@ -142,13 +142,12 @@ let () =
   match !batch_files with
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
-          x (Bsb_dir_index.of_int !dev_group )          
-          !namespace ""
+          (Bsb_dir_index.of_int !dev_group )          
+          !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
-      x
       (Bsb_dir_index.of_int !dev_group)
-      !namespace y
+      !namespace x y
   | _ -> 
     ()

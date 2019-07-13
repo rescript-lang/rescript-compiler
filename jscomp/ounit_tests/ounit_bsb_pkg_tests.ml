@@ -8,7 +8,7 @@ let (=~) = OUnit.assert_equal  ~printer:printer_string
 
 
 let parse_data_one = 
-(Bsb_db_decode.decode {|4.0.19
+(Bsb_db_decode.decode_internal {|4.0.19
 2
 1
 Demo
@@ -19,7 +19,7 @@ examples/test,01
 |} (ref 7))
 
 let parse_data_two = 
-  Bsb_db_decode.decode {|4.0.19
+  Bsb_db_decode.decode_internal {|4.0.19
 3
 2
 Fib

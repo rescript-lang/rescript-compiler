@@ -32,18 +32,27 @@ type group = {
    meta_info_offset : int 
  }
 
-val decode : 
+(* exposed only for testing *)
+val decode_internal : 
   string -> 
   int ref ->
   group array 
-  
+
 
 
 val read_build_cache : 
   dir:string -> t
 
+type ml_info = Ml_source of bool * Bsb_db.case
+
+type module_info = {
+  mli_info : Bsb_db.mli_info;
+  ml_info : ml_info;
+  name_sans_extension : string
+} 
+
 val find_opt :
   t -> (* contains global info *)
   int -> (* more likely to be zero *)
   string -> (* module name *)
-  Bsb_db.module_info option 
+  module_info option 
