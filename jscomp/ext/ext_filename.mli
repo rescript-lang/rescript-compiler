@@ -61,3 +61,9 @@ val chop_all_extensions_maybe:
 val module_name:  
   string ->
   string
+
+(** return [true] if upper case *)
+val module_name_with_case:  
+  string -> 
+  string * bool
+  

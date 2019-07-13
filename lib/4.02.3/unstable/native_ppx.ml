@@ -14976,6 +14976,12 @@ val chop_all_extensions_maybe:
 val module_name:  
   string ->
   string
+
+(** return [true] if upper case *)
+val module_name_with_case:  
+  string -> 
+  string * bool
+  
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15083,6 +15089,22 @@ let module_name name =
   let name_len = String.length name in 
   search_dot (name_len - 1)  name 
 
+
+let module_name_with_case name =  
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name, 
+  (name_len > 0 &&
+    let first_char = String.unsafe_get name 0 in
+    (first_char >= 'A' && first_char <= 'Z'))
 
 end
 module Bs_version : sig 

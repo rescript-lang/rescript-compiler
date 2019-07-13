@@ -25,10 +25,6 @@
 
 
 
-let module_name_of_file_if_any_with_upper file = 
-  let v = Ext_filename.chop_extension_maybe @@ Filename.basename file in
-  let res = Ext_string.capitalize_ascii v in 
-  res, res == v 
 
 
 
