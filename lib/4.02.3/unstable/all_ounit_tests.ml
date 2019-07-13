@@ -16649,6 +16649,8 @@ val contents : t -> string
 val length : t -> int
 (** Return the number of characters currently contained in the buffer. *)
 
+val is_empty : t -> bool
+
 val clear : t -> unit
 (** Empty the buffer. *)
 
@@ -16742,7 +16744,7 @@ let blit src srcoff dst dstoff len =
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len
 
 let length b = b.position
-
+let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 let reset b =
@@ -16977,11 +16979,11 @@ let rec collect_start buf s off len =
     let next = succ off in 
     match String.unsafe_get  s off with     
     | 'a' .. 'z' as c ->
-    Buffer.add_char buf (Ext_char.uppercase_ascii c)
+    Ext_buffer.add_char buf (Ext_char.uppercase_ascii c)
     ;
       collect_next buf s next len
     | 'A' .. 'Z' as c -> 
-      Buffer.add_char buf c ;
+      Ext_buffer.add_char buf c ;
       collect_next buf s next len
     | _ -> collect_start buf s next len
 and collect_next buf s off len = 
@@ -16994,7 +16996,7 @@ and collect_next buf s off len =
     | '0' .. '9'
     | '_'
     as c ->
-      Buffer.add_char buf c ;
+      Ext_buffer.add_char buf c ;
       collect_next buf s next len 
     | '.'
     | '-' -> 
@@ -17019,22 +17021,20 @@ let js_id_name_of_hint_name module_name =
         (Ext_string.tail_from module_name offset)
     else 
       let str_len = String.length module_name in 
-      let buf = Buffer.create str_len in 
+      let buf = Ext_buffer.create str_len in 
       collect_start buf module_name offset str_len ;
-      let res = Buffer.contents buf in 
-      if Ext_string.is_empty res then 
+      if Ext_buffer.is_empty buf then 
         Ext_string.capitalize_ascii module_name
-      else res 
+      else Ext_buffer.contents buf 
   else 
   if good_hint_name module_name 0 then
     Ext_string.capitalize_ascii module_name
   else 
     let str_len = (String.length module_name) in 
-    let buf = Buffer.create str_len in 
-    collect_start buf module_name 0 str_len ;
-    let res = Buffer.contents buf in 
-    if Ext_string.is_empty res then module_name
-    else res   
+    let buf = Ext_buffer.create str_len in 
+    collect_start buf module_name 0 str_len ;    
+    if Ext_buffer.is_empty buf then module_name
+    else  Ext_buffer.contents buf 
 
 end
 module Ext_namespace : sig 

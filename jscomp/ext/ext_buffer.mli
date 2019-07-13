@@ -45,6 +45,8 @@ val contents : t -> string
 val length : t -> int
 (** Return the number of characters currently contained in the buffer. *)
 
+val is_empty : t -> bool
+
 val clear : t -> unit
 (** Empty the buffer. *)
 

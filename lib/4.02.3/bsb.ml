@@ -12742,6 +12742,8 @@ val contents : t -> string
 val length : t -> int
 (** Return the number of characters currently contained in the buffer. *)
 
+val is_empty : t -> bool
+
 val clear : t -> unit
 (** Empty the buffer. *)
 
@@ -12835,7 +12837,7 @@ let blit src srcoff dst dstoff len =
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len
 
 let length b = b.position
-
+let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 let reset b =
