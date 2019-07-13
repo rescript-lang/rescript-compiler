@@ -11,7 +11,7 @@ build: [
 ]
 depends: [
   "ocaml" {>= "4.02.1" & < "4.09"}
-  "dune" {build & >= "1.8.0"}
+  "dune" {>= "1.8.0"}
   "ocamlfind" {>= "1.5.2"}
   "yojson"
   "mdx" {with-test & >= "1.3.0"}
