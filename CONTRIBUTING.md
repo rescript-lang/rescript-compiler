@@ -24,6 +24,11 @@ git submodule update --init && node scripts/buildocaml.js
 
 `scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory which will be invoked by `./scripts/ninja.js build`.
 
+### Building docs
+
+```
+./script/ninja.js docs
+```
 #### Edit file and test changes
 
 In general, you'd edit files and rerun `./scripts/ninja.js build`.
