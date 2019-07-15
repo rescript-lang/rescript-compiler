@@ -110,10 +110,6 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-type mli_info =       
-    | Mli_empty
-    | Mli_source of bool 
-type ml_info = Ml_source of bool 
 
 
 type module_info =  {
@@ -140,128 +136,10 @@ let find_opt
     in 
     let dir_name = 
         Ext_string.extract_until whole cursor ',' in 
-    (* 2 * 2 * 3 = 12 cases *)
-    Some (match whole.[!cursor] with
-        | 'f'
-          -> 
+    Some 
           {
             dir_name;
-            (* ml_info = Ml_source(false);
-            mli_info = Mli_empty; *)
-            case = false;
+            case = whole.[!cursor] = '1';
           }
-        | 'g'
-          -> 
-          {
-            dir_name;
-            (* ml_info = Ml_source(false);
-            mli_info = Mli_source(false); *)
-            case = false;
-          }
+        
       
-        | 'i'
-          ->
-          {
-            case = false;
-            dir_name }
-            (* ml_info = Ml_source(false);
-            mli_info = Mli_source(true)} *)
-       
-        (* another group *)
-        | 'k'
-          -> {
-              case = true;
-              dir_name;
-              (* ml_info = Ml_source(false) ;
-              mli_info = Mli_empty *)
-            } 
-     
-        | 'm'
-          ->
-          {
-            case = true;
-            dir_name;
-            (* ml_info = Ml_source(false) ;
-            mli_info = Mli_source(false) *)
-          }
-  
-        | 'o'
-          ->
-          {
-            case = true;
-            dir_name;
-            (* ml_info = Ml_source(false) ;
-            mli_info = Mli_source(true) *)
-          }
-        (* another group*)
-        | 'p'
-          -> 
-          {
-            case = false;
-            dir_name;
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_empty *)
-          }
-
-
-        | 'q'
-          ->
-          {
-            case = false;
-            dir_name;
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_source(false) *)
-          }
-  
-        | 's'
-          ->
-          {
-            case = false;
-            dir_name;
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_source(true) *)
-          }
-              
-        (* another group *)
-        | 'u'
-          -> 
-          {
-            case = true;
-            dir_name ; 
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_empty *)
-          }
-            
-        | 'w'
-          ->
-          {
-            case = true;
-            dir_name ; 
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_source(false) *)
-          }
-             
-        | 'y' 
-          -> 
-          {
-            case = true;
-            dir_name ; 
-           (* ml_info = Ml_source(true);
-           mli_info = Mli_source(true) *)
-          }
-
-        | 'h'          
-        | 'j'          
-        | 'l'          
-        | 'n'          
-        | 'r'          
-        | 't'          
-        | 'v'          
-        | 'x' 
-        | 'a'
-        | 'b'
-        | 'c'
-        | 'd'
-        | 'e' 
-          -> assert false    
-        | _ -> assert false)
