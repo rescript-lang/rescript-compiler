@@ -339,7 +339,7 @@
                   
 <pre><span id="VALobject_"><span class="keyword">val</span> object_</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">object_ dict</code> makes a JSON objet of the <code class="code">Js.Dict.t</code> <code class="code">dict</code><br>
+                    <code class="code">object_ dict</code> makes a JSON object of the <code class="code">Js.Dict.t</code> <code class="code">dict</code><br>
  
                     </div>
                     
@@ -459,7 +459,7 @@ let _ =
 
 let dict = Js.Dict.empty () in 
 Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "age" (Js.Json.number 30.0); 
 Js.Dict.set dict "likes" 
   (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
@@ -483,11 +483,11 @@ Js.log @@ Js.Json.stringify (Js.Json.object_ dict)
 
 let dict = Js.Dict.empty () in 
 Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "age" (Js.Json.number 30.0); 
 Js.Dict.set dict "likes" 
   (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 2
+Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
 </code></pre>  </pre>
                     </div>
                     </div>

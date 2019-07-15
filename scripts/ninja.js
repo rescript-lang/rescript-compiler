@@ -1779,15 +1779,28 @@ function main() {
         } catch (e) {}
         cp.execSync(`git clean -dfx jscomp lib`, {
           encoding: "utf8",
-          cwd: path.join(__dirname,'..'),
+          cwd: path.join(__dirname, ".."),
           stdio: [0, 1, 2]
-        });        
+        });
         break;
       case "config":
         console.log(`config for the first time may take a while`);
         updateDev();
         updateRelease();
 
+        break;
+      case "docs":
+        console.log(`building docs`);
+        require('./doc_gen').main()
+        break;
+      case "help":
+        console.log(`supported subcommands:
+[exe] config        
+[exe] build
+[exe] docs
+[exe] help
+[exe] clean
+        `)
         break;
       default:
         if (process.argv.length === emptyCount) {
