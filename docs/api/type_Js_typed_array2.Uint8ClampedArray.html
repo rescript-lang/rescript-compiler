@@ -21,12 +21,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;buffer&nbsp;:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.array_buffer&nbsp;=&nbsp;<span class="string">""</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;byteLength&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;byteOffset&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.array_buffer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"buffer"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;byteLength&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"byteLength"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;byteOffset&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"byteOffset"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;setArray&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"set"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
@@ -34,11 +34,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"set"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;length&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;length&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"length"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;copyWithin&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;to_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;to_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"copyWithin"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;copyWithinFrom&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;to_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;from:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"copyWithin"</span><br>
@@ -73,28 +74,29 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"sort"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;includes&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"includes"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;indexOf&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"indexOf"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;indexOfFrom&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;from:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"indexOf"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;join&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;join&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">"join"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;joinWith&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"join"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;lastIndexOf&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"lastIndexOf"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;lastIndexOfFrom&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;from:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"lastIndexOf"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;slice&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;start:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;end_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;start:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;end_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"slice"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;copy&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -104,18 +106,18 @@
 &nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"slice"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;subarray&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;start:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;end_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;start:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;end_:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"subarray"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;subarrayFrom&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"subarray"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toString&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">""</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toString&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"toString"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toLocaleString&nbsp;:&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"toLocaleString"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;every&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"every"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;everyi&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -124,7 +126,7 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;filter&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;=&nbsp;<span class="string">"filter"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;filteri&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -132,22 +134,22 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;find&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">"find"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;findi&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">"find"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;findIndex&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"findIndex"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;findIndexi&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
 &nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"findIndex"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;forEach&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"forEach"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;forEachi&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -156,7 +158,7 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;map&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.typed_array&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.typed_array&nbsp;=&nbsp;<span class="string">"map"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;mapi&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -164,7 +166,7 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;reduce&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b<br>
-&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"reduce"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;reducei&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -172,14 +174,14 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;reduceRight&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b<br>
-&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"reduceRight"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;reduceRighti&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;=&nbsp;<span class="string">"reduceRight"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;some&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;[@bs])&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"some"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;somei&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_typed_array2</span>.<span class="constructor">Uint8ClampedArray</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
