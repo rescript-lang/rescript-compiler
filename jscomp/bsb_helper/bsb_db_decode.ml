@@ -110,12 +110,16 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-type ml_info = Ml_source of bool * Bsb_db.case
+
 
 type module_info =  {
-  mli_info : Bsb_db.mli_info;
-  ml_info : ml_info;
-  name_sans_extension : string
+  (* mli_info : mli_info;
+  ml_info : ml_info; *)
+  case : Bsb_db.case; 
+  (* module and interface at least 
+    should have consistent case
+  *)
+  dir_name : string
 } 
 
 
@@ -130,150 +134,14 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
-    let name_sans_extension = 
-        Ext_string.extract_until whole cursor ',' in 
-    Some (match whole.[!cursor] with
-        | 'f'
-          -> 
+    let case = whole.[!cursor] = '1' in 
+    incr cursor; 
+    let dir_name = 
+        extract_line whole cursor  in 
+    Some 
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_empty
+            dir_name;
+            case 
           }
-        | 'g'
-          -> 
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(false,false)
-          }
-        | 'h'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(false,true)
-          }
-        | 'i'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(true,false)}
-
-        | 'j'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(true,true)}
-
-        (* another group *)
-        | 'k'
-          -> {
-              name_sans_extension;
-              ml_info = Ml_source(false,true) ;
-              mli_info = Mli_empty
-            } 
-        | 'l'
-          -> {
-              name_sans_extension;
-              ml_info = Ml_source(false,true) ;
-              mli_info = Mli_source(false,false)
-            } 
-        | 'm'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(false,true)
-          }
-        | 'n'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(true,false)
-          }
-        | 'o'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(true,true)
-          }
-        (* another group*)
-        | 'p'
-          -> 
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_empty
-          }
-
-
-        | 'q'
-          ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(false,false)
-          }
-        | 'r'
-          ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(false,true)
-          }
-        | 's'
-          ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(true,false)
-          }
-        | 't'
-          -> 
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(true,true)
-          }
-        (* another group *)
-        | 'u'
-          -> 
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_empty
-          }
-        | 'v'
-          ->
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(false,false)
-          }
-        | 'w'
-          ->
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(false,true)
-          }
-        | 'x' -> 
-
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(true,false)
-          }
-        | 'y' 
-          -> 
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(true,true)
-          }
-        | 'a'
-
-        | 'b'
-
-        | 'c'
-
-        | 'd'
-
-        | 'e' 
-          -> assert false    
-        | _ -> assert false)
+        
+      

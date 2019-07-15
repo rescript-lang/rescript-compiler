@@ -89,8 +89,8 @@ let read_deps (fn : string) : string list =
 
 type kind = Js | Bytecode | Native
 
-let output_file (oc : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string oc (match namespace with 
+let output_file (buf : Ext_buffer.t) source namespace = 
+  Ext_buffer.add_string buf (match namespace with 
       | None ->  source 
       | Some ns ->
         Ext_namespace.make ~ns source)
@@ -107,20 +107,20 @@ let oc_cmi buf namespace source =
   Ext_buffer.add_string buf Literals.suffix_cmi 
 
 
-let handle_module_info 
-    module_info 
-    input_file 
-    namespace rhs_suffix buf = 
-  let source = module_info.Bsb_db_decode.name_sans_extension in 
-  if source <> input_file then 
-    begin 
-      Ext_buffer.add_char buf ' ';  
-      output_file buf source namespace;
-      Ext_buffer.add_string buf rhs_suffix;
-      (* #3260 cmj changes does not imply cmi change anymore *)
-      oc_cmi buf namespace source
-    end
+(* For cases with self cycle
+    e.g, in b.ml
+    {[
+      include B
+    ]}
+    When ns is not turned on, it makes sense that b may come from third party package.
+    Hoever, this case is wont supported. 
+    It complicates when it has interface file or not.
+    - if it has interface file, the current interface will have priority, failed to build?
+    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
 
+    When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
+    it can be errored out earlier
+*)
 let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) = 
   let opt = Bsb_db_decode.find_opt db 0 dependent_module in 
   match opt with 
@@ -131,7 +131,6 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
     else None 
 let oc_impl 
     (mlast : string)
-    (input_file : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
@@ -141,9 +140,10 @@ let oc_impl
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
+  let cur_module_name = Ext_filename.module_name mlast  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
-    output_file buf input_file namespace ; 
+    output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
     Ext_buffer.add_string buf lhs_suffix; 
     Ext_buffer.add_string buf dep_lit ) in  
   Ext_option.iter namespace (fun ns -> 
@@ -158,14 +158,32 @@ let oc_impl
   while !offset < size do 
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+      begin
+        prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+        exit 2
+      end
+    );
     (match  
       find_module db dependent_module is_not_lib_dir index  
     with      
     | None -> ()
-    | Some module_info -> 
+    | Some ({dir_name; case }) -> 
       begin 
         Lazy.force at_most_once;
-        handle_module_info module_info input_file namespace rhs_suffix buf
+        let source = 
+          Filename.concat dir_name
+          (if case then 
+            dependent_module
+          else 
+            Ext_string.uncapitalize_ascii dependent_module) in 
+        Ext_buffer.add_char buf ' ';  
+        output_file buf source namespace;
+        Ext_buffer.add_string buf rhs_suffix;
+        
+        (* #3260 cmj changes does not imply cmi change anymore *)
+        oc_cmi buf namespace source
+
       end);     
     offset := next_tab + 1  
   done ;
@@ -179,15 +197,15 @@ let oc_impl
 *)
 let oc_intf
     mliast    
-    input_file 
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t) : unit =     
+  
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
-    output_file buf input_file namespace ;   
+    output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
     Ext_buffer.add_string buf Literals.suffix_cmi ; 
     Ext_buffer.add_string buf dep_lit) in 
   Ext_option.iter namespace (fun ns -> 
@@ -195,6 +213,7 @@ let oc_intf
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
+  let cur_module_name = Ext_filename.module_name mliast in
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 
   let offset = ref 1 in 
@@ -202,16 +221,25 @@ let oc_intf
   while !offset < size do 
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+       begin
+         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+         exit 2
+       end
+    );
     (match  find_module db dependent_module is_not_lib_dir index 
      with     
      | None -> ()
-     | Some module_info -> 
-       let source = module_info.name_sans_extension in 
-       if source <> input_file then
-         begin 
-           Lazy.force at_most_once; 
-           oc_cmi buf namespace source             
-         end);
+     | Some {dir_name; case} -> 
+       let source = 
+        Filename.concat dir_name 
+        (if case then dependent_module else
+          Ext_string.uncapitalize_ascii dependent_module
+        )
+      in 
+       Lazy.force at_most_once; 
+       oc_cmi buf namespace source             
+    );
     offset := next_tab + 1   
   done;  
   if !has_deps then
@@ -225,14 +253,13 @@ let emit_d
     Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name in   
   let buf = Ext_buffer.create 2048 in 
-  let input_file = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
+  
   oc_impl 
     mlast
-    input_file 
     index 
     data
     namespace
@@ -242,7 +269,6 @@ let emit_d
   if mliast <> "" then begin
     oc_intf 
       mliast
-      input_file 
       index 
       data 
       namespace 

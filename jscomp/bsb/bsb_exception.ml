@@ -79,7 +79,7 @@ let print (fmt : Format.formatter) (x : error) =
                         pos.pos_lnum s
   | Invalid_spec s ->
     Format.fprintf fmt
-    "@{<error>Error: Invalid bsconfig.json%s@}" s
+    "@{<error>Error: Invalid bsconfig.json %s@}" s
   | Invalid_json s ->
     Format.fprintf fmt
     "File %S, line 1\n\
