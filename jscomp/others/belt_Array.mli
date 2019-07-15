@@ -287,7 +287,7 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
 
     [offset] can be negative;and is evaluated as [length arr - offset]
 
-    [fill arr offset:(-1) len:1 ] means fill the last element,
+    [fill arr ~offset:(-1) ~len:1] means fill the last element,
     if the array does not have enough data;[fill] will ignore it
 
     @example {[
