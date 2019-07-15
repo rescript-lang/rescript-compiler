@@ -338,7 +338,7 @@ val forEach: 'a array ->  ('a -> unit ) -> unit
 (** [forEach xs f]
 
     Call [f] on each element of [xs] from the beginning to end. [f] returns [unit];so no
-    new array is created. Use [foreach] when you are primarily concerned with repetitively
+    new array is created. Use [forEach] when you are primarily concerned with repetitively
     creating side effects.
 
     @example {[
