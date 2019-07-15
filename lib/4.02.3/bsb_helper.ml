@@ -3929,12 +3929,14 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
+    let case = whole.[!cursor] = '1' in 
+    incr cursor; 
     let dir_name = 
-        Ext_string.extract_until whole cursor ',' in 
+        extract_line whole cursor  in 
     Some 
           {
             dir_name;
-            case = whole.[!cursor] = '1';
+            case 
           }
         
       
