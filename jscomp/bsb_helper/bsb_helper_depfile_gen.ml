@@ -89,8 +89,8 @@ let read_deps (fn : string) : string list =
 
 type kind = Js | Bytecode | Native
 
-let output_file (oc : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string oc (match namespace with 
+let output_file (buf : Ext_buffer.t) source namespace = 
+  Ext_buffer.add_string buf (match namespace with 
       | None ->  source 
       | Some ns ->
         Ext_namespace.make ~ns source)
