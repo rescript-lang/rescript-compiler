@@ -4956,21 +4956,23 @@ let handle_module_info
     input_file 
     namespace rhs_suffix buf = 
   let source = module_info.Bsb_db_decode.name_sans_extension in 
-  if source <> input_file then 
-    begin 
-      Ext_buffer.add_char buf ' ';  
-      output_file buf source namespace;
-      Ext_buffer.add_string buf rhs_suffix;
-      (* #3260 cmj changes does not imply cmi change anymore *)
-      oc_cmi buf namespace source
-    end
+  Ext_buffer.add_char buf ' ';  
+  output_file buf source namespace;
+  Ext_buffer.add_string buf rhs_suffix;
+  (* #3260 cmj changes does not imply cmi change anymore *)
+  oc_cmi buf namespace source
+
 (* For cases with self cycle
     e.g, in b.ml
     {[
       include B
     ]}
-    When ns is not turned on, it makes sense that b may come from third
-    party package.
+    When ns is not turned on, it makes sense that b may come from third party package.
+    Hoever, this case is wont supported. 
+    It complicates when it has interface file or not.
+    - if it has interface file, the current interface will have priority, failed to build?
+    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
+
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
 *)
@@ -4994,6 +4996,7 @@ let oc_impl
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
+  let cur_module_name = Ext_filename.module_name mlast  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
     output_file buf input_file_sans_extension namespace ; 
@@ -5011,6 +5014,12 @@ let oc_impl
   while !offset < size do 
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+      begin
+        prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+        exit 2
+      end
+    );
     (match  
       find_module db dependent_module is_not_lib_dir index  
     with      
@@ -5037,6 +5046,7 @@ let oc_intf
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t) : unit =     
+  
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
@@ -5048,6 +5058,7 @@ let oc_intf
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
+  let cur_module_name = Ext_filename.module_name mliast in
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 
   let offset = ref 1 in 
@@ -5055,16 +5066,20 @@ let oc_intf
   while !offset < size do 
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+       begin
+         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+         exit 2
+       end
+    );
     (match  find_module db dependent_module is_not_lib_dir index 
      with     
      | None -> ()
      | Some module_info -> 
        let source = module_info.name_sans_extension in 
-       if source <> input_file_sans_extension then
-         begin 
-           Lazy.force at_most_once; 
-           oc_cmi buf namespace source             
-         end);
+       Lazy.force at_most_once; 
+       oc_cmi buf namespace source             
+    );
     offset := next_tab + 1   
   done;  
   if !has_deps then
@@ -5083,6 +5098,7 @@ let emit_d
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
+  
   oc_impl 
     mlast
     input_file_sans_extension 
