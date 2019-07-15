@@ -319,9 +319,9 @@ val blit:
     [v2 = \[|20;21;22;23;24;25;26;27|\]]. The result shown is the content of the destination array.
 
     @example {[
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 ->
+      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
         [|20;21;14;15;16;25;26;27|]
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 ->
+      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
         [|10;11;14;15;16;15;16;17|]
       ]}
 
