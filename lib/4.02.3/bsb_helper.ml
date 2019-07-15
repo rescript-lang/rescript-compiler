@@ -3779,12 +3779,17 @@ val decode_internal :
 val read_build_cache : 
   dir:string -> t
 
-type ml_info = Ml_source of bool * Bsb_db.case
+type mli_info =       
+    | Mli_empty
+    | Mli_source of bool   
+
+type ml_info = Ml_source of bool 
 
 type module_info = {
-  mli_info : Bsb_db.mli_info;
-  ml_info : ml_info;
-  name_sans_extension : string
+  (* mli_info : mli_info;
+  ml_info : ml_info; *)
+  case : Bsb_db.case;
+  dir_name : string
 } 
 
 val find_opt :
@@ -3906,12 +3911,20 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-type ml_info = Ml_source of bool * Bsb_db.case
+type mli_info =       
+    | Mli_empty
+    | Mli_source of bool 
+type ml_info = Ml_source of bool 
+
 
 type module_info =  {
-  mli_info : Bsb_db.mli_info;
-  ml_info : ml_info;
-  name_sans_extension : string
+  (* mli_info : mli_info;
+  ml_info : ml_info; *)
+  case : Bsb_db.case; 
+  (* module and interface at least 
+    should have consistent case
+  *)
+  dir_name : string
 } 
 
 
@@ -3926,150 +3939,130 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
-    let name_sans_extension = 
+    let dir_name = 
         Ext_string.extract_until whole cursor ',' in 
+    (* 2 * 2 * 3 = 12 cases *)
     Some (match whole.[!cursor] with
         | 'f'
           -> 
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_empty
+            dir_name;
+            (* ml_info = Ml_source(false);
+            mli_info = Mli_empty; *)
+            case = false;
           }
         | 'g'
           -> 
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(false,false)
+            dir_name;
+            (* ml_info = Ml_source(false);
+            mli_info = Mli_source(false); *)
+            case = false;
           }
-        | 'h'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(false,true)
-          }
+      
         | 'i'
           ->
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(true,false)}
-
-        | 'j'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,false);
-            mli_info = Mli_source(true,true)}
-
+            case = false;
+            dir_name }
+            (* ml_info = Ml_source(false);
+            mli_info = Mli_source(true)} *)
+       
         (* another group *)
         | 'k'
           -> {
-              name_sans_extension;
-              ml_info = Ml_source(false,true) ;
-              mli_info = Mli_empty
+              case = true;
+              dir_name;
+              (* ml_info = Ml_source(false) ;
+              mli_info = Mli_empty *)
             } 
-        | 'l'
-          -> {
-              name_sans_extension;
-              ml_info = Ml_source(false,true) ;
-              mli_info = Mli_source(false,false)
-            } 
+     
         | 'm'
           ->
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(false,true)
+            case = true;
+            dir_name;
+            (* ml_info = Ml_source(false) ;
+            mli_info = Mli_source(false) *)
           }
-        | 'n'
-          ->
-          {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(true,false)
-          }
+  
         | 'o'
           ->
           {
-            name_sans_extension;
-            ml_info = Ml_source(false,true) ;
-            mli_info = Mli_source(true,true)
+            case = true;
+            dir_name;
+            (* ml_info = Ml_source(false) ;
+            mli_info = Mli_source(true) *)
           }
         (* another group*)
         | 'p'
           -> 
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_empty
+          {
+            case = false;
+            dir_name;
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_empty *)
           }
 
 
         | 'q'
           ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(false,false)
+          {
+            case = false;
+            dir_name;
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_source(false) *)
           }
-        | 'r'
-          ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(false,true)
-          }
+  
         | 's'
           ->
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(true,false)
+          {
+            case = false;
+            dir_name;
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_source(true) *)
           }
-        | 't'
-          -> 
-          {name_sans_extension;
-           ml_info = Ml_source(true, false);
-           mli_info = Mli_source(true,true)
-          }
+              
         (* another group *)
         | 'u'
           -> 
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_empty
+          {
+            case = true;
+            dir_name ; 
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_empty *)
           }
-        | 'v'
-          ->
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(false,false)
-          }
+            
         | 'w'
           ->
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(false,true)
+          {
+            case = true;
+            dir_name ; 
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_source(false) *)
           }
-        | 'x' -> 
-
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(true,false)
-          }
+             
         | 'y' 
           -> 
-          {name_sans_extension ; 
-           ml_info = Ml_source(true, true);
-           mli_info = Mli_source(true,true)
+          {
+            case = true;
+            dir_name ; 
+           (* ml_info = Ml_source(true);
+           mli_info = Mli_source(true) *)
           }
+
+        | 'h'          
+        | 'j'          
+        | 'l'          
+        | 'n'          
+        | 'r'          
+        | 't'          
+        | 'v'          
+        | 'x' 
         | 'a'
-
         | 'b'
-
         | 'c'
-
         | 'd'
-
         | 'e' 
           -> assert false    
         | _ -> assert false)
@@ -4933,8 +4926,8 @@ let read_deps (fn : string) : string list =
 
 type kind = Js | Bytecode | Native
 
-let output_file (oc : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string oc (match namespace with 
+let output_file (buf : Ext_buffer.t) source namespace = 
+  Ext_buffer.add_string buf (match namespace with 
       | None ->  source 
       | Some ns ->
         Ext_namespace.make ~ns source)
@@ -4950,17 +4943,6 @@ let oc_cmi buf namespace source =
   output_file buf source namespace;
   Ext_buffer.add_string buf Literals.suffix_cmi 
 
-
-let handle_module_info 
-    module_info 
-    input_file 
-    namespace rhs_suffix buf = 
-  let source = module_info.Bsb_db_decode.name_sans_extension in 
-  Ext_buffer.add_char buf ' ';  
-  output_file buf source namespace;
-  Ext_buffer.add_string buf rhs_suffix;
-  (* #3260 cmj changes does not imply cmi change anymore *)
-  oc_cmi buf namespace source
 
 (* For cases with self cycle
     e.g, in b.ml
@@ -4986,7 +4968,6 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
     else None 
 let oc_impl 
     (mlast : string)
-    (input_file_sans_extension : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
@@ -4999,7 +4980,7 @@ let oc_impl
   let cur_module_name = Ext_filename.module_name mlast  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
-    output_file buf input_file_sans_extension namespace ; 
+    output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
     Ext_buffer.add_string buf lhs_suffix; 
     Ext_buffer.add_string buf dep_lit ) in  
   Ext_option.iter namespace (fun ns -> 
@@ -5024,10 +5005,22 @@ let oc_impl
       find_module db dependent_module is_not_lib_dir index  
     with      
     | None -> ()
-    | Some module_info -> 
+    | Some ({dir_name; case }) -> 
       begin 
         Lazy.force at_most_once;
-        handle_module_info module_info input_file_sans_extension namespace rhs_suffix buf
+        let source = 
+          Filename.concat dir_name
+          (if case then 
+            dependent_module
+          else 
+            Ext_string.uncapitalize_ascii dependent_module) in 
+        Ext_buffer.add_char buf ' ';  
+        output_file buf source namespace;
+        Ext_buffer.add_string buf rhs_suffix;
+        
+        (* #3260 cmj changes does not imply cmi change anymore *)
+        oc_cmi buf namespace source
+
       end);     
     offset := next_tab + 1  
   done ;
@@ -5041,7 +5034,6 @@ let oc_impl
 *)
 let oc_intf
     mliast    
-    input_file_sans_extension 
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
@@ -5050,7 +5042,7 @@ let oc_intf
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
-    output_file buf input_file_sans_extension namespace ;   
+    output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
     Ext_buffer.add_string buf Literals.suffix_cmi ; 
     Ext_buffer.add_string buf dep_lit) in 
   Ext_option.iter namespace (fun ns -> 
@@ -5075,8 +5067,13 @@ let oc_intf
     (match  find_module db dependent_module is_not_lib_dir index 
      with     
      | None -> ()
-     | Some module_info -> 
-       let source = module_info.name_sans_extension in 
+     | Some {dir_name; case} -> 
+       let source = 
+        Filename.concat dir_name 
+        (if case then dependent_module else
+          Ext_string.uncapitalize_ascii dependent_module
+        )
+      in 
        Lazy.force at_most_once; 
        oc_cmi buf namespace source             
     );
@@ -5093,7 +5090,6 @@ let emit_d
     Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name in   
   let buf = Ext_buffer.create 2048 in 
-  let input_file_sans_extension = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
@@ -5101,7 +5097,6 @@ let emit_d
   
   oc_impl 
     mlast
-    input_file_sans_extension 
     index 
     data
     namespace
@@ -5111,7 +5106,6 @@ let emit_d
   if mliast <> "" then begin
     oc_intf 
       mliast
-      input_file_sans_extension 
       index 
       data 
       namespace 

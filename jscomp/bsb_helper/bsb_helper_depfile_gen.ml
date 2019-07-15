@@ -107,17 +107,6 @@ let oc_cmi buf namespace source =
   Ext_buffer.add_string buf Literals.suffix_cmi 
 
 
-let handle_module_info 
-    module_info 
-    input_file 
-    namespace rhs_suffix buf = 
-  let source = module_info.Bsb_db_decode.name_sans_extension in 
-  Ext_buffer.add_char buf ' ';  
-  output_file buf source namespace;
-  Ext_buffer.add_string buf rhs_suffix;
-  (* #3260 cmj changes does not imply cmi change anymore *)
-  oc_cmi buf namespace source
-
 (* For cases with self cycle
     e.g, in b.ml
     {[
@@ -142,7 +131,6 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
     else None 
 let oc_impl 
     (mlast : string)
-    (input_file_sans_extension : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
@@ -155,7 +143,7 @@ let oc_impl
   let cur_module_name = Ext_filename.module_name mlast  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
-    output_file buf input_file_sans_extension namespace ; 
+    output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
     Ext_buffer.add_string buf lhs_suffix; 
     Ext_buffer.add_string buf dep_lit ) in  
   Ext_option.iter namespace (fun ns -> 
@@ -180,10 +168,22 @@ let oc_impl
       find_module db dependent_module is_not_lib_dir index  
     with      
     | None -> ()
-    | Some module_info -> 
+    | Some ({dir_name; case }) -> 
       begin 
         Lazy.force at_most_once;
-        handle_module_info module_info input_file_sans_extension namespace rhs_suffix buf
+        let source = 
+          Filename.concat dir_name
+          (if case then 
+            dependent_module
+          else 
+            Ext_string.uncapitalize_ascii dependent_module) in 
+        Ext_buffer.add_char buf ' ';  
+        output_file buf source namespace;
+        Ext_buffer.add_string buf rhs_suffix;
+        
+        (* #3260 cmj changes does not imply cmi change anymore *)
+        oc_cmi buf namespace source
+
       end);     
     offset := next_tab + 1  
   done ;
@@ -197,7 +197,6 @@ let oc_impl
 *)
 let oc_intf
     mliast    
-    input_file_sans_extension 
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
@@ -206,7 +205,7 @@ let oc_intf
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
-    output_file buf input_file_sans_extension namespace ;   
+    output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
     Ext_buffer.add_string buf Literals.suffix_cmi ; 
     Ext_buffer.add_string buf dep_lit) in 
   Ext_option.iter namespace (fun ns -> 
@@ -231,8 +230,13 @@ let oc_intf
     (match  find_module db dependent_module is_not_lib_dir index 
      with     
      | None -> ()
-     | Some module_info -> 
-       let source = module_info.name_sans_extension in 
+     | Some {dir_name; case} -> 
+       let source = 
+        Filename.concat dir_name 
+        (if case then dependent_module else
+          Ext_string.uncapitalize_ascii dependent_module
+        )
+      in 
        Lazy.force at_most_once; 
        oc_cmi buf namespace source             
     );
@@ -249,7 +253,6 @@ let emit_d
     Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name in   
   let buf = Ext_buffer.create 2048 in 
-  let input_file_sans_extension = Ext_filename.chop_extension_maybe mlast in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
@@ -257,7 +260,6 @@ let emit_d
   
   oc_impl 
     mlast
-    input_file_sans_extension 
     index 
     data
     namespace
@@ -267,7 +269,6 @@ let emit_d
   if mliast <> "" then begin
     oc_intf 
       mliast
-      input_file_sans_extension 
       index 
       data 
       namespace 

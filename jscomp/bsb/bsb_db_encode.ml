@@ -76,7 +76,7 @@ let encode_info (x : Bsb_db.ml_info ) (y : Bsb_db.mli_info) : char =
 
 
 let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_string buf x.name_sans_extension;
+  Ext_buffer.add_string buf (Filename.dirname x.name_sans_extension);
   comma buf; 
   Ext_buffer.add_char buf (encode_info x.ml_info x.mli_info)
   
