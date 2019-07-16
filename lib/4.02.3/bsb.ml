@@ -749,6 +749,18 @@ val capitalize_sub:
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1283,7 +1295,29 @@ let lowercase_ascii (s : string) =
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
 
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
@@ -12643,6 +12677,19 @@ val not_equal :
   t -> 
   string -> 
   bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -12784,6 +12831,28 @@ let not_equal  (b : t) (s : string) =
   || not_equal_aux b.buffer s 0 s_len
 
 
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff))
+let add_int_2 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff))  
+let add_int_3 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) 
+
+let add_int_4 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 24 land 0xff)) 
+
+
+
 end
 module Bsb_db_encode : sig 
 #1 "bsb_db_encode.mli"
@@ -12860,14 +12929,7 @@ let comma buf =
  *)  
 
 
-let encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (if x.case then '1' else '0');
-  Ext_buffer.add_string buf x.dir
   
-  
-  
-  
-
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
@@ -12876,20 +12938,45 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   let len = String_map.cardinal db in 
   nl buf ; 
   Ext_buffer.add_string buf (string_of_int len);
-  String_map.iter db (fun name module_info ->
+  let mapping = String_hashtbl.create 50 in 
+  String_map.iter db (fun name {dir} ->
       nl buf; 
       Ext_buffer.add_string buf name; 
-
+      if not (String_hashtbl.mem mapping dir) then
+        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
     ); 
-  String_map.iter db (fun name module_info -> 
-      nl buf; 
-      encode_module_info module_info buf 
-    )
+  let length = String_hashtbl.length mapping in   
+  let rev_mapping = Array.make length "" in 
+  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  nl buf;
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; Ext_buffer.add_char buf  '\t');
+  nl buf;
+  let len_encoding = 
+    let max_range = length lsl 1 + 1 in 
+    if max_range <= 0xff then begin 
+      Ext_buffer.add_char buf '1';
+      Ext_buffer.add_int_1
+    end
+    else if max_range <= 0xff_ff then begin 
+      Ext_buffer.add_char buf '2';
+      Ext_buffer.add_int_2
+    end
+    else if length <= 0x7f_ff_ff then begin 
+      Ext_buffer.add_char buf '3';
+      Ext_buffer.add_int_3
+    end
+    else if length <= 0x7f_ff_ff_ff then begin
+      Ext_buffer.add_char buf '4';
+      Ext_buffer.add_int_4
+    end else assert false in 
+  String_map.iter db (fun _ module_info ->       
+      len_encoding buf 
+        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+    
 let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
   let buf = Ext_buffer.create 100_000 in 
-  Ext_buffer.add_char buf '\n';
-  let len = Array.length dbs in 
-  Ext_buffer.add_string buf (string_of_int len); 
+  nl buf;
+  Ext_buffer.add_string buf (string_of_int (Array.length dbs)); 
   Ext_array.iter dbs (fun x ->  encode_single x  buf);
   Ext_buffer.output_buffer oc buf
 

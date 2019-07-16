@@ -27,38 +27,41 @@
 
  type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int;
+   dir_info_offset : int ; 
+   module_info_offset : int;
  }
 
 type t = group array * string (* string is whole content*)
 
-
-
-let bool buf b =   
-  Buffer.add_char buf (if b then '1' else '0')
 
 type cursor = int ref 
 
 let extract_line (x : string) (cur : cursor) : string =
   Ext_string.extract_until x cur '\n'
 
-let next_mdoule_info (s : string) (cur : int) ~count  =  
-  if count = 0 then cur 
-  else 
-    Ext_string.index_count s cur '\n' count  + 1
 
+
+(*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
-and decode_single x (offset : cursor) : group = 
-  let cardinal = int_of_string (extract_line x offset) in 
-  let modules = decode_modules x offset cardinal in 
-  let meta_info_offset = !offset in 
-  offset := next_mdoule_info x meta_info_offset ~count:cardinal;
-  { modules ; meta_info_offset }
-and decode_modules x (offset : cursor) cardinal =   
-  let result = Array.make cardinal "" in 
-  for i = 0 to cardinal - 1 do 
+and decode_single (x : string) (offset : cursor) : group = 
+  let module_number = int_of_string (extract_line x offset) in 
+  let modules = decode_modules x offset module_number in 
+  let dir_info_offset = !offset in 
+  let module_info_offset = 
+    Ext_string.index_count x dir_info_offset '\n' 1 + 1 in
+  let dir_length =   (Char.code x.[module_info_offset] - Char.code '0') in
+  offset := 
+    1 +
+    dir_length * module_number +
+    1 
+    ;
+  { modules ; dir_info_offset; module_info_offset ; dir_length}
+and decode_modules x (offset : cursor) module_number =   
+  let result = Array.make module_number "" in 
+  for i = 0 to module_number - 1 do 
     Array.unsafe_set result i (extract_line x offset)
   done ;
   result
@@ -131,17 +134,26 @@ let find_opt
   match i with 
   | None -> None 
   | Some count ->     
-    let cursor = 
-      ref (next_mdoule_info whole group.meta_info_offset ~count)
+    let encode_len = group.dir_length in 
+    let index = 
+      Ext_string.get_1_2_3_4 whole 
+      ~off:(group.module_info_offset + 1 + count * encode_len)
+      encode_len
     in 
-    let case = whole.[!cursor] = '1' in 
-    incr cursor; 
-    let dir_name = 
-        extract_line whole cursor  in 
-    Some 
-          {
-            dir_name;
-            case 
-          }
+    let case = not (index mod 2 = 0) in 
+    let ith = index lsr 1 in 
+    let dir_name_start = 
+      if ith = 0 then group.dir_info_offset 
+      else 
+        Ext_string.index_count 
+          whole group.dir_info_offset '\t'
+          ith + 1
+    in 
+    let dir_name_finish = 
+      Ext_string.index_count 
+      whole dir_name_start   '\t' 1 
+     in    
+    Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+  
         
       

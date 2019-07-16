@@ -139,3 +139,25 @@ let not_equal  (b : t) (s : string) =
   b_len <> s_len 
   || not_equal_aux b.buffer s 0 s_len
 
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff))
+let add_int_2 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff))  
+let add_int_3 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) 
+
+let add_int_4 (buf : t ) (x : int ) = 
+  add_char buf (Char.unsafe_chr (x land 0xff));  
+  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) ;
+  add_char buf (Char.unsafe_chr (x lsr 24 land 0xff)) 
+
+

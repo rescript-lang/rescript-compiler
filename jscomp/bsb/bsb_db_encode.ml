@@ -42,14 +42,7 @@ let comma buf =
  *)  
 
 
-let encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (if x.case then '1' else '0');
-  Ext_buffer.add_string buf x.dir
   
-  
-  
-  
-
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
@@ -58,20 +51,45 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   let len = String_map.cardinal db in 
   nl buf ; 
   Ext_buffer.add_string buf (string_of_int len);
-  String_map.iter db (fun name module_info ->
+  let mapping = String_hashtbl.create 50 in 
+  String_map.iter db (fun name {dir} ->
       nl buf; 
       Ext_buffer.add_string buf name; 
-
+      if not (String_hashtbl.mem mapping dir) then
+        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
     ); 
-  String_map.iter db (fun name module_info -> 
-      nl buf; 
-      encode_module_info module_info buf 
-    )
+  let length = String_hashtbl.length mapping in   
+  let rev_mapping = Array.make length "" in 
+  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  nl buf;
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; Ext_buffer.add_char buf  '\t');
+  nl buf;
+  let len_encoding = 
+    let max_range = length lsl 1 + 1 in 
+    if max_range <= 0xff then begin 
+      Ext_buffer.add_char buf '1';
+      Ext_buffer.add_int_1
+    end
+    else if max_range <= 0xff_ff then begin 
+      Ext_buffer.add_char buf '2';
+      Ext_buffer.add_int_2
+    end
+    else if length <= 0x7f_ff_ff then begin 
+      Ext_buffer.add_char buf '3';
+      Ext_buffer.add_int_3
+    end
+    else if length <= 0x7f_ff_ff_ff then begin
+      Ext_buffer.add_char buf '4';
+      Ext_buffer.add_int_4
+    end else assert false in 
+  String_map.iter db (fun _ module_info ->       
+      len_encoding buf 
+        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+    
 let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
   let buf = Ext_buffer.create 100_000 in 
-  Ext_buffer.add_char buf '\n';
-  let len = Array.length dbs in 
-  Ext_buffer.add_string buf (string_of_int len); 
+  nl buf;
+  Ext_buffer.add_string buf (string_of_int (Array.length dbs)); 
   Ext_array.iter dbs (fun x ->  encode_single x  buf);
   Ext_buffer.output_buffer oc buf
 

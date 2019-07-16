@@ -29,7 +29,9 @@ type t
 
 type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int ;
+   dir_info_offset : int ; 
+   module_info_offset : int ;
  }
 
 (* exposed only for testing *)
