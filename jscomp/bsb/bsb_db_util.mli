@@ -23,7 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-open Bsb_db
+
 
 val conflict_module_info:
   string ->
@@ -34,11 +34,11 @@ val conflict_module_info:
 
 val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
 
-val sanity_check : t -> unit
+val sanity_check : Bsb_db.t -> unit
 
 (** 
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
 val collect_module_by_filename : 
-  dir:string -> t ->  string -> t
+  dir:string -> Bsb_db.t ->  string -> Bsb_db.t

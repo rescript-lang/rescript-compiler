@@ -26,15 +26,13 @@ type module_info = Bsb_db.module_info
 type t = Bsb_db.t
 type case = Bsb_db.case
 
-let dir_of_module_info (x : module_info)
-  = 
-  Filename.dirname x.name_sans_extension
+
      
-let conflict_module_info modname a b = 
+let conflict_module_info modname (a : module_info) (b : module_info) = 
   Bsb_exception.conflict_module
     modname
-    (dir_of_module_info a)
-    (dir_of_module_info b)
+    a.dir
+    b.dir
 
 (* merge data info from two directories*)    
 let merge (acc : t) (sources : t) : t =
