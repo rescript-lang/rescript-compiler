@@ -206,21 +206,18 @@ let handle_module_info
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : unit =
-  match module_info.ml_info with
-  | Ml_source (is_re,_) ->
-    emit_impl_build  rules
-      package_specs
-      group_dir_index
-      oc 
-      ~has_checked_ppx
-      ~bs_suffix
-      ~no_intf_file:(module_info.mli_info = Mli_empty)
-      ~is_re
-      js_post_build_cmd      
-      namespace
-      input 
-  | Ml_empty
-    -> assert false
+  emit_impl_build  rules
+    package_specs
+    group_dir_index
+    oc 
+    ~has_checked_ppx
+    ~bs_suffix
+    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~is_re:module_info.is_re
+    js_post_build_cmd      
+    namespace
+    input 
+
 
 
 let handle_file_group 

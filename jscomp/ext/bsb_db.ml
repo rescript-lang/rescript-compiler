@@ -27,16 +27,19 @@ type case = bool
 (** true means upper case*)
 
 type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool  * case  
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
+    dir : string ; 
+    is_re : bool;
+    case : bool;
     name_sans_extension : string  ;
   }
 
@@ -57,16 +60,7 @@ let filename_sans_suffix_of_module_info (x : module_info) =
 
 
 let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
+  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 

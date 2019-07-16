@@ -7139,7 +7139,7 @@ type case = bool
 
 
 type ml_info =
-  | Ml_source of  bool  * bool
+  | Ml_source
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -7147,14 +7147,17 @@ type ml_info =
   
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool * bool
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
-    name_sans_extension : string
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
   }
 
 type t = module_info String_map.t 
@@ -7214,16 +7217,19 @@ type case = bool
 (** true means upper case*)
 
 type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool  * case  
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
+    dir : string ; 
+    is_re : bool;
+    case : bool;
     name_sans_extension : string  ;
   }
 
@@ -7244,16 +7250,7 @@ let filename_sans_suffix_of_module_info (x : module_info) =
 
 
 let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
+  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
@@ -7558,21 +7555,15 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-      match module_info.ml_info, module_info.mli_info with 
-      | Ml_empty, _ ->      
+      if module_info.ml_info = Ml_empty then
         Bsb_exception.no_implementation m 
-      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
-        ->
-        if impl_is_re <> intf_is_re then
-          Bsb_exception.not_consistent m
-      | Ml_source _ , Mli_empty -> ()    
     )    
 
 (* invariant check:
   ml and mli should have the same case, same path
 *)  
-let check (x : module_info) name_sans_extension =  
-  if x.name_sans_extension <> name_sans_extension then 
+let check (x : module_info) name_sans_extension case is_re =  
+  if x.name_sans_extension <> name_sans_extension || x.case <> case || x.is_re <> is_re then 
     Bsb_exception.invalid_spec 
       (Printf.sprintf 
          "implementation and interface have different path names or different cases %s vs %s"
@@ -7582,36 +7573,37 @@ let adjust_module_info
   (x : module_info option) 
   (suffix : string) 
   (name_sans_extension : string) 
-  (upper : case) : module_info =
+  (case : case) : module_info =
+  let dir = Filename.dirname name_sans_extension in 
   match suffix with 
   | ".ml" -> 
-    let ml_info : Bsb_db.ml_info = Ml_source  ( false, upper) in 
+    let ml_info : Bsb_db.ml_info = Ml_source  in 
     (match x with 
     | None -> 
-      {name_sans_extension ; ml_info ; mli_info = Mli_empty}
+      {dir ; name_sans_extension ; ml_info ; mli_info = Mli_empty; is_re = false ; case }
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case false;
       {x with ml_info })
   | ".re" -> 
-    let ml_info  : Bsb_db.ml_info = Ml_source  ( true, upper)in
+    let ml_info  : Bsb_db.ml_info = Ml_source in
     (match x with None -> 
-      {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
+      {dir ; name_sans_extension; ml_info  ; mli_info = Mli_empty; is_re = true; case} 
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case true;
       {x with ml_info})
   | ".mli" ->  
-    let mli_info : Bsb_db.mli_info = Mli_source (false, upper) in 
+    let mli_info : Bsb_db.mli_info = Mli_source in 
     (match x with None -> 
-      {name_sans_extension; mli_info ; ml_info = Ml_empty}
+      {dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = false; case}
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case false;
       {x with mli_info })
   | ".rei" -> 
-    let mli_info : Bsb_db.mli_info = Mli_source (true, upper) in
+    let mli_info : Bsb_db.mli_info = Mli_source in
     (match x with None -> 
-      { name_sans_extension; mli_info ; ml_info = Ml_empty}
+      { dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = true; case}
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case true;
       { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
@@ -12868,16 +12860,13 @@ let comma buf =
     - code too verbose
     - not readable 
  *)  
-let encode_info (x : Bsb_db.ml_info ) : char =   
-  match x with 
-  | Ml_empty -> assert false
-  | Ml_source(_,case) -> 
-    if case then '1' else '0'
+let encode_info (x : Bsb_db.module_info ) : char =     
+    if x.case then '1' else '0'
 
 
 let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (encode_info x.ml_info);
-  Ext_buffer.add_string buf (Filename.dirname x.name_sans_extension)
+  Ext_buffer.add_char buf (encode_info x);
+  Ext_buffer.add_string buf x.dir
   
   
   
@@ -14028,21 +14017,18 @@ let handle_module_info
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : unit =
-  match module_info.ml_info with
-  | Ml_source (is_re,_) ->
-    emit_impl_build  rules
-      package_specs
-      group_dir_index
-      oc 
-      ~has_checked_ppx
-      ~bs_suffix
-      ~no_intf_file:(module_info.mli_info = Mli_empty)
-      ~is_re
-      js_post_build_cmd      
-      namespace
-      input 
-  | Ml_empty
-    -> assert false
+  emit_impl_build  rules
+    package_specs
+    group_dir_index
+    oc 
+    ~has_checked_ppx
+    ~bs_suffix
+    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~is_re:module_info.is_re
+    js_post_build_cmd      
+    namespace
+    input 
+
 
 
 let handle_file_group 
