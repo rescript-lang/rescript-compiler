@@ -287,7 +287,7 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
 
     [offset] can be negative;and is evaluated as [length arr - offset]
 
-    [fill arr offset:(-1) len:1 ] means fill the last element,
+    [fill arr ~offset:(-1) ~len:1] means fill the last element,
     if the array does not have enough data;[fill] will ignore it
 
     @example {[
@@ -319,9 +319,9 @@ val blit:
     [v2 = \[|20;21;22;23;24;25;26;27|\]]. The result shown is the content of the destination array.
 
     @example {[
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 ->
+      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
         [|20;21;14;15;16;25;26;27|]
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 ->
+      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
         [|10;11;14;15;16;15;16;17|]
       ]}
 
@@ -338,7 +338,7 @@ val forEach: 'a array ->  ('a -> unit ) -> unit
 (** [forEach xs f]
 
     Call [f] on each element of [xs] from the beginning to end. [f] returns [unit];so no
-    new array is created. Use [foreach] when you are primarily concerned with repetitively
+    new array is created. Use [forEach] when you are primarily concerned with repetitively
     creating side effects.
 
     @example {[
