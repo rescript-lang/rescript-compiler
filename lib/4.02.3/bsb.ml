@@ -12858,12 +12858,10 @@ let comma buf =
     - code too verbose
     - not readable 
  *)  
-let encode_info (x : Bsb_db.module_info ) : char =     
-    if x.case then '1' else '0'
 
 
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (encode_info x);
+let encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
+  Ext_buffer.add_char buf (if x.case then '1' else '0');
   Ext_buffer.add_string buf x.dir
   
   
@@ -12874,31 +12872,26 @@ let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t)  (buf2 : Ext_buffer.t) =    
+let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
   let len = String_map.cardinal db in 
   nl buf ; 
   Ext_buffer.add_string buf (string_of_int len);
   String_map.iter db (fun name module_info ->
       nl buf; 
       Ext_buffer.add_string buf name; 
-      nl buf2; 
-      encode_module_info module_info buf2 
-    ) 
 
-let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
-  output_char oc '\n';
-  let len = Array.length dbs in 
-  output_string oc (string_of_int len); 
-  let tmp_buf1 = Ext_buffer.create 10_000 in 
-  let tmp_buf2 = Ext_buffer.create 60_000 in 
-  Ext_array.iter dbs (fun x -> begin 
-        encode_single x  tmp_buf1 tmp_buf2;
-        Ext_buffer.output_buffer oc tmp_buf1;
-        Ext_buffer.output_buffer oc tmp_buf2;
-        Ext_buffer.clear tmp_buf1; 
-        Ext_buffer.clear tmp_buf2
-      end
+    ); 
+  String_map.iter db (fun name module_info -> 
+      nl buf; 
+      encode_module_info module_info buf 
     )
+let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
+  let buf = Ext_buffer.create 100_000 in 
+  Ext_buffer.add_char buf '\n';
+  let len = Array.length dbs in 
+  Ext_buffer.add_string buf (string_of_int len); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf);
+  Ext_buffer.output_buffer oc buf
 
 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
