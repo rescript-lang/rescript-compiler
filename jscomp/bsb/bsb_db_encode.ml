@@ -40,12 +40,10 @@ let comma buf =
     - code too verbose
     - not readable 
  *)  
-let encode_info (x : Bsb_db.module_info ) : char =     
-    if x.case then '1' else '0'
 
 
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (encode_info x);
+let encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
+  Ext_buffer.add_char buf (if x.case then '1' else '0');
   Ext_buffer.add_string buf x.dir
   
   
