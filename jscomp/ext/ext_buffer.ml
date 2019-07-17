@@ -144,20 +144,46 @@ let not_equal  (b : t) (s : string) =
   It could be one byte, two bytes, three bytes and four bytes 
   TODO: inline for better performance
 *)
-let add_int_1 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff))
-let add_int_2 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff))  
-let add_int_3 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) 
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  b.position <- pos + 2
 
-let add_int_4 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 24 land 0xff)) 
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  Bytes.unsafe_set b.buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 3;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  Bytes.unsafe_set b.buffer (pos + 2) c3;
+  Bytes.unsafe_set b.buffer (pos + 3) c4;
+  b.position <- pos + 4
+
 
 
