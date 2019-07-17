@@ -3886,7 +3886,7 @@ let extract_line (x : string) (cur : cursor) : string =
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
-  let len = int_of_string (extract_line x offset) in  
+  let len = Ext_pervasives.nat_of_string_exn (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single (x : string) (offset : cursor) : group = 
   let module_number = Ext_pervasives.nat_of_string_exn (extract_line x offset) in 

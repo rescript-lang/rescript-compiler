@@ -537,9 +537,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#unsafe_neq" -> Pjscomp Cneq
 
         | "#typeof" -> Pjs_typeof
-        | "#fn_run" | "#method_run" -> Pjs_fn_run(int_of_string p.prim_native_name)
-        | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name)
-        | "#fn_method" -> Pjs_fn_method (int_of_string p.prim_native_name)
+        | "#fn_run" | "#method_run" -> Pjs_fn_run(Ext_pervasives.nat_of_string_exn p.prim_native_name)
+        | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
+        | "#fn_method" -> Pjs_fn_method (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
