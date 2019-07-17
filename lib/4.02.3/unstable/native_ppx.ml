@@ -5186,7 +5186,7 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
-
+val nat_of_string_exn : string -> int
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5277,6 +5277,20 @@ let todo loc =
   failwith (loc ^ " Not supported yet")
 
 
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"

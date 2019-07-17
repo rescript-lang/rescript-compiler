@@ -798,7 +798,7 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
-
+val nat_of_string_exn : string -> int
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -889,6 +889,20 @@ let todo loc =
   failwith (loc ^ " Not supported yet")
 
 
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -3875,13 +3889,14 @@ let rec decode_internal (x : string) (offset : cursor) =
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single (x : string) (offset : cursor) : group = 
-  let module_number = int_of_string (extract_line x offset) in 
+  let module_number = Ext_pervasives.nat_of_string_exn (extract_line x offset) in 
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
     Ext_string.index_count x dir_info_offset '\n' 1 + 1 in
-  let dir_length =   (Char.code x.[module_info_offset] - Char.code '0') in
+  let dir_length = Char.code x.[module_info_offset] - Char.code '0' in
   offset := 
+    module_info_offset +
     1 +
     dir_length * module_number +
     1 
@@ -4238,21 +4253,47 @@ let not_equal  (b : t) (s : string) =
   It could be one byte, two bytes, three bytes and four bytes 
   TODO: inline for better performance
 *)
-let add_int_1 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff))
-let add_int_2 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff))  
-let add_int_3 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) 
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  b.position <- pos + 2
 
-let add_int_4 (buf : t ) (x : int ) = 
-  add_char buf (Char.unsafe_chr (x land 0xff));  
-  add_char buf (Char.unsafe_chr (x lsr 8 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 16 land 0xff)) ;
-  add_char buf (Char.unsafe_chr (x lsr 24 land 0xff)) 
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  Bytes.unsafe_set b.buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 3;
+  Bytes.unsafe_set b.buffer pos c1;
+  Bytes.unsafe_set b.buffer (pos + 1) c2;
+  Bytes.unsafe_set b.buffer (pos + 2) c3;
+  Bytes.unsafe_set b.buffer (pos + 3) c4;
+  b.position <- pos + 4
+
 
 
 

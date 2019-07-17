@@ -47,13 +47,14 @@ let rec decode_internal (x : string) (offset : cursor) =
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single (x : string) (offset : cursor) : group = 
-  let module_number = int_of_string (extract_line x offset) in 
+  let module_number = Ext_pervasives.nat_of_string_exn (extract_line x offset) in 
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
     Ext_string.index_count x dir_info_offset '\n' 1 + 1 in
-  let dir_length =   (Char.code x.[module_info_offset] - Char.code '0') in
+  let dir_length = Char.code x.[module_info_offset] - Char.code '0' in
   offset := 
+    module_info_offset +
     1 +
     dir_length * module_number +
     1 
