@@ -13039,18 +13039,17 @@ let tab buf =
 let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
   nl buf ; (* module name section *)
   let len = String_map.cardinal db in 
-  Ext_buffer.add_string buf (string_of_int len);
+  Ext_buffer.add_string_char buf (string_of_int len) '\n';
   let mapping = String_hashtbl.create 50 in 
-  String_map.iter db (fun name {dir} ->
-      nl buf; 
-      Ext_buffer.add_string buf name; 
+  String_map.iter db (fun name {dir} ->  
+      Ext_buffer.add_string_char buf name '\n'; 
       if not (String_hashtbl.mem mapping dir) then
         String_hashtbl.add mapping dir (String_hashtbl.length mapping)
     ); 
   let length = String_hashtbl.length mapping in   
   let rev_mapping = Array.make length "" in 
   String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
-  nl buf; (* directory name section *)
+  (* directory name section *)
   Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
   nl buf; (* module name info section *)
   let len_encoding = 

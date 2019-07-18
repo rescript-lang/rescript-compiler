@@ -46,7 +46,15 @@ let extract_line (x : string) (cur : cursor) : string =
 let rec decode_internal (x : string) (offset : cursor) =   
   let len = Ext_pervasives.parse_nat_of_string x offset in  
   incr offset;
-  Array.init len (fun _ ->  decode_single x offset)
+  let first = decode_single x offset in 
+  if len = 1 then [|first|]
+  else 
+    let result = Array.make len first in 
+    for i = 1 to len - 1 do 
+      Array.unsafe_set result i (decode_single x offset)
+    done ;
+    result
+  
 and decode_single (x : string) (offset : cursor) : group = 
   let module_number = Ext_pervasives.parse_nat_of_string x offset in 
   incr offset;
@@ -64,9 +72,14 @@ and decode_single (x : string) (offset : cursor) : group =
   { modules ; dir_info_offset; module_info_offset ; dir_length}
 and decode_modules x (offset : cursor) module_number =   
   let result = Array.make module_number "" in 
+  let cur = ref !offset in 
   for i = 0 to module_number - 1 do 
-    Array.unsafe_set result i (extract_line x offset)
+    let n = Ext_string.index_next x !cur '\n' in 
+    Array.unsafe_set result i 
+    (String.sub x !cur (n - !cur));
+    cur := n + 1; 
   done ;
+  offset := !cur;
   result
   
 
