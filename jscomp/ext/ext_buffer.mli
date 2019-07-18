@@ -102,3 +102,15 @@ val add_int_3 :
 
 val add_int_4 :    
    t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit

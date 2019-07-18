@@ -63,7 +63,7 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   let rev_mapping = Array.make length "" in 
   String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
   nl buf; (* directory name section *)
-  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; tab buf;);
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
   nl buf; (* module name info section *)
   let len_encoding = 
     let max_range = length lsl 1 + 1 in 
