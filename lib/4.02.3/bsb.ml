@@ -12982,7 +12982,7 @@ module Bsb_db_encode : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val write_build_cache : 
-  dir:string -> Bsb_db.ts -> unit
+  dir:string -> Bsb_db.ts -> string
 
 end = struct
 #1 "bsb_db_encode.ml"
@@ -13017,8 +13017,6 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let tab buf =   
-  Ext_buffer.add_char buf '\t'
 
 
 (* IDEAS: 
@@ -13074,19 +13072,22 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
       len_encoding buf 
         (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
     
-let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
-  let buf = Ext_buffer.create 100_000 in 
-  nl buf;
-  Ext_buffer.add_string buf (string_of_int (Array.length dbs)); 
-  Ext_array.iter dbs (fun x ->  encode_single x  buf);
-  Ext_buffer.output_buffer oc buf
+let encode (dbs : Bsb_db.ts) buf =     
+  
+  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf)
+  
 
 
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
+let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc Bs_version.version ;
-  encode bs_files oc; 
-  close_out oc 
+  let buf = Ext_buffer.create 100_000 in 
+  encode bs_files buf ; 
+  let digest = (Ext_buffer.digest buf) in
+  output_string oc (Digest.to_hex digest);
+  Ext_buffer.output_buffer oc buf;
+  close_out oc; 
+  digest
 
 end
 module Ext_digest : sig 
@@ -14549,7 +14550,7 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
-  Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
+  let _digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build

@@ -29,8 +29,6 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let tab buf =   
-  Ext_buffer.add_char buf '\t'
 
 
 (* IDEAS: 
@@ -86,16 +84,19 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
       len_encoding buf 
         (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
     
-let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
-  let buf = Ext_buffer.create 100_000 in 
-  nl buf;
-  Ext_buffer.add_string buf (string_of_int (Array.length dbs)); 
-  Ext_array.iter dbs (fun x ->  encode_single x  buf);
-  Ext_buffer.output_buffer oc buf
+let encode (dbs : Bsb_db.ts) buf =     
+  
+  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf)
+  
 
 
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
+let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc Bs_version.version ;
-  encode bs_files oc; 
-  close_out oc 
+  let buf = Ext_buffer.create 100_000 in 
+  encode bs_files buf ; 
+  let digest = (Ext_buffer.digest buf) in
+  output_string oc (Digest.to_hex digest);
+  Ext_buffer.output_buffer oc buf;
+  close_out oc; 
+  digest

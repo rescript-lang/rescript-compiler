@@ -243,7 +243,7 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
-  Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
+  let _digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build
