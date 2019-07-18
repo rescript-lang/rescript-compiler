@@ -248,6 +248,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -261,6 +263,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -538,3 +544,26 @@ let lowercase_ascii (s : string) =
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
+
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false

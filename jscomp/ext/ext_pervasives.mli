@@ -62,3 +62,9 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
+val nat_of_string_exn : string -> int
+
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 

@@ -5521,7 +5521,12 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
+val nat_of_string_exn : string -> int
 
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5612,6 +5617,39 @@ let todo loc =
   failwith (loc ^ " Not supported yet")
 
 
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -5732,6 +5770,13 @@ val index_count:
   int -> 
   int 
 
+val index_next :
+  string -> 
+  int ->
+  char -> 
+  int 
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -5811,6 +5856,18 @@ val capitalize_sub:
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6063,6 +6120,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -6076,6 +6135,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -6345,7 +6408,29 @@ let lowercase_ascii (s : string) =
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
 
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
 end
 module Ext_list : sig 
 #1 "ext_list.mli"

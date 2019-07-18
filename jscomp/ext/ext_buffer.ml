@@ -98,6 +98,16 @@ let add_string b s =
   Bytes.blit_string s 0 b.buffer b.position len;
   b.position <- new_position  
 
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  add_string b s;
+  add_char b c
+
+let add_char_string b c s  =
+  add_char b c ;
+  add_string b s
+
+
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
@@ -138,4 +148,55 @@ let not_equal  (b : t) (s : string) =
   let s_len = String.length s in 
   b_len <> s_len 
   || not_equal_aux b.buffer s 0 s_len
+
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
 

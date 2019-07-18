@@ -83,6 +83,7 @@ val make_custom_rules :
   has_builtin:bool -> 
   bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
+  digest:string ->
   command String_map.t ->
   builtin
 

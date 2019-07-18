@@ -798,7 +798,12 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
+val nat_of_string_exn : string -> int
 
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -889,6 +894,39 @@ let todo loc =
   failwith (loc ^ " Not supported yet")
 
 
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -1009,6 +1047,13 @@ val index_count:
   int -> 
   int 
 
+val index_next :
+  string -> 
+  int ->
+  char -> 
+  int 
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -1088,6 +1133,18 @@ val capitalize_sub:
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1340,6 +1397,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -1353,6 +1412,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -1622,7 +1685,29 @@ let lowercase_ascii (s : string) =
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
 
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
@@ -3340,7 +3425,7 @@ type case = bool
 
 
 type ml_info =
-  | Ml_source of  bool  * bool
+  | Ml_source
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -3348,14 +3433,17 @@ type ml_info =
   
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool * bool
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
-    name_sans_extension : string
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
   }
 
 type t = module_info String_map.t 
@@ -3415,16 +3503,19 @@ type case = bool
 (** true means upper case*)
 
 type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool  * case  
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
+    dir : string ; 
+    is_re : bool;
+    case : bool;
     name_sans_extension : string  ;
   }
 
@@ -3445,16 +3536,7 @@ let filename_sans_suffix_of_module_info (x : module_info) =
 
 
 let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
+  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
@@ -3765,7 +3847,9 @@ type t
 
 type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int ;
+   dir_info_offset : int ; 
+   module_info_offset : int ;
  }
 
 (* exposed only for testing *)
@@ -3822,40 +3906,59 @@ end = struct
 
  type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int;
+   dir_info_offset : int ; 
+   module_info_offset : int;
  }
 
 type t = group array * string (* string is whole content*)
 
-
-
-let bool buf b =   
-  Buffer.add_char buf (if b then '1' else '0')
 
 type cursor = int ref 
 
 let extract_line (x : string) (cur : cursor) : string =
   Ext_string.extract_until x cur '\n'
 
-let next_mdoule_info (s : string) (cur : int) ~count  =  
-  if count = 0 then cur 
-  else 
-    Ext_string.index_count s cur '\n' count  + 1
 
+
+(*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
-  let len = int_of_string (extract_line x offset) in  
-  Array.init len (fun _ ->  decode_single x offset)
-and decode_single x (offset : cursor) : group = 
-  let cardinal = int_of_string (extract_line x offset) in 
-  let modules = decode_modules x offset cardinal in 
-  let meta_info_offset = !offset in 
-  offset := next_mdoule_info x meta_info_offset ~count:cardinal;
-  { modules ; meta_info_offset }
-and decode_modules x (offset : cursor) cardinal =   
-  let result = Array.make cardinal "" in 
-  for i = 0 to cardinal - 1 do 
-    Array.unsafe_set result i (extract_line x offset)
+  let len = Ext_pervasives.parse_nat_of_string x offset in  
+  incr offset;
+  let first = decode_single x offset in 
+  if len = 1 then [|first|]
+  else 
+    let result = Array.make len first in 
+    for i = 1 to len - 1 do 
+      Array.unsafe_set result i (decode_single x offset)
+    done ;
+    result
+  
+and decode_single (x : string) (offset : cursor) : group = 
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+  incr offset;
+  let modules = decode_modules x offset module_number in 
+  let dir_info_offset = !offset in 
+  let module_info_offset = 
+    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+  let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
+  offset := 
+    module_info_offset +
+    1 +
+    dir_length * module_number +
+    1 
+    ;
+  { modules ; dir_info_offset; module_info_offset ; dir_length}
+and decode_modules x (offset : cursor) module_number =   
+  let result = Array.make module_number "" in 
+  let cur = ref !offset in 
+  for i = 0 to module_number - 1 do 
+    let n = Ext_string.index_next x !cur '\n' in 
+    Array.unsafe_set result i 
+    (String.sub x !cur (n - !cur));
+    cur := n + 1; 
   done ;
+  offset := !cur;
   result
   
 
@@ -3908,12 +4011,7 @@ let find_opt_aux sorted key  : _ option =
 
 
 type module_info =  {
-  (* mli_info : mli_info;
-  ml_info : ml_info; *)
   case : Bsb_db.case; 
-  (* module and interface at least 
-    should have consistent case
-  *)
   dir_name : string
 } 
 
@@ -3926,18 +4024,27 @@ let find_opt
   match i with 
   | None -> None 
   | Some count ->     
-    let cursor = 
-      ref (next_mdoule_info whole group.meta_info_offset ~count)
+    let encode_len = group.dir_length in 
+    let index = 
+      Ext_string.get_1_2_3_4 whole 
+      ~off:(group.module_info_offset + 1 + count * encode_len)
+      encode_len
     in 
-    let case = whole.[!cursor] = '1' in 
-    incr cursor; 
-    let dir_name = 
-        extract_line whole cursor  in 
-    Some 
-          {
-            dir_name;
-            case 
-          }
+    let case = not (index mod 2 = 0) in 
+    let ith = index lsr 1 in 
+    let dir_name_start = 
+      if ith = 0 then group.dir_info_offset 
+      else 
+        Ext_string.index_count 
+          whole group.dir_info_offset '\t'
+          ith + 1
+    in 
+    let dir_name_finish = 
+      Ext_string.index_count 
+      whole dir_name_start   '\t' 1 
+     in    
+    Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+  
         
       
 end
@@ -4035,6 +4142,30 @@ val not_equal :
   t -> 
   string -> 
   bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -4135,6 +4266,16 @@ let add_string b s =
   Bytes.blit_string s 0 b.buffer b.position len;
   b.position <- new_position  
 
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  add_string b s;
+  add_char b c
+
+let add_char_string b c s  =
+  add_char b c ;
+  add_string b s
+
+
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
@@ -4174,6 +4315,57 @@ let not_equal  (b : t) (s : string) =
   let s_len = String.length s in 
   b_len <> s_len 
   || not_equal_aux b.buffer s 0 s_len
+
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
 
 
 end
@@ -5057,6 +5249,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let hash : string ref = ref ""
 let batch_files = ref []
 let collect_file name =
   batch_files := name :: !batch_files
@@ -5077,6 +5270,8 @@ let () =
     ;
     "-bs-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
+    "-hash", Arg.String (fun s -> hash := s),
+    " Set hash(internal)";
     
   ] anonymous usage;
   (* arrange with mlast comes first *)

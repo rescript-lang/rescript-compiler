@@ -6,7 +6,7 @@ let ((>::),
 let printer_string = fun x -> x 
 let (=~) = OUnit.assert_equal  ~printer:printer_string  
 
-
+#if 0 then
 let parse_data_one = 
 (Bsb_db_decode.decode_internal {|4.0.19
 2
@@ -33,7 +33,7 @@ let data_one : Bsb_db_decode.group array =
 
 let data_two : Bsb_db_decode.group array =  
   [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 48}; {modules = [||]; meta_info_offset = -1} |]
-
+#end
 #if 0 then  
 let () = 
   Format.fprintf Format.err_formatter
@@ -93,13 +93,14 @@ let suites =
     s_test1 "xx" "xx";
     s_test1 "xx/yy/zz" "xx/yy/zz"
   end;
-  __LOC__ >:: begin fun _ -> 
+
+  (* __LOC__ >:: begin fun _ -> 
   OUnit.assert_equal parse_data_one  data_one
   end ;
   __LOC__ >:: begin fun _ -> 
   
   OUnit.assert_equal parse_data_two data_two
-  end 
+  end  *)
   ]
 
 

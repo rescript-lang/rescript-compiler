@@ -90,3 +90,27 @@ val not_equal :
   t -> 
   string -> 
   bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit

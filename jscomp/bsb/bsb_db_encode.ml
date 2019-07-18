@@ -29,8 +29,7 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let comma buf = 
-  Ext_buffer.add_char buf ','
+
 
 (* IDEAS: 
   Pros: 
@@ -40,54 +39,64 @@ let comma buf =
     - code too verbose
     - not readable 
  *)  
-let encode_info (x : Bsb_db.ml_info ) : char =   
-  match x with 
-  | Ml_empty -> assert false
-  | Ml_source(_,case) -> 
-    if case then '1' else '0'
 
 
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (encode_info x.ml_info);
-  Ext_buffer.add_string buf (Filename.dirname x.name_sans_extension)
   
-  
-  
-  
-
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t)  (buf2 : Ext_buffer.t) =    
+let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
+  nl buf ; (* module name section *)
   let len = String_map.cardinal db in 
-  nl buf ; 
-  Ext_buffer.add_string buf (string_of_int len);
-  String_map.iter db (fun name module_info ->
-      nl buf; 
-      Ext_buffer.add_string buf name; 
-      nl buf2; 
-      encode_module_info module_info buf2 
-    ) 
+  Ext_buffer.add_string_char buf (string_of_int len) '\n';
+  let mapping = String_hashtbl.create 50 in 
+  String_map.iter db (fun name {dir} ->  
+      Ext_buffer.add_string_char buf name '\n'; 
+      if not (String_hashtbl.mem mapping dir) then
+        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
+    ); 
+  let length = String_hashtbl.length mapping in   
+  let rev_mapping = Array.make length "" in 
+  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  (* directory name section *)
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
+  nl buf; (* module name info section *)
+  let len_encoding = 
+    let max_range = length lsl 1 + 1 in 
+    if max_range <= 0xff then begin 
+      Ext_buffer.add_char buf '1';
+      Ext_buffer.add_int_1
+    end
+    else if max_range <= 0xff_ff then begin 
+      Ext_buffer.add_char buf '2';
+      Ext_buffer.add_int_2
+    end
+    else if length <= 0x7f_ff_ff then begin 
+      Ext_buffer.add_char buf '3';
+      Ext_buffer.add_int_3
+    end
+    else if length <= 0x7f_ff_ff_ff then begin
+      Ext_buffer.add_char buf '4';
+      Ext_buffer.add_int_4
+    end else assert false in 
+  String_map.iter db (fun _ module_info ->       
+      len_encoding buf 
+        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+    
+let encode (dbs : Bsb_db.ts) buf =     
+  
+  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf)
+  
 
-let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
-  output_char oc '\n';
-  let len = Array.length dbs in 
-  output_string oc (string_of_int len); 
-  let tmp_buf1 = Ext_buffer.create 10_000 in 
-  let tmp_buf2 = Ext_buffer.create 60_000 in 
-  Ext_array.iter dbs (fun x -> begin 
-        encode_single x  tmp_buf1 tmp_buf2;
-        Ext_buffer.output_buffer oc tmp_buf1;
-        Ext_buffer.output_buffer oc tmp_buf2;
-        Ext_buffer.clear tmp_buf1; 
-        Ext_buffer.clear tmp_buf2
-      end
-    )
 
-
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
+let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc Bs_version.version ;
-  encode bs_files oc; 
-  close_out oc 
+  let buf = Ext_buffer.create 100_000 in 
+  encode bs_files buf ; 
+  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  output_string oc digest;
+  Ext_buffer.output_buffer oc buf;
+  close_out oc; 
+  digest

@@ -459,7 +459,12 @@ val hash_variant : string -> int
 
 val todo : string -> 'a
 
+val nat_of_string_exn : string -> int
 
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -550,6 +555,39 @@ let todo loc =
   failwith (loc ^ " Not supported yet")
 
 
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -670,6 +708,13 @@ val index_count:
   int -> 
   int 
 
+val index_next :
+  string -> 
+  int ->
+  char -> 
+  int 
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -749,6 +794,18 @@ val capitalize_sub:
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1001,6 +1058,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -1014,6 +1073,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -1283,7 +1346,29 @@ let lowercase_ascii (s : string) =
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
 
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
@@ -7139,7 +7224,7 @@ type case = bool
 
 
 type ml_info =
-  | Ml_source of  bool  * bool
+  | Ml_source
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -7147,14 +7232,17 @@ type ml_info =
   
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool * bool
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
-    name_sans_extension : string
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
   }
 
 type t = module_info String_map.t 
@@ -7214,16 +7302,19 @@ type case = bool
 (** true means upper case*)
 
 type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
+  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool  * case  
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
+    dir : string ; 
+    is_re : bool;
+    case : bool;
     name_sans_extension : string  ;
   }
 
@@ -7244,16 +7335,7 @@ let filename_sans_suffix_of_module_info (x : module_info) =
 
 
 let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
+  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
@@ -7482,7 +7564,7 @@ module Bsb_db_util : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-open Bsb_db
+
 
 val conflict_module_info:
   string ->
@@ -7493,14 +7575,14 @@ val conflict_module_info:
 
 val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
 
-val sanity_check : t -> unit
+val sanity_check : Bsb_db.t -> unit
 
 (** 
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
 val collect_module_by_filename : 
-  dir:string -> t ->  string -> t
+  dir:string -> Bsb_db.t ->  string -> Bsb_db.t
 
 end = struct
 #1 "bsb_db_util.ml"
@@ -7532,15 +7614,13 @@ type module_info = Bsb_db.module_info
 type t = Bsb_db.t
 type case = Bsb_db.case
 
-let dir_of_module_info (x : module_info)
-  = 
-  Filename.dirname x.name_sans_extension
+
      
-let conflict_module_info modname a b = 
+let conflict_module_info modname (a : module_info) (b : module_info) = 
   Bsb_exception.conflict_module
     modname
-    (dir_of_module_info a)
-    (dir_of_module_info b)
+    a.dir
+    b.dir
 
 (* merge data info from two directories*)    
 let merge (acc : t) (sources : t) : t =
@@ -7558,21 +7638,15 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-      match module_info.ml_info, module_info.mli_info with 
-      | Ml_empty, _ ->      
+      if module_info.ml_info = Ml_empty then
         Bsb_exception.no_implementation m 
-      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
-        ->
-        if impl_is_re <> intf_is_re then
-          Bsb_exception.not_consistent m
-      | Ml_source _ , Mli_empty -> ()    
     )    
 
 (* invariant check:
   ml and mli should have the same case, same path
 *)  
-let check (x : module_info) name_sans_extension =  
-  if x.name_sans_extension <> name_sans_extension then 
+let check (x : module_info) name_sans_extension case is_re =  
+  if x.name_sans_extension <> name_sans_extension || x.case <> case || x.is_re <> is_re then 
     Bsb_exception.invalid_spec 
       (Printf.sprintf 
          "implementation and interface have different path names or different cases %s vs %s"
@@ -7582,36 +7656,37 @@ let adjust_module_info
   (x : module_info option) 
   (suffix : string) 
   (name_sans_extension : string) 
-  (upper : case) : module_info =
+  (case : case) : module_info =
+  let dir = Filename.dirname name_sans_extension in 
   match suffix with 
   | ".ml" -> 
-    let ml_info : Bsb_db.ml_info = Ml_source  ( false, upper) in 
+    let ml_info : Bsb_db.ml_info = Ml_source  in 
     (match x with 
     | None -> 
-      {name_sans_extension ; ml_info ; mli_info = Mli_empty}
+      {dir ; name_sans_extension ; ml_info ; mli_info = Mli_empty; is_re = false ; case }
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case false;
       {x with ml_info })
   | ".re" -> 
-    let ml_info  : Bsb_db.ml_info = Ml_source  ( true, upper)in
+    let ml_info  : Bsb_db.ml_info = Ml_source in
     (match x with None -> 
-      {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
+      {dir ; name_sans_extension; ml_info  ; mli_info = Mli_empty; is_re = true; case} 
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case true;
       {x with ml_info})
   | ".mli" ->  
-    let mli_info : Bsb_db.mli_info = Mli_source (false, upper) in 
+    let mli_info : Bsb_db.mli_info = Mli_source in 
     (match x with None -> 
-      {name_sans_extension; mli_info ; ml_info = Ml_empty}
+      {dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = false; case}
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case false;
       {x with mli_info })
   | ".rei" -> 
-    let mli_info : Bsb_db.mli_info = Mli_source (true, upper) in
+    let mli_info : Bsb_db.mli_info = Mli_source in
     (match x with None -> 
-      { name_sans_extension; mli_info ; ml_info = Ml_empty}
+      { dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = true; case}
     | Some x -> 
-      check x name_sans_extension;
+      check x name_sans_extension case true;
       { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
@@ -12653,6 +12728,30 @@ val not_equal :
   t -> 
   string -> 
   bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -12753,6 +12852,16 @@ let add_string b s =
   Bytes.blit_string s 0 b.buffer b.position len;
   b.position <- new_position  
 
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  add_string b s;
+  add_char b c
+
+let add_char_string b c s  =
+  add_char b c ;
+  add_string b s
+
+
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
@@ -12794,6 +12903,57 @@ let not_equal  (b : t) (s : string) =
   || not_equal_aux b.buffer s 0 s_len
 
 
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
+
+
 end
 module Bsb_db_encode : sig 
 #1 "bsb_db_encode.mli"
@@ -12822,7 +12982,7 @@ module Bsb_db_encode : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val write_build_cache : 
-  dir:string -> Bsb_db.ts -> unit
+  dir:string -> Bsb_db.ts -> string
 
 end = struct
 #1 "bsb_db_encode.ml"
@@ -12857,8 +13017,7 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let comma buf = 
-  Ext_buffer.add_char buf ','
+
 
 (* IDEAS: 
   Pros: 
@@ -12868,57 +13027,67 @@ let comma buf =
     - code too verbose
     - not readable 
  *)  
-let encode_info (x : Bsb_db.ml_info ) : char =   
-  match x with 
-  | Ml_empty -> assert false
-  | Ml_source(_,case) -> 
-    if case then '1' else '0'
 
 
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Ext_buffer.t) =   
-  Ext_buffer.add_char buf (encode_info x.ml_info);
-  Ext_buffer.add_string buf (Filename.dirname x.name_sans_extension)
   
-  
-  
-  
-
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t)  (buf2 : Ext_buffer.t) =    
+let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
+  nl buf ; (* module name section *)
   let len = String_map.cardinal db in 
-  nl buf ; 
-  Ext_buffer.add_string buf (string_of_int len);
-  String_map.iter db (fun name module_info ->
-      nl buf; 
-      Ext_buffer.add_string buf name; 
-      nl buf2; 
-      encode_module_info module_info buf2 
-    ) 
+  Ext_buffer.add_string_char buf (string_of_int len) '\n';
+  let mapping = String_hashtbl.create 50 in 
+  String_map.iter db (fun name {dir} ->  
+      Ext_buffer.add_string_char buf name '\n'; 
+      if not (String_hashtbl.mem mapping dir) then
+        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
+    ); 
+  let length = String_hashtbl.length mapping in   
+  let rev_mapping = Array.make length "" in 
+  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  (* directory name section *)
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
+  nl buf; (* module name info section *)
+  let len_encoding = 
+    let max_range = length lsl 1 + 1 in 
+    if max_range <= 0xff then begin 
+      Ext_buffer.add_char buf '1';
+      Ext_buffer.add_int_1
+    end
+    else if max_range <= 0xff_ff then begin 
+      Ext_buffer.add_char buf '2';
+      Ext_buffer.add_int_2
+    end
+    else if length <= 0x7f_ff_ff then begin 
+      Ext_buffer.add_char buf '3';
+      Ext_buffer.add_int_3
+    end
+    else if length <= 0x7f_ff_ff_ff then begin
+      Ext_buffer.add_char buf '4';
+      Ext_buffer.add_int_4
+    end else assert false in 
+  String_map.iter db (fun _ module_info ->       
+      len_encoding buf 
+        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+    
+let encode (dbs : Bsb_db.ts) buf =     
+  
+  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf)
+  
 
-let encode (dbs : Bsb_db.ts) (oc : out_channel)=     
-  output_char oc '\n';
-  let len = Array.length dbs in 
-  output_string oc (string_of_int len); 
-  let tmp_buf1 = Ext_buffer.create 10_000 in 
-  let tmp_buf2 = Ext_buffer.create 60_000 in 
-  Ext_array.iter dbs (fun x -> begin 
-        encode_single x  tmp_buf1 tmp_buf2;
-        Ext_buffer.output_buffer oc tmp_buf1;
-        Ext_buffer.output_buffer oc tmp_buf2;
-        Ext_buffer.clear tmp_buf1; 
-        Ext_buffer.clear tmp_buf2
-      end
-    )
 
-
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
+let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc Bs_version.version ;
-  encode bs_files oc; 
-  close_out oc 
+  let buf = Ext_buffer.create 100_000 in 
+  encode bs_files buf ; 
+  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  output_string oc digest;
+  Ext_buffer.output_buffer oc buf;
+  close_out oc; 
+  digest
 
 end
 module Ext_digest : sig 
@@ -13236,6 +13405,7 @@ val make_custom_rules :
   has_builtin:bool -> 
   bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
+  digest:string ->
   command String_map.t ->
   builtin
 
@@ -13361,6 +13531,7 @@ let make_custom_rules
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+  ~(digest : string)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13446,7 +13617,8 @@ let make_custom_rules
   let build_bin_deps =
     define
       ~restat:()
-      ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
+      ~command:
+      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
@@ -14028,21 +14200,18 @@ let handle_module_info
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : unit =
-  match module_info.ml_info with
-  | Ml_source (is_re,_) ->
-    emit_impl_build  rules
-      package_specs
-      group_dir_index
-      oc 
-      ~has_checked_ppx
-      ~bs_suffix
-      ~no_intf_file:(module_info.mli_info = Mli_empty)
-      ~is_re
-      js_post_build_cmd      
-      namespace
-      input 
-  | Ml_empty
-    -> assert false
+  emit_impl_build  rules
+    package_specs
+    group_dir_index
+    oc 
+    ~has_checked_ppx
+    ~bs_suffix
+    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~is_re:module_info.is_re
+    js_post_build_cmd      
+    namespace
+    input 
+
 
 
 let handle_file_group 
@@ -14265,16 +14434,6 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules 
-      ~has_gentype:(gentype_config <> None)
-      ~has_postbuild:(js_post_build_cmd <> None)
-      ~has_ppx:(ppx_files <> [])
-      ~has_pp:(pp_file <> None)
-      ~has_builtin:(built_in_dependency <> None)
-      ~reason_react_jsx
-      ~bs_suffix
-      generators in 
   
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -14384,7 +14543,19 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
-  Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups ;
+  let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let rules : Bsb_ninja_rule.builtin = 
+      Bsb_ninja_rule.make_custom_rules 
+      ~has_gentype:(gentype_config <> None)
+      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_ppx:(ppx_files <> [])
+      ~has_pp:(pp_file <> None)
+      ~has_builtin:(built_in_dependency <> None)
+      ~reason_react_jsx
+      ~bs_suffix
+      ~digest
+      generators in 
+  
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build

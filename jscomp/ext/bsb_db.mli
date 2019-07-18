@@ -34,7 +34,7 @@ type case = bool
 
 
 type ml_info =
-  | Ml_source of  bool  * bool
+  | Ml_source
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -42,14 +42,17 @@ type ml_info =
   
   | Ml_empty
 type mli_info = 
-  | Mli_source of  bool * bool
+  | Mli_source 
   | Mli_empty
 
 type module_info = 
   {
     mli_info : mli_info ; 
     ml_info : ml_info ; 
-    name_sans_extension : string
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
   }
 
 type t = module_info String_map.t 
