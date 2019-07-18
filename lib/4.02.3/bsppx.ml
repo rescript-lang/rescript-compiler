@@ -6423,7 +6423,8 @@ let get_int_3 (x : string) off : int =
 let get_int_4 (x : string) off : int =   
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8  lor 
-  Char.code x.[off+2] lsl 16
+  Char.code x.[off+2] lsl 16 lor
+  Char.code x.[off+3] lsl 24 
 
 let get_1_2_3_4 (x : string) ~off len : int =  
   if len = 1 then get_int_1 x off 
