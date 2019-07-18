@@ -13029,8 +13029,24 @@ let nl buf =
     - not readable 
  *)  
 
-
-  
+let make_encoding length buf =
+  let max_range = length lsl 1 + 1 in 
+  if max_range <= 0xff then begin 
+    Ext_buffer.add_char buf '1';
+    Ext_buffer.add_int_1
+  end
+  else if max_range <= 0xff_ff then begin 
+    Ext_buffer.add_char buf '2';
+    Ext_buffer.add_int_2
+  end
+  else if length <= 0x7f_ff_ff then begin 
+    Ext_buffer.add_char buf '3';
+    Ext_buffer.add_int_3
+  end
+  else if length <= 0x7f_ff_ff_ff then begin
+    Ext_buffer.add_char buf '4';
+    Ext_buffer.add_int_4
+  end else assert false 
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
@@ -13051,24 +13067,7 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   (* directory name section *)
   Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
   nl buf; (* module name info section *)
-  let len_encoding = 
-    let max_range = length lsl 1 + 1 in 
-    if max_range <= 0xff then begin 
-      Ext_buffer.add_char buf '1';
-      Ext_buffer.add_int_1
-    end
-    else if max_range <= 0xff_ff then begin 
-      Ext_buffer.add_char buf '2';
-      Ext_buffer.add_int_2
-    end
-    else if length <= 0x7f_ff_ff then begin 
-      Ext_buffer.add_char buf '3';
-      Ext_buffer.add_int_3
-    end
-    else if length <= 0x7f_ff_ff_ff then begin
-      Ext_buffer.add_char buf '4';
-      Ext_buffer.add_int_4
-    end else assert false in 
+  let len_encoding = make_encoding length buf in 
   String_map.iter db (fun _ module_info ->       
       len_encoding buf 
         (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      

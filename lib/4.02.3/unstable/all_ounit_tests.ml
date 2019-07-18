@@ -3940,7 +3940,6 @@ let printer_string = fun x -> x
 let (=~) = OUnit.assert_equal  ~printer:printer_string  
 
 
-
 let scope_test s (a,b,c)= 
   match Bsb_pkg_types.extract_pkg_name_and_file s with 
   | Scope(a0,b0),c0 -> 
