@@ -13083,8 +13083,8 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string =
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = (Ext_buffer.digest buf) in
-  output_string oc (Digest.to_hex digest);
+  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
   digest
@@ -13405,6 +13405,7 @@ val make_custom_rules :
   has_builtin:bool -> 
   bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
+  digest:string ->
   command String_map.t ->
   builtin
 
@@ -13530,6 +13531,7 @@ let make_custom_rules
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+  ~(digest : string)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13615,7 +13617,8 @@ let make_custom_rules
   let build_bin_deps =
     define
       ~restat:()
-      ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
+      ~command:
+      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
@@ -14431,16 +14434,6 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules 
-      ~has_gentype:(gentype_config <> None)
-      ~has_postbuild:(js_post_build_cmd <> None)
-      ~has_ppx:(ppx_files <> [])
-      ~has_pp:(pp_file <> None)
-      ~has_builtin:(built_in_dependency <> None)
-      ~reason_react_jsx
-      ~bs_suffix
-      generators in 
   
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -14550,7 +14543,19 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
-  let _digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let rules : Bsb_ninja_rule.builtin = 
+      Bsb_ninja_rule.make_custom_rules 
+      ~has_gentype:(gentype_config <> None)
+      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_ppx:(ppx_files <> [])
+      ~has_pp:(pp_file <> None)
+      ~has_builtin:(built_in_dependency <> None)
+      ~reason_react_jsx
+      ~bs_suffix
+      ~digest
+      generators in 
+  
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   Ext_list.iter static_resources (fun output -> 
       Bsb_ninja_util.output_build

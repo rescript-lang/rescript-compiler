@@ -117,6 +117,7 @@ let make_custom_rules
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+  ~(digest : string)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -202,7 +203,8 @@ let make_custom_rules
   let build_bin_deps =
     define
       ~restat:()
-      ~command:"$bsdep $g_ns -g $bsb_dir_group $in"
+      ~command:
+      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 

@@ -95,8 +95,8 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string =
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = (Ext_buffer.digest buf) in
-  output_string oc (Digest.to_hex digest);
+  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
   digest

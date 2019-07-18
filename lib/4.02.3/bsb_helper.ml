@@ -5249,6 +5249,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let hash : string ref = ref ""
 let batch_files = ref []
 let collect_file name =
   batch_files := name :: !batch_files
@@ -5269,6 +5270,8 @@ let () =
     ;
     "-bs-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
+    "-hash", Arg.String (fun s -> hash := s),
+    " Set hash(internal)";
     
   ] anonymous usage;
   (* arrange with mlast comes first *)
