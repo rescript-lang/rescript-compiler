@@ -29,8 +29,9 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let comma buf = 
-  Ext_buffer.add_char buf ','
+let tab buf =   
+  Ext_buffer.add_char buf '\t'
+
 
 (* IDEAS: 
   Pros: 
@@ -48,8 +49,8 @@ let comma buf =
   Strictly speaking, [tmp_buf1] is not needed
 *)
 let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
+  nl buf ; (* module name section *)
   let len = String_map.cardinal db in 
-  nl buf ; 
   Ext_buffer.add_string buf (string_of_int len);
   let mapping = String_hashtbl.create 50 in 
   String_map.iter db (fun name {dir} ->
@@ -61,9 +62,9 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   let length = String_hashtbl.length mapping in   
   let rev_mapping = Array.make length "" in 
   String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
-  nl buf;
-  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; Ext_buffer.add_char buf  '\t');
-  nl buf;
+  nl buf; (* directory name section *)
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; tab buf;);
+  nl buf; (* module name info section *)
   let len_encoding = 
     let max_range = length lsl 1 + 1 in 
     if max_range <= 0xff then begin 

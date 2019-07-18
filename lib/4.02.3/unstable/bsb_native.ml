@@ -460,6 +460,11 @@ val hash_variant : string -> int
 val todo : string -> 'a
 
 val nat_of_string_exn : string -> int
+
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -564,6 +569,25 @@ let nat_of_string_exn (s : string) =
   let acc = int_of_string_aux s 0 0 (String.length s) in 
   if acc < 0 then invalid_arg s 
   else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -684,6 +708,13 @@ val index_count:
   int -> 
   int 
 
+val index_next :
+  string -> 
+  int ->
+  char -> 
+  int 
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -1027,6 +1058,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -1040,6 +1073,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -12956,8 +12993,9 @@ let bsbuild_cache = Literals.bsbuild_cache
 let nl buf = 
   Ext_buffer.add_char buf '\n'
 
-let comma buf = 
-  Ext_buffer.add_char buf ','
+let tab buf =   
+  Ext_buffer.add_char buf '\t'
+
 
 (* IDEAS: 
   Pros: 
@@ -12975,8 +13013,8 @@ let comma buf =
   Strictly speaking, [tmp_buf1] is not needed
 *)
 let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
+  nl buf ; (* module name section *)
   let len = String_map.cardinal db in 
-  nl buf ; 
   Ext_buffer.add_string buf (string_of_int len);
   let mapping = String_hashtbl.create 50 in 
   String_map.iter db (fun name {dir} ->
@@ -12988,9 +13026,9 @@ let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =
   let length = String_hashtbl.length mapping in   
   let rev_mapping = Array.make length "" in 
   String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
-  nl buf;
-  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; Ext_buffer.add_char buf  '\t');
-  nl buf;
+  nl buf; (* directory name section *)
+  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string buf s; tab buf;);
+  nl buf; (* module name info section *)
   let len_encoding = 
     let max_range = length lsl 1 + 1 in 
     if max_range <= 0xff then begin 

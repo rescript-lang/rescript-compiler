@@ -799,6 +799,11 @@ val hash_variant : string -> int
 val todo : string -> 'a
 
 val nat_of_string_exn : string -> int
+
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -903,6 +908,25 @@ let nat_of_string_exn (s : string) =
   let acc = int_of_string_aux s 0 0 (String.length s) in 
   if acc < 0 then invalid_arg s 
   else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -1023,6 +1047,13 @@ val index_count:
   int -> 
   int 
 
+val index_next :
+  string -> 
+  int ->
+  char -> 
+  int 
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -1366,6 +1397,8 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+
+
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then 
@@ -1379,6 +1412,10 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
+
+let index_next s i c =   
+  index_count s i c 1 
+
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -3886,15 +3923,17 @@ let extract_line (x : string) (cur : cursor) : string =
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
-  let len = Ext_pervasives.nat_of_string_exn (extract_line x offset) in  
+  let len = Ext_pervasives.parse_nat_of_string x offset in  
+  incr offset;
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single (x : string) (offset : cursor) : group = 
-  let module_number = Ext_pervasives.nat_of_string_exn (extract_line x offset) in 
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+  incr offset;
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
-    Ext_string.index_count x dir_info_offset '\n' 1 + 1 in
-  let dir_length = Char.code x.[module_info_offset] - Char.code '0' in
+    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+  let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
   offset := 
     module_info_offset +
     1 +
@@ -3959,12 +3998,7 @@ let find_opt_aux sorted key  : _ option =
 
 
 type module_info =  {
-  (* mli_info : mli_info;
-  ml_info : ml_info; *)
   case : Bsb_db.case; 
-  (* module and interface at least 
-    should have consistent case
-  *)
   dir_name : string
 } 
 

@@ -44,15 +44,17 @@ let extract_line (x : string) (cur : cursor) : string =
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
-  let len = Ext_pervasives.nat_of_string_exn (extract_line x offset) in  
+  let len = Ext_pervasives.parse_nat_of_string x offset in  
+  incr offset;
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single (x : string) (offset : cursor) : group = 
-  let module_number = Ext_pervasives.nat_of_string_exn (extract_line x offset) in 
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+  incr offset;
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
-    Ext_string.index_count x dir_info_offset '\n' 1 + 1 in
-  let dir_length = Char.code x.[module_info_offset] - Char.code '0' in
+    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+  let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
   offset := 
     module_info_offset +
     1 +
@@ -117,12 +119,7 @@ let find_opt_aux sorted key  : _ option =
 
 
 type module_info =  {
-  (* mli_info : mli_info;
-  ml_info : ml_info; *)
   case : Bsb_db.case; 
-  (* module and interface at least 
-    should have consistent case
-  *)
   dir_name : string
 } 
 
