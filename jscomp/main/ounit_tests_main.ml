@@ -43,6 +43,7 @@ let suites =
     Ounit_bsb_regex_tests.suites;
     Ounit_bsb_pkg_tests.suites;
     Ounit_depends_format_test.suites;
+    Ounit_util_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

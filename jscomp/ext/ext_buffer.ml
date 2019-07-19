@@ -190,7 +190,7 @@ let add_int_4 (b : t ) (x : int ) =
   let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
   let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
   let pos = b.position in
-  if pos + 3 >= b.length then resize b 3;
+  if pos + 3 >= b.length then resize b 4;
   let b_buffer = b.buffer in 
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
