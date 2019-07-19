@@ -52,7 +52,10 @@ type file_kind =
   | Little_bs 
   (** [js_name_of_modulename ~little A-Ns]
   *)
-val js_name_of_modulename : file_kind -> string -> string
+val js_name_of_modulename : 
+  string -> 
+  file_kind -> 
+  string
 
 (* TODO handle cases like 
    '@angular/core'

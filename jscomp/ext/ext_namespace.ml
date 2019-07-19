@@ -33,12 +33,11 @@ let ns_sep = "-"
 let make ~ns cunit  = 
   cunit ^ ns_sep ^ ns
 
-let path_char = Filename.dir_sep.[0]
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
-    if char = path_char then -1 
+    if Ext_filename.is_dir_sep char  then -1 
     else if char = ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
@@ -67,7 +66,7 @@ type file_kind =
   change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename little s = 
+let js_name_of_modulename s little = 
   match little with 
   | Little_js -> 
     change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js

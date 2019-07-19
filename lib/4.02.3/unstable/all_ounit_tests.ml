@@ -5184,7 +5184,9 @@ module Ext_filename : sig
     TODO : this short name will have to change upon renaming the file.
 *)
 
-
+val is_dir_sep : 
+  char -> bool 
+  
 val maybe_quote:
   string -> 
   string
@@ -16828,7 +16830,10 @@ type file_kind =
   | Little_bs 
   (** [js_name_of_modulename ~little A-Ns]
   *)
-val js_name_of_modulename : file_kind -> string -> string
+val js_name_of_modulename : 
+  string -> 
+  file_kind -> 
+  string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -16879,12 +16884,11 @@ let ns_sep = "-"
 let make ~ns cunit  = 
   cunit ^ ns_sep ^ ns
 
-let path_char = Filename.dir_sep.[0]
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
-    if char = path_char then -1 
+    if Ext_filename.is_dir_sep char  then -1 
     else if char = ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
@@ -16913,7 +16917,7 @@ type file_kind =
   change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename little s = 
+let js_name_of_modulename s little = 
   match little with 
   | Little_js -> 
     change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
@@ -17364,13 +17368,13 @@ let suites =
       Ext_namespace.change_ext_ns_suffix  "AA-b" Literals.suffix_js
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        Little_js "AA-b"
+        "AA-b" Little_js 
       =~ "aA.js";
       Ext_namespace.js_name_of_modulename 
-        Upper_js "AA-b"
+        "AA-b" Upper_js 
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        Upper_bs "AA-b"
+        "AA-b" Upper_bs 
       =~ "AA.bs.js";
     end;
     __LOC__ >:: begin   fun _ -> 
