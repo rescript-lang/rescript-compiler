@@ -156,22 +156,22 @@ let get_list_of_output_js
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
-    (fun (format : spec) acc ->
+    (fun (spec : spec) acc ->
         let basename =  Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
              (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
         in 
-        (Bsb_config.proj_rel @@ (if format.in_source then basename
-        else prefix_of_format format.format // basename))         
+        (Bsb_config.proj_rel @@ (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))         
        :: acc
     ) package_specs []
 
 
-let get_list_dirs    
+let list_dirs_by
   (package_specs : Spec_set.t)
+  (f : string -> unit)
   =  
-  Spec_set.fold (fun (spec : spec) acc -> 
-    if spec.in_source then acc 
-    else 
-      prefix_of_format spec.format :: acc 
-  ) package_specs []
+  Spec_set.iter (fun (spec : spec)  -> 
+    if not spec.in_source then     
+      f (prefix_of_format spec.format) 
+  ) package_specs 

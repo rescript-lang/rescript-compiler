@@ -10635,8 +10635,10 @@ val get_list_of_output_js :
 val package_flag_of_package_specs : 
   t -> string -> string
 
-val get_list_dirs :   
-  t -> string list 
+val list_dirs_by :   
+  t -> 
+  (string -> unit) -> 
+  unit
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -10797,25 +10799,25 @@ let get_list_of_output_js
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
-    (fun (format : spec) acc ->
+    (fun (spec : spec) acc ->
         let basename =  Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
              (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
         in 
-        (Bsb_config.proj_rel @@ (if format.in_source then basename
-        else prefix_of_format format.format // basename))         
+        (Bsb_config.proj_rel @@ (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))         
        :: acc
     ) package_specs []
 
 
-let get_list_dirs    
+let list_dirs_by
   (package_specs : Spec_set.t)
+  (f : string -> unit)
   =  
-  Spec_set.fold (fun (spec : spec) acc -> 
-    if spec.in_source then acc 
-    else 
-      prefix_of_format spec.format :: acc 
-  ) package_specs []
+  Spec_set.iter (fun (spec : spec)  -> 
+    if not spec.in_source then     
+      f (prefix_of_format spec.format) 
+  ) package_specs 
 end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
@@ -14727,9 +14729,8 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_dev config ;         
-    Ext_list.iter 
-      (Bsb_package_specs.get_list_dirs config.package_specs)
+      ~cwd ~bsc_dir ~not_dev config ;             
+    Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
