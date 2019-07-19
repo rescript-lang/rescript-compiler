@@ -66,14 +66,24 @@ and decode_single (x : string) (offset : cursor) : group =
     1 
     ;
   { modules ; dir_info_offset; module_info_offset ; dir_length}
-and decode_modules x (offset : cursor) module_number =   
+and decode_modules (x : string) (offset : cursor) module_number : string array =   
   let result = Array.make module_number "" in 
+  let last = ref !offset in 
   let cur = ref !offset in 
-  for i = 0 to module_number - 1 do 
-    let n = String.index_from x !cur '\n' in 
-    Array.unsafe_set result i 
-    (String.sub x !cur (n - !cur));
-    cur := n + 1; 
+  let tasks = ref 0 in 
+  while !tasks <> module_number do 
+    if String.unsafe_get x !cur = '\n' then 
+      begin 
+        let offs = !last in 
+        let len = (!cur - !last) in 
+        let b = Bytes.create len in 
+        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        Array.unsafe_set result !tasks
+        (Bytes.unsafe_to_string b);
+        incr tasks;
+        last := !cur + 1;
+      end;
+    incr cur
   done ;
   offset := !cur;
   result

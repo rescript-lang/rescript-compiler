@@ -26,6 +26,8 @@
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
