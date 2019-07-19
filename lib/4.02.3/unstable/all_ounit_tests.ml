@@ -1646,6 +1646,8 @@ module Ext_bytes : sig
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -1684,6 +1686,8 @@ end = struct
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -2161,11 +2165,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -2174,11 +2178,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**
@@ -2519,10 +2523,10 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
 
 
 
@@ -2540,10 +2544,10 @@ let index_count s i c count =
 
   index_rec_count s lim i c count 
 
-let index_next s i c =   
-  index_count s i c 1 
+(* let index_next s i c =   
+  index_count s i c 1  *)
 
-let extract_until s cursor c =       
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -2561,7 +2565,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -16449,12 +16453,25 @@ let add_string b s =
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
-  add_string b s;
-  add_char b c
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
 
 let add_char_string b c s  =
-  add_char b c ;
-  add_string b s
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
 
 
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
@@ -16578,6 +16595,8 @@ module Ext_digest : sig
 
 
  val length : int 
+
+ val hex_length : int
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
@@ -16606,6 +16625,8 @@ end = struct
 
 
  let length = 16
+
+ let hex_length = 32
 end
 module Ext_modulename : sig 
 #1 "ext_modulename.mli"
@@ -16994,7 +17015,7 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-    __LOC__ >:: begin 
+    (* __LOC__ >:: begin 
       fun _ -> 
       let nl cur s = Ext_string.extract_until s cur '\n' in 
       nl (ref 0) "hello\n" =~ "hello";
@@ -17016,7 +17037,7 @@ let suites =
       nl cur b =~ "d";
       nl cur b =~ "" ;
       nl cur b =~ "" ;
-    end ;
+    end ; *)
     __LOC__ >:: begin fun _ -> 
       let b = "a\nb\nc\nd\n" in
       let a = Ext_string.index_count in 
@@ -20531,6 +20552,22 @@ let suites =
       let buf = Ext_buffer.create 0 in 
       Ext_buffer.add_int_4 buf 0x1_ff_ff_ff;
       Ext_string.get_int_4 (Ext_buffer.contents buf) 0 =~ 0x1_ff_ff_ff
+    end;
+    __LOC__ >:: begin fun _ -> 
+        let buf = Ext_buffer.create 0 in 
+        Ext_buffer.add_string_char buf "hello" 'v';
+        Ext_buffer.contents buf =~ "hellov";
+        Ext_buffer.length buf =~ 6
+    end;
+    __LOC__ >:: begin fun _ -> 
+        let buf = Ext_buffer.create 0 in 
+        Ext_buffer.add_char_string buf 'h' "ellov";
+        Ext_buffer.contents buf =~ "hellov";
+        Ext_buffer.length buf =~ 6
+    end;
+    __LOC__ >:: begin fun _ -> 
+        String.length 
+        (Digest.to_hex(Digest.string "")) =~ 32
     end
 
   ]

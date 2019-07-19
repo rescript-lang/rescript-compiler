@@ -46,6 +46,22 @@ let suites =
       let buf = Ext_buffer.create 0 in 
       Ext_buffer.add_int_4 buf 0x1_ff_ff_ff;
       Ext_string.get_int_4 (Ext_buffer.contents buf) 0 =~ 0x1_ff_ff_ff
+    end;
+    __LOC__ >:: begin fun _ -> 
+        let buf = Ext_buffer.create 0 in 
+        Ext_buffer.add_string_char buf "hello" 'v';
+        Ext_buffer.contents buf =~ "hellov";
+        Ext_buffer.length buf =~ 6
+    end;
+    __LOC__ >:: begin fun _ -> 
+        let buf = Ext_buffer.create 0 in 
+        Ext_buffer.add_char_string buf 'h' "ellov";
+        Ext_buffer.contents buf =~ "hellov";
+        Ext_buffer.length buf =~ 6
+    end;
+    __LOC__ >:: begin fun _ -> 
+        String.length 
+        (Digest.to_hex(Digest.string "")) =~ 32
     end
 
   ]

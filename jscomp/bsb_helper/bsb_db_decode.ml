@@ -37,10 +37,6 @@ type t = group array * string (* string is whole content*)
 
 type cursor = int ref 
 
-let extract_line (x : string) (cur : cursor) : string =
-  Ext_string.extract_until x cur '\n'
-
-
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
@@ -61,7 +57,7 @@ and decode_single (x : string) (offset : cursor) : group =
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
-    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+    String.index_from x dir_info_offset '\n'  + 1 in
   let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
   offset := 
     module_info_offset +
@@ -70,31 +66,35 @@ and decode_single (x : string) (offset : cursor) : group =
     1 
     ;
   { modules ; dir_info_offset; module_info_offset ; dir_length}
-and decode_modules x (offset : cursor) module_number =   
+and decode_modules (x : string) (offset : cursor) module_number : string array =   
   let result = Array.make module_number "" in 
+  let last = ref !offset in 
   let cur = ref !offset in 
-  for i = 0 to module_number - 1 do 
-    let n = Ext_string.index_next x !cur '\n' in 
-    Array.unsafe_set result i 
-    (String.sub x !cur (n - !cur));
-    cur := n + 1; 
+  let tasks = ref 0 in 
+  while !tasks <> module_number do 
+    if String.unsafe_get x !cur = '\n' then 
+      begin 
+        let offs = !last in 
+        let len = (!cur - !last) in 
+        let b = Bytes.create len in 
+        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        Array.unsafe_set result !tasks
+        (Bytes.unsafe_to_string b);
+        incr tasks;
+        last := !cur + 1;
+      end;
+    incr cur
   done ;
   offset := !cur;
   result
   
 
-
-
-
-
+(* TODO: shall we check the consistency of digest *)
 let read_build_cache ~dir  : t = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let len = in_channel_length ic in 
-  let all_content = really_input_string ic len in 
-  let offset = ref 0 in 
-  let _cur_module_info_magic_number = extract_line all_content offset in 
-  (* assert (cur_module_info_magic_number = Bs_version.version);  *)
-  decode_internal all_content offset, all_content
+  let all_content = really_input_string ic len in   
+  decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -161,9 +161,9 @@ let find_opt
           ith + 1
     in 
     let dir_name_finish = 
-      Ext_string.index_count 
-      whole dir_name_start   '\t' 1 
-     in    
+      String.index_from
+        whole dir_name_start '\t' 
+    in    
     Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
   
         

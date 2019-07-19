@@ -519,6 +519,8 @@ module Ext_bytes : sig
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -557,6 +559,8 @@ end = struct
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -1034,11 +1038,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -1047,11 +1051,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**
@@ -1392,10 +1396,10 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
 
 
 
@@ -1413,10 +1417,10 @@ let index_count s i c count =
 
   index_rec_count s lim i c count 
 
-let index_next s i c =   
-  index_count s i c 1 
+(* let index_next s i c =   
+  index_count s i c 1  *)
 
-let extract_until s cursor c =       
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -1434,7 +1438,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -3543,6 +3547,67 @@ let has_reason_files (map  : t ) =
 
 
 end
+module Ext_digest : sig 
+#1 "ext_digest.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ val length : int 
+
+ val hex_length : int
+end = struct
+#1 "ext_digest.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let length = 16
+
+ let hex_length = 32
+end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3917,10 +3982,6 @@ type t = group array * string (* string is whole content*)
 
 type cursor = int ref 
 
-let extract_line (x : string) (cur : cursor) : string =
-  Ext_string.extract_until x cur '\n'
-
-
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
@@ -3941,7 +4002,7 @@ and decode_single (x : string) (offset : cursor) : group =
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
-    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+    String.index_from x dir_info_offset '\n'  + 1 in
   let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
   offset := 
     module_info_offset +
@@ -3950,31 +4011,35 @@ and decode_single (x : string) (offset : cursor) : group =
     1 
     ;
   { modules ; dir_info_offset; module_info_offset ; dir_length}
-and decode_modules x (offset : cursor) module_number =   
+and decode_modules (x : string) (offset : cursor) module_number : string array =   
   let result = Array.make module_number "" in 
+  let last = ref !offset in 
   let cur = ref !offset in 
-  for i = 0 to module_number - 1 do 
-    let n = Ext_string.index_next x !cur '\n' in 
-    Array.unsafe_set result i 
-    (String.sub x !cur (n - !cur));
-    cur := n + 1; 
+  let tasks = ref 0 in 
+  while !tasks <> module_number do 
+    if String.unsafe_get x !cur = '\n' then 
+      begin 
+        let offs = !last in 
+        let len = (!cur - !last) in 
+        let b = Bytes.create len in 
+        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        Array.unsafe_set result !tasks
+        (Bytes.unsafe_to_string b);
+        incr tasks;
+        last := !cur + 1;
+      end;
+    incr cur
   done ;
   offset := !cur;
   result
   
 
-
-
-
-
+(* TODO: shall we check the consistency of digest *)
 let read_build_cache ~dir  : t = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let len = in_channel_length ic in 
-  let all_content = really_input_string ic len in 
-  let offset = ref 0 in 
-  let _cur_module_info_magic_number = extract_line all_content offset in 
-  (* assert (cur_module_info_magic_number = Bs_version.version);  *)
-  decode_internal all_content offset, all_content
+  let all_content = really_input_string ic len in   
+  decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -4041,9 +4106,9 @@ let find_opt
           ith + 1
     in 
     let dir_name_finish = 
-      Ext_string.index_count 
-      whole dir_name_start   '\t' 1 
-     in    
+      String.index_from
+        whole dir_name_start '\t' 
+    in    
     Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
   
         
@@ -4269,12 +4334,25 @@ let add_string b s =
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
-  add_string b s;
-  add_char b c
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
 
 let add_char_string b c s  =
-  add_char b c ;
-  add_string b s
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
 
 
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
@@ -5133,15 +5211,13 @@ let oc_intf
     (match  find_module db dependent_module is_not_lib_dir index 
      with     
      | None -> ()
-     | Some {dir_name; case} -> 
-       let source = 
-        Filename.concat dir_name 
-        (if case then dependent_module else
-          Ext_string.uncapitalize_ascii dependent_module
-        )
-      in 
+     | Some {dir_name; case} ->       
        Lazy.force at_most_once; 
-       oc_cmi buf namespace source             
+       oc_cmi buf namespace 
+         (Filename.concat dir_name 
+            (if case then dependent_module else
+               Ext_string.uncapitalize_ascii dependent_module
+            ))
     );
     offset := next_tab + 1   
   done;  

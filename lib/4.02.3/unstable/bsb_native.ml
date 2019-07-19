@@ -180,6 +180,8 @@ module Ext_bytes : sig
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -218,6 +220,8 @@ end = struct
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" "noalloc"
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -695,11 +699,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -708,11 +712,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**
@@ -1053,10 +1057,10 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
 
 
 
@@ -1074,10 +1078,10 @@ let index_count s i c count =
 
   index_rec_count s lim i c count 
 
-let index_next s i c =   
-  index_count s i c 1 
+(* let index_next s i c =   
+  index_count s i c 1  *)
 
-let extract_until s cursor c =       
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -1095,7 +1099,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -12855,12 +12859,25 @@ let add_string b s =
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
-  add_string b s;
-  add_char b c
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
 
 let add_char_string b c s  =
-  add_char b c ;
-  add_string b s
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
 
 
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
@@ -13078,16 +13095,17 @@ let encode (dbs : Bsb_db.ts) buf =
   Ext_array.iter dbs (fun x ->  encode_single x  buf)
   
 
-
+(* TODO: shall we avoid writing such file (checking the digest) *)
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  let digest = Ext_buffer.digest buf in 
+  let hex_digest = Digest.to_hex digest in
   output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
-  digest
+  hex_digest
 
 end
 module Ext_digest : sig 
@@ -13118,6 +13136,8 @@ module Ext_digest : sig
 
 
  val length : int 
+
+ val hex_length : int
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
@@ -13146,6 +13166,8 @@ end = struct
 
 
  let length = 16
+
+ let hex_length = 32
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
@@ -13238,8 +13260,7 @@ let output
   Ext_list.iter file_groups 
     (fun  x ->
        String_map.iter x.sources (fun k _ -> 
-           Ext_buffer.add_string buf k ;
-           Ext_buffer.add_char buf '\n'
+           Ext_buffer.add_string_char buf k '\n';
          ) 
     );
   (* let contents = Buffer.contents buf in    *)

@@ -52,8 +52,7 @@ let output
   Ext_list.iter file_groups 
     (fun  x ->
        String_map.iter x.sources (fun k _ -> 
-           Ext_buffer.add_string buf k ;
-           Ext_buffer.add_char buf '\n'
+           Ext_buffer.add_string_char buf k '\n';
          ) 
     );
   (* let contents = Buffer.contents buf in    *)

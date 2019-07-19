@@ -54,11 +54,9 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
   Ext_buffer.add_char buf magic_sep_char;  
   String_set.iter (fun s ->
       if s <> "" && s.[0] <> '*' then begin (* filter *predef* *)
-        Ext_buffer.add_string buf s ; 
-        Ext_buffer.add_char buf magic_sep_char
+        Ext_buffer.add_string_char buf s magic_sep_char; 
       end
     ) output_set ;  
-
   output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;
   Ml_binary.write_ast kind fname pt oc;
