@@ -568,3 +568,8 @@ let get_1_2_3_4 (x : string) ~off len : int =
   else if len = 3 then get_int_3 x off 
   else if len = 4 then get_int_4 x off 
   else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);

@@ -75,11 +75,9 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
     if String.unsafe_get x !cur = '\n' then 
       begin 
         let offs = !last in 
-        let len = (!cur - !last) in 
-        let b = Bytes.create len in 
-        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        let len = (!cur - !last) in         
         Array.unsafe_set result !tasks
-        (Bytes.unsafe_to_string b);
+        (Ext_string.unsafe_sub x offs len);
         incr tasks;
         last := !cur + 1;
       end;

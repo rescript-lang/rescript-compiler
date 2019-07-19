@@ -217,3 +217,9 @@ val get_1_2_3_4 :
   off:int ->  
   int -> 
   int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string

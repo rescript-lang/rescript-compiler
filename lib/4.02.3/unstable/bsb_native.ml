@@ -810,6 +810,12 @@ val get_1_2_3_4 :
   off:int ->  
   int -> 
   int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1374,6 +1380,11 @@ let get_1_2_3_4 (x : string) ~off len : int =
   else if len = 3 then get_int_3 x off 
   else if len = 4 then get_int_4 x off 
   else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
@@ -9461,7 +9472,7 @@ let clean_bs_garbage bsc_dir proj_dir =
   try
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean bsc_dir proj_dir ;
-    List.iter try_remove Bsb_config.all_lib_artifacts;
+    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -11150,7 +11161,7 @@ let extract_ignored_dirs (map : json_map) =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~generate_watch_metadata
+    ~(generate_watch_metadata : bool)
     ~not_dev 
     cwd  
 

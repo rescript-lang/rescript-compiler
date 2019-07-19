@@ -47,7 +47,7 @@ let clean_bs_garbage bsc_dir proj_dir =
   try
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean bsc_dir proj_dir ;
-    List.iter try_remove Bsb_config.all_lib_artifacts;
+    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)

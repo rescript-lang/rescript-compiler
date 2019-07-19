@@ -1149,6 +1149,12 @@ val get_1_2_3_4 :
   off:int ->  
   int -> 
   int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1713,6 +1719,11 @@ let get_1_2_3_4 (x : string) ~off len : int =
   else if len = 3 then get_int_3 x off 
   else if len = 4 then get_int_4 x off 
   else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
@@ -4020,11 +4031,9 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
     if String.unsafe_get x !cur = '\n' then 
       begin 
         let offs = !last in 
-        let len = (!cur - !last) in 
-        let b = Bytes.create len in 
-        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        let len = (!cur - !last) in         
         Array.unsafe_set result !tasks
-        (Bytes.unsafe_to_string b);
+        (Ext_string.unsafe_sub x offs len);
         incr tasks;
         last := !cur + 1;
       end;
