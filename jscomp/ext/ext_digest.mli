@@ -24,3 +24,5 @@
 
 
  val length : int 
+
+ val hex_length : int

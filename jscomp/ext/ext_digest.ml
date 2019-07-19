@@ -24,3 +24,5 @@
 
 
  let length = 16
+
+ let hex_length = 32

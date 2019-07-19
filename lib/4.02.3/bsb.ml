@@ -13091,16 +13091,17 @@ let encode (dbs : Bsb_db.ts) buf =
   Ext_array.iter dbs (fun x ->  encode_single x  buf)
   
 
-
+(* TODO: shall we avoid writing such file (checking the digest) *)
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = Digest.to_hex (Ext_buffer.digest buf) in
+  let digest = Ext_buffer.digest buf in 
+  let hex_digest = Digest.to_hex digest in
   output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
-  digest
+  hex_digest
 
 end
 module Ext_digest : sig 
@@ -13131,6 +13132,8 @@ module Ext_digest : sig
 
 
  val length : int 
+
+ val hex_length : int
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
@@ -13159,6 +13162,8 @@ end = struct
 
 
  let length = 16
+
+ let hex_length = 32
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"

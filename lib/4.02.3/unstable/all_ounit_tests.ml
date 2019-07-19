@@ -16591,6 +16591,8 @@ module Ext_digest : sig
 
 
  val length : int 
+
+ val hex_length : int
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
@@ -16619,6 +16621,8 @@ end = struct
 
 
  let length = 16
+
+ let hex_length = 32
 end
 module Ext_modulename : sig 
 #1 "ext_modulename.mli"
@@ -20549,13 +20553,17 @@ let suites =
         let buf = Ext_buffer.create 0 in 
         Ext_buffer.add_string_char buf "hello" 'v';
         Ext_buffer.contents buf =~ "hellov";
-        Ext_buffer.length buf =~ 5
+        Ext_buffer.length buf =~ 6
     end;
     __LOC__ >:: begin fun _ -> 
         let buf = Ext_buffer.create 0 in 
         Ext_buffer.add_char_string buf 'h' "ellov";
         Ext_buffer.contents buf =~ "hellov";
-        Ext_buffer.length buf =~ 5
+        Ext_buffer.length buf =~ 6
+    end;
+    __LOC__ >:: begin fun _ -> 
+        String.length 
+        (Digest.to_hex(Digest.string "")) =~ 32
     end
 
   ]

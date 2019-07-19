@@ -37,10 +37,6 @@ type t = group array * string (* string is whole content*)
 
 type cursor = int ref 
 
-let extract_line (x : string) (cur : cursor) : string =
-  Ext_string.extract_until x cur '\n'
-
-
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
@@ -83,18 +79,12 @@ and decode_modules x (offset : cursor) module_number =
   result
   
 
-
-
-
-
+(* TODO: shall we check the consistency of digest *)
 let read_build_cache ~dir  : t = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let len = in_channel_length ic in 
-  let all_content = really_input_string ic len in 
-  let offset = ref 0 in 
-  let _cur_module_info_magic_number = extract_line all_content offset in 
-  (* assert (cur_module_info_magic_number = Bs_version.version);  *)
-  decode_internal all_content offset, all_content
+  let all_content = really_input_string ic len in   
+  decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
