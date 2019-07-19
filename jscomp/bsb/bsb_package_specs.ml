@@ -164,9 +164,10 @@ let package_output ({format; in_source } : spec) output=
 
 *)
 let get_list_of_output_js 
-    package_specs 
-    bs_suffix
-    output_file_sans_extension = 
+    (package_specs : Spec_set.t)
+    (bs_suffix : bool)
+    (output_file_sans_extension : string)
+    = 
   Spec_set.fold 
     (fun format acc ->
        package_output format 

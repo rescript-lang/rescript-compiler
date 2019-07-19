@@ -16906,26 +16906,26 @@ type file_kind =
   | Little_js 
   | Little_bs
 
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
+
+
 
 (* let ends_with_bs_suffix_then_chop s = 
   Ext_string.ends_with_then_chop s bs_suffix_js *)
   
 let js_name_of_basename bs_suffix s =   
   remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
+  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js )
 
 let js_name_of_modulename little s = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ Literals.suffix_js
   | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ Literals.suffix_bs_js
   | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
+    remove_ns_suffix s ^ Literals.suffix_js
   | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
+    remove_ns_suffix s ^ Literals.suffix_bs_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
