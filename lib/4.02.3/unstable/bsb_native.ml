@@ -12855,12 +12855,25 @@ let add_string b s =
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
-  add_string b s;
-  add_char b c
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
 
 let add_char_string b c s  =
-  add_char b c ;
-  add_string b s
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
 
 
 let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
@@ -13238,8 +13251,7 @@ let output
   Ext_list.iter file_groups 
     (fun  x ->
        String_map.iter x.sources (fun k _ -> 
-           Ext_buffer.add_string buf k ;
-           Ext_buffer.add_char buf '\n'
+           Ext_buffer.add_string_char buf k '\n';
          ) 
     );
   (* let contents = Buffer.contents buf in    *)
