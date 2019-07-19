@@ -171,8 +171,10 @@ let get_list_of_output_js
   Spec_set.fold 
     (fun format acc ->
        package_output format 
-         ( Ext_namespace.js_name_of_basename bs_suffix
-             output_file_sans_extension)
+         ( Ext_namespace.change_ext_ns_suffix
+             output_file_sans_extension
+             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+          )
        :: acc
     ) package_specs []
 

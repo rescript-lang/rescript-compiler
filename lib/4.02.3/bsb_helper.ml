@@ -4688,9 +4688,10 @@ val try_split_module_name :
    #1933 when removing ns suffix, don't pass the bound
    of basename
 *)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
+val change_ext_ns_suffix :  
+  string -> 
+  string ->
+  string
 
 type file_kind = 
   | Upper_js
@@ -4779,14 +4780,10 @@ type file_kind =
   | Little_bs
 
 
-
-
-(* let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js *)
   
-let js_name_of_basename bs_suffix s =   
+(* let js_name_of_basename bs_suffix s =   
   change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js )
+  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
 let js_name_of_modulename little s = 
   match little with 

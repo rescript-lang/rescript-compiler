@@ -299,9 +299,11 @@ let lambda_as_module
   let lambda_output = 
     compile ~filename output_prefix finalenv lam in
   let basename =  
-    Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
+    Ext_namespace.change_ext_ns_suffix 
       (Filename.basename
-         output_prefix) in
+         output_prefix) 
+      (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
+  in
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info  then 
     begin 
