@@ -50,7 +50,7 @@ let get_runtime_module_path
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
       module_system  in
-  let js_file =  Ext_namespace.js_name_of_modulename Little_js dep_module_id.id.name in     
+  let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name Little_js in     
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 
@@ -116,7 +116,7 @@ let string_of_module_id
       | None -> 
         Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
       | Some (cmj_path, dep_package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename little dep_module_id.id.name in 
+        let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name little in 
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
         in 

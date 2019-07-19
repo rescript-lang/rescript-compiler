@@ -15924,7 +15924,9 @@ module Ext_filename : sig
     TODO : this short name will have to change upon renaming the file.
 *)
 
-
+val is_dir_sep : 
+  char -> bool 
+  
 val maybe_quote:
   string -> 
   string

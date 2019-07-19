@@ -25,13 +25,14 @@
 
 let (//) = Ext_path.combine 
 
-let common_js_prefix p  =  Bsb_config.lib_js  // p
-let es6_prefix p = Bsb_config.lib_es6 // p 
-let es6_global_prefix p =  Bsb_config.lib_es6_global // p
 
+
+(* TODO: sync up with {!Js_packages_info.module_system}  *)
+type format = 
+  | NodeJS | Es6 | Es6_global
 
 type spec = {
-  format : string;
+  format : format;
   in_source : bool 
 }
 
@@ -42,12 +43,6 @@ module Spec_set = Set.Make( struct type t = spec
 type t = Spec_set.t 
 
 
-
-let supported_format x = 
-  x = Literals.commonjs ||
-  x = Literals.es6 ||
-  x = Literals.es6_global 
-
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
     format
@@ -55,6 +50,23 @@ let bad_module_format_message_exn ~loc format =
     Literals.es6
     Literals.es6_global
 
+let supported_format (x : string) loc = 
+  if x = Literals.commonjs then NodeJS
+  else if x = Literals.es6 then Es6
+  else if x = Literals.es6_global then Es6_global
+  else bad_module_format_message_exn ~loc x 
+
+let string_of_format (x : format) =
+  match x with 
+  | NodeJS -> Literals.commonjs
+  | Es6 -> Literals.es6
+  | Es6_global -> Literals.es6_global
+
+let prefix_of_format (x : format)  =   
+  (match x with 
+  | NodeJS -> Bsb_config.lib_js 
+  | Es6 -> Bsb_config.lib_es6 
+  | Es6_global -> Bsb_config.lib_es6_global )
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -77,11 +89,8 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
 (* TODO: FIXME: better API without mutating *)
 and from_json_single (x : Ext_json_types.t) : spec =
   match x with
-  | Str {str = format; loc } ->
-    if supported_format format then
-      {format ; in_source = false }
-    else
-      (bad_module_format_message_exn ~loc format)
+  | Str {str = format; loc } ->    
+      {format = supported_format format loc  ; in_source = false }    
   | Obj {map; loc} ->
     begin match String_map.find_exn map "module" with
       | Str {str = format} ->
@@ -90,11 +99,8 @@ and from_json_single (x : Ext_json_types.t) : spec =
           | Some (True _) -> true
           | Some _
           | None -> false
-        in
-        if supported_format format then
-          {format ; in_source  }
-        else
-          bad_module_format_message_exn ~loc format
+        in        
+          {format = supported_format format loc ; in_source  }        
       | Arr _ ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
@@ -123,16 +129,10 @@ let package_flag ({format; in_source } : spec) dir =
   Ext_string.inter2
     bs_package_output 
     (Ext_string.concat3
-       format
+       (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-          if format = Literals.commonjs then 
-             common_js_prefix dir 
-           else if format = Literals.es6 then 
-             es6_prefix dir 
-           else if format = Literals.es6_global then 
-             es6_global_prefix dir              
-           else assert false))
+        prefix_of_format format // dir))
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -142,36 +142,36 @@ let package_flag_of_package_specs (package_specs : t)
 
 let default_package_specs = 
   Spec_set.singleton 
-    { format = Literals.commonjs ; in_source = false }
-(** js output for each package *)
-let package_output ({format; in_source } : spec) output=
+    { format = NodeJS ; in_source = false }
 
-  let prefix  =
-    if in_source then fun x -> x 
-    else
-      (if format = Literals.commonjs then
-         common_js_prefix
-       else if format = Literals.es6 then 
-         es6_prefix   
-       else if format = Literals.es6_global then 
-         es6_global_prefix  
-       else assert false)
-  in
-  (Bsb_config.proj_rel @@ prefix output )
+
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]
 
 *)
 let get_list_of_output_js 
-    package_specs 
-    bs_suffix
-    output_file_sans_extension = 
+    (package_specs : Spec_set.t)
+    (bs_suffix : bool)
+    (output_file_sans_extension : string)
+    = 
   Spec_set.fold 
-    (fun format acc ->
-       package_output format 
-         ( Ext_namespace.js_name_of_basename bs_suffix
-             output_file_sans_extension)
+    (fun (spec : spec) acc ->
+        let basename =  Ext_namespace.change_ext_ns_suffix
+             output_file_sans_extension
+             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+        in 
+        (Bsb_config.proj_rel @@ (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))         
        :: acc
     ) package_specs []
 
+
+let list_dirs_by
+  (package_specs : Spec_set.t)
+  (f : string -> unit)
+  =  
+  Spec_set.iter (fun (spec : spec)  -> 
+    if not spec.in_source then     
+      f (prefix_of_format spec.format) 
+  ) package_specs 

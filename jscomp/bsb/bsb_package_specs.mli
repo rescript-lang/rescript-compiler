@@ -39,3 +39,7 @@ val get_list_of_output_js :
 val package_flag_of_package_specs : 
   t -> string -> string
 
+val list_dirs_by :   
+  t -> 
+  (string -> unit) -> 
+  unit

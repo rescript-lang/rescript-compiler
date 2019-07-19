@@ -33,20 +33,19 @@ let ns_sep = "-"
 let make ~ns cunit  = 
   cunit ^ ns_sep ^ ns
 
-let path_char = Filename.dir_sep.[0]
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
-    if char = path_char then -1 
+    if Ext_filename.is_dir_sep char  then -1 
     else if char = ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
 
-let remove_ns_suffix name =
+let change_ext_ns_suffix name ext =
   let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
+  if i < 0 then name ^ ext
+  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
 
 let try_split_module_name name = 
   let len = String.length name in 
@@ -61,26 +60,22 @@ type file_kind =
   | Little_js 
   | Little_bs
 
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
 
-(* let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js *)
   
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
+(* let js_name_of_basename bs_suffix s =   
+  change_ext_ns_suffix  s 
+  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename little s = 
+let js_name_of_modulename s little = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
   | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
   | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
+    change_ext_ns_suffix s  Literals.suffix_js
   | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
+    change_ext_ns_suffix s  Literals.suffix_bs_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:

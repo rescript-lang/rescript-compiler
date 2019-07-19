@@ -7389,7 +7389,9 @@ module Ext_filename : sig
     TODO : this short name will have to change upon renaming the file.
 *)
 
-
+val is_dir_sep : 
+  char -> bool 
+  
 val maybe_quote:
   string -> 
   string
@@ -10431,9 +10433,10 @@ val try_split_module_name :
    #1933 when removing ns suffix, don't pass the bound
    of basename
 *)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
+val change_ext_ns_suffix :  
+  string -> 
+  string ->
+  string
 
 type file_kind = 
   | Upper_js
@@ -10442,7 +10445,10 @@ type file_kind =
   | Little_bs 
   (** [js_name_of_modulename ~little A-Ns]
   *)
-val js_name_of_modulename : file_kind -> string -> string
+val js_name_of_modulename : 
+  string -> 
+  file_kind -> 
+  string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -10493,20 +10499,19 @@ let ns_sep = "-"
 let make ~ns cunit  = 
   cunit ^ ns_sep ^ ns
 
-let path_char = Filename.dir_sep.[0]
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
-    if char = path_char then -1 
+    if Ext_filename.is_dir_sep char  then -1 
     else if char = ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
 
-let remove_ns_suffix name =
+let change_ext_ns_suffix name ext =
   let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
+  if i < 0 then name ^ ext
+  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
 
 let try_split_module_name name = 
   let len = String.length name in 
@@ -10521,26 +10526,22 @@ type file_kind =
   | Little_js 
   | Little_bs
 
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
 
-(* let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js *)
   
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
+(* let js_name_of_basename bs_suffix s =   
+  change_ext_ns_suffix  s 
+  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename little s = 
+let js_name_of_modulename s little = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
   | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
   | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
+    change_ext_ns_suffix s  Literals.suffix_js
   | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
+    change_ext_ns_suffix s  Literals.suffix_bs_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
@@ -10634,7 +10635,10 @@ val get_list_of_output_js :
 val package_flag_of_package_specs : 
   t -> string -> string
 
-
+val list_dirs_by :   
+  t -> 
+  (string -> unit) -> 
+  unit
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -10664,13 +10668,14 @@ end = struct
 
 let (//) = Ext_path.combine 
 
-let common_js_prefix p  =  Bsb_config.lib_js  // p
-let es6_prefix p = Bsb_config.lib_es6 // p 
-let es6_global_prefix p =  Bsb_config.lib_es6_global // p
 
+
+(* TODO: sync up with {!Js_packages_info.module_system}  *)
+type format = 
+  | NodeJS | Es6 | Es6_global
 
 type spec = {
-  format : string;
+  format : format;
   in_source : bool 
 }
 
@@ -10681,12 +10686,6 @@ module Spec_set = Set.Make( struct type t = spec
 type t = Spec_set.t 
 
 
-
-let supported_format x = 
-  x = Literals.commonjs ||
-  x = Literals.es6 ||
-  x = Literals.es6_global 
-
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
     format
@@ -10694,6 +10693,23 @@ let bad_module_format_message_exn ~loc format =
     Literals.es6
     Literals.es6_global
 
+let supported_format (x : string) loc = 
+  if x = Literals.commonjs then NodeJS
+  else if x = Literals.es6 then Es6
+  else if x = Literals.es6_global then Es6_global
+  else bad_module_format_message_exn ~loc x 
+
+let string_of_format (x : format) =
+  match x with 
+  | NodeJS -> Literals.commonjs
+  | Es6 -> Literals.es6
+  | Es6_global -> Literals.es6_global
+
+let prefix_of_format (x : format)  =   
+  (match x with 
+  | NodeJS -> Bsb_config.lib_js 
+  | Es6 -> Bsb_config.lib_es6 
+  | Es6_global -> Bsb_config.lib_es6_global )
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -10716,11 +10732,8 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
 (* TODO: FIXME: better API without mutating *)
 and from_json_single (x : Ext_json_types.t) : spec =
   match x with
-  | Str {str = format; loc } ->
-    if supported_format format then
-      {format ; in_source = false }
-    else
-      (bad_module_format_message_exn ~loc format)
+  | Str {str = format; loc } ->    
+      {format = supported_format format loc  ; in_source = false }    
   | Obj {map; loc} ->
     begin match String_map.find_exn map "module" with
       | Str {str = format} ->
@@ -10729,11 +10742,8 @@ and from_json_single (x : Ext_json_types.t) : spec =
           | Some (True _) -> true
           | Some _
           | None -> false
-        in
-        if supported_format format then
-          {format ; in_source  }
-        else
-          bad_module_format_message_exn ~loc format
+        in        
+          {format = supported_format format loc ; in_source  }        
       | Arr _ ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
@@ -10762,16 +10772,10 @@ let package_flag ({format; in_source } : spec) dir =
   Ext_string.inter2
     bs_package_output 
     (Ext_string.concat3
-       format
+       (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-          if format = Literals.commonjs then 
-             common_js_prefix dir 
-           else if format = Literals.es6 then 
-             es6_prefix dir 
-           else if format = Literals.es6_global then 
-             es6_global_prefix dir              
-           else assert false))
+        prefix_of_format format // dir))
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -10781,40 +10785,39 @@ let package_flag_of_package_specs (package_specs : t)
 
 let default_package_specs = 
   Spec_set.singleton 
-    { format = Literals.commonjs ; in_source = false }
-(** js output for each package *)
-let package_output ({format; in_source } : spec) output=
+    { format = NodeJS ; in_source = false }
 
-  let prefix  =
-    if in_source then fun x -> x 
-    else
-      (if format = Literals.commonjs then
-         common_js_prefix
-       else if format = Literals.es6 then 
-         es6_prefix   
-       else if format = Literals.es6_global then 
-         es6_global_prefix  
-       else assert false)
-  in
-  (Bsb_config.proj_rel @@ prefix output )
+
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]
 
 *)
 let get_list_of_output_js 
-    package_specs 
-    bs_suffix
-    output_file_sans_extension = 
+    (package_specs : Spec_set.t)
+    (bs_suffix : bool)
+    (output_file_sans_extension : string)
+    = 
   Spec_set.fold 
-    (fun format acc ->
-       package_output format 
-         ( Ext_namespace.js_name_of_basename bs_suffix
-             output_file_sans_extension)
+    (fun (spec : spec) acc ->
+        let basename =  Ext_namespace.change_ext_ns_suffix
+             output_file_sans_extension
+             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+        in 
+        (Bsb_config.proj_rel @@ (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))         
        :: acc
     ) package_specs []
 
 
+let list_dirs_by
+  (package_specs : Spec_set.t)
+  (f : string -> unit)
+  =  
+  Spec_set.iter (fun (spec : spec)  -> 
+    if not spec.in_source then     
+      f (prefix_of_format spec.format) 
+  ) package_specs 
 end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
@@ -14726,7 +14729,9 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_dev config ;         
+      ~cwd ~bsc_dir ~not_dev config ;             
+    Bsb_package_specs.list_dirs_by config.package_specs
+      (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 

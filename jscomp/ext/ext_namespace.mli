@@ -40,9 +40,10 @@ val try_split_module_name :
    #1933 when removing ns suffix, don't pass the bound
    of basename
 *)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
+val change_ext_ns_suffix :  
+  string -> 
+  string ->
+  string
 
 type file_kind = 
   | Upper_js
@@ -51,7 +52,10 @@ type file_kind =
   | Little_bs 
   (** [js_name_of_modulename ~little A-Ns]
   *)
-val js_name_of_modulename : file_kind -> string -> string
+val js_name_of_modulename : 
+  string -> 
+  file_kind -> 
+  string
 
 (* TODO handle cases like 
    '@angular/core'
