@@ -102,11 +102,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -115,11 +115,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**

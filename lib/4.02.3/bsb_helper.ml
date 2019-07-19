@@ -1034,11 +1034,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -1047,11 +1047,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**
@@ -1392,10 +1392,10 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
 
 
 
@@ -1413,10 +1413,10 @@ let index_count s i c count =
 
   index_rec_count s lim i c count 
 
-let index_next s i c =   
-  index_count s i c 1 
+(* let index_next s i c =   
+  index_count s i c 1  *)
 
-let extract_until s cursor c =       
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -1434,7 +1434,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -3998,7 +3998,7 @@ and decode_single (x : string) (offset : cursor) : group =
   let modules = decode_modules x offset module_number in 
   let dir_info_offset = !offset in 
   let module_info_offset = 
-    Ext_string.index_next x dir_info_offset '\n'  + 1 in
+    String.index_from x dir_info_offset '\n'  + 1 in
   let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
   offset := 
     module_info_offset +
@@ -4011,7 +4011,7 @@ and decode_modules x (offset : cursor) module_number =
   let result = Array.make module_number "" in 
   let cur = ref !offset in 
   for i = 0 to module_number - 1 do 
-    let n = Ext_string.index_next x !cur '\n' in 
+    let n = String.index_from x !cur '\n' in 
     Array.unsafe_set result i 
     (String.sub x !cur (n - !cur));
     cur := n + 1; 
@@ -4092,9 +4092,9 @@ let find_opt
           ith + 1
     in 
     let dir_name_finish = 
-      Ext_string.index_count 
-      whole dir_name_start   '\t' 1 
-     in    
+      String.index_from
+        whole dir_name_start '\t' 
+    in    
     Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
   
         

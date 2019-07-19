@@ -2161,11 +2161,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -2174,11 +2174,11 @@ val index_count:
   int -> 
   int 
 
-val index_next :
+(* val index_next :
   string -> 
   int ->
   char -> 
-  int 
+  int  *)
 
   
 (**
@@ -2519,10 +2519,10 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
 
 
 
@@ -2540,10 +2540,10 @@ let index_count s i c count =
 
   index_rec_count s lim i c count 
 
-let index_next s i c =   
-  index_count s i c 1 
+(* let index_next s i c =   
+  index_count s i c 1  *)
 
-let extract_until s cursor c =       
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -2561,7 +2561,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -17011,7 +17011,7 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-    __LOC__ >:: begin 
+    (* __LOC__ >:: begin 
       fun _ -> 
       let nl cur s = Ext_string.extract_until s cur '\n' in 
       nl (ref 0) "hello\n" =~ "hello";
@@ -17033,7 +17033,7 @@ let suites =
       nl cur b =~ "d";
       nl cur b =~ "" ;
       nl cur b =~ "" ;
-    end ;
+    end ; *)
     __LOC__ >:: begin fun _ -> 
       let b = "a\nb\nc\nd\n" in
       let a = Ext_string.index_count in 

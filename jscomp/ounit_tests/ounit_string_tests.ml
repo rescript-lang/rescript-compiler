@@ -21,7 +21,7 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-    __LOC__ >:: begin 
+    (* __LOC__ >:: begin 
       fun _ -> 
       let nl cur s = Ext_string.extract_until s cur '\n' in 
       nl (ref 0) "hello\n" =~ "hello";
@@ -43,7 +43,7 @@ let suites =
       nl cur b =~ "d";
       nl cur b =~ "" ;
       nl cur b =~ "" ;
-    end ;
+    end ; *)
     __LOC__ >:: begin fun _ -> 
       let b = "a\nb\nc\nd\n" in
       let a = Ext_string.index_count in 
