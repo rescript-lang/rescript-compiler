@@ -10635,7 +10635,8 @@ val get_list_of_output_js :
 val package_flag_of_package_specs : 
   t -> string -> string
 
-
+val get_list_dirs :   
+  t -> string list 
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -10702,11 +10703,11 @@ let string_of_format (x : format) =
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
 
-let prefix_of_format (x : format) s =   
+let prefix_of_format (x : format)  =   
   (match x with 
   | NodeJS -> Bsb_config.lib_js 
   | Es6 -> Bsb_config.lib_es6 
-  | Es6_global -> Bsb_config.lib_es6_global ) // s
+  | Es6_global -> Bsb_config.lib_es6_global )
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -10772,7 +10773,7 @@ let package_flag ({format; in_source } : spec) dir =
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        prefix_of_format format dir))
+        prefix_of_format format // dir))
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -10802,11 +10803,19 @@ let get_list_of_output_js
              (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
         in 
         (Bsb_config.proj_rel @@ (if format.in_source then basename
-        else prefix_of_format format.format basename))         
+        else prefix_of_format format.format // basename))         
        :: acc
     ) package_specs []
 
 
+let get_list_dirs    
+  (package_specs : Spec_set.t)
+  =  
+  Spec_set.fold (fun (spec : spec) acc -> 
+    if spec.in_source then acc 
+    else 
+      prefix_of_format spec.format :: acc 
+  ) package_specs []
 end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
@@ -14719,6 +14728,9 @@ let regenerate_ninja
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~cwd ~bsc_dir ~not_dev config ;         
+    Ext_list.iter 
+      (Bsb_package_specs.get_list_dirs config.package_specs)
+      (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
