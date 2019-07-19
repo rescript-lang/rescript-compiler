@@ -16888,10 +16888,10 @@ let rec rindex_rec s i  =
     else
       rindex_rec s (i - 1) 
 
-let remove_ns_suffix name =
+let change_ext_ns_suffix name ext =
   let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
+  if i < 0 then name ^ ext
+  else String.sub name 0 i ^ ext 
 
 let try_split_module_name name = 
   let len = String.length name in 
@@ -16913,19 +16913,19 @@ type file_kind =
   Ext_string.ends_with_then_chop s bs_suffix_js *)
   
 let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
+  change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js )
 
 let js_name_of_modulename little s = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ Literals.suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
   | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ Literals.suffix_bs_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
   | Upper_js ->
-    remove_ns_suffix s ^ Literals.suffix_js
+    change_ext_ns_suffix s  Literals.suffix_js
   | Upper_bs -> 
-    remove_ns_suffix s ^ Literals.suffix_bs_js
+    change_ext_ns_suffix s  Literals.suffix_bs_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
