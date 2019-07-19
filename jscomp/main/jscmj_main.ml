@@ -48,10 +48,8 @@ let from_cmj (files : string list) (output_file : string) =
   let v = open_out_bin output_file in
   Ext_pervasives.finally v close_out (fun v ->   
       let f = Ext_pp.from_channel v in  
-      let aux file = 
-        let in_chan = open_in_bin file in
-        let len = in_channel_length in_chan in
-        let str = really_input_string in_chan len in
+      let aux file =                 
+        let str = Ext_io.load_file file in
         begin
           prerr_endline (* can not embed corrupted data *)
             (Printf.sprintf "Begin Verifying %s" file);
@@ -67,8 +65,7 @@ let from_cmj (files : string list) (output_file : string) =
               Ext_pp.string f "Js_cmj_format.from_string " ;
               raw_to_str f str));
           Ext_pp.string f  ";";
-          Ext_pp.newline f ;          
-          close_in in_chan;        
+          Ext_pp.newline f           
         end
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
