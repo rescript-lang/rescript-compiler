@@ -105,37 +105,6 @@ let extract_resources (input : Ext_json_types.t String_map.t) : string list =
   | None -> [] 
 
 
-let  handle_empty_sources 
-    ( cur_sources : Bsb_db.t ref)
-    dir 
-    (file_array : string array Lazy.t)
-    ({loc_start; loc_end} : Ext_json_types.json_array) 
-    generators
-  : Ext_file_pp.interval list  =    
-  let files_array = Lazy.force file_array in 
-  let dyn_file_array = String_vec.make (Array.length files_array) in 
-  let files  =
-    Ext_array.fold_left files_array !cur_sources (fun acc name -> 
-        if is_input_or_output generators name then acc 
-        else
-          match Ext_string.is_valid_source_name name with 
-          | Good ->  
-            let new_acc = Bsb_db_util.collect_module_by_filename ~dir acc name  in 
-            String_vec.push dyn_file_array name;
-            new_acc 
-          | Invalid_module_name ->
-            (* TODO: no warning for xx.cppo.ml *)
-            Bsb_log.warn
-              warning_unused_file name dir ;
-            acc 
-          | Suffix_mismatch -> acc 
-      ) in 
-  cur_sources := files ;    
-  [ Ext_file_pp.patch_action dyn_file_array 
-      loc_start loc_end
-  ]
-
-
 let extract_input_output (edge : Ext_json_types.t) : string list * string list = 
   let error () = 
     errorf edge {| invalid edge format, expect  ["output" , ":", "input" ]|}
@@ -302,7 +271,6 @@ let rec
   = 
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
-    let cur_update_queue = ref [] in 
     let cur_globbed_dirs = ref [] in 
     let cur_sources = ref String_map.empty in   
     let generators = 
@@ -327,14 +295,7 @@ let rec
                   acc 
                 | Suffix_mismatch ->  acc
             ) ;
-        cur_globbed_dirs :=  [dir]  
-      | Some (Arr ({content = [||] }as empty_json_array)) -> 
-        (* [ ] populatd by scanning the dir (just once) *)         
-        cur_update_queue := 
-          handle_empty_sources cur_sources cxt.cwd 
-            file_array 
-            empty_json_array
-            generators
+        cur_globbed_dirs :=  [dir]        
       | Some (Arr sx ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
@@ -409,7 +370,6 @@ let rec
                    public ;
                    dir_index = cxt.dir_index ;
                    generators  } ] ;
-      intervals = !cur_update_queue ;
       globbed_dirs = !cur_globbed_dirs ;
     }  children
 

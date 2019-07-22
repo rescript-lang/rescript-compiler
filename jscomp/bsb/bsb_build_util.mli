@@ -90,6 +90,8 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
+type result = { path : string; checked : bool }    
+
 (* [resolve_bsb_magic_file]
    returns a tuple (path,checked)
    when checked is true, it means such file should exist without depending on env
@@ -98,7 +100,7 @@ val resolve_bsb_magic_file :
   cwd:string -> 
   desc:string ->
   string -> 
-  string * bool
+  result
 
 type package_context = {
   cwd : string ; 

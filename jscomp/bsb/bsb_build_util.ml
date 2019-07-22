@@ -59,6 +59,7 @@ let convert_and_resolve_path : string -> string -> string =
     else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the beginning *)
 
+type result = { path : string; checked : bool }
 
 (* Magic path resolution:
    foo => foo
@@ -68,12 +69,12 @@ let convert_and_resolve_path : string -> string -> string =
    ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent (normalized) path
 *)
-let resolve_bsb_magic_file ~cwd ~desc p : string * bool =
+let resolve_bsb_magic_file ~cwd ~desc p : result  =
 
   let no_slash = Ext_string.no_slash_idx p in
   if no_slash < 0 then
     (* Single file FIXME: better error message for "" input *)
-    p, false  
+    { path = p; checked =  false  }
   else 
     let first_char = String.unsafe_get p 0 in 
     if Filename.is_relative p &&  
@@ -87,7 +88,7 @@ let resolve_bsb_magic_file ~cwd ~desc p : string * bool =
       (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
       let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
       let path = package_dir // relative_path in 
-      if Sys.file_exists path then path, true
+      if Sys.file_exists path then {path; checked = true}
       else 
         begin 
           Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
@@ -96,7 +97,7 @@ let resolve_bsb_magic_file ~cwd ~desc p : string * bool =
 
     else
       (* relative path [./x/y]*)
-      convert_and_resolve_path cwd p, true
+      { path = convert_and_resolve_path cwd p; checked = true}
 
 
 

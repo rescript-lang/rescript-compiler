@@ -56,13 +56,12 @@ type file_groups = file_group list
 
 type t =   
   { files :  file_groups; 
-    intervals :  Ext_file_pp.interval list ;    
     globbed_dirs : string list ; 
   }
 
 
 
-let empty : t = { files = []; intervals  = []; globbed_dirs = [];  }
+let empty : t = { files = []; globbed_dirs = [];  }
 
 
 
@@ -72,7 +71,6 @@ let merge (u : t)  (v : t)  =
   else 
     {
       files = Ext_list.append u.files  v.files ; 
-      intervals = Ext_list.append u.intervals  v.intervals ; 
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }  
 
