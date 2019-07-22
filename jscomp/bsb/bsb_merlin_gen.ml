@@ -32,11 +32,7 @@ let (//) = Ext_path.combine
 (** [new_content] should start end finish with newline *)
 let revise_merlin merlin new_content =
   if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
+    let s = Ext_io.load_file merlin in 
     let header =  Ext_string.find s ~sub:merlin_header  in
     let tail = Ext_string.find s ~sub:merlin_trailer in
     if header < 0  && tail < 0 then (* locked region not added yet *)

@@ -75,11 +75,9 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
     if String.unsafe_get x !cur = '\n' then 
       begin 
         let offs = !last in 
-        let len = (!cur - !last) in 
-        let b = Bytes.create len in 
-        Ext_bytes.unsafe_blit_string x offs b 0 len;
+        let len = (!cur - !last) in         
         Array.unsafe_set result !tasks
-        (Bytes.unsafe_to_string b);
+        (Ext_string.unsafe_sub x offs len);
         incr tasks;
         last := !cur + 1;
       end;
@@ -90,10 +88,9 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
   
 
 (* TODO: shall we check the consistency of digest *)
-let read_build_cache ~dir  : t = 
-  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
-  let len = in_channel_length ic in 
-  let all_content = really_input_string ic len in   
+let read_build_cache ~dir  : t =   
+  let all_content = 
+    Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
   decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
 let cmp (a : string) b = String_map.compare_key a b   

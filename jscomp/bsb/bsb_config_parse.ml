@@ -276,7 +276,7 @@ let extract_ignored_dirs (map : json_map) =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~generate_watch_metadata
+    ~(generate_watch_metadata : bool)
     ~not_dev 
     cwd  
 

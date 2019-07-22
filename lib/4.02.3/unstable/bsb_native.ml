@@ -810,6 +810,12 @@ val get_1_2_3_4 :
   off:int ->  
   int -> 
   int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1374,6 +1380,11 @@ let get_1_2_3_4 (x : string) ~off len : int =
   else if len = 3 then get_int_3 x off 
   else if len = 4 then get_int_4 x off 
   else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
@@ -9461,7 +9472,7 @@ let clean_bs_garbage bsc_dir proj_dir =
   try
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean bsc_dir proj_dir ;
-    List.iter try_remove Bsb_config.all_lib_artifacts;
+    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -11150,7 +11161,7 @@ let extract_ignored_dirs (map : json_map) =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~generate_watch_metadata
+    ~(generate_watch_metadata : bool)
     ~not_dev 
     cwd  
 
@@ -11321,6 +11332,95 @@ let interpret_json
   | _ -> failwith "bsconfig.json expect a json object {}"
 
 end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+val rev_lines_of_chann : in_channel -> string list
+
+val write_file : string -> string -> unit
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
+      match input_line chan with
+      | line -> loop (line :: acc) chan
+      | exception End_of_file -> close_in chan ; acc in
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
+  
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
+    output_string oc content
+  end
+
+end
 module Bsb_merlin_gen : sig 
 #1 "bsb_merlin_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11388,11 +11488,7 @@ let (//) = Ext_path.combine
 (** [new_content] should start end finish with newline *)
 let revise_merlin merlin new_content =
   if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
+    let s = Ext_io.load_file merlin in 
     let header =  Ext_string.find s ~sub:merlin_header  in
     let tail = Ext_string.find s ~sub:merlin_trailer in
     if header < 0  && tail < 0 then (* locked region not added yet *)
@@ -11588,7 +11684,10 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val pp_check_result : Format.formatter -> check_result -> unit
+val pp_check_result : 
+  Format.formatter -> 
+  check_result -> 
+  unit
 
 
 (** [record cwd file relevant_file_or_dirs]
@@ -11601,13 +11700,19 @@ val pp_check_result : Format.formatter -> check_result -> unit
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
-val record : cwd:string -> file:string -> string list -> unit
+val record : 
+  cwd:string -> 
+  file:string -> 
+  string list -> 
+  unit
 
 
 (** check if [build.ninja] should be regenerated *)
 val check :
   cwd:string ->  
-  forced:bool -> file:string -> check_result
+  forced:bool -> 
+  file:string -> 
+  check_result
 
 end = struct
 #1 "bsb_ninja_check.ml"
@@ -11635,21 +11740,17 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type dep_info = {
-  dir_or_file : string ;
-  st_mtime : float
-}
 
 type t =
-  { file_stamps : dep_info array ;
-    source_directory :  string ;
-    bsb_version : string;
-    bsc_version : string;
+  { 
+    dir_or_files : string array ;
+    st_mtimes : float array;
+    source_directory :  string ;    
   }
 
 
-let magic_number = "BS_DEP_INFOS_20170822"
-let bsb_version = "20170822+dev"
+let magic_number = Bs_version.version
+
 (* TODO: for such small data structure, maybe text format is better *)
 
 let write (fname : string)  (x : t) =
@@ -11682,18 +11783,18 @@ let pp_check_result fmt (check_resoult : check_result) =
         "Bsb forced rebuild"
       | Other s -> s)
 
-let rec check_aux cwd xs i finish =
+let rec check_aux cwd (xs : string array) (ys: float array) i finish =
   if i = finish then Good
   else
-    let k = Array.unsafe_get  xs i  in
-    let current_file = k.dir_or_file in
+    let current_file = Array.unsafe_get  xs i  in
+    
     let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.st_mtime then
-      check_aux cwd xs (i + 1 ) finish
+    if stat.st_mtime <= Array.unsafe_get ys i then
+      check_aux cwd xs ys (i + 1 ) finish
     else Other current_file
 
 
-let read (fname : string) cont =
+let read (fname : string) (cont : t -> check_result) =
   match open_in_bin fname with   (* Windows binary mode*)
   | ic ->
     let buffer = really_input_string ic (String.length magic_number) in
@@ -11704,19 +11805,19 @@ let read (fname : string) cont =
       cont res
   | exception _ -> Bsb_file_not_exist
 
-let record ~cwd ~file  file_or_dirs =
-  let file_stamps = 
-    Ext_array.of_list_map file_or_dirs
-      (fun  x -> 
-         {dir_or_file = x ;
-          st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
-         })
+let record ~cwd ~file  (file_or_dirs : string list) : unit =
+  let dir_or_files = Array.of_list file_or_dirs in 
+  let st_mtimes = 
+    Ext_array.map dir_or_files
+      (fun  x ->      
+           (Unix.stat (Filename.concat cwd  x )).st_mtime
+         )
   in 
   write file
-    { file_stamps ;
+    { st_mtimes ;
+      dir_or_files;
       source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }
+    }
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -11726,16 +11827,13 @@ let record ~cwd ~file  file_or_dirs =
 *)
 let check ~cwd ~forced ~file : check_result =
   read file  (fun  {
-      file_stamps ; source_directory; bsb_version = old_version;
-      bsc_version
+      dir_or_files ; source_directory; st_mtimes
     } ->
-      if old_version <> bsb_version then Bsb_bsc_version_mismatch else
       if cwd <> source_directory then Bsb_source_directory_changed else
-      if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
-          check_aux cwd file_stamps  0 (Array.length file_stamps)
+          check_aux cwd dir_or_files st_mtimes  0 (Array.length dir_or_files)
         with e ->
           begin
             Bsb_log.info
@@ -13819,7 +13917,7 @@ let regenerate_ninja
   | Bsb_source_directory_changed  
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
-      Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
+      Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
     Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
@@ -16363,95 +16461,6 @@ let root = OCamlRes.Res.([
       \  </body>\n\
        </html>")])
 ])
-
-end
-module Ext_io : sig 
-#1 "ext_io.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val load_file : string -> string
-
-val rev_lines_of_file : string -> string list
-
-val rev_lines_of_chann : in_channel -> string list
-
-val write_file : string -> string -> unit
-
-end = struct
-#1 "ext_io.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
-
-
-let  rev_lines_of_chann chan = 
-    let rec loop acc chan = 
-      match input_line chan with
-      | line -> loop (line :: acc) chan
-      | exception End_of_file -> close_in chan ; acc in
-    loop [] chan
-
-
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
-  
-
-let write_file f content = 
-  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
-    output_string oc content
-  end
 
 end
 module Bsb_theme_init : sig 

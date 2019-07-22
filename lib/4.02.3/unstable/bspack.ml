@@ -5069,6 +5069,12 @@ val get_1_2_3_4 :
   off:int ->  
   int -> 
   int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5633,6 +5639,11 @@ let get_1_2_3_4 (x : string) ~off len : int =
   else if len = 3 then get_int_3 x off 
   else if len = 4 then get_int_4 x off 
   else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
