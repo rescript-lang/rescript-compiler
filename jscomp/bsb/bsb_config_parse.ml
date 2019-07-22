@@ -120,13 +120,14 @@ let extract_package_name_and_namespace
   in 
   package_name, namespace
 
+type json_map = Ext_json_types.t String_map.t
 (**
     There are two things to check:
     - the running bsb and vendoring bsb is the same
     - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
 *)
-let check_version_exit (map : Ext_json_types.t String_map.t) stdlib_path =   
+let check_version_exit (map : json_map) stdlib_path =   
   match String_map.find_exn map Bsb_build_schemas.version with 
   | Str {str } -> 
     if str <> Bs_version.version then 
@@ -141,6 +142,67 @@ let check_version_exit (map : Ext_json_types.t String_map.t) stdlib_path =
         exit 2
       end
   | _ -> assert false
+
+let extract_bs_suffix_exn (map : json_map) =  
+  match String_map.find_opt map Bsb_build_schemas.suffix with 
+  | None -> false  
+  | Some (Str {str} as config ) -> 
+    if str = Literals.suffix_js then false 
+    else if str = Literals.suffix_bs_js then true
+    else Bsb_exception.config_error config 
+        "expect .bs.js or .js string here"
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect .bs.js or .js string here"
+
+let extract_gentype_config (map : json_map) cwd 
+  : Bsb_config_types.gentype_config option = 
+  match String_map.find_opt map Bsb_build_schemas.gentypeconfig with 
+  | None -> None
+  | Some (Obj {map = obj}) -> 
+    Some { path = 
+             match String_map.find_opt obj Bsb_build_schemas.path with
+             | None -> 
+               (Bsb_build_util.resolve_bsb_magic_file
+                 ~cwd ~desc:"gentype.exe"
+                 "gentype/gentype.exe").path
+             | Some (Str {str}) ->  
+               (Bsb_build_util.resolve_bsb_magic_file
+                 ~cwd ~desc:"gentype.exe" str).path 
+             | Some config -> 
+               Bsb_exception.config_error config
+                 "path expect to be a string"
+         }
+
+  | Some config -> 
+    Bsb_exception.config_error 
+      config "gentypeconfig expect an object"  
+
+let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
+  match String_map.find_opt map Bsb_build_schemas.refmt with 
+  | Some (Flo {flo} as config) -> 
+    begin match flo with 
+      | "3" -> Bsb_config_types.Refmt_v3
+      | _ -> Bsb_exception.config_error config "expect version 3 only"
+    end
+  | Some (Str {str}) 
+    -> 
+    Refmt_custom
+      (Bsb_build_util.resolve_bsb_magic_file 
+              ~cwd ~desc:Bsb_build_schemas.refmt str).path
+  | Some config  -> 
+    Bsb_exception.config_error config "expect version 2 or 3"
+  | None ->
+    Refmt_none 
+
+(** FIXME: optimize, better error message *)    
+let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
+  let v = ref default in 
+  map     
+  |? (field , `Bool (fun b -> v := b))
+  |> ignore ;
+  !v
+
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
@@ -164,7 +226,7 @@ let interpret_json
   let ppx_checked_files : string list ref = ref [] in 
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
-  let generate_merlin = ref true in 
+  
   let generators = ref String_map.empty in 
 
   (* When we plan to add more deps here,
@@ -179,7 +241,6 @@ let interpret_json
      2. we need store it so that we can call ninja correctly
   *)
   let entries = ref Bsb_default.main_entries in
-  let cut_generators = ref false in 
   let config_json_chan = open_in_bin config_json  in
   let global_data = 
     Ext_json_parse.parse_json_from_chan 
@@ -188,57 +249,9 @@ let interpret_json
   | Obj { map ; loc } ->
     let package_name, namespace = 
       extract_package_name_and_namespace loc  map in 
-    let refmt =   
-      match String_map.find_opt map Bsb_build_schemas.refmt with 
-      | Some (Flo {flo} as config) -> 
-        begin match flo with 
-        | "3" -> Bsb_config_types.Refmt_v3
-        | _ -> Bsb_exception.config_error config "expect version 3 only"
-        end
-      | Some (Str {str}) 
-        -> 
-        Refmt_custom
-        (fst (Bsb_build_util.resolve_bsb_magic_file 
-          ~cwd ~desc:Bsb_build_schemas.refmt str))
-      | Some config  -> 
-        Bsb_exception.config_error config "expect version 2 or 3"
-      | None ->
-        Refmt_none        
-    in 
-    let gentype_config : Bsb_config_types.gentype_config option  = 
-      match String_map.find_opt map Bsb_build_schemas.gentypeconfig with 
-      | None -> None
-      | Some (Obj {map = obj}) -> 
-        Some { path = 
-          match String_map.find_opt obj Bsb_build_schemas.path with
-          | None -> 
-            fst @@ Bsb_build_util.resolve_bsb_magic_file
-            ~cwd ~desc:"gentype.exe"
-            "gentype/gentype.exe"
-          | Some (Str {str}) ->  
-            fst @@ Bsb_build_util.resolve_bsb_magic_file
-            ~cwd ~desc:"gentype.exe" str 
-          | Some config -> 
-            Bsb_exception.config_error config
-              "path expect to be a string"
-        }
-        
-      | Some config -> 
-        Bsb_exception.config_error 
-          config "gentypeconfig expect an object"
-    in  
-    let bs_suffix = 
-          match String_map.find_opt map Bsb_build_schemas.suffix with 
-          | None -> false  
-          | Some (Str {str} as config ) -> 
-            if str = Literals.suffix_js then false 
-            else if str = Literals.suffix_bs_js then true
-            else Bsb_exception.config_error config 
-              "expect .bs.js or .js string here"
-          | Some config -> 
-            Bsb_exception.config_error config 
-              "expect .bs.js or .js string here"
-    in   
+    let refmt = extract_refmt map cwd in 
+    let gentype_config  = extract_gentype_config map cwd in  
+    let bs_suffix = extract_bs_suffix_exn map in   
     (* The default situation is empty *)
     (match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
      | Some (False _) -> 
@@ -274,7 +287,7 @@ let interpret_json
       | Some (Str {str = p }) ->
         if p = "" then failwith "invalid pp, empty string found"
         else 
-          Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
+          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
       | Some x ->    
         Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
       | None ->  
@@ -295,14 +308,11 @@ let interpret_json
                       "Unexpected input (expect a version number) for jsx, note boolean is no longer allowed"
         | None -> ()
       end)
-
-    |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
-        generate_merlin := b
-      ))
+    
 
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-            js_post_build_cmd := Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
+            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
 
           )
           )
@@ -325,17 +335,15 @@ let interpret_json
         let a,b = Ext_list.map_split_opt  args (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else 
-              let file, checked = 
+              let result = 
                 Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
               in 
-              let some_file = Some file in 
-              some_file, if checked then some_file else None
+              let some_file = Some result.path in 
+              some_file, if result.checked then some_file else None
           ) in 
         ppx_files := a ;  
         ppx_checked_files := b    
       ))
-
-    |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
           Ext_array.fold_left s String_map.empty (fun acc json -> 
@@ -362,11 +370,13 @@ let interpret_json
           | Some config -> 
             Bsb_exception.config_error config "expect an array of string"
         in
+        let cut_generators = 
+          extract_boolean map Bsb_build_schemas.cut_generators false in 
         let res = Bsb_parse_sources.scan
             ~ignored_dirs
             ~not_dev
             ~root: cwd
-            ~cut_generators: !cut_generators
+            ~cut_generators
             ~bs_suffix
             ~namespace
             x in 
@@ -426,11 +436,13 @@ let interpret_json
           bs_file_groups = res.files; 
           files_to_install = String_hash_set.create 96;
           built_in_dependency = !built_in_package;
-          generate_merlin = !generate_merlin ;
+          generate_merlin = 
+            extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx = !reason_react_jsx ;  
           entries = !entries;
           generators = !generators ; 
-          cut_generators = !cut_generators
+          cut_generators ;
+             
         }
       | None -> failwith "no sources specified, please checkout the schema for more details"
     end
