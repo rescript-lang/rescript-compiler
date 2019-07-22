@@ -143,6 +143,28 @@ let check_version_exit (map : json_map) stdlib_path =
       end
   | _ -> assert false
 
+let check_stdlib (map : json_map) cwd (*built_in_package*) =  
+  match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
+  | Some (False _) -> None    
+  | None 
+  | Some _ ->
+    begin
+      let stdlib_path = 
+        Bsb_pkg.resolve_bs_package ~cwd current_package in 
+      let json_spec = 
+        Ext_json_parse.parse_json_from_file 
+          (Filename.concat stdlib_path Literals.package_json) in 
+      match json_spec with 
+      | Obj {map}  -> 
+        check_version_exit map stdlib_path;
+        Some {
+            Bsb_config_types.package_name = current_package;
+            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
+          }
+
+      | _ -> assert false 
+
+    end
 let extract_bs_suffix_exn (map : json_map) =  
   match String_map.find_opt map Bsb_build_schemas.suffix with 
   | None -> false  
@@ -204,6 +226,39 @@ let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a boolean" )
   
+let extract_reason_react_jsx (map : json_map) = 
+  let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
+  map
+  |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
+      match String_map.find_opt m Bsb_build_schemas.react_jsx with 
+      | Some (Flo{loc; flo}) -> 
+        begin match flo with 
+          | "2" -> 
+            default := Some Jsx_v2
+          | "3" -> 
+            default := Some Jsx_v3
+          | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
+        end        
+      | Some x -> Bsb_exception.config_error x 
+                    "Unexpected input (expect a version number) for jsx, note boolean is no longer allowed"
+      | None -> ()
+    end)
+  |> ignore;
+  !default
+
+let extract_warning (map : json_map) = 
+  match String_map.find_opt map Bsb_build_schemas.warnings with 
+  | None -> None 
+  | Some (Obj {map }) -> Bsb_warning.from_map map 
+  | Some config -> Bsb_exception.config_error config "expect an object"
+
+let extract_ignored_dirs (map : json_map) =   
+  match String_map.find_opt map Bsb_build_schemas.ignored_dirs with 
+  | None -> String_set.empty
+  | Some (Arr {content}) -> 
+    String_set.of_list (Bsb_build_util.get_list_string content)
+  | Some config -> 
+    Bsb_exception.config_error config "expect an array of string"  
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
@@ -215,8 +270,7 @@ let interpret_json
     cwd  
 
   : Bsb_config_types.t =
-
-  let reason_react_jsx : Bsb_config_types.reason_react_jsx option ref = ref None in 
+  
   let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
@@ -227,7 +281,7 @@ let interpret_json
   let ppx_files : string list ref = ref [] in 
   let ppx_checked_files : string list ref = ref [] in 
   let js_post_build_cmd = ref None in 
-  let built_in_package = ref None in
+  
   
   let generators = ref String_map.empty in 
 
@@ -255,29 +309,7 @@ let interpret_json
     let gentype_config  = extract_gentype_config map cwd in  
     let bs_suffix = extract_bs_suffix_exn map in   
     (* The default situation is empty *)
-    (match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
-     | Some (False _) -> 
-       ()
-     | None 
-     | Some _ ->
-        begin
-          let stdlib_path = 
-              Bsb_pkg.resolve_bs_package ~cwd current_package in 
-          let json_spec = 
-              Ext_json_parse.parse_json_from_file 
-              (Filename.concat stdlib_path Literals.package_json) in 
-          match json_spec with 
-          | Obj {map}  -> 
-            check_version_exit map stdlib_path;
-            built_in_package := Some {
-              Bsb_config_types.package_name = current_package;
-              package_install_path = stdlib_path // Bsb_config.lib_ocaml;
-            }
-             
-          | _ -> assert false 
-          
-        end
-    ) ;
+    let built_in_package = check_stdlib map cwd in
     let package_specs =     
       match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
@@ -295,23 +327,8 @@ let interpret_json
       | None ->  
         None      
     in 
-    map
-    |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        match String_map.find_opt m Bsb_build_schemas.react_jsx with 
-        | Some (Flo{loc; flo}) -> 
-          begin match flo with 
-            | "2" -> 
-              reason_react_jsx := Some Jsx_v2
-            | "3" -> 
-              reason_react_jsx := Some Jsx_v3
-            | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
-          end        
-        | Some x -> Bsb_exception.config_error x 
-                      "Unexpected input (expect a version number) for jsx, note boolean is no longer allowed"
-        | None -> ()
-      end)
-    
-
+    let reason_react_jsx = extract_reason_react_jsx map in 
+    map    
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
@@ -363,28 +380,20 @@ let interpret_json
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
-      | Some x -> 
-        let ignored_dirs : String_set.t =   
-          match String_map.find_opt map Bsb_build_schemas.ignored_dirs with 
-          | None -> String_set.empty
-          | Some (Arr {content}) -> 
-            String_set.of_list (Bsb_build_util.get_list_string content)
-          | Some config -> 
-            Bsb_exception.config_error config "expect an array of string"
-        in
+      | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let res = Bsb_parse_sources.scan
-            ~ignored_dirs
+        let groups = Bsb_parse_sources.scan
+            ~ignored_dirs:(extract_ignored_dirs map)
             ~not_dev
             ~root: cwd
             ~cut_generators
             ~bs_suffix
             ~namespace
-            x in 
+            sources in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
-        begin match List.sort Ext_file_pp.interval_compare  res.intervals with
+          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;     
+        begin match List.sort Ext_file_pp.interval_compare  groups.intervals with
           | [] -> ()
           | queue ->
             let file_size = in_channel_length config_json_chan in
@@ -398,19 +407,13 @@ let interpret_json
             Unix.unlink config_json;
             Unix.rename output_file config_json
         end;
-        let warning : Bsb_warning.t option  = 
-          match String_map.find_opt map Bsb_build_schemas.warnings with 
-          | None -> None 
-          | Some (Obj {map }) -> Bsb_warning.from_map map 
-          | Some config -> Bsb_exception.config_error config "expect an object"
-        in 
-
+       
         {
           gentype_config;
           bs_suffix ;
           package_name ;
           namespace ;    
-          warning = warning;
+          warning = extract_warning map;
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_files = !ppx_files ;
@@ -434,13 +437,13 @@ let interpret_json
             (match override_package_specs with 
              | None ->  package_specs
              | Some x -> x );
-          globbed_dirs = res.globbed_dirs; 
-          bs_file_groups = res.files; 
+          globbed_dirs = groups.globbed_dirs; 
+          bs_file_groups = groups.files; 
           files_to_install = String_hash_set.create 96;
-          built_in_dependency = !built_in_package;
+          built_in_dependency = built_in_package;
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
-          reason_react_jsx = !reason_react_jsx ;  
+          reason_react_jsx  ;  
           entries = !entries;
           generators = !generators ; 
           cut_generators ;
