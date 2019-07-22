@@ -119,6 +119,28 @@ let extract_package_name_and_namespace
       "namespace field expects string or boolean"
   in 
   package_name, namespace
+
+(**
+    There are two things to check:
+    - the running bsb and vendoring bsb is the same
+    - the running bsb need delete stale build artifacts
+      (kinda check npm upgrade)
+*)
+let check_version_exit (map : Ext_json_types.t String_map.t) stdlib_path =   
+  match String_map.find_exn map Bsb_build_schemas.version with 
+  | Str {str } -> 
+    if str <> Bs_version.version then 
+      begin
+        Format.fprintf Format.err_formatter
+          "@{<error>bs-platform version mismatch@} Running bsb @{<info>%s@} (%s) vs vendored @{<info>%s@} (%s)@."
+          Bs_version.version
+          (Filename.dirname (Filename.dirname Sys.executable_name))
+          str
+          stdlib_path 
+        ;
+        exit 2
+      end
+  | _ -> assert false
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
@@ -231,20 +253,7 @@ let interpret_json
               (Filename.concat stdlib_path Literals.package_json) in 
           match json_spec with 
           | Obj {map}  -> 
-            (match String_map.find_exn map Bsb_build_schemas.version with 
-            | Str {str } -> 
-              if str <> Bs_version.version then 
-              (
-                Format.fprintf Format.err_formatter
-                "@{<error>bs-platform version mismatch@} Running bsb @{<info>%s@} (%s) vs vendored @{<info>%s@} (%s)@."
-                    Bs_version.version
-                    (Filename.dirname (Filename.dirname Sys.executable_name))
-                    str
-                    stdlib_path 
-                ;
-              exit 2)
-                
-            | _ -> assert false);
+            check_version_exit map stdlib_path;
             built_in_package := Some {
               Bsb_config_types.package_name = current_package;
               package_install_path = stdlib_path // Bsb_config.lib_ocaml;
