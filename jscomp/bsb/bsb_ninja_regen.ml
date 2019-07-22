@@ -54,7 +54,7 @@ let regenerate_ninja
   | Bsb_source_directory_changed  
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
-      Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
+      Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
     Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 

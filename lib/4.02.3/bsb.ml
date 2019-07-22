@@ -11652,7 +11652,10 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val pp_check_result : Format.formatter -> check_result -> unit
+val pp_check_result : 
+  Format.formatter -> 
+  check_result -> 
+  unit
 
 
 (** [record cwd file relevant_file_or_dirs]
@@ -11665,13 +11668,19 @@ val pp_check_result : Format.formatter -> check_result -> unit
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
-val record : cwd:string -> file:string -> string list -> unit
+val record : 
+  cwd:string -> 
+  file:string -> 
+  string list -> 
+  unit
 
 
 (** check if [build.ninja] should be regenerated *)
 val check :
   cwd:string ->  
-  forced:bool -> file:string -> check_result
+  forced:bool -> 
+  file:string -> 
+  check_result
 
 end = struct
 #1 "bsb_ninja_check.ml"
@@ -11699,21 +11708,17 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type dep_info = {
-  dir_or_file : string ;
-  st_mtime : float
-}
 
 type t =
-  { file_stamps : dep_info array ;
-    source_directory :  string ;
-    bsb_version : string;
-    bsc_version : string;
+  { 
+    dir_or_files : string array ;
+    st_mtimes : float array;
+    source_directory :  string ;    
   }
 
 
-let magic_number = "BS_DEP_INFOS_20170822"
-let bsb_version = "20170822+dev"
+let magic_number = Bs_version.version
+
 (* TODO: for such small data structure, maybe text format is better *)
 
 let write (fname : string)  (x : t) =
@@ -11746,18 +11751,18 @@ let pp_check_result fmt (check_resoult : check_result) =
         "Bsb forced rebuild"
       | Other s -> s)
 
-let rec check_aux cwd xs i finish =
+let rec check_aux cwd (xs : string array) (ys: float array) i finish =
   if i = finish then Good
   else
-    let k = Array.unsafe_get  xs i  in
-    let current_file = k.dir_or_file in
+    let current_file = Array.unsafe_get  xs i  in
+    
     let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.st_mtime then
-      check_aux cwd xs (i + 1 ) finish
+    if stat.st_mtime <= Array.unsafe_get ys i then
+      check_aux cwd xs ys (i + 1 ) finish
     else Other current_file
 
 
-let read (fname : string) cont =
+let read (fname : string) (cont : t -> check_result) =
   match open_in_bin fname with   (* Windows binary mode*)
   | ic ->
     let buffer = really_input_string ic (String.length magic_number) in
@@ -11768,19 +11773,19 @@ let read (fname : string) cont =
       cont res
   | exception _ -> Bsb_file_not_exist
 
-let record ~cwd ~file  file_or_dirs =
-  let file_stamps = 
-    Ext_array.of_list_map file_or_dirs
-      (fun  x -> 
-         {dir_or_file = x ;
-          st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
-         })
+let record ~cwd ~file  (file_or_dirs : string list) : unit =
+  let dir_or_files = Array.of_list file_or_dirs in 
+  let st_mtimes = 
+    Ext_array.map dir_or_files
+      (fun  x ->      
+           (Unix.stat (Filename.concat cwd  x )).st_mtime
+         )
   in 
   write file
-    { file_stamps ;
+    { st_mtimes ;
+      dir_or_files;
       source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }
+    }
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -11790,16 +11795,13 @@ let record ~cwd ~file  file_or_dirs =
 *)
 let check ~cwd ~forced ~file : check_result =
   read file  (fun  {
-      file_stamps ; source_directory; bsb_version = old_version;
-      bsc_version
+      dir_or_files ; source_directory; st_mtimes
     } ->
-      if old_version <> bsb_version then Bsb_bsc_version_mismatch else
       if cwd <> source_directory then Bsb_source_directory_changed else
-      if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
-          check_aux cwd file_stamps  0 (Array.length file_stamps)
+          check_aux cwd dir_or_files st_mtimes  0 (Array.length dir_or_files)
         with e ->
           begin
             Bsb_log.info
@@ -13883,7 +13885,7 @@ let regenerate_ninja
   | Bsb_source_directory_changed  
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
-      Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
+      Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
     Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 

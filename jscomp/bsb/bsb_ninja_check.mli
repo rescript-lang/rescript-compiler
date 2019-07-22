@@ -42,7 +42,10 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val pp_check_result : Format.formatter -> check_result -> unit
+val pp_check_result : 
+  Format.formatter -> 
+  check_result -> 
+  unit
 
 
 (** [record cwd file relevant_file_or_dirs]
@@ -55,10 +58,16 @@ val pp_check_result : Format.formatter -> check_result -> unit
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
-val record : cwd:string -> file:string -> string list -> unit
+val record : 
+  cwd:string -> 
+  file:string -> 
+  string list -> 
+  unit
 
 
 (** check if [build.ninja] should be regenerated *)
 val check :
   cwd:string ->  
-  forced:bool -> file:string -> check_result
+  forced:bool -> 
+  file:string -> 
+  check_result
