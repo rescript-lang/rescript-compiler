@@ -195,13 +195,15 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
   | None ->
     Refmt_none 
 
-(** FIXME: optimize, better error message *)    
+
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
-  let v = ref default in 
-  map     
-  |? (field , `Bool (fun b -> v := b))
-  |> ignore ;
-  !v
+  match String_map.find_opt map field with 
+  | None -> default 
+  | Some (True _ ) -> true
+  | Some (False _) -> false 
+  | Some config -> 
+    Bsb_exception.config_error config (field ^ " expect a boolean" )
+  
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
