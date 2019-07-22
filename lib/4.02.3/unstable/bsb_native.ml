@@ -10909,39 +10909,48 @@ let resolve_package cwd  package_name =
     package_install_path = x // Bsb_config.lib_ocaml
   }
 
-
+type json_map = Ext_json_types.t String_map.t
 (* Key is the path *)
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
-let parse_entries (field : Ext_json_types.t array) =
-  Ext_array.to_list_map (function
-      | Ext_json_types.Obj {map} ->
-        (* kind defaults to bytecode *)
-        let kind = ref "js" in
-        let main = ref None in
-        let _ = map
-                |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
-                |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
-        in
-        let path = begin match !main with
-          (* This is technically optional when compiling to js *)
-          | None when !kind = Literals.js ->
-            "Index"
-          | None -> 
-            failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
-          | Some path -> path
-        end in
-        if !kind = Literals.native then
-          Some (Bsb_config_types.NativeTarget path)
-        else if !kind = Literals.bytecode then
-          Some (Bsb_config_types.BytecodeTarget path)
-        else if !kind = Literals.js then
-          Some (Bsb_config_types.JsTarget path)
-        else
-          failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
-      | _ -> failwith "Unrecognized object inside array 'entries' field.") 
-    field
+
+
+let extract_main_entries (map :json_map) =  
+  
+  let extract_entries (field : Ext_json_types.t array) =
+    Ext_array.to_list_map (function
+        | Ext_json_types.Obj {map} ->
+          (* kind defaults to bytecode *)
+          let kind = ref "js" in
+          let main = ref None in
+          let _ = map
+                  |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
+                  |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
+          in
+          let path = begin match !main with
+            (* This is technically optional when compiling to js *)
+            | None when !kind = Literals.js ->
+              "Index"
+            | None -> 
+              failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
+            | Some path -> path
+          end in
+          if !kind = Literals.native then
+            Some (Bsb_config_types.NativeTarget path)
+          else if !kind = Literals.bytecode then
+            Some (Bsb_config_types.BytecodeTarget path)
+          else if !kind = Literals.js then
+            Some (Bsb_config_types.JsTarget path)
+          else
+            failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
+        | _ -> failwith "Unrecognized object inside array 'entries' field.") 
+      field in
+  let entries = ref Bsb_default.main_entries in
+  begin match String_map.find_opt map Bsb_build_schemas.entries with
+    | Some (Arr {content = s}) -> entries := extract_entries s
+    | _ -> ()
+  end; !entries
 
 
 
@@ -10996,7 +11005,7 @@ let extract_package_name_and_namespace
   in 
   package_name, namespace
 
-type json_map = Ext_json_types.t String_map.t
+
 (**
     There are two things to check:
     - the running bsb and vendoring bsb is the same
@@ -11172,7 +11181,6 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let entries = ref Bsb_default.main_entries in
   let global_data = 
     Ext_json_parse.parse_json_from_file config_json 
   in
@@ -11252,7 +11260,6 @@ let interpret_json
                 end
               | _ -> acc ) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
-    |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
@@ -11304,7 +11311,7 @@ let interpret_json
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
-          entries = !entries;
+          entries = extract_main_entries map;
           generators = !generators ; 
           cut_generators ;
              
