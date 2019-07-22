@@ -7842,6 +7842,729 @@ let string_of_bsb_dev_include i =
 
 let reset () = dir_index := 0
 end
+module Set_gen
+= struct
+#1 "set_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** balanced tree based on stdlib distribution *)
+
+type ('a, 'id) t0 = 
+  | Empty 
+  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
+
+type ('a, 'id) enumeration0 = 
+  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+
+
+let rec cons_enum s e = 
+  match s with 
+  | Empty -> e 
+  | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
+
+let rec height = function
+  | Empty -> 0 
+  | Node(_,_,_,h) -> h   
+
+(* Smallest and greatest element of a set *)
+
+let rec min_elt = function
+    Empty -> raise Not_found
+  | Node(Empty, v, r, _) -> v
+  | Node(l, v, r, _) -> min_elt l
+
+let rec max_elt = function
+    Empty -> raise Not_found
+  | Node(l, v, Empty, _) -> v
+  | Node(l, v, r, _) -> max_elt r
+
+
+
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
+
+let rec elements_aux accu = function
+  | Empty -> accu
+  | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
+
+let elements s =
+  elements_aux [] s
+
+let choose = min_elt
+
+let rec iter  x f = match x with
+  | Empty -> ()
+  | Node(l, v, r, _) -> iter l f ; f v; iter r f 
+
+let rec fold s accu f =
+  match s with
+  | Empty -> accu
+  | Node(l, v, r, _) -> fold r (f v (fold l accu f)) f 
+
+let rec for_all x p = match x with
+  | Empty -> true
+  | Node(l, v, r, _) -> p v && for_all l p && for_all r p 
+
+let rec exists x p = match x with
+  | Empty -> false
+  | Node(l, v, r, _) -> p v || exists l p  || exists r p
+
+
+let max_int3 (a : int) b c = 
+  if a >= b then 
+    if a >= c then a 
+    else c
+  else 
+  if b >=c then b
+  else c     
+let max_int_2 (a : int) b =  
+  if a >= b then a else b 
+
+
+
+exception Height_invariant_broken
+exception Height_diff_borken 
+
+let rec check_height_and_diff = 
+  function 
+  | Empty -> 0
+  | Node(l,_,r,h) -> 
+    let hl = check_height_and_diff l in
+    let hr = check_height_and_diff r in
+    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
+    else  
+      let diff = (abs (hl - hr)) in  
+      if  diff > 2 then raise Height_diff_borken 
+      else h     
+
+let check tree = 
+  ignore (check_height_and_diff tree)
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let create l v r = 
+  let hl = match l with Empty -> 0 | Node (_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node (_,_,_,h) -> h in
+  Node(l,v,r, if hl >= hr then hl + 1 else hr + 1)         
+
+(* Same as create, but performs one step of rebalancing if necessary.
+    Invariants:
+    1. {[ l < v < r ]}
+    2. l and r balanced 
+    3. | height l - height r | <= 3.
+
+    Proof by indunction
+
+    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
+*)
+let internal_bal l v r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> assert false
+    | Node(ll, lv, lr, _) ->   
+      if height ll >= height lr then
+        (* [ll] >~ [lr] 
+           [ll] >~ [r] 
+           [ll] ~~ [ lr ^ r]  
+        *)
+        create ll lv (create lr v r)
+      else begin
+        match lr with
+          Empty -> assert false
+        | Node(lrl, lrv, lrr, _)->
+          (* [lr] >~ [ll]
+             [lr] >~ [r]
+             [ll ^ lrl] ~~ [lrr ^ r]   
+          *)
+          create (create ll lv lrl) lrv (create lrr v r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> assert false
+    | Node(rl, rv, rr, _) ->
+      if height rr >= height rl then
+        create (create l v rl) rv rr
+      else begin
+        match rl with
+          Empty -> assert false
+        | Node(rll, rlv, rlr, _) ->
+          create (create l v rll) rlv (create rlr rv rr)
+      end
+  end else
+    Node(l, v, r, (if hl >= hr then hl + 1 else hr + 1))    
+
+let rec remove_min_elt = function
+    Empty -> invalid_arg "Set.remove_min_elt"
+  | Node(Empty, v, r, _) -> r
+  | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
+
+let singleton x = Node(Empty, x, Empty, 1)    
+
+(* 
+   All elements of l must precede the elements of r.
+       Assume | height l - height r | <= 2.
+   weak form of [concat] 
+*)
+
+let internal_merge l r =
+  match (l, r) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
+
+(* Beware: those two functions assume that the added v is *strictly*
+    smaller (or bigger) than all the present elements in the tree; it
+    does not test for equality with the current min (or max) element.
+    Indeed, they are only used during the "join" operation which
+    respects this precondition.
+*)
+
+let rec add_min_element v = function
+  | Empty -> singleton v
+  | Node (l, x, r, h) ->
+    internal_bal (add_min_element v l) x r
+
+let rec add_max_element v = function
+  | Empty -> singleton v
+  | Node (l, x, r, h) ->
+    internal_bal l x (add_max_element v r)
+
+(** 
+    Invariants:
+    1. l < v < r 
+    2. l and r are balanced 
+
+    Proof by induction
+    The height of output will be ~~ (max (height l) (height r) + 2)
+    Also use the lemma from [bal]
+*)
+let rec internal_join l v r =
+  match (l, r) with
+    (Empty, _) -> add_min_element v r
+  | (_, Empty) -> add_max_element v l
+  | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
+    if lh > rh + 2 then 
+      (* proof by induction:
+         now [height of ll] is [lh - 1] 
+      *)
+      internal_bal ll lv (internal_join lr v r) 
+    else
+    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
+    else create l v r
+
+
+(*
+    Required Invariants: 
+    [t1] < [t2]  
+*)
+let internal_concat t1 t2 =
+  match (t1, t2) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
+
+let rec filter x p = match x with 
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter l p in
+    let pv = p v in
+    let r' = filter r p in
+    if pv then internal_join l' v r' else internal_concat l' r'
+
+
+let rec partition x p = match x with 
+  | Empty -> (Empty, Empty)
+  | Node(l, v, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition l p in
+    let pv = p v in
+    let (rt, rf) = partition r p in
+    if pv
+    then (internal_join lt v rt, internal_concat lf rf)
+    else (internal_concat lt rt, internal_join lf v rf)
+
+let of_sorted_list l =
+  let rec sub n l =
+    match n, l with
+    | 0, l -> Empty, l
+    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
+    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
+    | 3, x0 :: x1 :: x2 :: l ->
+      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
+    | n, l ->
+      let nl = n / 2 in
+      let left, l = sub nl l in
+      match l with
+      | [] -> assert false
+      | mid :: l ->
+        let right, l = sub (n - nl - 1) l in
+        create left mid right, l
+  in
+  fst (sub (List.length l) l)
+
+let of_sorted_array l =   
+  let rec sub start n l  =
+    if n = 0 then Empty else 
+    if n = 1 then 
+      let x0 = Array.unsafe_get l start in
+      Node (Empty, x0, Empty, 1)
+    else if n = 2 then     
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in 
+      Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
+    if n = 3 then 
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in
+      let x2 = Array.unsafe_get l (start + 2) in
+      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
+    else 
+      let nl = n / 2 in
+      let left = sub start nl l in
+      let mid = start + nl in 
+      let v = Array.unsafe_get l mid in 
+      let right = sub (mid + 1) (n - nl - 1) l in        
+      create left v right
+  in
+  sub 0 (Array.length l) l 
+
+let is_ordered ~cmp tree =
+  let rec is_ordered_min_max tree =
+    match tree with
+    | Empty -> `Empty
+    | Node(l,v,r,_) -> 
+      begin match is_ordered_min_max l with
+        | `No -> `No 
+        | `Empty ->
+          begin match is_ordered_min_max r with
+            | `No  -> `No
+            | `Empty -> `V (v,v)
+            | `V(l,r) ->
+              if cmp v l < 0 then
+                `V(v,r)
+              else
+                `No
+          end
+        | `V(min_v,max_v)->
+          begin match is_ordered_min_max r with
+            | `No -> `No
+            | `Empty -> 
+              if cmp max_v v < 0 then 
+                `V(min_v,v)
+              else
+                `No 
+            | `V(min_v_r, max_v_r) ->
+              if cmp max_v min_v_r < 0 then
+                `V(min_v,max_v_r)
+              else `No
+          end
+      end  in 
+  is_ordered_min_max tree <> `No 
+
+let invariant ~cmp t = 
+  check t ; 
+  is_ordered ~cmp t 
+
+let rec compare_aux ~cmp e1 e2 =
+  match (e1, e2) with
+    (End, End) -> 0
+  | (End, _)  -> -1
+  | (_, End) -> 1
+  | (More(v1, r1, e1), More(v2, r2, e2)) ->
+    let c = cmp v1 v2 in
+    if c <> 0
+    then c
+    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
+
+let compare ~cmp s1 s2 =
+  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
+
+
+module type S = sig
+  type elt 
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: t ->  (elt -> unit) -> unit
+  val fold: t -> 'a -> (elt -> 'a -> 'a) -> 'a
+  val for_all: t -> (elt -> bool) ->  bool
+  val exists: t -> (elt -> bool) -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val min_elt: t -> elt
+  val max_elt: t -> elt
+  val choose: t -> elt
+  val of_sorted_list : elt list -> t 
+  val of_sorted_array : elt array -> t
+  val partition: t -> (elt -> bool) ->  t * t
+
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
+  val remove: t -> elt -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val compare: t -> t -> int
+  val equal: t -> t -> bool
+  val subset: t -> t -> bool
+  val filter: t -> (elt -> bool) ->  t
+
+  val split: t -> elt -> t * bool * t
+  val find:  t -> elt -> elt
+  val of_list: elt list -> t
+  val of_sorted_list : elt list ->  t
+  val of_sorted_array : elt array -> t 
+  val of_array : elt array -> t 
+  val invariant : t -> bool 
+  val print : Format.formatter -> t -> unit 
+end 
+
+end
+module String_set : sig 
+#1 "string_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+include Set_gen.S with type elt = string
+end = struct
+#1 "string_set.ml"
+# 1 "ext/set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+# 27 "ext/set.cppo.ml"
+type elt = string
+let compare_elt = Ext_string.compare 
+let print_elt = Format.pp_print_string
+
+# 49 "ext/set.cppo.ml"
+type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
+  | Empty 
+  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
+
+type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
+  | End 
+  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+    
+type  t = (elt, unit) t0
+type enumeration = (elt, unit) Set_gen.enumeration0
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let min_elt = Set_gen.min_elt
+let max_elt = Set_gen.max_elt
+let choose = Set_gen.choose 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+let partition = Set_gen.partition 
+let filter = Set_gen.filter 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec split (tree : t) x : t * bool * t =  match tree with 
+  | Empty ->
+    (Empty, false, Empty)
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then (l, true, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split l x in (ll, pres, Set_gen.internal_join rl v r)
+    else
+      let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
+let rec add (tree : t) x : t =  match tree with 
+  | Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = compare_elt x v in
+    if c = 0 then t else
+    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+
+let rec union (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, t2) -> t2
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+    if h1 >= h2 then
+      if h2 = 1 then add s1 v2 else begin
+        let (l2, _, r2) = split s2 v1 in
+        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add s2 v1 else begin
+      let (l1, _, r1) = split s1 v2 in
+      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
+    end    
+
+let rec inter (s1 : t)  (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> Empty
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split t2 v1 with
+      | (l2, false, r2) ->
+        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
+    end 
+
+let rec diff (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split t2 v1 with
+      | (l2, false, r2) ->
+        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
+    end
+
+
+let rec mem (tree : t) x =  match tree with 
+  | Empty -> false
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    c = 0 || mem (if c < 0 then l else r) x
+
+let rec remove (tree : t)  x : t = match tree with 
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
+
+let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
+
+
+let equal s1 s2 =
+  compare s1 s2 = 0
+
+let rec subset (s1 : t) (s2 : t) =
+  match (s1, s2) with
+  | Empty, _ ->
+    true
+  | _, Empty ->
+    false
+  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+    let c = compare_elt v1 v2 in
+    if c = 0 then
+      subset l1 l2 && subset r1 r2
+    else if c < 0 then
+      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+    else
+      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+let rec find (tree : t) x = match tree with
+  | Empty -> raise Not_found
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then v
+    else find (if c < 0 then l else r) x 
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add (singleton x0) x1 
+  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
+  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
+  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
+  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+
+let of_array l = 
+  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
+
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered ~cmp:compare_elt t          
+
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter s
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) 
+    )
+    s     
+
+
+
+
+
+
+end
+module Bsb_file_groups
+= struct
+#1 "bsb_file_groups.ml"
+(* Copyright (C) 2018- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ type public = 
+  | Export_none
+  | Export_all 
+  | Export_set of String_set.t 
+  
+
+type build_generator = 
+  { input : string list ;
+    output : string list;
+    command : string}  
+
+
+type  file_group = 
+  { dir : string ;
+    sources : Bsb_db.t; 
+    resources : string list ;
+    public : public ;
+    dir_index : Bsb_dir_index.t  ;
+    generators : build_generator list ; 
+    (* output of [generators] should be added to [sources],
+       if it is [.ml,.mli,.re,.rei]
+    *)
+  }     
+
+type file_groups = file_group list 
+  (**
+    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
+     we need add a new line in the end,
+     otherwise it will be idented twice
+*)
+
+type t =   
+  { files :  file_groups; 
+    globbed_dirs : string list ; 
+  }
+
+
+
+let empty : t = { files = []; globbed_dirs = [];  }
+
+
+
+let merge (u : t)  (v : t)  = 
+  if u == empty then v 
+  else if v == empty then u 
+  else 
+    {
+      files = Ext_list.append u.files  v.files ; 
+      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
+    }  
+
+
+(** when [is_empty file_group]
+    we don't need issue [-I] [-S] in [.merlin] file
+*)  
+let is_empty (x : file_group) = 
+  String_map.is_empty x.sources &&
+  x.resources = [] &&
+  x.generators = []    
+end
 module Vec_gen
 = struct
 #1 "vec_gen.ml"
@@ -8716,731 +9439,6 @@ let patch_action file_array
   close_in ic *)
 
 end
-module Set_gen
-= struct
-#1 "set_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** balanced tree based on stdlib distribution *)
-
-type ('a, 'id) t0 = 
-  | Empty 
-  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
-
-type ('a, 'id) enumeration0 = 
-  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
-
-
-let rec cons_enum s e = 
-  match s with 
-  | Empty -> e 
-  | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
-
-let rec height = function
-  | Empty -> 0 
-  | Node(_,_,_,h) -> h   
-
-(* Smallest and greatest element of a set *)
-
-let rec min_elt = function
-    Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
-
-let rec max_elt = function
-    Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
-
-
-
-
-let empty = Empty
-
-let is_empty = function Empty -> true | _ -> false
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
-  | Node (l,_,r, _) -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
-
-let cardinal s = cardinal_aux 0 s 
-
-let rec elements_aux accu = function
-  | Empty -> accu
-  | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
-
-let elements s =
-  elements_aux [] s
-
-let choose = min_elt
-
-let rec iter  x f = match x with
-  | Empty -> ()
-  | Node(l, v, r, _) -> iter l f ; f v; iter r f 
-
-let rec fold s accu f =
-  match s with
-  | Empty -> accu
-  | Node(l, v, r, _) -> fold r (f v (fold l accu f)) f 
-
-let rec for_all x p = match x with
-  | Empty -> true
-  | Node(l, v, r, _) -> p v && for_all l p && for_all r p 
-
-let rec exists x p = match x with
-  | Empty -> false
-  | Node(l, v, r, _) -> p v || exists l p  || exists r p
-
-
-let max_int3 (a : int) b c = 
-  if a >= b then 
-    if a >= c then a 
-    else c
-  else 
-  if b >=c then b
-  else c     
-let max_int_2 (a : int) b =  
-  if a >= b then a else b 
-
-
-
-exception Height_invariant_broken
-exception Height_diff_borken 
-
-let rec check_height_and_diff = 
-  function 
-  | Empty -> 0
-  | Node(l,_,r,h) -> 
-    let hl = check_height_and_diff l in
-    let hr = check_height_and_diff r in
-    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
-    else  
-      let diff = (abs (hl - hr)) in  
-      if  diff > 2 then raise Height_diff_borken 
-      else h     
-
-let check tree = 
-  ignore (check_height_and_diff tree)
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
-*)
-let create l v r = 
-  let hl = match l with Empty -> 0 | Node (_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node (_,_,_,h) -> h in
-  Node(l,v,r, if hl >= hr then hl + 1 else hr + 1)         
-
-(* Same as create, but performs one step of rebalancing if necessary.
-    Invariants:
-    1. {[ l < v < r ]}
-    2. l and r balanced 
-    3. | height l - height r | <= 3.
-
-    Proof by indunction
-
-    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
-*)
-let internal_bal l v r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> assert false
-    | Node(ll, lv, lr, _) ->   
-      if height ll >= height lr then
-        (* [ll] >~ [lr] 
-           [ll] >~ [r] 
-           [ll] ~~ [ lr ^ r]  
-        *)
-        create ll lv (create lr v r)
-      else begin
-        match lr with
-          Empty -> assert false
-        | Node(lrl, lrv, lrr, _)->
-          (* [lr] >~ [ll]
-             [lr] >~ [r]
-             [ll ^ lrl] ~~ [lrr ^ r]   
-          *)
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> assert false
-    | Node(rl, rv, rr, _) ->
-      if height rr >= height rl then
-        create (create l v rl) rv rr
-      else begin
-        match rl with
-          Empty -> assert false
-        | Node(rll, rlv, rlr, _) ->
-          create (create l v rll) rlv (create rlr rv rr)
-      end
-  end else
-    Node(l, v, r, (if hl >= hr then hl + 1 else hr + 1))    
-
-let rec remove_min_elt = function
-    Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, v, r, _) -> r
-  | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
-
-let singleton x = Node(Empty, x, Empty, 1)    
-
-(* 
-   All elements of l must precede the elements of r.
-       Assume | height l - height r | <= 2.
-   weak form of [concat] 
-*)
-
-let internal_merge l r =
-  match (l, r) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
-
-(* Beware: those two functions assume that the added v is *strictly*
-    smaller (or bigger) than all the present elements in the tree; it
-    does not test for equality with the current min (or max) element.
-    Indeed, they are only used during the "join" operation which
-    respects this precondition.
-*)
-
-let rec add_min_element v = function
-  | Empty -> singleton v
-  | Node (l, x, r, h) ->
-    internal_bal (add_min_element v l) x r
-
-let rec add_max_element v = function
-  | Empty -> singleton v
-  | Node (l, x, r, h) ->
-    internal_bal l x (add_max_element v r)
-
-(** 
-    Invariants:
-    1. l < v < r 
-    2. l and r are balanced 
-
-    Proof by induction
-    The height of output will be ~~ (max (height l) (height r) + 2)
-    Also use the lemma from [bal]
-*)
-let rec internal_join l v r =
-  match (l, r) with
-    (Empty, _) -> add_min_element v r
-  | (_, Empty) -> add_max_element v l
-  | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
-    if lh > rh + 2 then 
-      (* proof by induction:
-         now [height of ll] is [lh - 1] 
-      *)
-      internal_bal ll lv (internal_join lr v r) 
-    else
-    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else create l v r
-
-
-(*
-    Required Invariants: 
-    [t1] < [t2]  
-*)
-let internal_concat t1 t2 =
-  match (t1, t2) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
-
-let rec filter x p = match x with 
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pv = p v in
-    let r' = filter r p in
-    if pv then internal_join l' v r' else internal_concat l' r'
-
-
-let rec partition x p = match x with 
-  | Empty -> (Empty, Empty)
-  | Node(l, v, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pv = p v in
-    let (rt, rf) = partition r p in
-    if pv
-    then (internal_join lt v rt, internal_concat lf rf)
-    else (internal_concat lt rt, internal_join lf v rf)
-
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
-
-let of_sorted_array l =   
-  let rec sub start n l  =
-    if n = 0 then Empty else 
-    if n = 1 then 
-      let x0 = Array.unsafe_get l start in
-      Node (Empty, x0, Empty, 1)
-    else if n = 2 then     
-      let x0 = Array.unsafe_get l start in 
-      let x1 = Array.unsafe_get l (start + 1) in 
-      Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
-    if n = 3 then 
-      let x0 = Array.unsafe_get l start in 
-      let x1 = Array.unsafe_get l (start + 1) in
-      let x2 = Array.unsafe_get l (start + 2) in
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
-    else 
-      let nl = n / 2 in
-      let left = sub start nl l in
-      let mid = start + nl in 
-      let v = Array.unsafe_get l mid in 
-      let right = sub (mid + 1) (n - nl - 1) l in        
-      create left v right
-  in
-  sub 0 (Array.length l) l 
-
-let is_ordered ~cmp tree =
-  let rec is_ordered_min_max tree =
-    match tree with
-    | Empty -> `Empty
-    | Node(l,v,r,_) -> 
-      begin match is_ordered_min_max l with
-        | `No -> `No 
-        | `Empty ->
-          begin match is_ordered_min_max r with
-            | `No  -> `No
-            | `Empty -> `V (v,v)
-            | `V(l,r) ->
-              if cmp v l < 0 then
-                `V(v,r)
-              else
-                `No
-          end
-        | `V(min_v,max_v)->
-          begin match is_ordered_min_max r with
-            | `No -> `No
-            | `Empty -> 
-              if cmp max_v v < 0 then 
-                `V(min_v,v)
-              else
-                `No 
-            | `V(min_v_r, max_v_r) ->
-              if cmp max_v min_v_r < 0 then
-                `V(min_v,max_v_r)
-              else `No
-          end
-      end  in 
-  is_ordered_min_max tree <> `No 
-
-let invariant ~cmp t = 
-  check t ; 
-  is_ordered ~cmp t 
-
-let rec compare_aux ~cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = cmp v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
-
-
-module type S = sig
-  type elt 
-  type t
-  val empty: t
-  val is_empty: t -> bool
-  val iter: t ->  (elt -> unit) -> unit
-  val fold: t -> 'a -> (elt -> 'a -> 'a) -> 'a
-  val for_all: t -> (elt -> bool) ->  bool
-  val exists: t -> (elt -> bool) -> bool
-  val singleton: elt -> t
-  val cardinal: t -> int
-  val elements: t -> elt list
-  val min_elt: t -> elt
-  val max_elt: t -> elt
-  val choose: t -> elt
-  val of_sorted_list : elt list -> t 
-  val of_sorted_array : elt array -> t
-  val partition: t -> (elt -> bool) ->  t * t
-
-  val mem: t -> elt -> bool
-  val add: t -> elt -> t
-  val remove: t -> elt -> t
-  val union: t -> t -> t
-  val inter: t -> t -> t
-  val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
-  val subset: t -> t -> bool
-  val filter: t -> (elt -> bool) ->  t
-
-  val split: t -> elt -> t * bool * t
-  val find:  t -> elt -> elt
-  val of_list: elt list -> t
-  val of_sorted_list : elt list ->  t
-  val of_sorted_array : elt array -> t 
-  val of_array : elt array -> t 
-  val invariant : t -> bool 
-  val print : Format.formatter -> t -> unit 
-end 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-include Set_gen.S with type elt = string
-end = struct
-#1 "string_set.ml"
-# 1 "ext/set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-# 27 "ext/set.cppo.ml"
-type elt = string
-let compare_elt = Ext_string.compare 
-let print_elt = Format.pp_print_string
-
-# 49 "ext/set.cppo.ml"
-type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
-  | Empty 
-  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
-
-type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
-  | End 
-  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
-    
-type  t = (elt, unit) t0
-type enumeration = (elt, unit) Set_gen.enumeration0
-let empty = Set_gen.empty 
-let is_empty = Set_gen.is_empty
-let iter = Set_gen.iter
-let fold = Set_gen.fold
-let for_all = Set_gen.for_all 
-let exists = Set_gen.exists 
-let singleton = Set_gen.singleton 
-let cardinal = Set_gen.cardinal
-let elements = Set_gen.elements
-let min_elt = Set_gen.min_elt
-let max_elt = Set_gen.max_elt
-let choose = Set_gen.choose 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
-let partition = Set_gen.partition 
-let filter = Set_gen.filter 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
-
-let rec split (tree : t) x : t * bool * t =  match tree with 
-  | Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then (l, true, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split l x in (ll, pres, Set_gen.internal_join rl v r)
-    else
-      let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
-let rec add (tree : t) x : t =  match tree with 
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = compare_elt x v in
-    if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
-
-let rec union (s1 : t) (s2 : t) : t  =
-  match (s1, s2) with
-  | (Empty, t2) -> t2
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
-    if h1 >= h2 then
-      if h2 = 1 then add s1 v2 else begin
-        let (l2, _, r2) = split s2 v1 in
-        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
-      end
-    else
-    if h1 = 1 then add s2 v1 else begin
-      let (l1, _, r1) = split s1 v2 in
-      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
-    end    
-
-let rec inter (s1 : t)  (s2 : t) : t  =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split t2 v1 with
-      | (l2, false, r2) ->
-        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
-    end 
-
-let rec diff (s1 : t) (s2 : t) : t  =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split t2 v1 with
-      | (l2, false, r2) ->
-        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
-    end
-
-
-let rec mem (tree : t) x =  match tree with 
-  | Empty -> false
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    c = 0 || mem (if c < 0 then l else r) x
-
-let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
-
-let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
-
-
-let equal s1 s2 =
-  compare s1 s2 = 0
-
-let rec subset (s1 : t) (s2 : t) =
-  match (s1, s2) with
-  | Empty, _ ->
-    true
-  | _, Empty ->
-    false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = compare_elt v1 v2 in
-    if c = 0 then
-      subset l1 l2 && subset r1 r2
-    else if c < 0 then
-      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-    else
-      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
-
-
-
-let rec find (tree : t) x = match tree with
-  | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find (if c < 0 then l else r) x 
-
-
-
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add (singleton x0) x1 
-  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
-  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
-  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
-
-let of_array l = 
-  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
-
-(* also check order *)
-let invariant t =
-  Set_gen.check t ;
-  Set_gen.is_ordered ~cmp:compare_elt t          
-
-let print fmt s = 
-  Format.fprintf 
-   fmt   "@[<v>{%a}@]@."
-    (fun fmt s   -> 
-       iter s
-         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
-         print_elt e) 
-    )
-    s     
-
-
-
-
-
-
-end
-module Bsb_file_groups
-= struct
-#1 "bsb_file_groups.ml"
-(* Copyright (C) 2018- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- type public = 
-  | Export_none
-  | Export_all 
-  | Export_set of String_set.t 
-  
-
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}  
-
-
-type  file_group = 
-  { dir : string ;
-    sources : Bsb_db.t; 
-    resources : string list ;
-    public : public ;
-    dir_index : Bsb_dir_index.t  ;
-    generators : build_generator list ; 
-    (* output of [generators] should be added to [sources],
-       if it is [.ml,.mli,.re,.rei]
-    *)
-  }     
-
-type file_groups = file_group list 
-  (**
-    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
-     we need add a new line in the end,
-     otherwise it will be idented twice
-*)
-
-type t =   
-  { files :  file_groups; 
-    intervals :  Ext_file_pp.interval list ;    
-    globbed_dirs : string list ; 
-  }
-
-
-
-let empty : t = { files = []; intervals  = []; globbed_dirs = [];  }
-
-
-
-let merge (u : t)  (v : t)  = 
-  if u == empty then v 
-  else if v == empty then u 
-  else 
-    {
-      files = Ext_list.append u.files  v.files ; 
-      intervals = Ext_list.append u.intervals  v.intervals ; 
-      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
-    }  
-
-
-(** when [is_empty file_group]
-    we don't need issue [-I] [-S] in [.merlin] file
-*)  
-let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
-  x.resources = [] &&
-  x.generators = []    
-end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9992,7 +9990,6 @@ let rec
                    public ;
                    dir_index = cxt.dir_index ;
                    generators  } ] ;
-      intervals = !cur_update_queue ;
       globbed_dirs = !cur_globbed_dirs ;
     }  children
 
@@ -11814,7 +11811,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let config_file_bak = "bsconfig.json.bak"
+
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
@@ -12089,10 +12086,9 @@ let interpret_json
      2. we need store it so that we can call ninja correctly
   *)
   let entries = ref Bsb_default.main_entries in
-  let config_json_chan = open_in_bin config_json  in
   let global_data = 
-    Ext_json_parse.parse_json_from_chan 
-      config_json config_json_chan  in
+    Ext_json_parse.parse_json_from_file config_json 
+  in
   match global_data with
   | Obj { map ; loc } ->
     let package_name, namespace = 
@@ -12184,22 +12180,7 @@ let interpret_json
             ~namespace
             sources in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;     
-        begin match List.sort Ext_file_pp.interval_compare  groups.intervals with
-          | [] -> ()
-          | queue ->
-            let file_size = in_channel_length config_json_chan in
-            let output_file = (cwd //config_file_bak) in 
-            let oc = open_out_bin output_file in
-            let () =
-              Ext_file_pp.process_wholes
-                queue file_size config_json_chan oc in
-            close_out oc ;
-            close_in config_json_chan ;
-            Unix.unlink config_json;
-            Unix.rename output_file config_json
-        end;
-       
+          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;        
         {
           gentype_config;
           bs_suffix ;

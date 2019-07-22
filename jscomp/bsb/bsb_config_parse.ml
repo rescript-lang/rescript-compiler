@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let config_file_bak = "bsconfig.json.bak"
+
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
@@ -297,10 +297,9 @@ let interpret_json
      2. we need store it so that we can call ninja correctly
   *)
   let entries = ref Bsb_default.main_entries in
-  let config_json_chan = open_in_bin config_json  in
   let global_data = 
-    Ext_json_parse.parse_json_from_chan 
-      config_json config_json_chan  in
+    Ext_json_parse.parse_json_from_file config_json 
+  in
   match global_data with
   | Obj { map ; loc } ->
     let package_name, namespace = 
@@ -392,22 +391,7 @@ let interpret_json
             ~namespace
             sources in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;     
-        begin match List.sort Ext_file_pp.interval_compare  groups.intervals with
-          | [] -> ()
-          | queue ->
-            let file_size = in_channel_length config_json_chan in
-            let output_file = (cwd //config_file_bak) in 
-            let oc = open_out_bin output_file in
-            let () =
-              Ext_file_pp.process_wholes
-                queue file_size config_json_chan oc in
-            close_out oc ;
-            close_in config_json_chan ;
-            Unix.unlink config_json;
-            Unix.rename output_file config_json
-        end;
-       
+          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;        
         {
           gentype_config;
           bs_suffix ;

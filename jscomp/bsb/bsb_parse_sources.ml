@@ -409,7 +409,6 @@ let rec
                    public ;
                    dir_index = cxt.dir_index ;
                    generators  } ] ;
-      intervals = !cur_update_queue ;
       globbed_dirs = !cur_globbed_dirs ;
     }  children
 
