@@ -644,7 +644,11 @@ let jsxMapper () =
     | name when isLabelled name ->
     (getLabel name, [], type_) :: types
     | name when isOptional name ->
-    (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
+#if OCAML_VERSION >= (4,3,0)
+  (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
+#else
+  (getLabel name, [], type_) :: types
+#endif
     | _ -> types
   in
 
@@ -1005,7 +1009,7 @@ let jsxMapper () =
             ({txt = "bs.config"} as bsConfigLabel),
             PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
           )
-        } 
+        }
         ::restOfStructure ) | ({
           pstr_loc;
           pstr_desc = Pstr_attribute (
