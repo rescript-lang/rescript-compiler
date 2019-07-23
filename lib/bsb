@@ -176,7 +176,7 @@ if (watch_mode) {
      */
     var watchers = [];
 
-    function onUncaughtException (err){
+    function onUncaughtException(err){
         console.error("Uncaught Exception", err)
         process.exit(1)
     }
@@ -184,9 +184,11 @@ if (watch_mode) {
         try {
             fs.unlinkSync(lockFileName)
         } catch (err) {
-
+            process.exitCode = 1
         }
-        process.exit(2)
+    }
+    function exitProcess() {
+        process.exit(0)
     }
 
     /**
@@ -205,18 +207,21 @@ if (watch_mode) {
             }
 
             process.on('exit', onExit)
-            // Ctrl+C
-            process.on('SIGINT', onExit)
-            // kill pid
-            process.on('SIGUSR1', onExit)
-            process.on('SIGUSR2', onExit)
-            process.on('SIGTERM', onExit)
-            process.on('SIGHUP', onExit)
             process.on('uncaughtException', onUncaughtException)
-            process.stdin.on('close', onExit)
+
+            // OS signal handlers
+            // Ctrl+C
+            process.on('SIGINT', exitProcess)
+            // kill pid
+            process.on('SIGUSR1', exitProcess)
+            process.on('SIGUSR2', exitProcess)
+            process.on('SIGTERM', exitProcess)
+            process.on('SIGHUP', exitProcess)
+
+            process.stdin.on('close', exitProcess)
             // close when stdin stops
             if (os.platform() !== "win32") {
-                process.stdin.on('end', onExit)
+                process.stdin.on('end', exitProcess)
                 process.stdin.resume()
             }
 
