@@ -26,3 +26,4 @@ lib/bs
 **/*.js
 !node_modules
 !input.js
+!testcase.js
