@@ -11,6 +11,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "1.9.3"
+    "bs-platform": "^5.1.0-dev.3"
   }
 }
