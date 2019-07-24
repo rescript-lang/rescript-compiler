@@ -39,10 +39,11 @@ let make_sub_path (x : t) : string =
     a failure
 *)
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
+  (* First try to resolve recursively from the current working directory  *)
   let sub_path = make_sub_path pkg   in
   let rec aux  cwd  =
     let abs_marker =  cwd //  sub_path in
-    if Sys.file_exists abs_marker then abs_marker
+    if Sys.file_exists abs_marker then Some(abs_marker)
     else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length another_cwd < String.length cwd then
@@ -51,14 +52,28 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
         begin match Sys.getenv "npm_config_prefix"
                     // "lib" // sub_path with
         | abs_marker when Sys.file_exists abs_marker ->
-          abs_marker
+          Some(abs_marker)
         | _ ->
-            Bsb_exception.package_not_found ~pkg ~json:None
+            None
         | exception Not_found ->
-            Bsb_exception.package_not_found ~pkg ~json:None
+            None
         end
   in
-  aux cwd
+  match aux cwd with
+  | Some(package_dir) -> package_dir
+  (* If the package can not be resolved then check if NODE_PATH is set and if set then search there*)
+  | None ->
+    let node_path =
+      match Sys.getenv "NODE_PATH" with
+      | node_path -> 
+        Str.split (Str.regexp ";") node_path
+      | exception Not_found ->
+        Bsb_exception.package_not_found ~pkg ~json:None
+    in
+    match List.find (fun dir -> Sys.file_exists (dir // Bsb_pkg_types.to_string pkg)) node_path with
+    | resolved_dir -> resolved_dir // Bsb_pkg_types.to_string pkg
+    | exception Not_found ->
+      Bsb_exception.package_not_found ~pkg ~json:None
 
 module Coll = Hashtbl_make.Make(struct
   type nonrec t = t 

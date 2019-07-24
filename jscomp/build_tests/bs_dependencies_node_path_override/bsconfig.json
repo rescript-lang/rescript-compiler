@@ -1,0 +1,23 @@
+{
+  "name": "dev",
+  "version": "0.1.0",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs" : true
+    },
+    {
+      "dir": "examples",
+      "type" : "dev",
+      "subdirs" : true
+    }
+  ],
+  "package-specs" : {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "namespace": true,
+  "bs-dependencies" : [
+    "liba"
+  ]
+}
