@@ -93,7 +93,7 @@ let rec equal
       | _ -> false 
     end 
 
-let rec encode_aux (x : t ) 
+let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
   match x with 
@@ -107,12 +107,12 @@ let rec encode_aux (x : t )
       | [||] -> a "[]"
       | _ -> 
         a "[ ";
-        encode_aux
+        encode_buf
           (Array.unsafe_get content 0)
           buf ; 
         for i = 1 to Array.length content - 1 do 
           a " , ";
-          encode_aux 
+          encode_buf 
             (Array.unsafe_get content i)
             buf
         done;    
@@ -134,7 +134,7 @@ let rec encode_aux (x : t )
             end; 
             a (quot k);
             a " : ";
-            encode_aux v buf ;
+            encode_buf v buf ;
             i + 1 
           ) in 
           a " }"
@@ -143,10 +143,10 @@ let rec encode_aux (x : t )
 
 let to_string x  = 
     let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
+    encode_buf x buf ;
     Buffer.contents buf 
 
 let to_channel (oc : out_channel) x  = 
     let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
+    encode_buf x buf ;
     Buffer.output_buffer oc buf   
