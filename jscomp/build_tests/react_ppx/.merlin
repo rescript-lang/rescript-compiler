@@ -1,0 +1,11 @@
+####{BSB GENERATED: NO EDIT
+B lib/bs
+FLG -open ReactPpxTests
+FLG -ppx '/Users/hongbozhang/git/bucklescript/lib/bsppx.exe -bs-jsx 3'
+S /Users/hongbozhang/git/node_modules/bs-platform/lib/ocaml
+B /Users/hongbozhang/git/node_modules/bs-platform/lib/ocaml
+FLG -nostdlib -color always
+FLG -w -30-40+6+7+27+32..39+44+45+101
+S src
+B lib/bs/src
+####BSB GENERATED: NO EDIT}

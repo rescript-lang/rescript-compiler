@@ -1,5 +1,6 @@
 module React = {
     type element;
+    type componentLike('props, 'return) = 'props => 'return;
 }
 
 module Test = {
@@ -7,7 +8,7 @@ module Test = {
   external make: (~className: string=?) => React.element = "Foo";
 };
 
-let test = Test.make(
+let test (~className) = Test.make(
   Test.makeProps(~className, ())
 );
 
