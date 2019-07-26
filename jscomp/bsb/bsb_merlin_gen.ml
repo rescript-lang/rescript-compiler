@@ -99,7 +99,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
 
 let merlin_file_gen ~cwd
     built_in_ppx
-    ({bs_file_groups = res_files ; 
+    ({file_groups = res_files ; 
       generate_merlin;
       ppx_files;
       pp_file;
@@ -166,7 +166,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    Ext_list.iter res_files (fun (x : Bsb_file_groups.file_group) -> 
+    Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;

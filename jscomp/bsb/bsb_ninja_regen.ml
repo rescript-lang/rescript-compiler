@@ -74,7 +74,7 @@ let regenerate_ninja
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
-      (Literals.bsconfig_json::config.globbed_dirs) ;
+      (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
 

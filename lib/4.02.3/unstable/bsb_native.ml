@@ -10491,8 +10491,7 @@ type t =
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
-    globbed_dirs : string list;
-    bs_file_groups : Bsb_file_groups.file_groups;
+    file_groups : Bsb_file_groups.t;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
@@ -11369,9 +11368,8 @@ let interpret_json
           package_specs = 
             (match override_package_specs with 
              | None ->  package_specs
-             | Some x -> x );
-          globbed_dirs = groups.globbed_dirs; 
-          bs_file_groups = groups.files; 
+             | Some x -> x );          
+          file_groups = groups; 
           files_to_install = String_hash_set.create 96;
           built_in_dependency = built_in_package;
           generate_merlin = 
@@ -11610,7 +11608,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
 
 let merlin_file_gen ~cwd
     built_in_ppx
-    ({bs_file_groups = res_files ; 
+    ({file_groups = res_files ; 
       generate_merlin;
       ppx_files;
       pp_file;
@@ -11677,7 +11675,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    Ext_list.iter res_files (fun (x : Bsb_file_groups.file_group) -> 
+    Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
@@ -13705,7 +13703,7 @@ let output_ninja_and_namespace_map
       refmt_flags;
       js_post_build_cmd;
       package_specs;
-      bs_file_groups;
+      file_groups = { files = bs_file_groups};
       files_to_install;
       built_in_dependency;
       reason_react_jsx;
@@ -13992,7 +13990,7 @@ let regenerate_ninja
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
-      (Literals.bsconfig_json::config.globbed_dirs) ;
+      (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
 
@@ -14055,9 +14053,9 @@ end = struct
 
 
 
-let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t 
+let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t 
   = 
-  Ext_array.of_list_map bs_file_groups (fun x -> 
+  Ext_array.of_list_map config.file_groups.files (fun x -> 
     Ext_json_noloc.(
       kvs [
         "dir", str x.dir ;

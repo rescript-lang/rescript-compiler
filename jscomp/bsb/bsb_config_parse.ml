@@ -431,9 +431,8 @@ let interpret_json
           package_specs = 
             (match override_package_specs with 
              | None ->  package_specs
-             | Some x -> x );
-          globbed_dirs = groups.globbed_dirs; 
-          bs_file_groups = groups.files; 
+             | Some x -> x );          
+          file_groups = groups; 
           files_to_install = String_hash_set.create 96;
           built_in_dependency = built_in_package;
           generate_merlin = 
