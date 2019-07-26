@@ -282,7 +282,6 @@ let extract_ignored_dirs (map : json_map) =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~(generate_watch_metadata : bool)
     ~not_dev 
     cwd  
 
@@ -399,10 +398,7 @@ let interpret_json
             ~cut_generators
             ~bs_suffix
             ~namespace
-            sources in 
-        if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta 
-          ~name:(cwd//Bsb_config.lib_bs//Literals.sourcedirs_meta) groups ;        
+            sources in         
         {
           gentype_config;
           bs_suffix ;

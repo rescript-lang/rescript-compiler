@@ -62,9 +62,13 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~generate_watch_metadata
         ~not_dev
         cwd in 
+    if generate_watch_metadata then       
+      Bsb_watcher_gen.generate_sourcedirs_meta
+      ~name:(cwd // Bsb_config.lib_bs // Literals.sourcedirs_meta)
+      config.file_groups
+    ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
