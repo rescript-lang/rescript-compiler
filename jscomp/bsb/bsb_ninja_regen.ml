@@ -38,7 +38,8 @@ let regenerate_ninja
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
+  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
       ~cwd  
@@ -57,7 +58,7 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
-    Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+    Bsb_build_util.mkp lib_bs_dir; 
     let config = 
       Bsb_config_parse.interpret_json 
         ~override_package_specs
@@ -66,8 +67,8 @@ let regenerate_ninja
         cwd in 
     if generate_watch_metadata then       
       Bsb_watcher_gen.generate_sourcedirs_meta
-      ~name:(cwd // Bsb_config.lib_bs // Literals.sourcedirs_meta)
-      config.file_groups
+        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+        config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
