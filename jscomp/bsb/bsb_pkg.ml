@@ -63,8 +63,6 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
     let node_path =
       match Sys.getenv "NODE_PATH" with
       | node_path -> 
-        print_endline node_path;
-        print_endline (Char.escaped node_path_delimiter);
         Ext_string.split node_path node_path_delimiter 
       | exception Not_found ->
         Bsb_exception.package_not_found ~pkg ~json:None
