@@ -228,7 +228,13 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
   | None ->
     Refmt_none 
 
-
+let extract_string (map : json_map) (field : string) cb = 
+  match String_map.find_opt map field with 
+  | None -> None 
+  | Some (Str{str}) -> cb str 
+  | Some config -> 
+    Bsb_exception.config_error config (field ^ " expect a string" )
+  
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
   match String_map.find_opt map field with 
   | None -> default 
@@ -326,16 +332,11 @@ let interpret_json
       | None ->  Bsb_package_specs.default_package_specs 
     in
     let pp_flags : string option = 
-      match String_map.find_opt map Bsb_build_schemas.pp_flags with 
-      | Some (Str {str = p }) ->
+      extract_string map Bsb_build_schemas.pp_flags (fun p -> 
         if p = "" then failwith "invalid pp, empty string found"
         else 
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
-      | Some x ->    
-        Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
-      | None ->  
-        None      
-    in 
+      ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     map    
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
