@@ -150,3 +150,8 @@ let to_channel (oc : out_channel) x  =
     let buf = Buffer.create 1024 in 
     encode_buf x buf ;
     Buffer.output_buffer oc buf   
+
+let to_file name v =     
+  let ochan = open_out_bin name in 
+  to_channel ochan v ;
+  close_out ochan

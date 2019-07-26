@@ -38,3 +38,8 @@ val to_string : t -> string
 
 
 val to_channel : out_channel -> t -> unit
+
+val to_file : 
+  string -> 
+  t -> 
+  unit 

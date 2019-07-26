@@ -130,3 +130,5 @@ val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
+
+val sourcedirs_meta : string

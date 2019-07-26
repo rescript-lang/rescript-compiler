@@ -132,3 +132,5 @@ let node_current = "."
 let gentype_import = "genType.import"
 
 let bsbuild_cache = ".bsbuild"    
+
+let sourcedirs_meta = ".sourcedirs.json"

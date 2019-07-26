@@ -71,8 +71,7 @@ type t =
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
-    globbed_dirs : string list;
-    bs_file_groups : Bsb_file_groups.file_groups;
+    file_groups : Bsb_file_groups.t;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)

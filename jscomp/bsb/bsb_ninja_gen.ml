@@ -114,7 +114,7 @@ let output_ninja_and_namespace_map
       refmt_flags;
       js_post_build_cmd;
       package_specs;
-      bs_file_groups;
+      file_groups = { files = bs_file_groups};
       files_to_install;
       built_in_dependency;
       reason_react_jsx;

@@ -5013,6 +5013,8 @@ val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
+
+val sourcedirs_meta : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5150,6 +5152,7 @@ let gentype_import = "genType.import"
 
 let bsbuild_cache = ".bsbuild"    
 
+let sourcedirs_meta = ".sourcedirs.json"
 end
 module Bsb_pkg : sig 
 #1 "bsb_pkg.mli"
@@ -10488,8 +10491,7 @@ type t =
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
-    globbed_dirs : string list;
-    bs_file_groups : Bsb_file_groups.file_groups;
+    file_groups : Bsb_file_groups.t;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
@@ -10581,302 +10583,6 @@ let refmt_none = "refmt.exe"
 let main_entries = [Bsb_config_types.JsTarget "Index"]
 
 end
-module Ext_json_noloc : sig 
-#1 "ext_json_noloc.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t 
-
-val true_  : t 
-val false_ : t 
-val null : t 
-val str : string -> t 
-val flo : string -> t 
-val arr : t array -> t 
-val obj : t String_map.t -> t 
-val kvs : (string * t) list -> t 
-val equal : t -> t -> bool 
-val to_string : t -> string 
-
-
-val to_channel : out_channel -> t -> unit
-end = struct
-#1 "ext_json_noloc.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
-  | Str of string
-  | Arr of t array 
-  | Obj of t String_map.t
-
-
-(** poor man's serialization *)
-
-let quot x = 
-    "\"" ^ String.escaped x ^ "\""
-
-let true_ = True
-let false_ = False
-let null = Null 
-let str s  = Str s 
-let flo s = Flo s 
-let arr s = Arr s 
-let obj s = Obj s 
-let kvs s = 
-  Obj (String_map.of_list s)
-  
-let rec equal 
-    (x : t)
-    (y : t) = 
-  match x with 
-  | Null  -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null  -> true
-      | _ -> false end
-  | Str str  -> 
-    begin match y with 
-      | Str str2 -> str = str2
-      | _ -> false end
-  | Flo flo 
-    ->
-    begin match y with
-      |  Flo flo2 -> 
-        flo = flo2 
-      | _ -> false
-    end
-  | True  -> 
-    begin match y with 
-      | True  -> true 
-      | _ -> false 
-    end
-  | False  -> 
-    begin match y with 
-      | False  -> true 
-      | _ -> false 
-    end     
-  | Arr content 
-    -> 
-    begin match y with 
-      | Arr content2
-        ->
-        Ext_array.for_all2_no_exn content content2 equal 
-      | _ -> false 
-    end
-
-  | Obj map -> 
-    begin match y with 
-      | Obj map2 -> 
-        String_map.equal map map2 equal 
-      | _ -> false 
-    end 
-
-let rec encode_buf (x : t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
-  | Null  -> a "null"
-  | Str s   -> a (quot s)
-  | Flo  s -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  content -> 
-    begin match content with 
-      | [||] -> a "[]"
-      | _ -> 
-        a "[ ";
-        encode_buf
-          (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
-          a " , ";
-          encode_buf 
-            (Array.unsafe_get content i)
-            buf
-        done;    
-        a " ]"
-    end
-  | True  -> a "true"
-  | False  -> a "false"
-  | Obj map -> 
-    if String_map.is_empty map then 
-      a "{}"
-    else 
-      begin  
-        (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
-        a "{ ";
-        let _ : int =  String_map.fold map 0 (fun  k v i -> 
-            if i <> 0 then begin
-              a " , " 
-            end; 
-            a (quot k);
-            a " : ";
-            encode_buf v buf ;
-            i + 1 
-          ) in 
-          a " }"
-      end
-
-
-let to_string x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.contents buf 
-
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.output_buffer oc buf   
-end
-module Bsb_watcher_gen : sig 
-#1 "bsb_watcher_gen.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** This module try to generate some meta data so that
-  everytime [bsconfig.json] is reload, we can re-read
-  such meta data changes in the watcher.
-  
-  Another way of doing it is processing [bsconfig.json] 
-  directly in [watcher] but that would 
-  mean the duplication of logic in [bsb] and [bsb_watcher]
-*)
-val generate_sourcedirs_meta : 
-  string -> Bsb_file_groups.t -> unit 
-end = struct
-#1 "bsb_watcher_gen.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let (//) = Ext_path.combine
-
-let sourcedirs_meta = ".sourcedirs.json"
-
-let kvs = Ext_json_noloc.kvs
-let arr = Ext_json_noloc.arr
-let str = Ext_json_noloc.str 
-
-let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
-  let v = 
-    kvs [
-      "dirs" ,
-      arr (Ext_array.of_list_map res.files ( fun x -> 
-          str x.dir 
-        ) ) ;
-      "generated" ,
-      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
-          Ext_list.flat_map_append x.generators acc
-            (fun x -> 
-               Ext_list.map x.output str)   
-        ));        
-        "pkgs", arr 
-          (Array.of_list
-            (Bsb_pkg.to_list (fun pkg path ->
-              arr [|
-                str (Bsb_pkg_types.to_string pkg);
-                str path
-                |]
-              ))
-          )
-    ]
-  in 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
-end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10912,7 +10618,6 @@ val package_specs_from_bsconfig :
 val interpret_json : 
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    generate_watch_metadata:bool -> 
     not_dev:bool -> 
     string -> 
     Bsb_config_types.t
@@ -11152,7 +10857,13 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
   | None ->
     Refmt_none 
 
-
+let extract_string (map : json_map) (field : string) cb = 
+  match String_map.find_opt map field with 
+  | None -> None 
+  | Some (Str{str}) -> cb str 
+  | Some config -> 
+    Bsb_exception.config_error config (field ^ " expect a string" )
+  
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
   match String_map.find_opt map field with 
   | None -> default 
@@ -11200,7 +10911,6 @@ let extract_ignored_dirs (map : json_map) =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~(generate_watch_metadata : bool)
     ~not_dev 
     cwd  
 
@@ -11250,16 +10960,11 @@ let interpret_json
       | None ->  Bsb_package_specs.default_package_specs 
     in
     let pp_flags : string option = 
-      match String_map.find_opt map Bsb_build_schemas.pp_flags with 
-      | Some (Str {str = p }) ->
+      extract_string map Bsb_build_schemas.pp_flags (fun p -> 
         if p = "" then failwith "invalid pp, empty string found"
         else 
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
-      | Some x ->    
-        Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
-      | None ->  
-        None      
-    in 
+      ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     map    
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
@@ -11322,9 +11027,7 @@ let interpret_json
             ~cut_generators
             ~bs_suffix
             ~namespace
-            sources in 
-        if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;        
+            sources in         
         {
           gentype_config;
           bs_suffix ;
@@ -11353,9 +11056,8 @@ let interpret_json
           package_specs = 
             (match override_package_specs with 
              | None ->  package_specs
-             | Some x -> x );
-          globbed_dirs = groups.globbed_dirs; 
-          bs_file_groups = groups.files; 
+             | Some x -> x );          
+          file_groups = groups; 
           files_to_install = String_hash_set.create 96;
           built_in_dependency = built_in_package;
           generate_merlin = 
@@ -11594,7 +11296,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
 
 let merlin_file_gen ~cwd
     built_in_ppx
-    ({bs_file_groups = res_files ; 
+    ({file_groups = res_files ; 
       generate_merlin;
       ppx_files;
       pp_file;
@@ -11661,7 +11363,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    Ext_list.iter res_files (fun (x : Bsb_file_groups.file_group) -> 
+    Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
@@ -13689,7 +13391,7 @@ let output_ninja_and_namespace_map
       refmt_flags;
       js_post_build_cmd;
       package_specs;
-      bs_file_groups;
+      file_groups = { files = bs_file_groups};
       files_to_install;
       built_in_dependency;
       reason_react_jsx;
@@ -13859,6 +13561,313 @@ let output_ninja_and_namespace_map
   close_out oc
 
 end
+module Ext_json_noloc : sig 
+#1 "ext_json_noloc.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t 
+
+val true_  : t 
+val false_ : t 
+val null : t 
+val str : string -> t 
+val flo : string -> t 
+val arr : t array -> t 
+val obj : t String_map.t -> t 
+val kvs : (string * t) list -> t 
+val equal : t -> t -> bool 
+val to_string : t -> string 
+
+
+val to_channel : out_channel -> t -> unit
+
+val to_file : 
+  string -> 
+  t -> 
+  unit 
+
+end = struct
+#1 "ext_json_noloc.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | True 
+  | False 
+  | Null 
+  | Flo of string 
+  | Str of string
+  | Arr of t array 
+  | Obj of t String_map.t
+
+
+(** poor man's serialization *)
+
+let quot x = 
+    "\"" ^ String.escaped x ^ "\""
+
+let true_ = True
+let false_ = False
+let null = Null 
+let str s  = Str s 
+let flo s = Flo s 
+let arr s = Arr s 
+let obj s = Obj s 
+let kvs s = 
+  Obj (String_map.of_list s)
+  
+let rec equal 
+    (x : t)
+    (y : t) = 
+  match x with 
+  | Null  -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null  -> true
+      | _ -> false end
+  | Str str  -> 
+    begin match y with 
+      | Str str2 -> str = str2
+      | _ -> false end
+  | Flo flo 
+    ->
+    begin match y with
+      |  Flo flo2 -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True  -> 
+    begin match y with 
+      | True  -> true 
+      | _ -> false 
+    end
+  | False  -> 
+    begin match y with 
+      | False  -> true 
+      | _ -> false 
+    end     
+  | Arr content 
+    -> 
+    begin match y with 
+      | Arr content2
+        ->
+        Ext_array.for_all2_no_exn content content2 equal 
+      | _ -> false 
+    end
+
+  | Obj map -> 
+    begin match y with 
+      | Obj map2 -> 
+        String_map.equal map map2 equal 
+      | _ -> false 
+    end 
+
+let rec encode_buf (x : t ) 
+    (buf : Buffer.t) : unit =  
+  let a str = Buffer.add_string buf str in 
+  match x with 
+  | Null  -> a "null"
+  | Str s   -> a (quot s)
+  | Flo  s -> 
+    a s (* 
+    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+  | Arr  content -> 
+    begin match content with 
+      | [||] -> a "[]"
+      | _ -> 
+        a "[ ";
+        encode_buf
+          (Array.unsafe_get content 0)
+          buf ; 
+        for i = 1 to Array.length content - 1 do 
+          a " , ";
+          encode_buf 
+            (Array.unsafe_get content i)
+            buf
+        done;    
+        a " ]"
+    end
+  | True  -> a "true"
+  | False  -> a "false"
+  | Obj map -> 
+    if String_map.is_empty map then 
+      a "{}"
+    else 
+      begin  
+        (*prerr_endline "WEIRD";
+        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        a "{ ";
+        let _ : int =  String_map.fold map 0 (fun  k v i -> 
+            if i <> 0 then begin
+              a " , " 
+            end; 
+            a (quot k);
+            a " : ";
+            encode_buf v buf ;
+            i + 1 
+          ) in 
+          a " }"
+      end
+
+
+let to_string x  = 
+    let buf = Buffer.create 1024 in 
+    encode_buf x buf ;
+    Buffer.contents buf 
+
+let to_channel (oc : out_channel) x  = 
+    let buf = Buffer.create 1024 in 
+    encode_buf x buf ;
+    Buffer.output_buffer oc buf   
+
+let to_file name v =     
+  let ochan = open_out_bin name in 
+  to_channel ochan v ;
+  close_out ochan
+end
+module Bsb_watcher_gen : sig 
+#1 "bsb_watcher_gen.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** This module try to generate some meta data so that
+  everytime [bsconfig.json] is reload, we can re-read
+  such meta data changes in the watcher.
+  
+  Another way of doing it is processing [bsconfig.json] 
+  directly in [watcher] but that would 
+  mean the duplication of logic in [bsb] and [bsb_watcher]
+*)
+val generate_sourcedirs_meta : 
+  name:string -> 
+  Bsb_file_groups.t -> 
+  unit 
+end = struct
+#1 "bsb_watcher_gen.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let kvs = Ext_json_noloc.kvs
+let arr = Ext_json_noloc.arr
+let str = Ext_json_noloc.str 
+
+let generate_sourcedirs_meta 
+  ~name (res : Bsb_file_groups.t) = 
+  let v = 
+    kvs [
+      "dirs" ,
+      arr (Ext_array.of_list_map res.files ( fun x -> 
+          str x.dir 
+        ) ) ;
+      "generated" ,
+      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
+          Ext_list.flat_map_append x.generators acc
+            (fun x -> 
+               Ext_list.map x.output str)   
+        ));        
+        "pkgs", arr 
+          (Array.of_list
+            (Bsb_pkg.to_list (fun pkg path ->
+              arr [|
+                str (Bsb_pkg_types.to_string pkg);
+                str path
+                |]
+              ))
+          )
+    ]
+  in 
+  Ext_json_noloc.to_file 
+  name v
+  
+end
 module Bsb_ninja_regen : sig 
 #1 "bsb_ninja_regen.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -13940,7 +13949,8 @@ let regenerate_ninja
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
+  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
       ~cwd  
@@ -13959,14 +13969,18 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
-    Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+    Bsb_build_util.mkp lib_bs_dir; 
     let config = 
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~generate_watch_metadata
         ~not_dev
         cwd in 
+    if generate_watch_metadata then       
+      Bsb_watcher_gen.generate_sourcedirs_meta
+        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+        config.file_groups
+    ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
@@ -13976,7 +13990,7 @@ let regenerate_ninja
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
-      (Literals.bsconfig_json::config.globbed_dirs) ;
+      (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
 
@@ -14039,9 +14053,9 @@ end = struct
 
 
 
-let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t 
+let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t 
   = 
-  Ext_array.of_list_map bs_file_groups (fun x -> 
+  Ext_array.of_list_map config.file_groups.files (fun x -> 
     Ext_json_noloc.(
       kvs [
         "dir", str x.dir ;

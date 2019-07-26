@@ -23,15 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let (//) = Ext_path.combine
-
-let sourcedirs_meta = ".sourcedirs.json"
 
 let kvs = Ext_json_noloc.kvs
 let arr = Ext_json_noloc.arr
 let str = Ext_json_noloc.str 
 
-let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
+let generate_sourcedirs_meta 
+  ~name (res : Bsb_file_groups.t) = 
   let v = 
     kvs [
       "dirs" ,
@@ -55,6 +53,6 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
           )
     ]
   in 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
+  Ext_json_noloc.to_file 
+  name v
+  

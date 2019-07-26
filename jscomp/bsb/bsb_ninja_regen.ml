@@ -38,7 +38,8 @@ let regenerate_ninja
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
+  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
       ~cwd  
@@ -57,14 +58,18 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
-    Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+    Bsb_build_util.mkp lib_bs_dir; 
     let config = 
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~generate_watch_metadata
         ~not_dev
         cwd in 
+    if generate_watch_metadata then       
+      Bsb_watcher_gen.generate_sourcedirs_meta
+        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+        config.file_groups
+    ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
@@ -74,7 +79,7 @@ let regenerate_ninja
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
-      (Literals.bsconfig_json::config.globbed_dirs) ;
+      (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
 
