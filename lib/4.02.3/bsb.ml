@@ -5237,8 +5237,13 @@ type t = Bsb_pkg_types.t
   when resolving [ppx-flags]
 *)
 let make_sub_path (x : t) : string = 
-   Literals.node_modules // Bsb_pkg_types.to_string x 
-  
+  Literals.node_modules // Bsb_pkg_types.to_string x
+
+let node_path_delimiter =
+  if Sys.os_type = "Win32" then
+    ';'
+  else
+    ':'
 
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure
@@ -5247,7 +5252,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
   let sub_path = make_sub_path pkg   in
   let rec aux  cwd  =
-    let abs_marker =  cwd //  sub_path in
+    let abs_marker =  cwd // sub_path in
     if Sys.file_exists abs_marker then Some(abs_marker)
     else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
@@ -5263,14 +5268,20 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
     let node_path =
       match Sys.getenv "NODE_PATH" with
       | node_path -> 
-        Str.split (Str.regexp ";") node_path
+        print_endline node_path;
+        print_endline (Char.escaped node_path_delimiter);
+        Ext_string.split node_path node_path_delimiter 
       | exception Not_found ->
         Bsb_exception.package_not_found ~pkg ~json:None
     in
-    match List.find (fun dir -> Sys.file_exists (dir // Bsb_pkg_types.to_string pkg)) node_path with
-    | resolved_dir -> resolved_dir // Bsb_pkg_types.to_string pkg
-    | exception Not_found ->
-      Bsb_exception.package_not_found ~pkg ~json:None
+    let check_dir dir =
+      match Sys.file_exists dir with
+      | true -> Some(dir)
+      | false -> None
+    in
+    match Ext_list.find_opt node_path (fun dir -> check_dir (dir // Bsb_pkg_types.to_string pkg))  with
+    | Some(resolved_dir) -> resolved_dir
+    | None -> Bsb_exception.package_not_found ~pkg ~json:None
 
 module Coll = Hashtbl_make.Make(struct
   type nonrec t = t 

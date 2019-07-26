@@ -1,5 +1,5 @@
 {
-  "name": "dev",
+  "name": "bs_dependencies_node_path_override",
   "version": "0.1.0",
   "scripts": {
     "clean": "bsb -clean-world",
