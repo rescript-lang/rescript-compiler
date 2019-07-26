@@ -1,7 +1,7 @@
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-let (=~) = OUnit.assert_equal
+let (=~) = OUnit.assert_equal ~printer:Ext_obj.dump
 
 
 let suites = 
@@ -40,4 +40,14 @@ let suites =
       String_hashtbl.length h =~  count 
     end; 
     
+    __LOC__ >:: begin fun _ ->
+      let h = String_hashtbl.create 0 in 
+      let count = 10 in 
+      for i = 0 to count - 1 do 
+        String_hashtbl.replace h (string_of_int i) i
+      done; 
+      let xs = String_hashtbl.to_list h (fun k _ -> k) in 
+      let ys = List.sort compare xs  in 
+      ys =~ ["0";"1";"2";"3";"4";"5";"6";"7";"8";"9"]
+    end
   ]

@@ -55,6 +55,5 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
           )
     ]
   in 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
+  Ext_json_noloc.to_file (cwd // Bsb_config.lib_bs // sourcedirs_meta) v
+  

@@ -10623,6 +10623,12 @@ val to_string : t -> string
 
 
 val to_channel : out_channel -> t -> unit
+
+val to_file : 
+  string -> 
+  t -> 
+  unit 
+
 end = struct
 #1 "ext_json_noloc.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -10777,6 +10783,11 @@ let to_channel (oc : out_channel) x  =
     let buf = Buffer.create 1024 in 
     encode_buf x buf ;
     Buffer.output_buffer oc buf   
+
+let to_file name v =     
+  let ochan = open_out_bin name in 
+  to_channel ochan v ;
+  close_out ochan
 end
 module Bsb_watcher_gen : sig 
 #1 "bsb_watcher_gen.mli"
@@ -10873,9 +10884,8 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
           )
     ]
   in 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
+  Ext_json_noloc.to_file (cwd // Bsb_config.lib_bs // sourcedirs_meta) v
+  
 end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
