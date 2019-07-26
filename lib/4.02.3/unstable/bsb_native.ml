@@ -5013,6 +5013,8 @@ val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
+
+val sourcedirs_meta : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5150,6 +5152,7 @@ let gentype_import = "genType.import"
 
 let bsbuild_cache = ".bsbuild"    
 
+let sourcedirs_meta = ".sourcedirs.json"
 end
 module Bsb_pkg : sig 
 #1 "bsb_pkg.mli"
@@ -10824,7 +10827,9 @@ module Bsb_watcher_gen : sig
   mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
 val generate_sourcedirs_meta : 
-  string -> Bsb_file_groups.t -> unit 
+  name:string -> 
+  Bsb_file_groups.t -> 
+  unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -10852,15 +10857,13 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let (//) = Ext_path.combine
-
-let sourcedirs_meta = ".sourcedirs.json"
 
 let kvs = Ext_json_noloc.kvs
 let arr = Ext_json_noloc.arr
 let str = Ext_json_noloc.str 
 
-let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
+let generate_sourcedirs_meta 
+  ~name (res : Bsb_file_groups.t) = 
   let v = 
     kvs [
       "dirs" ,
@@ -10884,7 +10887,8 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
           )
     ]
   in 
-  Ext_json_noloc.to_file (cwd // Bsb_config.lib_bs // sourcedirs_meta) v
+  Ext_json_noloc.to_file 
+  name v
   
 end
 module Bsb_config_parse : sig 
@@ -11334,7 +11338,8 @@ let interpret_json
             ~namespace
             sources in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;        
+          Bsb_watcher_gen.generate_sourcedirs_meta 
+          ~name:(cwd//Bsb_config.lib_bs//Literals.sourcedirs_meta) groups ;        
         {
           gentype_config;
           bs_suffix ;

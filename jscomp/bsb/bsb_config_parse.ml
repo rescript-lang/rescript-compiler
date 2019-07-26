@@ -400,7 +400,8 @@ let interpret_json
             ~namespace
             sources in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd groups ;        
+          Bsb_watcher_gen.generate_sourcedirs_meta 
+          ~name:(cwd//Bsb_config.lib_bs//Literals.sourcedirs_meta) groups ;        
         {
           gentype_config;
           bs_suffix ;
