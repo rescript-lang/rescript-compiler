@@ -4546,6 +4546,7 @@ module type S = sig
   val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val length: 'a t -> int
   val stats: 'a t -> Hashtbl.statistics
+  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
   val of_list2: key list -> 'a list -> 'a t
 end
 
@@ -4614,6 +4615,20 @@ let iter h f =
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
   done
+
+let to_list h f =
+  let rec do_bucket bucket acc =
+    match bucket with 
+    | Empty ->
+      acc
+    | Cons(k, d, rest) ->
+      do_bucket rest (f k d :: acc) in
+  let d = h.data in
+  let acc = ref [] in
+  for i = 0 to Array.length d - 1 do
+    acc := do_bucket (Array.unsafe_get d i) !acc
+  done;
+  !acc
 
 let fold f h init =
   let rec do_bucket b accu =
@@ -4738,6 +4753,7 @@ let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
 let copy = Hashtbl_gen.copy
 let iter = Hashtbl_gen.iter
+let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
 let length = Hashtbl_gen.length
 let stats = Hashtbl_gen.stats
@@ -4859,7 +4875,7 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
-# 161 "ext/hashtbl.cppo.ml"
+# 162 "ext/hashtbl.cppo.ml"
 end
 
 end
@@ -5177,7 +5193,11 @@ val resolve_bs_package :
     cwd:string ->  Bsb_pkg_types.t -> string 
 
 
-
+val to_list:    
+  (Bsb_pkg_types.t  ->
+   string ->
+   'a
+  ) -> 'a list
 end = struct
 #1 "bsb_pkg.ml"
 
@@ -5247,8 +5267,14 @@ module Coll = Hashtbl_make.Make(struct
   let equal = Bsb_pkg_types.equal
   let hash (x : t) = Hashtbl.hash x     
 end)
+
+
 let cache : string Coll.t = Coll.create 0
 
+
+let to_list cb  =   
+  Coll.to_list cache  cb 
+  
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   match Coll.find_opt cache package with
@@ -6618,6 +6644,7 @@ let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
 let copy = Hashtbl_gen.copy
 let iter = Hashtbl_gen.iter
+let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
 let length = Hashtbl_gen.length
 let stats = Hashtbl_gen.stats
@@ -10693,7 +10720,7 @@ let rec equal
       | _ -> false 
     end 
 
-let rec encode_aux (x : t ) 
+let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
   match x with 
@@ -10707,12 +10734,12 @@ let rec encode_aux (x : t )
       | [||] -> a "[]"
       | _ -> 
         a "[ ";
-        encode_aux
+        encode_buf
           (Array.unsafe_get content 0)
           buf ; 
         for i = 1 to Array.length content - 1 do 
           a " , ";
-          encode_aux 
+          encode_buf 
             (Array.unsafe_get content i)
             buf
         done;    
@@ -10734,7 +10761,7 @@ let rec encode_aux (x : t )
             end; 
             a (quot k);
             a " : ";
-            encode_aux v buf ;
+            encode_buf v buf ;
             i + 1 
           ) in 
           a " }"
@@ -10743,12 +10770,12 @@ let rec encode_aux (x : t )
 
 let to_string x  = 
     let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
+    encode_buf x buf ;
     Buffer.contents buf 
 
 let to_channel (oc : out_channel) x  = 
     let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
+    encode_buf x buf ;
     Buffer.output_buffer oc buf   
 end
 module Bsb_watcher_gen : sig 
@@ -10818,23 +10845,35 @@ let (//) = Ext_path.combine
 
 let sourcedirs_meta = ".sourcedirs.json"
 
+let kvs = Ext_json_noloc.kvs
+let arr = Ext_json_noloc.arr
+let str = Ext_json_noloc.str 
+
 let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
-    Ext_json_noloc.(
-      kvs [
-        "dirs" ,
+    kvs [
+      "dirs" ,
       arr (Ext_array.of_list_map res.files ( fun x -> 
-      str x.dir 
-      ) ) ;
+          str x.dir 
+        ) ) ;
       "generated" ,
-      arr @@ Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
-      Ext_list.flat_map_append x.generators acc
-      (fun x -> 
-        Ext_list.map x.output str)   
-      )  
-      ]
-     ) in 
+      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
+          Ext_list.flat_map_append x.generators acc
+            (fun x -> 
+               Ext_list.map x.output str)   
+        ));        
+        "pkgs", arr 
+          (Array.of_list
+            (Bsb_pkg.to_list (fun pkg path ->
+              arr [|
+                str (Bsb_pkg_types.to_string pkg);
+                str path
+                |]
+              ))
+          )
+    ]
+  in 
+  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   Ext_json_noloc.to_channel ochan v ;
   close_out ochan
 end

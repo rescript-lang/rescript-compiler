@@ -65,8 +65,14 @@ module Coll = Hashtbl_make.Make(struct
   let equal = Bsb_pkg_types.equal
   let hash (x : t) = Hashtbl.hash x     
 end)
+
+
 let cache : string Coll.t = Coll.create 0
 
+
+let to_list cb  =   
+  Coll.to_list cache  cb 
+  
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   match Coll.find_opt cache package with

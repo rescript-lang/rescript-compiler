@@ -38,3 +38,8 @@ val resolve_bs_package :
     cwd:string ->  Bsb_pkg_types.t -> string 
 
 
+val to_list:    
+  (Bsb_pkg_types.t  ->
+   string ->
+   'a
+  ) -> 'a list

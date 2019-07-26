@@ -44,6 +44,7 @@ module type S = sig
   val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val length: 'a t -> int
   val stats: 'a t -> Hashtbl.statistics
+  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
   val of_list2: key list -> 'a list -> 'a t
 end
 
@@ -112,6 +113,20 @@ let iter h f =
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
   done
+
+let to_list h f =
+  let rec do_bucket bucket acc =
+    match bucket with 
+    | Empty ->
+      acc
+    | Cons(k, d, rest) ->
+      do_bucket rest (f k d :: acc) in
+  let d = h.data in
+  let acc = ref [] in
+  for i = 0 to Array.length d - 1 do
+    acc := do_bucket (Array.unsafe_get d i) !acc
+  done;
+  !acc
 
 let fold f h init =
   let rec do_bucket b accu =
