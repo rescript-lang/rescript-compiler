@@ -2,6 +2,6 @@
 var assert = require('assert')
 var path = require('path')
 var p = require('child_process')
-p.execSync(`bsb -make-world`, {cwd:__dirname,shell:true,encoding:'utf8',stdio:"inherit"})
+p.execSync(`bsb -version; bsb -make-world`, { cwd: __dirname, shell: true, encoding: 'utf8', stdio: "inherit" })
 var u = require("./examples/test.js")
-assert.equal(path.basename(u.v),'demo.mldemo.ml')
+assert.equal(path.basename(u.v), 'demo.mldemo.ml')
