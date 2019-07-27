@@ -43,6 +43,7 @@ let bs_version_string = Bs_version.version
 
 let print_version_string () = 
   print_string bs_version_string;
+  print_endline "Flurfenderf";
   print_newline (); 
   exit 0 
 
