@@ -35,7 +35,7 @@ let make_sub_path (x : t) : string =
   Literals.node_modules // Bsb_pkg_types.to_string x
 
 let node_path_delimiter =
-  if Sys.os_type = "Win32" then
+  if Sys.win32 then
     ';'
   else
     ':'
