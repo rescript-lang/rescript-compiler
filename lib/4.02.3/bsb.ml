@@ -5214,33 +5214,49 @@ type t = Bsb_pkg_types.t
   when resolving [ppx-flags]
 *)
 let make_sub_path (x : t) : string = 
-   Literals.node_modules // Bsb_pkg_types.to_string x 
-  
+  Literals.node_modules // Bsb_pkg_types.to_string x
+
+let node_path_delimiter =
+  if Sys.win32 then
+    ';'
+  else
+    ':'
 
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure
 *)
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
+  (* First try to resolve recursively from the current working directory  *)
   let sub_path = make_sub_path pkg   in
   let rec aux  cwd  =
-    let abs_marker =  cwd //  sub_path in
-    if Sys.file_exists abs_marker then abs_marker
+    let abs_marker =  cwd // sub_path in
+    if Sys.file_exists abs_marker then Some(abs_marker)
     else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length another_cwd < String.length cwd then
-        aux    another_cwd
-      else (* To the end try other possiblilities *)
-        begin match Sys.getenv "npm_config_prefix"
-                    // "lib" // sub_path with
-        | abs_marker when Sys.file_exists abs_marker ->
-          abs_marker
-        | _ ->
-            Bsb_exception.package_not_found ~pkg ~json:None
-        | exception Not_found ->
-            Bsb_exception.package_not_found ~pkg ~json:None
-        end
+        aux another_cwd
+      else
+        None
   in
-  aux cwd
+  match aux cwd with
+  | Some(package_dir) -> package_dir
+  (* If the package can not be resolved then check if NODE_PATH is set and if set then search there*)
+  | None ->
+    let node_path =
+      match Sys.getenv "NODE_PATH" with
+      | node_path -> 
+        Ext_string.split node_path node_path_delimiter 
+      | exception Not_found ->
+        Bsb_exception.package_not_found ~pkg ~json:None
+    in
+    let check_dir dir =
+      match Sys.file_exists dir with
+      | true -> Some(dir)
+      | false -> None
+    in
+    match Ext_list.find_opt node_path (fun dir -> check_dir (dir // Bsb_pkg_types.to_string pkg))  with
+    | Some(resolved_dir) -> resolved_dir
+    | None -> Bsb_exception.package_not_found ~pkg ~json:None
 
 module Coll = Hashtbl_make.Make(struct
   type nonrec t = t 
