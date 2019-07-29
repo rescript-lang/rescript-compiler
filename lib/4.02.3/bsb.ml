@@ -5253,15 +5253,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
       if String.length another_cwd < String.length cwd then
         aux    another_cwd
       else (* To the end try other possiblilities *)
-        begin match Sys.getenv "npm_config_prefix"
-                    // "lib" // sub_path with
-        | abs_marker when Sys.file_exists abs_marker ->
-          abs_marker
-        | _ ->
-            Bsb_exception.package_not_found ~pkg ~json:None
-        | exception Not_found ->
-            Bsb_exception.package_not_found ~pkg ~json:None
-        end
+        Bsb_exception.package_not_found ~pkg ~json:None
   in
   aux cwd
 
