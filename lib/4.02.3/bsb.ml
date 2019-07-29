@@ -8737,7 +8737,7 @@ module Bsb_parse_sources : sig
     all relative paths, this function will do the IO
 *)
 val scan :
-  not_toplevel: bool -> 
+  toplevel: bool -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
@@ -9180,13 +9180,14 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~not_toplevel 
+  ~toplevel 
   ~root 
   ~cut_generators 
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
   x : t = 
+  let not_toplevel = toplevel in 
   parse_sources {
     ignored_dirs;
     not_toplevel;
@@ -10949,7 +10950,7 @@ let interpret_json
     cwd  
 
   : Bsb_config_types.t =
-  let not_toplevel = not toplevel in 
+
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
@@ -11013,7 +11014,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~not_toplevel
+            ~toplevel
             ~root: cwd
             ~cut_generators
             ~bs_suffix

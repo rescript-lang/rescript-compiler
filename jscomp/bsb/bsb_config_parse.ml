@@ -348,7 +348,7 @@ let interpret_json
     cwd  
 
   : Bsb_config_types.t =
-  let not_toplevel = not toplevel in 
+
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
@@ -412,7 +412,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~not_toplevel
+            ~toplevel
             ~root: cwd
             ~cut_generators
             ~bs_suffix

@@ -423,13 +423,14 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~not_toplevel 
+  ~toplevel 
   ~root 
   ~cut_generators 
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
   x : t = 
+  let not_toplevel = toplevel in 
   parse_sources {
     ignored_dirs;
     not_toplevel;
