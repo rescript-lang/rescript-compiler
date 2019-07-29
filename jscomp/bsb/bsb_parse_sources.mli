@@ -30,7 +30,7 @@
     all relative paths, this function will do the IO
 *)
 val scan :
-  not_dev: bool -> 
+  not_toplevel: bool -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 

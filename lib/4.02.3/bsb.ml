@@ -8737,7 +8737,7 @@ module Bsb_parse_sources : sig
     all relative paths, this function will do the IO
 *)
 val scan :
-  not_dev: bool -> 
+  not_toplevel: bool -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
@@ -8803,7 +8803,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  not_dev : bool ;
+  not_toplevel : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -8932,7 +8932,7 @@ let extract_generators
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
-    assume [not_dev && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    assume [not_toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
     is already checked, so we don't need check it again    
 *)
 let try_unlink s = 
@@ -9031,7 +9031,7 @@ let rec
     let cur_globbed_dirs = ref [] in 
     let cur_sources = ref String_map.empty in   
     let generators = 
-      extract_generators input (cxt.cut_generators || cxt.not_dev) dir 
+      extract_generators input (cxt.cut_generators || cxt.not_toplevel) dir 
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
@@ -9131,11 +9131,11 @@ let rec
     }  children
 
 
-and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({not_toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not_toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -9149,7 +9149,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+    if not_toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -9180,7 +9180,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~not_dev 
+  ~not_toplevel 
   ~root 
   ~cut_generators 
   ~namespace 
@@ -9189,7 +9189,7 @@ let scan
   x : t = 
   parse_sources {
     ignored_dirs;
-    not_dev;
+    not_toplevel;
     dir_index = Bsb_dir_index.lib_dir_index;
     cwd = Filename.current_dir_name;
     root ;
@@ -10622,7 +10622,7 @@ val package_specs_from_bsconfig :
 val interpret_json : 
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    not_dev:bool -> 
+    not_toplevel:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -10945,7 +10945,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~not_dev 
+    ~not_toplevel 
     cwd  
 
   : Bsb_config_types.t =
@@ -10992,7 +10992,7 @@ let interpret_json
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
     let bs_dev_dependencies = 
-      if not not_dev then 
+      if not not_toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
@@ -11013,7 +11013,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~not_dev
+            ~not_toplevel
             ~root: cwd
             ~cut_generators
             ~bs_suffix
@@ -13263,11 +13263,10 @@ module Bsb_ninja_gen : sig
 (** 
   generate ninja file based on [cwd] and [bsc_dir]
 *)
-val 
-  output_ninja_and_namespace_map :
+val output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
-  not_dev:bool -> 
+  not_toplevel:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -13332,11 +13331,11 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool)     
+    (not_toplevel : bool)     
     (bsc_flags : string list)
   : string =       
   String.concat Ext_string.single_space 
-    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+    (if not_toplevel then "-bs-quiet" :: bsc_flags else bsc_flags)
 
 
 let emit_bsc_lib_includes 
@@ -13373,7 +13372,7 @@ let emit_bsc_lib_includes
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~not_dev           
+    ~not_toplevel           
     ({
       bs_suffix;
       package_name;
@@ -13449,8 +13448,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_toplevel warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
@@ -13899,7 +13898,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  not_dev:bool ->
+  not_toplevel:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
   string -> 
@@ -13942,11 +13941,11 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~not_dev 
+    ~not_toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
-  let generate_watch_metadata = not not_dev in 
+  let generate_watch_metadata = not not_toplevel in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -13972,7 +13971,7 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~not_dev
+        ~not_toplevel
         cwd in 
     if generate_watch_metadata then       
       Bsb_watcher_gen.generate_sourcedirs_meta
@@ -13982,7 +13981,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_dev config ;             
+      ~cwd ~bsc_dir ~not_toplevel config ;             
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 
@@ -14067,7 +14066,7 @@ let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t
 
 let query_current_package_sources cwd bsc_dir = 
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~not_dev:false
+      ~not_toplevel:false
       ~override_package_specs:None
       ~forced:true  cwd bsc_dir in 
     match config_opt with   
@@ -16946,7 +16945,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
       if not top then
         begin 
           let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja ~not_dev:true
+            Bsb_ninja_regen.regenerate_ninja ~not_toplevel:true
               ~override_package_specs:(Some deps) 
               ~forced:true
               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
@@ -17134,7 +17133,7 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~override_package_specs:None ~not_dev:false 
+        ~override_package_specs:None ~not_toplevel:false 
         ~forced:false 
         cwd bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
@@ -17165,7 +17164,7 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~override_package_specs:None 
-                     ~not_dev:false 
+                     ~not_toplevel:false 
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
@@ -17188,7 +17187,7 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~override_package_specs:None 
-                ~not_dev:false cwd bsc_dir 
+                ~not_toplevel:false cwd bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

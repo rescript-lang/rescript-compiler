@@ -344,7 +344,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~not_dev 
+    ~not_toplevel 
     cwd  
 
   : Bsb_config_types.t =
@@ -391,7 +391,7 @@ let interpret_json
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
     let bs_dev_dependencies = 
-      if not not_dev then 
+      if not not_toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
@@ -412,7 +412,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~not_dev
+            ~not_toplevel
             ~root: cwd
             ~cut_generators
             ~bs_suffix

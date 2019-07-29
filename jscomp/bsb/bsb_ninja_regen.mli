@@ -30,7 +30,7 @@
     otherwise return Some info
 *)
 val regenerate_ninja :
-  not_dev:bool ->
+  not_toplevel:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
   string -> 
