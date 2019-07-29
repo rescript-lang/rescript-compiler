@@ -10910,16 +10910,15 @@ let extract_generators (map : json_map) =
   
 
 let extract_dependencies (map : json_map) cwd (field : string )
-  : Bsb_config_types.dependencies = 
-  let deps = ref [] in 
-  (match String_map.find_opt map field with 
-  | None -> ()
+  : Bsb_config_types.dependencies =   
+  match String_map.find_opt map field with 
+  | None -> []
   | Some (Arr ({content = s})) -> 
-    deps :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
+    Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
   | Some config -> 
     Bsb_exception.config_error config 
-      (field ^ " expect an array"));
-  !deps    
+      (field ^ " expect an array")
+  
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
