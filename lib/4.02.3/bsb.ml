@@ -8803,7 +8803,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  not_toplevel : bool ;
+  toplevel : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -9031,7 +9031,7 @@ let rec
     let cur_globbed_dirs = ref [] in 
     let cur_sources = ref String_map.empty in   
     let generators = 
-      extract_generators input (cxt.cut_generators || cxt.not_toplevel) dir 
+      extract_generators input (cxt.cut_generators || not cxt.toplevel) dir 
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
@@ -9131,11 +9131,11 @@ let rec
     }  children
 
 
-and parsing_single_source ({not_toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not_toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -9149,7 +9149,7 @@ and parsing_single_source ({not_toplevel; dir_index ; cwd} as cxt ) (x : Ext_jso
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not_toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -9187,10 +9187,9 @@ let scan
   ~bs_suffix 
   ~ignored_dirs
   x : t = 
-  let not_toplevel = toplevel in 
   parse_sources {
     ignored_dirs;
-    not_toplevel;
+    toplevel;
     dir_index = Bsb_dir_index.lib_dir_index;
     cwd = Filename.current_dir_name;
     root ;
