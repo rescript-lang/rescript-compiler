@@ -114,6 +114,7 @@ function main() {
     console.log("BSBDIR:",  bsbDir)
 
     if (themeTest) {
+        console.log('Doing theme tests')
         var themeOutput = cp.execSync(`bsb -themes`,{encoding : 'ascii'}) 
         var themes = themeOutput.split('\n').slice(1).map(x=>x.trim()).filter(x=>x)        
         var themesDir = path.join(__dirname,'..','themes') 
