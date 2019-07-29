@@ -10919,6 +10919,31 @@ let extract_dependencies (map : json_map) cwd (field : string )
     Bsb_exception.config_error config 
       (field ^ " expect an array")
   
+(* return an empty array if not found *)     
+let extract_string_list_acc (map : json_map) (field : string) (acc : string list): string list = 
+  match String_map.find_opt map field with 
+  | None -> acc
+  | Some (Arr {content = s}) -> 
+    Bsb_build_util.get_list_string_acc s acc
+  | Some config ->   
+    Bsb_exception.config_error config (field ^ " expect an array")
+
+let extract_string_list map field = extract_string_list_acc map field []    
+
+let extract_js_post_build (map : json_map) cwd : string option = 
+  let js_post_build_cmd = ref None in 
+  map    
+  |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+      m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
+          js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
+
+        )
+        )
+      |> ignore
+    end)
+
+  |> ignore ;
+  !js_post_build_cmd
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
@@ -10930,16 +10955,12 @@ let interpret_json
 
   : Bsb_config_types.t =
   
-  let config_json = cwd // Literals.bsconfig_json in
-  let refmt_flags = ref Bsb_default.refmt_flags in
-  let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
-  let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_files : string list ref = ref [] in 
-  let ppx_checked_files : string list ref = ref [] in 
-  let js_post_build_cmd = ref None in 
+  
+  
+ 
   
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
@@ -10951,7 +10972,7 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match  Ext_json_parse.parse_json_from_file config_json with
+  match  Ext_json_parse.parse_json_from_file (cwd // Literals.bsconfig_json) with
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
@@ -10979,35 +11000,18 @@ let interpret_json
       if not not_dev then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
-    map    
-    |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-        m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
-
-          )
-          )
-        |> ignore
-      end)
-    
-    (* More design *)
-    |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
-    |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
-    |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        let args = get_list_string s in 
-        let a,b = Ext_list.map_split_opt  args (fun p ->
-            if p = "" then failwith "invalid ppx, empty string found"
+    let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
+    let ppx_files, ppx_checked_files = 
+      Ext_list.map_split_opt  args (fun p ->
+            if p = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
             else 
               let result = 
                 Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
               in 
               let some_file = Some result.path in 
               some_file, if result.checked then some_file else None
-          ) in 
-        ppx_files := a ;  
-        ppx_checked_files := b    
-      ))
-    |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
-    |> ignore ;
+          )
+    in   
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
@@ -11026,10 +11030,10 @@ let interpret_json
           package_name ;
           namespace ;    
           warning = extract_warning map;
-          external_includes = !bs_external_includes;
-          bsc_flags = !bsc_flags ;
-          ppx_files = !ppx_files ;
-          ppx_checked_files = !ppx_checked_files;
+          external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
+          bsc_flags = extract_string_list_acc map Bsb_build_schemas.bsc_flags Bsb_default.bsc_flags;
+          ppx_files ;
+          ppx_checked_files ;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
@@ -11043,8 +11047,11 @@ let interpret_json
              ]}
           *)          
           refmt;
-          refmt_flags = !refmt_flags ;
-          js_post_build_cmd =  !js_post_build_cmd ;
+          refmt_flags = 
+            (let flags = 
+               extract_string_list map Bsb_build_schemas.refmt_flags in 
+             if flags = [] then Bsb_default.refmt_flags else flags)  ;
+          js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
             (match override_package_specs with 
              | None ->  package_specs
