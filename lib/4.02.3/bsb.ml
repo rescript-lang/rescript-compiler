@@ -10708,18 +10708,21 @@ let package_specs_from_bsconfig () =
 
 
 let extract_package_name_and_namespace
-    loc (map : Ext_json_types.t String_map.t) : string * string option =   
+    (map : json_map) : string * string option =   
   let package_name = 
     match String_map.find_opt map Bsb_build_schemas.name with 
 
-    | Some (Str { str = "_" })
+    | Some (Str { str = "_" } as config)
       -> 
-      Bsb_exception.errorf ~loc "_ is a reserved package name"
+      Bsb_exception.config_error config "_ is a reserved package name"
     | Some (Str {str = name }) -> 
       name 
-    | Some _ | None -> 
-      Bsb_exception.errorf ~loc
-        "field name  as string is required"
+    | Some config -> 
+      Bsb_exception.config_error config 
+        "name expect a string field"  
+    | None -> 
+      Bsb_exception.invalid_spec
+        "field name is required"
   in 
   let namespace = 
     match String_map.find_opt map Bsb_build_schemas.namespace with 
@@ -10732,7 +10735,7 @@ let extract_package_name_and_namespace
       (*TODO : check the validity of namespace *)
       Some (Ext_namespace.namespace_of_package_name str)        
     | Some x ->
-      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+      Bsb_exception.config_error x 
       "namespace field expects string or boolean"
   in 
   package_name, namespace
@@ -10883,6 +10886,30 @@ let extract_ignored_dirs (map : json_map) =
   | Some config -> 
     Bsb_exception.config_error config "expect an array of string"  
 
+let extract_generators (map : json_map) = 
+  let generators = ref String_map.empty in 
+  (match String_map.find_opt map Bsb_build_schemas.generators with 
+   | None -> ()
+   | Some (Arr {content = s}) -> 
+     generators :=
+       Ext_array.fold_left s String_map.empty (fun acc json -> 
+           match json with 
+           | Obj {map = m ; loc}  -> 
+             begin match String_map.find_opt  m Bsb_build_schemas.name,
+                         String_map.find_opt  m Bsb_build_schemas.command with 
+             | Some (Str {str = name}), Some ( Str {str = command}) -> 
+               String_map.add acc name command 
+             | _, _ -> 
+               Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+             end
+           | _ -> acc )
+   | Some config ->
+     Bsb_exception.config_error config (Bsb_build_schemas.generators ^ " expect an array field")       
+  );
+  !generators
+  
+
+
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
@@ -10905,7 +10932,7 @@ let interpret_json
   let js_post_build_cmd = ref None in 
   
   
-  let generators = ref String_map.empty in 
+  
 
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
@@ -10918,13 +10945,10 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let global_data = 
-    Ext_json_parse.parse_json_from_file config_json 
-  in
-  match global_data with
-  | Obj { map ; loc } ->
+  match  Ext_json_parse.parse_json_from_file config_json with
+  | Obj { map } ->
     let package_name, namespace = 
-      extract_package_name_and_namespace loc  map in 
+      extract_package_name_and_namespace  map in 
     let refmt = extract_refmt map cwd in 
     let gentype_config  = extract_gentype_config map cwd in  
     let bs_suffix = extract_bs_suffix_exn map in   
@@ -10938,7 +10962,8 @@ let interpret_json
     in
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
-        if p = "" then failwith "invalid pp, empty string found"
+        if p = "" then 
+          Bsb_exception.invalid_spec "invalid pp, empty string found"
         else 
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
@@ -10978,19 +11003,6 @@ let interpret_json
         ppx_files := a ;  
         ppx_checked_files := b    
       ))
-    |? (Bsb_build_schemas.generators, `Arr (fun s ->
-        generators :=
-          Ext_array.fold_left s String_map.empty (fun acc json -> 
-              match json with 
-              | Obj {map = m ; loc}  -> 
-                begin match String_map.find_opt  m Bsb_build_schemas.name,
-                            String_map.find_opt  m Bsb_build_schemas.command with 
-                | Some (Str {str = name}), Some ( Str {str = command}) -> 
-                  String_map.add acc name command 
-                | _, _ -> 
-                  Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
-                end
-              | _ -> acc ) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
@@ -11041,13 +11053,16 @@ let interpret_json
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
           entries = extract_main_entries map;
-          generators = !generators ; 
+          generators = extract_generators map ; 
           cut_generators ;
              
         }
-      | None -> failwith "no sources specified, please checkout the schema for more details"
+      | None -> 
+          Bsb_exception.invalid_spec
+            "no sources specified in bsconfig.json"
     end
-  | _ -> failwith "bsconfig.json expect a json object {}"
+  | _ -> 
+    Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
 end
 module Ext_io : sig 
