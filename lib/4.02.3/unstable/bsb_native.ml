@@ -13298,7 +13298,7 @@ module Bsb_ninja_gen : sig
 val output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
-  not_toplevel:bool -> 
+  toplevel:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -13404,7 +13404,7 @@ let emit_bsc_lib_includes
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~not_toplevel           
+    ~toplevel           
     ({
       bs_suffix;
       package_name;
@@ -13430,7 +13430,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  
+  let not_toplevel = not toplevel in
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
@@ -14014,7 +14014,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_toplevel config ;             
+      ~cwd ~bsc_dir ~toplevel config ;             
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 

@@ -99,7 +99,7 @@ let emit_bsc_lib_includes
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~not_toplevel           
+    ~toplevel           
     ({
       bs_suffix;
       package_name;
@@ -125,7 +125,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  
+  let not_toplevel = not toplevel in
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
