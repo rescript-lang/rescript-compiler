@@ -10540,7 +10540,7 @@ module Bsb_default : sig
 
 
 
-val bsc_flags : string list 
+
 
 val refmt_flags : string list  
 
@@ -10577,11 +10577,6 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* for default warning flags, please see bsb_warning.ml *)
-let bsc_flags =
-  [
-    "-color"; "always"
-  ] 
 
 
 let refmt_flags = ["--print"; "binary"]
@@ -10920,15 +10915,15 @@ let extract_dependencies (map : json_map) cwd (field : string )
       (field ^ " expect an array")
   
 (* return an empty array if not found *)     
-let extract_string_list_acc (map : json_map) (field : string) (acc : string list): string list = 
+let extract_string_list (map : json_map) (field : string) : string list = 
   match String_map.find_opt map field with 
-  | None -> acc
+  | None -> []
   | Some (Arr {content = s}) -> 
-    Bsb_build_util.get_list_string_acc s acc
+    Bsb_build_util.get_list_string s 
   | Some config ->   
     Bsb_exception.config_error config (field ^ " expect an array")
 
-let extract_string_list map field = extract_string_list_acc map field []    
+
 
 let extract_js_post_build (map : json_map) cwd : string option = 
   let js_post_build_cmd = ref None in 
@@ -11031,7 +11026,7 @@ let interpret_json
           namespace ;    
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
-          bsc_flags = extract_string_list_acc map Bsb_build_schemas.bsc_flags Bsb_default.bsc_flags;
+          bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
           ppx_files ;
           ppx_checked_files ;
           pp_file = pp_flags ;          
@@ -12512,7 +12507,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg";
+    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if is_re then 
@@ -12536,7 +12531,7 @@ let make_custom_rules
   in   
   let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx  ~explicit : string =
     Buffer.clear buf ; 
-    Buffer.add_string buf "$bsc  $warnings";
+    Buffer.add_string buf "$bsc  $warnings -color always";
     (match has_pp with 
       | `regular -> Buffer.add_string buf " $pp_flags"
       | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
@@ -12633,7 +12628,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only -c $in"
       ~restat:()
       "build_package"
   in 

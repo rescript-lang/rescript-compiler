@@ -129,7 +129,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg";
+    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if is_re then 
@@ -153,7 +153,7 @@ let make_custom_rules
   in   
   let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx  ~explicit : string =
     Buffer.clear buf ; 
-    Buffer.add_string buf "$bsc  $warnings";
+    Buffer.add_string buf "$bsc  $warnings -color always";
     (match has_pp with 
       | `regular -> Buffer.add_string buf " $pp_flags"
       | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
@@ -250,7 +250,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only -c $in"
       ~restat:()
       "build_package"
   in 

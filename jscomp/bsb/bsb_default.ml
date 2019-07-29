@@ -23,11 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* for default warning flags, please see bsb_warning.ml *)
-let bsc_flags =
-  [
-    "-color"; "always"
-  ] 
 
 
 let refmt_flags = ["--print"; "binary"]

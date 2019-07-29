@@ -314,15 +314,15 @@ let extract_dependencies (map : json_map) cwd (field : string )
       (field ^ " expect an array")
   
 (* return an empty array if not found *)     
-let extract_string_list_acc (map : json_map) (field : string) (acc : string list): string list = 
+let extract_string_list (map : json_map) (field : string) : string list = 
   match String_map.find_opt map field with 
-  | None -> acc
+  | None -> []
   | Some (Arr {content = s}) -> 
-    Bsb_build_util.get_list_string_acc s acc
+    Bsb_build_util.get_list_string s 
   | Some config ->   
     Bsb_exception.config_error config (field ^ " expect an array")
 
-let extract_string_list map field = extract_string_list_acc map field []    
+
 
 let extract_js_post_build (map : json_map) cwd : string option = 
   let js_post_build_cmd = ref None in 
@@ -425,7 +425,7 @@ let interpret_json
           namespace ;    
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
-          bsc_flags = extract_string_list_acc map Bsb_build_schemas.bsc_flags Bsb_default.bsc_flags;
+          bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
           ppx_files ;
           ppx_checked_files ;
           pp_file = pp_flags ;          
