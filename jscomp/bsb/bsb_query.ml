@@ -42,7 +42,6 @@ let query_current_package_sources cwd bsc_dir =
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
       ~not_dev:false
       ~override_package_specs:None
-      ~generate_watch_metadata:true
       ~forced:true  cwd bsc_dir in 
     match config_opt with   
     | None -> None

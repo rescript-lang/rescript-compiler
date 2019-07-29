@@ -35,9 +35,9 @@ let (//) = Ext_path.combine
 let regenerate_ninja 
     ~not_dev 
     ~(override_package_specs : Bsb_package_specs.t option)
-    ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
+  let generate_watch_metadata = not not_dev in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =

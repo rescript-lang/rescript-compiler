@@ -13933,8 +13933,9 @@ module Bsb_ninja_regen : sig
 val regenerate_ninja :
   not_dev:bool ->
   override_package_specs:Bsb_package_specs.t option ->
-  generate_watch_metadata: bool -> 
-  forced: bool -> string -> string -> 
+  forced: bool -> 
+  string -> 
+  string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -13975,9 +13976,9 @@ let (//) = Ext_path.combine
 let regenerate_ninja 
     ~not_dev 
     ~(override_package_specs : Bsb_package_specs.t option)
-    ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
+  let generate_watch_metadata = not not_dev in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -14100,7 +14101,6 @@ let query_current_package_sources cwd bsc_dir =
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
       ~not_dev:false
       ~override_package_specs:None
-      ~generate_watch_metadata:true
       ~forced:true  cwd bsc_dir in 
     match config_opt with   
     | None -> None
@@ -16977,8 +16977,8 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
       if not top then
         begin 
-          let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
-              ~generate_watch_metadata:false
+          let config_opt = 
+            Bsb_ninja_regen.regenerate_ninja ~not_dev:true
               ~override_package_specs:(Some deps) 
               ~forced:true
               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
@@ -17165,8 +17165,8 @@ let () =
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-      Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
-        ~generate_watch_metadata:true
+      Bsb_ninja_regen.regenerate_ninja 
+        ~override_package_specs:None ~not_dev:false 
         ~forced:false 
         cwd bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
@@ -17196,7 +17196,6 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~generate_watch_metadata:true 
                      ~override_package_specs:None 
                      ~not_dev:false 
                      ~forced:force_regenerate cwd bsc_dir  in
@@ -17218,8 +17217,8 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja 
-                ~generate_watch_metadata:true 
+            let config_opt = 
+              Bsb_ninja_regen.regenerate_ninja 
                 ~override_package_specs:None 
                 ~not_dev:false cwd bsc_dir 
                 ~forced:!force_regenerate in
