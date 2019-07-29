@@ -10941,6 +10941,17 @@ let extract_generators (map : json_map) =
   !generators
   
 
+let extract_dependencies (map : json_map) cwd (field : string )
+  : Bsb_config_types.dependencies = 
+  let deps = ref [] in 
+  (match String_map.find_opt map field with 
+  | None -> ()
+  | Some (Arr ({content = s})) -> 
+    deps :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
+  | Some config -> 
+    Bsb_exception.config_error config 
+      (field ^ " expect an array"));
+  !deps    
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
@@ -10963,16 +10974,12 @@ let interpret_json
   let ppx_checked_files : string list ref = ref [] in 
   let js_post_build_cmd = ref None in 
   
-  
-  
-
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
      Make sure it works with [-make-world] [-clean-world]
   *)
-  let bs_dependencies = ref [] in 
-  let bs_dev_dependencies = ref [] in
+  
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
@@ -11000,6 +11007,11 @@ let interpret_json
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
+    let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let bs_dev_dependencies = 
+      if not not_dev then 
+        extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
+      else [] in 
     map    
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
@@ -11009,15 +11021,7 @@ let interpret_json
           )
         |> ignore
       end)
-
-    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))))
-    |? (Bsb_build_schemas.bs_dev_dependencies,
-        `Arr (fun s ->
-            if not  not_dev then 
-              bs_dev_dependencies
-              :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s)))
-       )
-
+    
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
@@ -11060,8 +11064,8 @@ let interpret_json
           ppx_files = !ppx_files ;
           ppx_checked_files = !ppx_checked_files;
           pp_file = pp_flags ;          
-          bs_dependencies = !bs_dependencies;
-          bs_dev_dependencies = !bs_dev_dependencies;
+          bs_dependencies ;
+          bs_dev_dependencies ;
           (*
             reference for quoting
              {[
