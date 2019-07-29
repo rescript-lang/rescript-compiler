@@ -175,7 +175,7 @@ let extract_generators
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
-    assume [not_toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    assume [not toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
     is already checked, so we don't need check it again    
 *)
 let try_unlink s = 

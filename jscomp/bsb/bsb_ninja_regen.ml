@@ -36,9 +36,8 @@ let regenerate_ninja
     ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
     ~forced cwd bsc_dir
-  : Bsb_config_types.t option =
-  let not_toplevel = not toplevel in 
-  let generate_watch_metadata = not not_toplevel in 
+  : Bsb_config_types.t option =  
+
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -66,7 +65,7 @@ let regenerate_ninja
         ~bsc_dir
         ~toplevel
         cwd in 
-    if generate_watch_metadata then       
+    if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups

@@ -8932,7 +8932,7 @@ let extract_generators
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
-    assume [not_toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    assume [not toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
     is already checked, so we don't need check it again    
 *)
 let try_unlink s = 
@@ -9999,7 +9999,7 @@ val from_map : Ext_json_types.t String_map.t -> t option
 (** [opt_warning_to_string not_dev warning]
 *)
 val opt_warning_to_string : 
-  not_toplevel:bool -> 
+  toplevel:bool -> 
   t option -> 
   string
 
@@ -10073,7 +10073,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string ~not_toplevel
+let warning_to_string ~toplevel
     warning : string =
   default_warning_flag  ^
   (match warning.number with
@@ -10088,8 +10088,7 @@ let warning_to_string ~not_toplevel
       | '0' .. '9' -> "+" ^ content
       | _ -> content
     ) ^
-  if not_toplevel then Ext_string.empty
-  else
+  if toplevel then 
     match warning.error with
     | Warn_error_true ->
       warn_error
@@ -10098,6 +10097,7 @@ let warning_to_string ~not_toplevel
       " -warn-error " ^ y
     | Warn_error_false ->
       Ext_string.empty
+ else Ext_string.empty     
 
 
 
@@ -10125,10 +10125,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string ~not_toplevel warning =
+let opt_warning_to_string ~toplevel warning =
   match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string ~not_toplevel w
+  | Some w -> warning_to_string ~toplevel w
 
 
 end
@@ -13433,7 +13433,6 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  let not_toplevel = not toplevel in
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
@@ -13483,7 +13482,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~not_toplevel warning ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
@@ -13979,9 +13978,8 @@ let regenerate_ninja
     ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
     ~forced cwd bsc_dir
-  : Bsb_config_types.t option =
-  let not_toplevel = not toplevel in 
-  let generate_watch_metadata = not not_toplevel in 
+  : Bsb_config_types.t option =  
+
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -14009,7 +14007,7 @@ let regenerate_ninja
         ~bsc_dir
         ~toplevel
         cwd in 
-    if generate_watch_metadata then       
+    if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
