@@ -10622,7 +10622,7 @@ val package_specs_from_bsconfig :
 val interpret_json : 
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    not_toplevel:bool -> 
+    toplevel:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -10945,11 +10945,11 @@ let extract_js_post_build (map : json_map) cwd : string option =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~not_toplevel 
+    ~toplevel 
     cwd  
 
   : Bsb_config_types.t =
-  
+  let not_toplevel = not toplevel in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
@@ -10992,7 +10992,7 @@ let interpret_json
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
     let bs_dev_dependencies = 
-      if not not_toplevel then 
+      if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
@@ -13898,7 +13898,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  not_toplevel:bool ->
+  toplevel:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
   string -> 
@@ -13941,10 +13941,11 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~not_toplevel 
+    ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
+  let not_toplevel = not toplevel in 
   let generate_watch_metadata = not not_toplevel in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
@@ -13971,7 +13972,7 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~not_toplevel
+        ~toplevel
         cwd in 
     if generate_watch_metadata then       
       Bsb_watcher_gen.generate_sourcedirs_meta
@@ -14066,7 +14067,7 @@ let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t
 
 let query_current_package_sources cwd bsc_dir = 
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~not_toplevel:false
+      ~toplevel:true
       ~override_package_specs:None
       ~forced:true  cwd bsc_dir in 
     match config_opt with   
@@ -16945,7 +16946,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
       if not top then
         begin 
           let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja ~not_toplevel:true
+            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
               ~override_package_specs:(Some deps) 
               ~forced:true
               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
@@ -17133,7 +17134,7 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~override_package_specs:None ~not_toplevel:false 
+        ~override_package_specs:None ~toplevel:true
         ~forced:false 
         cwd bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
@@ -17164,7 +17165,7 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~override_package_specs:None 
-                     ~not_toplevel:false 
+                     ~toplevel:true
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
@@ -17187,7 +17188,7 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~override_package_specs:None 
-                ~not_toplevel:false cwd bsc_dir 
+                ~toplevel:true cwd bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

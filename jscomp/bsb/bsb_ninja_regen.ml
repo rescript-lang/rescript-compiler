@@ -33,10 +33,11 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~not_toplevel 
+    ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
     ~forced cwd bsc_dir
   : Bsb_config_types.t option =
+  let not_toplevel = not toplevel in 
   let generate_watch_metadata = not not_toplevel in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
@@ -63,7 +64,7 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~not_toplevel
+        ~toplevel
         cwd in 
     if generate_watch_metadata then       
       Bsb_watcher_gen.generate_sourcedirs_meta

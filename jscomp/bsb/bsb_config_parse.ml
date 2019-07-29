@@ -344,11 +344,11 @@ let extract_js_post_build (map : json_map) cwd : string option =
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~not_toplevel 
+    ~toplevel 
     cwd  
 
   : Bsb_config_types.t =
-  
+  let not_toplevel = not toplevel in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
@@ -391,7 +391,7 @@ let interpret_json
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
     let bs_dev_dependencies = 
-      if not not_toplevel then 
+      if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
