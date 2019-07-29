@@ -8737,7 +8737,7 @@ module Bsb_parse_sources : sig
     all relative paths, this function will do the IO
 *)
 val scan :
-  not_dev: bool -> 
+  toplevel: bool -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
@@ -8803,7 +8803,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  not_dev : bool ;
+  toplevel : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -8932,7 +8932,7 @@ let extract_generators
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
-    assume [not_dev && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    assume [not toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
     is already checked, so we don't need check it again    
 *)
 let try_unlink s = 
@@ -9031,7 +9031,7 @@ let rec
     let cur_globbed_dirs = ref [] in 
     let cur_sources = ref String_map.empty in   
     let generators = 
-      extract_generators input (cxt.cut_generators || cxt.not_dev) dir 
+      extract_generators input (cxt.cut_generators || not cxt.toplevel) dir 
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
@@ -9131,11 +9131,11 @@ let rec
     }  children
 
 
-and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -9149,7 +9149,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -9180,7 +9180,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~not_dev 
+  ~toplevel 
   ~root 
   ~cut_generators 
   ~namespace 
@@ -9189,7 +9189,7 @@ let scan
   x : t = 
   parse_sources {
     ignored_dirs;
-    not_dev;
+    toplevel;
     dir_index = Bsb_dir_index.lib_dir_index;
     cwd = Filename.current_dir_name;
     root ;
@@ -9998,7 +9998,10 @@ val from_map : Ext_json_types.t String_map.t -> t option
 
 (** [opt_warning_to_string not_dev warning]
 *)
-val opt_warning_to_string : bool -> t option -> string
+val opt_warning_to_string : 
+  toplevel:bool -> 
+  t option -> 
+  string
 
 
 end = struct
@@ -10070,7 +10073,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string not_dev
+let warning_to_string ~toplevel
     warning : string =
   default_warning_flag  ^
   (match warning.number with
@@ -10085,8 +10088,7 @@ let warning_to_string not_dev
       | '0' .. '9' -> "+" ^ content
       | _ -> content
     ) ^
-  if not_dev then Ext_string.empty
-  else
+  if toplevel then 
     match warning.error with
     | Warn_error_true ->
       warn_error
@@ -10095,6 +10097,7 @@ let warning_to_string not_dev
       " -warn-error " ^ y
     | Warn_error_false ->
       Ext_string.empty
+ else Ext_string.empty     
 
 
 
@@ -10122,10 +10125,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string not_dev warning =
+let opt_warning_to_string ~toplevel warning =
   match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string not_dev w
+  | Some w -> warning_to_string ~toplevel w
 
 
 end
@@ -10540,7 +10543,7 @@ module Bsb_default : sig
 
 
 
-val bsc_flags : string list 
+
 
 val refmt_flags : string list  
 
@@ -10577,11 +10580,6 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* for default warning flags, please see bsb_warning.ml *)
-let bsc_flags =
-  [
-    "-color"; "always"
-  ] 
 
 
 let refmt_flags = ["--print"; "binary"]
@@ -10627,7 +10625,7 @@ val package_specs_from_bsconfig :
 val interpret_json : 
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    not_dev:bool -> 
+    toplevel:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -10708,18 +10706,21 @@ let package_specs_from_bsconfig () =
 
 
 let extract_package_name_and_namespace
-    loc (map : Ext_json_types.t String_map.t) : string * string option =   
+    (map : json_map) : string * string option =   
   let package_name = 
     match String_map.find_opt map Bsb_build_schemas.name with 
 
-    | Some (Str { str = "_" })
+    | Some (Str { str = "_" } as config)
       -> 
-      Bsb_exception.errorf ~loc "_ is a reserved package name"
+      Bsb_exception.config_error config "_ is a reserved package name"
     | Some (Str {str = name }) -> 
       name 
-    | Some _ | None -> 
-      Bsb_exception.errorf ~loc
-        "field name  as string is required"
+    | Some config -> 
+      Bsb_exception.config_error config 
+        "name expect a string field"  
+    | None -> 
+      Bsb_exception.invalid_spec
+        "field name is required"
   in 
   let namespace = 
     match String_map.find_opt map Bsb_build_schemas.namespace with 
@@ -10732,7 +10733,7 @@ let extract_package_name_and_namespace
       (*TODO : check the validity of namespace *)
       Some (Ext_namespace.namespace_of_package_name str)        
     | Some x ->
-      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+      Bsb_exception.config_error x 
       "namespace field expects string or boolean"
   in 
   package_name, namespace
@@ -10883,48 +10884,96 @@ let extract_ignored_dirs (map : json_map) =
   | Some config -> 
     Bsb_exception.config_error config "expect an array of string"  
 
+let extract_generators (map : json_map) = 
+  let generators = ref String_map.empty in 
+  (match String_map.find_opt map Bsb_build_schemas.generators with 
+   | None -> ()
+   | Some (Arr {content = s}) -> 
+     generators :=
+       Ext_array.fold_left s String_map.empty (fun acc json -> 
+           match json with 
+           | Obj {map = m ; loc}  -> 
+             begin match String_map.find_opt  m Bsb_build_schemas.name,
+                         String_map.find_opt  m Bsb_build_schemas.command with 
+             | Some (Str {str = name}), Some ( Str {str = command}) -> 
+               String_map.add acc name command 
+             | _, _ -> 
+               Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+             end
+           | _ -> acc )
+   | Some config ->
+     Bsb_exception.config_error config (Bsb_build_schemas.generators ^ " expect an array field")       
+  );
+  !generators
+  
+
+let extract_dependencies (map : json_map) cwd (field : string )
+  : Bsb_config_types.dependencies =   
+  match String_map.find_opt map field with 
+  | None -> []
+  | Some (Arr ({content = s})) -> 
+    Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
+  | Some config -> 
+    Bsb_exception.config_error config 
+      (field ^ " expect an array")
+  
+(* return an empty array if not found *)     
+let extract_string_list (map : json_map) (field : string) : string list = 
+  match String_map.find_opt map field with 
+  | None -> []
+  | Some (Arr {content = s}) -> 
+    Bsb_build_util.get_list_string s 
+  | Some config ->   
+    Bsb_exception.config_error config (field ^ " expect an array")
+
+
+
+let extract_js_post_build (map : json_map) cwd : string option = 
+  let js_post_build_cmd = ref None in 
+  map    
+  |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+      m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
+          js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
+
+        )
+        )
+      |> ignore
+    end)
+
+  |> ignore ;
+  !js_post_build_cmd
+
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
-    ~not_dev 
+    ~toplevel 
     cwd  
 
   : Bsb_config_types.t =
-  
-  let config_json = cwd // Literals.bsconfig_json in
-  let refmt_flags = ref Bsb_default.refmt_flags in
-  let bs_external_includes = ref [] in 
+
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
-  let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_files : string list ref = ref [] in 
-  let ppx_checked_files : string list ref = ref [] in 
-  let js_post_build_cmd = ref None in 
   
   
-  let generators = ref String_map.empty in 
-
+ 
+  
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
      Make sure it works with [-make-world] [-clean-world]
   *)
-  let bs_dependencies = ref [] in 
-  let bs_dev_dependencies = ref [] in
+  
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let global_data = 
-    Ext_json_parse.parse_json_from_file config_json 
-  in
-  match global_data with
-  | Obj { map ; loc } ->
+  match  Ext_json_parse.parse_json_from_file (cwd // Literals.bsconfig_json) with
+  | Obj { map } ->
     let package_name, namespace = 
-      extract_package_name_and_namespace loc  map in 
+      extract_package_name_and_namespace  map in 
     let refmt = extract_refmt map cwd in 
     let gentype_config  = extract_gentype_config map cwd in  
     let bs_suffix = extract_bs_suffix_exn map in   
@@ -10938,68 +10987,36 @@ let interpret_json
     in
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
-        if p = "" then failwith "invalid pp, empty string found"
+        if p = "" then 
+          Bsb_exception.invalid_spec "invalid pp, empty string found"
         else 
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    map    
-    |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-        m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
-
-          )
-          )
-        |> ignore
-      end)
-
-    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))))
-    |? (Bsb_build_schemas.bs_dev_dependencies,
-        `Arr (fun s ->
-            if not  not_dev then 
-              bs_dev_dependencies
-              :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s)))
-       )
-
-    (* More design *)
-    |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
-    |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
-    |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        let args = get_list_string s in 
-        let a,b = Ext_list.map_split_opt  args (fun p ->
-            if p = "" then failwith "invalid ppx, empty string found"
+    let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let bs_dev_dependencies = 
+      if toplevel then 
+        extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
+      else [] in 
+    let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
+    let ppx_files, ppx_checked_files = 
+      Ext_list.map_split_opt  args (fun p ->
+            if p = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
             else 
               let result = 
                 Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
               in 
               let some_file = Some result.path in 
               some_file, if result.checked then some_file else None
-          ) in 
-        ppx_files := a ;  
-        ppx_checked_files := b    
-      ))
-    |? (Bsb_build_schemas.generators, `Arr (fun s ->
-        generators :=
-          Ext_array.fold_left s String_map.empty (fun acc json -> 
-              match json with 
-              | Obj {map = m ; loc}  -> 
-                begin match String_map.find_opt  m Bsb_build_schemas.name,
-                            String_map.find_opt  m Bsb_build_schemas.command with 
-                | Some (Str {str = name}), Some ( Str {str = command}) -> 
-                  String_map.add acc name command 
-                | _, _ -> 
-                  Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
-                end
-              | _ -> acc ) ))
-    |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
-    |> ignore ;
+          )
+    in   
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~not_dev
+            ~toplevel
             ~root: cwd
             ~cut_generators
             ~bs_suffix
@@ -11011,13 +11028,13 @@ let interpret_json
           package_name ;
           namespace ;    
           warning = extract_warning map;
-          external_includes = !bs_external_includes;
-          bsc_flags = !bsc_flags ;
-          ppx_files = !ppx_files ;
-          ppx_checked_files = !ppx_checked_files;
+          external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
+          bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
+          ppx_files ;
+          ppx_checked_files ;
           pp_file = pp_flags ;          
-          bs_dependencies = !bs_dependencies;
-          bs_dev_dependencies = !bs_dev_dependencies;
+          bs_dependencies ;
+          bs_dev_dependencies ;
           (*
             reference for quoting
              {[
@@ -11028,8 +11045,11 @@ let interpret_json
              ]}
           *)          
           refmt;
-          refmt_flags = !refmt_flags ;
-          js_post_build_cmd =  !js_post_build_cmd ;
+          refmt_flags = 
+            (let flags = 
+               extract_string_list map Bsb_build_schemas.refmt_flags in 
+             if flags = [] then Bsb_default.refmt_flags else flags)  ;
+          js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
             (match override_package_specs with 
              | None ->  package_specs
@@ -11041,13 +11061,16 @@ let interpret_json
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
           entries = extract_main_entries map;
-          generators = !generators ; 
+          generators = extract_generators map ; 
           cut_generators ;
              
         }
-      | None -> failwith "no sources specified, please checkout the schema for more details"
+      | None -> 
+          Bsb_exception.invalid_spec
+            "no sources specified in bsconfig.json"
     end
-  | _ -> failwith "bsconfig.json expect a json object {}"
+  | _ -> 
+    Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
 end
 module Ext_io : sig 
@@ -12487,7 +12510,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg";
+    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if is_re then 
@@ -12511,7 +12534,7 @@ let make_custom_rules
   in   
   let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx  ~explicit : string =
     Buffer.clear buf ; 
-    Buffer.add_string buf "$bsc  $warnings";
+    Buffer.add_string buf "$bsc  $warnings -color always";
     (match has_pp with 
       | `regular -> Buffer.add_string buf " $pp_flags"
       | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
@@ -12608,7 +12631,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -no-alias-deps -bs-cmi-only -c $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only -c $in"
       ~restat:()
       "build_package"
   in 
@@ -13243,11 +13266,10 @@ module Bsb_ninja_gen : sig
 (** 
   generate ninja file based on [cwd] and [bsc_dir]
 *)
-val 
-  output_ninja_and_namespace_map :
+val output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
-  not_dev:bool -> 
+  toplevel:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -13312,11 +13334,11 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool)     
+    ~(toplevel : bool)     
     (bsc_flags : string list)
   : string =       
   String.concat Ext_string.single_space 
-    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+    (if toplevel then bsc_flags else "-bs-quiet" :: bsc_flags )
 
 
 let emit_bsc_lib_includes 
@@ -13353,7 +13375,7 @@ let emit_bsc_lib_includes
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~not_dev           
+    ~toplevel           
     ({
       bs_suffix;
       package_name;
@@ -13378,7 +13400,6 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
@@ -13429,8 +13450,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
@@ -13879,10 +13900,11 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  not_dev:bool ->
+  toplevel:bool ->
   override_package_specs:Bsb_package_specs.t option ->
-  generate_watch_metadata: bool -> 
-  forced: bool -> string -> string -> 
+  forced: bool -> 
+  string -> 
+  string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -13921,11 +13943,11 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~not_dev 
+    ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
-    ~generate_watch_metadata 
     ~forced cwd bsc_dir
-  : Bsb_config_types.t option =
+  : Bsb_config_types.t option =  
+
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -13951,9 +13973,9 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~not_dev
+        ~toplevel
         cwd in 
-    if generate_watch_metadata then       
+    if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
@@ -13961,7 +13983,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_dev config ;             
+      ~cwd ~bsc_dir ~toplevel config ;             
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 
@@ -14046,9 +14068,8 @@ let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t
 
 let query_current_package_sources cwd bsc_dir = 
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~not_dev:false
+      ~toplevel:true
       ~override_package_specs:None
-      ~generate_watch_metadata:true
       ~forced:true  cwd bsc_dir in 
     match config_opt with   
     | None -> None
@@ -16925,8 +16946,8 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
       if not top then
         begin 
-          let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
-              ~generate_watch_metadata:false
+          let config_opt = 
+            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
               ~override_package_specs:(Some deps) 
               ~forced:true
               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
@@ -17113,8 +17134,8 @@ let () =
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-      Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
-        ~generate_watch_metadata:true
+      Bsb_ninja_regen.regenerate_ninja 
+        ~override_package_specs:None ~toplevel:true
         ~forced:false 
         cwd bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
@@ -17144,9 +17165,8 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~generate_watch_metadata:true 
                      ~override_package_specs:None 
-                     ~not_dev:false 
+                     ~toplevel:true
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
@@ -17166,10 +17186,10 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja 
-                ~generate_watch_metadata:true 
+            let config_opt = 
+              Bsb_ninja_regen.regenerate_ninja 
                 ~override_package_specs:None 
-                ~not_dev:false cwd bsc_dir 
+                ~toplevel:true cwd bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

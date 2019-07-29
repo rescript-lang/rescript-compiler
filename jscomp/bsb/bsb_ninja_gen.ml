@@ -58,11 +58,11 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_dev : bool)     
+    ~(toplevel : bool)     
     (bsc_flags : string list)
   : string =       
   String.concat Ext_string.single_space 
-    (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+    (if toplevel then bsc_flags else "-bs-quiet" :: bsc_flags )
 
 
 let emit_bsc_lib_includes 
@@ -99,7 +99,7 @@ let emit_bsc_lib_includes
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~not_dev           
+    ~toplevel           
     ({
       bs_suffix;
       package_name;
@@ -124,7 +124,6 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t) : unit 
   =
-  
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
@@ -175,8 +174,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_dev warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_dev  bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 

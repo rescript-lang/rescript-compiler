@@ -65,7 +65,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string not_dev
+let warning_to_string ~toplevel
     warning : string =
   default_warning_flag  ^
   (match warning.number with
@@ -80,8 +80,7 @@ let warning_to_string not_dev
       | '0' .. '9' -> "+" ^ content
       | _ -> content
     ) ^
-  if not_dev then Ext_string.empty
-  else
+  if toplevel then 
     match warning.error with
     | Warn_error_true ->
       warn_error
@@ -90,6 +89,7 @@ let warning_to_string not_dev
       " -warn-error " ^ y
     | Warn_error_false ->
       Ext_string.empty
+ else Ext_string.empty     
 
 
 
@@ -117,8 +117,8 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string not_dev warning =
+let opt_warning_to_string ~toplevel warning =
   match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string not_dev w
+  | Some w -> warning_to_string ~toplevel w
 

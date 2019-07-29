@@ -38,5 +38,8 @@ val from_map : Ext_json_types.t String_map.t -> t option
 
 (** [opt_warning_to_string not_dev warning]
 *)
-val opt_warning_to_string : bool -> t option -> string
+val opt_warning_to_string : 
+  toplevel:bool -> 
+  t option -> 
+  string
 

@@ -33,11 +33,11 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~not_dev 
+    ~toplevel 
     ~(override_package_specs : Bsb_package_specs.t option)
-    ~generate_watch_metadata 
     ~forced cwd bsc_dir
-  : Bsb_config_types.t option =
+  : Bsb_config_types.t option =  
+
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -63,9 +63,9 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
-        ~not_dev
+        ~toplevel
         cwd in 
-    if generate_watch_metadata then       
+    if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
@@ -73,7 +73,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~cwd
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~not_dev config ;             
+      ~cwd ~bsc_dir ~toplevel config ;             
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> Bsb_build_util.mkp (cwd // x));
     (* PR2184: we still need record empty dir 

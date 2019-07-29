@@ -142,8 +142,8 @@ let () =
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-      Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
-        ~generate_watch_metadata:true
+      Bsb_ninja_regen.regenerate_ninja 
+        ~override_package_specs:None ~toplevel:true
         ~forced:false 
         cwd bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
@@ -173,9 +173,8 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~generate_watch_metadata:true 
                      ~override_package_specs:None 
-                     ~not_dev:false 
+                     ~toplevel:true
                      ~forced:force_regenerate cwd bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
@@ -195,10 +194,10 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja 
-                ~generate_watch_metadata:true 
+            let config_opt = 
+              Bsb_ninja_regen.regenerate_ninja 
                 ~override_package_specs:None 
-                ~not_dev:false cwd bsc_dir 
+                ~toplevel:true cwd bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

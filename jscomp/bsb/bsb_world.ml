@@ -74,8 +74,8 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
       if not top then
         begin 
-          let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
-              ~generate_watch_metadata:false
+          let config_opt = 
+            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
               ~override_package_specs:(Some deps) 
               ~forced:true
               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)

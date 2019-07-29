@@ -150,7 +150,7 @@ function main() {
                 // note existsSync test already ensure that it is a directory
                 cp.exec(`node input.js`, {cwd : testDir, encoding : 'utf8'},function (error, stdout, stderr){
                     console.log(stdout)
-                    console.log(stderr)
+                    // console.log(stderr)
                     if (error !== null) {
                         throw new Error (`working in ${testDir} Error: \n${error} `)
                     }
