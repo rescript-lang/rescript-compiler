@@ -145,6 +145,7 @@ function main() {
             if(!fs.existsSync(path.join(testDir,'input.js'))){
                 console.warn(`input.js does not exist in ${testDir}`)
             } else {
+                cp.execSync(`npm link bs-platform`, {cwd : testDir, stdio:[0,1,2],encoding : 'utf8'})
                 // note existsSync test already ensure that it is a directory
                 cp.exec(`node input.js`, {cwd : testDir, encoding : 'utf8'},function (error, stdout, stderr){
                     console.log(stdout)
