@@ -1,7 +1,7 @@
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-let (=~) = OUnit.assert_equal    
+let (=~) = OUnit.assert_equal  ~printer:Ext_obj.dump  
 
 let printer_string = fun x -> x 
 
@@ -495,6 +495,11 @@ let suites =
         string_eq 
           (Ext_filename.module_name "a/b/.")
           ""  ;  
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.split "" ':' =~ [];
+      Ext_string.split "a:b:" ':' =~ ["a";"b"];
+      Ext_string.split "a:b:" ':' ~keep_empty:true =~ ["a";"b";""]
     end
   ]
 
