@@ -58,7 +58,7 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_toplevel : bool)     
+    ~(not_toplevel : bool)     
     (bsc_flags : string list)
   : string =       
   String.concat Ext_string.single_space 
@@ -175,8 +175,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_toplevel  bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~not_toplevel warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~not_toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 

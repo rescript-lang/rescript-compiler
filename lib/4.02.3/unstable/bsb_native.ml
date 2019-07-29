@@ -9998,7 +9998,10 @@ val from_map : Ext_json_types.t String_map.t -> t option
 
 (** [opt_warning_to_string not_dev warning]
 *)
-val opt_warning_to_string : bool -> t option -> string
+val opt_warning_to_string : 
+  not_toplevel:bool -> 
+  t option -> 
+  string
 
 
 end = struct
@@ -10070,7 +10073,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string not_dev
+let warning_to_string ~not_toplevel
     warning : string =
   default_warning_flag  ^
   (match warning.number with
@@ -10085,7 +10088,7 @@ let warning_to_string not_dev
       | '0' .. '9' -> "+" ^ content
       | _ -> content
     ) ^
-  if not_dev then Ext_string.empty
+  if not_toplevel then Ext_string.empty
   else
     match warning.error with
     | Warn_error_true ->
@@ -10122,10 +10125,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string not_dev warning =
+let opt_warning_to_string ~not_toplevel warning =
   match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string not_dev w
+  | Some w -> warning_to_string ~not_toplevel w
 
 
 end
@@ -13363,7 +13366,7 @@ let output_reason_config
       |] oc 
 
 let get_bsc_flags 
-    (not_toplevel : bool)     
+    ~(not_toplevel : bool)     
     (bsc_flags : string list)
   : string =       
   String.concat Ext_string.single_space 
@@ -13480,8 +13483,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string not_toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags not_toplevel  bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~not_toplevel warning ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~not_toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
