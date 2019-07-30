@@ -102,7 +102,7 @@ let rec tolist_f_aux a f  i res =
     tolist_f_aux a f  (i - 1)
       (f v :: res)
        
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else

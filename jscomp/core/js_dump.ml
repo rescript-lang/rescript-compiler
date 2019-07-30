@@ -887,7 +887,7 @@ and expression_desc cxt (level:int) f x : cxt  =
           dbg_record f ;
           P.paren_group f 1 (fun _ -> arguments cxt f 
                                 [E.array Immutable
-                                   (Ext_array.to_list_f E.str labels);
+                                   (Ext_array.to_list_f labels E.str );
                                  E.array mutable_flag 
                                    (Ext_list.map el drop_comment) ]
                             )
