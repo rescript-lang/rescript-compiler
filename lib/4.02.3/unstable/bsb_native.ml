@@ -9225,14 +9225,20 @@ let flag_concat flag xs =
 let (//) = Ext_path.combine
 
 
-(*TODO: optimize *)
+
 let ppx_flags (xs : Bsb_config_types.ppx list) =
   flag_concat "-ppx"
     (Ext_list.map xs 
-      (fun x -> if x.args = [] then Filename.quote x.name else assert false))
+       (fun x -> 
+          if x.args = [] then Ext_filename.maybe_quote x.name else 
+            let fmt : _ format = 
+              if Ext_sys.is_windows_or_cygwin then "\"%s %s\""
+              else "'%s %s'" in 
+            Printf.sprintf fmt x.name (String.concat " " x.args) 
+       ))
 
 let pp_flag (xs : string) = 
-   "-pp " ^ Filename.quote xs
+   "-pp " ^ Ext_filename.maybe_quote xs
 
 let include_dirs = flag_concat "-I"
 
@@ -10964,10 +10970,10 @@ let extract_string_list (map : json_map) (field : string) : string list =
     Bsb_exception.config_error config (field ^ " expect an array")
 
 
-let extract_ppx (map : json_map) (cwd : string) =     
+let extract_ppx (map : json_map) (cwd : string) : Bsb_config_types.ppx list =     
   let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
 
-  Ext_list.map_split_opt  args (fun p ->
+  let ppx_files, _ = Ext_list.map_split_opt  args (fun p ->
       if p = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
       else 
         let result = 
@@ -10975,7 +10981,8 @@ let extract_ppx (map : json_map) (cwd : string) =
         in 
         let some_file = Some result.path in 
         some_file, if result.checked then some_file else None
-    )
+    ) in 
+  Ext_list.map ppx_files (fun x -> {Bsb_config_types.name = x; args = []})
 
 let extract_js_post_build (map : json_map) cwd : string option = 
   let js_post_build_cmd = ref None in 
@@ -11047,18 +11054,6 @@ let interpret_json
       if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
       else [] in 
-    let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
-    let ppx_files, _ = 
-      Ext_list.map_split_opt  args (fun p ->
-            if p = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
-            else 
-              let result = 
-                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
-              in 
-              let some_file = Some result.path in 
-              some_file, if result.checked then some_file else None
-          )
-    in   
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
@@ -11079,7 +11074,7 @@ let interpret_json
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = Ext_list.map ppx_files (fun x -> {Bsb_config_types.name = x; args = []});
+          ppx_files = extract_ppx map cwd;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
