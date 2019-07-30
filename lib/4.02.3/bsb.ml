@@ -195,7 +195,11 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
-val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -355,7 +359,7 @@ let rec tolist_f_aux a f  i res =
     tolist_f_aux a f  (i - 1)
       (f v :: res)
        
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
@@ -10937,20 +10941,39 @@ let extract_string_list (map : json_map) (field : string) : string list =
   | Some config ->   
     Bsb_exception.config_error config (field ^ " expect an array")
 
-
-let extract_ppx (map : json_map) (cwd : string) : Bsb_config_types.ppx list =     
-  let args = extract_string_list map Bsb_build_schemas.ppx_flags in   
-
-  let ppx_files, _ = Ext_list.map_split_opt  args (fun p ->
-      if p = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
+let extract_ppx 
+  (map : json_map) 
+  (field : string) 
+  ~(cwd : string) : Bsb_config_types.ppx list =     
+  match String_map.find_opt map field with 
+  | None -> []
+  | Some (Arr {content }) -> 
+    let resolve s = 
+      if s = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
       else 
-        let result = 
-          Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
-        in 
-        let some_file = Some result.path in 
-        some_file, if result.checked then some_file else None
-    ) in 
-  Ext_list.map ppx_files (fun x -> {Bsb_config_types.name = x; args = []})
+        (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags s).path in 
+    Ext_array.to_list_f content (fun x -> 
+      match x with 
+      | Str x ->    
+      
+        {Bsb_config_types.name = 
+          resolve x.str; 
+          args = []}
+      | Arr {content } -> 
+
+          let xs = Bsb_build_util.get_list_string content in 
+          (match xs with 
+          | [] -> Bsb_exception.config_error x " empty array is not allowed"
+          | name :: args -> 
+            {Bsb_config_types.name = resolve name ; args}
+          )
+      | config -> Bsb_exception.config_error config 
+        (field ^ "expect each item to be either string or array")
+    )
+  | Some config -> 
+    Bsb_exception.config_error config (field ^ " expect an array")
+
+
 
 let extract_js_post_build (map : json_map) cwd : string option = 
   let js_post_build_cmd = ref None in 
@@ -11042,7 +11065,7 @@ let interpret_json
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = extract_ppx map cwd;
+          ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
