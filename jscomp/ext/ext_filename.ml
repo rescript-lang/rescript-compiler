@@ -41,7 +41,8 @@ let maybe_quote ( s : string) =
         | 'A' .. 'Z'
         | '_' | '+' 
         | '-' | '.'
-        | '/' -> true
+        | '/' 
+        | '@' -> true
         | _ -> false
       )  in 
   if noneed_quote then
