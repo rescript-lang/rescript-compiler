@@ -1,8 +1,12 @@
 'use strict';
 
 
-function f(x, y) {
+function f(_x, _y) {
   while(true) {
+    var y = _y;
+    var x = _x;
+    _y = x;
+    _x = y;
     continue ;
   };
 }

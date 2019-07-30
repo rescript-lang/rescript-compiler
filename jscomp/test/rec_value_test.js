@@ -465,15 +465,13 @@ function fake_inline_minus(n) {
   return n + 1 | 0;
 }
 
-function fake_inline(n) {
-  return n + 1 | 0;
-}
+var fake_inline = fake_inline_minus;
+
+var fake_inline_inlie2 = fake_inline_minus(3);
 
 Mt.from_pair_suites("Rec_value_test", suites);
 
 var v$1 = 3;
-
-var fake_inline_inlie2 = 4;
 
 exports.x = x;
 exports.a = a;

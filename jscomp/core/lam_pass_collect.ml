@@ -143,9 +143,13 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       collect  l
     | Llet (kind,ident,arg,body) -> 
-      collect_bind Non_rec kind ident arg ; collect body
+      collect_bind Lam_non_rec kind ident arg ; collect body
     | Lletrec (bindings, body) -> 
-      List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
+      (match bindings with 
+       | [ident, arg] -> collect_bind Lam_self_rec Strict ident arg
+       | _ -> 
+         Ext_list.iter bindings
+           (fun (ident,arg) -> collect_bind Lam_rec  Strict ident arg )) ;
       collect body
     | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args

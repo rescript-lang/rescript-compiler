@@ -24,12 +24,14 @@
 
 
 type rec_flag = 
-  | Rec 
-  | Non_rec
+  | Lam_rec 
+  | Lam_non_rec
 
 (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination
 *)  
+  | Lam_self_rec
+  (* not inlining in this case *)
 type function_id = {
   mutable arity : Lam_arity.t;
   lambda  : (Lam.t * rec_flag) option ;

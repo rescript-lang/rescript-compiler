@@ -234,10 +234,14 @@ let simplify_alias
               match is_export_id, param_map with 
               | false, (_, param_map)
               | true, (true, param_map) -> 
-                if rec_flag = Rec then               
-                  Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
-                else 
-                  simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
+                begin match rec_flag with 
+                  
+                  | Lam_rec  ->  Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
+                  | Lam_self_rec -> normal ()
+                  | Lam_non_rec -> 
+                    simpl 
+                      (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
+                end
               | _ -> normal ()
             else 
               normal ()
