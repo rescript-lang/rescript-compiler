@@ -28,8 +28,13 @@
 
 
 type rec_flag = 
-  | Rec 
-  | Non_rec
+  | Lam_rec 
+  | Lam_non_rec
+  | Lam_self_rec 
+    (* only a 
+      single mutual 
+      recursive function      
+    *)
 
 
 type function_id = {

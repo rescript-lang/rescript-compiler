@@ -144,7 +144,7 @@ let handle_exports (meta : Lam_stats.t)
                 (FunctionId{arity ; lambda = 
                 match lam with 
                 | Lfunction _ -> 
-                  Some (lam,  Non_rec)
+                  Some (lam,  Lam_non_rec)
                 | _ -> None })
               );
             { acc with
