@@ -30,7 +30,7 @@ Use:
 ppx_flags [ppxs]
 ]}
 *)
-val ppx_flags : string list -> string
+val ppx_flags : Bsb_config_types.ppx list -> string
 
 val pp_flag : string  -> string
 

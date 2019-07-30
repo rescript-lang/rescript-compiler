@@ -29,13 +29,20 @@ let flag_concat flag xs =
 let (//) = Ext_path.combine
 
 
-(*TODO: optimize *)
-let ppx_flags xs =
+
+let ppx_flags (xs : Bsb_config_types.ppx list) =
   flag_concat "-ppx"
-    (Ext_list.map xs Filename.quote)
+    (Ext_list.map xs 
+       (fun x -> 
+          if x.args = [] then Ext_filename.maybe_quote x.name else 
+            let fmt : _ format = 
+              if Ext_sys.is_windows_or_cygwin then "\"%s %s\""
+              else "'%s %s'" in 
+            Printf.sprintf fmt x.name (String.concat " " x.args) 
+       ))
 
 let pp_flag (xs : string) = 
-   "-pp " ^ Filename.quote xs
+   "-pp " ^ Ext_filename.maybe_quote xs
 
 let include_dirs = flag_concat "-I"
 

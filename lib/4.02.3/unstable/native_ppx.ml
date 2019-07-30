@@ -7973,7 +7973,11 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
-val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -8133,7 +8137,7 @@ let rec tolist_f_aux a f  i res =
     tolist_f_aux a f  (i - 1)
       (f v :: res)
        
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
@@ -15133,7 +15137,8 @@ let maybe_quote ( s : string) =
         | 'A' .. 'Z'
         | '_' | '+' 
         | '-' | '.'
-        | '/' -> true
+        | '/' 
+        | '@' -> true
         | _ -> false
       )  in 
   if noneed_quote then

@@ -48,6 +48,11 @@ type gentype_config = {
   path : string (* resolved *)
 }
 type command = string
+
+type ppx = {
+  name : string;
+  args : string list
+}
 type t = 
   {
     package_name : string ; 
@@ -56,8 +61,7 @@ type t =
     (* CapitalPackage *)
     external_includes : string list ; 
     bsc_flags : string list ;
-    ppx_files : string list ;
-    ppx_checked_files : string list ;
+    ppx_files : ppx list ;
     pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
