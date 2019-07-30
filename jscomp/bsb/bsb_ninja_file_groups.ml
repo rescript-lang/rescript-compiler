@@ -82,7 +82,6 @@ let emit_impl_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
-    ~has_checked_ppx
     ~bs_suffix
     ~(no_intf_file : bool) 
     js_post_build_cmd
@@ -112,13 +111,10 @@ let emit_impl_build
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
-      group_dir_index in
-  let implicit_deps = (if has_checked_ppx then [ "$ppx_checked_files" ] else []) in     
-
+      group_dir_index in  
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
     ~input
-    ~implicit_deps
     ~rule:( if is_re then 
               rules.build_ast_and_module_sets_from_re
             else
@@ -134,7 +130,6 @@ let emit_impl_build
                  else filename_sans_extension ^ Literals.suffix_mli))
       ~rule:(if is_re then rules.build_ast_and_module_sets_from_rei
              else rules.build_ast_and_module_sets)
-      ~implicit_deps
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi
@@ -155,7 +150,6 @@ let emit_impl_build
     ~inputs:(if not no_intf_file then [output_mliast] else [])
     ~input:output_mlast
     ~rule:rules.build_bin_deps
-    ~implicit_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
               else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
                           op = 
@@ -200,7 +194,6 @@ let handle_module_info
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
-    ~has_checked_ppx
     ~bs_suffix
     oc  module_name 
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
@@ -210,7 +203,6 @@ let handle_module_info
     package_specs
     group_dir_index
     oc 
-    ~has_checked_ppx
     ~bs_suffix
     ~no_intf_file:(module_info.mli_info = Mli_empty)
     ~is_re:module_info.is_re
@@ -222,7 +214,6 @@ let handle_module_info
 
 let handle_file_group 
     oc 
-    ~(has_checked_ppx : bool)
     ~bs_suffix
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
@@ -243,7 +234,6 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info rules
-        ~has_checked_ppx
         ~bs_suffix
          group.dir_index 
          package_specs js_post_build_cmd 
@@ -257,7 +247,6 @@ let handle_file_group
 
 let handle_file_groups
     oc 
-    ~has_checked_ppx
     ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
@@ -268,7 +257,6 @@ let handle_file_groups
   Ext_list.iter file_groups
     (handle_file_group 
        oc  
-       ~has_checked_ppx
        ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
        files_to_install 
        namespace

@@ -30,9 +30,10 @@ let (//) = Ext_path.combine
 
 
 (*TODO: optimize *)
-let ppx_flags xs =
+let ppx_flags (xs : Bsb_config_types.ppx list) =
   flag_concat "-ppx"
-    (Ext_list.map xs Filename.quote)
+    (Ext_list.map xs 
+      (fun x -> if x.args = [] then Filename.quote x.name else assert false))
 
 let pp_flag (xs : string) = 
    "-pp " ^ Filename.quote xs

@@ -107,7 +107,7 @@ let output_ninja_and_namespace_map
       bsc_flags ; 
       pp_file;
       ppx_files ;
-      ppx_checked_files;
+
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -155,16 +155,7 @@ let output_ninja_and_namespace_map
       (Ext_filename.maybe_quote x.package_install_path) oc 
     )  
     ;  
-    (*
-    TODO: 
-    see https://github.com/ninja-build/ninja/issues/1375
-    *)
-    (match ppx_checked_files with
-     | first_ppx_checked_file :: _ -> 
-       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
-         first_ppx_checked_file oc
-     | [] -> ())
-    ;
+    
 
     Bsb_ninja_util.output_kvs
       [|
@@ -254,7 +245,6 @@ let output_ninja_and_namespace_map
         ~rule:rules.copy_resources);
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
-    ~has_checked_ppx:(ppx_checked_files <> [])
     ~bs_suffix     
     ~rules
     ~js_post_build_cmd 

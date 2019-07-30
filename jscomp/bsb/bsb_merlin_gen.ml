@@ -117,8 +117,17 @@ let merlin_file_gen ~cwd
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
     output_merlin_namespace buffer namespace; 
-    Ext_list.iter ppx_files (fun x ->
-        Buffer.add_string buffer (merlin_flg_ppx ^ x )
+    Ext_list.iter ppx_files (fun ppx ->
+        Buffer.add_string buffer merlin_flg_ppx;
+        if ppx.args = [] then 
+          Buffer.add_string buffer ppx.name
+        else   
+          let fmt : _ format = 
+            if Ext_sys.is_windows_or_cygwin then 
+              "\"%s %s\""
+            else "'%s %s'" in 
+          Buffer.add_string buffer 
+            (Printf.sprintf fmt ppx.name (String.concat " " ppx.args))
       );
     Ext_option.iter pp_file (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
