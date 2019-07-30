@@ -140,13 +140,14 @@ function main() {
     if (bsbTest){
         console.log('Doing build_tests')
         var buildTestDir = path.join(__dirname,'..','jscomp','build_tests')
+        cp.execSync(`npm link bs-platform`, {cwd : buildTestDir, stdio:[0,1,2],encoding : 'utf8'})
         var files = fs.readdirSync(buildTestDir)
         files.forEach(function(file){
             var testDir = path.join(buildTestDir, file)                        
             if(!fs.existsSync(path.join(testDir,'input.js'))){
                 console.warn(`input.js does not exist in ${testDir}`)
             } else {
-                cp.execSync(`npm link bs-platform`, {cwd : testDir, stdio:[0,1,2],encoding : 'utf8'})
+                
                 // note existsSync test already ensure that it is a directory
                 cp.exec(`node input.js`, {cwd : testDir, encoding : 'utf8'},function (error, stdout, stderr){
                     console.log(stdout)
