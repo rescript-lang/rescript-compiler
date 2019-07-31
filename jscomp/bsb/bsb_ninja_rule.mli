@@ -35,11 +35,9 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  build_ast_and_module_sets : t;
-  (** TODO: Implement it on top of pp_flags *)
-  build_ast_and_module_sets_from_re : t ;
-  build_ast_and_module_sets_from_rei : t ;
-
+  
+  build_ast : t;
+  build_ast_from_re : t ;
 
   (** platform dependent, on Win32,
       invoking cmd.exe

@@ -54,31 +54,33 @@ let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
 
 type valid_input = 
-  | Ml 
-  | Mli
+  | Implementation 
+  | Interface
   | Mlast    
   | Mliast 
   | Mlmap
   | Cmi
-  
+
+(** This is per-file based, 
+    when [ocamlc] [-c -o another_dir/xx.cmi] 
+    it will return (another_dir/xx)
+*)    
+
 let check_suffix  name  = 
-  if Ext_path.check_suffix_case name ".ml"
-  || Ext_path.check_suffix_case name ".mlt" then 
-    Ml,
-    (** This is per-file based, 
-        when [ocamlc] [-c -o another_dir/xx.cmi] 
-        it will return (another_dir/xx)
-    *)    
-    Compenv.output_prefix name 
-  else if Ext_path.check_suffix_case name !Config.interface_suffix then 
-    Mli,  Compenv.output_prefix name 
-  else if Ext_path.check_suffix_case name ".mlast" then 
-    Mlast, Compenv.output_prefix name 
-  else if Ext_path.check_suffix_case name ".mliast" then 
-    Mliast, Compenv.output_prefix name 
-  else if Ext_path.check_suffix_case name ".mlmap"  then 
-    Mlmap, Compenv.output_prefix name 
-  else if Ext_path.check_suffix_case name ".cmi" then 
-    Cmi, Compenv.output_prefix name
-  else 
-    raise(Arg.Bad("don't know what to do with " ^ name))
+  let ext = Ext_filename.get_extension_maybe name in 
+  let input = 
+    if ext = Literals.suffix_ml ||  ext = Literals.suffix_re then 
+      Implementation
+    else if ext = !Config.interface_suffix || ext = Literals.suffix_rei then 
+      Interface  
+    else if ext =  Literals.suffix_mlast then 
+      Mlast 
+    else if ext = Literals.suffix_mliast then 
+      Mliast
+    else if ext =  Literals.suffix_mlmap  then 
+      Mlmap 
+    else if ext =  Literals.suffix_cmi then 
+      Cmi
+    else 
+      raise(Arg.Bad("don't know what to do with " ^ name)) in 
+  input, Compenv.output_prefix name

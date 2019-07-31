@@ -57,6 +57,14 @@ let chop_extension_maybe name =
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
 
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
+
 let chop_all_extensions_maybe name =
   let rec search_dot i last =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then 
