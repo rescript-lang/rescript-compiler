@@ -5703,6 +5703,12 @@ val chop_extension_maybe:
   string -> 
   string
 
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
 val new_extension:  
   string -> 
   string -> 
@@ -5782,6 +5788,14 @@ let chop_extension_maybe name =
     else if String.unsafe_get name i = '.' then String.sub name 0 i
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
+
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
 
 let chop_all_extensions_maybe name =
   let rec search_dot i last =
@@ -9682,8 +9696,7 @@ let sort  project_ml project_mli (ast_table : _ t String_map.t) =
 
 (** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
 let check_suffix  name  = 
-  if Ext_path.check_suffix_case name ".ml"
-  || Ext_path.check_suffix_case name ".mlt" then 
+  if Ext_path.check_suffix_case name ".ml" then 
     `Ml,
     Ext_filename.chop_extension_maybe  name 
   else if Ext_path.check_suffix_case name !Config.interface_suffix then 

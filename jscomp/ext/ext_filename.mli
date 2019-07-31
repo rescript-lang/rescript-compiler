@@ -50,6 +50,12 @@ val chop_extension_maybe:
   string -> 
   string
 
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
 val new_extension:  
   string -> 
   string -> 
