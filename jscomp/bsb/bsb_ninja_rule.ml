@@ -180,11 +180,7 @@ let make_custom_rules
     define
       ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true)
       "build_ast_and_module_sets_from_re" in 
-  (* let build_ast_from_rei =
-    define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`intf)      
-      "build_ast_and_module_sets_from_rei" in  *)
-
+ 
   let copy_resources =    
     define 
       ~command:(
@@ -249,11 +245,7 @@ let make_custom_rules
   in 
   {
     build_ast ;
-    (** TODO: Implement it on top of pp_flags *)
     build_ast_from_re  ;
-    (* build_ast_from_rei ; *)
-
-
     (** platform dependent, on Win32,
         invoking cmd.exe
     *)
