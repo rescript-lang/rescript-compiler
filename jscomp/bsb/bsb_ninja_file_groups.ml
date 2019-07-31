@@ -112,13 +112,16 @@ let emit_impl_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
+  let ast_rule =             
+    match is_dev, is_re with 
+    | true, true -> rules.build_ast_from_re_dev
+    | false, true -> rules.build_ast_from_re
+    | true, false -> rules.build_ast_dev
+    | false, false -> rules.build_ast in     
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
     ~input
-    ~rule:( if is_re then 
-              rules.build_ast_from_re
-            else
-              rules.build_ast);
+    ~rule:ast_rule;
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -128,8 +131,7 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_from_re
-             else rules.build_ast)
+      ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi

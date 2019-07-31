@@ -1,12 +1,27 @@
 {
-    "ppx-flags": 
+    "ppx-flags": [
         [
-            ["@hongbo/ppx1/test.js", "-hello"],
-            ["@hongbo/ppx1/test.js", "-heyy"],
-            "@hongbo/ppx1/test.js"
+            "@hongbo/ppx1/test.js",
+            "-hello"
         ],
-    "sources" : {
-        "dir": "src"
-    },
-    "name": "hello"
+        [
+            "@hongbo/ppx1/test.js",
+            "-heyy"
+        ],
+        "@hongbo/ppx1/test.js"
+    ],
+    "ppx-dev-flags" : [
+        "@hongbo/ppx1/test.js"
+    ],
+    "sources": [
+        {
+            "dir": "src"
+        },
+        {
+            "dir": "examples",
+            "type": "dev"
+        }
+    ],
+    "name": "hello",
+    "refmt":3
 }

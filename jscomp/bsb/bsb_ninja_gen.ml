@@ -107,7 +107,7 @@ let output_ninja_and_namespace_map
       bsc_flags ; 
       pp_file;
       ppx_files ;
-
+      ppx_dev_files ; 
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -226,6 +226,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
+      ~has_dev_ppx:(ppx_dev_files <> [])
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])

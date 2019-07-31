@@ -35,10 +35,11 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  
-  build_ast : t;
-  build_ast_from_re : t ;
 
+  build_ast : t;
+  build_ast_dev : t;
+  build_ast_from_re : t ;
+  build_ast_from_re_dev : t ;
   (** platform dependent, on Win32,
       invoking cmd.exe
   *)
@@ -77,6 +78,7 @@ val make_custom_rules :
   has_gentype:bool ->
   has_postbuild:bool ->
   has_ppx:bool ->
+  has_dev_ppx:bool -> 
   has_pp:bool ->
   has_builtin:bool -> 
   bs_suffix:bool ->

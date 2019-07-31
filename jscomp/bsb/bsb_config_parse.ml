@@ -447,6 +447,7 @@ let interpret_json
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
           ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
+          ppx_dev_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_dev_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;

@@ -78,8 +78,9 @@ type command = string
 
 type builtin = {
   build_ast : t;
-  (** TODO: Implement it on top of pp_flags *)
+  build_ast_dev : t;
   build_ast_from_re : t ;
+  build_ast_from_re_dev : t;
   (* build_ast_from_rei : t ; *)
 
 
@@ -113,6 +114,7 @@ let make_custom_rules
   ~(has_gentype : bool)        
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
+  ~(has_dev_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
@@ -151,7 +153,7 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~has_pp ~has_ppx ~has_dev_ppx ~has_reason_react_jsx : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
     (match has_pp with 
@@ -167,20 +169,55 @@ let make_custom_rules
     | _, Some Jsx_v3 
       -> Buffer.add_string buf " -bs-jsx 3"
     );
-    if has_ppx then 
-      Buffer.add_string buf " $ppx_flags"; 
+    (match has_dev_ppx, has_ppx with
+    | true, _ -> 
+      Buffer.add_string buf " $dev_ppx_flags"
+    | false, _ -> 
+      if has_ppx then 
+        Buffer.add_string buf " $ppx_flags"
+     ); 
     Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in";   
     Buffer.contents buf
   in  
+  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast_and_module_sets" in
+      ~command:(mk_ast 
+                  ~has_pp:(if has_pp then `regular else `none) 
+                  ~has_ppx 
+                  ~has_dev_ppx:false
+                  ~has_reason_react_jsx:false )
+      "build_ast" in
+  let build_ast_dev  =    
+    if has_dev_ppx then 
+      define
+        ~command:(mk_ast 
+                    ~has_pp:(if has_pp then `regular else `none) 
+                    ~has_ppx 
+                    ~has_dev_ppx:true
+                    ~has_reason_react_jsx:false )
+        "build_ast_dev" 
+    else build_ast in 
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_and_module_sets_from_re" in 
- 
+      ~command:(mk_ast 
+                  ~has_pp:`refmt
+                  ~has_ppx
+                  ~has_dev_ppx:false
+                  ~has_reason_react_jsx:true)
+      "build_ast_from_re" in 
+  let build_ast_from_re_dev =   
+    if has_dev_ppx then 
+      define
+        ~command:(mk_ast 
+                    ~has_pp:`refmt
+                    ~has_ppx
+                    ~has_dev_ppx:true
+                    ~has_reason_react_jsx:true)
+        "build_ast_from_re_dev" 
+    else 
+      build_ast_from_re
+  in 
   let copy_resources =    
     define 
       ~command:(
@@ -245,7 +282,9 @@ let make_custom_rules
   in 
   {
     build_ast ;
+    build_ast_dev;
     build_ast_from_re  ;
+    build_ast_from_re_dev  ;
     (** platform dependent, on Win32,
         invoking cmd.exe
     *)

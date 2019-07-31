@@ -95,6 +95,7 @@ let name = "name"
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
+let ppx_dev_flags = "ppx-dev-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
@@ -7297,6 +7298,7 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_files : ppx list ;
+    ppx_dev_files : ppx list;
     pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
@@ -11113,6 +11115,7 @@ let interpret_json
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
           ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
+          ppx_dev_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_dev_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
@@ -12352,6 +12355,7 @@ let bsdep = "bsdep"
 let bsc_flags = "bsc_flags"
 
 let ppx_flags = "ppx_flags"
+let ppx_dev_flags = "ppx_dev_flags"
 
 let pp_flags = "pp_flags"
 
@@ -12414,10 +12418,11 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  
-  build_ast : t;
-  build_ast_from_re : t ;
 
+  build_ast : t;
+  build_ast_dev : t;
+  build_ast_from_re : t ;
+  build_ast_from_re_dev : t ;
   (** platform dependent, on Win32,
       invoking cmd.exe
   *)
@@ -12456,6 +12461,7 @@ val make_custom_rules :
   has_gentype:bool ->
   has_postbuild:bool ->
   has_ppx:bool ->
+  has_dev_ppx:bool -> 
   has_pp:bool ->
   has_builtin:bool -> 
   bs_suffix:bool ->
@@ -12547,8 +12553,9 @@ type command = string
 
 type builtin = {
   build_ast : t;
-  (** TODO: Implement it on top of pp_flags *)
+  build_ast_dev : t;
   build_ast_from_re : t ;
+  build_ast_from_re_dev : t;
   (* build_ast_from_rei : t ; *)
 
 
@@ -12582,6 +12589,7 @@ let make_custom_rules
   ~(has_gentype : bool)        
   ~(has_postbuild : bool)
   ~(has_ppx : bool)
+  ~(has_dev_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
   ~(bs_suffix : bool)
@@ -12620,7 +12628,7 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~has_pp ~has_ppx ~has_dev_ppx ~has_reason_react_jsx : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
     (match has_pp with 
@@ -12636,20 +12644,55 @@ let make_custom_rules
     | _, Some Jsx_v3 
       -> Buffer.add_string buf " -bs-jsx 3"
     );
-    if has_ppx then 
-      Buffer.add_string buf " $ppx_flags"; 
+    (match has_dev_ppx, has_ppx with
+    | true, _ -> 
+      Buffer.add_string buf " $dev_ppx_flags"
+    | false, _ -> 
+      if has_ppx then 
+        Buffer.add_string buf " $ppx_flags"
+     ); 
     Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in";   
     Buffer.contents buf
   in  
+  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast_and_module_sets" in
+      ~command:(mk_ast 
+                  ~has_pp:(if has_pp then `regular else `none) 
+                  ~has_ppx 
+                  ~has_dev_ppx:false
+                  ~has_reason_react_jsx:false )
+      "build_ast" in
+  let build_ast_dev  =    
+    if has_dev_ppx then 
+      define
+        ~command:(mk_ast 
+                    ~has_pp:(if has_pp then `regular else `none) 
+                    ~has_ppx 
+                    ~has_dev_ppx:true
+                    ~has_reason_react_jsx:false )
+        "build_ast_dev" 
+    else build_ast in 
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_and_module_sets_from_re" in 
- 
+      ~command:(mk_ast 
+                  ~has_pp:`refmt
+                  ~has_ppx
+                  ~has_dev_ppx:false
+                  ~has_reason_react_jsx:true)
+      "build_ast_from_re" in 
+  let build_ast_from_re_dev =   
+    if has_dev_ppx then 
+      define
+        ~command:(mk_ast 
+                    ~has_pp:`refmt
+                    ~has_ppx
+                    ~has_dev_ppx:true
+                    ~has_reason_react_jsx:true)
+        "build_ast_from_re_dev" 
+    else 
+      build_ast_from_re
+  in 
   let copy_resources =    
     define 
       ~command:(
@@ -12714,7 +12757,9 @@ let make_custom_rules
   in 
   {
     build_ast ;
+    build_ast_dev;
     build_ast_from_re  ;
+    build_ast_from_re_dev  ;
     (** platform dependent, on Win32,
         invoking cmd.exe
     *)
@@ -13145,13 +13190,16 @@ let emit_impl_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
+  let ast_rule =             
+    match is_dev, is_re with 
+    | true, true -> rules.build_ast_from_re_dev
+    | false, true -> rules.build_ast_from_re
+    | true, false -> rules.build_ast_dev
+    | false, false -> rules.build_ast in     
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
     ~input
-    ~rule:( if is_re then 
-              rules.build_ast_from_re
-            else
-              rules.build_ast);
+    ~rule:ast_rule;
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -13161,8 +13209,7 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_from_re
-             else rules.build_ast)
+      ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi
@@ -13443,7 +13490,7 @@ let output_ninja_and_namespace_map
       bsc_flags ; 
       pp_file;
       ppx_files ;
-
+      ppx_dev_files ; 
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -13562,6 +13609,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
+      ~has_dev_ppx:(ppx_dev_files <> [])
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])

@@ -62,6 +62,7 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_files : ppx list ;
+    ppx_dev_files : ppx list;
     pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;

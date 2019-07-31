@@ -444,6 +444,10 @@
             "$ref": "#/definitions/ppx-specs",
             "description": "PPX macros to pass to compiler. The syntax is package_name/binary, for example: `reason/reactjs_jsx_ppx_3.native`. Currenly searches in `node_modules`"
         },
+        "ppx-dev-flags": {
+            "$ref": "#/definitions/ppx-specs",
+            "description": "Similar to `ppx-flags`, but only applied to dev directories, which is only a dev dependency. PPX macros to pass to compiler. The syntax is package_name/binary, for example: `reason/reactjs_jsx_ppx_3.native`. Currenly searches in `node_modules`"
+        },
         "pp-flags": {
             "$ref": "#/definitions/pp-specs",
             "description": "preprocessors to pass to compiler. The syntax is package_name/binary, for example: `pp/syntax.exe`. Currenly searches in `node_modules`"

@@ -29,6 +29,7 @@ let name = "name"
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
+let ppx_dev_flags = "ppx-dev-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
