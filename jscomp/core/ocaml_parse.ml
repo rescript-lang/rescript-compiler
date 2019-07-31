@@ -73,13 +73,13 @@ let check_suffix  name  =
       Implementation
     else if ext = !Config.interface_suffix || ext = Literals.suffix_rei then 
       Interface  
-    else if ext =  ".mlast" then 
+    else if ext =  Literals.suffix_mlast then 
       Mlast 
-    else if ext = ".mliast" then 
+    else if ext = Literals.suffix_mliast then 
       Mliast
-    else if ext =  ".mlmap"  then 
+    else if ext =  Literals.suffix_mlmap  then 
       Mlmap 
-    else if ext =  ".cmi" then 
+    else if ext =  Literals.suffix_cmi then 
       Cmi
     else 
       raise(Arg.Bad("don't know what to do with " ^ name)) in 
