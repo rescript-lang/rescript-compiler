@@ -19,9 +19,9 @@ let process_implementation_file ppf name =
 
 let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
-  | Ml, opref ->
+  | Implementation, opref ->
     Js_implementation.implementation ppf name opref 
-  | Mli, opref -> 
+  | Interface, opref -> 
     Js_implementation.interface ppf name opref 
   | Mliast, opref 
     -> Js_implementation.interface_mliast ppf name opref 

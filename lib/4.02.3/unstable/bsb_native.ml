@@ -12400,10 +12400,10 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  build_ast_and_module_sets : t;
+  build_ast : t;
   (** TODO: Implement it on top of pp_flags *)
-  build_ast_and_module_sets_from_re : t ;
-  build_ast_and_module_sets_from_rei : t ;
+  build_ast_from_re : t ;
+  build_ast_from_rei : t ;
 
 
   (** platform dependent, on Win32,
@@ -12534,10 +12534,10 @@ let define
 type command = string
 
 type builtin = {
-  build_ast_and_module_sets : t;
+  build_ast : t;
   (** TODO: Implement it on top of pp_flags *)
-  build_ast_and_module_sets_from_re : t ;
-  build_ast_and_module_sets_from_rei : t ;
+  build_ast_from_re : t ;
+  build_ast_from_rei : t ;
 
 
   (** platform dependent, on Win32,
@@ -12636,15 +12636,15 @@ let make_custom_rules
        Buffer.add_string buf " $in");
     Buffer.contents buf
   in  
-  let build_ast_and_module_sets =
+  let build_ast =
     define
       ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false ~explicit:`regular)
       "build_ast_and_module_sets" in
-  let build_ast_and_module_sets_from_re =
+  let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`impl)
       "build_ast_and_module_sets_from_re" in 
-  let build_ast_and_module_sets_from_rei =
+  let build_ast_from_rei =
     define
       ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`intf)      
       "build_ast_and_module_sets_from_rei" in 
@@ -12712,10 +12712,10 @@ let make_custom_rules
       "build_package"
   in 
   {
-    build_ast_and_module_sets ;
+    build_ast ;
     (** TODO: Implement it on top of pp_flags *)
-    build_ast_and_module_sets_from_re  ;
-    build_ast_and_module_sets_from_rei ;
+    build_ast_from_re  ;
+    build_ast_from_rei ;
 
 
     (** platform dependent, on Win32,
@@ -13152,9 +13152,9 @@ let emit_impl_build
     ~output:output_mlast
     ~input
     ~rule:( if is_re then 
-              rules.build_ast_and_module_sets_from_re
+              rules.build_ast_from_re
             else
-              rules.build_ast_and_module_sets);
+              rules.build_ast);
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -13164,8 +13164,8 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_and_module_sets_from_rei
-             else rules.build_ast_and_module_sets)
+      ~rule:(if is_re then rules.build_ast_from_rei
+             else rules.build_ast)
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi

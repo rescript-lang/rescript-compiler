@@ -54,24 +54,23 @@ let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
 
 type valid_input = 
-  | Ml 
-  | Mli
+  | Implementation 
+  | Interface
   | Mlast    
   | Mliast 
   | Mlmap
   | Cmi
   
 let check_suffix  name  = 
-  if Ext_path.check_suffix_case name ".ml"
-  || Ext_path.check_suffix_case name ".mlt" then 
-    Ml,
+  if Ext_path.check_suffix_case name ".ml" then 
+    Implementation,
     (** This is per-file based, 
         when [ocamlc] [-c -o another_dir/xx.cmi] 
         it will return (another_dir/xx)
     *)    
     Compenv.output_prefix name 
   else if Ext_path.check_suffix_case name !Config.interface_suffix then 
-    Mli,  Compenv.output_prefix name 
+    Interface,  Compenv.output_prefix name 
   else if Ext_path.check_suffix_case name ".mlast" then 
     Mlast, Compenv.output_prefix name 
   else if Ext_path.check_suffix_case name ".mliast" then 

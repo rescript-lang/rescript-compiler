@@ -77,10 +77,10 @@ let define
 type command = string
 
 type builtin = {
-  build_ast_and_module_sets : t;
+  build_ast : t;
   (** TODO: Implement it on top of pp_flags *)
-  build_ast_and_module_sets_from_re : t ;
-  build_ast_and_module_sets_from_rei : t ;
+  build_ast_from_re : t ;
+  build_ast_from_rei : t ;
 
 
   (** platform dependent, on Win32,
@@ -179,15 +179,15 @@ let make_custom_rules
        Buffer.add_string buf " $in");
     Buffer.contents buf
   in  
-  let build_ast_and_module_sets =
+  let build_ast =
     define
       ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false ~explicit:`regular)
       "build_ast_and_module_sets" in
-  let build_ast_and_module_sets_from_re =
+  let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`impl)
       "build_ast_and_module_sets_from_re" in 
-  let build_ast_and_module_sets_from_rei =
+  let build_ast_from_rei =
     define
       ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true ~explicit:`intf)      
       "build_ast_and_module_sets_from_rei" in 
@@ -255,10 +255,10 @@ let make_custom_rules
       "build_package"
   in 
   {
-    build_ast_and_module_sets ;
+    build_ast ;
     (** TODO: Implement it on top of pp_flags *)
-    build_ast_and_module_sets_from_re  ;
-    build_ast_and_module_sets_from_rei ;
+    build_ast_from_re  ;
+    build_ast_from_rei ;
 
 
     (** platform dependent, on Win32,

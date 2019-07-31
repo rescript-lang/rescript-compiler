@@ -32,8 +32,8 @@ val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature laz
 val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
     
 type valid_input = 
-  | Ml 
-  | Mli
+  | Implementation
+  | Interface
   | Mlast    
   | Mliast 
   | Mlmap
