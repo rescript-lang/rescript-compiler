@@ -38,7 +38,7 @@ type builtin = {
   build_ast : t;
   (** TODO: Implement it on top of pp_flags *)
   build_ast_from_re : t ;
-  build_ast_from_rei : t ;
+  (* build_ast_from_rei : t ; *)
 
 
   (** platform dependent, on Win32,

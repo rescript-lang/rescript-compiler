@@ -128,7 +128,7 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_from_rei
+      ~rule:(if is_re then rules.build_ast_from_re
              else rules.build_ast)
     ;
     Bsb_ninja_util.output_build oc
