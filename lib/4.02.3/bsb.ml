@@ -9570,32 +9570,11 @@ let check (x : module_info)
   x.info <- Ml_mli;      
   x
 
-  
-let adjust_module_info 
-  (x : module_info option) 
-  (suffix : string) 
-  (name_sans_extension : string) 
-  (case : case) : module_info =
-  let dir = Filename.dirname name_sans_extension in 
-  let info, is_re = 
-    match suffix with 
-    | ".ml" -> Bsb_db.Ml, false
-    | ".re" -> Ml, true
-    | ".mli" -> Mli, false
-    | ".rei" -> Mli, true 
-    | _ -> 
-      Ext_pervasives.failwithf ~loc:__LOC__ 
-        "don't know what to do with %s%s" 
-        name_sans_extension suffix in 
-   match x with 
-    | None -> 
-      {dir ; name_sans_extension ; info ; is_re ; case }
-    | Some x -> 
-      check x name_sans_extension case is_re info      
-  
+
+
 let collect_module_by_filename 
   ~(dir : string) (map : t) (file_name : string) : t  = 
-  let module_name, upper = 
+  let module_name, case = 
     Ext_filename.module_name_with_case file_name in 
   let suffix = Ext_path.get_extension file_name in 
   let name_sans_extension = 
@@ -9603,11 +9582,25 @@ let collect_module_by_filename
   String_map.adjust 
     map
     module_name 
-    (fun (opt_module_info : module_info option)-> 
-       adjust_module_info 
-         opt_module_info
-         suffix 
-         name_sans_extension upper )
+    (fun  opt_module_info -> 
+       let dir = Filename.dirname name_sans_extension in 
+       let info, is_re = 
+         match suffix with 
+         | ".ml" -> Bsb_db.Ml, false
+         | ".re" -> Ml, true
+         | ".mli" -> Mli, false
+         | ".rei" -> Mli, true 
+         | _ -> 
+           Ext_pervasives.failwithf ~loc:__LOC__ 
+             "don't know what to do with %s%s" 
+             name_sans_extension suffix in 
+       match opt_module_info with 
+       | None -> 
+         {dir ; name_sans_extension ; info ; is_re ; case }
+       | Some x -> 
+         check x name_sans_extension case is_re info      
+
+    )
 
 end
 module Ext_option : sig 
