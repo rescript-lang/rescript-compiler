@@ -430,7 +430,7 @@ let interpret_json
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups = Bsb_parse_sources.scan
+        let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
             ~root: cwd
@@ -478,7 +478,7 @@ let interpret_json
           entries = extract_main_entries map;
           generators = extract_generators map ; 
           cut_generators ;
-             
+          number_of_dev_groups;   
         }
       | None -> 
           Bsb_exception.invalid_spec

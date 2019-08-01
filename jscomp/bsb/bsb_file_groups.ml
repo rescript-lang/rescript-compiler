@@ -48,11 +48,6 @@ type  file_group =
   }     
 
 type file_groups = file_group list 
-  (**
-    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
-     we need add a new line in the end,
-     otherwise it will be idented twice
-*)
 
 type t =   
   { files :  file_groups; 

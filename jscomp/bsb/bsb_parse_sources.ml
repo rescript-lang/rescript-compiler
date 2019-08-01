@@ -429,7 +429,8 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t = 
+  x : t * int = 
+  Bsb_dir_index.reset ();
   parse_sources {
     ignored_dirs;
     toplevel;
@@ -440,7 +441,7 @@ let scan
     namespace;
     bs_suffix;
     traverse = false
-  } x
+  } x, Bsb_dir_index.get_current_number_of_dev_groups ()
 
 
 

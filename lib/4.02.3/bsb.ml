@@ -4402,11 +4402,6 @@ type  file_group =
   }     
 
 type file_groups = file_group list 
-  (**
-    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
-     we need add a new line in the end,
-     otherwise it will be idented twice
-*)
 
 type t =   
   { files :  file_groups; 
@@ -7318,7 +7313,8 @@ type t =
     generators : command String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
-    gentype_config : gentype_config option
+    gentype_config : gentype_config option;
+    number_of_dev_groups : int
   }
 
 end
@@ -9763,7 +9759,7 @@ val scan :
   bs_suffix:bool -> 
   ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
-  Bsb_file_groups.t
+  Bsb_file_groups.t * int 
 
 (** This function has some duplication 
   from [scan],
@@ -10205,7 +10201,8 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t = 
+  x : t * int = 
+  Bsb_dir_index.reset ();
   parse_sources {
     ignored_dirs;
     toplevel;
@@ -10216,7 +10213,7 @@ let scan
     namespace;
     bs_suffix;
     traverse = false
-  } x
+  } x, Bsb_dir_index.get_current_number_of_dev_groups ()
 
 
 
@@ -11064,7 +11061,7 @@ let interpret_json
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups = Bsb_parse_sources.scan
+        let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
             ~root: cwd
@@ -11112,7 +11109,7 @@ let interpret_json
           entries = extract_main_entries map;
           generators = extract_generators map ; 
           cut_generators ;
-             
+          number_of_dev_groups;   
         }
       | None -> 
           Bsb_exception.invalid_spec
@@ -13426,6 +13423,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
+      number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
   
@@ -13481,8 +13479,7 @@ let output_ninja_and_namespace_map
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
   in        
-  let  bs_groups, bsc_lib_dirs, static_resources =
-    let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
+  let  bs_groups, bsc_lib_dirs, static_resources =    
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
         Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
