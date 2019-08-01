@@ -16873,7 +16873,8 @@ module Ext_namespace : sig
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : ns:string -> string -> string 
+val make : 
+  ?ns:string -> string -> string 
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -16950,8 +16951,10 @@ end = struct
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
+let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =

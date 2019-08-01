@@ -6250,7 +6250,8 @@ module Ext_namespace : sig
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : ns:string -> string -> string 
+val make : 
+  ?ns:string -> string -> string 
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -6327,8 +6328,10 @@ end = struct
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
+let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =
@@ -13110,6 +13113,10 @@ let make_common_shadows
        ]
     )   
   
+type module_output = {
+  output_cmj : string;
+  output_cmi : string
+}
 
 
 let emit_module_build
@@ -13123,7 +13130,7 @@ let emit_module_build
     ~is_re
     namespace
     filename_sans_extension
-  : unit =    
+  =    
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
@@ -13132,12 +13139,8 @@ let emit_module_build
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
-  let output_filename_sans_extension = 
-    match namespace with 
-    | None -> 
-      filename_sans_extension 
-    | Some ns -> 
-      Ext_namespace.make ~ns filename_sans_extension
+  let output_filename_sans_extension =  
+      Ext_namespace.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -13147,13 +13150,27 @@ let emit_module_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
+  let ast_rule =     
+    if is_re then 
+      rules.build_ast_from_re
+    else
+      rules.build_ast in 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
     ~input
-    ~rule:( if is_re then 
-              rules.build_ast_from_re
-            else
-              rules.build_ast);
+    ~rule:ast_rule;
+  Bsb_ninja_util.output_build
+    oc
+    ~output:output_d
+    ~inputs:(if no_intf_file then [] else [output_mliast])
+    ~input:output_mlast
+    ~rule:rules.build_bin_deps
+    ?shadows:(if is_dev then
+                Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                       op = 
+                         Overwrite (string_of_int (group_dir_index :> int)) }] 
+              else None)
+  ;  
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -13163,8 +13180,7 @@ let emit_module_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_from_re
-             else rules.build_ast)
+      ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi
@@ -13179,17 +13195,7 @@ let emit_module_build
              )
     ;
   end;
-  Bsb_ninja_util.output_build
-    oc
-    ~output:output_d
-    ~inputs:(if not no_intf_file then [output_mliast] else [])
-    ~input:output_mlast
-    ~rule:rules.build_bin_deps
-    ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
-              else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
-                          op = 
-                            Overwrite (string_of_int (group_dir_index :> int)) }])
-  ;
+
   let shadows =
     match js_post_build_cmd with
     | None -> common_shadows
@@ -13198,29 +13204,32 @@ let emit_module_build
        op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
       :: common_shadows
   in
-  let rule , cm_outputs, implicit_deps =
+  let rule =
     if no_intf_file then 
       (match is_re, is_dev with
       | true, false -> rules.re_cmj_cmi_js 
       | false, false ->  rules.ml_cmj_cmi_js
       | true, true -> rules.re_cmj_cmi_js_dev
       | false, true -> rules.ml_cmj_cmi_js_dev
-      ), [output_cmi], []
+      )
     else  
       (match is_re, is_dev with
       | true, false -> rules.re_cmj_js 
       | false, false -> rules.ml_cmj_js
       | true, true -> rules.re_cmj_js_dev
-      | false, true -> rules.ml_cmj_js_dev), []  , [output_cmi]
+      | false, true -> rules.ml_cmj_js_dev)
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
     ~shadows
-    ~implicit_outputs:  (output_js @ cm_outputs)
+    ~implicit_outputs:  
+      (if no_intf_file then output_cmi::output_js else output_js)
     ~input:output_mlast
-    ~implicit_deps
+    ~implicit_deps:(if no_intf_file then [] else [output_cmi])
     ~order_only_deps:[output_d]
     ~rule
+  (* ;
+  {output_cmj; output_cmi} *)
 
 
 
@@ -13231,9 +13240,9 @@ let handle_module_info
     js_post_build_cmd
     ~bs_suffix
     oc  module_name 
-    ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
+    (module_info : Bsb_db.module_info)
     namespace
-  : unit =
+  =
   emit_module_build  rules
     package_specs
     group_dir_index
@@ -13243,7 +13252,7 @@ let handle_module_info
     ~is_re:module_info.is_re
     js_post_build_cmd      
     namespace
-    input 
+    module_info.name_sans_extension
 
 
 
@@ -13275,7 +13284,7 @@ let handle_file_group
         oc 
         module_name 
         module_info
-        namespace      
+        namespace 
     )
 
     (* ; 
@@ -16975,9 +16984,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
   in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
-      match namespace with 
-      | None -> x 
-      | Some ns -> Ext_namespace.make ~ns x in 
+      Ext_namespace.make ?ns:namespace x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;
