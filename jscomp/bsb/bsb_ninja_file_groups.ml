@@ -210,7 +210,7 @@ let handle_module_info
     group_dir_index
     oc 
     ~bs_suffix
-    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~no_intf_file:(module_info.info <> Ml_mli)
     ~is_re:module_info.is_re
     js_post_build_cmd      
     namespace

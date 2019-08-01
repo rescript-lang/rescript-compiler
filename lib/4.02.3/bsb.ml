@@ -3473,23 +3473,16 @@ module Bsb_db : sig
 
 type case = bool 
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
 
-type ml_info =
-  | Ml_source
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
+
 
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string;
     is_re : bool;
     case : bool;
@@ -3552,17 +3545,15 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-type ml_info =
-  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+  
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string ; 
     is_re : bool;
     case : bool;
@@ -9552,61 +9543,56 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-      if module_info.ml_info = Ml_empty then
+      if module_info.info = Mli then
         Bsb_exception.no_implementation m 
     )    
 
 (* invariant check:
   ml and mli should have the same case, same path
 *)  
-let check (x : module_info) name_sans_extension case is_re =  
-  if x.name_sans_extension <> name_sans_extension || x.case <> case || x.is_re <> is_re then 
-    Bsb_exception.invalid_spec 
-      (Printf.sprintf 
-         "implementation and interface have different path names or different cases %s vs %s"
-         x.name_sans_extension name_sans_extension)
+let check (x : module_info) 
+  name_sans_extension 
+  case 
+  is_re 
+  (module_info : Bsb_db.info)
+  =  
+  let x_ml_info = x.info in  
+  (if x.name_sans_extension <> name_sans_extension 
+   || x.case <> case 
+   || x.is_re <> is_re 
+   || x_ml_info = module_info 
+   || x_ml_info = Ml_mli
+   then 
+     Bsb_exception.invalid_spec 
+       (Printf.sprintf 
+          "implementation and interface have different path names or different cases %s vs %s"
+          x.name_sans_extension name_sans_extension));
+  x.info <- Ml_mli;      
+  x
 
+  
 let adjust_module_info 
   (x : module_info option) 
   (suffix : string) 
   (name_sans_extension : string) 
   (case : case) : module_info =
   let dir = Filename.dirname name_sans_extension in 
-  match suffix with 
-  | ".ml" -> 
-    let ml_info : Bsb_db.ml_info = Ml_source  in 
-    (match x with 
+  let info, is_re = 
+    match suffix with 
+    | ".ml" -> Bsb_db.Ml, false
+    | ".re" -> Ml, true
+    | ".mli" -> Mli, false
+    | ".rei" -> Mli, true 
+    | _ -> 
+      Ext_pervasives.failwithf ~loc:__LOC__ 
+        "don't know what to do with %s%s" 
+        name_sans_extension suffix in 
+   match x with 
     | None -> 
-      {dir ; name_sans_extension ; ml_info ; mli_info = Mli_empty; is_re = false ; case }
+      {dir ; name_sans_extension ; info ; is_re ; case }
     | Some x -> 
-      check x name_sans_extension case false;
-      {x with ml_info })
-  | ".re" -> 
-    let ml_info  : Bsb_db.ml_info = Ml_source in
-    (match x with None -> 
-      {dir ; name_sans_extension; ml_info  ; mli_info = Mli_empty; is_re = true; case} 
-    | Some x -> 
-      check x name_sans_extension case true;
-      {x with ml_info})
-  | ".mli" ->  
-    let mli_info : Bsb_db.mli_info = Mli_source in 
-    (match x with None -> 
-      {dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = false; case}
-    | Some x -> 
-      check x name_sans_extension case false;
-      {x with mli_info })
-  | ".rei" -> 
-    let mli_info : Bsb_db.mli_info = Mli_source in
-    (match x with None -> 
-      { dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = true; case}
-    | Some x -> 
-      check x name_sans_extension case true;
-      { x with mli_info})
-  | _ -> 
-    Ext_pervasives.failwithf ~loc:__LOC__ 
-      "don't know what to do with %s%s" 
-      name_sans_extension suffix
-
+      check x name_sans_extension case is_re info      
+  
 let collect_module_by_filename 
   ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
@@ -13207,7 +13193,7 @@ let handle_module_info
     group_dir_index
     oc 
     ~bs_suffix
-    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~no_intf_file:(module_info.info <> Ml_mli)
     ~is_re:module_info.is_re
     js_post_build_cmd      
     namespace
