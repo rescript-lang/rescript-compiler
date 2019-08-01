@@ -13080,7 +13080,7 @@ let make_common_shadows
   
 
 
-let emit_impl_build
+let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
@@ -13202,7 +13202,7 @@ let handle_module_info
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : unit =
-  emit_impl_build  rules
+  emit_module_build  rules
     package_specs
     group_dir_index
     oc 
@@ -13236,16 +13236,21 @@ let handle_file_group
           String_set.mem set module_name in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
-      (handle_module_info rules
+      handle_module_info rules
         ~bs_suffix
-         group.dir_index 
-         package_specs js_post_build_cmd 
-         oc 
-         module_name 
-         module_info
-         namespace
-      )
-    ) 
+        group.dir_index 
+        package_specs js_post_build_cmd 
+        oc 
+        module_name 
+        module_info
+        namespace      
+    )
+
+    (* ; 
+    Bsb_ninja_util.phony
+    oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
+
+    (* pseuduo targets per directory *)
 
 
 let handle_file_groups
