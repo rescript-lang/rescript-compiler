@@ -3509,7 +3509,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 
@@ -3574,15 +3574,6 @@ type t = module_info String_map.t
 
 type ts = t array 
 (** indexed by the group *)
-
-
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
 
 
 let has_reason_files (map  : t ) = 
@@ -13276,7 +13267,8 @@ let handle_file_group
         | Export_set set ->  
           String_set.mem set module_name in
       if installable then 
-        String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
+        String_hash_set.add files_to_install 
+          module_info.name_sans_extension;
       handle_module_info rules
         ~bs_suffix
         group.dir_index 

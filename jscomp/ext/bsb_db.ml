@@ -50,15 +50,6 @@ type ts = t array
 (** indexed by the group *)
 
 
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
-
-
 let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ {is_re} -> is_re)  
 

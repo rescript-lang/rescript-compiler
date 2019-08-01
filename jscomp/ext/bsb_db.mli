@@ -68,7 +68,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 

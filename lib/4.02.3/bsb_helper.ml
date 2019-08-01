@@ -3479,7 +3479,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 
@@ -3544,15 +3544,6 @@ type t = module_info String_map.t
 
 type ts = t array 
 (** indexed by the group *)
-
-
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
 
 
 let has_reason_files (map  : t ) = 
