@@ -96,6 +96,25 @@ let emit_bsc_lib_includes
           )))  oc 
 
 
+let output_static_resources 
+    (static_resources : string list) 
+    copy_rule 
+    oc
+  = 
+  Ext_list.iter static_resources (fun output -> 
+      Bsb_ninja_util.output_build
+        oc
+        ~output
+        ~input:(Bsb_config.proj_rel output)
+        ~rule:copy_rule);
+  if static_resources <> [] then
+    Bsb_ninja_util.phony
+      oc
+      ~order_only_deps:static_resources 
+      ~inputs:[]
+      ~output:Literals.build_ninja         
+
+
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
@@ -237,12 +256,7 @@ let output_ninja_and_namespace_map
       generators in 
   
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
-  Ext_list.iter static_resources (fun output -> 
-      Bsb_ninja_util.output_build
-        oc
-        ~output
-        ~input:(Bsb_config.proj_rel output)
-        ~rule:rules.copy_resources);
+  output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
     ~bs_suffix     
@@ -253,12 +267,7 @@ let output_ninja_and_namespace_map
     bs_file_groups 
     namespace
     ;
-  if static_resources <> [] then
-    Bsb_ninja_util.phony
-      oc
-      ~order_only_deps:static_resources 
-      ~inputs:[]
-      ~output:Literals.build_ninja ;
+
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
         cwd // Bsb_config.lib_bs  in
