@@ -13986,13 +13986,17 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
-    Bsb_build_util.mkp lib_bs_dir; 
+    
     let config = 
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
         ~toplevel
         cwd in 
+    (* create directory, lib/bs, lib/js, lib/es6 etc *)    
+    Bsb_build_util.mkp lib_bs_dir;         
+    Bsb_package_specs.list_dirs_by config.package_specs
+      (fun x -> Unix.mkdir (cwd // x) 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
@@ -14002,8 +14006,7 @@ let regenerate_ninja
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~cwd ~bsc_dir ~toplevel config ;             
-    Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> Bsb_build_util.mkp (cwd // x));
+    
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
