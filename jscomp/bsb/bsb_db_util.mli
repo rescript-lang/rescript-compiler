@@ -40,5 +40,10 @@ val sanity_check : Bsb_db.t -> unit
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
-val collect_module_by_filename : 
-  dir:string -> Bsb_db.t ->  string -> Bsb_db.t
+
+val add_basename:
+  dir:string -> 
+  Bsb_db.t ->  
+  error_on_invalid_suffix:bool-> 
+  string -> 
+  Bsb_db.t

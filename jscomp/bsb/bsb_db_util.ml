@@ -78,33 +78,56 @@ let check (x : module_info)
   x
 
 
+let warning_unused_file : _ format = 
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
-let collect_module_by_filename 
-  ~(dir : string) (map : t) (file_name : string) : t  = 
-  let module_name, case = 
-    Ext_filename.module_name_with_case file_name in 
-  let suffix = Ext_path.get_extension file_name in 
-  let name_sans_extension = 
-     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
-  String_map.adjust 
-    map
-    module_name 
-    (fun  opt_module_info -> 
-       let dir = Filename.dirname name_sans_extension in 
-       let info, is_re = 
-         match suffix with 
-         | ".ml" -> Bsb_db.Ml, false
-         | ".re" -> Ml, true
-         | ".mli" -> Mli, false
-         | ".rei" -> Mli, true 
-         | _ -> 
-           Ext_pervasives.failwithf ~loc:__LOC__ 
-             "don't know what to do with %s%s" 
-             name_sans_extension suffix in 
-       match opt_module_info with 
-       | None -> 
-         {dir ; name_sans_extension ; info ; is_re ; case }
-       | Some x -> 
-         check x name_sans_extension case is_re info      
+let add_basename
+    ~(dir:string) 
+    (map : t)  
+    ~(error_on_invalid_suffix:bool)
+    basename =   
+  let info = ref Bsb_db.Ml in   
+  let is_re = ref false in 
+  let invalid_suffix = ref false in
+  (match Ext_filename.get_extension_maybe basename with 
+   | ".ml" -> 
+     () 
+   | ".re" ->
+     is_re := true
+   | ".mli" -> 
+     info := Mli
+   | ".rei" -> 
+     info := Mli;
+     is_re := true 
+   | _ -> 
+     invalid_suffix := true
 
-    )
+  );   
+  let info= !info in 
+  let is_re = !is_re in 
+  let invalid_suffix = !invalid_suffix in 
+  if invalid_suffix then 
+    if error_on_invalid_suffix then 
+      Ext_pervasives.failwithf ~loc:__LOC__ 
+        "don't know what to do with %s invalid suffix" 
+        basename 
+    else map      
+  else  
+    match Ext_filename.as_module ~basename:(Filename.basename basename) with 
+    | None -> 
+      Bsb_log.warn warning_unused_file basename dir; 
+      map 
+    | Some {module_name; case} ->     
+      let name_sans_extension = 
+        Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+      let dir = Filename.dirname name_sans_extension in                
+      String_map.adjust 
+        map
+        module_name 
+        (fun  opt_module_info -> 
+           match opt_module_info with 
+           | None -> 
+             {dir ; name_sans_extension ; info ; is_re ; case }
+           | Some x -> 
+             check x name_sans_extension case is_re info      
+        )

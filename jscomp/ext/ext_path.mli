@@ -54,7 +54,7 @@ val combine :
        get_extension "a" = ""
    ]}
 *)
-val get_extension : string -> string
+
 
 
 

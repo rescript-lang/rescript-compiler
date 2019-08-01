@@ -39,8 +39,6 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
       Ext_list.exists output it_is
     ) 
 
-let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 let errorf x fmt = 
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
@@ -156,13 +154,8 @@ let extract_generators
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
-              Ext_list.iter output (fun  output -> 
-                  match Ext_string.is_valid_source_name output with
-                  | Good ->
-                    cur_sources := Bsb_db_util.collect_module_by_filename ~dir !cur_sources output
-                  | Invalid_module_name ->                  
-                    Bsb_log.warn warning_unused_file output dir 
-                  | Suffix_mismatch -> ()                
+              cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
+                  Bsb_db_util.add_basename ~dir acc output ~error_on_invalid_suffix:false
                 )
             | _ ->
               errorf x "Invalid generator format")
@@ -278,33 +271,27 @@ let rec
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-    let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
     begin 
       match String_map.find_opt input Bsb_build_schemas.files with 
       | None ->  (* No setting on [!files]*)
         (** We should avoid temporary files *)
         cur_sources := 
-          Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then acc 
+          Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+              if is_input_or_output generators basename then acc 
               else 
-                match Ext_string.is_valid_source_name name with 
-                | Good -> 
-                  Bsb_db_util.collect_module_by_filename  ~dir acc name 
-                | Invalid_module_name ->
-                  Bsb_log.warn warning_unused_file name dir; 
-                  acc 
-                | Suffix_mismatch ->  acc
+                Bsb_db_util.add_basename ~dir acc basename  ~error_on_invalid_suffix:false              
             ) ;
         cur_globbed_dirs :=  [dir]        
-      | Some (Arr sx ) -> 
+      | Some (Arr basenames ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
-              match s with 
-              | Str str -> 
-                Bsb_db_util.collect_module_by_filename ~dir acc str.str
+          Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
+              match basename with 
+              | Str {str = basename} -> 
+                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:true
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -325,10 +312,10 @@ let rec
             fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-        cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-            if is_input_or_output generators name || not (predicate name) then acc 
+        cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+            if is_input_or_output generators basename || not (predicate basename) then acc 
             else 
-              Bsb_db_util.collect_module_by_filename  ~dir acc name 
+              Bsb_db_util.add_basename  ~dir acc basename ~error_on_invalid_suffix:false
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;
@@ -343,7 +330,7 @@ let rec
       | Some (True _), _ -> 
         let root = cxt.root in 
         let parent = Filename.concat root dir in
-        Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
+        Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (String_set.mem cxt.ignored_dirs x) && 
                 Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge

@@ -1115,15 +1115,6 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
-
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -1494,42 +1485,6 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file (s : string) = 
-  let len = String.length s in 
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'A' .. 'Z'
-  | 'a' .. 'z' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-
-
-type check_result = 
-  | Good 
-  | Invalid_module_name 
-  | Suffix_mismatch
-  (** 
-     TODO: move to another module 
-     Make {!Ext_filename} not stateful
-  *)
-let is_valid_source_name name : check_result =
-  match check_any_suffix_case_then_chop name [
-      ".ml"; 
-      ".re";
-      ".mli"; 
-      ".rei"
-    ] with 
-  | None -> Suffix_mismatch
-  | Some x -> 
-    if is_valid_module_file  x then
-      Good
-    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  last_idx = 
@@ -4821,7 +4776,7 @@ val combine :
        get_extension "a" = ""
    ]}
 *)
-val get_extension : string -> string
+
 
 
 
@@ -5004,10 +4959,6 @@ let combine path1 path2 =
 
 
 
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
 
 
 let (//) x y =
@@ -6063,11 +6014,19 @@ val module_name:
   string ->
   string
 
-(** return [true] if upper case *)
-val module_name_with_case:  
-  string -> 
-  string * bool
-  
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6184,23 +6143,67 @@ let module_name name =
   let name_len = String.length name in 
   search_dot (name_len - 1)  name 
 
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
 
-let module_name_with_case name =  
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
     else 
     if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
     else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name, 
-  (name_len > 0 &&
-    let first_char = String.unsafe_get name 0 in
-    (first_char >= 'A' && first_char <= 'Z'))
-
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -9486,9 +9489,13 @@ val sanity_check : Bsb_db.t -> unit
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
-val collect_module_by_filename : 
-  dir:string -> Bsb_db.t ->  string -> Bsb_db.t
 
+val add_basename:
+  dir:string -> 
+  Bsb_db.t ->  
+  error_on_invalid_suffix:bool-> 
+  string -> 
+  Bsb_db.t
 end = struct
 #1 "bsb_db_util.ml"
 
@@ -9571,36 +9578,59 @@ let check (x : module_info)
   x
 
 
+let warning_unused_file : _ format = 
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
-let collect_module_by_filename 
-  ~(dir : string) (map : t) (file_name : string) : t  = 
-  let module_name, case = 
-    Ext_filename.module_name_with_case file_name in 
-  let suffix = Ext_path.get_extension file_name in 
-  let name_sans_extension = 
-     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
-  String_map.adjust 
-    map
-    module_name 
-    (fun  opt_module_info -> 
-       let dir = Filename.dirname name_sans_extension in 
-       let info, is_re = 
-         match suffix with 
-         | ".ml" -> Bsb_db.Ml, false
-         | ".re" -> Ml, true
-         | ".mli" -> Mli, false
-         | ".rei" -> Mli, true 
-         | _ -> 
-           Ext_pervasives.failwithf ~loc:__LOC__ 
-             "don't know what to do with %s%s" 
-             name_sans_extension suffix in 
-       match opt_module_info with 
-       | None -> 
-         {dir ; name_sans_extension ; info ; is_re ; case }
-       | Some x -> 
-         check x name_sans_extension case is_re info      
+let add_basename
+    ~(dir:string) 
+    (map : t)  
+    ~(error_on_invalid_suffix:bool)
+    basename =   
+  let info = ref Bsb_db.Ml in   
+  let is_re = ref false in 
+  let invalid_suffix = ref false in
+  (match Ext_filename.get_extension_maybe basename with 
+   | ".ml" -> 
+     () 
+   | ".re" ->
+     is_re := true
+   | ".mli" -> 
+     info := Mli
+   | ".rei" -> 
+     info := Mli;
+     is_re := true 
+   | _ -> 
+     invalid_suffix := true
 
-    )
+  );   
+  let info= !info in 
+  let is_re = !is_re in 
+  let invalid_suffix = !invalid_suffix in 
+  if invalid_suffix then 
+    if error_on_invalid_suffix then 
+      Ext_pervasives.failwithf ~loc:__LOC__ 
+        "don't know what to do with %s invalid suffix" 
+        basename 
+    else map      
+  else  
+    match Ext_filename.as_module ~basename:(Filename.basename basename) with 
+    | None -> 
+      Bsb_log.warn warning_unused_file basename dir; 
+      map 
+    | Some {module_name; case} ->     
+      let name_sans_extension = 
+        Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+      let dir = Filename.dirname name_sans_extension in                
+      String_map.adjust 
+        map
+        module_name 
+        (fun  opt_module_info -> 
+           match opt_module_info with 
+           | None -> 
+             {dir ; name_sans_extension ; info ; is_re ; case }
+           | Some x -> 
+             check x name_sans_extension case is_re info      
+        )
 
 end
 module Ext_option : sig 
@@ -9784,8 +9814,6 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
       Ext_list.exists output it_is
     ) 
 
-let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 let errorf x fmt = 
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
@@ -9901,13 +9929,8 @@ let extract_generators
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
-              Ext_list.iter output (fun  output -> 
-                  match Ext_string.is_valid_source_name output with
-                  | Good ->
-                    cur_sources := Bsb_db_util.collect_module_by_filename ~dir !cur_sources output
-                  | Invalid_module_name ->                  
-                    Bsb_log.warn warning_unused_file output dir 
-                  | Suffix_mismatch -> ()                
+              cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
+                  Bsb_db_util.add_basename ~dir acc output ~error_on_invalid_suffix:false
                 )
             | _ ->
               errorf x "Invalid generator format")
@@ -10023,33 +10046,27 @@ let rec
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-    let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
     begin 
       match String_map.find_opt input Bsb_build_schemas.files with 
       | None ->  (* No setting on [!files]*)
         (** We should avoid temporary files *)
         cur_sources := 
-          Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then acc 
+          Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+              if is_input_or_output generators basename then acc 
               else 
-                match Ext_string.is_valid_source_name name with 
-                | Good -> 
-                  Bsb_db_util.collect_module_by_filename  ~dir acc name 
-                | Invalid_module_name ->
-                  Bsb_log.warn warning_unused_file name dir; 
-                  acc 
-                | Suffix_mismatch ->  acc
+                Bsb_db_util.add_basename ~dir acc basename  ~error_on_invalid_suffix:false              
             ) ;
         cur_globbed_dirs :=  [dir]        
-      | Some (Arr sx ) -> 
+      | Some (Arr basenames ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
-              match s with 
-              | Str str -> 
-                Bsb_db_util.collect_module_by_filename ~dir acc str.str
+          Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
+              match basename with 
+              | Str {str = basename} -> 
+                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:true
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -10070,10 +10087,10 @@ let rec
             fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-        cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-            if is_input_or_output generators name || not (predicate name) then acc 
+        cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+            if is_input_or_output generators basename || not (predicate basename) then acc 
             else 
-              Bsb_db_util.collect_module_by_filename  ~dir acc name 
+              Bsb_db_util.add_basename  ~dir acc basename ~error_on_invalid_suffix:false
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;
@@ -10088,7 +10105,7 @@ let rec
       | Some (True _), _ -> 
         let root = cxt.root in 
         let parent = Filename.concat root dir in
-        Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
+        Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (String_set.mem cxt.ignored_dirs x) && 
                 Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge

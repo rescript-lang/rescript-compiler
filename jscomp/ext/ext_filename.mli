@@ -70,8 +70,16 @@ val module_name:
   string ->
   string
 
-(** return [true] if upper case *)
-val module_name_with_case:  
-  string -> 
-  string * bool
-  
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option

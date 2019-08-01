@@ -145,15 +145,6 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
-
 
 val no_char : string -> char -> int -> int -> bool 
 

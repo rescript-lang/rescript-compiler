@@ -134,10 +134,6 @@ let combine path1 path2 =
 
 
 
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
 
 
 let (//) x y =

@@ -69,7 +69,7 @@ let suites =
              (function 'A' .. 'Z' -> true | _ -> false)));             
     end; 
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
         ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
@@ -82,6 +82,17 @@ let suites =
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
         ; "-.ml"
         ]
+    end; *)
+    __LOC__ >:: begin fun _ -> 
+      Ext_filename.module_name "a/hello.ml" =~ "Hello";
+      Ext_filename.as_module ~basename:"a.ml" =~ Some {module_name = "A"; case = false};
+      Ext_filename.as_module ~basename:"Aa.ml" =~ Some {module_name = "Aa"; case = true};
+      Ext_filename.as_module ~basename:"_Aa.ml" =~ None;
+      Ext_filename.as_module ~basename:"A_a" =~ Some {module_name = "A_a"; case = true};
+      Ext_filename.as_module ~basename:"" =~ None;
+      Ext_filename.as_module ~basename:"a/hello.ml" =~ 
+        None
+
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
