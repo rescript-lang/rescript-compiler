@@ -1,10 +1,18 @@
 {
   "name": "a0002",
   "version": "0.1.0",
-  "sources": {
+  "sources": [{
     "dir" : ".",
     "subdirs" : false
-  },
+  }, {
+    "dir": "re",
+    "files" : {
+      "slow-re": "hexll\\.*.ml"
+    }},
+    {"dir":"files",
+      "files" : ["hello00.ml"]
+  
+  }],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
