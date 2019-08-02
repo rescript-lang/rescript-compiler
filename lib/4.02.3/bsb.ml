@@ -1115,15 +1115,6 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
-
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -1494,42 +1485,6 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file (s : string) = 
-  let len = String.length s in 
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'A' .. 'Z'
-  | 'a' .. 'z' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-
-
-type check_result = 
-  | Good 
-  | Invalid_module_name 
-  | Suffix_mismatch
-  (** 
-     TODO: move to another module 
-     Make {!Ext_filename} not stateful
-  *)
-let is_valid_source_name name : check_result =
-  match check_any_suffix_case_then_chop name [
-      ".ml"; 
-      ".re";
-      ".mli"; 
-      ".rei"
-    ] with 
-  | None -> Suffix_mismatch
-  | Some x -> 
-    if is_valid_module_file  x then
-      Good
-    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  last_idx = 
@@ -3473,23 +3428,16 @@ module Bsb_db : sig
 
 type case = bool 
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
 
-type ml_info =
-  | Ml_source
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
+
 
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string;
     is_re : bool;
     case : bool;
@@ -3509,7 +3457,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 
@@ -3552,17 +3500,15 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-type ml_info =
-  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+  
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string ; 
     is_re : bool;
     case : bool;
@@ -3574,15 +3520,6 @@ type t = module_info String_map.t
 
 type ts = t array 
 (** indexed by the group *)
-
-
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
 
 
 let has_reason_files (map  : t ) = 
@@ -4402,11 +4339,6 @@ type  file_group =
   }     
 
 type file_groups = file_group list 
-  (**
-    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
-     we need add a new line in the end,
-     otherwise it will be idented twice
-*)
 
 type t =   
   { files :  file_groups; 
@@ -4844,7 +4776,7 @@ val combine :
        get_extension "a" = ""
    ]}
 *)
-val get_extension : string -> string
+
 
 
 
@@ -5027,10 +4959,6 @@ let combine path1 path2 =
 
 
 
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
 
 
 let (//) x y =
@@ -6086,11 +6014,19 @@ val module_name:
   string ->
   string
 
-(** return [true] if upper case *)
-val module_name_with_case:  
-  string -> 
-  string * bool
-  
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6207,23 +6143,67 @@ let module_name name =
   let name_len = String.length name in 
   search_dot (name_len - 1)  name 
 
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
 
-let module_name_with_case name =  
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
     else 
     if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
     else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name, 
-  (name_len > 0 &&
-    let first_char = String.unsafe_get name 0 in
-    (first_char >= 'A' && first_char <= 'Z'))
-
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -6255,7 +6235,8 @@ module Ext_namespace : sig
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : ns:string -> string -> string 
+val make : 
+  ?ns:string -> string -> string 
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -6332,8 +6313,10 @@ end = struct
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
+let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =
@@ -7318,7 +7301,8 @@ type t =
     generators : command String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
-    gentype_config : gentype_config option
+    gentype_config : gentype_config option;
+    number_of_dev_groups : int
   }
 
 end
@@ -9505,9 +9489,13 @@ val sanity_check : Bsb_db.t -> unit
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
-val collect_module_by_filename : 
-  dir:string -> Bsb_db.t ->  string -> Bsb_db.t
 
+val add_basename:
+  dir:string -> 
+  Bsb_db.t ->  
+  ?error_on_invalid_suffix:Ext_position.t-> 
+  string -> 
+  Bsb_db.t
 end = struct
 #1 "bsb_db_util.ml"
 
@@ -9562,76 +9550,87 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-      if module_info.ml_info = Ml_empty then
+      if module_info.info = Mli then
         Bsb_exception.no_implementation m 
     )    
 
 (* invariant check:
   ml and mli should have the same case, same path
 *)  
-let check (x : module_info) name_sans_extension case is_re =  
-  if x.name_sans_extension <> name_sans_extension || x.case <> case || x.is_re <> is_re then 
-    Bsb_exception.invalid_spec 
-      (Printf.sprintf 
-         "implementation and interface have different path names or different cases %s vs %s"
-         x.name_sans_extension name_sans_extension)
+let check (x : module_info) 
+  name_sans_extension 
+  case 
+  is_re 
+  (module_info : Bsb_db.info)
+  =  
+  let x_ml_info = x.info in  
+  (if x.name_sans_extension <> name_sans_extension 
+   || x.case <> case 
+   || x.is_re <> is_re 
+   || x_ml_info = module_info 
+   || x_ml_info = Ml_mli
+   then 
+     Bsb_exception.invalid_spec 
+       (Printf.sprintf 
+          "implementation and interface have different path names or different cases %s vs %s"
+          x.name_sans_extension name_sans_extension));
+  x.info <- Ml_mli;      
+  x
 
-let adjust_module_info 
-  (x : module_info option) 
-  (suffix : string) 
-  (name_sans_extension : string) 
-  (case : case) : module_info =
-  let dir = Filename.dirname name_sans_extension in 
-  match suffix with 
-  | ".ml" -> 
-    let ml_info : Bsb_db.ml_info = Ml_source  in 
-    (match x with 
+
+let warning_unused_file : _ format = 
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+
+let add_basename
+    ~(dir:string) 
+    (map : t)  
+    ?(error_on_invalid_suffix)
+    basename =   
+  let info = ref Bsb_db.Ml in   
+  let is_re = ref false in 
+  let invalid_suffix = ref false in
+  (match Ext_filename.get_extension_maybe basename with 
+   | ".ml" -> 
+     () 
+   | ".re" ->
+     is_re := true
+   | ".mli" -> 
+     info := Mli
+   | ".rei" -> 
+     info := Mli;
+     is_re := true 
+   | _ -> 
+     invalid_suffix := true
+
+  );   
+  let info= !info in 
+  let is_re = !is_re in 
+  let invalid_suffix = !invalid_suffix in 
+  if invalid_suffix then 
+    match error_on_invalid_suffix with
+    | None -> map 
+    | Some loc -> 
+      Bsb_exception.errorf ~loc:loc
+        "invalid suffix %s" basename
+  else  
+    match Ext_filename.as_module ~basename:(Filename.basename basename) with 
     | None -> 
-      {dir ; name_sans_extension ; ml_info ; mli_info = Mli_empty; is_re = false ; case }
-    | Some x -> 
-      check x name_sans_extension case false;
-      {x with ml_info })
-  | ".re" -> 
-    let ml_info  : Bsb_db.ml_info = Ml_source in
-    (match x with None -> 
-      {dir ; name_sans_extension; ml_info  ; mli_info = Mli_empty; is_re = true; case} 
-    | Some x -> 
-      check x name_sans_extension case true;
-      {x with ml_info})
-  | ".mli" ->  
-    let mli_info : Bsb_db.mli_info = Mli_source in 
-    (match x with None -> 
-      {dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = false; case}
-    | Some x -> 
-      check x name_sans_extension case false;
-      {x with mli_info })
-  | ".rei" -> 
-    let mli_info : Bsb_db.mli_info = Mli_source in
-    (match x with None -> 
-      { dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = true; case}
-    | Some x -> 
-      check x name_sans_extension case true;
-      { x with mli_info})
-  | _ -> 
-    Ext_pervasives.failwithf ~loc:__LOC__ 
-      "don't know what to do with %s%s" 
-      name_sans_extension suffix
-
-let collect_module_by_filename 
-  ~(dir : string) (map : t) (file_name : string) : t  = 
-  let module_name, upper = 
-    Ext_filename.module_name_with_case file_name in 
-  let suffix = Ext_path.get_extension file_name in 
-  let name_sans_extension = 
-     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
-  String_map.adjust 
-    map
-    module_name 
-    (fun (opt_module_info : module_info option)-> 
-       adjust_module_info 
-         opt_module_info
-         suffix 
-         name_sans_extension upper )
+      Bsb_log.warn warning_unused_file basename dir; 
+      map 
+    | Some {module_name; case} ->     
+      let name_sans_extension = 
+        Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+      let dir = Filename.dirname name_sans_extension in                
+      String_map.adjust 
+        map
+        module_name 
+        (fun  opt_module_info -> 
+           match opt_module_info with 
+           | None -> 
+             {dir ; name_sans_extension ; info ; is_re ; case }
+           | Some x -> 
+             check x name_sans_extension case is_re info      
+        )
 
 end
 module Ext_option : sig 
@@ -9763,7 +9762,7 @@ val scan :
   bs_suffix:bool -> 
   ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
-  Bsb_file_groups.t
+  Bsb_file_groups.t * int 
 
 (** This function has some duplication 
   from [scan],
@@ -9815,8 +9814,6 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
       Ext_list.exists output it_is
     ) 
 
-let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 let errorf x fmt = 
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
@@ -9932,13 +9929,8 @@ let extract_generators
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
-              Ext_list.iter output (fun  output -> 
-                  match Ext_string.is_valid_source_name output with
-                  | Good ->
-                    cur_sources := Bsb_db_util.collect_module_by_filename ~dir !cur_sources output
-                  | Invalid_module_name ->                  
-                    Bsb_log.warn warning_unused_file output dir 
-                  | Suffix_mismatch -> ()                
+              cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
+                  Bsb_db_util.add_basename ~dir acc output 
                 )
             | _ ->
               errorf x "Invalid generator format")
@@ -10054,33 +10046,27 @@ let rec
         cur_sources
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-    let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
     begin 
       match String_map.find_opt input Bsb_build_schemas.files with 
       | None ->  (* No setting on [!files]*)
         (** We should avoid temporary files *)
         cur_sources := 
-          Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-              if is_input_or_output generators name then acc 
+          Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+              if is_input_or_output generators basename then acc 
               else 
-                match Ext_string.is_valid_source_name name with 
-                | Good -> 
-                  Bsb_db_util.collect_module_by_filename  ~dir acc name 
-                | Invalid_module_name ->
-                  Bsb_log.warn warning_unused_file name dir; 
-                  acc 
-                | Suffix_mismatch ->  acc
+                Bsb_db_util.add_basename ~dir acc basename 
             ) ;
         cur_globbed_dirs :=  [dir]        
-      | Some (Arr sx ) -> 
+      | Some (Arr basenames ) -> 
         (* [ a,b ] populated by users themselves 
            TODO: still need check?
         *)      
         cur_sources := 
-          Ext_array.fold_left sx.content !cur_sources (fun acc s ->
-              match s with 
-              | Str str -> 
-                Bsb_db_util.collect_module_by_filename ~dir acc str.str
+          Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
+              match basename with 
+              | Str {str = basename;loc} -> 
+                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -10101,10 +10087,10 @@ let rec
             fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-        cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-            if is_input_or_output generators name || not (predicate name) then acc 
+        cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+            if is_input_or_output generators basename || not (predicate basename) then acc 
             else 
-              Bsb_db_util.collect_module_by_filename  ~dir acc name 
+              Bsb_db_util.add_basename  ~dir acc basename 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;
@@ -10119,7 +10105,7 @@ let rec
       | Some (True _), _ -> 
         let root = cxt.root in 
         let parent = Filename.concat root dir in
-        Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
+        Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (String_set.mem cxt.ignored_dirs x) && 
                 Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
@@ -10205,18 +10191,21 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t = 
-  parse_sources {
-    ignored_dirs;
-    toplevel;
-    dir_index = Bsb_dir_index.lib_dir_index;
-    cwd = Filename.current_dir_name;
-    root ;
-    cut_generators;
-    namespace;
-    bs_suffix;
-    traverse = false
-  } x
+  x : t * int = 
+  Bsb_dir_index.reset ();
+  let output = 
+    parse_sources {
+      ignored_dirs;
+      toplevel;
+      dir_index = Bsb_dir_index.lib_dir_index;
+      cwd = Filename.current_dir_name;
+      root ;
+      cut_generators;
+      namespace;
+      bs_suffix;
+      traverse = false
+    } x in 
+  output, Bsb_dir_index.get_current_number_of_dev_groups ()
 
 
 
@@ -11064,7 +11053,7 @@ let interpret_json
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups = Bsb_parse_sources.scan
+        let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
             ~root: cwd
@@ -11112,7 +11101,7 @@ let interpret_json
           entries = extract_main_entries map;
           generators = extract_generators map ; 
           cut_generators ;
-             
+          number_of_dev_groups;   
         }
       | None -> 
           Bsb_exception.invalid_spec
@@ -12471,7 +12460,12 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name  =
+let print_rule (oc : out_channel) 
+  ~description 
+  ?(restat : unit option)  
+  ?dyndep 
+  ~command   
+  name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   Ext_option.iter dyndep (fun f ->
@@ -13078,7 +13072,7 @@ let make_common_shadows
   
 
 
-let emit_impl_build
+let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
@@ -13089,7 +13083,7 @@ let emit_impl_build
     ~is_re
     namespace
     filename_sans_extension
-  : unit =    
+  =    
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
@@ -13098,12 +13092,8 @@ let emit_impl_build
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
-  let output_filename_sans_extension = 
-    match namespace with 
-    | None -> 
-      filename_sans_extension 
-    | Some ns -> 
-      Ext_namespace.make ~ns filename_sans_extension
+  let output_filename_sans_extension =  
+      Ext_namespace.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -13113,13 +13103,27 @@ let emit_impl_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
+  let ast_rule =     
+    if is_re then 
+      rules.build_ast_from_re
+    else
+      rules.build_ast in 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
     ~input
-    ~rule:( if is_re then 
-              rules.build_ast_from_re
-            else
-              rules.build_ast);
+    ~rule:ast_rule;
+  Bsb_ninja_util.output_build
+    oc
+    ~output:output_d
+    ~inputs:(if no_intf_file then [] else [output_mliast])
+    ~input:output_mlast
+    ~rule:rules.build_bin_deps
+    ?shadows:(if is_dev then
+                Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                       op = 
+                         Overwrite (string_of_int (group_dir_index :> int)) }] 
+              else None)
+  ;  
   if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
       ~output:output_mliast
@@ -13129,8 +13133,7 @@ let emit_impl_build
       ~input:(Bsb_config.proj_rel 
                 (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                  else filename_sans_extension ^ Literals.suffix_mli))
-      ~rule:(if is_re then rules.build_ast_from_re
-             else rules.build_ast)
+      ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc
       ~output:output_cmi
@@ -13145,17 +13148,7 @@ let emit_impl_build
              )
     ;
   end;
-  Bsb_ninja_util.output_build
-    oc
-    ~output:output_d
-    ~inputs:(if not no_intf_file then [output_mliast] else [])
-    ~input:output_mlast
-    ~rule:rules.build_bin_deps
-    ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
-              else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
-                          op = 
-                            Overwrite (string_of_int (group_dir_index :> int)) }])
-  ;
+
   let shadows =
     match js_post_build_cmd with
     | None -> common_shadows
@@ -13164,29 +13157,32 @@ let emit_impl_build
        op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
       :: common_shadows
   in
-  let rule , cm_outputs, implicit_deps =
+  let rule =
     if no_intf_file then 
       (match is_re, is_dev with
       | true, false -> rules.re_cmj_cmi_js 
       | false, false ->  rules.ml_cmj_cmi_js
       | true, true -> rules.re_cmj_cmi_js_dev
       | false, true -> rules.ml_cmj_cmi_js_dev
-      ), [output_cmi], []
+      )
     else  
       (match is_re, is_dev with
       | true, false -> rules.re_cmj_js 
       | false, false -> rules.ml_cmj_js
       | true, true -> rules.re_cmj_js_dev
-      | false, true -> rules.ml_cmj_js_dev), []  , [output_cmi]
+      | false, true -> rules.ml_cmj_js_dev)
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj
     ~shadows
-    ~implicit_outputs:  (output_js @ cm_outputs)
+    ~implicit_outputs:  
+      (if no_intf_file then output_cmi::output_js else output_js)
     ~input:output_mlast
-    ~implicit_deps
+    ~implicit_deps:(if no_intf_file then [] else [output_cmi])
     ~order_only_deps:[output_d]
     ~rule
+  (* ;
+  {output_cmj; output_cmi} *)
 
 
 
@@ -13197,19 +13193,19 @@ let handle_module_info
     js_post_build_cmd
     ~bs_suffix
     oc  module_name 
-    ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
+    (module_info : Bsb_db.module_info)
     namespace
-  : unit =
-  emit_impl_build  rules
+  =
+  emit_module_build  rules
     package_specs
     group_dir_index
     oc 
     ~bs_suffix
-    ~no_intf_file:(module_info.mli_info = Mli_empty)
+    ~no_intf_file:(module_info.info <> Ml_mli)
     ~is_re:module_info.is_re
     js_post_build_cmd      
     namespace
-    input 
+    module_info.name_sans_extension
 
 
 
@@ -13233,17 +13229,23 @@ let handle_file_group
         | Export_set set ->  
           String_set.mem set module_name in
       if installable then 
-        String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
-      (handle_module_info rules
+        String_hash_set.add files_to_install 
+          module_info.name_sans_extension;
+      handle_module_info rules
         ~bs_suffix
-         group.dir_index 
-         package_specs js_post_build_cmd 
-         oc 
-         module_name 
-         module_info
-         namespace
-      )
-    ) 
+        group.dir_index 
+        package_specs js_post_build_cmd 
+        oc 
+        module_name 
+        module_info
+        namespace 
+    )
+
+    (* ; 
+    Bsb_ninja_util.phony
+    oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
+
+    (* pseuduo targets per directory *)
 
 
 let handle_file_groups
@@ -13400,6 +13402,25 @@ let emit_bsc_lib_includes
           )))  oc 
 
 
+let output_static_resources 
+    (static_resources : string list) 
+    copy_rule 
+    oc
+  = 
+  Ext_list.iter static_resources (fun output -> 
+      Bsb_ninja_util.output_build
+        oc
+        ~output
+        ~input:(Bsb_config.proj_rel output)
+        ~rule:copy_rule);
+  if static_resources <> [] then
+    Bsb_ninja_util.phony
+      oc
+      ~order_only_deps:static_resources 
+      ~inputs:[]
+      ~output:Literals.build_ninja         
+
+
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
@@ -13426,6 +13447,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
+      number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
   
@@ -13481,8 +13503,7 @@ let output_ninja_and_namespace_map
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
   in        
-  let  bs_groups, bsc_lib_dirs, static_resources =
-    let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
+  let  bs_groups, bsc_lib_dirs, static_resources =    
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
         Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
@@ -13541,12 +13562,7 @@ let output_ninja_and_namespace_map
       generators in 
   
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
-  Ext_list.iter static_resources (fun output -> 
-      Bsb_ninja_util.output_build
-        oc
-        ~output
-        ~input:(Bsb_config.proj_rel output)
-        ~rule:rules.copy_resources);
+  output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Bsb_ninja_file_groups.handle_file_groups oc  
     ~bs_suffix     
@@ -13557,12 +13573,7 @@ let output_ninja_and_namespace_map
     bs_file_groups 
     namespace
     ;
-  if static_resources <> [] then
-    Bsb_ninja_util.phony
-      oc
-      ~order_only_deps:static_resources 
-      ~inputs:[]
-      ~output:Literals.build_ninja ;
+
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
         cwd // Bsb_config.lib_bs  in
@@ -13986,13 +13997,17 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self bsc_dir cwd; 
     end ; 
-    Bsb_build_util.mkp lib_bs_dir; 
+    
     let config = 
       Bsb_config_parse.interpret_json 
         ~override_package_specs
         ~bsc_dir
         ~toplevel
         cwd in 
+    (* create directory, lib/bs, lib/js, lib/es6 etc *)    
+    Bsb_build_util.mkp lib_bs_dir;         
+    Bsb_package_specs.list_dirs_by config.package_specs
+      (fun x -> Unix.mkdir (cwd // x) 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
@@ -14002,8 +14017,7 @@ let regenerate_ninja
       (bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~cwd ~bsc_dir ~toplevel config ;             
-    Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> Bsb_build_util.mkp (cwd // x));
+    
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~cwd ~file:output_deps 
@@ -16924,9 +16938,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
   in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
-      match namespace with 
-      | None -> x 
-      | Some ns -> Ext_namespace.make ~ns x in 
+      Ext_namespace.make ?ns:namespace x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;

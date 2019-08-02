@@ -1085,15 +1085,6 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
-
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -1464,42 +1455,6 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file (s : string) = 
-  let len = String.length s in 
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'A' .. 'Z'
-  | 'a' .. 'z' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-
-
-type check_result = 
-  | Good 
-  | Invalid_module_name 
-  | Suffix_mismatch
-  (** 
-     TODO: move to another module 
-     Make {!Ext_filename} not stateful
-  *)
-let is_valid_source_name name : check_result =
-  match check_any_suffix_case_then_chop name [
-      ".ml"; 
-      ".re";
-      ".mli"; 
-      ".rei"
-    ] with 
-  | None -> Suffix_mismatch
-  | Some x -> 
-    if is_valid_module_file  x then
-      Good
-    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  last_idx = 
@@ -3443,23 +3398,16 @@ module Bsb_db : sig
 
 type case = bool 
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
 
-type ml_info =
-  | Ml_source
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
+
 
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string;
     is_re : bool;
     case : bool;
@@ -3479,7 +3427,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 
@@ -3522,17 +3470,15 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-type ml_info =
-  | Ml_source  (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+  
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string ; 
     is_re : bool;
     case : bool;
@@ -3544,15 +3490,6 @@ type t = module_info String_map.t
 
 type ts = t array 
 (** indexed by the group *)
-
-
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
 
 
 let has_reason_files (map  : t ) = 
@@ -4626,11 +4563,19 @@ val module_name:
   string ->
   string
 
-(** return [true] if upper case *)
-val module_name_with_case:  
-  string -> 
-  string * bool
-  
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4747,23 +4692,67 @@ let module_name name =
   let name_len = String.length name in 
   search_dot (name_len - 1)  name 
 
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
 
-let module_name_with_case name =  
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
     else 
     if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
     else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name, 
-  (name_len > 0 &&
-    let first_char = String.unsafe_get name 0 in
-    (first_char >= 'A' && first_char <= 'Z'))
-
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -4795,7 +4784,8 @@ module Ext_namespace : sig
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : ns:string -> string -> string 
+val make : 
+  ?ns:string -> string -> string 
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -4872,8 +4862,10 @@ end = struct
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
+let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =
@@ -5191,10 +5183,8 @@ let read_deps (fn : string) : string list =
 type kind = Js | Bytecode | Native
 
 let output_file (buf : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string buf (match namespace with 
-      | None ->  source 
-      | Some ns ->
-        Ext_namespace.make ~ns source)
+  Ext_buffer.add_string buf 
+    (Ext_namespace.make ?ns:namespace source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]

@@ -32,23 +32,16 @@
 
 type case = bool 
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
 
-type ml_info =
-  | Ml_source
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source 
-  | Mli_empty
+
 
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
     dir : string;
     is_re : bool;
     case : bool;
@@ -68,7 +61,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 

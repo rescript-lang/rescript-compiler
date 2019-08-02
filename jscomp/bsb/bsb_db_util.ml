@@ -50,73 +50,84 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-      if module_info.ml_info = Ml_empty then
+      if module_info.info = Mli then
         Bsb_exception.no_implementation m 
     )    
 
 (* invariant check:
   ml and mli should have the same case, same path
 *)  
-let check (x : module_info) name_sans_extension case is_re =  
-  if x.name_sans_extension <> name_sans_extension || x.case <> case || x.is_re <> is_re then 
-    Bsb_exception.invalid_spec 
-      (Printf.sprintf 
-         "implementation and interface have different path names or different cases %s vs %s"
-         x.name_sans_extension name_sans_extension)
+let check (x : module_info) 
+  name_sans_extension 
+  case 
+  is_re 
+  (module_info : Bsb_db.info)
+  =  
+  let x_ml_info = x.info in  
+  (if x.name_sans_extension <> name_sans_extension 
+   || x.case <> case 
+   || x.is_re <> is_re 
+   || x_ml_info = module_info 
+   || x_ml_info = Ml_mli
+   then 
+     Bsb_exception.invalid_spec 
+       (Printf.sprintf 
+          "implementation and interface have different path names or different cases %s vs %s"
+          x.name_sans_extension name_sans_extension));
+  x.info <- Ml_mli;      
+  x
 
-let adjust_module_info 
-  (x : module_info option) 
-  (suffix : string) 
-  (name_sans_extension : string) 
-  (case : case) : module_info =
-  let dir = Filename.dirname name_sans_extension in 
-  match suffix with 
-  | ".ml" -> 
-    let ml_info : Bsb_db.ml_info = Ml_source  in 
-    (match x with 
+
+let warning_unused_file : _ format = 
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+
+let add_basename
+    ~(dir:string) 
+    (map : t)  
+    ?(error_on_invalid_suffix)
+    basename =   
+  let info = ref Bsb_db.Ml in   
+  let is_re = ref false in 
+  let invalid_suffix = ref false in
+  (match Ext_filename.get_extension_maybe basename with 
+   | ".ml" -> 
+     () 
+   | ".re" ->
+     is_re := true
+   | ".mli" -> 
+     info := Mli
+   | ".rei" -> 
+     info := Mli;
+     is_re := true 
+   | _ -> 
+     invalid_suffix := true
+
+  );   
+  let info= !info in 
+  let is_re = !is_re in 
+  let invalid_suffix = !invalid_suffix in 
+  if invalid_suffix then 
+    match error_on_invalid_suffix with
+    | None -> map 
+    | Some loc -> 
+      Bsb_exception.errorf ~loc:loc
+        "invalid suffix %s" basename
+  else  
+    match Ext_filename.as_module ~basename:(Filename.basename basename) with 
     | None -> 
-      {dir ; name_sans_extension ; ml_info ; mli_info = Mli_empty; is_re = false ; case }
-    | Some x -> 
-      check x name_sans_extension case false;
-      {x with ml_info })
-  | ".re" -> 
-    let ml_info  : Bsb_db.ml_info = Ml_source in
-    (match x with None -> 
-      {dir ; name_sans_extension; ml_info  ; mli_info = Mli_empty; is_re = true; case} 
-    | Some x -> 
-      check x name_sans_extension case true;
-      {x with ml_info})
-  | ".mli" ->  
-    let mli_info : Bsb_db.mli_info = Mli_source in 
-    (match x with None -> 
-      {dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = false; case}
-    | Some x -> 
-      check x name_sans_extension case false;
-      {x with mli_info })
-  | ".rei" -> 
-    let mli_info : Bsb_db.mli_info = Mli_source in
-    (match x with None -> 
-      { dir; name_sans_extension; mli_info ; ml_info = Ml_empty; is_re = true; case}
-    | Some x -> 
-      check x name_sans_extension case true;
-      { x with mli_info})
-  | _ -> 
-    Ext_pervasives.failwithf ~loc:__LOC__ 
-      "don't know what to do with %s%s" 
-      name_sans_extension suffix
-
-let collect_module_by_filename 
-  ~(dir : string) (map : t) (file_name : string) : t  = 
-  let module_name, upper = 
-    Ext_filename.module_name_with_case file_name in 
-  let suffix = Ext_path.get_extension file_name in 
-  let name_sans_extension = 
-     Filename.concat dir (Ext_filename.chop_extension_maybe file_name) in 
-  String_map.adjust 
-    map
-    module_name 
-    (fun (opt_module_info : module_info option)-> 
-       adjust_module_info 
-         opt_module_info
-         suffix 
-         name_sans_extension upper )
+      Bsb_log.warn warning_unused_file basename dir; 
+      map 
+    | Some {module_name; case} ->     
+      let name_sans_extension = 
+        Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+      let dir = Filename.dirname name_sans_extension in                
+      String_map.adjust 
+        map
+        module_name 
+        (fun  opt_module_info -> 
+           match opt_module_info with 
+           | None -> 
+             {dir ; name_sans_extension ; info ; is_re ; case }
+           | Some x -> 
+             check x name_sans_extension case is_re info      
+        )

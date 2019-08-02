@@ -90,10 +90,8 @@ let read_deps (fn : string) : string list =
 type kind = Js | Bytecode | Native
 
 let output_file (buf : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string buf (match namespace with 
-      | None ->  source 
-      | Some ns ->
-        Ext_namespace.make ~ns source)
+  Ext_buffer.add_string buf 
+    (Ext_namespace.make ?ns:namespace source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]

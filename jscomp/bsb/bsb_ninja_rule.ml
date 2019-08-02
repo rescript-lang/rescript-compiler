@@ -34,7 +34,12 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name  =
+let print_rule (oc : out_channel) 
+  ~description 
+  ?(restat : unit option)  
+  ?dyndep 
+  ~command   
+  name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   Ext_option.iter dyndep (fun f ->
