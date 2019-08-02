@@ -84,7 +84,7 @@ let warning_unused_file : _ format =
 let add_basename
     ~(dir:string) 
     (map : t)  
-    ~(error_on_invalid_suffix:bool)
+    ?(error_on_invalid_suffix)
     basename =   
   let info = ref Bsb_db.Ml in   
   let is_re = ref false in 
@@ -107,11 +107,11 @@ let add_basename
   let is_re = !is_re in 
   let invalid_suffix = !invalid_suffix in 
   if invalid_suffix then 
-    if error_on_invalid_suffix then 
-      Ext_pervasives.failwithf ~loc:__LOC__ 
-        "don't know what to do with %s invalid suffix" 
-        basename 
-    else map      
+    match error_on_invalid_suffix with
+    | None -> map 
+    | Some loc -> 
+      Bsb_exception.errorf ~loc:loc
+        "invalid suffix %s" basename
   else  
     match Ext_filename.as_module ~basename:(Filename.basename basename) with 
     | None -> 

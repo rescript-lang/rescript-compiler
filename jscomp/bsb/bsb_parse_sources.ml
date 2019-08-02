@@ -155,7 +155,7 @@ let extract_generators
                  it may be re-added again later when scanning files (not explicit files input)
               *)
               cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
-                  Bsb_db_util.add_basename ~dir acc output ~error_on_invalid_suffix:false
+                  Bsb_db_util.add_basename ~dir acc output 
                 )
             | _ ->
               errorf x "Invalid generator format")
@@ -280,7 +280,7 @@ let rec
           Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
               if is_input_or_output generators basename then acc 
               else 
-                Bsb_db_util.add_basename ~dir acc basename  ~error_on_invalid_suffix:false              
+                Bsb_db_util.add_basename ~dir acc basename 
             ) ;
         cur_globbed_dirs :=  [dir]        
       | Some (Arr basenames ) -> 
@@ -290,8 +290,8 @@ let rec
         cur_sources := 
           Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
               match basename with 
-              | Str {str = basename} -> 
-                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:true
+              | Str {str = basename;loc} -> 
+                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
               | _ -> acc
             ) 
       | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -315,7 +315,7 @@ let rec
         cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
             if is_input_or_output generators basename || not (predicate basename) then acc 
             else 
-              Bsb_db_util.add_basename  ~dir acc basename ~error_on_invalid_suffix:false
+              Bsb_db_util.add_basename  ~dir acc basename 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
     end;

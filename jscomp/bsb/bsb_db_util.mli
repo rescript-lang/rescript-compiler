@@ -44,6 +44,6 @@ val sanity_check : Bsb_db.t -> unit
 val add_basename:
   dir:string -> 
   Bsb_db.t ->  
-  error_on_invalid_suffix:bool-> 
+  ?error_on_invalid_suffix:Ext_position.t-> 
   string -> 
   Bsb_db.t
