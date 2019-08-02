@@ -13068,10 +13068,6 @@ let make_common_shadows
        ]
     )   
   
-type module_output = {
-  output_cmj : string;
-  output_cmi : string
-}
 
 
 let emit_module_build
