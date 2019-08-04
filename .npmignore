@@ -29,3 +29,4 @@ ocaml/
 lib/4.02.3/unstable
 lib/4.06.1/unstable
 .circleci/
+native/

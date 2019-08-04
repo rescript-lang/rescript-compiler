@@ -10,7 +10,7 @@ var json = require(path.join(root, 'package.json'))
 
 function clean() {
     console.log(`cleanning`)
-    p.execSync(`git clean -dfx .`, root_config)
+    p.execSync(`git clean -dfx . -e native/`, root_config)
 }
 function verifyIsCleanWorkTree() {
     var output = p.execSync(`git status -uno`, root_config)
