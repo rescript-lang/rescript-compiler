@@ -37,16 +37,16 @@ function ierr(b, str, f) {
                         "%s "
                       ], f)), str);
   } else {
-    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* Char_literal */Block.__(12, [
-                                /* " " */32,
-                                /* End_of_format */0
-                              ])
-                          ]),
-                        "%s "
-                      ], f)), str);
+    return Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* " " */32,
+                              /* End_of_format */0
+                            ])
+                        ]),
+                      "%s "
+                    ], f))(str);
   }
 }
 
@@ -88,19 +88,19 @@ function iwarn(b, str, f) {
                         "WARN: %s "
                       ], f)), str);
   } else {
-    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "WARN: ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* " " */32,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "WARN: %s "
-                      ], f)), str);
+    return Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String_literal */Block.__(11, [
+                          "WARN: ",
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
+                      "WARN: %s "
+                    ], f))(str);
   }
 }
 

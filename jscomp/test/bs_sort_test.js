@@ -1,10 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_Range = require("../../lib/js/belt_Range.js");
 var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 
@@ -276,7 +276,7 @@ eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Belt_SortArray.binaryS
           3,
           5,
           7
-        ], 4, Caml_obj.caml_compare) ^ -1, 2);
+        ], 4, Caml_primitive.caml_int_compare) ^ -1, 2);
 
 eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Belt_SortArray.binarySearchBy(/* array */[
           1,
