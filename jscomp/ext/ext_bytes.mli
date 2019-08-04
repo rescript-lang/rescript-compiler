@@ -27,7 +27,13 @@
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" "noalloc"
+                     = "caml_blit_string" 
+#if OCAML_VERSION =~ ">4.03.0" then
+[@@noalloc]
+#else                     
+"noalloc"
+#end                     
+    
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
