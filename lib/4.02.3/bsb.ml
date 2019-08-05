@@ -9916,25 +9916,25 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
      : build_generator list  =
-  begin match String_map.find_opt input  Bsb_build_schemas.generators with
-    | Some (Arr { content ; loc_start}) ->
-      (* Need check is dev build or not *)
-      Ext_array.fold_left content [] (fun acc x ->
+  match String_map.find_opt input  Bsb_build_schemas.generators with
+  | Some (Arr { content ; loc_start}) ->
+    (* Need check is dev build or not *)
+    Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-           (match String_map.find_opt map Bsb_build_schemas.name ,
-                      String_map.find_opt map Bsb_build_schemas.edge
-            with
-            | Some (Str command), Some edge ->
-              let output, input = extract_input_output edge in 
-              {Bsb_file_groups.input ; output ; command = command.str } :: acc
-            | _ ->
-              errorf x "Invalid generator format")
+          (match String_map.find_opt map Bsb_build_schemas.name ,
+                 String_map.find_opt map Bsb_build_schemas.edge
+           with
+           | Some (Str command), Some edge ->
+             let output, input = extract_input_output edge in 
+             {Bsb_file_groups.input ; output ; command = command.str } :: acc
+           | _ ->
+             errorf x "Invalid generator format")
         | _ -> errorf x "Invalid generator format"
       )  
-    | Some x  -> errorf x "Invalid generator format"
-    | None -> []
-  end 
+  | Some x  -> errorf x "Invalid generator format"
+  | None -> []
+
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
@@ -10035,21 +10035,21 @@ let rec
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
     let cur_globbed_dirs = ref [] in 
-    let cur_sources = ref String_map.empty in   
-    let generators = 
-      if (cxt.cut_generators || not cxt.toplevel) then []
-      else 
-        extract_generators input 
-    in 
+    let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
+    let scanned_generators = extract_generators input in        
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    let cur_sources = 
+      ref (Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
+             String_map.empty (fun acc o -> 
+                 Bsb_db_util.add_basename ~dir acc o)) in 
     begin 
       match String_map.find_opt input Bsb_build_schemas.files with 
       | None ->  (* No setting on [!files]*)
         (** We should avoid temporary files *)
         cur_sources := 
           Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-              if is_input_or_output generators basename then acc 
+              if is_input_or_output scanned_generators basename then acc 
               else 
                 Bsb_db_util.add_basename ~dir acc basename 
             ) ;
@@ -10084,7 +10084,7 @@ let rec
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
         cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-            if is_input_or_output generators basename || not (predicate basename) then acc 
+            if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
             else 
               Bsb_db_util.add_basename  ~dir acc basename 
           ) 
@@ -10127,7 +10127,7 @@ let rec
                    resources ;
                    public ;
                    dir_index = cxt.dir_index ;
-                   generators  } ] ;
+                   generators = if has_generators then scanned_generators else []  } ] ;
       globbed_dirs = !cur_globbed_dirs ;
     }  children
 

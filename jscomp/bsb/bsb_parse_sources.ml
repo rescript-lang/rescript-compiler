@@ -253,21 +253,21 @@ let rec
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
     let cur_globbed_dirs = ref [] in 
-    let cur_sources = ref String_map.empty in   
-    let generators = 
-      if (cxt.cut_generators || not cxt.toplevel) then []
-      else 
-        extract_generators input 
-    in 
+    let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
+    let scanned_generators = extract_generators input in        
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    let cur_sources = 
+      ref (Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
+             String_map.empty (fun acc o -> 
+                 Bsb_db_util.add_basename ~dir acc o)) in 
     begin 
       match String_map.find_opt input Bsb_build_schemas.files with 
       | None ->  (* No setting on [!files]*)
         (** We should avoid temporary files *)
         cur_sources := 
           Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-              if is_input_or_output generators basename then acc 
+              if is_input_or_output scanned_generators basename then acc 
               else 
                 Bsb_db_util.add_basename ~dir acc basename 
             ) ;
@@ -302,7 +302,7 @@ let rec
           | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
           | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
         cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-            if is_input_or_output generators basename || not (predicate basename) then acc 
+            if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
             else 
               Bsb_db_util.add_basename  ~dir acc basename 
           ) 
@@ -345,7 +345,7 @@ let rec
                    resources ;
                    public ;
                    dir_index = cxt.dir_index ;
-                   generators  } ] ;
+                   generators = if has_generators then scanned_generators else []  } ] ;
       globbed_dirs = !cur_globbed_dirs ;
     }  children
 
