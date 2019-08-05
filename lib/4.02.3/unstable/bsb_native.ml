@@ -13086,16 +13086,16 @@ module Bsb_ninja_file_groups : sig
 
 
 
-val handle_file_groups :
+val handle_files_per_dir :
   out_channel ->
-  package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
-  js_post_build_cmd:string option -> 
-  files_to_install:String_hash_set.t ->  
   rules:Bsb_ninja_rule.builtin ->
-  Bsb_file_groups.file_groups ->
-  string option -> 
-  unit
+  package_specs:Bsb_package_specs.t ->
+  js_post_build_cmd:string option ->
+  files_to_install:String_hash_set.t ->
+  namespace:string option -> 
+  Bsb_file_groups.file_group -> unit
+
 end = struct
 #1 "bsb_ninja_file_groups.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -13301,8 +13301,8 @@ let handle_files_per_dir
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) 
-    (namespace  : string option)
+    ~(files_to_install : String_hash_set.t) 
+    ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
 
@@ -13331,25 +13331,6 @@ let handle_files_per_dir
     oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
     (* pseuduo targets per directory *)
-
-
-let handle_file_groups
-    oc 
-    ~package_specs 
-    ~bs_suffix
-    ~js_post_build_cmd
-    ~files_to_install 
-    ~rules
-    (file_groups  :  Bsb_file_groups.file_groups)
-    namespace   =
-  Ext_list.iter file_groups
-    (handle_files_per_dir
-       oc  
-       ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
-       files_to_install 
-       namespace
-    ) 
-  
 
 end
 module Bsb_ninja_gen : sig 
@@ -13649,15 +13630,16 @@ let output_ninja_and_namespace_map
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
-  Bsb_ninja_file_groups.handle_file_groups oc  
-    ~bs_suffix     
-    ~rules
-    ~js_post_build_cmd 
-    ~package_specs 
-    ~files_to_install
-    bs_file_groups 
-    namespace
-    ;
+  Ext_list.iter bs_file_groups 
+    (fun files_per_dir ->
+       Bsb_ninja_file_groups.handle_files_per_dir oc  
+         ~bs_suffix     
+         ~rules
+         ~js_post_build_cmd 
+         ~package_specs 
+         ~files_to_install    
+         ~namespace files_per_dir)
+  ;
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     

@@ -201,8 +201,8 @@ let handle_files_per_dir
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) 
-    (namespace  : string option)
+    ~(files_to_install : String_hash_set.t) 
+    ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
 
@@ -231,22 +231,3 @@ let handle_files_per_dir
     oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
     (* pseuduo targets per directory *)
-
-
-let handle_file_groups
-    oc 
-    ~package_specs 
-    ~bs_suffix
-    ~js_post_build_cmd
-    ~files_to_install 
-    ~rules
-    (file_groups  :  Bsb_file_groups.file_groups)
-    namespace   =
-  Ext_list.iter file_groups
-    (handle_files_per_dir
-       oc  
-       ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
-       files_to_install 
-       namespace
-    ) 
-  
