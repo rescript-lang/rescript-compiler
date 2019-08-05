@@ -191,30 +191,10 @@ let emit_module_build
 
 
 
-let handle_module_info 
-    rules
-    (group_dir_index : Bsb_dir_index.t)
-    (package_specs : Bsb_package_specs.t) 
-    js_post_build_cmd
-    ~bs_suffix
-    oc  module_name 
-    (module_info : Bsb_db.module_info)
-    namespace
-  =
-  emit_module_build  rules
-    package_specs
-    group_dir_index
-    oc 
-    ~bs_suffix
-    ~no_intf_file:(module_info.info <> Ml_mli)
-    ~is_re:module_info.is_re
-    js_post_build_cmd      
-    namespace
-    module_info.name_sans_extension
 
 
 
-let handle_file_group 
+let handle_files_per_dir
     oc 
     ~bs_suffix
     ~(rules : Bsb_ninja_rule.builtin)
@@ -236,14 +216,16 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install 
           module_info.name_sans_extension;
-      handle_module_info rules
-        ~bs_suffix
-        group.dir_index 
-        package_specs js_post_build_cmd 
+      emit_module_build  rules
+        package_specs
+        group.dir_index
         oc 
-        module_name 
-        module_info
-        namespace 
+        ~bs_suffix
+        ~no_intf_file:(module_info.info <> Ml_mli)
+        ~is_re:module_info.is_re
+        js_post_build_cmd      
+        namespace
+        module_info.name_sans_extension
     )
 
     (* ; 
@@ -263,7 +245,7 @@ let handle_file_groups
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace   =
   Ext_list.iter file_groups
-    (handle_file_group 
+    (handle_files_per_dir
        oc  
        ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
        files_to_install 

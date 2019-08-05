@@ -4293,8 +4293,84 @@ let print fmt s =
 
 
 end
-module Bsb_file_groups
-= struct
+module Bsb_file_groups : sig 
+#1 "bsb_file_groups.mli"
+(* Copyright (C) 2018- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ type public = 
+  | Export_none
+  | Export_all 
+  | Export_set of String_set.t 
+  
+
+type build_generator = 
+  { input : string list ;
+    output : string list;
+    command : string}  
+
+
+type  file_group = 
+  { dir : string ;
+    sources : Bsb_db.t; 
+    resources : string list ;
+    public : public ;
+    dir_index : Bsb_dir_index.t  ;
+    generators : build_generator list ; 
+    (* output of [generators] should be added to [sources],
+       if it is [.ml,.mli,.re,.rei]
+    *)
+  }     
+
+type file_groups = file_group list 
+
+type t 
+  = private
+  { files :  file_groups; 
+    globbed_dirs : string list ; 
+  }
+
+val empty : t    
+
+val merge : 
+  t -> 
+  t -> 
+  t   
+
+val cons :   
+  file_group:file_group ->
+  ?globbed_dir:string ->
+  t ->
+  t
+
+val is_empty :   
+  file_group ->
+  bool
+
+
+end = struct
 #1 "bsb_file_groups.ml"
 (* Copyright (C) 2018- Authors of BuckleScript
  * 
@@ -13183,30 +13259,10 @@ let emit_module_build
 
 
 
-let handle_module_info 
-    rules
-    (group_dir_index : Bsb_dir_index.t)
-    (package_specs : Bsb_package_specs.t) 
-    js_post_build_cmd
-    ~bs_suffix
-    oc  module_name 
-    (module_info : Bsb_db.module_info)
-    namespace
-  =
-  emit_module_build  rules
-    package_specs
-    group_dir_index
-    oc 
-    ~bs_suffix
-    ~no_intf_file:(module_info.info <> Ml_mli)
-    ~is_re:module_info.is_re
-    js_post_build_cmd      
-    namespace
-    module_info.name_sans_extension
 
 
 
-let handle_file_group 
+let handle_files_per_dir
     oc 
     ~bs_suffix
     ~(rules : Bsb_ninja_rule.builtin)
@@ -13228,14 +13284,16 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install 
           module_info.name_sans_extension;
-      handle_module_info rules
-        ~bs_suffix
-        group.dir_index 
-        package_specs js_post_build_cmd 
+      emit_module_build  rules
+        package_specs
+        group.dir_index
         oc 
-        module_name 
-        module_info
-        namespace 
+        ~bs_suffix
+        ~no_intf_file:(module_info.info <> Ml_mli)
+        ~is_re:module_info.is_re
+        js_post_build_cmd      
+        namespace
+        module_info.name_sans_extension
     )
 
     (* ; 
@@ -13255,7 +13313,7 @@ let handle_file_groups
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace   =
   Ext_list.iter file_groups
-    (handle_file_group 
+    (handle_files_per_dir
        oc  
        ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
        files_to_install 
