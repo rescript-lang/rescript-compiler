@@ -4367,7 +4367,14 @@ let merge (u : t)  (v : t)  =
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }  
 
-
+let cons ~file_group ?globbed_dir (v : t) : t =  
+  {
+    files = file_group :: v.files;
+    globbed_dirs = 
+      match globbed_dir with 
+      | None -> v.globbed_dirs
+      | Some f -> f :: v.globbed_dirs
+  }
 (** when [is_empty file_group]
     we don't need issue [-I] [-S] in [.merlin] file
 *)  
@@ -10115,16 +10122,16 @@ let rec
     in 
     (** Do some clean up *)  
     prune_staled_bs_js_files cxt sources ;
-    Bsb_file_groups.merge {
-      files =  [ { dir ; 
-                   sources = sources; 
-                   resources ;
-                   public ;
-                   dir_index = cxt.dir_index ;
-                   generators = if has_generators then scanned_generators else []  } ] ;
-      globbed_dirs = 
-        if !cur_globbed_dirs then [dir] else [];
-    }  children
+    Bsb_file_groups.cons 
+      ~file_group:{ dir ; 
+                    sources = sources; 
+                    resources ;
+                    public ;
+                    dir_index = cxt.dir_index ;
+                    generators = if has_generators then scanned_generators else []  } 
+      ?globbed_dir:(
+        if !cur_globbed_dirs then Some dir else None)
+      children
 
 
 and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )

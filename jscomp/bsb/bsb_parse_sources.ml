@@ -333,16 +333,16 @@ let rec
     in 
     (** Do some clean up *)  
     prune_staled_bs_js_files cxt sources ;
-    Bsb_file_groups.merge {
-      files =  [ { dir ; 
-                   sources = sources; 
-                   resources ;
-                   public ;
-                   dir_index = cxt.dir_index ;
-                   generators = if has_generators then scanned_generators else []  } ] ;
-      globbed_dirs = 
-        if !cur_globbed_dirs then [dir] else [];
-    }  children
+    Bsb_file_groups.cons 
+      ~file_group:{ dir ; 
+                    sources = sources; 
+                    resources ;
+                    public ;
+                    dir_index = cxt.dir_index ;
+                    generators = if has_generators then scanned_generators else []  } 
+      ?globbed_dir:(
+        if !cur_globbed_dirs then Some dir else None)
+      children
 
 
 and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )

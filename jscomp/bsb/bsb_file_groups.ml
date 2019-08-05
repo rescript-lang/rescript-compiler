@@ -69,7 +69,14 @@ let merge (u : t)  (v : t)  =
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }  
 
-
+let cons ~file_group ?globbed_dir (v : t) : t =  
+  {
+    files = file_group :: v.files;
+    globbed_dirs = 
+      match globbed_dir with 
+      | None -> v.globbed_dirs
+      | Some f -> f :: v.globbed_dirs
+  }
 (** when [is_empty file_group]
     we don't need issue [-I] [-S] in [.merlin] file
 *)  
