@@ -13151,12 +13151,13 @@ let emit_module_build
     (group_dir_index : Bsb_dir_index.t) 
     oc 
     ~bs_suffix
-    ~(no_intf_file : bool) 
     js_post_build_cmd
-    ~is_re
     namespace
-    filename_sans_extension
+    (module_info : Bsb_db.module_info)
   =    
+  let no_intf_file = module_info.info <> Ml_mli in 
+  let is_re = module_info.is_re in 
+  let filename_sans_extension = module_info.name_sans_extension in 
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
@@ -13289,11 +13290,8 @@ let handle_files_per_dir
         group.dir_index
         oc 
         ~bs_suffix
-        ~no_intf_file:(module_info.info <> Ml_mli)
-        ~is_re:module_info.is_re
         js_post_build_cmd      
-        namespace
-        module_info.name_sans_extension
+        namespace module_info
     )
 
     (* ; 
