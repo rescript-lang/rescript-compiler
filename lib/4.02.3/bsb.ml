@@ -10050,50 +10050,43 @@ let rec
   = 
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
-    let cur_globbed_dirs = ref [] in 
+    let cur_globbed_dirs = ref false in 
     let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
     let scanned_generators = extract_generators input in        
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-    let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
-    let cur_sources = 
-      ref (Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
-             String_map.empty (fun acc o -> 
-                 Bsb_db_util.add_basename ~dir acc o)) in 
-    begin 
+    let base_name_array = 
+        lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
+    let output_sources = 
+      Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
+        String_map.empty (fun acc o -> 
+            Bsb_db_util.add_basename ~dir acc o) in 
+    let sources = 
       match String_map.find_opt input Bsb_build_schemas.files with 
-      | None ->  (* No setting on [!files]*)
+      | None ->  
         (** We should avoid temporary files *)
-        cur_sources := 
-          Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-              if is_input_or_output scanned_generators basename then acc 
-              else 
-                Bsb_db_util.add_basename ~dir acc basename 
-            ) ;
-        cur_globbed_dirs :=  [dir]        
-      | Some (Arr basenames ) -> 
-        (* [ a,b ] populated by users themselves 
-           TODO: still need check?
-        *)      
-        cur_sources := 
-          Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
-              match basename with 
-              | Str {str = basename;loc} -> 
-                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
-              | _ -> acc
-            ) 
+        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
+            if is_input_or_output scanned_generators basename then acc 
+            else 
+              Bsb_db_util.add_basename ~dir acc basename 
+          ) 
+      | Some (Arr basenames ) ->         
+        Ext_array.fold_left basenames.content output_sources (fun acc basename ->
+            match basename with 
+            | Str {str = basename;loc} -> 
+              Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
+            | _ -> acc
+          ) 
       | Some (Obj {map = map; loc} ) -> (* { excludes : [], slow_re : "" }*)
-        cur_globbed_dirs := [dir];  
         let predicate = extract_predicate map in 
-        cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
+        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
             if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
             else 
               Bsb_db_util.add_basename  ~dir acc basename 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
-    end;
-    let cur_sources = !cur_sources in 
+    in 
     let resources = extract_resources input in
-    let public = extract_pub input cur_sources in 
+    let public = extract_pub input sources in 
     (** Doing recursive stuff *)  
     let children =     
       match sub_dirs_field, 
@@ -10121,15 +10114,16 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    prune_staled_bs_js_files cxt cur_sources ;
+    prune_staled_bs_js_files cxt sources ;
     Bsb_file_groups.merge {
       files =  [ { dir ; 
-                   sources = cur_sources; 
+                   sources = sources; 
                    resources ;
                    public ;
                    dir_index = cxt.dir_index ;
                    generators = if has_generators then scanned_generators else []  } ] ;
-      globbed_dirs = !cur_globbed_dirs ;
+      globbed_dirs = 
+        if !cur_globbed_dirs then [dir] else [];
     }  children
 
 
