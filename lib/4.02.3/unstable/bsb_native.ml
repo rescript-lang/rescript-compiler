@@ -9934,25 +9934,24 @@ let extract_generators (input : json_map) : build_generator list  =
   | Some x  -> errorf x "Invalid generator format"
   | None -> []
 
-let extract_predicate 
-  (m : json_map) loc : string -> bool =
+let extract_predicate (m : json_map)  : string -> bool =
   let excludes = 
     match String_map.find_opt m  Bsb_build_schemas.excludes with 
     | None -> []   
     | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
     | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
   let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
-  let predicate = 
-    match slow_re, excludes with 
-    | Some (Str {str = s}), [] -> 
-      let re = Str.regexp s  in 
-      fun name -> Str.string_match re name 0 
-    | Some (Str {str = s}) , _::_ -> 
-      let re = Str.regexp s in   
-      fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
-    | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
-    | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in   
-  predicate    
+  match slow_re, excludes with 
+  | Some (Str {str = s}), [] -> 
+    let re = Str.regexp s  in 
+    fun name -> Str.string_match re name 0 
+  | Some (Str {str = s}) , _::_ -> 
+    let re = Str.regexp s in   
+    fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
+  | Some config, _ -> Bsb_exception.config_error config (Bsb_build_schemas.slow_re ^ " expect a string literal")
+  | None , _ -> 
+    fun name -> not (Ext_list.mem_string excludes name)
+
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
     assume [not toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
@@ -10084,7 +10083,7 @@ let rec
             ) 
       | Some (Obj {map = map; loc} ) -> (* { excludes : [], slow_re : "" }*)
         cur_globbed_dirs := [dir];  
-        let predicate = extract_predicate map loc in 
+        let predicate = extract_predicate map in 
         cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
             if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
             else 
