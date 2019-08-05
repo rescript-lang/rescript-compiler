@@ -554,7 +554,11 @@ module Ext_bytes : sig
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" "noalloc"
+                     = "caml_blit_string" 
+                     
+"noalloc"
+                     
+    
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -594,7 +598,10 @@ end = struct
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" "noalloc"
+                     = "caml_blit_string" 
+                     
+"noalloc"
+
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -10642,10 +10649,9 @@ val package_specs_from_bsconfig :
 
 
 val interpret_json : 
-    override_package_specs:Bsb_package_specs.t option -> 
+    toplevel_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    toplevel:bool -> 
-    string -> 
+    cwd:string -> 
     Bsb_config_types.t
 
 
@@ -11029,10 +11035,9 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~override_package_specs
+    ~toplevel_package_specs
     ~bsc_dir 
-    ~toplevel 
-    cwd  
+    ~cwd  
 
   : Bsb_config_types.t =
 
@@ -11077,6 +11082,7 @@ let interpret_json
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
@@ -11121,7 +11127,7 @@ let interpret_json
              if flags = [] then Bsb_default.refmt_flags else flags)  ;
           js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
-            (match override_package_specs with 
+            (match toplevel_package_specs with 
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 
@@ -13961,11 +13967,10 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  toplevel:bool ->
-  override_package_specs:Bsb_package_specs.t option ->
+  toplevel_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
-  string -> 
-  string -> 
+  cwd:string -> 
+  bsc_dir:string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -14004,11 +14009,10 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~toplevel 
-    ~(override_package_specs : Bsb_package_specs.t option)
-    ~forced cwd bsc_dir
+    ~(toplevel_package_specs : Bsb_package_specs.t option)
+    ~forced ~cwd ~bsc_dir
   : Bsb_config_types.t option =  
-
+  let toplevel = toplevel_package_specs = None in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -14032,10 +14036,9 @@ let regenerate_ninja
     
     let config = 
       Bsb_config_parse.interpret_json 
-        ~override_package_specs
+        ~toplevel_package_specs
         ~bsc_dir
-        ~toplevel
-        cwd in 
+        ~cwd in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
@@ -14058,103 +14061,6 @@ let regenerate_ninja
 
 
 
-end
-module Bsb_query : sig 
-#1 "bsb_query.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val query: cwd:string -> bsc_dir:string -> string -> unit  
-end = struct
-#1 "bsb_query.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-let query_sources (config : Bsb_config_types.t) : Ext_json_noloc.t 
-  = 
-  Ext_array.of_list_map config.file_groups.files (fun x -> 
-    Ext_json_noloc.(
-      kvs [
-        "dir", str x.dir ;
-        "sources" ,         
-        arr (Ext_array.of_list_map (String_map.keys x.sources) str)        
-      ]
-    )
-  )
-  |> Ext_json_noloc.arr 
-
-
-let query_current_package_sources cwd bsc_dir = 
-    let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~toplevel:true
-      ~override_package_specs:None
-      ~forced:true  cwd bsc_dir in 
-    match config_opt with   
-    | None -> None
-     
-    | Some config ->
-      Some (query_sources config)
-
-
-let query ~cwd ~bsc_dir str = 
-  match str with 
-  | "sources" -> 
-    begin match query_current_package_sources cwd bsc_dir with 
-    | None -> raise (Arg.Bad "internal error in query")
-    | Some config -> 
-      output_string stdout 
-      (Printf.sprintf "QUERY-INFO-BEGIN(%s)\n" str);
-      Ext_json_noloc.to_channel stdout 
-      ( config );
-      output_string stdout "\nQUERY-INFO-END\n";
-    end
-  | _ -> raise (Arg.Bad "Unsupported query")
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
@@ -17009,10 +16915,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
       if not top then
         begin 
           let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
-              ~override_package_specs:(Some deps) 
+            Bsb_ninja_regen.regenerate_ninja 
+              ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~cwd ~bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = cwd // Bsb_config.lib_bs;
@@ -17125,8 +17031,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
-    "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
-    " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,
     " List all available themes";
     "-where",
@@ -17197,9 +17101,9 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~override_package_specs:None ~toplevel:true
+        ~toplevel_package_specs:None 
         ~forced:false 
-        cwd bsc_dir |> ignore;
+        ~cwd ~bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
 
     | argv -> 
@@ -17227,9 +17131,8 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~override_package_specs:None 
-                     ~toplevel:true
-                     ~forced:force_regenerate cwd bsc_dir  in
+                     ~toplevel_package_specs:None 
+                     ~forced:force_regenerate ~cwd ~bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
                  end;
@@ -17250,8 +17153,8 @@ let () =
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
-                ~override_package_specs:None 
-                ~toplevel:true cwd bsc_dir 
+                ~toplevel_package_specs:None 
+                ~cwd ~bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

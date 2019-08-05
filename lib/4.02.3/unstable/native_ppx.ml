@@ -4908,7 +4908,11 @@ module Ext_bytes : sig
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" "noalloc"
+                     = "caml_blit_string" 
+                     
+"noalloc"
+                     
+    
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -4948,7 +4952,10 @@ end = struct
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" "noalloc"
+                     = "caml_blit_string" 
+                     
+"noalloc"
+
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"

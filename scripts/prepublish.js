@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 //@ts-check
 var p = require('child_process')
 var path = require('path')

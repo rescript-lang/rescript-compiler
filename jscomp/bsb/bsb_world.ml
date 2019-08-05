@@ -73,10 +73,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
       if not top then
         begin 
           let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
-              ~override_package_specs:(Some deps) 
+            Bsb_ninja_regen.regenerate_ninja 
+              ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~cwd ~bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = cwd // Bsb_config.lib_bs;
