@@ -85,7 +85,7 @@ let add_basename
     ~(dir:string) 
     (map : t)  
     ?(error_on_invalid_suffix)
-    basename =   
+    basename : t =   
   let info = ref Bsb_db.Ml in   
   let is_re = ref false in 
   let invalid_suffix = ref false in

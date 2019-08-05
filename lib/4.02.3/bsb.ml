@@ -9592,7 +9592,7 @@ let add_basename
     ~(dir:string) 
     (map : t)  
     ?(error_on_invalid_suffix)
-    basename =   
+    basename : t =   
   let info = ref Bsb_db.Ml in   
   let is_re = ref false in 
   let invalid_suffix = ref false in
@@ -9915,9 +9915,6 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
 
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
-    (cut_generators_or_not_dev : bool) 
-    (dir : string) 
-    (cur_sources : Bsb_db.t ref)
      : build_generator list  =
   let generators : build_generator list ref  = ref [] in
   begin match String_map.find_opt input  Bsb_build_schemas.generators with
@@ -9931,14 +9928,7 @@ let extract_generators
             with
             | Some (Str command), Some edge ->
               let output, input = extract_input_output edge in 
-              if not cut_generators_or_not_dev then  
                 generators := {input ; output ; command = command.str } :: !generators;
-              (* ATTENTION: Now adding output as source files, 
-                 it may be re-added again later when scanning files (not explicit files input)
-              *)
-              cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
-                  Bsb_db_util.add_basename ~dir acc output 
-                )
             | _ ->
               errorf x "Invalid generator format")
         | _ -> errorf x "Invalid generator format"
@@ -10049,8 +10039,9 @@ let rec
     let cur_globbed_dirs = ref [] in 
     let cur_sources = ref String_map.empty in   
     let generators = 
-      extract_generators input (cxt.cut_generators || not cxt.toplevel) dir 
-        cur_sources
+      if (cxt.cut_generators || not cxt.toplevel) then []
+      else 
+        extract_generators input 
     in 
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
