@@ -49,7 +49,8 @@ type  file_group =
 
 type file_groups = file_group list 
 
-type t =   
+type t 
+  = private
   { files :  file_groups; 
     globbed_dirs : string list ; 
   }
