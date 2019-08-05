@@ -374,10 +374,9 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~override_package_specs
+    ~toplevel_package_specs
     ~bsc_dir 
-    ~toplevel 
-    cwd  
+    ~cwd  
 
   : Bsb_config_types.t =
 
@@ -422,6 +421,7 @@ let interpret_json
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
@@ -466,7 +466,7 @@ let interpret_json
              if flags = [] then Bsb_default.refmt_flags else flags)  ;
           js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
-            (match override_package_specs with 
+            (match toplevel_package_specs with 
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 

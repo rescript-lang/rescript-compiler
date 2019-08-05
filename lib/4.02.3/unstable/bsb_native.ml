@@ -10649,10 +10649,9 @@ val package_specs_from_bsconfig :
 
 
 val interpret_json : 
-    override_package_specs:Bsb_package_specs.t option -> 
+    toplevel_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    toplevel:bool -> 
-    string -> 
+    cwd:string -> 
     Bsb_config_types.t
 
 
@@ -11036,10 +11035,9 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~override_package_specs
+    ~toplevel_package_specs
     ~bsc_dir 
-    ~toplevel 
-    cwd  
+    ~cwd  
 
   : Bsb_config_types.t =
 
@@ -11084,6 +11082,7 @@ let interpret_json
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
         extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
@@ -11128,7 +11127,7 @@ let interpret_json
              if flags = [] then Bsb_default.refmt_flags else flags)  ;
           js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
-            (match override_package_specs with 
+            (match toplevel_package_specs with 
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 
@@ -13968,11 +13967,10 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  toplevel:bool ->
-  override_package_specs:Bsb_package_specs.t option ->
+  toplevel_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
-  string -> 
-  string -> 
+  cwd:string -> 
+  bsc_dir:string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -14011,11 +14009,10 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~toplevel 
-    ~(override_package_specs : Bsb_package_specs.t option)
-    ~forced cwd bsc_dir
+    ~(toplevel_package_specs : Bsb_package_specs.t option)
+    ~forced ~cwd ~bsc_dir
   : Bsb_config_types.t option =  
-
+  let toplevel = toplevel_package_specs = None in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -14039,10 +14036,9 @@ let regenerate_ninja
     
     let config = 
       Bsb_config_parse.interpret_json 
-        ~override_package_specs
+        ~toplevel_package_specs
         ~bsc_dir
-        ~toplevel
-        cwd in 
+        ~cwd in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
@@ -16919,10 +16915,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
       if not top then
         begin 
           let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja ~toplevel:false
-              ~override_package_specs:(Some deps) 
+            Bsb_ninja_regen.regenerate_ninja 
+              ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~cwd ~bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = cwd // Bsb_config.lib_bs;
@@ -17105,9 +17101,9 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~override_package_specs:None ~toplevel:true
+        ~toplevel_package_specs:None 
         ~forced:false 
-        cwd bsc_dir |> ignore;
+        ~cwd ~bsc_dir |> ignore;
       ninja_command_exit  vendor_ninja [||] 
 
     | argv -> 
@@ -17135,9 +17131,8 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~override_package_specs:None 
-                     ~toplevel:true
-                     ~forced:force_regenerate cwd bsc_dir  in
+                     ~toplevel_package_specs:None 
+                     ~forced:force_regenerate ~cwd ~bsc_dir  in
                  if make_world then begin
                    Bsb_world.make_world_deps cwd config_opt [||]
                  end;
@@ -17158,8 +17153,8 @@ let () =
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
-                ~override_package_specs:None 
-                ~toplevel:true cwd bsc_dir 
+                ~toplevel_package_specs:None 
+                ~cwd ~bsc_dir 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

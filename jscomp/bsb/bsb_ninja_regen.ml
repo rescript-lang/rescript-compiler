@@ -33,11 +33,10 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~toplevel 
-    ~(override_package_specs : Bsb_package_specs.t option)
-    ~forced cwd bsc_dir
+    ~(toplevel_package_specs : Bsb_package_specs.t option)
+    ~forced ~cwd ~bsc_dir
   : Bsb_config_types.t option =  
-
+  let toplevel = toplevel_package_specs = None in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -61,10 +60,9 @@ let regenerate_ninja
     
     let config = 
       Bsb_config_parse.interpret_json 
-        ~override_package_specs
+        ~toplevel_package_specs
         ~bsc_dir
-        ~toplevel
-        cwd in 
+        ~cwd in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
