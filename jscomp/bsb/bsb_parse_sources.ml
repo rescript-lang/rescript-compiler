@@ -134,27 +134,25 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
      : build_generator list  =
-  let generators : build_generator list ref  = ref [] in
-  begin match String_map.find_opt input  Bsb_build_schemas.generators with
-    | Some (Arr { content ; loc_start}) ->
-      (* Need check is dev build or not *)
-      Ext_array.iter content (fun x ->
+  match String_map.find_opt input  Bsb_build_schemas.generators with
+  | Some (Arr { content ; loc_start}) ->
+    (* Need check is dev build or not *)
+    Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-           (match String_map.find_opt map Bsb_build_schemas.name ,
-                      String_map.find_opt map Bsb_build_schemas.edge
-            with
-            | Some (Str command), Some edge ->
-              let output, input = extract_input_output edge in 
-                generators := {input ; output ; command = command.str } :: !generators;
-            | _ ->
-              errorf x "Invalid generator format")
+          (match String_map.find_opt map Bsb_build_schemas.name ,
+                 String_map.find_opt map Bsb_build_schemas.edge
+           with
+           | Some (Str command), Some edge ->
+             let output, input = extract_input_output edge in 
+             {Bsb_file_groups.input ; output ; command = command.str } :: acc
+           | _ ->
+             errorf x "Invalid generator format")
         | _ -> errorf x "Invalid generator format"
       )  
-    | Some x  -> errorf x "Invalid generator format"
-    | None -> ()
-  end ;
-  !generators 
+  | Some x  -> errorf x "Invalid generator format"
+  | None -> []
+
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
