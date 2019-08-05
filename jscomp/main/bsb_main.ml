@@ -71,8 +71,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
-    "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
-    " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,
     " List all available themes";
     "-where",

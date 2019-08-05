@@ -97,10 +97,10 @@ let get_current_number_of_dev_groups =
 
 (** bsb generate pre-defined variables [bsc_group_i_includes]
   for each rule, there is variable [bsc_extra_excludes]
-  [bsc_extra_includes] are for app test etc
+  [g_dev_incls] are for app test etc
   it will be like
   {[
-    bsc_extra_includes = ${bsc_group_1_includes}
+    g_dev_incls = ${bsc_group_1_includes}
   ]}
   where [bsc_group_1_includes] will be pre-calcuated
 *)
@@ -165,7 +165,11 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
-val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -325,7 +329,7 @@ let rec tolist_f_aux a f  i res =
     tolist_f_aux a f  (i - 1)
       (f v :: res)
        
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
@@ -519,6 +523,12 @@ module Ext_bytes : sig
 
 
 
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" 
+
+[@@noalloc]
+                     
+    
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -556,6 +566,11 @@ end = struct
 
 
 
+
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" 
+
+[@@noalloc]                     
 
 
 external char_code: char -> int = "%identity"
@@ -667,6 +682,13 @@ external id : 'a -> 'a = "%identity"
 val hash_variant : string -> int
 
 val todo : string -> 'a
+
+val nat_of_string_exn : string -> int
+
+val parse_nat_of_string:
+  string -> 
+  int ref -> 
+  int 
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -755,6 +777,41 @@ let hash_variant s =
 
 let todo loc = 
   failwith (loc ^ " Not supported yet")
+
+
+
+
+let rec int_of_string_aux s acc off len =  
+  if off >= len then acc 
+  else 
+    let d = (Char.code (String.unsafe_get s off) - 48) in 
+    if d >=0 && d <= 9 then 
+      int_of_string_aux s (10*acc + d) (off + 1) len
+    else -1 (* error *)
+
+let nat_of_string_exn (s : string) = 
+  let acc = int_of_string_aux s 0 0 (String.length s) in 
+  if acc < 0 then invalid_arg s 
+  else acc 
+
+
+(** return index *)
+let parse_nat_of_string (s : string) (cursor : int ref) =  
+  let current = !cursor in 
+  assert (current >= 0);
+  let acc = ref 0 in 
+  let s_len = String.length s in 
+  let todo = ref true in 
+  let cur = ref current in 
+  while !todo && !cursor < s_len do 
+    let d = Char.code (String.unsafe_get s !cur) - 48 in 
+    if d >=0 && d <= 9 then begin 
+      acc := 10* !acc + d;
+      incr cur
+    end else todo := false
+  done ;
+  cursor := !cur;
+  !acc 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -862,11 +919,11 @@ val equal : string -> string -> bool
    telling the return string is empty since 
    "\n\n" would result in an empty string too.
 *)
-val extract_until:
+(* val extract_until:
   string -> 
   int ref -> (* cursor to be updated *)
   char -> 
-  string
+  string *)
 
 val index_count:  
   string -> 
@@ -875,6 +932,13 @@ val index_count:
   int -> 
   int 
 
+(* val index_next :
+  string -> 
+  int ->
+  char -> 
+  int  *)
+
+  
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -897,15 +961,6 @@ val tail_from : string -> int -> string
 val rindex_neg : string -> char -> int 
 
 val rindex_opt : string -> char -> int option
-
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
 
 
 val no_char : string -> char -> int -> int -> bool 
@@ -954,6 +1009,24 @@ val capitalize_sub:
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1201,10 +1274,12 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
-let rec index_rec s lim i c =
+(* let rec index_rec s lim i c =
   if i >= lim then -1 else
   if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
+  else index_rec s lim (i + 1) c *)
+
+
 
 let rec index_rec_count s lim i c count =
   if i >= lim then -1 else
@@ -1219,7 +1294,11 @@ let index_count s i c count =
     Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
 
   index_rec_count s lim i c count 
-let extract_until s cursor c =       
+
+(* let index_next s i c =   
+  index_count s i c 1  *)
+
+(* let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
   if start < 0 || start >= len then (
@@ -1237,7 +1316,7 @@ let extract_until s cursor c =
         cursor := i + 1;
         i 
       ) in 
-    String.sub s start (finish - start)
+    String.sub s start (finish - start) *)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -1253,42 +1332,6 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file (s : string) = 
-  let len = String.length s in 
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'A' .. 'Z'
-  | 'a' .. 'z' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-
-
-type check_result = 
-  | Good 
-  | Invalid_module_name 
-  | Suffix_mismatch
-  (** 
-     TODO: move to another module 
-     Make {!Ext_filename} not stateful
-  *)
-let is_valid_source_name name : check_result =
-  match check_any_suffix_case_then_chop name [
-      ".ml"; 
-      ".re";
-      ".mli"; 
-      ".rei"
-    ] with 
-  | None -> Suffix_mismatch
-  | Some x -> 
-    if is_valid_module_file  x then
-      Good
-    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  last_idx = 
@@ -1484,7 +1527,35 @@ let lowercase_ascii = String.lowercase_ascii
 
 
 
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
 
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16 lor
+  Char.code x.[off+3] lsl 24 
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
@@ -3200,24 +3271,20 @@ module Bsb_db : sig
 
 type case = bool 
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
 
-type ml_info =
-  | Ml_source of  bool  * bool
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_info = 
-  | Mli_source of  bool * bool
-  | Mli_empty
+
 
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
-    name_sans_extension : string
+    mutable info : info;
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
   }
 
 type t = module_info String_map.t 
@@ -3233,7 +3300,7 @@ type ts = t array
   ]}
 *)
 
-val filename_sans_suffix_of_module_info : module_info -> string 
+
 
 
 
@@ -3276,17 +3343,18 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-type ml_info =
-  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
-  | Ml_empty
-type mli_info = 
-  | Mli_source of  bool  * case  
-  | Mli_empty
 
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+  
 type module_info = 
   {
-    mli_info : mli_info ; 
-    ml_info : ml_info ; 
+    mutable info : info;
+    dir : string ; 
+    is_re : bool;
+    case : bool;
     name_sans_extension : string  ;
   }
 
@@ -3297,35 +3365,17 @@ type ts = t array
 (** indexed by the group *)
 
 
-
-
-
-let filename_sans_suffix_of_module_info (x : module_info) =
-  x.name_sans_extension
-
-
-
-
 let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ module_info ->
-      match module_info with 
-      |  { ml_info = Ml_source(is_re,_); 
-           mli_info = Mli_source(is_rei,_) } ->
-        is_re || is_rei
-      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
-      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
-        ->  is_re
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  
+  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
 
 end
-module Bs_version : sig 
-#1 "bs_version.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+module Ext_digest : sig 
+#1 "ext_digest.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3343,21 +3393,19 @@ module Bs_version : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val version : string
 
-val header : string 
+ val length : int 
 
-val package_name : string
+ val hex_length : int
 end = struct
-#1 "bs_version.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+#1 "ext_digest.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3375,15 +3423,104 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)    
-let version = "5.1.0"
-let header = 
-   "// Generated by BUCKLESCRIPT VERSION 5.1.0, PLEASE EDIT WITH CARE"  
-let package_name = "bs-platform"   
-    
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let length = 16
+
+ let hex_length = 32
+end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+val rev_lines_of_chann : in_channel -> string list
+
+val write_file : string -> string -> unit
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
+      match input_line chan with
+      | line -> loop (line :: acc) chan
+      | exception End_of_file -> close_in chan ; acc in
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
+  
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
+    output_string oc content
+  end
+
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -3519,6 +3656,8 @@ val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
+
+val sourcedirs_meta : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3656,6 +3795,7 @@ let gentype_import = "genType.import"
 
 let bsbuild_cache = ".bsbuild"    
 
+let sourcedirs_meta = ".sourcedirs.json"
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -3690,24 +3830,34 @@ type t
 
 type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int ;
+   dir_info_offset : int ; 
+   module_info_offset : int ;
  }
 
-val decode : 
+(* exposed only for testing *)
+val decode_internal : 
   string -> 
   int ref ->
   group array 
-  
+
 
 
 val read_build_cache : 
   dir:string -> t
 
+
+
+type module_info = {
+  case : Bsb_db.case;
+  dir_name : string
+} 
+
 val find_opt :
   t -> (* contains global info *)
   int -> (* more likely to be zero *)
   string -> (* module name *)
-  Bsb_db.module_info option 
+  module_info option 
 end = struct
 #1 "bsb_db_decode.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -3739,82 +3889,71 @@ end = struct
 
  type group = {
    modules : string array ; 
-   meta_info_offset : int 
+   dir_length : int;
+   dir_info_offset : int ; 
+   module_info_offset : int;
  }
 
 type t = group array * string (* string is whole content*)
 
 
-
-let bool buf b =   
-  Buffer.add_char buf (if b then '1' else '0')
-
-
-
-let decode_ml_info (x : char ) : Bsb_db.ml_info =   
-  match x with 
-  | '0' -> Ml_empty 
-  | '1' -> Ml_source(false,false) 
-  | '2' -> Ml_source(false,true) 
-  | '3' -> Ml_source(true, false) 
-  | '4' -> Ml_source(true, true) 
-  | _ -> assert false
-
-
-let decode_mli_info (x : char ) : Bsb_db.mli_info =   
-  match x with 
-  | '0' -> Mli_empty 
-  | '1' -> Mli_source(false,false) 
-  | '2' -> Mli_source(false,true) 
-  | '3' -> Mli_source(true, false)
-  | '4' -> Mli_source(true, true) 
-  | _ -> assert false
-
-
-
-
-
-
-
 type cursor = int ref 
 
-let extract_line (x : string) (cur : cursor) : string =
-  Ext_string.extract_until x cur '\n'
 
-let next_mdoule_info (s : string) (cur : int) ~count  =  
-  if count = 0 then cur 
+(*TODO: special case when module_count is zero *)
+let rec decode_internal (x : string) (offset : cursor) =   
+  let len = Ext_pervasives.parse_nat_of_string x offset in  
+  incr offset;
+  let first = decode_single x offset in 
+  if len = 1 then [|first|]
   else 
-    Ext_string.index_count s cur '\n' count  + 1
-
-let rec decode (x : string) (offset : cursor) =   
-  let len = int_of_string (extract_line x offset) in  
-  Array.init len (fun _ ->  decode_single x offset)
-and decode_single x (offset : cursor) : group = 
-  let cardinal = int_of_string (extract_line x offset) in 
-  let modules = decode_modules x offset cardinal in 
-  let meta_info_offset = !offset in 
-  offset := next_mdoule_info x meta_info_offset ~count:cardinal;
-  { modules ; meta_info_offset }
-and decode_modules x (offset : cursor) cardinal =   
-  let result = Array.make cardinal "" in 
-  for i = 0 to cardinal - 1 do 
-    Array.unsafe_set result i (extract_line x offset)
+    let result = Array.make len first in 
+    for i = 1 to len - 1 do 
+      Array.unsafe_set result i (decode_single x offset)
+    done ;
+    result
+  
+and decode_single (x : string) (offset : cursor) : group = 
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+  incr offset;
+  let modules = decode_modules x offset module_number in 
+  let dir_info_offset = !offset in 
+  let module_info_offset = 
+    String.index_from x dir_info_offset '\n'  + 1 in
+  let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
+  offset := 
+    module_info_offset +
+    1 +
+    dir_length * module_number +
+    1 
+    ;
+  { modules ; dir_info_offset; module_info_offset ; dir_length}
+and decode_modules (x : string) (offset : cursor) module_number : string array =   
+  let result = Array.make module_number "" in 
+  let last = ref !offset in 
+  let cur = ref !offset in 
+  let tasks = ref 0 in 
+  while !tasks <> module_number do 
+    if String.unsafe_get x !cur = '\n' then 
+      begin 
+        let offs = !last in 
+        let len = (!cur - !last) in         
+        Array.unsafe_set result !tasks
+        (Ext_string.unsafe_sub x offs len);
+        incr tasks;
+        last := !cur + 1;
+      end;
+    incr cur
   done ;
+  offset := !cur;
   result
   
 
-
-
-
-
-let read_build_cache ~dir  : t = 
-  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
-  let len = in_channel_length ic in 
-  let all_content = really_input_string ic len in 
-  let offset = ref 0 in 
-  let cur_module_info_magic_number = extract_line all_content offset in 
-  assert (cur_module_info_magic_number = Bs_version.version); 
-  decode all_content offset, all_content
+(* TODO: shall we check the consistency of digest *)
+let read_build_cache ~dir  : t =   
+  let all_content = 
+    Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
+  decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -3849,22 +3988,644 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
+
+
+type module_info =  {
+  case : Bsb_db.case; 
+  dir_name : string
+} 
+
+
 let find_opt 
-  ((sorteds,whole) : t )  i key 
-    : Bsb_db.module_info option = 
+  ((sorteds,whole) : t )  i (key : string) 
+    : module_info option = 
   let group = sorteds.(i) in 
   let i = find_opt_aux group.modules key in 
   match i with 
   | None -> None 
   | Some count ->     
-    let cursor = 
-      ref (next_mdoule_info whole group.meta_info_offset ~count)
+    let encode_len = group.dir_length in 
+    let index = 
+      Ext_string.get_1_2_3_4 whole 
+      ~off:(group.module_info_offset + 1 + count * encode_len)
+      encode_len
     in 
-    let name_sans_extension = 
-        Ext_string.extract_until whole cursor ',' in 
-    let mli_info =  decode_mli_info whole.[!cursor] in 
-    let ml_info = decode_ml_info whole.[!cursor + 1] in
-    Some {mli_info ; ml_info; name_sans_extension}
+    let case = not (index mod 2 = 0) in 
+    let ith = index lsr 1 in 
+    let dir_name_start = 
+      if ith = 0 then group.dir_info_offset 
+      else 
+        Ext_string.index_count 
+          whole group.dir_info_offset '\t'
+          ith + 1
+    in 
+    let dir_name_finish = 
+      String.index_from
+        whole dir_name_start '\t' 
+    in    
+    Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+  
+        
+      
+end
+module Ext_buffer : sig 
+#1 "ext_buffer.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*  Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt   *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Extensible buffers.
+
+   This module implements buffers that automatically expand
+   as necessary.  It provides accumulative concatenation of strings
+   in quasi-linear time (instead of quadratic time when strings are
+   concatenated pairwise).
+*)
+
+(* BuckleScript customization: customized for efficient digest *)
+
+type t
+(** The abstract type of buffers. *)
+
+val create : int -> t
+(** [create n] returns a fresh buffer, initially empty.
+   The [n] parameter is the initial size of the internal byte sequence
+   that holds the buffer contents. That byte sequence is automatically
+   reallocated when more than [n] characters are stored in the buffer,
+   but shrinks back to [n] characters when [reset] is called.
+   For best performance, [n] should be of the same order of magnitude
+   as the number of characters that are expected to be stored in
+   the buffer (for instance, 80 for a buffer that holds one output
+   line).  Nothing bad will happen if the buffer grows beyond that
+   limit, however. In doubt, take [n = 16] for instance.
+   If [n] is not between 1 and {!Sys.max_string_length}, it will
+   be clipped to that interval. *)
+
+val contents : t -> string
+(** Return a copy of the current contents of the buffer.
+    The buffer itself is unchanged. *)
+
+val length : t -> int
+(** Return the number of characters currently contained in the buffer. *)
+
+val is_empty : t -> bool
+
+val clear : t -> unit
+(** Empty the buffer. *)
+
+
+val add_char : t -> char -> unit
+(** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
+
+val add_string : t -> string -> unit
+(** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
+
+val add_bytes : t -> bytes -> unit
+(** [add_string b s] appends the string [s] at the end of the buffer [b].
+    @since 4.02 *)
+
+val add_substring : t -> string -> int -> int -> unit
+(** [add_substring b s ofs len] takes [len] characters from offset
+   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
+
+val add_subbytes : t -> bytes -> int -> int -> unit
+(** [add_substring b s ofs len] takes [len] characters from offset
+    [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
+    @since 4.02 *)
+
+val add_buffer : t -> t -> unit
+(** [add_buffer b1 b2] appends the current contents of buffer [b2]
+   at the end of buffer [b1].  [b2] is not modified. *)    
+
+val add_channel : t -> in_channel -> int -> unit
+(** [add_channel b ic n] reads exactly [n] character from the
+   input channel [ic] and stores them at the end of buffer [b].
+   Raise [End_of_file] if the channel contains fewer than [n]
+   characters. *)
+
+val output_buffer : out_channel -> t -> unit
+(** [output_buffer oc b] writes the current contents of buffer [b]
+   on the output channel [oc]. *)   
+
+val digest : t -> Digest.t   
+
+val not_equal : 
+  t -> 
+  string -> 
+  bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit
+end = struct
+#1 "ext_buffer.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*    Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt    *)
+(*                                                                        *)
+(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Extensible buffers *)
+
+type t =
+ {mutable buffer : bytes;
+  mutable position : int;
+  mutable length : int;
+  initial_buffer : bytes}
+
+let create n =
+ let n = if n < 1 then 1 else n in
+ 
+ let n = if n > Sys.max_string_length then Sys.max_string_length else n in
+ 
+ let s = Bytes.create n in
+ {buffer = s; position = 0; length = n; initial_buffer = s}
+
+let contents b = Bytes.sub_string b.buffer 0 b.position
+let to_bytes b = Bytes.sub b.buffer 0 b.position 
+
+let sub b ofs len =
+  if ofs < 0 || len < 0 || ofs > b.position - len
+  then invalid_arg "Buffer.sub"
+  else Bytes.sub_string b.buffer ofs len
+
+
+let blit src srcoff dst dstoff len =
+  if len < 0 || srcoff < 0 || srcoff > src.position - len
+             || dstoff < 0 || dstoff > (Bytes.length dst) - len
+  then invalid_arg "Buffer.blit"
+  else
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len
+
+let length b = b.position
+let is_empty b = b.position = 0
+let clear b = b.position <- 0
+
+let reset b =
+  b.position <- 0; b.buffer <- b.initial_buffer;
+  b.length <- Bytes.length b.buffer
+
+let resize b more =
+  let len = b.length in
+  let new_len = ref len in
+  while b.position + more > !new_len do new_len := 2 * !new_len done;
+   
+  if !new_len > Sys.max_string_length then begin
+    if b.position + more <= Sys.max_string_length
+    then new_len := Sys.max_string_length
+    else failwith "Buffer.add: cannot grow buffer"
+  end;
+  
+  let new_buffer = Bytes.create !new_len in
+  (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
+     this tricky function that is slow anyway. *)
+  Bytes.blit b.buffer 0 new_buffer 0 b.position;
+  b.buffer <- new_buffer;
+  b.length <- !new_len  
+
+let add_char b c =
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+
+let add_substring b s offset len =
+  if offset < 0 || len < 0 || offset > String.length s - len
+  then invalid_arg "Buffer.add_substring/add_subbytes";
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Bytes.blit_string s offset b.buffer b.position len;
+  b.position <- new_position  
+
+
+let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len
+
+let add_string b s =
+  let len = String.length s in
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Bytes.blit_string s 0 b.buffer b.position len;
+  b.position <- new_position  
+
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
+
+let add_char_string b c s  =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
+
+
+let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+
+let add_buffer b bs =
+  add_subbytes b bs.buffer 0 bs.position
+
+let add_channel b ic len =
+  if len < 0 
+
+    || len > Sys.max_string_length 
+
+    then   (* PR#5004 *)
+    invalid_arg "Buffer.add_channel";
+  if b.position + len > b.length then resize b len;
+  really_input ic b.buffer b.position len;
+  b.position <- b.position + len
+
+let output_buffer oc b =
+  output oc b.buffer 0 b.position  
+
+external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
+
+let digest b = 
+  unsafe_string 
+  b.buffer 0 b.position    
+
+let rec not_equal_aux (b : bytes) (s : string) i len = 
+    if i >= len then false
+    else 
+      (Bytes.unsafe_get b i 
+      <>
+      String.unsafe_get s i )
+      || not_equal_aux b s (i + 1) len 
+
+(** avoid a large copy *)
+let not_equal  (b : t) (s : string) = 
+  let b_len = b.position in 
+  let s_len = String.length s in 
+  b_len <> s_len 
+  || not_equal_aux b.buffer s 0 s_len
+
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 4;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
+
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+val is_dir_sep : 
+  char -> bool 
+  
+val maybe_quote:
+  string -> 
+  string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' 
+        | '@' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
+
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
+
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
+    else 
+    if String.unsafe_get name i = '.' then 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
+    else 
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
 end
 module Ext_char : sig 
 #1 "ext_char.mli"
@@ -4000,7 +4761,8 @@ module Ext_namespace : sig
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : ns:string -> string -> string 
+val make : 
+  ?ns:string -> string -> string 
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -4014,9 +4776,10 @@ val try_split_module_name :
    #1933 when removing ns suffix, don't pass the bound
    of basename
 *)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
+val change_ext_ns_suffix :  
+  string -> 
+  string ->
+  string
 
 type file_kind = 
   | Upper_js
@@ -4025,7 +4788,10 @@ type file_kind =
   | Little_bs 
   (** [js_name_of_modulename ~little A-Ns]
   *)
-val js_name_of_modulename : file_kind -> string -> string
+val js_name_of_modulename : 
+  string -> 
+  file_kind -> 
+  string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -4073,23 +4839,24 @@ end = struct
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
+let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ ns_sep ^ ns
 
-let path_char = Filename.dir_sep.[0]
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
-    if char = path_char then -1 
+    if Ext_filename.is_dir_sep char  then -1 
     else if char = ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
 
-let remove_ns_suffix name =
+let change_ext_ns_suffix name ext =
   let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
+  if i < 0 then name ^ ext
+  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
 
 let try_split_module_name name = 
   let len = String.length name in 
@@ -4104,26 +4871,22 @@ type file_kind =
   | Little_js 
   | Little_bs
 
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
 
-(* let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js *)
   
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
+(* let js_name_of_basename bs_suffix s =   
+  change_ext_ns_suffix  s 
+  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename little s = 
+let js_name_of_modulename s little = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
   | Little_bs -> 
-    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
+    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
   | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
+    change_ext_ns_suffix s  Literals.suffix_js
   | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
+    change_ext_ns_suffix s  Literals.suffix_bs_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
@@ -4293,24 +5056,14 @@ type kind = Js | Bytecode | Native
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
 *)
-val deps_of_channel : in_channel -> string array
-
-(**
-  [make compilation_kind filename index namespace]
-  emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
-*)
-val emit_dep_file: 
-  kind ->
-  string -> 
-  Bsb_dir_index.t ->  
-  string option ->
-  unit
+val deps_of_channel : in_channel -> string list
 
 
-val emit_d:
-  string ->
+
+val emit_d:  
   Bsb_dir_index.t ->  
   string  option ->
+  string ->
   string -> (* empty string means no mliast *)
   unit
 end = struct
@@ -4344,50 +5097,60 @@ end = struct
 let dep_lit = " : "
 let write_buf name buf  =     
   let oc = open_out_bin name in 
-  Buffer.output_buffer oc buf ;
+  Ext_buffer.output_buffer oc buf ;
   close_out oc 
 
 (* should be good for small file *)
-let load_file name (buf : Buffer.t): unit  = 
-  let len = Buffer.length buf in 
+let load_file name (buf : Ext_buffer.t): unit  = 
+  let len = Ext_buffer.length buf in 
   let ic = open_in_bin name in 
   let n = in_channel_length ic in   
   if n <> len then begin close_in ic ; write_buf name buf  end 
   else
     let holder = really_input_string ic  n in 
     close_in ic ; 
-    if holder <> Buffer.contents buf then 
+    if Ext_buffer.not_equal buf holder then 
       write_buf name buf 
 ;;
-let write_file name  (buf : Buffer.t) = 
+let write_file name  (buf : Ext_buffer.t) = 
   if Sys.file_exists name then 
     load_file name buf 
   else 
     write_buf name buf 
     
+(* return an non-decoded string *)
+let extract_dep_raw_string (fn : string) : string =   
+  let ic = open_in_bin fn in 
+  let size = input_binary_int ic in 
+  let s = really_input_string ic size in
+  close_in ic;
+  s
+
 (* Make sure it is the same as {!Binary_ast.magic_sep_char}*)
 let magic_sep_char = '\n'
 
-let deps_of_channel (ic : in_channel) : string array = 
+let deps_of_channel (ic : in_channel) : string list = 
   let size = input_binary_int ic in 
-  let s = really_input_string ic size in 
-  let first_tab  = String.index s magic_sep_char in 
-  let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
-  let rec aux s ith (offset : int) : unit = 
+  let s = really_input_string ic size in   
+  let rec aux (s : string) acc (offset : int) size : string list = 
     if offset < size then
-      let next_tab = String.index_from s offset magic_sep_char  in 
-      return_arr.(ith) <- String.sub s offset (next_tab - offset) ; 
-      aux s (ith + 1) (next_tab + 1) 
+      let next_tab = String.index_from s offset magic_sep_char in        
+      aux s 
+        (String.sub s offset (next_tab - offset)::acc) (next_tab + 1) 
+        size
+    else acc    
   in 
-  aux s 0 (first_tab + 1) ; 
+  aux s [] 1 size 
 
-  return_arr 
+  
+
+
 
 (** Please refer to {!Binary_ast} for encoding format, we move it here 
     mostly for cutting the dependency so that [bsb_helper.exe] does
     not depend on compler-libs
 *)
-let read_deps (fn : string) : string array = 
+let read_deps (fn : string) : string list = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
@@ -4396,11 +5159,9 @@ let read_deps (fn : string) : string array =
 
 type kind = Js | Bytecode | Native
 
-let output_file (oc : Buffer.t) source namespace = 
-  Buffer.add_string oc (match namespace with 
-      | None ->  source 
-      | Some ns ->
-        Ext_namespace.make ~ns source)
+let output_file (buf : Ext_buffer.t) source namespace = 
+  Ext_buffer.add_string buf 
+    (Ext_namespace.make ?ns:namespace source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -4409,28 +5170,25 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmi] if it has [mli]
 *)
 let oc_cmi buf namespace source = 
-  Buffer.add_char buf ' ';  
+  Ext_buffer.add_char buf ' ';  
   output_file buf source namespace;
-  Buffer.add_string buf Literals.suffix_cmi 
+  Ext_buffer.add_string buf Literals.suffix_cmi 
 
 
-let handle_module_info 
-    (module_info : Bsb_db.module_info)
-    input_file 
-    namespace rhs_suffix buf = 
-  let source = module_info.name_sans_extension in 
-  if source <> input_file then 
-    begin 
-      if module_info.ml_info <> Ml_empty then 
-        begin
-          Buffer.add_char buf ' ';  
-          output_file buf source namespace;
-          Buffer.add_string buf rhs_suffix
-        end;
-      (* #3260 cmj changes does not imply cmi change anymore *)
-      oc_cmi buf namespace source
-    end
+(* For cases with self cycle
+    e.g, in b.ml
+    {[
+      include B
+    ]}
+    When ns is not turned on, it makes sense that b may come from third party package.
+    Hoever, this case is wont supported. 
+    It complicates when it has interface file or not.
+    - if it has interface file, the current interface will have priority, failed to build?
+    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
 
+    When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
+    it can be errored out earlier
+*)
 let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) = 
   let opt = Bsb_db_decode.find_opt db 0 dependent_module in 
   match opt with 
@@ -4440,41 +5198,65 @@ let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) =
       Bsb_db_decode.find_opt db (index :> int) dependent_module 
     else None 
 let oc_impl 
-    (dependent_module_set : string array)
-    (input_file : string)
+    (mlast : string)
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
-    (buf : Buffer.t)
+    (buf : Ext_buffer.t)
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
+  let cur_module_name = Ext_filename.module_name mlast  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
-    output_file buf input_file namespace ; 
-    Buffer.add_string buf lhs_suffix; 
-    Buffer.add_string buf dep_lit ) in  
+    output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
+    Ext_buffer.add_string buf lhs_suffix; 
+    Ext_buffer.add_string buf dep_lit ) in  
   Ext_option.iter namespace (fun ns -> 
       Lazy.force at_most_once;
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
+      Ext_buffer.add_string buf ns;
+      Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
-  Ext_array.iter dependent_module_set (fun dependent_module ->
-      match  
-        find_module db dependent_module is_not_lib_dir index  
-      with      
-      | None -> ()
-      | Some module_info -> 
-        begin 
-          Lazy.force at_most_once;
-          handle_module_info module_info input_file namespace rhs_suffix buf
-        end     
+  let s = extract_dep_raw_string mlast in 
+  let offset = ref 1 in 
+  let size = String.length s in 
+  while !offset < size do 
+    let next_tab = String.index_from s !offset magic_sep_char in
+    let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+      begin
+        prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+        exit 2
+      end
     );
+    (match  
+      find_module db dependent_module is_not_lib_dir index  
+    with      
+    | None -> ()
+    | Some ({dir_name; case }) -> 
+      begin 
+        Lazy.force at_most_once;
+        let source = 
+          Filename.concat dir_name
+          (if case then 
+            dependent_module
+          else 
+            Ext_string.uncapitalize_ascii dependent_module) in 
+        Ext_buffer.add_char buf ' ';  
+        output_file buf source namespace;
+        Ext_buffer.add_string buf rhs_suffix;
+        
+        (* #3260 cmj changes does not imply cmi change anymore *)
+        oc_cmi buf namespace source
+
+      end);     
+    offset := next_tab + 1  
+  done ;
   if !has_deps then  
-    Buffer.add_char buf '\n'
+    Ext_buffer.add_char buf '\n'
 
 
 
@@ -4482,66 +5264,77 @@ let oc_impl
     [.cmi] file
 *)
 let oc_intf
-    (dependent_module_set : string array)
-    input_file 
+    mliast    
     (index : Bsb_dir_index.t)
     (db : Bsb_db_decode.t)
     (namespace : string option)
-    (buf : Buffer.t) : unit =   
+    (buf : Ext_buffer.t) : unit =     
+  
   let has_deps = ref false in  
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
-    output_file buf input_file namespace ;   
-    Buffer.add_string buf Literals.suffix_cmi ; 
-    Buffer.add_string buf dep_lit) in 
+    output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
+    Ext_buffer.add_string buf Literals.suffix_cmi ; 
+    Ext_buffer.add_string buf dep_lit) in 
   Ext_option.iter namespace (fun ns -> 
       Lazy.force at_most_once;  
-      Buffer.add_string buf ns;
-      Buffer.add_string buf Literals.suffix_cmi;
+      Ext_buffer.add_string buf ns;
+      Ext_buffer.add_string buf Literals.suffix_cmi;
     ) ; 
+  let cur_module_name = Ext_filename.module_name mliast in
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
-  Ext_array.iter dependent_module_set begin fun dependent_module ->
-    match  find_module db dependent_module is_not_lib_dir index 
-    with     
-    | None -> ()
-    | Some module_info -> 
-      let source = module_info.name_sans_extension in 
-      if source <> input_file then
-        begin 
-          Lazy.force at_most_once; 
-          oc_cmi buf namespace source             
-        end
-  end;
+  let s = extract_dep_raw_string mliast in 
+  let offset = ref 1 in 
+  let size = String.length s in 
+  while !offset < size do 
+    let next_tab = String.index_from s !offset magic_sep_char in
+    let dependent_module = String.sub s !offset (next_tab - !offset) in 
+    (if dependent_module = cur_module_name then 
+       begin
+         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+         exit 2
+       end
+    );
+    (match  find_module db dependent_module is_not_lib_dir index 
+     with     
+     | None -> ()
+     | Some {dir_name; case} ->       
+       Lazy.force at_most_once; 
+       oc_cmi buf namespace 
+         (Filename.concat dir_name 
+            (if case then dependent_module else
+               Ext_string.uncapitalize_ascii dependent_module
+            ))
+    );
+    offset := next_tab + 1   
+  done;  
   if !has_deps then
-    Buffer.add_char buf '\n'
+    Ext_buffer.add_char buf '\n'
 
 
-let emit_d mlast 
+let emit_d 
   (index : Bsb_dir_index.t) 
-  (namespace : string option) has_intf = 
+  (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name
-  in 
-  let set_a = read_deps mlast in 
-  let buf = Buffer.create 128 in 
-  let input_file = Filename.chop_extension mlast in 
-  let filename = input_file ^ Literals.suffix_d in   
+      ~dir:Filename.current_dir_name in   
+  let buf = Ext_buffer.create 2048 in 
+  let filename = 
+      Ext_filename.new_extension mlast Literals.suffix_d in   
   let lhs_suffix = Literals.suffix_cmj in   
   let rhs_suffix = Literals.suffix_cmj in 
+  
   oc_impl 
-    set_a 
-    input_file 
+    mlast
     index 
     data
     namespace
     buf 
     lhs_suffix 
     rhs_suffix ;      
-  if has_intf <> "" then begin
+  if mliast <> "" then begin
     oc_intf 
-      (read_deps has_intf)
-      input_file 
+      mliast
       index 
       data 
       namespace 
@@ -4549,538 +5342,12 @@ let emit_d mlast
   end;          
   write_file filename buf 
 
-(* OPT: Don't touch the .d file if nothing changed *)
-let emit_dep_file
-    compilation_kind
-    (fn : string)
-    (index : Bsb_dir_index.t) 
-    (namespace : string option) : unit = 
-  let data  =
-    Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name
-  in 
-  let set = read_deps fn in 
-  match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
-  | Some  input_file -> 
-     
-   let lhs_suffix = Literals.suffix_cmj in   
-   let rhs_suffix = Literals.suffix_cmj in 
 
-   let buf = Buffer.create 64 in 
-   oc_impl 
-     set 
-     input_file 
-     index 
-     data
-     namespace
-     buf 
-     lhs_suffix 
-     rhs_suffix       
-     ;
-   write_file (input_file ^ Literals.suffix_d ) buf 
-    
-  | None -> 
-    begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
-      | Some input_file -> 
-        let filename = (input_file ^ Literals.suffix_d) in 
-        let buf = Buffer.create 64 in 
-        oc_intf 
-          set 
-          input_file 
-          index 
-          data 
-          namespace 
-          buf; 
-        write_file filename buf 
-      | None -> 
-        raise (Arg.Bad ("don't know what to do with  " ^ fn))
-    end
 
-end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Not used yet *)
-(* val is_directory_no_exn : string -> bool *)
 
 
-val is_windows_or_cygwin : bool 
-
-val getenv_opt : 
-  string -> 
-  string option 
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** TODO: not exported yet, wait for Windows Fix*)
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-
-let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
-
-
-let getenv_opt = Sys.getenv_opt
-
-end
-module Ext_path : sig 
-#1 "ext_path.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t 
-
-
-
-
-
-(**
-   [combine path1 path2]
-   1. add some simplifications when concatenating
-   2. when [path2] is absolute, return [path2]
-*)  
-val combine : 
-  string -> 
-  string -> 
-  string    
-
-
-
-val chop_extension : ?loc:string -> string -> string 
-
-
-val chop_extension_if_any : string -> string
-
-val chop_all_extensions_if_any : 
-  string -> string 
-
-(**
-   {[
-     get_extension "a.txt" = ".txt"
-       get_extension "a" = ""
-   ]}
-*)
-val get_extension : string -> string
-
-
-
-
-val node_rebase_file :
-  from:string -> 
-  to_:string ->
-  string -> 
-  string 
-
-(** 
-   TODO: could be highly optimized
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-   Given that two paths are directory
-
-   A typical use case is 
-   {[
-     Filename.concat 
-       (rel_normalized_absolute_path cwd (Filename.dirname a))
-       (Filename.basename a)
-   ]}
-*)
-val rel_normalized_absolute_path : from:string -> string -> string 
-
-
-val normalize_absolute_path : string -> string 
-
-val absolute_path : string Lazy.t -> string -> string
-
-(** [concat dirname filename]
-    The same as {!Filename.concat} except a tiny optimization 
-    for current directory simplification
-*)
-val concat : string -> string -> string 
-
-val check_suffix_case : 
-  string -> string -> bool
-end = struct
-#1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = 
-  | File of string 
-  | Dir of string 
-
-
-
-
-
-
-let split_by_sep_per_os : string -> string list = 
-  if Ext_sys.is_windows_or_cygwin then 
-  fun x -> 
-    (* on Windows, we can still accept -bs-package-output lib/js *)
-    Ext_string.split_by 
-      (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
-  else 
-  fun x -> Ext_string.split x '/'
-
-(** example
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    ]}
-
-    The other way
-    {[
-
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    ]}
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
-    ]}
-    {[
-      /a/b
-      /c/d
-    ]}
-*)
-let node_relative_path 
-    ~from:(file_or_dir_2 : t )
-    (file_or_dir_1 : t) 
-  = 
-  let relevant_dir1 = 
-    match file_or_dir_1 with 
-    | Dir x -> x 
-    | File file1 ->  Filename.dirname file1 in
-  let relevant_dir2 = 
-    match file_or_dir_2 with 
-    | Dir x -> x 
-    | File file2 -> Filename.dirname file2  in
-  let dir1 = split_by_sep_per_os relevant_dir1 in
-  let dir2 = split_by_sep_per_os relevant_dir2 in
-  let rec go (dir1 : string list) (dir2 : string list) = 
-    match dir1, dir2 with 
-    | "." :: xs, ys -> go xs ys 
-    | xs , "." :: ys -> go xs ys 
-    | x::xs , y :: ys when x = y
-      -> go xs ys 
-    | _, _ -> 
-      Ext_list.map_append  dir2  dir1  (fun _ ->  Literals.node_parent)
-  in
-  match go dir1 dir2 with
-  | (x :: _ ) as ys when x = Literals.node_parent -> 
-    String.concat Literals.node_sep ys
-  | ys -> 
-    String.concat Literals.node_sep  
-    @@ Literals.node_current :: ys
-
-
-let node_concat ~dir base =
-  dir ^ Literals.node_sep ^ base 
-
-let node_rebase_file ~from ~to_ file = 
-  
-  node_concat
-    ~dir:(
-      if from = to_ then Literals.node_current
-      else node_relative_path ~from:(Dir from) (Dir to_)) 
-    file
-    
-    
-(***
-   {[
-     Filename.concat "." "";;
-     "./"
-   ]}
-*)
-let combine path1 path2 =  
-  if Filename.is_relative path2 then
-    if Ext_string.is_empty path2 then 
-      path1
-    else 
-    if path1 = Filename.current_dir_name then 
-      path2
-    else
-    if path2 = Filename.current_dir_name 
-    then path1
-    else
-      Filename.concat path1 path2 
-  else
-    path2
-
-
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-let rec chop_all_extensions_if_any fname =
-  match Filename.chop_extension fname with 
-  | x -> chop_all_extensions_if_any x 
-  | exception _ -> fname
-
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
-
-
-let (//) x y =
-  if x = Filename.current_dir_name then y
-  else if y = Filename.current_dir_name then x 
-  else Filename.concat x y 
-
-(**
-   {[
-     split_aux "//ghosg//ghsogh/";;
-     - : string * string list = ("/", ["ghosg"; "ghsogh"])
-   ]}
-   Note that 
-   {[
-     Filename.dirname "/a/" = "/"
-       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
-   ]}
-   Special case:
-   {[
-     basename "//" = "/"
-       basename "///"  = "/"
-   ]}
-   {[
-     basename "" =  "."
-       basename "" = "."
-       dirname "" = "."
-       dirname "" =  "."
-   ]}  
-*)
-let split_aux p =
-  let rec go p acc =
-    let dir = Filename.dirname p in
-    if dir = p then dir, acc
-    else
-      let new_path = Filename.basename p in 
-      if Ext_string.equal new_path Filename.dir_sep then 
-        go dir acc 
-        (* We could do more path simplification here
-           leave to [rel_normalized_absolute_path]
-        *)
-      else 
-        go dir (new_path :: acc)
-
-  in go p []
-
-
-
-
-
-(** 
-   TODO: optimization
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-
-   This function is useed in [es6-global] and 
-   [amdjs-global] format and tailored for `rollup`
-*)
-let rel_normalized_absolute_path ~from to_ =
-  let root1, paths1 = split_aux from in 
-  let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2
-  else
-    let rec go xss yss =
-      match xss, yss with 
-      | x::xs, y::ys -> 
-        if Ext_string.equal x  y then go xs ys 
-        else if x = Filename.current_dir_name then go xs yss 
-        else if y = Filename.current_dir_name then go xss ys
-        else 
-          let start = 
-            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc  _  -> acc // Ext_string.parent_dir_lit )
-          in 
-          Ext_list.fold_left yss start (fun acc v -> acc // v)
-      | [], [] -> Ext_string.empty
-      | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | x::xs, [] ->
-        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
-     in
-    let v =  go paths1 paths2  in 
-
-    if Ext_string.is_empty v then  Literals.node_current
-    else 
-    if
-      v = "."
-      || v = ".."
-      || Ext_string.starts_with v "./"  
-      || Ext_string.starts_with v "../" 
-    then v 
-    else "./" ^ v 
-
-(*TODO: could be hgighly optimized later 
-  {[
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/a/b/../c../d/e/f";;
-
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/gsho/./../..";;
-
-    normalize_absolute_path "/a/b/c/d";;
-
-    normalize_absolute_path "/a/b/c/d/";;
-
-    normalize_absolute_path "/a/";;
-
-    normalize_absolute_path "/a";;
-  ]}
-*)
-(** See tests in {!Ounit_path_tests} *)
-let normalize_absolute_path x =
-  let drop_if_exist xs =
-    match xs with 
-    | [] -> []
-    | _ :: xs -> xs in 
-  let rec normalize_list acc paths =
-    match paths with 
-    | [] -> acc 
-    | x :: xs -> 
-      if Ext_string.equal x Ext_string.current_dir_lit then 
-        normalize_list acc xs 
-      else if Ext_string.equal x Ext_string.parent_dir_lit then 
-        normalize_list (drop_if_exist acc ) xs 
-      else   
-        normalize_list (x::acc) xs 
-  in
-  let root, paths = split_aux x in
-  let rev_paths =  normalize_list [] paths in 
-  let rec go acc rev_paths =
-    match rev_paths with 
-    | [] -> Filename.concat root acc 
-    | last::rest ->  go (Filename.concat last acc ) rest  in 
-  match rev_paths with 
-  | [] -> root 
-  | last :: rest -> go last rest 
-
-
-
-
-let absolute_path cwd s = 
-  let process s = 
-    let s = 
-      if Filename.is_relative s then
-        Lazy.force cwd // s 
-      else s in
-    (* Now simplify . and .. components *)
-    let rec aux s =
-      let base,dir  = Filename.basename s, Filename.dirname s  in
-      if dir = s then dir
-      else if base = Filename.current_dir_name then aux dir
-      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
-      else aux dir // base
-    in aux s  in 
-  process s 
-
-
-let absolute cwd s =   
-  match s with 
-  | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x)
-
-let concat dirname filename =
-  if filename = Filename.current_dir_name then dirname
-  else if dirname = Filename.current_dir_name then filename
-  else Filename.concat dirname filename
-  
-
-let check_suffix_case =
-  Ext_string.ends_with
 end
 module Bsb_helper_main : sig 
 #1 "bsb_helper_main.mli"
@@ -5146,19 +5413,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let main_module = ref None
-
-let set_main_module modulename =
-  main_module := Some modulename
-
-let includes :  _ list ref = ref []
-
-let add_include =
-  let normalize cwd s =
-    Ext_path.normalize_absolute_path (Ext_path.combine cwd s) in
-  fun dir ->
-    includes := (normalize (Sys.getcwd ()) dir) :: !includes
-
+let hash : string ref = ref ""
 let batch_files = ref []
 let collect_file name =
   batch_files := name :: !batch_files
@@ -5179,21 +5434,22 @@ let () =
     ;
     "-bs-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
+    "-hash", Arg.String (fun s -> hash := s),
+    " Set hash(internal)";
     
   ] anonymous usage;
   (* arrange with mlast comes first *)
   match !batch_files with
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
-          x (Bsb_dir_index.of_int !dev_group )          
-          !namespace ""
+          (Bsb_dir_index.of_int !dev_group )          
+          !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
-      x
       (Bsb_dir_index.of_int !dev_group)
-      !namespace y
+      !namespace x y
   | _ -> 
-    assert false  
+    ()
 
 end
