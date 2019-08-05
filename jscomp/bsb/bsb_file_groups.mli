@@ -49,38 +49,26 @@ type  file_group =
 
 type file_groups = file_group list 
 
-type t =   
+type t 
+  = private
   { files :  file_groups; 
     globbed_dirs : string list ; 
   }
 
+val empty : t    
 
+val merge : 
+  t -> 
+  t -> 
+  t   
 
-let empty : t = { files = []; globbed_dirs = [];  }
+val cons :   
+  file_group:file_group ->
+  ?globbed_dir:string ->
+  t ->
+  t
 
+val is_empty :   
+  file_group ->
+  bool
 
-
-let merge (u : t)  (v : t)  = 
-  if u == empty then v 
-  else if v == empty then u 
-  else 
-    {
-      files = Ext_list.append u.files  v.files ; 
-      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
-    }  
-
-let cons ~file_group ?globbed_dir (v : t) : t =  
-  {
-    files = file_group :: v.files;
-    globbed_dirs = 
-      match globbed_dir with 
-      | None -> v.globbed_dirs
-      | Some f -> f :: v.globbed_dirs
-  }
-(** when [is_empty file_group]
-    we don't need issue [-I] [-S] in [.merlin] file
-*)  
-let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
-  x.resources = [] &&
-  x.generators = []    

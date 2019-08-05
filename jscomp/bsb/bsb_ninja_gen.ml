@@ -258,15 +258,16 @@ let output_ninja_and_namespace_map
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
-  Bsb_ninja_file_groups.handle_file_groups oc  
-    ~bs_suffix     
-    ~rules
-    ~js_post_build_cmd 
-    ~package_specs 
-    ~files_to_install
-    bs_file_groups 
-    namespace
-    ;
+  Ext_list.iter bs_file_groups 
+    (fun files_per_dir ->
+       Bsb_ninja_file_groups.handle_files_per_dir oc  
+         ~bs_suffix     
+         ~rules
+         ~js_post_build_cmd 
+         ~package_specs 
+         ~files_to_install    
+         ~namespace files_per_dir)
+  ;
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     

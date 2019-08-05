@@ -169,10 +169,7 @@
                                             },
                                             "description": "Files to be excluded"
                                         }
-                                    },
-                                    "required": [
-                                        "slow-re"
-                                    ]
+                                    }
                                 }
                             ]
                         },

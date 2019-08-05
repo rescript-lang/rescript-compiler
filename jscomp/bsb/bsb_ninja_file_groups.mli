@@ -25,13 +25,12 @@
 
 
 
-val handle_file_groups :
+val handle_files_per_dir :
   out_channel ->
-  package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
-  js_post_build_cmd:string option -> 
-  files_to_install:String_hash_set.t ->  
   rules:Bsb_ninja_rule.builtin ->
-  Bsb_file_groups.file_groups ->
-  string option -> 
-  unit
+  package_specs:Bsb_package_specs.t ->
+  js_post_build_cmd:string option ->
+  files_to_install:String_hash_set.t ->
+  namespace:string option -> 
+  Bsb_file_groups.file_group -> unit

@@ -4293,8 +4293,84 @@ let print fmt s =
 
 
 end
-module Bsb_file_groups
-= struct
+module Bsb_file_groups : sig 
+#1 "bsb_file_groups.mli"
+(* Copyright (C) 2018- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ type public = 
+  | Export_none
+  | Export_all 
+  | Export_set of String_set.t 
+  
+
+type build_generator = 
+  { input : string list ;
+    output : string list;
+    command : string}  
+
+
+type  file_group = 
+  { dir : string ;
+    sources : Bsb_db.t; 
+    resources : string list ;
+    public : public ;
+    dir_index : Bsb_dir_index.t  ;
+    generators : build_generator list ; 
+    (* output of [generators] should be added to [sources],
+       if it is [.ml,.mli,.re,.rei]
+    *)
+  }     
+
+type file_groups = file_group list 
+
+type t 
+  = private
+  { files :  file_groups; 
+    globbed_dirs : string list ; 
+  }
+
+val empty : t    
+
+val merge : 
+  t -> 
+  t -> 
+  t   
+
+val cons :   
+  file_group:file_group ->
+  ?globbed_dir:string ->
+  t ->
+  t
+
+val is_empty :   
+  file_group ->
+  bool
+
+
+end = struct
 #1 "bsb_file_groups.ml"
 (* Copyright (C) 2018- Authors of BuckleScript
  * 
@@ -4367,7 +4443,14 @@ let merge (u : t)  (v : t)  =
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }  
 
-
+let cons ~file_group ?globbed_dir (v : t) : t =  
+  {
+    files = file_group :: v.files;
+    globbed_dirs = 
+      match globbed_dir with 
+      | None -> v.globbed_dirs
+      | Some f -> f :: v.globbed_dirs
+  }
 (** when [is_empty file_group]
     we don't need issue [-I] [-S] in [.merlin] file
 *)  
@@ -9592,7 +9675,7 @@ let add_basename
     ~(dir:string) 
     (map : t)  
     ?(error_on_invalid_suffix)
-    basename =   
+    basename : t =   
   let info = ref Bsb_db.Ml in   
   let is_re = ref false in 
   let invalid_suffix = ref false in
@@ -9912,41 +9995,45 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
         | _ -> None) input))
     | _ -> error ()    
+type json_map = Ext_json_types.t String_map.t
 
-let extract_generators 
-    (input : Ext_json_types.t String_map.t) 
-    (cut_generators_or_not_dev : bool) 
-    (dir : string) 
-    (cur_sources : Bsb_db.t ref)
-     : build_generator list  =
-  let generators : build_generator list ref  = ref [] in
-  begin match String_map.find_opt input  Bsb_build_schemas.generators with
-    | Some (Arr { content ; loc_start}) ->
-      (* Need check is dev build or not *)
-      Ext_array.iter content (fun x ->
+let extract_generators (input : json_map) : build_generator list  =
+  match String_map.find_opt input  Bsb_build_schemas.generators with
+  | Some (Arr { content ; loc_start}) ->
+    (* Need check is dev build or not *)
+    Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-           (match String_map.find_opt map Bsb_build_schemas.name ,
-                      String_map.find_opt map Bsb_build_schemas.edge
-            with
-            | Some (Str command), Some edge ->
-              let output, input = extract_input_output edge in 
-              if not cut_generators_or_not_dev then  
-                generators := {input ; output ; command = command.str } :: !generators;
-              (* ATTENTION: Now adding output as source files, 
-                 it may be re-added again later when scanning files (not explicit files input)
-              *)
-              cur_sources := Ext_list.fold_left output !cur_sources (fun  acc output -> 
-                  Bsb_db_util.add_basename ~dir acc output 
-                )
-            | _ ->
-              errorf x "Invalid generator format")
+          (match String_map.find_opt map Bsb_build_schemas.name ,
+                 String_map.find_opt map Bsb_build_schemas.edge
+           with
+           | Some (Str command), Some edge ->
+             let output, input = extract_input_output edge in 
+             {Bsb_file_groups.input ; output ; command = command.str } :: acc
+           | _ ->
+             errorf x "Invalid generator format")
         | _ -> errorf x "Invalid generator format"
       )  
-    | Some x  -> errorf x "Invalid generator format"
-    | None -> ()
-  end ;
-  !generators 
+  | Some x  -> errorf x "Invalid generator format"
+  | None -> []
+
+let extract_predicate (m : json_map)  : string -> bool =
+  let excludes = 
+    match String_map.find_opt m  Bsb_build_schemas.excludes with 
+    | None -> []   
+    | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
+    | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
+  let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
+  match slow_re, excludes with 
+  | Some (Str {str = s}), [] -> 
+    let re = Str.regexp s  in 
+    fun name -> Str.string_match re name 0 
+  | Some (Str {str = s}) , _::_ -> 
+    let re = Str.regexp s in   
+    fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
+  | Some config, _ -> Bsb_exception.config_error config (Bsb_build_schemas.slow_re ^ " expect a string literal")
+  | None , _ -> 
+    fun name -> not (Ext_list.mem_string excludes name)
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
@@ -10046,64 +10133,43 @@ let rec
   = 
   if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
-    let cur_globbed_dirs = ref [] in 
-    let cur_sources = ref String_map.empty in   
-    let generators = 
-      extract_generators input (cxt.cut_generators || not cxt.toplevel) dir 
-        cur_sources
-    in 
+    let cur_globbed_dirs = ref false in 
+    let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
+    let scanned_generators = extract_generators input in        
     let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-    let base_name_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
-    begin 
+    let base_name_array = 
+        lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
+    let output_sources = 
+      Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
+        String_map.empty (fun acc o -> 
+            Bsb_db_util.add_basename ~dir acc o) in 
+    let sources = 
       match String_map.find_opt input Bsb_build_schemas.files with 
-      | None ->  (* No setting on [!files]*)
+      | None ->  
         (** We should avoid temporary files *)
-        cur_sources := 
-          Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-              if is_input_or_output generators basename then acc 
-              else 
-                Bsb_db_util.add_basename ~dir acc basename 
-            ) ;
-        cur_globbed_dirs :=  [dir]        
-      | Some (Arr basenames ) -> 
-        (* [ a,b ] populated by users themselves 
-           TODO: still need check?
-        *)      
-        cur_sources := 
-          Ext_array.fold_left basenames.content !cur_sources (fun acc basename ->
-              match basename with 
-              | Str {str = basename;loc} -> 
-                Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
-              | _ -> acc
-            ) 
-      | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
-        cur_globbed_dirs := [dir];  
-        let excludes = 
-          match String_map.find_opt m  Bsb_build_schemas.excludes with 
-          | None -> []   
-          | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-          | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-        let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
-        let predicate = 
-          match slow_re, excludes with 
-          | Some (Str {str = s}), [] -> 
-            let re = Str.regexp s  in 
-            fun name -> Str.string_match re name 0 
-          | Some (Str {str = s}) , _::_ -> 
-            let re = Str.regexp s in   
-            fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
-          | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
-          | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-        cur_sources := Ext_array.fold_left (Lazy.force base_name_array) !cur_sources (fun acc basename -> 
-            if is_input_or_output generators basename || not (predicate basename) then acc 
+        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
+            if is_input_or_output scanned_generators basename then acc 
+            else 
+              Bsb_db_util.add_basename ~dir acc basename 
+          ) 
+      | Some (Arr basenames ) ->         
+        Ext_array.fold_left basenames.content output_sources (fun acc basename ->
+            match basename with 
+            | Str {str = basename;loc} -> 
+              Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
+            | _ -> acc
+          ) 
+      | Some (Obj {map = map; loc} ) -> (* { excludes : [], slow_re : "" }*)
+        let predicate = extract_predicate map in 
+        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
+            if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
             else 
               Bsb_db_util.add_basename  ~dir acc basename 
           ) 
       | Some x -> Bsb_exception.config_error x "files field expect array or object "
-    end;
-    let cur_sources = !cur_sources in 
+    in 
     let resources = extract_resources input in
-    let public = extract_pub input cur_sources in 
+    let public = extract_pub input sources in 
     (** Doing recursive stuff *)  
     let children =     
       match sub_dirs_field, 
@@ -10131,16 +10197,17 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    prune_staled_bs_js_files cxt cur_sources ;
-    Bsb_file_groups.merge {
-      files =  [ { dir ; 
-                   sources = cur_sources; 
-                   resources ;
-                   public ;
-                   dir_index = cxt.dir_index ;
-                   generators  } ] ;
-      globbed_dirs = !cur_globbed_dirs ;
-    }  children
+    prune_staled_bs_js_files cxt sources ;
+    Bsb_file_groups.cons 
+      ~file_group:{ dir ; 
+                    sources = sources; 
+                    resources ;
+                    public ;
+                    dir_index = cxt.dir_index ;
+                    generators = if has_generators then scanned_generators else []  } 
+      ?globbed_dir:(
+        if !cur_globbed_dirs then Some dir else None)
+      children
 
 
 and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
@@ -12987,16 +13054,16 @@ module Bsb_ninja_file_groups : sig
 
 
 
-val handle_file_groups :
+val handle_files_per_dir :
   out_channel ->
-  package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
-  js_post_build_cmd:string option -> 
-  files_to_install:String_hash_set.t ->  
   rules:Bsb_ninja_rule.builtin ->
-  Bsb_file_groups.file_groups ->
-  string option -> 
-  unit
+  package_specs:Bsb_package_specs.t ->
+  js_post_build_cmd:string option ->
+  files_to_install:String_hash_set.t ->
+  namespace:string option -> 
+  Bsb_file_groups.file_group -> unit
+
 end = struct
 #1 "bsb_ninja_file_groups.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -13084,12 +13151,13 @@ let emit_module_build
     (group_dir_index : Bsb_dir_index.t) 
     oc 
     ~bs_suffix
-    ~(no_intf_file : bool) 
     js_post_build_cmd
-    ~is_re
     namespace
-    filename_sans_extension
+    (module_info : Bsb_db.module_info)
   =    
+  let no_intf_file = module_info.info <> Ml_mli in 
+  let is_re = module_info.is_re in 
+  let filename_sans_extension = module_info.name_sans_extension in 
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input = 
     Bsb_config.proj_rel 
@@ -13192,37 +13260,17 @@ let emit_module_build
 
 
 
-let handle_module_info 
-    rules
-    (group_dir_index : Bsb_dir_index.t)
-    (package_specs : Bsb_package_specs.t) 
-    js_post_build_cmd
-    ~bs_suffix
-    oc  module_name 
-    (module_info : Bsb_db.module_info)
-    namespace
-  =
-  emit_module_build  rules
-    package_specs
-    group_dir_index
-    oc 
-    ~bs_suffix
-    ~no_intf_file:(module_info.info <> Ml_mli)
-    ~is_re:module_info.is_re
-    js_post_build_cmd      
-    namespace
-    module_info.name_sans_extension
 
 
 
-let handle_file_group 
+let handle_files_per_dir
     oc 
     ~bs_suffix
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) 
-    (namespace  : string option)
+    ~(files_to_install : String_hash_set.t) 
+    ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
 
@@ -13237,14 +13285,13 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install 
           module_info.name_sans_extension;
-      handle_module_info rules
-        ~bs_suffix
-        group.dir_index 
-        package_specs js_post_build_cmd 
+      emit_module_build  rules
+        package_specs
+        group.dir_index
         oc 
-        module_name 
-        module_info
-        namespace 
+        ~bs_suffix
+        js_post_build_cmd      
+        namespace module_info
     )
 
     (* ; 
@@ -13252,25 +13299,6 @@ let handle_file_group
     oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
     (* pseuduo targets per directory *)
-
-
-let handle_file_groups
-    oc 
-    ~package_specs 
-    ~bs_suffix
-    ~js_post_build_cmd
-    ~files_to_install 
-    ~rules
-    (file_groups  :  Bsb_file_groups.file_groups)
-    namespace   =
-  Ext_list.iter file_groups
-    (handle_file_group 
-       oc  
-       ~bs_suffix ~package_specs ~rules ~js_post_build_cmd
-       files_to_install 
-       namespace
-    ) 
-  
 
 end
 module Bsb_ninja_gen : sig 
@@ -13570,15 +13598,16 @@ let output_ninja_and_namespace_map
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
-  Bsb_ninja_file_groups.handle_file_groups oc  
-    ~bs_suffix     
-    ~rules
-    ~js_post_build_cmd 
-    ~package_specs 
-    ~files_to_install
-    bs_file_groups 
-    namespace
-    ;
+  Ext_list.iter bs_file_groups 
+    (fun files_per_dir ->
+       Bsb_ninja_file_groups.handle_files_per_dir oc  
+         ~bs_suffix     
+         ~rules
+         ~js_post_build_cmd 
+         ~package_specs 
+         ~files_to_install    
+         ~namespace files_per_dir)
+  ;
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
