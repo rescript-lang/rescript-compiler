@@ -25,13 +25,12 @@ See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
 The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
 Refer to its copyright and license notices for information about its licensing.
 
-The [`ninja-build`](ninja-build) directory contains the official [ninja-build](https://github.com/ninja-build/ninja) (version 1.7.2).
+The `vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
 Refer to its copyright and license notices for information about its licensing.
 
 BuckleScript builds on parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 
 * [`jscomp/core/js_dump.ml`](jscomp/core/js_dump.ml) (pretty printer)
-* [`jscomp/runtime`](jscomp/runtime)
 
 BuckleScript builds on parts of OCaml:
 
@@ -41,15 +40,14 @@ BuckleScript builds on parts of OCaml:
 These modules were adapted from [`ocaml/bytecomp/simplif.ml`](ocaml/bytecomp/simplif.ml) for
 JavaScript specific optimization purposes.
 
-* [`jscomp/core/js_main.ml`](jscomp/core/js_main.ml)
+* [`jscomp/main/js_main.ml`](jscomp/main/js_main.ml)
 
-`jscomp/core/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is not
-actively used but demonstrates that it is easy to assemble a whole compiler using the OCaml compiler
-libraries. It also shows how to add more compilation flags to a JS backend.
+`jscomp/main/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main etry 
+point of the underlying compiler.
 
-* [`jscomp/stdlib`](jscomp/stdlib)
+* [`jscomp/stdlib-402`](jscomp/stdlib-402) [`jscomp/stdlib-406`](jscomp/stdlib-406)
 
-`jscomp/stdlib` is copied from [`ocaml/stdlib`](ocaml/stdlib). It is compiled to JavaScript and
+`jscomp/stdlib-*` is copied from [`ocaml/stdlib`](ocaml/stdlib). It is compiled to JavaScript and
 included with BuckleScript.
 
 * [`jscomp/test`](jscomp/test)
