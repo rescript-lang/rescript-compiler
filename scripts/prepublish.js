@@ -7,7 +7,7 @@ var assert = require('assert')
 var root = path.join(__dirname, '..')
 var root_config = { cwd: root, encoding: 'utf8' }
 var json = require(path.join(root, 'package.json'))
-
+var os = require('os')
 
 function clean() {
     console.log(`cleanning`)
@@ -91,4 +91,19 @@ console.log(`okay to publish`)
 if(!process.argv.includes('-weekly')){
     console.log(`checking windows`)
     checkWinBinary()
+}
+
+/**
+ * 
+ * @param {string} data 
+ */
+function pbcopy(data) {
+    var proc = require('child_process').spawn('pbcopy'); 
+    proc.stdin.write(data); proc.stdin.end();
+}
+
+var publishCommand = `yarn --network-timeout 100000000 --tag ${json.version}`
+console.log(`please run: \n${publishCommand}`)
+if(os.platform() === 'darwin'){
+    pbcopy(publishCommand)
 }
