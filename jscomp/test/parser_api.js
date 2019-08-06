@@ -138,10 +138,13 @@ function print_config(oc) {
                         /* No_padding */0,
                         /* String_literal */Block.__(11, [
                             ": ",
-                            /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                            /* Bool */Block.__(9, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
                                     /* "\n" */10,
                                     /* End_of_format */0
-                                  ])])
+                                  ])
+                              ])
                           ])
                       ]),
                     "%s: %B\n"
@@ -1424,7 +1427,7 @@ function set_color_tag_handling(ppf) {
     functions$prime_002,
     functions$prime_003
   ];
-  ppf[/* pp_mark_tags */21] = true;
+  ppf[/* pp_mark_tags */22] = true;
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
 }
 
@@ -2963,7 +2966,8 @@ function print_updating_num_loc_lines(ppf, f, arg) {
         /* out_string */out_string,
         /* out_flush */out_functions[/* out_flush */1],
         /* out_newline */out_functions[/* out_newline */2],
-        /* out_spaces */out_functions[/* out_spaces */3]
+        /* out_spaces */out_functions[/* out_spaces */3],
+        /* out_indent */out_functions[/* out_indent */4]
       ]);
   Curry._2(f, ppf, arg);
   Format.pp_print_flush(ppf, /* () */0);
@@ -12852,6 +12856,21 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     
   };
+  var parse_and_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number" && e === 0) {
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
+      } else {
+        return false;
+      }
+    } else {
+      push(e);
+      return v;
+    }
+  };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
     var curr_loc = curr(lexbuf);
@@ -12991,21 +13010,6 @@ function directive_parse(token_with_comments, lexbuf) {
                 curr_loc
               ];
       }
-    }
-  };
-  var parse_and_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number" && e === 0) {
-      var calc$1 = calc && v;
-      var b = parse_and_aux(calc$1, parse_relation(calc$1));
-      if (v) {
-        return b;
-      } else {
-        return false;
-      }
-    } else {
-      push(e);
-      return v;
     }
   };
   var parse_or_aux = function (calc, v) {
@@ -14176,6 +14180,68 @@ function token(lexbuf) {
   };
 }
 
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
+}
+
+function string(lexbuf) {
+  lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 164;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          return /* () */0;
+      case 1 : 
+          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
+          update_loc(lexbuf$1, undefined, 1, false, space.length);
+          return string(lexbuf$1);
+      case 2 : 
+          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
+          return string(lexbuf$1);
+      case 3 : 
+          store_string_char(char_for_decimal_code(lexbuf$1, 1));
+          return string(lexbuf$1);
+      case 4 : 
+          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
+          return string(lexbuf$1);
+      case 5 : 
+          if (comment_start_loc[0] !== /* [] */0) {
+            return string(lexbuf$1);
+          } else {
+            var loc = curr(lexbuf$1);
+            prerr_warning(loc, /* Illegal_backslash */7);
+            store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
+            return string(lexbuf$1);
+          }
+      case 6 : 
+          if (comment_start_loc[0] === /* [] */0) {
+            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
+          }
+          update_loc(lexbuf$1, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf$1));
+          return string(lexbuf$1);
+      case 7 : 
+          is_in_string[0] = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc[0]
+              ];
+      case 8 : 
+          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+          return string(lexbuf$1);
+      default:
+        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
 function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -14353,68 +14419,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           continue ;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
-}
-
-function string(lexbuf) {
-  lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 164;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 : 
-          return /* () */0;
-      case 1 : 
-          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
-          update_loc(lexbuf$1, undefined, 1, false, space.length);
-          return string(lexbuf$1);
-      case 2 : 
-          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
-          return string(lexbuf$1);
-      case 3 : 
-          store_string_char(char_for_decimal_code(lexbuf$1, 1));
-          return string(lexbuf$1);
-      case 4 : 
-          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
-          return string(lexbuf$1);
-      case 5 : 
-          if (comment_start_loc[0] !== /* [] */0) {
-            return string(lexbuf$1);
-          } else {
-            var loc = curr(lexbuf$1);
-            prerr_warning(loc, /* Illegal_backslash */7);
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
-            return string(lexbuf$1);
-          }
-      case 6 : 
-          if (comment_start_loc[0] === /* [] */0) {
-            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
-          }
-          update_loc(lexbuf$1, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf$1));
-          return string(lexbuf$1);
-      case 7 : 
-          is_in_string[0] = false;
-          throw [
-                $$Error$2,
-                /* Unterminated_string */0,
-                string_start_loc[0]
-              ];
-      case 8 : 
-          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-          return string(lexbuf$1);
-      default:
-        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -14957,33 +14961,29 @@ function wrap(parsing_fun, lexbuf) {
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
-      } else {
+      if (typeof tmp === "number") {
+        throw err;
+      } else if (tmp.tag) {
+        throw err;
+      } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);
         throw err;
+      } else {
+        throw err;
       }
-    } else {
-      exit$2 = 3;
-    }
-    if (exit$2 === 3) {
-      if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
+    } else if (err[0] === $$Error$1) {
+      if (input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
       } else {
-        exit$1 = 2;
-      }
-    }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
         throw err;
       }
+    } else if (err === Parsing.Parse_error || err === Escape_error) {
+      exit = 1;
+    } else {
+      throw err;
     }
     if (exit === 1) {
       var loc = curr(lexbuf);

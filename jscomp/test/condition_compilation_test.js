@@ -46,7 +46,7 @@ var version_gt_3 = true;
 
 var version = -1;
 
-var ocaml_veriosn = "4.02.3";
+var ocaml_veriosn = "unknown";
 
 exports.b = b;
 exports.buffer_size = buffer_size;
