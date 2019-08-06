@@ -14039,7 +14039,9 @@ let regenerate_ninja
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> Unix.mkdir (cwd // x) 0o777);
+      (fun x -> 
+        let dir = cwd // x in (*Unix.EEXIST error*)
+        if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
