@@ -102,7 +102,7 @@ function pbcopy(data) {
     proc.stdin.write(data); proc.stdin.end();
 }
 
-var publishCommand = `yarn --network-timeout 100000000 --tag ${json.version}`
+var publishCommand = `yarn publish --network-timeout 100000000 --tag ${json.version}`
 console.log(`please run: \n${publishCommand}`)
 if(os.platform() === 'darwin'){
     pbcopy(publishCommand)
