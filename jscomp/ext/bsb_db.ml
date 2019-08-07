@@ -48,8 +48,6 @@ type ts = t array
 (** indexed by the group *)
 
 
-let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 

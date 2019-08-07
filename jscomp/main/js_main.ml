@@ -17,12 +17,17 @@ let process_implementation_file ppf name =
   Js_implementation.implementation ppf name (Compenv.output_prefix name)
 
 
+
 let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
   | Implementation, opref ->
     Js_implementation.implementation ppf name opref 
-  | Interface, opref -> 
+  | Re, opref ->     
+    Js_implementation.implementation ppf (Ast_reason_pp.pp name) opref 
+  | Interface , opref ->   
     Js_implementation.interface ppf name opref 
+  | Rei, opref ->
+    Js_implementation.interface ppf (Ast_reason_pp.pp name) opref 
   | Mliast, opref 
     -> Js_implementation.interface_mliast ppf name opref 
   | Mlast, opref 
@@ -103,6 +108,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-jsx",
     Arg.Int (fun i -> Js_config.jsx_version := i),
     " Set jsx version"
+  )
+  :: 
+  ("-bs-refmt",
+    Arg.String (fun s -> Js_config.refmt := Some s),
+    " Set customized refmt path"
   )
   :: 
   ("-bs-re-out",

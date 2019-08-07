@@ -36,26 +36,6 @@ let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
-let output_reason_config 
-  (has_reason_files : bool)
-  (refmt : Bsb_config_types.refmt) 
-  (bsc_dir : string)
-  (refmt_flags : string) 
-  (oc : out_channel) : unit =   
-  if has_reason_files then 
-    Bsb_ninja_util.output_kvs
-      [|
-        Bsb_ninja_global_vars.refmt, 
-        (Ext_filename.maybe_quote
-           (match refmt with 
-            | Refmt_none -> 
-              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
-              bsc_dir // Bsb_default.refmt_none
-            | Refmt_v3 -> 
-              bsc_dir // Bsb_default.refmt_v3
-            | Refmt_custom x -> x ));        
-        Bsb_ninja_global_vars.refmt_flags, refmt_flags;
-      |] oc 
 
 let get_bsc_flags 
     ~(toplevel : bool)     
@@ -130,7 +110,6 @@ let output_ninja_and_namespace_map
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
-      refmt_flags;
       js_post_build_cmd;
       package_specs;
       file_groups = { files = bs_file_groups};
@@ -147,9 +126,7 @@ let output_ninja_and_namespace_map
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
-  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let has_reason_files = ref false in 
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
@@ -209,7 +186,6 @@ let output_ninja_and_namespace_map
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
       Bsb_db_util.sanity_check bs_group;
-      has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -224,11 +200,9 @@ let output_ninja_and_namespace_map
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       Bsb_db_util.sanity_check lib;
-      has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         Bsb_db_util.sanity_check c;
-        has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
@@ -241,10 +215,12 @@ let output_ninja_and_namespace_map
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
-  output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
+      ~refmt:(match refmt with 
+        | Refmt_none | Refmt_v3 -> None 
+        | Refmt_custom x -> Some x)
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])

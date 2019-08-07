@@ -460,10 +460,6 @@ let interpret_json
              ]}
           *)          
           refmt;
-          refmt_flags = 
-            (let flags = 
-               extract_string_list map Bsb_build_schemas.refmt_flags in 
-             if flags = [] then Bsb_default.refmt_flags else flags)  ;
           js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
             (match toplevel_package_specs with 

@@ -376,6 +376,7 @@ val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
+val refmt : string option ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -490,6 +491,9 @@ let force_cmi = ref false
 let force_cmj = ref false
 
 let jsx_version = ref (-1)
+
+let refmt = ref None
+
 end
 module Clflags : sig 
 #1 "clflags.mli"

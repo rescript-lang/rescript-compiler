@@ -98,7 +98,7 @@ let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
-let refmt_flags = "refmt-flags"
+
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
@@ -3468,14 +3468,6 @@ type ts = t array
 
 
 
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
-val has_reason_files : t -> bool
-
-
-
 
 end = struct
 #1 "bsb_db.ml"
@@ -3529,8 +3521,6 @@ type ts = t array
 (** indexed by the group *)
 
 
-let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
@@ -7380,7 +7370,6 @@ type t =
       [.merlin]
     *)
     refmt : refmt;
-    refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
@@ -10608,81 +10597,6 @@ let clean_bs_deps bsc_dir proj_dir =
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
 
 end
-module Bsb_default : sig 
-#1 "bsb_default.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-val refmt_flags : string list  
-
-val refmt_v3 : string
-
-val refmt_none : string
-
-val main_entries : Bsb_config_types.entries_t list
-
-end = struct
-#1 "bsb_default.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let refmt_flags = ["--print"; "binary"]
-
-let refmt_v3 = "refmt.exe"
-let refmt_none = "refmt.exe"
-
-let main_entries = [Bsb_config_types.JsTarget "Index"]
-
-end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11156,10 +11070,6 @@ let interpret_json
              ]}
           *)          
           refmt;
-          refmt_flags = 
-            (let flags = 
-               extract_string_list map Bsb_build_schemas.refmt_flags in 
-             if flags = [] then Bsb_default.refmt_flags else flags)  ;
           js_post_build_cmd = (extract_js_post_build map cwd);
           package_specs = 
             (match toplevel_package_specs with 
@@ -12491,6 +12401,7 @@ val make_custom_rules :
   bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
+  refmt:string option ->
   command String_map.t ->
   builtin
 
@@ -12622,6 +12533,7 @@ let make_custom_rules
   ~(bs_suffix : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
+  ~(refmt : string option) (* set refmt path when needed *)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -12636,6 +12548,7 @@ let make_custom_rules
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
+    (* TODO: see if we set this dynamically *)  
     if is_re then 
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
@@ -12655,21 +12568,24 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
-    (match has_pp with 
-      | `regular -> Buffer.add_string buf " $pp_flags"
-      | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
-      | `none -> ()
-      );
+    (match refmt with 
+    | None -> ()
+    | Some x ->
+      Buffer.add_string buf " -refmt ";
+      Buffer.add_string buf (Ext_filename.maybe_quote x);
+    );
+    if has_pp then
+      Buffer.add_string buf " $pp_flags";
     (match has_reason_react_jsx, reason_react_jsx with
-    | false, _ 
-    | _, None -> ()
-    | _, Some Jsx_v2
-      -> Buffer.add_string buf " -bs-jsx 2"
-    | _, Some Jsx_v3 
-      -> Buffer.add_string buf " -bs-jsx 3"
+     | false, _ 
+     | _, None -> ()
+     | _, Some Jsx_v2
+       -> Buffer.add_string buf " -bs-jsx 2"
+     | _, Some Jsx_v3 
+       -> Buffer.add_string buf " -bs-jsx 3"
     );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
@@ -12678,12 +12594,12 @@ let make_custom_rules
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast_and_module_sets" in
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      "build_ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_and_module_sets_from_re" in 
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      "build_ast_from_re" in 
  
   let copy_resources =    
     define 
@@ -13159,10 +13075,14 @@ let emit_module_build
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
-  let input = 
+  let input_impl = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
        else filename_sans_extension ^ Literals.suffix_ml  ) in
+  let input_intf =      
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+       else filename_sans_extension ^ Literals.suffix_mli) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
@@ -13184,7 +13104,7 @@ let emit_module_build
       rules.build_ast in 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
-    ~input
+    ~input:input_impl
     ~rule:ast_rule;
   Bsb_ninja_util.output_build
     oc
@@ -13204,9 +13124,7 @@ let emit_module_build
       (* TODO: we can get rid of absloute path if we fixed the location to be 
           [lib/bs], better for testing?
       *)
-      ~input:(Bsb_config.proj_rel 
-                (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-                 else filename_sans_extension ^ Literals.suffix_mli))
+      ~input:input_intf
       ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc
@@ -13376,26 +13294,6 @@ let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
-let output_reason_config 
-  (has_reason_files : bool)
-  (refmt : Bsb_config_types.refmt) 
-  (bsc_dir : string)
-  (refmt_flags : string) 
-  (oc : out_channel) : unit =   
-  if has_reason_files then 
-    Bsb_ninja_util.output_kvs
-      [|
-        Bsb_ninja_global_vars.refmt, 
-        (Ext_filename.maybe_quote
-           (match refmt with 
-            | Refmt_none -> 
-              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
-              bsc_dir // Bsb_default.refmt_none
-            | Refmt_v3 -> 
-              bsc_dir // Bsb_default.refmt_v3
-            | Refmt_custom x -> x ));        
-        Bsb_ninja_global_vars.refmt_flags, refmt_flags;
-      |] oc 
 
 let get_bsc_flags 
     ~(toplevel : bool)     
@@ -13470,7 +13368,6 @@ let output_ninja_and_namespace_map
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
-      refmt_flags;
       js_post_build_cmd;
       package_specs;
       file_groups = { files = bs_file_groups};
@@ -13487,9 +13384,7 @@ let output_ninja_and_namespace_map
   
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
-  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let has_reason_files = ref false in 
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
@@ -13549,7 +13444,6 @@ let output_ninja_and_namespace_map
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
       Bsb_db_util.sanity_check bs_group;
-      has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -13564,11 +13458,9 @@ let output_ninja_and_namespace_map
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       Bsb_db_util.sanity_check lib;
-      has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         Bsb_db_util.sanity_check c;
-        has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
@@ -13581,10 +13473,12 @@ let output_ninja_and_namespace_map
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
-  output_reason_config !has_reason_files  refmt bsc_dir refmt_flags oc;
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
+      ~refmt:(match refmt with 
+        | Refmt_none | Refmt_v3 -> None 
+        | Refmt_custom x -> Some x)
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])

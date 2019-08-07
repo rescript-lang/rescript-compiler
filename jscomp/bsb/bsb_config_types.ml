@@ -72,7 +72,6 @@ type t =
       [.merlin]
     *)
     refmt : refmt;
-    refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;

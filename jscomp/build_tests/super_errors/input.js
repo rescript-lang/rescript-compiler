@@ -17,7 +17,7 @@ const fixtures = fs
   .filter(fileName => path.extname(fileName) === '.re')
 
 const runtime = path.join(__dirname, '..', '..', 'runtime')
-const prefix = `${bsc} -bs-re-out -I ${runtime} -pp '${refmt} --print binary' -w +10-40+6+7+27+32..39+44+45`
+const prefix = `${bsc} -bs-re-out -I ${runtime}  -w +A`
 
 const updateTests = process.argv[2] === 'update'
 
@@ -33,7 +33,7 @@ let atLeastOneTaskFailed = false
 
 fixtures.forEach(fileName => {
   const fullFilePath = path.join(__dirname, 'fixtures', fileName)
-  const command = `${prefix} -color always -bs-super-errors -impl ${fullFilePath}`
+  const command = `${prefix} -color always -bs-super-errors ${fullFilePath}`
   console.log(`running ${command}`)
   child_process.exec(command, (err, stdout, stderr) => {
     doneTasksCount++
