@@ -38,6 +38,8 @@ type valid_input =
   | Rei
   | Mlast    
   | Mliast 
+  | Reast 
+  | Reiast
   | Mlmap
   | Cmi
 val check_suffix :  string -> valid_input * string

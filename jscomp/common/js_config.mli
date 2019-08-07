@@ -102,3 +102,4 @@ val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
+val is_reason : bool ref 

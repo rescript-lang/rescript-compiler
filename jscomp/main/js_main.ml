@@ -17,10 +17,13 @@ let process_implementation_file ppf name =
   Js_implementation.implementation ppf name (Compenv.output_prefix name)
 
 
+let setup_reason_context () = 
+  Js_config.is_reason := true;
+  Lazy.force Super_main.setup;
+  Lazy.force Reason_outcome_printer_main.setup
 
 let reason_pp name  = 
-  Lazy.force Super_main.setup;
-  Lazy.force Reason_outcome_printer_main.setup;
+  setup_reason_context ();
   Ast_reason_pp.pp name
 
 let process_file ppf name = 
@@ -35,6 +38,14 @@ let process_file ppf name =
     Js_implementation.interface ppf (reason_pp name) opref 
   | Mliast, opref 
     -> Js_implementation.interface_mliast ppf name opref 
+  | Reiast, opref 
+    -> 
+      setup_reason_context ();
+      Js_implementation.interface_mliast ppf name opref   
+  | Reast, opref 
+    -> 
+      setup_reason_context ();
+      Js_implementation.implementation_mlast ppf name opref
   | Mlast, opref 
     -> Js_implementation.implementation_mlast ppf name opref
   | Mlmap, opref 

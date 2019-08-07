@@ -60,6 +60,8 @@ type valid_input =
   | Rei
   | Mlast    
   | Mliast 
+  | Reast
+  | Reiast
   | Mlmap
   | Cmi
 
@@ -83,6 +85,10 @@ let check_suffix  name  =
       Mlast 
     else if ext = Literals.suffix_mliast then 
       Mliast
+    else if ext = Literals.suffix_reast then   
+      Reast 
+    else if ext = Literals.suffix_reiast then   
+      Reiast
     else if ext =  Literals.suffix_mlmap  then 
       Mlmap 
     else if ext =  Literals.suffix_cmi then 
