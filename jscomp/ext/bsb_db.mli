@@ -65,11 +65,3 @@ type ts = t array
 
 
 
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
-val has_reason_files : t -> bool
-
-
-

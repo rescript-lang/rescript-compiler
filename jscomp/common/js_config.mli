@@ -101,3 +101,4 @@ val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
+val refmt : string option ref

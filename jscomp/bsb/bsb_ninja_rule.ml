@@ -123,6 +123,7 @@ let make_custom_rules
   ~(bs_suffix : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
+  ~(refmt : string option) (* set refmt path when needed *)
   (custom_rules : command String_map.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -137,6 +138,7 @@ let make_custom_rules
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
+    (* TODO: see if we set this dynamically *)  
     if is_re then 
       Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
@@ -156,21 +158,24 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
-    (match has_pp with 
-      | `regular -> Buffer.add_string buf " $pp_flags"
-      | `refmt -> Buffer.add_string buf {| -pp "$refmt $refmt_flags"|}
-      | `none -> ()
-      );
+    (match refmt with 
+    | None -> ()
+    | Some x ->
+      Buffer.add_string buf " -refmt ";
+      Buffer.add_string buf (Ext_filename.maybe_quote x);
+    );
+    if has_pp then
+      Buffer.add_string buf " $pp_flags";
     (match has_reason_react_jsx, reason_react_jsx with
-    | false, _ 
-    | _, None -> ()
-    | _, Some Jsx_v2
-      -> Buffer.add_string buf " -bs-jsx 2"
-    | _, Some Jsx_v3 
-      -> Buffer.add_string buf " -bs-jsx 3"
+     | false, _ 
+     | _, None -> ()
+     | _, Some Jsx_v2
+       -> Buffer.add_string buf " -bs-jsx 2"
+     | _, Some Jsx_v3 
+       -> Buffer.add_string buf " -bs-jsx 3"
     );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
@@ -179,12 +184,12 @@ let make_custom_rules
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp:(if has_pp then `regular else `none) ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast_and_module_sets" in
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      "build_ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp:`refmt ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_and_module_sets_from_re" in 
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      "build_ast_from_re" in 
  
   let copy_resources =    
     define 

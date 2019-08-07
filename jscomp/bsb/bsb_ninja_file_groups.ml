@@ -91,10 +91,14 @@ let emit_module_build
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
-  let input = 
+  let input_impl = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
        else filename_sans_extension ^ Literals.suffix_ml  ) in
+  let input_intf =      
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+       else filename_sans_extension ^ Literals.suffix_mli) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
@@ -116,7 +120,7 @@ let emit_module_build
       rules.build_ast in 
   Bsb_ninja_util.output_build oc
     ~output:output_mlast
-    ~input
+    ~input:input_impl
     ~rule:ast_rule;
   Bsb_ninja_util.output_build
     oc
@@ -136,9 +140,7 @@ let emit_module_build
       (* TODO: we can get rid of absloute path if we fixed the location to be 
           [lib/bs], better for testing?
       *)
-      ~input:(Bsb_config.proj_rel 
-                (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-                 else filename_sans_extension ^ Literals.suffix_mli))
+      ~input:input_intf
       ~rule:ast_rule
     ;
     Bsb_ninja_util.output_build oc

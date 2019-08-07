@@ -110,3 +110,5 @@ let force_cmi = ref false
 let force_cmj = ref false
 
 let jsx_version = ref (-1)
+
+let refmt = ref None
