@@ -89,7 +89,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
   let types_signature = ref [] in
   if use_super_errors then begin
     Misc.Color.setup (Some Always);
-    Super_main.setup ();
+    Lazy.force Super_main.setup ;
   end;
 
   (* copied over from Bsb_warning.default_warning_flag *)

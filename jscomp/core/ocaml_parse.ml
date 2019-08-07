@@ -54,8 +54,8 @@ let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
 
 type valid_input = 
-  | Implementation 
-  | Interface
+  | Ml 
+  | Mli
   | Re
   | Rei
   | Mlast    
@@ -72,11 +72,11 @@ let check_suffix  name  =
   let ext = Ext_filename.get_extension_maybe name in 
   let input = 
     if ext = Literals.suffix_ml  then 
-      Implementation
+      Ml
     else if  ext = Literals.suffix_re then
       Re
     else if ext = !Config.interface_suffix then 
-      Interface  
+      Mli  
     else if  ext = Literals.suffix_rei  then
       Rei
     else if ext =  Literals.suffix_mlast then 

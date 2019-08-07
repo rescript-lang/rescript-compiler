@@ -18,16 +18,21 @@ let process_implementation_file ppf name =
 
 
 
+let reason_pp name  = 
+  Lazy.force Super_main.setup;
+  Lazy.force Reason_outcome_printer_main.setup;
+  Ast_reason_pp.pp name
+
 let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
-  | Implementation, opref ->
+  | Ml, opref ->
     Js_implementation.implementation ppf name opref 
   | Re, opref ->     
-    Js_implementation.implementation ppf (Ast_reason_pp.pp name) opref 
-  | Interface , opref ->   
+    Js_implementation.implementation ppf (reason_pp name) opref 
+  | Mli , opref ->   
     Js_implementation.interface ppf name opref 
   | Rei, opref ->
-    Js_implementation.interface ppf (Ast_reason_pp.pp name) opref 
+    Js_implementation.interface ppf (reason_pp name) opref 
   | Mliast, opref 
     -> Js_implementation.interface_mliast ppf name opref 
   | Mlast, opref 
@@ -100,9 +105,14 @@ let buckle_script_flags : (string * Arg.spec * string) list =
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
         don't have time to set the custom printer before it starts outputting
         warnings *)
-      Super_main.setup
+      (fun _ -> Lazy.force Super_main.setup)
      ,
    " Better error message combined with other tools "
+  )
+   :: 
+  ("-bs-re-out",
+    Arg.Unit (fun _ -> Lazy.force Reason_outcome_printer_main.setup),
+   " Print compiler output in Reason syntax"
   )
   ::
   ("-bs-jsx",
@@ -114,11 +124,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.String (fun s -> Js_config.refmt := Some s),
     " Set customized refmt path"
   )
-  :: 
-  ("-bs-re-out",
-    Arg.Unit Reason_outcome_printer_main.setup,
-   " Print compiler output in Reason syntax"
-  )
+ 
   ::
   (
     "-bs-gentype",
