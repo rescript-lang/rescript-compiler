@@ -63,82 +63,70 @@ let output_build
   output_string oc "build ";
   output_string oc output ;
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
-  begin match implicit_outputs with
-    | [] -> ()
-    | _ ->
-      output_string oc " | ";
-      implicit_outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+  if implicit_outputs <> [] then begin 
+    output_string oc " | ";
+    Ext_list.iter implicit_outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
   end;
   output_string oc " : ";
   output_string oc rule;
   output_string oc Ext_string.single_space;
   output_string oc input;
-  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
-  begin match implicit_deps with
-    | [] -> ()
-    | _ ->
-      begin
-        output_string oc " | ";
-        implicit_deps
-        |>
-        List.iter (fun s -> output_string oc Ext_string.single_space; output_string oc s )
-      end
-  end;
-  begin match order_only_deps with
-    | [] -> ()
-    | _ ->
-      begin
-        output_string oc " || ";
-        order_only_deps
-        |>
-        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-      end
-  end;
+  Ext_list.iter inputs (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
+  if implicit_deps <> [] then 
+    begin
+      output_string oc " | ";
+      Ext_list.iter implicit_deps (fun s -> output_string oc Ext_string.single_space; output_string oc s )
+    end
+  ;
+  if order_only_deps <> [] then
+    begin
+      output_string oc " || ";                
+      Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+    end
+  ;
   output_string oc "\n";
-  begin match shadows with
-    | [] -> ()
-    | xs ->
-      Ext_list.iter xs (fun {key=k; op= v} ->
-          output_string oc "  " ;
-          output_string oc k ;
-          output_string oc " = ";
-          match v with
-          | Overwrite s -> 
-            output_string oc s ; 
-            output_string oc "\n"
-          | OverwriteVar s ->
-            output_string oc "$";
-            output_string oc s ; 
-            output_string oc "\n"
-          | OverwriteVars s ->  
-            Ext_list.iter s (fun s ->
-                output_string oc "$";
-                output_string oc s ; 
-                output_string oc Ext_string.single_space
-              );
-            output_string oc "\n"
-          | AppendList ls -> 
-            output_string oc "$" ;
-            output_string oc k;
-            Ext_list.iter ls
-              (fun s ->
-                 output_string oc Ext_string.single_space;
-                 output_string oc s 
-                 ) ;
-            output_string oc "\n"
-          | Append s ->
-            output_string oc "$" ;
-            output_string oc k;
-            output_string oc Ext_string.single_space;
-            output_string oc s ; output_string oc "\n"
-          | AppendVar s ->   
-            output_string oc "$" ;
-            output_string oc k;
-            output_string oc Ext_string.single_space;
-            output_string oc "$";
-            output_string oc s ; 
-            output_string oc "\n"
-        ) 
+  if shadows <> [] then begin 
+    Ext_list.iter shadows (fun {key=k; op= v} ->
+        output_string oc "  " ;
+        output_string oc k ;
+        output_string oc " = ";
+        match v with
+        | Overwrite s -> 
+          output_string oc s ; 
+          output_string oc "\n"
+        | OverwriteVar s ->
+          output_string oc "$";
+          output_string oc s ; 
+          output_string oc "\n"
+        | OverwriteVars s ->  
+          Ext_list.iter s (fun s ->
+              output_string oc "$";
+              output_string oc s ; 
+              output_string oc Ext_string.single_space
+            );
+          output_string oc "\n"
+        | AppendList ls -> 
+          output_string oc "$" ;
+          output_string oc k;
+          Ext_list.iter ls
+            (fun s ->
+               output_string oc Ext_string.single_space;
+               output_string oc s 
+            ) ;
+          output_string oc "\n"
+        | Append s ->
+          output_string oc "$" ;
+          output_string oc k;
+          output_string oc Ext_string.single_space;
+          output_string oc s ; output_string oc "\n"
+        | AppendVar s ->   
+          output_string oc "$" ;
+          output_string oc k;
+          output_string oc Ext_string.single_space;
+          output_string oc "$";
+          output_string oc s ; 
+          output_string oc "\n"
+      ) 
   end;
   if restat <> None then 
     output_string oc "  restat = 1 \n"
@@ -152,13 +140,11 @@ let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
   output_string oc "phony";
   output_string oc Ext_string.single_space;
   Ext_list.iter inputs  (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
-  (match order_only_deps with
-   | [] -> ()
-   | _ ->
-     begin
-       output_string oc " || ";                
-       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-     end);
+  if order_only_deps <> [] then 
+    begin
+      output_string oc " || ";                
+      Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+    end;
   output_string oc "\n";
   if restat <> None then 
     output_string oc "  restat = 1 \n"

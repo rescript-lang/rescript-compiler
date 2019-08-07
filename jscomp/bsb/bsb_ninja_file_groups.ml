@@ -198,14 +198,15 @@ let handle_files_per_dir
   : unit =
 
   handle_generators oc group rules.customs ;
+  let installable =
+    match group.public with
+    | Export_all -> fun _ -> true
+    | Export_none -> fun _ -> false
+    | Export_set set ->  
+      fun module_name ->
+      String_set.mem set module_name in
   String_map.iter group.sources   (fun  module_name module_info   ->
-      let installable =
-        match group.public with
-        | Export_all -> true
-        | Export_none -> false
-        | Export_set set ->  
-          String_set.mem set module_name in
-      if installable then 
+      if installable module_name then 
         String_hash_set.add files_to_install 
           module_info.name_sans_extension;
       emit_module_build  rules
