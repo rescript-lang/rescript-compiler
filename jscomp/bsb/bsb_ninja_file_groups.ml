@@ -93,14 +93,14 @@ let emit_module_build
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
-      (if is_re then filename_sans_extension ^ Literals.suffix_re 
-       else filename_sans_extension ^ Literals.suffix_ml  ) in
+      (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
   let input_intf =      
     Bsb_config.proj_rel 
-      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-       else filename_sans_extension ^ Literals.suffix_mli) in
-  let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
-  let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
+      (filename_sans_extension ^ if is_re then  Literals.suffix_rei else  Literals.suffix_mli) in
+  let output_mlast = 
+    filename_sans_extension  ^ if is_re then Literals.suffix_reast else Literals.suffix_mlast in
+  let output_mliast = 
+    filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
       Ext_namespace.make ?ns:namespace filename_sans_extension
@@ -148,12 +148,7 @@ let emit_module_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(match is_re,is_dev with 
-             | true, false -> rules.re_cmi 
-             | true, true -> rules.re_cmi_dev 
-             | false, false -> rules.ml_cmi
-             | false, true -> rules.ml_cmi_dev             
-             )
+      ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
     ;
   end;
 
@@ -167,18 +162,12 @@ let emit_module_build
   in
   let rule =
     if no_intf_file then 
-      (match is_re, is_dev with
-      | true, false -> rules.re_cmj_cmi_js 
-      | false, false ->  rules.ml_cmj_cmi_js
-      | true, true -> rules.re_cmj_cmi_js_dev
-      | false, true -> rules.ml_cmj_cmi_js_dev
+      (if is_dev then rules.ml_cmj_cmi_js_dev 
+       else rules.ml_cmj_cmi_js
       )
     else  
-      (match is_re, is_dev with
-      | true, false -> rules.re_cmj_js 
-      | false, false -> rules.ml_cmj_js
-      | true, true -> rules.re_cmj_js_dev
-      | false, true -> rules.ml_cmj_js_dev)
+      (if  is_dev then rules.ml_cmj_js_dev
+       else rules.ml_cmj_js)
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

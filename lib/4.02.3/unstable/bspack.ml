@@ -7308,6 +7308,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
@@ -7452,6 +7455,8 @@ let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
@@ -8149,6 +8154,7 @@ val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
+val is_reason : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8266,6 +8272,7 @@ let jsx_version = ref (-1)
 
 let refmt = ref None
 
+let is_reason = ref false
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"

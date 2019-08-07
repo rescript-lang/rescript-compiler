@@ -32,12 +32,14 @@ val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature laz
 val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
     
 type valid_input = 
-  | Implementation
-  | Interface
+  | Ml
+  | Mli
   | Re
   | Rei
   | Mlast    
   | Mliast 
+  | Reast 
+  | Reiast
   | Mlmap
   | Cmi
 val check_suffix :  string -> valid_input * string

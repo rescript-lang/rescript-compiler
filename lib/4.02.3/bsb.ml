@@ -4617,6 +4617,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
@@ -4761,6 +4764,8 @@ let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
@@ -12371,12 +12376,7 @@ type builtin = {
   ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
   ml_cmi_dev : t ;
-  re_cmj_js : t ;
-  re_cmj_js_dev: t;
-  re_cmj_cmi_js : t ;
-  re_cmj_cmi_js_dev : t ;
-  re_cmi : t ;
-  re_cmi_dev : t;
+
   build_package : t ;
   customs : t String_map.t
 }
@@ -12511,12 +12511,7 @@ type builtin = {
   ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
   ml_cmi_dev : t ;
-  re_cmj_js : t ;
-  re_cmj_js_dev: t;
-  re_cmj_cmi_js : t ;
-  re_cmj_cmi_js_dev : t ;
-  re_cmi : t ;
-  re_cmi_dev : t;
+  
   build_package : t ;
   customs : t String_map.t
 }
@@ -12541,16 +12536,12 @@ let make_custom_rules
   let buf = Buffer.create 100 in     
   let mk_ml_cmj_cmd 
       ~read_cmi 
-      ~is_re 
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
-    (* TODO: see if we set this dynamically *)  
-    if is_re then 
-      Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -12619,41 +12610,27 @@ let make_custom_rules
     let postbuild = has_postbuild && postbuild in 
     define
       ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:false ~is_dev:false 
+                  ~read_cmi  ~is_dev:false 
                   ~postbuild)
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       name,
     define
       ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:false ~is_dev:true
+                  ~read_cmi  ~is_dev:true
                   ~postbuild)
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
-      (name ^ "_dev"),
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:true ~is_dev:false 
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_re"),
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:true ~is_dev:true
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_re_dev")  
+      (name ^ "_dev")
   in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js, ml_cmj_js_dev, re_cmj_js, re_cmj_js_dev =
+  let ml_cmj_js, ml_cmj_js_dev =
     aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
-  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev, re_cmj_cmi_js, re_cmj_cmi_js_dev =
+  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
     aux
       ~read_cmi:false 
       ~name:"ml_cmj_cmi" ~postbuild:true in  
-  let ml_cmi, ml_cmi_dev, re_cmi, re_cmi_dev =
+  let ml_cmi, ml_cmi_dev =
     aux 
        ~read_cmi:false  ~postbuild:false
       ~name:"ml_cmi" in 
@@ -12677,14 +12654,10 @@ let make_custom_rules
     ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
     ml_cmi ;
-    re_cmj_js_dev;
-    re_cmi_dev;
+    
     ml_cmj_cmi_js_dev;
     ml_cmi_dev;
-    re_cmj_cmi_js_dev;
-    re_cmj_js ;
-    re_cmj_cmi_js ;
-    re_cmi ;
+    
     build_package ;
     customs =
       String_map.mapi custom_rules begin fun name command -> 
@@ -13077,14 +13050,14 @@ let emit_module_build
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
-      (if is_re then filename_sans_extension ^ Literals.suffix_re 
-       else filename_sans_extension ^ Literals.suffix_ml  ) in
+      (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
   let input_intf =      
     Bsb_config.proj_rel 
-      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-       else filename_sans_extension ^ Literals.suffix_mli) in
-  let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
-  let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
+      (filename_sans_extension ^ if is_re then  Literals.suffix_rei else  Literals.suffix_mli) in
+  let output_mlast = 
+    filename_sans_extension  ^ if is_re then Literals.suffix_reast else Literals.suffix_mlast in
+  let output_mliast = 
+    filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
       Ext_namespace.make ?ns:namespace filename_sans_extension
@@ -13132,12 +13105,7 @@ let emit_module_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~input:output_mliast
-      ~rule:(match is_re,is_dev with 
-             | true, false -> rules.re_cmi 
-             | true, true -> rules.re_cmi_dev 
-             | false, false -> rules.ml_cmi
-             | false, true -> rules.ml_cmi_dev             
-             )
+      ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
     ;
   end;
 
@@ -13151,18 +13119,12 @@ let emit_module_build
   in
   let rule =
     if no_intf_file then 
-      (match is_re, is_dev with
-      | true, false -> rules.re_cmj_cmi_js 
-      | false, false ->  rules.ml_cmj_cmi_js
-      | true, true -> rules.re_cmj_cmi_js_dev
-      | false, true -> rules.ml_cmj_cmi_js_dev
+      (if is_dev then rules.ml_cmj_cmi_js_dev 
+       else rules.ml_cmj_cmi_js
       )
     else  
-      (match is_re, is_dev with
-      | true, false -> rules.re_cmj_js 
-      | false, false -> rules.ml_cmj_js
-      | true, true -> rules.re_cmj_js_dev
-      | false, true -> rules.ml_cmj_js_dev)
+      (if  is_dev then rules.ml_cmj_js_dev
+       else rules.ml_cmj_js)
   in
   Bsb_ninja_util.output_build oc
     ~output:output_cmj

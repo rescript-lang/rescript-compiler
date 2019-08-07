@@ -52,12 +52,7 @@ type builtin = {
   ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
   ml_cmi_dev : t ;
-  re_cmj_js : t ;
-  re_cmj_js_dev: t;
-  re_cmj_cmi_js : t ;
-  re_cmj_cmi_js_dev : t ;
-  re_cmi : t ;
-  re_cmi_dev : t;
+
   build_package : t ;
   customs : t String_map.t
 }

@@ -112,3 +112,5 @@ let force_cmj = ref false
 let jsx_version = ref (-1)
 
 let refmt = ref None
+
+let is_reason = ref false

@@ -101,12 +101,7 @@ type builtin = {
   ml_cmj_cmi_js_dev : t ;
   ml_cmi : t;
   ml_cmi_dev : t ;
-  re_cmj_js : t ;
-  re_cmj_js_dev: t;
-  re_cmj_cmi_js : t ;
-  re_cmj_cmi_js_dev : t ;
-  re_cmi : t ;
-  re_cmi_dev : t;
+  
   build_package : t ;
   customs : t String_map.t
 }
@@ -131,16 +126,12 @@ let make_custom_rules
   let buf = Buffer.create 100 in     
   let mk_ml_cmj_cmd 
       ~read_cmi 
-      ~is_re 
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
-    (* TODO: see if we set this dynamically *)  
-    if is_re then 
-      Buffer.add_string buf " -bs-re-out -bs-super-errors";
     if read_cmi then 
       Buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -209,41 +200,27 @@ let make_custom_rules
     let postbuild = has_postbuild && postbuild in 
     define
       ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:false ~is_dev:false 
+                  ~read_cmi  ~is_dev:false 
                   ~postbuild)
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
       name,
     define
       ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:false ~is_dev:true
+                  ~read_cmi  ~is_dev:true
                   ~postbuild)
       ~dyndep:"$in_e.d"
       ~restat:() (* Always restat when having mli *)
-      (name ^ "_dev"),
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:true ~is_dev:false 
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_re"),
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi ~is_re:true ~is_dev:true
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_re_dev")  
+      (name ^ "_dev")
   in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js, ml_cmj_js_dev, re_cmj_js, re_cmj_js_dev =
+  let ml_cmj_js, ml_cmj_js_dev =
     aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
-  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev, re_cmj_cmi_js, re_cmj_cmi_js_dev =
+  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
     aux
       ~read_cmi:false 
       ~name:"ml_cmj_cmi" ~postbuild:true in  
-  let ml_cmi, ml_cmi_dev, re_cmi, re_cmi_dev =
+  let ml_cmi, ml_cmi_dev =
     aux 
        ~read_cmi:false  ~postbuild:false
       ~name:"ml_cmi" in 
@@ -267,14 +244,10 @@ let make_custom_rules
     ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
     ml_cmi ;
-    re_cmj_js_dev;
-    re_cmi_dev;
+    
     ml_cmj_cmi_js_dev;
     ml_cmi_dev;
-    re_cmj_cmi_js_dev;
-    re_cmj_js ;
-    re_cmj_cmi_js ;
-    re_cmi ;
+    
     build_package ;
     customs =
       String_map.mapi custom_rules begin fun name command -> 
