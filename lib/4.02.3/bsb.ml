@@ -13021,7 +13021,7 @@ let emit_module_build
     namespace
     (module_info : Bsb_db.module_info)
   =    
-  let no_intf_file = module_info.info <> Ml_mli in 
+  let has_intf_file = module_info.info = Ml_mli in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
@@ -13059,7 +13059,7 @@ let emit_module_build
   Bsb_ninja_targets.output_build
     oc
     ~outputs:[output_d]
-    ~inputs:(if no_intf_file then [output_mlast] else [output_mlast;output_mliast])
+    ~inputs:(if has_intf_file then [output_mlast;output_mliast] else [output_mlast] )
     ~rule:rules.build_bin_deps
     ?shadows:(if is_dev then
                 Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
@@ -13067,7 +13067,7 @@ let emit_module_build
                          Overwrite (string_of_int (group_dir_index :> int)) }] 
               else None)
   ;  
-  if not no_intf_file then begin           
+  if has_intf_file then begin           
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_mliast]
       (* TODO: we can get rid of absloute path if we fixed the location to be 
@@ -13094,21 +13094,21 @@ let emit_module_build
       :: common_shadows
   in
   let rule =
-    if no_intf_file then 
+    if has_intf_file then 
+      (if  is_dev then rules.ml_cmj_js_dev
+       else rules.ml_cmj_js)
+    else  
       (if is_dev then rules.ml_cmj_cmi_js_dev 
        else rules.ml_cmj_cmi_js
       )
-    else  
-      (if  is_dev then rules.ml_cmj_js_dev
-       else rules.ml_cmj_js)
   in
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_cmj]
     ~shadows
     ~implicit_outputs:  
-      (if no_intf_file then output_cmi::output_js else output_js)
+      (if has_intf_file then output_js else output_cmi::output_js )
     ~inputs:[output_mlast]
-    ~implicit_deps:(if no_intf_file then [] else [output_cmi])
+    ~implicit_deps:(if has_intf_file then [output_cmi] else [] )
     ~order_only_deps:[output_d]
     ~rule
   (* ;
