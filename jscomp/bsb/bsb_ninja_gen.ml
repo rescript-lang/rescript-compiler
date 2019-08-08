@@ -66,7 +66,7 @@ let emit_bsc_lib_includes
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
-  Bsb_ninja_util.output_kv
+  Bsb_ninja_targets.output_kv
     Bsb_build_schemas.g_lib_incls 
     (Bsb_build_util.include_dirs 
        (all_includes 
@@ -82,13 +82,13 @@ let output_static_resources
     oc
   = 
   Ext_list.iter static_resources (fun output -> 
-      Bsb_ninja_util.output_build
+      Bsb_ninja_targets.output_build
         oc
-        ~output
-        ~input:(Bsb_config.proj_rel output)
+        ~outputs:[output]
+        ~inputs:[Bsb_config.proj_rel output]
         ~rule:copy_rule);
   if static_resources <> [] then
-    Bsb_ninja_util.phony
+    Bsb_ninja_targets.phony
       oc
       ~order_only_deps:static_resources 
       ~inputs:[]
@@ -139,22 +139,22 @@ let output_ninja_and_namespace_map
       Ext_string.inter2 "-bs-ns" s in  
   let () = 
     Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
+        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
           (Bsb_build_util.pp_flag flag) oc 
       );
     Ext_option.iter gentype_config (fun x -> 
         (* resolved earlier *)
-        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
       );
     Ext_option.iter built_in_dependency (fun x -> 
-      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
+      Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.g_stdlib_incl
       (Ext_filename.maybe_quote x.package_install_path) oc 
     )  
     ;  
     
 
-    Bsb_ninja_util.output_kvs
+    Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
@@ -208,7 +208,7 @@ let output_ninja_and_namespace_map
             if String_map.mem lib k  then 
               Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
             ) ;
-        Bsb_ninja_util.output_kv 
+        Bsb_ninja_targets.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs source_dirs.(i)) oc
       done  ;
@@ -251,9 +251,9 @@ let output_ninja_and_namespace_map
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
-      Bsb_ninja_util.output_build oc 
-        ~output:(ns ^ Literals.suffix_cmi)
-        ~input:(ns ^ Literals.suffix_mlmap)
+      Bsb_ninja_targets.output_build oc 
+        ~outputs:[ns ^ Literals.suffix_cmi]
+        ~inputs:[ns ^ Literals.suffix_mlmap]
         ~rule:rules.build_package
     );
   close_out oc

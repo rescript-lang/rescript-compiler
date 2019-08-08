@@ -12653,7 +12653,7 @@ let make_custom_rules
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";
-    Buffer.add_string buf " -o $out -c  $in";
+    Buffer.add_string buf " -o $out $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
@@ -12679,7 +12679,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
-    Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
     Buffer.contents buf
   in  
   let build_ast =
@@ -12735,7 +12735,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only -c $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only $in"
       ~restat:()
       "build_package"
   in 
@@ -12767,8 +12767,8 @@ let make_custom_rules
 
 
 end
-module Bsb_ninja_util : sig 
-#1 "bsb_ninja_util.mli"
+module Bsb_ninja_targets : sig 
+#1 "bsb_ninja_targets.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12815,27 +12815,30 @@ type shadow = { key : string ; op : override }
 val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
-  ?outputs:string list ->
-  ?implicit_outputs: string list ->  
-  ?inputs:string list ->
+  ?implicit_outputs: string list ->    
   ?shadows:shadow list ->
   ?restat:unit ->
-  output:string ->
-  input:string ->
-  rule:Bsb_ninja_rule.t -> out_channel -> unit
+  outputs:string list ->
+  inputs:string list ->
+  rule:Bsb_ninja_rule.t -> 
+  out_channel -> 
+  unit
 
 
 val phony  :
   ?order_only_deps:string list ->
   ?restat:unit ->
-  inputs:string list -> output:string -> out_channel -> unit
+  inputs:string list -> 
+  output:string -> 
+  out_channel -> 
+  unit
 
 val output_kv : string ->  string -> out_channel -> unit 
 val output_kvs : (string * string) array -> out_channel -> unit
 
 
 end = struct
-#1 "bsb_ninja_util.ml"
+#1 "bsb_ninja_targets.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12888,18 +12891,15 @@ type shadow =
 let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
-    ?(outputs=[])
     ?(implicit_outputs=[])
-    ?(inputs=[])
     ?(shadows=([] : shadow list))
     ?restat
-    ~output
-    ~input
+    ~outputs
+    ~inputs
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
-  output_string oc output ;
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   if implicit_outputs <> [] then begin 
     output_string oc " | ";
@@ -12907,8 +12907,6 @@ let output_build
   end;
   output_string oc " : ";
   output_string oc rule;
-  output_string oc Ext_string.single_space;
-  output_string oc input;
   Ext_list.iter inputs (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   if implicit_deps <> [] then 
     begin
@@ -13077,21 +13075,14 @@ let handle_generators oc
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
   Ext_list.iter group.generators (fun {output; input; command} -> 
-      begin match String_map.find_opt custom_rules command with 
-        | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
-        | Some rule -> 
-          begin match output, input with
-            | output::outputs, input::inputs -> 
-              Bsb_ninja_util.output_build oc 
-                ~outputs:(Ext_list.map  outputs  map_to_source_dir)
-                ~inputs:(Ext_list.map inputs map_to_source_dir) 
-                ~output:(map_to_source_dir output)
-                ~input:(map_to_source_dir input)
-                ~rule
-            | [], _ 
-            | _, []  -> Ext_pervasives.failwithf ~loc:__LOC__ "either output or input can not be empty in rule %s" command
-          end
-      end
+      (*TODO: add a loc for better error message *)
+      match String_map.find_opt custom_rules command with 
+      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | Some rule -> 
+        Bsb_ninja_targets.output_build oc 
+          ~outputs:(Ext_list.map  output  map_to_source_dir)
+          ~inputs:(Ext_list.map input map_to_source_dir) 
+          ~rule
     )
 
 
@@ -13099,7 +13090,7 @@ let make_common_shadows
     package_specs 
     dirname 
     dir_index 
-  : Bsb_ninja_util.shadow list 
+  : Bsb_ninja_targets.shadow list 
   =
   
     { key = Bsb_ninja_global_vars.g_pkg_flg;
@@ -13160,36 +13151,35 @@ let emit_module_build
       rules.build_ast_from_re
     else
       rules.build_ast in 
-  Bsb_ninja_util.output_build oc
-    ~output:output_mlast
-    ~input:input_impl
+  Bsb_ninja_targets.output_build oc
+    ~outputs:[output_mlast]
+    ~inputs:[input_impl]
     ~rule:ast_rule;
-  Bsb_ninja_util.output_build
+  Bsb_ninja_targets.output_build
     oc
-    ~output:output_d
-    ~inputs:(if no_intf_file then [] else [output_mliast])
-    ~input:output_mlast
+    ~outputs:[output_d]
+    ~inputs:(if no_intf_file then [output_mlast] else [output_mlast;output_mliast])
     ~rule:rules.build_bin_deps
     ?shadows:(if is_dev then
-                Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
                        op = 
                          Overwrite (string_of_int (group_dir_index :> int)) }] 
               else None)
   ;  
   if not no_intf_file then begin           
-    Bsb_ninja_util.output_build oc
-      ~output:output_mliast
+    Bsb_ninja_targets.output_build oc
+      ~outputs:[output_mliast]
       (* TODO: we can get rid of absloute path if we fixed the location to be 
           [lib/bs], better for testing?
       *)
-      ~input:input_intf
+      ~inputs:[input_intf]
       ~rule:ast_rule
     ;
-    Bsb_ninja_util.output_build oc
-      ~output:output_cmi
+    Bsb_ninja_targets.output_build oc
+      ~outputs:[output_cmi]
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
-      ~input:output_mliast
+      ~inputs:[output_mliast]
       ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
     ;
   end;
@@ -13211,12 +13201,12 @@ let emit_module_build
       (if  is_dev then rules.ml_cmj_js_dev
        else rules.ml_cmj_js)
   in
-  Bsb_ninja_util.output_build oc
-    ~output:output_cmj
+  Bsb_ninja_targets.output_build oc
+    ~outputs:[output_cmj]
     ~shadows
     ~implicit_outputs:  
       (if no_intf_file then output_cmi::output_js else output_js)
-    ~input:output_mlast
+    ~inputs:[output_mlast]
     ~implicit_deps:(if no_intf_file then [] else [output_cmi])
     ~order_only_deps:[output_d]
     ~rule
@@ -13261,7 +13251,7 @@ let handle_files_per_dir
     )
 
     (* ; 
-    Bsb_ninja_util.phony
+    Bsb_ninja_targets.phony
     oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
     (* pseuduo targets per directory *)
@@ -13372,7 +13362,7 @@ let emit_bsc_lib_includes
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
-  Bsb_ninja_util.output_kv
+  Bsb_ninja_targets.output_kv
     Bsb_build_schemas.g_lib_incls 
     (Bsb_build_util.include_dirs 
        (all_includes 
@@ -13388,13 +13378,13 @@ let output_static_resources
     oc
   = 
   Ext_list.iter static_resources (fun output -> 
-      Bsb_ninja_util.output_build
+      Bsb_ninja_targets.output_build
         oc
-        ~output
-        ~input:(Bsb_config.proj_rel output)
+        ~outputs:[output]
+        ~inputs:[Bsb_config.proj_rel output]
         ~rule:copy_rule);
   if static_resources <> [] then
-    Bsb_ninja_util.phony
+    Bsb_ninja_targets.phony
       oc
       ~order_only_deps:static_resources 
       ~inputs:[]
@@ -13445,22 +13435,22 @@ let output_ninja_and_namespace_map
       Ext_string.inter2 "-bs-ns" s in  
   let () = 
     Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
+        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
           (Bsb_build_util.pp_flag flag) oc 
       );
     Ext_option.iter gentype_config (fun x -> 
         (* resolved earlier *)
-        Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
       );
     Ext_option.iter built_in_dependency (fun x -> 
-      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.g_stdlib_incl
+      Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.g_stdlib_incl
       (Ext_filename.maybe_quote x.package_install_path) oc 
     )  
     ;  
     
 
-    Bsb_ninja_util.output_kvs
+    Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
@@ -13514,7 +13504,7 @@ let output_ninja_and_namespace_map
             if String_map.mem lib k  then 
               Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
             ) ;
-        Bsb_ninja_util.output_kv 
+        Bsb_ninja_targets.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs source_dirs.(i)) oc
       done  ;
@@ -13557,9 +13547,9 @@ let output_ninja_and_namespace_map
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
-      Bsb_ninja_util.output_build oc 
-        ~output:(ns ^ Literals.suffix_cmi)
-        ~input:(ns ^ Literals.suffix_mlmap)
+      Bsb_ninja_targets.output_build oc 
+        ~outputs:[ns ^ Literals.suffix_cmi]
+        ~inputs:[ns ^ Literals.suffix_mlmap]
         ~rule:rules.build_package
     );
   close_out oc

@@ -268,9 +268,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.no_assert_false,
     " no code for assert false"
   )  
-  (* :: *)
-  (* ("-bs-list-directives", *)
-  (* ) *)
+
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous
@@ -279,6 +277,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 let _ = 
   (* Default configuration: sync up with 
     {!Jsoo_main}  *)
+  Clflags.compile_only := true;
   Clflags.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
   (* default true 

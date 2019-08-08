@@ -35,21 +35,14 @@ let handle_generators oc
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
   Ext_list.iter group.generators (fun {output; input; command} -> 
-      begin match String_map.find_opt custom_rules command with 
-        | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
-        | Some rule -> 
-          begin match output, input with
-            | output::outputs, input::inputs -> 
-              Bsb_ninja_util.output_build oc 
-                ~outputs:(Ext_list.map  outputs  map_to_source_dir)
-                ~inputs:(Ext_list.map inputs map_to_source_dir) 
-                ~output:(map_to_source_dir output)
-                ~input:(map_to_source_dir input)
-                ~rule
-            | [], _ 
-            | _, []  -> Ext_pervasives.failwithf ~loc:__LOC__ "either output or input can not be empty in rule %s" command
-          end
-      end
+      (*TODO: add a loc for better error message *)
+      match String_map.find_opt custom_rules command with 
+      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | Some rule -> 
+        Bsb_ninja_targets.output_build oc 
+          ~outputs:(Ext_list.map  output  map_to_source_dir)
+          ~inputs:(Ext_list.map input map_to_source_dir) 
+          ~rule
     )
 
 
@@ -57,7 +50,7 @@ let make_common_shadows
     package_specs 
     dirname 
     dir_index 
-  : Bsb_ninja_util.shadow list 
+  : Bsb_ninja_targets.shadow list 
   =
   
     { key = Bsb_ninja_global_vars.g_pkg_flg;
@@ -118,36 +111,35 @@ let emit_module_build
       rules.build_ast_from_re
     else
       rules.build_ast in 
-  Bsb_ninja_util.output_build oc
-    ~output:output_mlast
-    ~input:input_impl
+  Bsb_ninja_targets.output_build oc
+    ~outputs:[output_mlast]
+    ~inputs:[input_impl]
     ~rule:ast_rule;
-  Bsb_ninja_util.output_build
+  Bsb_ninja_targets.output_build
     oc
-    ~output:output_d
-    ~inputs:(if no_intf_file then [] else [output_mliast])
-    ~input:output_mlast
+    ~outputs:[output_d]
+    ~inputs:(if no_intf_file then [output_mlast] else [output_mlast;output_mliast])
     ~rule:rules.build_bin_deps
     ?shadows:(if is_dev then
-                Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
                        op = 
                          Overwrite (string_of_int (group_dir_index :> int)) }] 
               else None)
   ;  
   if not no_intf_file then begin           
-    Bsb_ninja_util.output_build oc
-      ~output:output_mliast
+    Bsb_ninja_targets.output_build oc
+      ~outputs:[output_mliast]
       (* TODO: we can get rid of absloute path if we fixed the location to be 
           [lib/bs], better for testing?
       *)
-      ~input:input_intf
+      ~inputs:[input_intf]
       ~rule:ast_rule
     ;
-    Bsb_ninja_util.output_build oc
-      ~output:output_cmi
+    Bsb_ninja_targets.output_build oc
+      ~outputs:[output_cmi]
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
-      ~input:output_mliast
+      ~inputs:[output_mliast]
       ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
     ;
   end;
@@ -169,12 +161,12 @@ let emit_module_build
       (if  is_dev then rules.ml_cmj_js_dev
        else rules.ml_cmj_js)
   in
-  Bsb_ninja_util.output_build oc
-    ~output:output_cmj
+  Bsb_ninja_targets.output_build oc
+    ~outputs:[output_cmj]
     ~shadows
     ~implicit_outputs:  
       (if no_intf_file then output_cmi::output_js else output_js)
-    ~input:output_mlast
+    ~inputs:[output_mlast]
     ~implicit_deps:(if no_intf_file then [] else [output_cmi])
     ~order_only_deps:[output_d]
     ~rule
@@ -219,7 +211,7 @@ let handle_files_per_dir
     )
 
     (* ; 
-    Bsb_ninja_util.phony
+    Bsb_ninja_targets.phony
     oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
     (* pseuduo targets per directory *)

@@ -44,20 +44,23 @@ type shadow = { key : string ; op : override }
 val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
-  ?outputs:string list ->
-  ?implicit_outputs: string list ->  
-  ?inputs:string list ->
+  ?implicit_outputs: string list ->    
   ?shadows:shadow list ->
   ?restat:unit ->
-  output:string ->
-  input:string ->
-  rule:Bsb_ninja_rule.t -> out_channel -> unit
+  outputs:string list ->
+  inputs:string list ->
+  rule:Bsb_ninja_rule.t -> 
+  out_channel -> 
+  unit
 
 
 val phony  :
   ?order_only_deps:string list ->
   ?restat:unit ->
-  inputs:string list -> output:string -> out_channel -> unit
+  inputs:string list -> 
+  output:string -> 
+  out_channel -> 
+  unit
 
 val output_kv : string ->  string -> out_channel -> unit 
 val output_kvs : (string * string) array -> out_channel -> unit
