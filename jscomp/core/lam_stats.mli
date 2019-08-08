@@ -44,7 +44,6 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 type t = {
   env : Env.t;
-  filename : string ;
   export_idents : Ident_set.t ;
   exports : Ident.t list ;
   alias_tbl : alias_tbl; 

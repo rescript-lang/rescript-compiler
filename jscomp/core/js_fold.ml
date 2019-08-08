@@ -293,11 +293,9 @@ class virtual fold =
            let o = o#property_name _x in let o = o#expression _x_i1 in o)
     method property : property -> 'self_type = o#unknown
     method program : program -> 'self_type =
-      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
-        ->
-        let o = o#string _x in
-        let o = o#block _x_i1 in
-        let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
+      fun { block = _x; exports = _x_i1; export_set = _x_i2 } ->
+        let o = o#block _x in
+        let o = o#exports _x_i1 in let o = o#unknown _x_i2 in o
     method number : number -> 'self_type = o#unknown
     method mutable_flag : mutable_flag -> 'self_type = o#unknown
     method length_object : length_object -> 'self_type = o#unknown

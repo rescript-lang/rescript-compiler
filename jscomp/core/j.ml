@@ -337,8 +337,6 @@ and 'a case_clause = {
 and block =  statement list
 
 and program = {
-  name :  string;
-
   block : block ;
   exports : exports ;
   export_set : Ident_set.t ;

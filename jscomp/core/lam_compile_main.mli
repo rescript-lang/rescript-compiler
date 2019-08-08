@@ -38,7 +38,6 @@
     {!Env.get_unit_name ()}
  *)
 val compile :  
-  filename : string -> 
   string -> 
   Env.t ->   
   Lambda.lambda -> 

@@ -36,7 +36,6 @@ let program_is_empty (x : J.program) =
   | {
     block = [];
     exports = [];
-    name = _ ;
     export_set = _
   }  -> true 
   | _  -> false  

@@ -122,7 +122,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
       let () = Js_dump_program.pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
                           NodeJS
-                          (Lam_compile_main.compile ~filename:"" ""
+                          (Lam_compile_main.compile ""
                              !finalenv  lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in

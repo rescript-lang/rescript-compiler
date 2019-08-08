@@ -56,7 +56,7 @@ let count_collects () =
     val defined_idents : J.variable_declaration Ident_hashtbl.t = Ident_hashtbl.create 83
 
     val mutable my_export_set  : Ident_set.t = Ident_set.empty
-    val mutable name : string = ""
+
 
     method add_use id = 
       match Ident_hashtbl.find_opt stats id with
@@ -64,7 +64,7 @@ let count_collects () =
       | Some v -> incr v 
     method! program x = 
       my_export_set <- x.export_set ; 
-      name <- x.name;
+
       super#program x
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
@@ -135,7 +135,7 @@ let get_stats (program : J.program) : J.variable_declaration Ident_hashtbl.t
     (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
     while it is still called 
 *)
-let subst name (export_set : Ident_set.t) stats  = 
+let subst (export_set : Ident_set.t) stats  = 
   object (self)
     inherit Js_map.map as super
     method! statement st = 
@@ -231,6 +231,6 @@ let subst name (export_set : Ident_set.t) stats  =
 let tailcall_inline (program : J.program) = 
   let stats = get_stats program in
   let export_set = program.export_set in
-  (subst program.name export_set stats )#program program
+  (subst export_set stats )#program program
 
     

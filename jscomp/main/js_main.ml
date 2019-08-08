@@ -275,6 +275,41 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
+
+let print_if ppf flag printer arg =
+  if !flag then Format.fprintf ppf "%a@." printer arg;
+  arg
+
+let eval ppf s =
+#if OCAML_VERSION =~ ">4.03.0" then
+  Compenv.readenv ppf (Before_compile "//<toplevel>//"); (*FIXME*)
+#else
+  Compenv.readenv ppf Before_compile; 
+#end  
+  Compmisc.init_path  false;
+      Ext_ref.protect_list 
+        [Clflags.dont_write_files , true ; 
+         Clflags.annotations, false;
+         Clflags.binary_annotations, false;
+        ]  (fun _ -> 
+            Ocaml_parse.parse_implementation_from_string s 
+            (* FIXME: Note in theory, the order of applying our built in ppx 
+               and apply third party ppx should not matter, but in practice  
+               it may.
+               We should make it more consistent. 
+               Thirdy party ppx may be buggy to drop annotations.
+               If we always put our ppx in the beginning, it will be more robust, 
+               however, the current implementation (in the batch compilation mode) 
+               seems to apply our ppx after all ppx transformations
+            *)
+            |> Pparse.apply_rewriters_str ~tool_name:Js_config.tool_name
+            |> print_if ppf Clflags.dump_parsetree Printast.implementation
+            |> print_if ppf Clflags.dump_source Pprintast.structure
+            |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
+          )
+  
+
+
 let _ = 
   (* Default configuration: sync up with 
     {!Jsoo_main}  *)
@@ -296,14 +331,10 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-
     let eval_string = !eval_string in
-    let task : Ocaml_batch_compile.task = 
-      if eval_string <> "" then 
-        Bsc_task_eval eval_string
-      else Bsc_task_none in
-    exit (Ocaml_batch_compile.batch_compile ppf 
-              task) 
+    if eval_string <> "" then 
+      eval ppf eval_string
+    
   with x -> 
     begin
       Location.report_exception ppf x;
