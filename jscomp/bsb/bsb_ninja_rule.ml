@@ -144,7 +144,7 @@ let make_custom_rules
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";
-    Buffer.add_string buf " -o $out -c  $in";
+    Buffer.add_string buf " -o $out $in";
     if postbuild then
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
@@ -170,7 +170,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
-    Buffer.add_string buf " $bsc_flags -c -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
     Buffer.contents buf
   in  
   let build_ast =
@@ -226,7 +226,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only -c $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only $in"
       ~restat:()
       "build_package"
   in 
