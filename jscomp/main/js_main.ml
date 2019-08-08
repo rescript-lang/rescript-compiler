@@ -26,33 +26,34 @@ let reason_pp name  =
   setup_reason_context ();
   Ast_reason_pp.pp name
 
-let process_file ppf name = 
-  match Ocaml_parse.check_suffix  name with 
+let process_file ppf sourcefile = 
+  match Ocaml_parse.check_suffix  sourcefile with 
   | Ml, opref ->
-    Js_implementation.implementation ppf name opref 
+    Js_implementation.implementation ppf sourcefile opref 
   | Re, opref ->     
-    Js_implementation.implementation ppf (reason_pp name) opref 
+    Js_implementation.implementation ppf (reason_pp sourcefile) opref 
   | Mli , opref ->   
-    Js_implementation.interface ppf name opref 
+    Js_implementation.interface ppf sourcefile opref 
   | Rei, opref ->
-    Js_implementation.interface ppf (reason_pp name) opref 
+    (* FIXME: the [sourcefile] propgation seems to be wrong *)
+    Js_implementation.interface ppf (reason_pp sourcefile) opref 
   | Mliast, opref 
-    -> Js_implementation.interface_mliast ppf name opref 
+    -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Reiast, opref 
     -> 
       setup_reason_context ();
-      Js_implementation.interface_mliast ppf name opref   
+      Js_implementation.interface_mliast ppf sourcefile opref   
   | Reast, opref 
     -> 
       setup_reason_context ();
-      Js_implementation.implementation_mlast ppf name opref
+      Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlast, opref 
-    -> Js_implementation.implementation_mlast ppf name opref
+    -> Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlmap, opref 
-    -> Js_implementation.implementation_map ppf name opref
+    -> Js_implementation.implementation_map ppf sourcefile opref
   | Cmi, _ 
     ->
-      let {Cmi_format.cmi_sign } =  Cmi_format.read_cmi name in 
+      let {Cmi_format.cmi_sign } =  Cmi_format.read_cmi sourcefile in 
       Printtyp.signature Format.std_formatter cmi_sign ; 
       Format.pp_print_newline Format.std_formatter ()
       

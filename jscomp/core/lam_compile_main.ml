@@ -305,16 +305,8 @@ let lambda_as_module
       (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
-  if Js_packages_info.is_empty package_info  then 
-    begin 
-      let output_chan chan =         
-        Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
-      (if !Js_config.dump_js then output_chan stdout);
-      if not !Clflags.dont_write_files then 
-        Ext_pervasives.with_file_as_chan 
-          (Filename.dirname filename //  basename)
-          output_chan
-    end
+  if Js_packages_info.is_empty package_info  then     
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout      
   else
     Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
         let output_chan chan  = 
