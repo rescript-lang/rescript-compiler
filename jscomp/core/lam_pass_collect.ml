@@ -181,7 +181,6 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 
 let count_alias_globals 
     env 
-    filename
     (export_idents : Ident.t list)
     (export_sets  : Ident_set.t)
     (lam : Lam.t) : Lam_stats.t =
@@ -190,7 +189,6 @@ let count_alias_globals
      ident_tbl = Ident_hashtbl.create 31;
 
      exports =  export_idents;
-     filename;
      env;
      export_idents = export_sets;
     } in 

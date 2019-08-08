@@ -67,9 +67,6 @@ class rewrite_return ?return_value ()=
  *)
 let mark_dead = object (self)
   inherit Js_fold.fold as super
-
-  val mutable name = ""
-
   val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Ident_hashtbl.t
       = Ident_hashtbl.create 17
   
@@ -95,12 +92,11 @@ let mark_dead = object (self)
         Js_op_util.update_used_stats ident_info Used; 
         Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
     | Some (`Info _) ->  
-        (** check [camlinternlFormat,box_type] inlined twice 
-            FIXME: seems we have redeclared identifiers
-         *)
-      if Js_config.get_diagnose () then 
-        Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
-        (* assert false *)
+      (** check [camlinternlFormat,box_type] inlined twice 
+          FIXME: seems we have redeclared identifiers
+      *)
+      ()
+    (* assert false *)
     | None ->  (* First time *)
         Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
@@ -118,7 +114,6 @@ let mark_dead = object (self)
 
   method! program x = 
     export_set <- x.export_set ; 
-    name <- x.name;
     super#program x 
 
   method! ident x = 
@@ -199,7 +194,7 @@ let mark_dead_code js =
     ]}
 
 *) 
-let subst_map name = object (self)
+let subst_map () = object (self)
   inherit Js_map.map as super
 
   val mutable substitution :  J.expression Ident_hashtbl.t= Ident_hashtbl.create 17 
@@ -297,7 +292,7 @@ end
 
 let program  (js : J.program) = 
   js 
-  |> (subst_map js.name )#program
+  |> (subst_map () )#program
   |> mark_dead_code
   (* |> mark_dead_code *)
   (* mark dead code twice does have effect in some cases, however, we disabled it 
