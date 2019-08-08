@@ -314,8 +314,6 @@ let lambda_as_module
             module_system 
             lambda_output
             chan in
-        (if !Js_config.dump_js then 
-           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
 #if BS_NATIVE then

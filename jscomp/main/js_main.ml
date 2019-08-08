@@ -280,21 +280,17 @@ let print_if ppf flag printer arg =
   if !flag then Format.fprintf ppf "%a@." printer arg;
   arg
 
-let batch_compile ppf main_file =
+let eval ppf s =
 #if OCAML_VERSION =~ ">4.03.0" then
-  Compenv.readenv ppf (Before_compile ""); (*FIXME*)
+  Compenv.readenv ppf (Before_compile "//<toplevel>//"); (*FIXME*)
 #else
   Compenv.readenv ppf Before_compile; 
 #end  
   Compmisc.init_path  false;
-  begin match main_file with       
-    | None ->  0
-    | Some s ->
       Ext_ref.protect_list 
         [Clflags.dont_write_files , true ; 
          Clflags.annotations, false;
          Clflags.binary_annotations, false;
-         Js_config.dump_js, true ;
         ]  (fun _ -> 
             Ocaml_parse.parse_implementation_from_string s 
             (* FIXME: Note in theory, the order of applying our built in ppx 
@@ -310,8 +306,8 @@ let batch_compile ppf main_file =
             |> print_if ppf Clflags.dump_parsetree Printast.implementation
             |> print_if ppf Clflags.dump_source Pprintast.structure
             |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
-          ); 0
-  end  
+          )
+  
 
 
 let _ = 
@@ -335,14 +331,10 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-
     let eval_string = !eval_string in
-    let task = 
-      if eval_string <> "" then 
-        Some eval_string
-      else None in
-    exit (batch_compile ppf 
-              task) 
+    if eval_string <> "" then 
+      eval ppf eval_string
+    
   with x -> 
     begin
       Location.report_exception ppf x;

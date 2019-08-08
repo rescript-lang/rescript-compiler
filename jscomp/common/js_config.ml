@@ -94,9 +94,6 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 
 let sort_imports = ref true
-let dump_js = ref false
-
-
 
 let syntax_only = ref false
 let binary_ast = ref false
