@@ -45,8 +45,7 @@ val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
   ?implicit_outputs: string list ->    
-  ?shadows:shadow list ->
-  ?restat:unit ->
+  ?shadows:shadow list ->  
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
@@ -56,7 +55,6 @@ val output_build :
 
 val phony  :
   ?order_only_deps:string list ->
-  ?restat:unit ->
   inputs:string list -> 
   output:string -> 
   out_channel -> 
