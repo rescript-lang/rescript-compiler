@@ -12816,8 +12816,7 @@ val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
   ?implicit_outputs: string list ->    
-  ?shadows:shadow list ->
-  ?restat:unit ->
+  ?shadows:shadow list ->  
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
@@ -12827,7 +12826,6 @@ val output_build :
 
 val phony  :
   ?order_only_deps:string list ->
-  ?restat:unit ->
   inputs:string list -> 
   output:string -> 
   out_channel -> 
@@ -12893,7 +12891,6 @@ let output_build
     ?(implicit_deps=[])
     ?(implicit_outputs=[])
     ?(shadows=([] : shadow list))
-    ?restat
     ~outputs
     ~inputs
     ~rule
@@ -12963,13 +12960,11 @@ let output_build
           output_string oc s ; 
           output_string oc "\n"
       ) 
-  end;
-  if restat <> None then 
-    output_string oc "  restat = 1 \n"
+  end
 
 
 
-let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
+let phony ?(order_only_deps=[]) ~inputs ~output oc =
   output_string oc "build ";
   output_string oc output ;
   output_string oc " : ";
@@ -12981,9 +12976,7 @@ let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
       output_string oc " || ";                
       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
     end;
-  output_string oc "\n";
-  if restat <> None then 
-    output_string oc "  restat = 1 \n"
+  output_string oc "\n"
 
 let output_kv key value oc  =
   output_string oc key ;
