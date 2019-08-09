@@ -4,19 +4,10 @@ bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I runtime -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I runtime  $in
     description = $in -> $out
 rule cc_cmi
-    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I runtime -c $in
-    description = $in -> $out    
-rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I runtime -c -impl $in
-    description = $in -> $out
-rule re_cmi
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I runtime -c -impl $in
-    description = $in -> $out
-rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I runtime -c -intf $in
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I runtime  $in
     description = $in -> $out    
 
 build runtime/bs_stdlib_mini.cmi : cc runtime/bs_stdlib_mini.mli

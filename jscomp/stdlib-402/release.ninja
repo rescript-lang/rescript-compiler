@@ -3,19 +3,10 @@ bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  -w -40-49-103-3 -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
 
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I stdlib-402 -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I stdlib-402  $in
     description = $in -> $out
 rule cc_cmi
-    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I stdlib-402 -c $in
-    description = $in -> $out    
-rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I stdlib-402 -c -impl $in
-    description = $in -> $out
-rule re_cmi
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I stdlib-402 -c -impl $in
-    description = $in -> $out
-rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I stdlib-402 -c -intf $in
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I stdlib-402  $in
     description = $in -> $out    
 
 build stdlib-402/camlinternalFormatBasics.cmi : cc stdlib-402/camlinternalFormatBasics.mli | others
