@@ -8,10 +8,10 @@ var suites_000 = /* tuple */[
   "basic_add",
   (function (param) {
       return /* Eq */Block.__(0, [
-                /* record */[
-                  /* re */2,
-                  /* im */2
-                ],
+                /* record */{
+                  re: 2,
+                  im: 2
+                },
                 Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
               ]);
     })
