@@ -190,6 +190,21 @@ let make_block ?comment
     comment 
   }    
 
+let make_block ?comment tag tag_info es mutable_flag : t =
+  let comment = 
+    match comment with 
+    | None -> Lam_compile_util.comment_of_tag_info tag_info 
+    | _ -> comment in
+  match tag_info with
+  | Blk_record des when des <> [| "contents" |] ->
+    let property_map = List.mapi (fun i e -> (des.(i), e)) es in
+    {
+      expression_desc = Object property_map;
+      comment 
+    }
+  | _ -> make_block ?comment tag tag_info es mutable_flag 
+  
+  
 
 module L = Literals
 
@@ -1304,4 +1319,5 @@ let resolve_and_apply
     ) args 
 
 
-
+let object_assign ?comment e1 e2 : t = 
+  { comment ; expression_desc = Object_assign (e1, e2) }

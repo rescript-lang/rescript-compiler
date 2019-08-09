@@ -429,7 +429,7 @@ let discard_sign (x : int64) : int64 =
 *)
 
 let float_of_bits : t -> float = fun%raw x  -> {| 
-  return new Float64Array(new Int32Array([x[1],x[0]]).buffer)[0]
+  return new Float64Array(new Int32Array([x.lo,x.hi]).buffer)[0]
 |}
   (* let to_int32 (x : nativeint) = x |> Caml_nativeint_extern.to_int32
   in

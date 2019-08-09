@@ -10,10 +10,10 @@ var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var one_float = /* int64 */[
-  /* hi */1072693248,
-  /* lo */0
-];
+var one_float = /* int64 */{
+  hi: 1072693248,
+  lo: 0
+};
 
 var int32_pairs = /* array */[
   /* tuple */[

@@ -7,7 +7,7 @@ var Stack = require("../../lib/js/stack.js");
 
 function to_list(v) {
   var acc = /* [] */0;
-  while(v[/* c */0] !== /* [] */0) {
+  while(v.c !== /* [] */0) {
     acc = /* :: */[
       Stack.pop(v),
       acc
@@ -17,7 +17,9 @@ function to_list(v) {
 }
 
 function v(param) {
-  var v$1 = /* record */[/* c : [] */0];
+  var v$1 = /* record */{
+    c: /* [] */0
+  };
   Stack.push(3, v$1);
   Stack.push(4, v$1);
   Stack.push(1, v$1);
