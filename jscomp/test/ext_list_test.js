@@ -626,7 +626,7 @@ function find_first_not(p, _param) {
         return Caml_option.some(a);
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -643,7 +643,7 @@ function for_all_opt(p, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -725,7 +725,7 @@ function find_no_exn(p, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -742,7 +742,7 @@ function find_opt(p, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }

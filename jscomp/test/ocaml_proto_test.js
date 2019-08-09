@@ -193,7 +193,7 @@ function file_option(file_options, name) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -259,7 +259,7 @@ function apply_until(f, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -3928,7 +3928,7 @@ function find_field_option(field_options, option_name) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -4152,7 +4152,7 @@ function get_default(field_name, field_options, field_type) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -4534,7 +4534,7 @@ function compile_message_p2(types, param, message) {
               }
               catch (exn){
                 if (exn === Caml_builtin_exceptions.not_found) {
-                  return undefined;
+                  return ;
                 } else {
                   throw exn;
                 }
@@ -6593,7 +6593,7 @@ function ocaml_container(field_options) {
     if (match$1.tag === 4) {
       return match$1[0];
     } else {
-      return undefined;
+      return ;
     }
   }
   

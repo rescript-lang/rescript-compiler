@@ -1824,7 +1824,7 @@ register_error_of_exn((function (param) {
                           "Some fatal warnings were triggered (%d occurrences)"
                         ]), param[1]);
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -2183,7 +2183,7 @@ function get_docstring(info, dsl) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -2246,7 +2246,7 @@ function get_pre_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -2284,7 +2284,7 @@ function get_post_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -2311,7 +2311,7 @@ function get_info(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -4896,7 +4896,7 @@ var yyact = /* array */[
                 ], _4);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -5185,7 +5185,7 @@ var yyact = /* array */[
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5708,7 +5708,7 @@ var yyact = /* array */[
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);

@@ -55,7 +55,7 @@ Printexc.register_printer((function (param) {
                           "A(%d)"
                         ]), param[1]);
         } else {
-          return undefined;
+          return ;
         }
       }));
 

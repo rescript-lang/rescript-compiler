@@ -456,7 +456,7 @@ function parse_color_setting(param) {
     case "never" : 
         return /* Never */2;
     default:
-      return undefined;
+      return ;
   }
 }
 
@@ -1173,7 +1173,7 @@ function edit_distance(a, b, cutoff) {
   var lb = b.length;
   var cutoff$1 = Caml_primitive.caml_int_min(la > lb ? la : lb, cutoff);
   if (Pervasives.abs(la - lb | 0) > cutoff$1) {
-    return undefined;
+    return ;
   } else {
     var m = $$Array.make_matrix(la + 1 | 0, lb + 1 | 0, cutoff$1 + 1 | 0);
     Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), 0, 0);
@@ -1193,7 +1193,7 @@ function edit_distance(a, b, cutoff) {
     }
     var result = Caml_array.caml_array_get(Caml_array.caml_array_get(m, la), lb);
     if (result > cutoff$1) {
-      return undefined;
+      return ;
     } else {
       return result;
     }
@@ -3544,7 +3544,7 @@ function error_of_exn$1(exn) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -3648,7 +3648,7 @@ register_error_of_exn((function (param) {
                           "Some fatal warnings were triggered (%d occurrences)"
                         ]), param[1]);
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -4019,7 +4019,7 @@ function get_docstring(info, dsl) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -4082,7 +4082,7 @@ function get_pre_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -4120,7 +4120,7 @@ function get_post_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -4147,7 +4147,7 @@ function get_info(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -7520,7 +7520,7 @@ var yyact = /* array */[
                 ], _4);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7809,7 +7809,7 @@ var yyact = /* array */[
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
@@ -8332,7 +8332,7 @@ var yyact = /* array */[
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);

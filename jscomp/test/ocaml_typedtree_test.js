@@ -286,7 +286,7 @@ function edit_distance(a, b, cutoff) {
   var lb = b.length;
   var cutoff$1 = Caml_primitive.caml_int_min(la > lb ? la : lb, cutoff);
   if (Pervasives.abs(la - lb | 0) > cutoff$1) {
-    return undefined;
+    return ;
   } else {
     var m = $$Array.make_matrix(la + 1 | 0, lb + 1 | 0, cutoff$1 + 1 | 0);
     Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), 0, 0);
@@ -306,7 +306,7 @@ function edit_distance(a, b, cutoff) {
     }
     var result = Caml_array.caml_array_get(Caml_array.caml_array_get(m, la), lb);
     if (result > cutoff$1) {
-      return undefined;
+      return ;
     } else {
       return result;
     }
@@ -2084,7 +2084,7 @@ register_error_of_exn((function (param) {
                           "Some fatal warnings were triggered (%d occurrences)"
                         ]), param[1]);
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -5013,7 +5013,7 @@ function find_expans(priv, p1, _param) {
   while(true) {
     var param = _param;
     if (typeof param === "number") {
-      return undefined;
+      return ;
     } else if (param.tag) {
       var rem = param[0][/* contents */0];
       _param = rem;
@@ -6338,7 +6338,7 @@ function get_docstring(info, dsl) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -6401,7 +6401,7 @@ function get_pre_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -6439,7 +6439,7 @@ function get_post_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -6466,7 +6466,7 @@ function get_info(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -9510,7 +9510,7 @@ function get_arg(x) {
   switch (match.tag | 0) {
     case 0 : 
     case 1 : 
-        return undefined;
+        return ;
     case 2 : 
         return Caml_option.some(match[0]);
     
@@ -11345,7 +11345,7 @@ function gadt_instance_level(env, t) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -15269,7 +15269,7 @@ var yyact = /* array */[
                 ], _4);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15558,7 +15558,7 @@ var yyact = /* array */[
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
@@ -16081,7 +16081,7 @@ var yyact = /* array */[
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
-      return undefined;
+      return ;
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -25497,7 +25497,7 @@ function closed_type_decl(decl) {
       closed_type(match$1);
     }
     it_type_declaration(unmark_iterators, decl);
-    return undefined;
+    return ;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -25518,7 +25518,7 @@ function closed_extension_constructor(ext) {
       List.iter(closed_type, ext[/* ext_args */2]);
     }
     unmark_extension_constructor(ext);
-    return undefined;
+    return ;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -25576,7 +25576,7 @@ function closed_class(params, sign) {
     iter_type_expr(mark_type, repr(sign[/* csig_self */0]));
     List.iter(unmark_type, params);
     unmark_class_signature(sign);
-    return undefined;
+    return ;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -26170,7 +26170,7 @@ function find_repr(p1, _param) {
   while(true) {
     var param = _param;
     if (typeof param === "number") {
-      return undefined;
+      return ;
     } else if (param.tag) {
       var rem = param[0][/* contents */0];
       _param = rem;
@@ -27583,7 +27583,7 @@ function unify_univar(t1, t2, _param) {
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
-            return undefined;
+            return ;
           } else {
             throw exn;
           }
@@ -42390,7 +42390,7 @@ function mismatch(unif, param) {
                 t$prime
               ];
       } else {
-        return undefined;
+        return ;
       }
     } else {
       throw [
@@ -50159,7 +50159,7 @@ function close_variant(env, row) {
             return nm;
           } else {
             set_row_field(match[3], /* Rabsent */0);
-            return undefined;
+            return ;
           }
         }), row$1[/* row_name */5], row$1[/* row_fields */0]);
   if (!row$1[/* row_closed */3] || nm !== row$1[/* row_name */5]) {
@@ -52472,12 +52472,12 @@ function do_match(_pss, _qs) {
     } else if (pss) {
       var match$1 = pss[0];
       if (match$1[0]) {
-        return undefined;
+        return ;
       } else {
         return Caml_option.some(match$1[1]);
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -52492,7 +52492,7 @@ function check_partial_all(v, casel) {
   }
   catch (exn){
     if (exn === NoGuard) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -52511,7 +52511,7 @@ function get_first(f, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -52898,7 +52898,7 @@ function string_of_payload(param) {
         if (match) {
           var match$1 = match[0][/* pstr_desc */0];
           if (match$1.tag) {
-            return undefined;
+            return ;
           } else {
             var match$2 = match$1[0][/* pexp_desc */0];
             if (match$2.tag === 1 && !match[1]) {
@@ -52906,18 +52906,18 @@ function string_of_payload(param) {
               if (param$1.tag === 2) {
                 return param$1[0];
               } else {
-                return undefined;
+                return ;
               }
             } else {
-              return undefined;
+              return ;
             }
           }
         } else {
-          return undefined;
+          return ;
         }
     case 1 : 
     case 2 : 
-        return undefined;
+        return ;
     
   }
 }
@@ -53517,7 +53517,7 @@ function validate_name(s) {
     if (name !== "" && strict_lowercase(Caml_string.get(name, 0))) {
       return s;
     } else {
-      return undefined;
+      return ;
     }
   }
   
@@ -55412,7 +55412,7 @@ register_error_of_exn((function (param) {
         } else if (param[0] === Error_forward) {
           return param[1];
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -57166,7 +57166,7 @@ function find_record_qual(_param) {
         
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -58302,7 +58302,7 @@ function partial_pred(lev, env, expected_ty, constrs, labels, p) {
   }
   catch (exn){
     backtrack(snap);
-    return undefined;
+    return ;
   }
 }
 
@@ -60096,7 +60096,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
-              return undefined;
+              return ;
             } else {
               throw exn;
             }
@@ -64547,7 +64547,7 @@ register_error_of_exn((function (param) {
         } else if (param[0] === Error_forward$1) {
           return param[1];
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -72784,7 +72784,7 @@ register_error_of_exn((function (param) {
         } else if (param[0] === Error_forward$2) {
           return param[1];
         } else {
-          return undefined;
+          return ;
         }
       }));
 
@@ -74649,7 +74649,7 @@ function path_of_module$1(mexp) {
   }
   catch (exn){
     if (exn === Not_a_path) {
-      return undefined;
+      return ;
     } else {
       throw exn;
     }
@@ -76683,7 +76683,7 @@ register_error_of_exn((function (param) {
         } else if (param[0] === Error_forward$3) {
           return param[1];
         } else {
-          return undefined;
+          return ;
         }
       }));
 

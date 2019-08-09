@@ -928,7 +928,7 @@ function parse_chan_gen(bufsize, ic) {
   return (function (param) {
       var e = next(d);
       if (typeof e === "number") {
-        return undefined;
+        return ;
       } else {
         return e;
       }
