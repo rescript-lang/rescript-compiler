@@ -45,7 +45,7 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
     begin 
 
       if Js_config.get_diagnose () then
-        Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
+        Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;    
       let modulename = module_of_filename ppf sourcefile outputprefix in
       Lam_compile_env.reset () ;
       let initial_env = Compmisc.initial_env () in
@@ -108,7 +108,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
     begin
 
       if Js_config.get_diagnose () then
-        Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
+        Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;      
       let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
       Lam_compile_env.reset () ;
       let env = Compmisc.initial_env() in

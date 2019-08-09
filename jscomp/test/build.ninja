@@ -218,6 +218,7 @@ build test/functor_ffi.cmi test/functor_ffi.cmj : cc test/functor_ffi.ml | $stdl
 build test/functor_inst.cmi test/functor_inst.cmj : cc test/functor_inst.ml | $stdlib
 build test/gbk.cmi test/gbk.cmj : cc test/gbk.ml | $stdlib
 build test/genlex_test.cmi test/genlex_test.cmj : cc test/genlex_test.ml | test/mt.cmj $stdlib
+build test/gentTypeReTest.cmi test/gentTypeReTest.cmj : cc test/gentTypeReTest.re | $stdlib
 build test/global_exception_regression_test.cmi test/global_exception_regression_test.cmj : cc test/global_exception_regression_test.ml | test/mt.cmj $stdlib
 build test/global_mangles.cmi test/global_mangles.cmj : cc test/global_mangles.ml | $stdlib
 build test/global_module_alias_test.cmi test/global_module_alias_test.cmj : cc test/global_module_alias_test.ml | test/mt.cmj $stdlib
