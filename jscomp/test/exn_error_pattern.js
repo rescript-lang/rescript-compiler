@@ -14,7 +14,7 @@ function f(match) {
     } else if (match[0] === Caml_builtin_exceptions.sys_error) {
       return 2;
     } else {
-      return undefined;
+      return ;
     }
   }
   
@@ -33,7 +33,7 @@ function g(match) {
     } else if (match[0] === A || match[0] === B) {
       return match[1];
     } else {
-      return undefined;
+      return ;
     }
   }
   

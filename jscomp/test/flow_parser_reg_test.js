@@ -5704,7 +5704,7 @@ function primitive(param) {
           
         }
       } else {
-        return undefined;
+        return ;
       }
     } else {
       return /* Null */2;
@@ -7287,7 +7287,7 @@ function peek_unary_op(env) {
     if (match >= 46) {
       if (match >= 94) {
         if (match >= 102) {
-          return undefined;
+          return ;
         } else {
           switch (match - 94 | 0) {
             case 0 : 
@@ -7298,7 +7298,7 @@ function peek_unary_op(env) {
             case 3 : 
             case 4 : 
             case 5 : 
-                return undefined;
+                return ;
             case 6 : 
                 return /* Not */2;
             case 7 : 
@@ -7307,7 +7307,7 @@ function peek_unary_op(env) {
           }
         }
       } else if (match !== 62 || !env[/* allow_await */14]) {
-        return undefined;
+        return ;
       } else {
         return /* Await */7;
       }
@@ -7322,7 +7322,7 @@ function peek_unary_op(env) {
         
       }
     } else {
-      return undefined;
+      return ;
     }
   }
   
@@ -11336,7 +11336,7 @@ function _object$2(restricted_error) {
                     ]
                   ]]);
       } else {
-        return undefined;
+        return ;
       }
     }
   };

@@ -169,7 +169,7 @@ function check_any_suffix_case_then_chop(s, suffixes) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -437,7 +437,7 @@ function rindex_rec_opt(s, _i, c) {
   while(true) {
     var i = _i;
     if (i < 0) {
-      return undefined;
+      return ;
     } else if (s.charCodeAt(i) === c) {
       return i;
     } else {
