@@ -191,7 +191,7 @@ function test55(param) {
   var ob = $$Buffer.create(42);
   create_tscanf_data(ob, tscanf_data_file_lines);
   var s = $$Buffer.contents(ob);
-  ob[/* position */1] = 0;
+  ob.position = 0;
   var ib = Scanf.Scanning[/* from_string */6](s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = $$Buffer.contents(ob);

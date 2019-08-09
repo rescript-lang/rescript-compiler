@@ -6,18 +6,18 @@ var BUI = require("@blp/ui");
 var Runtime = require("@runtime");
 
 var data = /* array */[
-  /* record */[
-    /* ticker */"GOOG",
-    /* price */700.0
-  ],
-  /* record */[
-    /* ticker */"AAPL",
-    /* price */500.0
-  ],
-  /* record */[
-    /* ticker */"MSFT",
-    /* price */300.0
-  ]
+  /* record */{
+    ticker: "GOOG",
+    price: 700.0
+  },
+  /* record */{
+    ticker: "AAPL",
+    price: 500.0
+  },
+  /* record */{
+    ticker: "MSFT",
+    price: 300.0
+  }
 ];
 
 function ui_layout(compile, lookup, appContext) {
@@ -103,7 +103,7 @@ function ui_layout(compile, lookup, appContext) {
         }));
   Runtime.setInterval((function () {
           grid.dataSource = Array.prototype.map.call(data, (function (param) {
-                  var price = param[/* price */1];
+                  var price = param.price;
                   var bid = price + 20 * Math.random();
                   var ask = price + 20 * Math.random();
                   var result = Curry._1(computeFunction[0], {
@@ -111,7 +111,7 @@ function ui_layout(compile, lookup, appContext) {
                         ask: ask
                       });
                   return /* array */[
-                          mk_titleRow(param[/* ticker */0]),
+                          mk_titleRow(param.ticker),
                           mk_titleRow(bid.toFixed(2)),
                           mk_titleRow(ask.toFixed(2)),
                           mk_titleRow(result.toFixed(2))

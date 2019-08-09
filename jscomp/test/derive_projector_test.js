@@ -3,15 +3,15 @@
 var Block = require("../../lib/js/block.js");
 
 function u_x(param) {
-  return param[/* u_x */0];
+  return param.u_x;
 }
 
 function b_x(param) {
-  return param[/* b_x */0];
+  return param.b_x;
 }
 
 function c_x(param) {
-  return param[/* c_x */0];
+  return param.c_x;
 }
 
 function d_int(param_0) {
@@ -34,14 +34,16 @@ function d_tweak(param_0) {
 }
 
 function u_X(param) {
-  return param[/* u_X */2];
+  return param.u_X;
 }
 
 function d(param) {
-  return param[/* d */0];
+  return param.d;
 }
 
-var v = /* d : D_int */Block.__(0, [3]);
+var v = /* record */({
+    d: /* D_int */Block.__(0, [3])
+  }).d;
 
 var h_001 = /* :: */[
   /* D_int */Block.__(0, [3]),

@@ -4,16 +4,15 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var x = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
-      1,
-      x
-    ]);
+Object.assign(x, /* :: */[
+    1,
+    x
+  ]);
 
 var a = [];
 
@@ -21,27 +20,27 @@ var b = [];
 
 var c = [];
 
-Caml_obj.caml_update_dummy(a, /* :: */[
-      2,
-      b
-    ]);
+Object.assign(a, /* :: */[
+    2,
+    b
+  ]);
 
-Caml_obj.caml_update_dummy(b, /* :: */[
-      3,
-      c
-    ]);
+Object.assign(b, /* :: */[
+    3,
+    c
+  ]);
 
-Caml_obj.caml_update_dummy(c, /* :: */[
-      3,
-      a
-    ]);
+Object.assign(c, /* :: */[
+    3,
+    a
+  ]);
 
 var xx = [];
 
-Caml_obj.caml_update_dummy(xx, /* :: */[
-      1,
-      xx
-    ]);
+Object.assign(xx, /* :: */[
+    1,
+    xx
+  ]);
 
 function naive(n) {
   if (n === 0 || n === 1) {
@@ -86,10 +85,10 @@ function fib(n) {
 
 var ys = [];
 
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
+Object.assign(ys, /* :: */[
+    1,
+    ys
+  ]);
 
 var xs_000 = /* :: */[
   2,
@@ -218,19 +217,19 @@ var rec_variant_b = [];
 
 var rec_variant_a = [];
 
-Caml_obj.caml_update_dummy(rec_variant_b, /* B */Block.__(0, [
-        "gho",
-        (function (param) {
-            return rec_variant_a;
-          })
-      ]));
+Object.assign(rec_variant_b, /* B */Block.__(0, [
+      "gho",
+      (function (param) {
+          return rec_variant_a;
+        })
+    ]));
 
-Caml_obj.caml_update_dummy(rec_variant_a, /* A */Block.__(1, [
-        3,
-        (function (param) {
-            return rec_variant_b;
-          })
-      ]));
+Object.assign(rec_variant_a, /* A */Block.__(1, [
+      3,
+      (function (param) {
+          return rec_variant_b;
+        })
+    ]));
 
 var suites_000 = /* tuple */[
   "hd",
