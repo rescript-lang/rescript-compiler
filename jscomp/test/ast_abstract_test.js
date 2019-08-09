@@ -27,30 +27,54 @@ function eq(loc, x, y) {
 
 function tToJs(param) {
   return {
-          x: param[/* x */0],
-          y: param[/* y */1],
-          z: param[/* z */2]
+          x: param.x,
+          y: param.y,
+          z: param.z
         };
 }
 
 function tFromJs(param) {
-  return /* record */[
-          /* x */param.x,
-          /* y */param.y,
-          /* z */param.z
-        ];
+  return /* record */{
+          x: param.x,
+          y: param.y,
+          z: param.z
+        };
 }
 
 var v0 = {
-  x: /* x */3,
-  y: /* y */false,
-  z: /* z */false
+  x: /* record */({
+      x: 3,
+      y: false,
+      z: false
+    }).x,
+  y: /* record */({
+      x: 3,
+      y: false,
+      z: false
+    }).y,
+  z: /* record */({
+      x: 3,
+      y: false,
+      z: false
+    }).z
 };
 
 var v1 = {
-  x: /* x */3,
-  y: /* y */false,
-  z: /* z */""
+  x: /* record */({
+      x: 3,
+      y: false,
+      z: ""
+    }).x,
+  y: /* record */({
+      x: 3,
+      y: false,
+      z: ""
+    }).y,
+  z: /* record */({
+      x: 3,
+      y: false,
+      z: ""
+    }).z
 };
 
 var jsMapperConstantArray = /* array */[

@@ -345,6 +345,9 @@ class virtual map =
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
       | Is_null_or_undefined _x ->
           let _x = o#expression _x in Is_null_or_undefined _x
+      | Object_assign (_x, _x_i1) ->
+          let _x = o#option (fun o -> o#expression) _x in
+          let _x_i1 = o#expression _x_i1 in Object_assign (_x, _x_i1)
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)

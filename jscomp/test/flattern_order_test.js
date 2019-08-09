@@ -1,14 +1,13 @@
 'use strict';
 
 var List = require("../../lib/js/list.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var ys = [];
 
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
+Object.assign(ys, /* :: */[
+    1,
+    ys
+  ]);
 
 function _zs(param) {
   return /* tuple */[
@@ -57,19 +56,15 @@ function even2(n) {
 
 var v = /* record */[/* contents */0];
 
-function obj_000(param) {
-  return v[0];
-}
-
-function obj_001(i) {
-  v[0] = i;
-  return /* () */0;
-}
-
-var obj = /* record */[
-  obj_000,
-  obj_001
-];
+var obj = /* record */{
+  get: (function (param) {
+      return v[0];
+    }),
+  set: (function (i) {
+      v[0] = i;
+      return /* () */0;
+    })
+};
 
 exports.xs = xs;
 exports.even = even;

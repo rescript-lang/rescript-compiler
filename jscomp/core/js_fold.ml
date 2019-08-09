@@ -339,6 +339,9 @@ class virtual fold =
           let o = o#expression _x in
           let o = o#list (fun o -> o#expression) _x_i1 in
           let o = o#unknown _x_i2 in o
+      | Object_assign (_x, _x_i1) ->
+          let o = o#option (fun o -> o#expression) _x in
+          let o = o#expression _x_i1 in o
       | String_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Array_index (_x, _x_i1) ->

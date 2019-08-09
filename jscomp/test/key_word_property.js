@@ -16,10 +16,10 @@ function mk($$window, $$default) {
 
 function mk2($$window, $$default) {
   return /* :: */[
-          /* record */[
-            /* window */$$window,
-            /* default */$$default
-          ],
+          /* record */{
+            window: $$window,
+            default: $$default
+          },
           /* [] */0
         ];
 }

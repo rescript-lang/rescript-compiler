@@ -190,6 +190,8 @@ var a = /* Sum */Block.__(2, [/* :: */[
 
 var b = /* Val */Block.__(0, [/* Symbol */Block.__(1, ["x"])]);
 
-console.log(compare(/* InSum */0, /* record */[/* complex */true], a, b));
+console.log(compare(/* InSum */0, /* record */{
+          complex: true
+        }, a, b));
 
 /*  Not a pure module */

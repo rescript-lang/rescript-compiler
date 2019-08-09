@@ -206,6 +206,7 @@ let exp_need_paren  (e : J.expression) =
   | Js_not _
   | Bool _
   | New _
+  | Object_assign _
     -> false
 
 let comma_strings f ls =     
@@ -835,6 +836,20 @@ and expression_desc cxt (level:int) f x : cxt  =
       P.string f (Js_op_util.op_str op);
       P.space f;
       expression rght cxt   f e2)
+  | Object_assign (e1_opt, e2) ->
+    P.group f 1 (fun _ ->
+        P.string f "Object.assign(";
+        let cxt = match e1_opt with
+          | Some e1 ->
+            expression 15 cxt f e1
+          | None ->
+            P.string f "{}";
+            cxt in
+        P.string f ", ";
+        let cxt = expression 15 cxt f e2 in
+        P.string f ")";
+        cxt 
+      )
   | String_append (e1, e2) ->
     let op : Js_op.binop = Plus in
     let (out, lft, rght) = Js_op_util.op_prec op in

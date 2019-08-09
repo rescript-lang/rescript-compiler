@@ -49,12 +49,12 @@ function f_arr(x) {
 }
 
 function f_opion(x) {
-  var match = x[/* hi */0];
+  var match = x.hi;
   if (match !== 2) {
     if (match !== 3) {
       return 0;
     } else {
-      var match$1 = x[/* lo */1];
+      var match$1 = x.lo;
       if (match$1 && match$1[0] === undefined) {
         var match$2 = match$1[1];
         if (match$2 && match$2[0] === undefined) {
@@ -92,7 +92,7 @@ function f_opion(x) {
       }
     }
   } else {
-    var match$8 = x[/* lo */1];
+    var match$8 = x.lo;
     if (match$8 && match$8[0] === undefined) {
       var match$9 = match$8[1];
       if (match$9 && match$9[0] === undefined) {

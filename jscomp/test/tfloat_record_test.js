@@ -34,9 +34,11 @@ function print_newline(param) {
             ]);
 }
 
-var s = /* record */[/* f */1.0];
+var s = /* record */{
+  f: 1.0
+};
 
-print_float(s[/* f */0]);
+print_float(s.f);
 
 print_newline(/* () */0);
 

@@ -286,7 +286,7 @@ and compile_recursive_let ~all_bindings
       (Declare (Alias, id))
        result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
-    when Ext_list.for_all ls (fun x ->
+    when (* XXX *) false && Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
           Ident.same pid id  ||
@@ -325,9 +325,14 @@ and compile_recursive_let ~all_bindings
         Js_output.make
           (Ext_list.append
              b
+             [
+              S.exp (E.object_assign (Some (E.var id)) v)
+             (* XXX
              [S.exp
                 (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy"
-                   [ E.var id;  v])]),
+                   [ E.var id;  v])
+              *)
+              ]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false

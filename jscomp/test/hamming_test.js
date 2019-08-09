@@ -10,30 +10,30 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
-var n0 = /* int64 */[
-  /* hi */0,
-  /* lo */0
-];
+var n0 = /* int64 */{
+  hi: 0,
+  lo: 0
+};
 
-var n1 = /* int64 */[
-  /* hi */0,
-  /* lo */1
-];
+var n1 = /* int64 */{
+  hi: 0,
+  lo: 1
+};
 
-var n2 = /* int64 */[
-  /* hi */0,
-  /* lo */2
-];
+var n2 = /* int64 */{
+  hi: 0,
+  lo: 2
+};
 
-var n3 = /* int64 */[
-  /* hi */0,
-  /* lo */3
-];
+var n3 = /* int64 */{
+  hi: 0,
+  lo: 3
+};
 
-var n5 = /* int64 */[
-  /* hi */0,
-  /* lo */5
-];
+var n5 = /* int64 */{
+  hi: 0,
+  lo: 5
+};
 
 var $percent = Caml_int64.mod_;
 
@@ -213,48 +213,48 @@ var ham3 = [];
 
 var ham5 = [];
 
-Caml_obj.caml_update_dummy(hamming, Block.__(246, [(function (param) {
-            return /* Cons */[
-                    nn1,
-                    merge(cmp, ham2, merge(cmp, ham3, ham5))
-                  ];
-          })]));
+Object.assign(hamming, Block.__(246, [(function (param) {
+          return /* Cons */[
+                  nn1,
+                  merge(cmp, ham2, merge(cmp, ham3, ham5))
+                ];
+        })]));
 
-Caml_obj.caml_update_dummy(ham2, Block.__(246, [(function (param) {
-            var lzarg = map(x2, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
+Object.assign(ham2, Block.__(246, [(function (param) {
+          var lzarg = map(x2, hamming);
+          var tag = lzarg.tag | 0;
+          if (tag === 250) {
+            return lzarg[0];
+          } else if (tag === 246) {
+            return CamlinternalLazy.force_lazy_block(lzarg);
+          } else {
+            return lzarg;
+          }
+        })]));
 
-Caml_obj.caml_update_dummy(ham3, Block.__(246, [(function (param) {
-            var lzarg = map(x3, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
+Object.assign(ham3, Block.__(246, [(function (param) {
+          var lzarg = map(x3, hamming);
+          var tag = lzarg.tag | 0;
+          if (tag === 250) {
+            return lzarg[0];
+          } else if (tag === 246) {
+            return CamlinternalLazy.force_lazy_block(lzarg);
+          } else {
+            return lzarg;
+          }
+        })]));
 
-Caml_obj.caml_update_dummy(ham5, Block.__(246, [(function (param) {
-            var lzarg = map(x5, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
+Object.assign(ham5, Block.__(246, [(function (param) {
+          var lzarg = map(x5, hamming);
+          var tag = lzarg.tag | 0;
+          if (tag === 250) {
+            return lzarg[0];
+          } else if (tag === 246) {
+            return CamlinternalLazy.force_lazy_block(lzarg);
+          } else {
+            return lzarg;
+          }
+        })]));
 
 iter_interval(pr, hamming, /* tuple */[
       88000,

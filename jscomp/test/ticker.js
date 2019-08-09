@@ -102,14 +102,14 @@ function string_of_rank(param) {
 
 function find_ticker_by_name(all_tickers, ticker) {
   return List.find((function (param) {
-                return param[/* ticker_name */2] === ticker;
+                return param.ticker_name === ticker;
               }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
   return List.iter((function (param) {
-                if (param[/* type_ */3]) {
-                  console.log(param[/* ticker_name */2]);
+                if (param.type_) {
+                  console.log(param.ticker_name);
                   return /* () */0;
                 } else {
                   return /* () */0;
@@ -769,20 +769,20 @@ var Ticker_map = [
 function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
-            var rank = ticker[/* rank */1];
+            var rank = ticker.rank;
             if (typeof rank === "number" && rank === 0) {
-              ticker[/* rank */1] = /* Visited */1;
-              var match = ticker[/* type_ */3];
+              ticker.rank = /* Visited */1;
+              var match = ticker.type_;
               if (match) {
                 var match$1 = match[0];
-                var counter$1 = loop(counter, match$1[/* lhs */2]);
-                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
+                var counter$1 = loop(counter, match$1.lhs);
+                var counter$2 = loop(counter$1, match$1.rhs);
                 var counter$3 = counter$2 + 1 | 0;
-                ticker[/* rank */1] = /* Ranked */[counter$3];
+                ticker.rank = /* Ranked */[counter$3];
                 return counter$3;
               } else {
                 var counter$4 = counter + 1 | 0;
-                ticker[/* rank */1] = /* Ranked */[counter$4];
+                ticker.rank = /* Ranked */[counter$4];
                 return counter$4;
               }
             } else {
@@ -792,21 +792,21 @@ function compute_update_sequences(all_tickers) {
           return loop(counter, ticker);
         }), 0, all_tickers);
   var map = List.fold_left((function (map, ticker) {
-          if (ticker[/* type_ */3]) {
+          if (ticker.type_) {
             var loop = function (_up, _map, _ticker) {
               while(true) {
                 var ticker = _ticker;
                 var map = _map;
                 var up = _up;
-                var type_ = ticker[/* type_ */3];
-                var ticker_name = ticker[/* ticker_name */2];
+                var type_ = ticker.type_;
+                var ticker_name = ticker.ticker_name;
                 if (type_) {
                   var match = type_[0];
                   var map$1 = loop(/* :: */[
                         ticker,
                         up
-                      ], map, match[/* lhs */2]);
-                  _ticker = match[/* rhs */1];
+                      ], map, match.lhs);
+                  _ticker = match.rhs;
                   _map = map$1;
                   _up = /* :: */[
                     ticker,
@@ -821,7 +821,7 @@ function compute_update_sequences(all_tickers) {
             };
             return loop(/* [] */0, map, ticker);
           } else {
-            return add(ticker[/* ticker_name */2], /* :: */[
+            return add(ticker.ticker_name, /* :: */[
                         ticker,
                         /* [] */0
                       ], map);
@@ -829,14 +829,14 @@ function compute_update_sequences(all_tickers) {
         }), /* Empty */0, List.rev(all_tickers));
   return fold((function (k, l, map) {
                 var l$1 = List.sort_uniq((function (lhs, rhs) {
-                        var match = lhs[/* rank */1];
+                        var match = lhs.rank;
                         if (typeof match === "number") {
                           throw [
                                 Caml_builtin_exceptions.failure,
                                 "All nodes should be ranked"
                               ];
                         }
-                        var match$1 = rhs[/* rank */1];
+                        var match$1 = rhs.rank;
                         if (typeof match$1 === "number") {
                           throw [
                                 Caml_builtin_exceptions.failure,
@@ -852,23 +852,23 @@ function compute_update_sequences(all_tickers) {
 function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
   return List.iter((function (ticker) {
-                var match = ticker[/* type_ */3];
+                var match = ticker.type_;
                 if (match) {
                   var match$1 = match[0];
-                  var match$2 = match$1[/* lhs */2][/* value */0];
-                  var match$3 = match$1[/* rhs */1][/* value */0];
+                  var match$2 = match$1.lhs.value;
+                  var match$3 = match$1.rhs.value;
                   var value;
                   if (match$2 !== undefined && match$3 !== undefined) {
                     var y = match$3;
                     var x = match$2;
-                    value = match$1[/* op */0] ? x - y : x + y;
+                    value = match$1.op ? x - y : x + y;
                   } else {
                     value = undefined;
                   }
-                  ticker[/* value */0] = value;
+                  ticker.value = value;
                   return /* () */0;
-                } else if (ticker[/* ticker_name */2] === new_ticker) {
-                  ticker[/* value */0] = new_value;
+                } else if (ticker.ticker_name === new_ticker) {
+                  ticker.value = new_value;
                   return /* () */0;
                 } else {
                   throw [
@@ -883,16 +883,16 @@ function process_input_line(ticker_map, all_tickers, line) {
   var make_binary_op = function (ticker_name, lhs, rhs, op) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
-    return /* record */[
-            /* value */undefined,
-            /* rank : Uninitialized */0,
-            /* ticker_name */ticker_name,
-            /* type_ : Binary_op */[/* record */[
-                /* op */op,
-                /* rhs */rhs$1,
-                /* lhs */lhs$1
-              ]]
-          ];
+    return /* record */{
+            value: undefined,
+            rank: /* Uninitialized */0,
+            ticker_name: ticker_name,
+            type_: /* Binary_op */[/* record */{
+                op: op,
+                rhs: rhs$1,
+                lhs: lhs$1
+              }]
+          };
   };
   var tokens = split(/* "|" */124, line);
   if (tokens) {
@@ -1003,12 +1003,12 @@ function process_input_line(ticker_map, all_tickers, line) {
                     }
                     return /* tuple */[
                             /* :: */[
-                              /* record */[
-                                /* value */undefined,
-                                /* rank : Uninitialized */0,
-                                /* ticker_name */ticker_name,
-                                /* type_ : Market */0
-                              ],
+                              /* record */{
+                                value: undefined,
+                                rank: /* Uninitialized */0,
+                                ticker_name: ticker_name,
+                                type_: /* Market */0
+                              },
                               all_tickers
                             ],
                             ticker_map

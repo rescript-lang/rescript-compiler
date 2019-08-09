@@ -114,7 +114,7 @@ let resize indexfun h =
 
 let key_index h key =
   (* compatibility with old hash tables *)
-  if Obj.size (Obj.repr h) >= 3
+  if (* XXX *) true || Obj.size (Obj.repr h) >= 3
   then (seeded_hash_param 10 100 h.seed key) land (Array.length h.data - 1)
   else (old_hash_param 10 100 key) mod (Array.length h.data)
 
