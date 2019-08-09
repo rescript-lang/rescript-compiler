@@ -293,7 +293,6 @@ let (//) = Filename.concat
 
 let lambda_as_module 
     finalenv 
-    (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   let lambda_output = 

@@ -137,7 +137,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
               try
                 Lam_compile_main.lambda_as_module
                   finalenv  
-                  sourcefile  outputprefix lambda  with
+                  outputprefix lambda  with
               | e -> 
                 (* Save to a file instead so that it will not scare user *)
                 (if Js_config.get_diagnose () then
