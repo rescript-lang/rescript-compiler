@@ -11657,14 +11657,11 @@ val get_check_div_by_zero : unit -> bool
 
 
 
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
 
 
-val iset_debug_file : string -> unit
+
 val set_debug_file : string -> unit
-val get_debug_file : unit -> string
+
 
 val is_same_file : unit -> bool 
 
@@ -11762,19 +11759,14 @@ let no_builtin_ppx_mli = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
+
 let debug_file = ref ""
 
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
 
-let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
 
 let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
+  !debug_file <> "" &&  !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 
@@ -11890,8 +11882,7 @@ let warning_formatter = Format.err_formatter
 
 let print_string_warning (loc : Location.t) x =   
   if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@." 
-      (Js_config.get_current_file ())
+    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
   else 
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
@@ -16804,7 +16795,7 @@ let parse_external_attributes
         if txt = Literals.gentype_import then 
           let bundle = 
               "./" ^ Ext_filename.new_extension
-                (Filename.basename (Js_config.get_current_file ()))  ".gen"
+                (Filename.basename !Location.input_name)  ".gen"
             in 
             attr::attrs, 
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          

@@ -277,7 +277,7 @@ let parse_external_attributes
         if txt = Literals.gentype_import then 
           let bundle = 
               "./" ^ Ext_filename.new_extension
-                (Filename.basename (Js_config.get_current_file ()))  ".gen"
+                (Filename.basename !Location.input_name)  ".gen"
             in 
             attr::attrs, 
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          

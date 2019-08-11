@@ -28,12 +28,12 @@ let print_if ppf flag printer arg =
 
 
 
-let after_parsing_sig ppf sourcefile outputprefix ast  =
+let after_parsing_sig ppf  outputprefix ast  =
   if !Js_config.binary_ast then
     begin 
       Binary_ast.write_ast
         Mli
-        ~fname:sourcefile
+        ~sourcefile:!Location.input_name
         ~output:(outputprefix ^ if !Js_config.is_reason  then Literals.suffix_reiast else Literals.suffix_mliast)
         (* to support relocate to another directory *)
         ast 
@@ -45,8 +45,8 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
     begin 
 
       if Js_config.get_diagnose () then
-        Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
-      let modulename = module_of_filename ppf sourcefile outputprefix in
+        Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;    
+      let modulename = module_of_filename ppf !Location.input_name outputprefix in
       Lam_compile_env.reset () ;
       let initial_env = Compmisc.initial_env () in
       Env.set_unit_name modulename;
@@ -74,30 +74,28 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
 #else
         let sg = Env.save_signature ?check_exists:(if !Js_config.force_cmi then None else Some ()) sg modulename (outputprefix ^ ".cmi") in
 #end        
-        Typemod.save_signature modulename tsg outputprefix sourcefile
+        Typemod.save_signature modulename tsg outputprefix !Location.input_name
           initial_env sg ;
       end
     end
 let interface ppf sourcefile outputprefix =
-  Js_config.set_current_file sourcefile ; 
   Compmisc.init_path false;
   Ocaml_parse.parse_interface ppf sourcefile
   |> print_if ppf Clflags.dump_parsetree Printast.interface
   |> print_if ppf Clflags.dump_source Pprintast.signature 
-  |> after_parsing_sig ppf sourcefile outputprefix 
+  |> after_parsing_sig ppf  outputprefix 
 
-let interface_mliast ppf sourcefile outputprefix  = 
-  Js_config.set_current_file sourcefile ; 
+let interface_mliast ppf fname outputprefix  = 
   Compmisc.init_path false;
-  Binary_ast.read_ast Mli sourcefile 
+  Binary_ast.read_ast Mli fname 
   |> print_if ppf Clflags.dump_parsetree Printast.interface
   |> print_if ppf Clflags.dump_source Pprintast.signature 
-  |> after_parsing_sig ppf sourcefile outputprefix 
+  |> after_parsing_sig ppf  outputprefix 
 
-let after_parsing_impl ppf sourcefile outputprefix ast =
+let after_parsing_impl ppf  outputprefix ast =
   
   if !Js_config.binary_ast then
-    Binary_ast.write_ast ~fname:sourcefile 
+    Binary_ast.write_ast ~sourcefile:!Location.input_name 
       Ml ~output:(outputprefix ^ 
         if !Js_config.is_reason then  Literals.suffix_reast else Literals.suffix_mlast
         )
@@ -108,15 +106,15 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
     begin
 
       if Js_config.get_diagnose () then
-        Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
-      let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
+        Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;      
+      let modulename = Compenv.module_of_filename ppf !Location.input_name outputprefix in
       Lam_compile_env.reset () ;
       let env = Compmisc.initial_env() in
       Env.set_unit_name modulename;
-      try
+      
         let (typedtree, coercion, finalenv, current_signature) =
           ast 
-          |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) sourcefile outputprefix modulename env 
+          |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) !Location.input_name outputprefix modulename env 
           |> print_if ppf Clflags.dump_typedtree
             (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
         in
@@ -134,46 +132,27 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
 #end              
                -> 
               ignore (print_if ppf Clflags.dump_rawlambda Printlambda.lambda lambda);
-              try
                 Lam_compile_main.lambda_as_module
                   finalenv  
-                  sourcefile  outputprefix lambda  with
-              | e -> 
-                (* Save to a file instead so that it will not scare user *)
-                (if Js_config.get_diagnose () then
-                   begin              
-                     let file = "bsc.dump" in
-                     Ext_pervasives.with_file_as_chan file
-                       (fun ch -> output_string ch @@             
-                         Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
-                     Ext_log.err __LOC__
-                       "Compilation fatal error, stacktrace saved into %s when compiling %s"
-                       file sourcefile;
-                   end;            
-                 raise e)             
+                  outputprefix lambda
             );
 
         end;
         Stypes.dump (Some (outputprefix ^ ".annot"));
-      with x ->
-        Stypes.dump (Some (outputprefix ^ ".annot"));
-        raise x
     end
 let implementation ppf sourcefile outputprefix =
   Compmisc.init_path false;
-  Js_config.set_current_file sourcefile ; 
   Ocaml_parse.parse_implementation ppf sourcefile
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
-  |> after_parsing_impl ppf sourcefile outputprefix 
+  |> after_parsing_impl ppf outputprefix 
 
-let implementation_mlast ppf sourcefile outputprefix = 
+let implementation_mlast ppf fname outputprefix = 
   Compmisc.init_path false;
-  Js_config.set_current_file sourcefile ; 
-  Binary_ast.read_ast Ml sourcefile
+  Binary_ast.read_ast Ml fname
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
-  |> after_parsing_impl ppf sourcefile outputprefix 
+  |> after_parsing_impl ppf  outputprefix 
 
 
 
@@ -209,5 +188,5 @@ let implementation_map ppf sourcefile outputprefix =
   ml_ast
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
-  |> after_parsing_impl ppf sourcefile outputprefix 
+  |> after_parsing_impl ppf outputprefix 
 

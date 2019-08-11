@@ -45,7 +45,6 @@ val compile :
 
 val lambda_as_module :  
   Env.t ->
-  string -> 
   string ->
   Lambda.lambda -> 
   unit

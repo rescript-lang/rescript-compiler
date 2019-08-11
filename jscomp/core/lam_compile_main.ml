@@ -121,7 +121,7 @@ let _d  = fun env s lam ->
 #if undefined BS_RELEASE_BUILD then 
     Lam_util.dump env s lam ;
     Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
-    ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
+    ignore @@ Lam_check.check !Location.input_name lam;
     Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
 #end
     lam
@@ -198,7 +198,7 @@ let compile
     |> (fun lam -> 
        let () = 
         Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
-      Lam_check.check (Js_config.get_current_file ()) lam
+      Lam_check.check !Location.input_name lam
     ) 
 #end    
   in
@@ -293,7 +293,6 @@ let (//) = Filename.concat
 
 let lambda_as_module 
     finalenv 
-    (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   let lambda_output = 
