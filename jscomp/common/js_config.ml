@@ -71,19 +71,14 @@ let no_builtin_ppx_mli = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
+
 let debug_file = ref ""
 
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
 
-let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
 
 let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
+  !debug_file <> "" &&  !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 

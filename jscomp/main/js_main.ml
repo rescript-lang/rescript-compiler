@@ -22,21 +22,26 @@ let setup_reason_context () =
   Lazy.force Super_main.setup;
   Lazy.force Reason_outcome_printer_main.setup
 
-let reason_pp name  = 
+let reason_pp ~sourcefile  = 
   setup_reason_context ();
-  Ast_reason_pp.pp name
+  Ast_reason_pp.pp sourcefile
 
 let process_file ppf sourcefile = 
+  (* This is a better default then "", it will be changed later 
+     The {!Location.input_name} relies on that we write the binary ast 
+    properly
+  *)
+  Location.input_name := sourcefile;  
   match Ocaml_parse.check_suffix  sourcefile with 
   | Ml, opref ->
     Js_implementation.implementation ppf sourcefile opref 
   | Re, opref ->     
-    Js_implementation.implementation ppf (reason_pp sourcefile) opref 
+    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref 
   | Mli , opref ->   
     Js_implementation.interface ppf sourcefile opref 
   | Rei, opref ->
     (* FIXME: the [sourcefile] propgation seems to be wrong *)
-    Js_implementation.interface ppf (reason_pp sourcefile) opref 
+    Js_implementation.interface ppf (reason_pp ~sourcefile) opref 
   | Mliast, opref 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Reiast, opref 
@@ -305,7 +310,7 @@ let eval ppf s =
             |> Pparse.apply_rewriters_str ~tool_name:Js_config.tool_name
             |> print_if ppf Clflags.dump_parsetree Printast.implementation
             |> print_if ppf Clflags.dump_source Pprintast.structure
-            |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
+            |> Js_implementation.after_parsing_impl ppf  "Bs_internal_eval" 
           )
   
 
@@ -337,6 +342,9 @@ let _ =
     
   with x -> 
     begin
+#if undefined BS_RELEASE_BUILD then      
+      Printexc.print_backtrace stderr;
+#end
       Location.report_exception ppf x;
       exit 2
     end

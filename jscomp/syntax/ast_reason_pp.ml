@@ -31,7 +31,7 @@ exception Pp_error
 *)
 let pp (sourcefile : string) =
   
-  Location.input_name := sourcefile;
+  
   let tmpfile = Filename.temp_file "ocamlpp" "" in
   let pp = (*TODO: check to avoid double quoting *)
     Ext_filename.maybe_quote 

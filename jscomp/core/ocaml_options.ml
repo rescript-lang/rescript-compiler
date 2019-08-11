@@ -264,13 +264,6 @@ let print_version_string () =
 let print_standard_library () = 
   print_string Bs_conditional_initial.standard_library; print_newline(); exit 0
 
-let print_version_and_library compiler =
-  Printf.printf "The OCaml %s, version " compiler;
-  print_string bs_version_string; print_newline();
-  print_string "Standard library directory: ";
-  print_string Bs_conditional_initial.standard_library; print_newline();
-  exit 0 
-
 let ocaml_options = 
   let set r () = r := true in 
   let unset r () = r := false in 
@@ -309,7 +302,8 @@ let ocaml_options =
   let _strict_formats = set Clflags.strict_formats in 
   let _unsafe = set Clflags.fast in 
   (* let _unsafe_string = set unsafe_string in  *)
-  let _v () = print_version_and_library "compiler" in 
+  (* let _v () = print_version_and_library "compiler" in  *)
+  let _v = print_version_string in 
   let _version = print_version_string in 
   let _vnum = print_version_string in 
   let _w = (Warnings.parse_options false) in

@@ -25,9 +25,9 @@
 
 let setup_env () =
 #if undefined BS_RELEASE_BUILD then
+    Printexc.record_backtrace true;
     (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 
-     | None -> 
-       Js_config.set_debug_file "caml_obj.ml"
+     | None -> ()       
      | Some s -> 
        Js_config.set_debug_file s 
     );

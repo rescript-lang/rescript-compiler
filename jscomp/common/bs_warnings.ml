@@ -43,8 +43,7 @@ let warning_formatter = Format.err_formatter
 
 let print_string_warning (loc : Location.t) x =   
   if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@." 
-      (Js_config.get_current_file ())
+    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
   else 
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 

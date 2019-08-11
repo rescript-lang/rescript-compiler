@@ -46,7 +46,9 @@ let parse_implementation ppf sourcefile =
 
 let parse_implementation_from_string  str = 
   let lb = Lexing.from_string str in
-  Location.init lb "//toplevel//";
+  let fname =  "//toplevel//" in 
+  Location.input_name := fname;
+  Location.init lb fname;
   Ppx_entry.rewrite_implementation (Parse.implementation lb)
 
 
