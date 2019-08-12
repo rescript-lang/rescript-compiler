@@ -1758,6 +1758,7 @@ function main() {
         } catch (e) {
           console.log(e.message);
           console.log(`please run "./scripts/ninja.js config" first`);
+          process.exit(2);
         }
         break;
       case "clean":
@@ -1782,7 +1783,7 @@ function main() {
         break;
       case "docs":
         console.log(`building docs`);
-        require('./doc_gen').main()
+        require("./doc_gen").main();
         break;
       case "help":
         console.log(`supported subcommands:
@@ -1791,7 +1792,7 @@ function main() {
 [exe] docs
 [exe] help
 [exe] clean
-        `)
+        `);
         break;
       default:
         if (process.argv.length === emptyCount) {
