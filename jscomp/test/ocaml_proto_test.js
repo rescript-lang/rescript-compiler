@@ -2914,19 +2914,36 @@ function gen_sig(and_, t, sc) {
                       ]), type_name, type_name));
   };
   var match = t.spec;
-  var tmp;
   switch (match.tag | 0) {
     case 0 : 
+        f(match[0].r_name);
+        break;
     case 1 : 
     case 2 : 
-        tmp = /* tuple */[
-          f(match[0].cv_name),
-          true
-        ];
         break;
     
   }
-  return tmp[1];
+  var match$1 = t.spec;
+  switch (match$1.tag | 0) {
+    case 1 : 
+        f(match$1[0].v_name);
+        break;
+    case 0 : 
+    case 2 : 
+        break;
+    
+  }
+  var match$2 = t.spec;
+  switch (match$2.tag | 0) {
+    case 0 : 
+    case 1 : 
+        break;
+    case 2 : 
+        f(match$2[0].cv_name);
+        break;
+    
+  }
+  return true;
 }
 
 var Codegen_decode = /* module */[
@@ -3432,9 +3449,30 @@ function gen_sig$1(and_, t, sc) {
   var match = t.spec;
   switch (match.tag | 0) {
     case 0 : 
+        f(match[0].r_name);
+        break;
     case 1 : 
     case 2 : 
-        f(match[0].cv_name);
+        break;
+    
+  }
+  var match$1 = t.spec;
+  switch (match$1.tag | 0) {
+    case 1 : 
+        f(match$1[0].v_name);
+        break;
+    case 0 : 
+    case 2 : 
+        break;
+    
+  }
+  var match$2 = t.spec;
+  switch (match$2.tag | 0) {
+    case 0 : 
+    case 1 : 
+        break;
+    case 2 : 
+        f(match$2[0].cv_name);
         break;
     
   }
@@ -5557,19 +5595,36 @@ function gen_sig$3(and_, t, sc) {
                       ]), type_name));
   };
   var match = t.spec;
-  var tmp;
   switch (match.tag | 0) {
     case 0 : 
+        f(match[0].r_name);
+        break;
     case 1 : 
     case 2 : 
-        tmp = /* tuple */[
-          f(match[0].cv_name),
-          true
-        ];
         break;
     
   }
-  return tmp[1];
+  var match$1 = t.spec;
+  switch (match$1.tag | 0) {
+    case 1 : 
+        f(match$1[0].v_name);
+        break;
+    case 0 : 
+    case 2 : 
+        break;
+    
+  }
+  var match$2 = t.spec;
+  switch (match$2.tag | 0) {
+    case 0 : 
+    case 1 : 
+        break;
+    case 2 : 
+        f(match$2[0].cv_name);
+        break;
+    
+  }
+  return true;
 }
 
 var Codegen_encode = /* module */[
