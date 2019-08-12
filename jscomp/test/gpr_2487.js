@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 
 var b = Belt_Array.eq(/* array */[
@@ -11,7 +10,9 @@ var b = Belt_Array.eq(/* array */[
       1,
       2,
       3
-    ], Caml_obj.caml_equal);
+    ], (function (prim, prim$1) {
+        return prim === prim$1;
+      }));
 
 var A = 0;
 

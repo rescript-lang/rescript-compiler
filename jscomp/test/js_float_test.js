@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites_000 = /* tuple */[
   "_NaN <> _NaN",
@@ -39,7 +40,7 @@ var suites_001 = /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       false,
-                      isFinite(Number.POSITIVE_INFINITY)
+                      isFinite(Pervasives.infinity)
                     ]);
           })
       ],
@@ -49,7 +50,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         false,
-                        isFinite(Number.NEGATIVE_INFINITY)
+                        isFinite(Pervasives.neg_infinity)
                       ]);
             })
         ],
