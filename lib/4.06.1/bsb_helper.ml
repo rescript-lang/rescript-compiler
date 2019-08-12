@@ -3304,14 +3304,6 @@ type ts = t array
 
 
 
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
-val has_reason_files : t -> bool
-
-
-
 
 end = struct
 #1 "bsb_db.ml"
@@ -3365,8 +3357,6 @@ type ts = t array
 (** indexed by the group *)
 
 
-let has_reason_files (map  : t ) = 
-  String_map.exists map (fun _ {is_re} -> is_re)  
 
 
 
@@ -3616,6 +3606,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
@@ -3760,6 +3753,8 @@ let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"

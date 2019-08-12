@@ -379,226 +379,6 @@ let print_config oc =
 
 end
 module Config = Config_whole_compiler 
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-
-
-
-val no_warn_unimplemented_external : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-
-
-
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-
-val bs_suffix : bool ref
-val debug : bool ref
-
-val cmi_only  : bool ref
-val force_cmi : bool ref 
-val force_cmj : bool ref
-
-val jsx_version : int ref
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
-
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-
-
-
-let sort_imports = ref true
-let dump_js = ref false
-
-
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-let bs_suffix = ref false 
-
-let debug = ref false
-
-let cmi_only = ref false  
-let force_cmi = ref false
-let force_cmj = ref false
-
-let jsx_version = ref (-1)
-end
 module Arg_helper : sig 
 #1 "arg_helper.mli"
 (**************************************************************************)
@@ -5009,6 +4789,221 @@ let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
 let deprecated ?(def = none) ?(use = none) loc msg =
   prerr_warning loc (Warnings.Deprecated (msg, def, use))
 
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** cross module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** options for builtin ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+
+
+
+val no_warn_unimplemented_external : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+
+
+
+
+
+
+
+val set_debug_file : string -> unit
+
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+
+val bs_suffix : bool ref
+val debug : bool ref
+
+val cmi_only  : bool ref
+val force_cmi : bool ref 
+val force_cmj : bool ref
+
+val jsx_version : int ref
+val refmt : string option ref
+val is_reason : bool ref 
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+(* let get_packages_info () = !packages_info *)
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unimplemented_external = ref false 
+
+let debug_file = ref ""
+
+
+let set_debug_file  f = debug_file := f
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !Location.input_name
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+
+
+
+let sort_imports = ref true
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+let bs_suffix = ref false 
+
+let debug = ref false
+
+let cmi_only = ref false  
+let force_cmi = ref false
+let force_cmj = ref false
+
+let jsx_version = ref (-1)
+
+let refmt = ref None
+
+let is_reason = ref false
 end
 (** Interface as module  *)
 module Asttypes
@@ -14576,8 +14571,7 @@ let warning_formatter = Format.err_formatter
 
 let print_string_warning (loc : Location.t) x =   
   if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@." 
-      (Js_config.get_current_file ())
+    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
   else 
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
@@ -15341,6 +15335,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
@@ -15485,6 +15482,8 @@ let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
@@ -18828,7 +18827,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)    
-let version = "6.1.0-dev.5"
+let version = "6.1.0-dev.6"
 let header = 
    "// Generated by BUCKLESCRIPT, PLEASE EDIT WITH CARE"  
 let package_name = "bs-platform"   
@@ -20323,7 +20322,7 @@ let parse_external_attributes
         if txt = Literals.gentype_import then 
           let bundle = 
               "./" ^ Ext_filename.new_extension
-                (Filename.basename (Js_config.get_current_file ()))  ".gen"
+                (Filename.basename !Location.input_name)  ".gen"
             in 
             attr::attrs, 
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          

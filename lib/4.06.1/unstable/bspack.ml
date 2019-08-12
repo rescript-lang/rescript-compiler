@@ -9942,6 +9942,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
@@ -10086,6 +10089,8 @@ let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
@@ -10754,14 +10759,11 @@ val get_check_div_by_zero : unit -> bool
 
 
 
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
 
 
-val iset_debug_file : string -> unit
+
 val set_debug_file : string -> unit
-val get_debug_file : unit -> string
+
 
 val is_same_file : unit -> bool 
 
@@ -10769,7 +10771,7 @@ val tool_name : string
 
 
 val sort_imports : bool ref 
-val dump_js : bool ref
+
 val syntax_only  : bool ref
 val binary_ast : bool ref
 
@@ -10782,6 +10784,8 @@ val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
+val refmt : string option ref
+val is_reason : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10857,19 +10861,14 @@ let no_builtin_ppx_mli = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
+
 let debug_file = ref ""
 
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
 
-let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
 
 let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
+  !debug_file <> "" &&  !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 
@@ -10880,9 +10879,6 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 
 let sort_imports = ref true
-let dump_js = ref false
-
-
 
 let syntax_only = ref false
 let binary_ast = ref false
@@ -10896,6 +10892,10 @@ let force_cmi = ref false
 let force_cmj = ref false
 
 let jsx_version = ref (-1)
+
+let refmt = ref None
+
+let is_reason = ref false
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
