@@ -53,7 +53,7 @@ let after_parsing_sig ppf  outputprefix ast  =
 
       let tsg = Typemod.type_interface 
 #if OCAML_VERSION =~ ">4.03.0" then
-          sourcefile
+          !Location.input_name
 #end
           initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
