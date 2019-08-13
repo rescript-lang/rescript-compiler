@@ -285,8 +285,8 @@ and compile_recursive_let ~all_bindings
     Js_output.output_of_expression 
       (Declare (Alias, id))
        result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
-  | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
-    when (* XXX *) false && Ext_list.for_all ls (fun x ->
+  | Lprim {primitive = Pmakeblock (0, (* XXX *) Blk_record fields, _) ; args =  ls}
+    when Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
           Ident.same pid id  ||
@@ -304,8 +304,9 @@ and compile_recursive_let ~all_bindings
       (Ext_list.mapi ls (fun i x ->
            match x with
            | Lvar lid
-             -> S.exp
-                  (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
+             ->
+             S.exp
+                  (E.assign (E.dot (E.var id) fields.(i)) (E.var lid))
            | _ -> assert false))
     ), []
 
