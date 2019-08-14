@@ -114,7 +114,7 @@ let after_parsing_impl ppf  outputprefix ast =
     begin
       if Js_config.get_diagnose () then
         Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;      
-      let modulename = Compenv.module_of_filename ppf !Location.input_name outputprefix in
+      let modulename = Ext_filename.module_name outputprefix in
       Lam_compile_env.reset () ;
       let env = Compmisc.initial_env() in
       Env.set_unit_name modulename;
