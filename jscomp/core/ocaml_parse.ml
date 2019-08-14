@@ -42,46 +42,4 @@ let parse_implementation ppf sourcefile =
 #end
       )
 
-type valid_input = 
-  | Ml 
-  | Mli
-  | Re
-  | Rei
-  | Mlast    
-  | Mliast 
-  | Reast
-  | Reiast
-  | Mlmap
-  | Cmi
 
-(** This is per-file based, 
-    when [ocamlc] [-c -o another_dir/xx.cmi] 
-    it will return (another_dir/xx)
-*)    
-
-let check_suffix  name  = 
-  let ext = Ext_filename.get_extension_maybe name in 
-  let input = 
-    if ext = Literals.suffix_ml  then 
-      Ml
-    else if  ext = Literals.suffix_re then
-      Re
-    else if ext = !Config.interface_suffix then 
-      Mli  
-    else if  ext = Literals.suffix_rei  then
-      Rei
-    else if ext =  Literals.suffix_mlast then 
-      Mlast 
-    else if ext = Literals.suffix_mliast then 
-      Mliast
-    else if ext = Literals.suffix_reast then   
-      Reast 
-    else if ext = Literals.suffix_reiast then   
-      Reiast
-    else if ext =  Literals.suffix_mlmap  then 
-      Mlmap 
-    else if ext =  Literals.suffix_cmi then 
-      Cmi
-    else 
-      raise(Arg.Bad("don't know what to do with " ^ name)) in 
-  input, Compenv.output_prefix name

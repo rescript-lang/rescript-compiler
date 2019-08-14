@@ -33,15 +33,4 @@ val parse_implementation :
   Parsetree.structure
 
     
-type valid_input = 
-  | Ml
-  | Mli
-  | Re
-  | Rei
-  | Mlast    
-  | Mliast 
-  | Reast 
-  | Reiast
-  | Mlmap
-  | Cmi
-val check_suffix :  string -> valid_input * string
+
