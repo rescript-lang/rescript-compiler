@@ -47837,8 +47837,11 @@ register_error_of_exn((function (param) {
 function get_location(ti) {
   switch (ti.tag | 0) {
     case 0 : 
+        return ti[0].pat_loc;
     case 1 : 
+        return ti[0].exp_loc;
     case 2 : 
+        return ti[0].cl_loc;
     case 3 : 
         return ti[0].mod_loc;
     case 4 : 

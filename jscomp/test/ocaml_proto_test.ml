@@ -3745,26 +3745,12 @@ let gen_sig ?and_ t sc =
     F.line sc @@ sp "(** [decode_%s decoder] decodes a [%s] value from [decoder] *)" type_name type_name; 
   in 
 
-  (* FIXME: this pattern match should compile to 3 cases
    let (), has_encoded = match t with 
     | {T.spec = T.Record {T.r_name; _ } } -> f r_name, true
     | {T.spec = T.Variant {T.v_name; _ }} -> f v_name, true 
     | {T.spec = T.Const_variant {T.cv_name; _ }} -> f cv_name, true
   in
-  has_encoded *)
-  let () = match t with 
-  | {T.spec = T.Record {T.r_name; _ } }-> f r_name
-  | _ -> ()
-  in
-  let () = match t with 
-    | {T.spec = T.Variant v } -> f v.T.v_name 
-    | _ -> ()
-  in
-  let () = match t with 
-    | {T.spec = T.Const_variant {T.cv_name; _ } } -> f cv_name
-    | _ -> ()
-  in
-  true
+  has_encoded
 
 
 let ocamldoc_title = "Protobuf Decoding"
@@ -4002,27 +3988,11 @@ let gen_sig ?and_ t sc =
     F.line sc @@ sp "val pp_%s : Format.formatter -> %s -> unit " type_name type_name;
     F.line sc @@ sp "(** [pp_%s v] formats v] *)" type_name;
   in 
-  (* FIXME: this pattern match should compile to 3 cases
-   begin
+  begin
     match t with 
     | {T.spec = T.Record {T.r_name; _ } } -> f r_name
     | {T.spec = T.Variant v } -> f v.T.v_name
     | {T.spec = T.Const_variant {T.cv_name; _ ; } } -> f cv_name
-  end; *)
-  begin
-    match t with 
-    | {T.spec = T.Record {T.r_name; _ } } -> f r_name
-    | _ -> ()
-  end;
-  begin
-    match t with 
-    | {T.spec = T.Variant v } -> f v.T.v_name
-    | _ -> ()
-  end;
-  begin
-    match t with 
-    | {T.spec = T.Const_variant {T.cv_name; _ ; } } -> f cv_name
-    | _ -> ()
   end;
   true
 
@@ -5491,26 +5461,12 @@ let gen_sig ?and_ t sc =
     F.line sc @@ sp "val encode_%s : %s -> Pbrt.Encoder.t -> unit" type_name type_name;
     F.line sc @@ sp "(** [encode_%s v encoder] encodes [v] with the given [encoder] *)" type_name; 
   in 
-  (* FIXME: this pattern match should compile to 3 cases
-   let (), has_encoded = match t with 
+  let (), has_encoded = match t with 
     | {T.spec = T.Record {T.r_name; _ } }-> f r_name, true
     | {T.spec = T.Variant v } -> f v.T.v_name, true 
     | {T.spec = T.Const_variant {T.cv_name; _ } } -> f cv_name, true
   in
-  has_encoded *)
-  let () = match t with 
-    | {T.spec = T.Record {T.r_name; _ } }-> f r_name
-    | _ -> ()
-  in
-  let () = match t with 
-    | {T.spec = T.Variant v } -> f v.T.v_name
-    | _ -> ()
-  in
-  let () = match t with 
-    | {T.spec = T.Const_variant {T.cv_name; _ } } -> f cv_name
-    | _ -> ()
-  in
-  true
+  has_encoded
 
 let ocamldoc_title = "Protobuf Toding"
 

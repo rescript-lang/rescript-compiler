@@ -267,12 +267,12 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
    | Pccall {prim_name = n1; prim_native_name = nn1; _} 
     -> n0 = n1 && nn0 = nn1 
    | _ -> false )    
-  | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
-  | Psetfield(i0, _dbg_info0) -> (match rhs with Psetfield(i1, _dbg_info1) ->  i0 = i1  | _ -> false)
+  | Pfield (n0, dbg_info0) ->  (match rhs with Pfield (n1, dbg_info1) ->  n0 = n1 && (* XXX *) dbg_info0 = dbg_info1 | _ -> false )    
+  | Psetfield(i0, dbg_info0) -> (match rhs with Psetfield(i1, dbg_info1) ->  i0 = i1 && (* XXX *) dbg_info0 = dbg_info1 | _ -> false)
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
   | Pmakeblock (i, _tag_info, mutable_flag) -> (match rhs with Pmakeblock(i1,_,mutable_flag1) ->  i = i1 && mutable_flag = mutable_flag1  | _ -> false)
-  | Pfloatfield (i0,_dbg_info) -> (match rhs with Pfloatfield (i1,_) -> i0 = i1   | _ -> false)
-  | Psetfloatfield (i0,_dbg_info) ->  (match rhs with Psetfloatfield(i1,_) -> i0 = i1  | _ -> false)
+  | Pfloatfield (i0, dbg_info0) -> (match rhs with Pfloatfield (i1, dbg_info1) -> i0 = i1 && (* XXX *) dbg_info0 = dbg_info1 | _ -> false)
+  | Psetfloatfield (i0, dbg_info0) ->  (match rhs with Psetfloatfield(i1, dbg_info1) -> i0 = i1 && (* XXX *) dbg_info0 = dbg_info1 | _ -> false)
   | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
   | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
