@@ -76,17 +76,12 @@ let process_file ppf sourcefile =
       raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
-  | Ml ->
-    Js_implementation.implementation ppf sourcefile opref 
   | Re ->     
     setup_reason_context ();
-    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref 
-  | Mli  ->   
-    Js_implementation.interface ppf sourcefile opref 
+    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref   
   | Rei ->
+    setup_reason_context ();
     Js_implementation.interface ppf (reason_pp ~sourcefile) opref 
-  | Mliast 
-    -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Reiast 
     -> 
     setup_reason_context ();
@@ -95,6 +90,12 @@ let process_file ppf sourcefile =
     -> 
     setup_reason_context ();
     Js_implementation.implementation_mlast ppf sourcefile opref
+  | Ml ->
+    Js_implementation.implementation ppf sourcefile opref 
+  | Mli  ->   
+    Js_implementation.interface ppf sourcefile opref   
+  | Mliast 
+    -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Mlast 
     -> Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlmap 
