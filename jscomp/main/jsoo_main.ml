@@ -56,15 +56,9 @@ end
      *    type: "error" // or "warning" or "info"
      *  }
 *)
-let () =
-  Clflags.compile_only := true;
-  Clflags.bs_only := true;
-  Oprint.out_ident := Outcome_printer_ns.out_ident;
-  Clflags.assume_no_mli := Clflags.Mli_non_exists;
+let () =  
   Bs_conditional_initial.setup_env ();
-  Clflags.dont_write_files := true;
-  Clflags.unsafe_string := false;
-  Clflags.record_event_when_debug := false
+  Clflags.binary_annotations := false
 
 let error_of_exn e =   
 #if OCAML_VERSION =~ ">4.03.0" then

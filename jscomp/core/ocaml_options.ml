@@ -260,9 +260,15 @@ let print_version_string () =
   print_newline (); 
   exit 0 
 
-  
+let standard_library =
+#if undefined BS_RELEASE_BUILD then
+      Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+#else
+      Config.standard_library
+#end  
+
 let print_standard_library () = 
-  print_string Bs_conditional_initial.standard_library; print_newline(); exit 0
+  print_string standard_library; print_newline(); exit 0
 
 let ocaml_options = 
   let set r () = r := true in 
