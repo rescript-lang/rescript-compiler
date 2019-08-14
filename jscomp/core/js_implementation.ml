@@ -112,40 +112,37 @@ let after_parsing_impl ppf  outputprefix ast =
     Warnings.check_fatal ()
   else 
     begin
-
       if Js_config.get_diagnose () then
         Format.fprintf Format.err_formatter "Building %s@." !Location.input_name;      
       let modulename = Compenv.module_of_filename ppf !Location.input_name outputprefix in
       Lam_compile_env.reset () ;
       let env = Compmisc.initial_env() in
       Env.set_unit_name modulename;
-      
-        let (typedtree, coercion, finalenv, current_signature) =
-          ast 
-          |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) !Location.input_name outputprefix modulename env 
-          |> print_if ppf Clflags.dump_typedtree
-            (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
-        in
-        if !Clflags.print_types || !Js_config.cmi_only then begin
-          Warnings.check_fatal ();
-        end else begin
-          (typedtree, coercion)
-          |> Translmod.transl_implementation modulename
 
-          |> (fun lambda -> 
-              print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
-              |>
-              Lam_compile_main.lambda_as_module
-                finalenv  
-                outputprefix 
-            );
-
-        end;
+      let (typedtree, coercion, finalenv, current_signature) =
+        ast 
+        |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) !Location.input_name outputprefix modulename env 
+        |> print_if ppf Clflags.dump_typedtree
+          (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
+      in
+      if !Clflags.print_types || !Js_config.cmi_only then begin
+        Warnings.check_fatal ();
+      end else begin
+        (typedtree, coercion)
+        |> Translmod.transl_implementation modulename
+        |> (fun lambda -> 
+            print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
+            |>
+            Lam_compile_main.lambda_as_module
+              finalenv  
+              outputprefix 
+          );
+      end;
         Stypes.dump (Some (outputprefix ^ ".annot"));
     end
-let implementation ppf sourcefile outputprefix =
+let implementation ppf fname outputprefix =
   Compmisc.init_path false;
-  Ocaml_parse.parse_implementation ppf sourcefile
+  Ocaml_parse.parse_implementation ppf fname
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 
