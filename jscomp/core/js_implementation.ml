@@ -92,6 +92,14 @@ let interface_mliast ppf fname outputprefix  =
   |> print_if ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
+
+let get_lambda = fun   
+#if OCAML_VERSION =~ ">4.03.0" then
+              {code = lambda}
+#else
+              lambda
+#end              -> lambda 
+
 let after_parsing_impl ppf  outputprefix ast =
   
   if !Js_config.binary_ast then
@@ -124,17 +132,12 @@ let after_parsing_impl ppf  outputprefix ast =
           (typedtree, coercion)
           |> Translmod.transl_implementation modulename
 
-          |> (fun 
-#if OCAML_VERSION =~ ">4.03.0" then
-              {code = lambda}
-#else
-              lambda
-#end              
-               -> 
-              ignore (print_if ppf Clflags.dump_rawlambda Printlambda.lambda lambda);
-                Lam_compile_main.lambda_as_module
-                  finalenv  
-                  outputprefix lambda
+          |> (fun lambda -> 
+              print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
+              |>
+              Lam_compile_main.lambda_as_module
+                finalenv  
+                outputprefix 
             );
 
         end;
