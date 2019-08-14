@@ -20517,7 +20517,7 @@ module Bs_conditional_initial : sig
 *)
 val setup_env : unit -> unit
 
-val standard_library : string 
+
 end = struct
 #1 "bs_conditional_initial.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20546,14 +20546,25 @@ end = struct
 
 
 let setup_env () =
+  Clflags.compile_only := true;
+  Clflags.bs_only := true;  
+  Clflags.no_implicit_current_dir := true; 
+  (* default true 
+     otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
+  *)
+  Clflags.assume_no_mli := Clflags.Mli_non_exists;
+  Clflags.unsafe_string := false;
+  Clflags.debug := true;
+  Clflags.record_event_when_debug := false;
+  Clflags.binary_annotations := true; 
+  Clflags.transparent_modules := true;
+  (* Turn on [-no-alias-deps] by default -- double check *)
+  Oprint.out_ident := Outcome_printer_ns.out_ident;
+
 
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
   
-
-let standard_library =
-
-  Config.standard_library
 
 
 end

@@ -291,22 +291,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 
 
 let _ = 
-  (* Default configuration: sync up with 
-    {!Jsoo_main}  *)
-  Clflags.compile_only := true;
-  Clflags.bs_only := true;  
-  Clflags.no_implicit_current_dir := true; 
-  (* default true 
-    otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
-  *)
-  Clflags.assume_no_mli := Clflags.Mli_non_exists;
-  Clflags.unsafe_string := false;
-  Clflags.debug := true;
-  Clflags.record_event_when_debug := false;
-  Clflags.binary_annotations := true; 
-  Clflags.transparent_modules := true;
-  (* Turn on [-no-alias-deps] by default -- double check *)
-  Oprint.out_ident := Outcome_printer_ns.out_ident;
+
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
