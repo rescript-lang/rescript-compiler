@@ -79,6 +79,7 @@ let process_file ppf sourcefile =
   | Ml ->
     Js_implementation.implementation ppf sourcefile opref 
   | Re ->     
+    setup_reason_context ();
     Js_implementation.implementation ppf (reason_pp ~sourcefile) opref 
   | Mli  ->   
     Js_implementation.interface ppf sourcefile opref 
