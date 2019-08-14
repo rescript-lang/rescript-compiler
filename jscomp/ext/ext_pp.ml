@@ -97,7 +97,8 @@ let group t i action =
   else
     let old = t.indent_level in
     t.indent_level <- t.indent_level + i;
-    Ext_pervasives.finally () (fun _ -> t.indent_level <- old) action
+    Ext_pervasives.finally ~clean:(fun _ -> t.indent_level <- old)
+    ()  action
 
 let vgroup = group
 

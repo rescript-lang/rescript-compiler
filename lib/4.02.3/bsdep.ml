@@ -23231,7 +23231,10 @@ module Ext_pervasives : sig
 
 external reraise: exn -> 'a = "%reraise"
 
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+val finally : 
+  'a ->
+  clean:('a -> 'c) -> 
+  ('a -> 'b) -> 'b
 
 val try_it : (unit -> 'a) ->  unit 
 
@@ -23298,7 +23301,7 @@ end = struct
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v action f   = 
+let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -23309,10 +23312,10 @@ let try_it f  =
   try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
+  finally (open_out_bin filename) ~clean:close_out f 
 
 let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
+  finally (open_out_bin filename) ~clean:close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in

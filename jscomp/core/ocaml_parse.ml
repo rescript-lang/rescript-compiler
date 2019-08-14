@@ -30,8 +30,6 @@ let parse_interface ppf sourcefile =
   Ppx_entry.rewrite_signature (Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile)
 
 
-let lazy_parse_interface ppf sourcefile =
-  lazy (parse_interface ppf sourcefile)
 
 let parse_implementation ppf sourcefile = 
   Ppx_entry.rewrite_implementation
@@ -43,17 +41,6 @@ let parse_implementation ppf sourcefile =
 
 #end
       )
-
-let parse_implementation_from_string  str = 
-  let lb = Lexing.from_string str in
-  let fname =  "//toplevel//" in 
-  Location.input_name := fname;
-  Location.init lb fname;
-  Ppx_entry.rewrite_implementation (Parse.implementation lb)
-
-
-let lazy_parse_implementation ppf sourcefile =
-  lazy (parse_implementation ppf sourcefile)
 
 type valid_input = 
   | Ml 
