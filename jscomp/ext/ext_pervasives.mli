@@ -34,7 +34,10 @@
 
 external reraise: exn -> 'a = "%reraise"
 
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+val finally : 
+  'a ->
+  clean:('a -> 'c) -> 
+  ('a -> 'b) -> 'b
 
 val try_it : (unit -> 'a) ->  unit 
 

@@ -46,7 +46,7 @@ let from_cmj (files : string list) (output_file : string) =
     Ext_pp.string f "\""
   in  
   let v = open_out_bin output_file in
-  Ext_pervasives.finally v close_out (fun v ->   
+  Ext_pervasives.finally v ~clean:close_out (fun v ->   
       let f = Ext_pp.from_channel v in  
       let aux file =                 
         let str = Ext_io.load_file file in
@@ -83,7 +83,7 @@ let from_cmi (files : string list) (output_file : string) =
     Ext_pp.string f "\""
   in  
   let v = open_out_bin output_file in
-  Ext_pervasives.finally v close_out (fun v ->   
+  Ext_pervasives.finally v ~clean:close_out (fun v ->   
       let f = Ext_pp.from_channel v in  
       let aux file = 
         let cmi = Cmi_format.read_cmi file in 

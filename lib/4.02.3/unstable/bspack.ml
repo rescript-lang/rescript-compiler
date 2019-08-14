@@ -4705,7 +4705,10 @@ module Ext_pervasives : sig
 
 external reraise: exn -> 'a = "%reraise"
 
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+val finally : 
+  'a ->
+  clean:('a -> 'c) -> 
+  ('a -> 'b) -> 'b
 
 val try_it : (unit -> 'a) ->  unit 
 
@@ -4772,7 +4775,7 @@ end = struct
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v action f   = 
+let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -4783,10 +4786,10 @@ let try_it f  =
   try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
+  finally (open_out_bin filename) ~clean:close_out f 
 
 let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
+  finally (open_out_bin filename) ~clean:close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
@@ -9985,7 +9988,7 @@ end = struct
 
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
+  Ext_pervasives.finally (open_in_bin f) ~clean:close_in begin fun ic ->   
     let n = in_channel_length ic in
     let s = Bytes.create n in
     really_input ic s 0 n;
@@ -10002,11 +10005,14 @@ let  rev_lines_of_chann chan =
 
 
 let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in rev_lines_of_chann
-  
+  Ext_pervasives.finally 
+    ~clean:close_in 
+    (open_in_bin file) rev_lines_of_chann
+
 
 let write_file f content = 
-  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
+  Ext_pervasives.finally ~clean:close_out 
+    (open_out_bin f)  begin fun oc ->   
     output_string oc content
   end
 

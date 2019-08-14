@@ -32,7 +32,7 @@ exception Pp_error
 let pp (sourcefile : string) =
   
   
-  let tmpfile = Filename.temp_file "ocamlpp" "" in
+  let tmpfile = Filename.temp_file "bspp" "" in
   let pp = (*TODO: check to avoid double quoting *)
     Ext_filename.maybe_quote 
       (match !Js_config.refmt with 
