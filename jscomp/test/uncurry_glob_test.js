@@ -5,8 +5,10 @@ var Caml_utils = require("../../lib/js/caml_utils.js");
 var v = Caml_utils.repeat(100, "x");
 
 function M(U) {
-  var v = U[/* f */0](100, "x");
-  return /* module */[/* v */v];
+  var v = U.f(100, "x");
+  return /* module */{
+          v: v
+        };
 }
 
 function f() {

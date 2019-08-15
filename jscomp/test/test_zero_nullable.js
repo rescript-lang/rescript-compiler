@@ -97,19 +97,19 @@ function f10(x) {
 
 var f11 = false;
 
-var Test_null = /* module */[
-  /* f1 */f1,
-  /* f2 */f2,
-  /* f5 */f5,
-  /* f4 */f4,
-  /* f6 */f6,
-  /* f7 */f7,
-  /* f8 */f8,
-  /* u */u,
-  /* f9 */f9,
-  /* f10 */f10,
-  /* f11 */f11
-];
+var Test_null = /* module */{
+  f1: f1,
+  f2: f2,
+  f5: f5,
+  f4: f4,
+  f6: f6,
+  f7: f7,
+  f8: f8,
+  u: u,
+  f9: f9,
+  f10: f10,
+  f11: f11
+};
 
 function f1$1(x) {
   if (x !== undefined) {
@@ -182,19 +182,19 @@ function f10$1(x) {
 
 var f11$1 = false;
 
-var Test_def = /* module */[
-  /* f1 */f1$1,
-  /* f2 */f2$1,
-  /* f5 */f5$1,
-  /* f4 */f4$1,
-  /* f6 */f6$1,
-  /* f7 */f7$1,
-  /* f8 */f8$1,
-  /* u */u$1,
-  /* f9 */f9$1,
-  /* f10 */f10$1,
-  /* f11 */f11$1
-];
+var Test_def = /* module */{
+  f1: f1$1,
+  f2: f2$1,
+  f5: f5$1,
+  f4: f4$1,
+  f6: f6$1,
+  f7: f7$1,
+  f8: f8$1,
+  u: u$1,
+  f9: f9$1,
+  f10: f10$1,
+  f11: f11$1
+};
 
 function f1$2(x) {
   if (x == null) {
@@ -265,19 +265,19 @@ function f10$2(x) {
 
 var f11$2 = false;
 
-var Test_null_def = /* module */[
-  /* f1 */f1$2,
-  /* f2 */f2$2,
-  /* f5 */f5$2,
-  /* f4 */f4$2,
-  /* f6 */f6$2,
-  /* f7 */f7$2,
-  /* f8 */f8$2,
-  /* u */u$2,
-  /* f9 */f9$2,
-  /* f10 */f10$2,
-  /* f11 */f11$2
-];
+var Test_null_def = /* module */{
+  f1: f1$2,
+  f2: f2$2,
+  f5: f5$2,
+  f4: f4$2,
+  f6: f6$2,
+  f7: f7$2,
+  f8: f8$2,
+  u: u$2,
+  f9: f9$2,
+  f10: f10$2,
+  f11: f11$2
+};
 
 eq("File \"test_zero_nullable.ml\", line 227, characters 7-14", f1$2(0), 1);
 

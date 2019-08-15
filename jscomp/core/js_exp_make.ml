@@ -202,7 +202,18 @@ let make_block ?comment tag tag_info es mutable_flag : t =
       expression_desc = Object property_map;
       comment 
     }
-  | _ -> make_block ?comment tag tag_info es mutable_flag 
+  | Blk_module Some(des) ->
+    let des = Array.of_list des in
+    let property_map = List.mapi (fun i e -> (des.(i), e)) es in
+    {
+      expression_desc = Object property_map;
+      comment 
+    }
+  (* | Blk_na ->
+    let comment = Some "block???" in
+    make_block ?comment tag tag_info es mutable_flag *)
+  | _ ->
+    make_block ?comment tag tag_info es mutable_flag 
   
   
 

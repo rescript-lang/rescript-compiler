@@ -16,9 +16,11 @@ function $$return(param) {
 function Make(U) {
   var h = function (x, x$1) {
     console.log(f(x$1, x$1));
-    return Curry._2(U[/* say */0], x$1, x$1);
+    return Curry._2(U.say, x$1, x$1);
   };
-  return /* module */[/* h */h];
+  return /* module */{
+          h: h
+        };
 }
 
 exports.v = v;

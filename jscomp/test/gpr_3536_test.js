@@ -12,7 +12,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var X = /* module */[];
+var X = /* module */{ };
 
 function xx(obj, a0, a1, a2, a3, a4, a5) {
   return (Curry._2(a4, Curry._2(a2, Curry._2(a0, obj, a1), a3), a5) - 1 | 0) - 3 | 0;

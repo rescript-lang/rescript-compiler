@@ -6,17 +6,17 @@ var v = /* record */[/* contents */32];
 
 v[0] = 0;
 
-var N = /* module */[
-  /* a */3,
-  /* v */v
-];
+var N = /* module */{
+  a: 3,
+  v: v
+};
 
 var v$1 = /* record */[/* contents */32];
 
-var NN = /* module */[
-  /* a */3,
-  /* v */v$1
-];
+var NN = /* module */{
+  a: 3,
+  v: v$1
+};
 
 var init = $$Array.init;
 

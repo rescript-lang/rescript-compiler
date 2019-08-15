@@ -36,7 +36,9 @@ var s = /* module */[
   $$String.compare
 ];
 
-var N = /* module */[/* s */s];
+var N = /* module */{
+  s: s
+};
 
 function v(x) {
   return x.length;

@@ -34,20 +34,18 @@ var v1 = [
   2
 ];
 
-var N = /* module */[
-  /* a */0,
-  /* b */1
-];
+var N = /* module */{
+  a: 0,
+  b: 1
+};
 
-function N0_002(prim) {
-  return prim;
-}
-
-var N0 = /* module */[
-  /* a */0,
-  /* b */1,
-  N0_002
-];
+var N0 = /* module */{
+  a: 0,
+  b: 1,
+  "%identity": (function (prim) {
+      return prim;
+    })
+};
 
 console.log(" hei " + (String(v) + " "));
 
