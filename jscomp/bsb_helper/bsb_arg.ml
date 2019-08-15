@@ -111,17 +111,19 @@ let parse_exn  (speclist : t) anonfun errmsg =
             incr current;
         | Int f when !current + 1 < l ->
             let arg = argv.(!current + 1) in
-            begin try f (int_of_string arg)
-            with Failure "int_of_string" ->
-                   raise (Stop (Wrong (s, arg, "an integer")))
+            begin match int_of_string arg with 
+              | i -> f i 
+              | exception _ 
+                ->
+                raise (Stop (Wrong (s, arg, "an integer")))
             end;
             incr current;
         | Set_int r when !current + 1 < l ->
             let arg = argv.(!current + 1) in
-            begin try r := (int_of_string arg)
-            with Failure "int_of_string" ->
-                   raise (Stop (Wrong (s, arg, "an integer")))
-            end;
+            r := (try int_of_string arg
+                  with _ ->
+                    raise (Stop (Wrong (s, arg, "an integer")))
+                 );
             incr current;
         | _ -> raise (Stop (Missing s))
         in
