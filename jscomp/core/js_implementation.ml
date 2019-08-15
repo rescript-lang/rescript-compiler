@@ -78,9 +78,13 @@ let after_parsing_sig ppf  outputprefix ast  =
           initial_env sg ;
       end
     end
-let interface ppf sourcefile outputprefix =
+
+
+
+let interface ppf fname outputprefix =
   Compmisc.init_path false;
-  Ocaml_parse.parse_interface ppf sourcefile
+  Pparse.parse_interface ~tool_name:Js_config.tool_name ppf fname
+  |> Ppx_entry.rewrite_signature
   |> print_if ppf Clflags.dump_parsetree Printast.interface
   |> print_if ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
@@ -142,7 +146,8 @@ let after_parsing_impl ppf  outputprefix ast =
     end
 let implementation ppf fname outputprefix =
   Compmisc.init_path false;
-  Ocaml_parse.parse_implementation ppf fname
+  Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf fname
+  |> Ppx_entry.rewrite_implementation
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 

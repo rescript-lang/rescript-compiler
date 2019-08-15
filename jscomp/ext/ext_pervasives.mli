@@ -43,15 +43,14 @@ val try_it : (unit -> 'a) ->  unit
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
 
-val is_pos_pow : Int32.t -> int
 
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
 
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
 
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+
 
 
 

@@ -276,7 +276,7 @@ let from_string s : t =
     if Ext_string.starts_with s bs_external then
       Marshal.from_string s bs_external_length
     else
-      Ext_pervasives.failwithf
+      Ext_fmt.failwithf
         ~loc:__LOC__
         "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
   else Ffi_normal

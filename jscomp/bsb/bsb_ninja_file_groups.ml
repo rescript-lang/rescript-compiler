@@ -37,7 +37,7 @@ let handle_generators oc
   Ext_list.iter group.generators (fun {output; input; command} -> 
       (*TODO: add a loc for better error message *)
       match String_map.find_opt custom_rules command with 
-      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | None -> Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
       | Some rule -> 
         Bsb_ninja_targets.output_build oc 
           ~outputs:(Ext_list.map  output  map_to_source_dir)

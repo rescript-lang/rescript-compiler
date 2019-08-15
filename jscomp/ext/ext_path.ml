@@ -313,7 +313,7 @@ let rec find_root_filename ~cwd filename   =
     if String.length cwd' < String.length cwd then  
       find_root_filename ~cwd:cwd'  filename 
     else 
-      Ext_pervasives.failwithf 
+      Ext_fmt.failwithf 
         ~loc:__LOC__
         "%s not found from %s" filename cwd
 

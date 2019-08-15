@@ -35,14 +35,14 @@ let to_bytes b = Bytes.sub b.buffer 0 b.position
 
 let sub b ofs len =
   if ofs < 0 || len < 0 || ofs > b.position - len
-  then invalid_arg "Buffer.sub"
+  then invalid_arg "Ext_buffer.sub"
   else Bytes.sub_string b.buffer ofs len
 
 
 let blit src srcoff dst dstoff len =
   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
-  then invalid_arg "Buffer.blit"
+  then invalid_arg "Ext_buffer.blit"
   else
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len
 
@@ -63,7 +63,7 @@ let resize b more =
   if !new_len > Sys.max_string_length then begin
     if b.position + more <= Sys.max_string_length
     then new_len := Sys.max_string_length
-    else failwith "Buffer.add: cannot grow buffer"
+    else failwith "Ext_buffer.add: cannot grow buffer"
   end;
 #end  
   let new_buffer = Bytes.create !new_len in
@@ -81,7 +81,7 @@ let add_char b c =
 
 let add_substring b s offset len =
   if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Buffer.add_substring/add_subbytes";
+  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Bytes.blit_string s offset b.buffer b.position len;
@@ -133,7 +133,7 @@ let add_channel b ic len =
     || len > Sys.max_string_length 
 #end
     then   (* PR#5004 *)
-    invalid_arg "Buffer.add_channel";
+    invalid_arg "Ext_buffer.add_channel";
   if b.position + len > b.length then resize b len;
   really_input ic b.buffer b.position len;
   b.position <- b.position + len

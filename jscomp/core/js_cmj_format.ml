@@ -88,7 +88,7 @@ let digest_length = 16 (*16 chars *)
 let verify_magic_in_beg ic =
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
-    Ext_pervasives.failwithf ~loc:__LOC__ 
+    Ext_fmt.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
 
@@ -116,7 +116,7 @@ let from_string s : t =
   if magic_number = cmj_magic_number then 
     Marshal.from_string s  (digest_length + cmj_magic_number_length)
   else 
-    Ext_pervasives.failwithf ~loc:__LOC__ 
+    Ext_fmt.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 

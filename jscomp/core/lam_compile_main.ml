@@ -213,7 +213,7 @@ let compile
     if Js_config.is_same_file () then
       let f =
         Ext_filename.new_extension !Location.input_name  ".lambda" in
-      Ext_pervasives.with_file_as_pp f begin fun fmt ->
+      Ext_fmt.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
           (Lam_group.pp_group env) fmt (coerced_input.groups) 
       end;

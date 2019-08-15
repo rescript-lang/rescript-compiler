@@ -102,9 +102,9 @@ let is_valid_npm_package_name (s : string) =
 
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
-  let buf = Buffer.create len in 
+  let buf = Ext_buffer.create len in 
   let add capital ch = 
-    Buffer.add_char buf 
+    Ext_buffer.add_char buf 
       (if capital then 
          (Ext_char.uppercase_ascii ch)
        else ch) in    
@@ -125,4 +125,4 @@ let namespace_of_package_name (s : string) : string =
       | _ -> aux capital (off+1) len
   in 
   aux true 0 len ;
-  Buffer.contents buf 
+  Ext_buffer.contents buf 

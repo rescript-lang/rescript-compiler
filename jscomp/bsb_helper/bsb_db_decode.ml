@@ -93,7 +93,9 @@ let read_build_cache ~dir  : t =
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
   decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
-let cmp (a : string) b = String_map.compare_key a b   
+(* Invariant: the same as encoding String_map.compare_key  *)  
+let cmp  =  Ext_string.compare
+    
 
 let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
   let mid = (lo + hi)/2 in 
@@ -129,7 +131,7 @@ let find_opt_aux sorted key  : _ option =
 
 
 type module_info =  {
-  case : Bsb_db.case; 
+  case : bool ; (* which is Bsb_db.case*)
   dir_name : string
 } 
 

@@ -116,7 +116,7 @@ let check_suffix_case = ends_with
 let check_suffix_case_then_chop = ends_with_then_chop
 
 let check_any_suffix_case s suffixes = 
-  List.exists (fun x -> check_suffix_case s x) suffixes
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
 
 let check_any_suffix_case_then_chop s suffixes = 
   let rec aux suffixes = 
@@ -260,8 +260,7 @@ let rec index_rec_count s lim i c count =
 let index_count s i c count =     
   let lim = String.length s in 
   if i < 0 || i >= lim || count < 1 then 
-    Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
-
+    invalid_arg ("index_count: ( " ^string_of_int i ^ "," ^string_of_int count ^ ")" );
   index_rec_count s lim i c count 
 
 (* let index_next s i c =   

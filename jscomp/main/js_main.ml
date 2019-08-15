@@ -26,41 +26,85 @@ let reason_pp ~sourcefile  =
   setup_reason_context ();
   Ast_reason_pp.pp sourcefile
 
+type valid_input = 
+  | Ml 
+  | Mli
+  | Re
+  | Rei
+  | Mlast    
+  | Mliast 
+  | Reast
+  | Reiast
+  | Mlmap
+  | Cmi
+
+(** This is per-file based, 
+    when [ocamlc] [-c -o another_dir/xx.cmi] 
+    it will return (another_dir/xx)
+*)    
+
+
 let process_file ppf sourcefile = 
   (* This is a better default then "", it will be changed later 
      The {!Location.input_name} relies on that we write the binary ast 
-    properly
+     properly
   *)
   Location.input_name := sourcefile;  
-  match Ocaml_parse.check_suffix  sourcefile with 
-  | Ml, opref ->
-    Js_implementation.implementation ppf sourcefile opref 
-  | Re, opref ->     
-    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref 
-  | Mli , opref ->   
-    Js_implementation.interface ppf sourcefile opref 
-  | Rei, opref ->
-    (* FIXME: the [sourcefile] propgation seems to be wrong *)
+  let ext = Ext_filename.get_extension_maybe sourcefile in 
+  let input = 
+    if ext = Literals.suffix_ml  then 
+      Ml
+    else if  ext = Literals.suffix_re then
+      Re
+    else if ext = !Config.interface_suffix then 
+      Mli  
+    else if  ext = Literals.suffix_rei  then
+      Rei
+    else if ext =  Literals.suffix_mlast then 
+      Mlast 
+    else if ext = Literals.suffix_mliast then 
+      Mliast
+    else if ext = Literals.suffix_reast then   
+      Reast 
+    else if ext = Literals.suffix_reiast then   
+      Reiast
+    else if ext =  Literals.suffix_mlmap  then 
+      Mlmap 
+    else if ext =  Literals.suffix_cmi then 
+      Cmi
+    else 
+      raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
+  let opref = Compenv.output_prefix sourcefile in 
+  match input with 
+  | Re ->     
+    setup_reason_context ();
+    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref   
+  | Rei ->
+    setup_reason_context ();
     Js_implementation.interface ppf (reason_pp ~sourcefile) opref 
-  | Mliast, opref 
+  | Reiast 
+    -> 
+    setup_reason_context ();
+    Js_implementation.interface_mliast ppf sourcefile opref   
+  | Reast 
+    -> 
+    setup_reason_context ();
+    Js_implementation.implementation_mlast ppf sourcefile opref
+  | Ml ->
+    Js_implementation.implementation ppf sourcefile opref 
+  | Mli  ->   
+    Js_implementation.interface ppf sourcefile opref   
+  | Mliast 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
-  | Reiast, opref 
-    -> 
-      setup_reason_context ();
-      Js_implementation.interface_mliast ppf sourcefile opref   
-  | Reast, opref 
-    -> 
-      setup_reason_context ();
-      Js_implementation.implementation_mlast ppf sourcefile opref
-  | Mlast, opref 
+  | Mlast 
     -> Js_implementation.implementation_mlast ppf sourcefile opref
-  | Mlmap, opref 
+  | Mlmap 
     -> Js_implementation.implementation_map ppf sourcefile opref
-  | Cmi, _ 
+  | Cmi
     ->
-      let {Cmi_format.cmi_sign } =  Cmi_format.read_cmi sourcefile in 
-      Printtyp.signature Format.std_formatter cmi_sign ; 
-      Format.pp_print_newline Format.std_formatter ()
+    let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
+    Printtyp.signature Format.std_formatter cmi_sign ; 
+    Format.pp_print_newline Format.std_formatter ()
       
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
