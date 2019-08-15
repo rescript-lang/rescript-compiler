@@ -355,8 +355,15 @@ let init n f =
   | _ ->
     Array.to_list (Array.init n f)
 
+let rec rev_append l1 l2 =
+  match l1 with
+    [] -> l2
+  | a :: l -> rev_append l   (a :: l2)
+
+let rev l = rev_append l []      
+
 let rec small_split_at n acc l = 
-  if n <= 0 then List.rev acc , l 
+  if n <= 0 then rev acc , l 
   else 
     match l with 
     | x::xs -> small_split_at (n - 1) (x ::acc) xs 
@@ -368,7 +375,7 @@ let split_at l n =
 let rec split_at_last_aux acc x = 
   match x with 
   | [] -> invalid_arg "Ext_list.split_at_last"
-  | [ x] -> List.rev acc, x
+  | [ x] -> rev acc, x
   | y0::ys -> split_at_last_aux (y0::acc) ys   
 
 let split_at_last (x : 'a list) = 
@@ -420,10 +427,6 @@ let rec rev_map_append l1 l2 f =
   | a :: l -> rev_map_append l (f a :: l2) f
 
 
-let rec rev_append l1 l2 =
-  match l1 with
-    [] -> l2
-  | a :: l -> rev_append l   (a :: l2)
 
 (** It is not worth loop unrolling, 
     it is already tail-call, and we need to be careful 
@@ -487,7 +490,7 @@ and aux eq (x : 'a)  (xss : 'a list list) : 'a list list =
       y :: aux eq x ys                                 
   | _ :: _ -> assert false    
 
-let stable_group lst eq =  group eq lst |> List.rev  
+let stable_group lst eq =  group eq lst |> rev  
 
 let rec drop h n = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -625,7 +628,7 @@ let rec assoc_by_string lst (k : string) def  =
       | None -> assert false 
       | Some x -> x end
   | (k1,v1)::rest -> 
-    if Ext_string.equal k1 k then v1 else 
+    if  k1 = k then v1 else 
       assoc_by_string  rest k def 
 
 let rec assoc_by_int lst (k : int) def = 
@@ -699,7 +702,7 @@ let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
     ([], []) -> accu
   | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
-  | (_, _) -> invalid_arg "List.fold_left2"
+  | (_, _) -> invalid_arg "Ext_list.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 
