@@ -12,9 +12,9 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var Actors = /* module */[];
+var Actors = /* module */{ };
 
-var Dom_html = /* module */[];
+var Dom_html = /* module */{ };
 
 function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, max_frames, max_ticks, frame_size, src_offset) {
   var loop = $staropt$star !== undefined ? $staropt$star : true;
@@ -685,14 +685,14 @@ function update_animation(spr) {
   }
 }
 
-var Sprite = /* module */[
-  /* setup_sprite */setup_sprite,
-  /* make */make,
-  /* make_bgd */make_bgd,
-  /* make_particle */make_particle$1,
-  /* transform_enemy */transform_enemy,
-  /* update_animation */update_animation
-];
+var Sprite = /* module */{
+  setup_sprite: setup_sprite,
+  make: make,
+  make_bgd: make_bgd,
+  make_particle: make_particle$1,
+  transform_enemy: transform_enemy,
+  update_animation: update_animation
+};
 
 function pair_to_xy(pair) {
   return /* record */{
@@ -785,11 +785,11 @@ function $$process(part) {
   return /* () */0;
 }
 
-var Particle = /* module */[
-  /* make */make$1,
-  /* make_score */make_score,
-  /* process */$$process
-];
+var Particle = /* module */{
+  make: make$1,
+  make_score: make_score,
+  process: $$process
+};
 
 var id_counter = /* record */[/* contents */Pervasives.min_int];
 
@@ -1396,29 +1396,29 @@ function kill(collid, ctx) {
   }
 }
 
-var $$Object = /* module */[
-  /* invuln */60,
-  /* dampen_jump */4,
-  /* get_sprite */get_sprite,
-  /* get_obj */get_obj,
-  /* spawn */spawn,
-  /* equals */equals,
-  /* is_player */is_player,
-  /* is_enemy */is_enemy,
-  /* normalize_origin */normalize_origin,
-  /* normalize_pos */normalize_pos,
-  /* kill */kill,
-  /* process_obj */process_obj,
-  /* update_player */update_player,
-  /* check_collision */check_collision,
-  /* evolve_enemy */evolve_enemy,
-  /* evolve_block */evolve_block,
-  /* dec_health */dec_health,
-  /* rev_dir */rev_dir,
-  /* reverse_left_right */reverse_left_right,
-  /* collide_block */collide_block,
-  /* spawn_above */spawn_above
-];
+var $$Object = /* module */{
+  invuln: 60,
+  dampen_jump: 4,
+  get_sprite: get_sprite,
+  get_obj: get_obj,
+  spawn: spawn,
+  equals: equals,
+  is_player: is_player,
+  is_enemy: is_enemy,
+  normalize_origin: normalize_origin,
+  normalize_pos: normalize_pos,
+  kill: kill,
+  process_obj: process_obj,
+  update_player: update_player,
+  check_collision: check_collision,
+  evolve_enemy: evolve_enemy,
+  evolve_block: evolve_block,
+  dec_health: dec_health,
+  rev_dir: rev_dir,
+  reverse_left_right: reverse_left_right,
+  collide_block: collide_block,
+  spawn_above: spawn_above
+};
 
 function render_bbox(sprite, param) {
   var context = sprite.context;
@@ -1500,16 +1500,16 @@ function game_loss(ctx) {
       ];
 }
 
-var Draw = /* module */[
-  /* render */render,
-  /* clear_canvas */clear_canvas,
-  /* draw_bgd */draw_bgd,
-  /* render_bbox */render_bbox,
-  /* fps */fps,
-  /* hud */hud,
-  /* game_win */game_win,
-  /* game_loss */game_loss
-];
+var Draw = /* module */{
+  render: render,
+  clear_canvas: clear_canvas,
+  draw_bgd: draw_bgd,
+  render_bbox: render_bbox,
+  fps: fps,
+  hud: hud,
+  game_win: game_win,
+  game_loss: game_loss
+};
 
 function make$3(param, param$1) {
   return /* record */{
@@ -1573,14 +1573,14 @@ function update(vpt, ctr) {
         };
 }
 
-var Viewport = /* module */[
-  /* make */make$3,
-  /* calc_viewport_point */calc_viewport_point,
-  /* in_viewport */in_viewport,
-  /* out_of_viewport_below */out_of_viewport_below,
-  /* coord_to_viewport */coord_to_viewport,
-  /* update */update
-];
+var Viewport = /* module */{
+  make: make$3,
+  calc_viewport_point: calc_viewport_point,
+  in_viewport: in_viewport,
+  out_of_viewport_below: out_of_viewport_below,
+  coord_to_viewport: coord_to_viewport,
+  update: update
+};
 
 var pressed_keys = /* record */{
   left: false,
@@ -2390,11 +2390,11 @@ function keyup(evt) {
   return true;
 }
 
-var Director = /* module */[
-  /* update_loop */update_loop,
-  /* keydown */keydown,
-  /* keyup */keyup
-];
+var Director = /* module */{
+  update_loop: update_loop,
+  keydown: keydown,
+  keyup: keyup
+};
 
 function mem_loc(checkloc, _loclist) {
   while(true) {
@@ -3236,10 +3236,10 @@ function init(param) {
   return Random.self_init(/* () */0);
 }
 
-var Procedural_generator = /* module */[
-  /* init */init,
-  /* generate */generate
-];
+var Procedural_generator = /* module */{
+  init: init,
+  generate: generate
+};
 
 var loadCount = /* record */[/* contents */0];
 
@@ -3320,17 +3320,17 @@ window.onload = (function (param) {
     return true;
   });
 
-var Main = /* module */[
-  /* Html */0,
-  /* Pg */0,
-  /* loadCount */loadCount,
-  /* imgsToLoad */4,
-  /* level_width */2400,
-  /* level_height */256,
-  /* load */load,
-  /* inc_counter */inc_counter,
-  /* preload */preload
-];
+var Main = /* module */{
+  Html: 0,
+  Pg: 0,
+  loadCount: loadCount,
+  imgsToLoad: 4,
+  level_width: 2400,
+  level_height: 256,
+  load: load,
+  inc_counter: inc_counter,
+  preload: preload
+};
 
 exports.Actors = Actors;
 exports.Dom_html = Dom_html;

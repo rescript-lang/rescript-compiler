@@ -81,13 +81,13 @@ function extract(queue) {
   }
 }
 
-var PrioQueue = /* module */[
-  /* empty : Empty */0,
-  /* insert */insert,
-  /* Queue_is_empty */Queue_is_empty,
-  /* remove_top */remove_top,
-  /* extract */extract
-];
+var PrioQueue = /* module */{
+  empty: /* Empty */0,
+  insert: insert,
+  Queue_is_empty: Queue_is_empty,
+  remove_top: remove_top,
+  extract: extract
+};
 
 exports.PrioQueue = PrioQueue;
 /* No side effect */

@@ -45,7 +45,7 @@ Caml_module.update_mod([[0]], Int3, Int3);
 var tmp;
 
 try {
-  Curry._1(Int3[/* u */0], 3);
+  Curry._1(Int3.u, 3);
   tmp = 3;
 }
 catch (raw_exn){

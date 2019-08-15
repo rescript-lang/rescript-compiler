@@ -69,10 +69,10 @@ function string_of_float_option(param) {
   }
 }
 
-var Util = /* module */[
-  /* split */split,
-  /* string_of_float_option */string_of_float_option
-];
+var Util = /* module */{
+  split: split,
+  string_of_float_option: string_of_float_option
+};
 
 function string_of_rank(param) {
   if (typeof param === "number") {

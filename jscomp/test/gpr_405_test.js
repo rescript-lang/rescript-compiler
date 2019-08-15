@@ -6,14 +6,14 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(funarg) {
-  var $$let = funarg[/* V */0];
+  var $$let = funarg.V;
   var H = Hashtbl.Make([
         $$let[2],
         $$let[1]
       ]);
   var find_default = function (htbl, x) {
     try {
-      return Curry._2(H[/* find */6], htbl, x);
+      return Curry._2(H.find, htbl, x);
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
@@ -24,10 +24,10 @@ function Make(funarg) {
     }
   };
   var min_cutset = function (gr, first_node) {
-    var n_labels = Curry._1(H[/* create */0], 97);
-    var l_labels = Curry._1(H[/* create */0], 97);
-    var already_processed = Curry._1(H[/* create */0], 97);
-    var on_the_stack = Curry._1(H[/* create */0], 97);
+    var n_labels = Curry._1(H.create, 97);
+    var l_labels = Curry._1(H.create, 97);
+    var already_processed = Curry._1(H.create, 97);
+    var on_the_stack = Curry._1(H.create, 97);
     var cut_set = /* record */[/* contents : [] */0];
     var counter = /* record */[/* contents */1];
     var step2 = function (top, rest_of_stack) {
@@ -51,12 +51,12 @@ function Make(funarg) {
               ]
             ];
       }
-      Curry._3(H[/* add */4], on_the_stack, top, true);
-      Curry._3(H[/* add */4], n_labels, top, counter[0]);
+      Curry._3(H.add, on_the_stack, top, true);
+      Curry._3(H.add, n_labels, top, counter[0]);
       counter[0] = counter[0] + 1 | 0;
-      Curry._3(H[/* add */4], l_labels, top, 0);
-      Curry._3(H[/* add */4], already_processed, top, true);
-      var _successors = Curry._2(funarg[/* succ */1], gr, top);
+      Curry._3(H.add, l_labels, top, 0);
+      Curry._3(H.add, already_processed, top, true);
+      var _successors = Curry._2(funarg.succ, gr, top);
       var _top = top;
       var _rest_of_stack = rest_of_stack;
       while(true) {
@@ -66,8 +66,8 @@ function Make(funarg) {
         if (successors) {
           var successor = successors[0];
           if (find_default(already_processed, successor)) {
-            var x = find_default(on_the_stack, successor) ? Curry._2(H[/* find */6], n_labels, successor) : Curry._2(H[/* find */6], l_labels, successor);
-            Curry._3(H[/* add */4], l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), x));
+            var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
+            Curry._3(H.add, l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), x));
             _successors = successors[1];
             continue ;
           } else {
@@ -80,14 +80,14 @@ function Make(funarg) {
                       ]);
           }
         } else {
-          if (Curry._2(H[/* find */6], l_labels, top$1) === Curry._2(H[/* find */6], n_labels, top$1)) {
+          if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
             cut_set[0] = /* :: */[
               top$1,
               cut_set[0]
             ];
-            Curry._3(H[/* add */4], l_labels, top$1, 0);
+            Curry._3(H.add, l_labels, top$1, 0);
           }
-          if (Curry._2(H[/* find */6], l_labels, top$1) > Curry._2(H[/* find */6], n_labels, top$1)) {
+          if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Graph.Mincut: graph not reducible"
@@ -96,8 +96,8 @@ function Make(funarg) {
           if (rest_of_stack$1) {
             var match = rest_of_stack$1[0];
             var new_top = match[0];
-            Curry._3(H[/* add */4], on_the_stack, top$1, false);
-            Curry._3(H[/* add */4], l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), Curry._2(H[/* find */6], l_labels, new_top)));
+            Curry._3(H.add, on_the_stack, top$1, false);
+            Curry._3(H.add, l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
             _rest_of_stack = rest_of_stack$1[1];
             _top = new_top;
             _successors = match[1];

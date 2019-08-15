@@ -16,7 +16,9 @@ catch (exn){
   f = 3;
 }
 
-var N = /* module */[/* f */f];
+var N = /* module */{
+  f: f
+};
 
 exports.N = N;
 /* f Not a pure module */

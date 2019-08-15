@@ -26,7 +26,9 @@ function log(x) {
   return /* () */0;
 }
 
-var N = /* module */[/* log2 */log];
+var N = /* module */{
+  log2: log
+};
 
 forIn({
       x: 3

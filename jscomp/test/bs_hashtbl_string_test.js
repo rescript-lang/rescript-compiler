@@ -104,10 +104,10 @@ function bench2(m) {
 
 function bench3(m) {
   var empty = {
-    cmp: m[/* cmp */0],
+    cmp: m.cmp,
     data: Belt_MapDict.empty
   };
-  var cmp = m[/* cmp */0];
+  var cmp = m.cmp;
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
     table = Belt_MapDict.set(table, String(i), i, cmp);

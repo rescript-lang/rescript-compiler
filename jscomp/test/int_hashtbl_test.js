@@ -9,12 +9,12 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function f(H) {
-  var tbl = Curry._1(H[/* create */0], 17);
-  Curry._3(H[/* add */4], tbl, 1, /* "1" */49);
-  Curry._3(H[/* add */4], tbl, 2, /* "2" */50);
+  var tbl = Curry._1(H.create, 17);
+  Curry._3(H.add, tbl, 1, /* "1" */49);
+  Curry._3(H.add, tbl, 2, /* "2" */50);
   return List.sort((function (param, param$1) {
                 return Caml_primitive.caml_int_compare(param[0], param$1[0]);
-              }), Curry._3(H[/* fold */11], (function (k, v, acc) {
+              }), Curry._3(H.fold, (function (k, v, acc) {
                     return /* :: */[
                             /* tuple */[
                               k,
@@ -26,14 +26,14 @@ function f(H) {
 }
 
 function g(H, count) {
-  var tbl = Curry._1(H[/* create */0], 17);
+  var tbl = Curry._1(H.create, 17);
   for(var i = 0; i <= count; ++i){
-    Curry._3(H[/* replace */8], tbl, (i << 1), String(i));
+    Curry._3(H.replace, tbl, (i << 1), String(i));
   }
   for(var i$1 = 0; i$1 <= count; ++i$1){
-    Curry._3(H[/* replace */8], tbl, (i$1 << 1), String(i$1));
+    Curry._3(H.replace, tbl, (i$1 << 1), String(i$1));
   }
-  var v = Curry._3(H[/* fold */11], (function (k, v, acc) {
+  var v = Curry._3(H.fold, (function (k, v, acc) {
           return /* :: */[
                   /* tuple */[
                     k,
@@ -53,10 +53,10 @@ function equal(x, y) {
   return x === y;
 }
 
-var Int_hash = Hashtbl.Make(/* module */[
-      /* equal */equal,
-      /* hash */hash
-    ]);
+var Int_hash = Hashtbl.Make(/* module */{
+      equal: equal,
+      hash: hash
+    });
 
 var suites_000 = /* tuple */[
   "simple",

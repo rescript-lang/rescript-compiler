@@ -8,9 +8,11 @@ var A = Caml_exceptions.create("Exception_def.A");
 
 var A$1 = Caml_exceptions.create("Exception_def.U.A");
 
-var U = /* module */[/* A */A$1];
+var U = /* module */{
+  A: A$1
+};
 
-var H = /* module */[];
+var H = /* module */{ };
 
 var Bx = Caml_exceptions.create("Exception_def.Bx");
 

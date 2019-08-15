@@ -10,7 +10,7 @@ function f1(g, x) {
   return Curry._1(g, x);
 }
 
-var X = /* module */[];
+var X = /* module */{ };
 
 function f2(g, x) {
   return Curry._1(g, x);
@@ -37,7 +37,7 @@ function f7(g, x) {
   return Curry._1(g, x);
 }
 
-var X0 = /* module */[];
+var X0 = /* module */{ };
 
 function f8(g, x) {
   return Curry._1(g, x);
@@ -63,7 +63,9 @@ function f13(g, x) {
   return Curry._1(g, x);
 }
 
-var X2 = /* module */[/* f13 */f13];
+var X2 = /* module */{
+  f13: f13
+};
 
 function f14(h, g, x) {
   return Curry._2(h, g, x);

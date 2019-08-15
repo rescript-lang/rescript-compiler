@@ -1543,15 +1543,15 @@ var string_of_lambda = Curry._1(Format.asprintf(/* Format */[
           "%a"
         ]), pr_lambda);
 
-var Lambda_suites = /* module */[
-  /* ident */ident,
-  /* kwd */kwd,
-  /* pr_exp0 */pr_exp0,
-  /* pr_app */pr_app,
-  /* pr_other_applications */pr_other_applications,
-  /* pr_lambda */pr_lambda,
-  /* string_of_lambda */string_of_lambda
-];
+var Lambda_suites = /* module */{
+  ident: ident,
+  kwd: kwd,
+  pr_exp0: pr_exp0,
+  pr_app: pr_app,
+  pr_other_applications: pr_other_applications,
+  pr_lambda: pr_lambda,
+  string_of_lambda: string_of_lambda
+};
 
 var lambda_suites = /* array */[
   /* tuple */[

@@ -342,10 +342,10 @@ function $great$great$eq(x, f) {
   return Curry._1(f, x);
 }
 
-var ID_MONAD = /* module */[
-  /* return */$$return,
-  /* >>= */$great$great$eq
-];
+var ID_MONAD = /* module */{
+  return: $$return,
+  ">>=": $great$great$eq
+};
 
 function make($staropt$star, refill) {
   var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
@@ -973,7 +973,7 @@ function parse_file_list(filename) {
 }
 
 function MakeDecode(funarg) {
-  var $great$great$eq = funarg[/* >>= */1];
+  var $great$great$eq = funarg[">>="];
   var make = function ($staropt$star, refill) {
     var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
@@ -1053,7 +1053,7 @@ function MakeDecode(funarg) {
             ]), t.line, t.col);
     return Printf.kbprintf((function (b) {
                   var msg$prime = $$Buffer.contents(b);
-                  return Curry._1(funarg[/* return */0], /* `Error */[
+                  return Curry._1(funarg.return, /* `Error */[
                               106380200,
                               msg$prime
                             ]);
@@ -1466,7 +1466,7 @@ function MakeDecode(funarg) {
         return _refill(t, (function (param) {
                       return expr_or_end(k, param);
                     }), (function (param) {
-                      return Curry._1(funarg[/* return */0], /* End */3455931);
+                      return Curry._1(funarg.return, /* End */3455931);
                     }));
       } else {
         var c = _get(t);
@@ -1486,7 +1486,7 @@ function MakeDecode(funarg) {
   };
   var next = function (t) {
     return expr_or_end((function (param, x) {
-                  return Curry._1(funarg[/* return */0], /* `Ok */[
+                  return Curry._1(funarg.return, /* `Ok */[
                               17724,
                               x
                             ]);

@@ -61,12 +61,694 @@ function fatal_error(msg) {
   throw Fatal_error;
 }
 
+function try_finally(work, cleanup) {
+  var result;
+  try {
+    result = Curry._1(work, /* () */0);
+  }
+  catch (e){
+    Curry._1(cleanup, /* () */0);
+    throw e;
+  }
+  Curry._1(cleanup, /* () */0);
+  return result;
+}
+
+function map_end(f, l1, l2) {
+  if (l1) {
+    return /* :: */[
+            Curry._1(f, l1[0]),
+            map_end(f, l1[1], l2)
+          ];
+  } else {
+    return l2;
+  }
+}
+
+function map_left_right(f, param) {
+  if (param) {
+    var res = Curry._1(f, param[0]);
+    return /* :: */[
+            res,
+            map_left_right(f, param[1])
+          ];
+  } else {
+    return /* [] */0;
+  }
+}
+
+function for_all2(pred, _l1, _l2) {
+  while(true) {
+    var l2 = _l2;
+    var l1 = _l1;
+    if (l1) {
+      if (l2 && Curry._2(pred, l1[0], l2[0])) {
+        _l2 = l2[1];
+        _l1 = l1[1];
+        continue ;
+      } else {
+        return false;
+      }
+    } else if (l2) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+}
+
+function replicate_list(elem, n) {
+  if (n <= 0) {
+    return /* [] */0;
+  } else {
+    return /* :: */[
+            elem,
+            replicate_list(elem, n - 1 | 0)
+          ];
+  }
+}
+
+function list_remove(x, param) {
+  if (param) {
+    var tl = param[1];
+    var hd = param[0];
+    if (Caml_obj.caml_equal(hd, x)) {
+      return tl;
+    } else {
+      return /* :: */[
+              hd,
+              list_remove(x, tl)
+            ];
+    }
+  } else {
+    return /* [] */0;
+  }
+}
+
+function split_last(param) {
+  if (param) {
+    var tl = param[1];
+    var x = param[0];
+    if (tl) {
+      var match = split_last(tl);
+      return /* tuple */[
+              /* :: */[
+                x,
+                match[0]
+              ],
+              match[1]
+            ];
+    } else {
+      return /* tuple */[
+              /* [] */0,
+              x
+            ];
+    }
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "misc.ml",
+            54,
+            10
+          ]
+        ];
+  }
+}
+
+function samelist(pred, _l1, _l2) {
+  while(true) {
+    var l2 = _l2;
+    var l1 = _l1;
+    if (l1) {
+      if (l2 && Curry._2(pred, l1[0], l2[0])) {
+        _l2 = l2[1];
+        _l1 = l1[1];
+        continue ;
+      } else {
+        return false;
+      }
+    } else if (l2) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+}
+
+function may(f, param) {
+  if (param !== undefined) {
+    return Curry._1(f, Caml_option.valFromOption(param));
+  } else {
+    return /* () */0;
+  }
+}
+
+function may_map(f, param) {
+  if (param !== undefined) {
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(param)));
+  }
+  
+}
+
+function find_in_path(path, name) {
+  if (Curry._1(Filename.is_implicit, name)) {
+    var _param = path;
+    while(true) {
+      var param = _param;
+      if (param) {
+        var fullname = Filename.concat(param[0], name);
+        if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
+          return fullname;
+        } else {
+          _param = param[1];
+          continue ;
+        }
+      } else {
+        throw Caml_builtin_exceptions.not_found;
+      }
+    };
+  } else if (Caml_external_polyfill.resolve("caml_sys_file_exists")(name)) {
+    return name;
+  } else {
+    throw Caml_builtin_exceptions.not_found;
+  }
+}
+
+function find_in_path_rel(path, name) {
+  var simplify = function (_s) {
+    while(true) {
+      var s = _s;
+      var base = Curry._1(Filename.basename, s);
+      var dir = Curry._1(Filename.dirname, s);
+      if (dir === s) {
+        return dir;
+      } else if (base === Filename.current_dir_name) {
+        _s = dir;
+        continue ;
+      } else {
+        return Filename.concat(simplify(dir), base);
+      }
+    };
+  };
+  var _param = path;
+  while(true) {
+    var param = _param;
+    if (param) {
+      var fullname = simplify(Filename.concat(param[0], name));
+      if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
+        return fullname;
+      } else {
+        _param = param[1];
+        continue ;
+      }
+    } else {
+      throw Caml_builtin_exceptions.not_found;
+    }
+  };
+}
+
+function find_in_path_uncap(path, name) {
+  var uname = Caml_bytes.bytes_to_string(Bytes.uncapitalize(Caml_bytes.bytes_of_string(name)));
+  var _param = path;
+  while(true) {
+    var param = _param;
+    if (param) {
+      var dir = param[0];
+      var fullname = Filename.concat(dir, name);
+      var ufullname = Filename.concat(dir, uname);
+      if (Caml_external_polyfill.resolve("caml_sys_file_exists")(ufullname)) {
+        return ufullname;
+      } else if (Caml_external_polyfill.resolve("caml_sys_file_exists")(fullname)) {
+        return fullname;
+      } else {
+        _param = param[1];
+        continue ;
+      }
+    } else {
+      throw Caml_builtin_exceptions.not_found;
+    }
+  };
+}
+
+function remove_file(filename) {
+  try {
+    return Caml_external_polyfill.resolve("caml_sys_remove")(filename);
+  }
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn[0] === Caml_builtin_exceptions.sys_error) {
+      return /* () */0;
+    } else {
+      throw exn;
+    }
+  }
+}
+
+function expand_directory(alt, s) {
+  if (s.length !== 0 && Caml_string.get(s, 0) === /* "+" */43) {
+    return Filename.concat(alt, $$String.sub(s, 1, s.length - 1 | 0));
+  } else {
+    return s;
+  }
+}
+
 function create_hashtable(size, init) {
   var tbl = Hashtbl.create(undefined, size);
   List.iter((function (param) {
           return Hashtbl.add(tbl, param[0], param[1]);
         }), init);
   return tbl;
+}
+
+function copy_file(ic, oc) {
+  var buff = Caml_bytes.caml_create_bytes(4096);
+  var _param = /* () */0;
+  while(true) {
+    var n = Pervasives.input(ic, buff, 0, 4096);
+    if (n === 0) {
+      return /* () */0;
+    } else {
+      Pervasives.output(oc, buff, 0, n);
+      _param = /* () */0;
+      continue ;
+    }
+  };
+}
+
+function copy_file_chunk(ic, oc, len) {
+  var buff = Caml_bytes.caml_create_bytes(4096);
+  var _n = len;
+  while(true) {
+    var n = _n;
+    if (n <= 0) {
+      return /* () */0;
+    } else {
+      var r = Pervasives.input(ic, buff, 0, n < 4096 ? n : 4096);
+      if (r === 0) {
+        throw Caml_builtin_exceptions.end_of_file;
+      }
+      Pervasives.output(oc, buff, 0, r);
+      _n = n - r | 0;
+      continue ;
+    }
+  };
+}
+
+function string_of_file(ic) {
+  var b = $$Buffer.create(65536);
+  var buff = Caml_bytes.caml_create_bytes(4096);
+  var _param = /* () */0;
+  while(true) {
+    var n = Pervasives.input(ic, buff, 0, 4096);
+    if (n === 0) {
+      return $$Buffer.contents(b);
+    } else {
+      $$Buffer.add_subbytes(b, buff, 0, n);
+      _param = /* () */0;
+      continue ;
+    }
+  };
+}
+
+function log2(n) {
+  if (n <= 1) {
+    return 0;
+  } else {
+    return 1 + log2((n >> 1)) | 0;
+  }
+}
+
+function align(n, a) {
+  if (n >= 0) {
+    return (n + a | 0) - 1 & (-a | 0);
+  } else {
+    return n & (-a | 0);
+  }
+}
+
+function no_overflow_add(a, b) {
+  return (a ^ b | a ^ (a + b | 0) ^ -1) < 0;
+}
+
+function no_overflow_sub(a, b) {
+  return (a ^ b ^ -1 | b ^ (a - b | 0)) < 0;
+}
+
+function no_overflow_lsl(a) {
+  if ((Pervasives.min_int >> 1) <= a) {
+    return a <= (Pervasives.max_int >> 1);
+  } else {
+    return false;
+  }
+}
+
+function chop_extension_if_any(fname) {
+  try {
+    return Filename.chop_extension(fname);
+  }
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+      return fname;
+    } else {
+      throw exn;
+    }
+  }
+}
+
+function chop_extensions(file) {
+  var dirname = Curry._1(Filename.dirname, file);
+  var basename = Curry._1(Filename.basename, file);
+  try {
+    var pos = $$String.index(basename, /* "." */46);
+    var basename$1 = $$String.sub(basename, 0, pos);
+    if (Curry._1(Filename.is_implicit, file) && dirname === Filename.current_dir_name) {
+      return basename$1;
+    } else {
+      return Filename.concat(dirname, basename$1);
+    }
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return file;
+    } else {
+      throw exn;
+    }
+  }
+}
+
+function search_substring(pat, str, start) {
+  var _i = start;
+  var _j = 0;
+  while(true) {
+    var j = _j;
+    var i = _i;
+    if (j >= pat.length) {
+      return i;
+    } else {
+      if ((i + j | 0) >= str.length) {
+        throw Caml_builtin_exceptions.not_found;
+      }
+      if (Caml_string.get(str, i + j | 0) === Caml_string.get(pat, j)) {
+        _j = j + 1 | 0;
+        continue ;
+      } else {
+        _j = 0;
+        _i = i + 1 | 0;
+        continue ;
+      }
+    }
+  };
+}
+
+function replace_substring(before, after, str) {
+  var search = function (_acc, _curr) {
+    while(true) {
+      var curr = _curr;
+      var acc = _acc;
+      var exit = 0;
+      var next;
+      try {
+        next = search_substring(before, str, curr);
+        exit = 1;
+      }
+      catch (exn){
+        if (exn === Caml_builtin_exceptions.not_found) {
+          var suffix = $$String.sub(str, curr, str.length - curr | 0);
+          return List.rev(/* :: */[
+                      suffix,
+                      acc
+                    ]);
+        } else {
+          throw exn;
+        }
+      }
+      if (exit === 1) {
+        var prefix = $$String.sub(str, curr, next - curr | 0);
+        _curr = next + before.length | 0;
+        _acc = /* :: */[
+          prefix,
+          acc
+        ];
+        continue ;
+      }
+      
+    };
+  };
+  return $$String.concat(after, search(/* [] */0, 0));
+}
+
+function rev_split_words(s) {
+  var split1 = function (res, _i) {
+    while(true) {
+      var i = _i;
+      if (i >= s.length) {
+        return res;
+      } else {
+        var match = Caml_string.get(s, i);
+        var switcher = match - 9 | 0;
+        if (switcher > 4 || switcher < 0) {
+          if (switcher !== 23) {
+            return split2(res, i, i + 1 | 0);
+          } else {
+            _i = i + 1 | 0;
+            continue ;
+          }
+        } else if (switcher === 3 || switcher === 2) {
+          return split2(res, i, i + 1 | 0);
+        } else {
+          _i = i + 1 | 0;
+          continue ;
+        }
+      }
+    };
+  };
+  var split2 = function (res, i, _j) {
+    while(true) {
+      var j = _j;
+      if (j >= s.length) {
+        return /* :: */[
+                $$String.sub(s, i, j - i | 0),
+                res
+              ];
+      } else {
+        var match = Caml_string.get(s, j);
+        var exit = 0;
+        var switcher = match - 9 | 0;
+        if (switcher > 4 || switcher < 0) {
+          if (switcher !== 23) {
+            _j = j + 1 | 0;
+            continue ;
+          } else {
+            exit = 1;
+          }
+        } else if (switcher === 3 || switcher === 2) {
+          _j = j + 1 | 0;
+          continue ;
+        } else {
+          exit = 1;
+        }
+        if (exit === 1) {
+          return split1(/* :: */[
+                      $$String.sub(s, i, j - i | 0),
+                      res
+                    ], j + 1 | 0);
+        }
+        
+      }
+    };
+  };
+  return split1(/* [] */0, 0);
+}
+
+function get_ref(r) {
+  var v = r[0];
+  r[0] = /* [] */0;
+  return v;
+}
+
+function fst3(param) {
+  return param[0];
+}
+
+function snd3(param) {
+  return param[1];
+}
+
+function thd3(param) {
+  return param[2];
+}
+
+function fst4(param) {
+  return param[0];
+}
+
+function snd4(param) {
+  return param[1];
+}
+
+function thd4(param) {
+  return param[2];
+}
+
+function for4(param) {
+  return param[3];
+}
+
+function create(str_size) {
+  var tbl_size = Caml_int32.div(str_size, Sys.max_string_length) + 1 | 0;
+  var tbl = Caml_array.caml_make_vect(tbl_size, Bytes.empty);
+  for(var i = 0 ,i_finish = tbl_size - 2 | 0; i <= i_finish; ++i){
+    Caml_array.caml_array_set(tbl, i, Caml_bytes.caml_create_bytes(Sys.max_string_length));
+  }
+  Caml_array.caml_array_set(tbl, tbl_size - 1 | 0, Caml_bytes.caml_create_bytes(Caml_int32.mod_(str_size, Sys.max_string_length)));
+  return tbl;
+}
+
+function length(tbl) {
+  var tbl_size = tbl.length;
+  return Caml_int32.imul(Sys.max_string_length, tbl_size - 1 | 0) + Caml_array.caml_array_get(tbl, tbl_size - 1 | 0).length | 0;
+}
+
+function get(tbl, ind) {
+  return Caml_bytes.get(Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length)), Caml_int32.mod_(ind, Sys.max_string_length));
+}
+
+function set(tbl, ind, c) {
+  Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length))[Caml_int32.mod_(ind, Sys.max_string_length)] = c;
+  return /* () */0;
+}
+
+function blit(src, srcoff, dst, dstoff, len) {
+  for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
+    set(dst, dstoff + i | 0, get(src, srcoff + i | 0));
+  }
+  return /* () */0;
+}
+
+function output(oc, tbl, pos, len) {
+  for(var i = pos ,i_finish = (pos + len | 0) - 1 | 0; i <= i_finish; ++i){
+    Caml_io.caml_ml_output_char(oc, get(tbl, i));
+  }
+  return /* () */0;
+}
+
+function unsafe_blit_to_bytes(src, srcoff, dst, dstoff, len) {
+  for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
+    dst[dstoff + i | 0] = get(src, srcoff + i | 0);
+  }
+  return /* () */0;
+}
+
+function input_bytes(ic, len) {
+  var tbl = create(len);
+  $$Array.iter((function (str) {
+          return Pervasives.really_input(ic, str, 0, str.length);
+        }), tbl);
+  return tbl;
+}
+
+var LongString = /* module */{
+  create: create,
+  length: length,
+  get: get,
+  set: set,
+  blit: blit,
+  output: output,
+  unsafe_blit_to_bytes: unsafe_blit_to_bytes,
+  input_bytes: input_bytes
+};
+
+function edit_distance(a, b, cutoff) {
+  var la = a.length;
+  var lb = b.length;
+  var cutoff$1 = Caml_primitive.caml_int_min(la > lb ? la : lb, cutoff);
+  if (Pervasives.abs(la - lb | 0) > cutoff$1) {
+    return ;
+  } else {
+    var m = $$Array.make_matrix(la + 1 | 0, lb + 1 | 0, cutoff$1 + 1 | 0);
+    Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), 0, 0);
+    for(var i = 1; i <= la; ++i){
+      Caml_array.caml_array_set(Caml_array.caml_array_get(m, i), 0, i);
+    }
+    for(var j = 1; j <= lb; ++j){
+      Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), j, j);
+    }
+    for(var i$1 = 1; i$1 <= la; ++i$1){
+      for(var j$1 = Caml_primitive.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_primitive.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
+        var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
+        var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+        var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+        Caml_array.caml_array_set(Caml_array.caml_array_get(m, i$1), j$1, best$1);
+      }
+    }
+    var result = Caml_array.caml_array_get(Caml_array.caml_array_get(m, la), lb);
+    if (result > cutoff$1) {
+      return ;
+    } else {
+      return result;
+    }
+  }
+}
+
+function split(s, c) {
+  var len = s.length;
+  var _pos = 0;
+  var _to_rev = /* [] */0;
+  while(true) {
+    var to_rev = _to_rev;
+    var pos = _pos;
+    if (pos === len) {
+      return List.rev(/* :: */[
+                  "",
+                  to_rev
+                ]);
+    } else {
+      var match;
+      try {
+        match = $$String.index_from(s, pos, c);
+      }
+      catch (exn){
+        if (exn === Caml_builtin_exceptions.not_found) {
+          match = undefined;
+        } else {
+          throw exn;
+        }
+      }
+      if (match !== undefined) {
+        var pos2 = match;
+        if (pos2 === pos) {
+          _to_rev = /* :: */[
+            "",
+            to_rev
+          ];
+          _pos = pos + 1 | 0;
+          continue ;
+        } else {
+          _to_rev = /* :: */[
+            $$String.sub(s, pos, pos2 - pos | 0),
+            to_rev
+          ];
+          _pos = pos2 + 1 | 0;
+          continue ;
+        }
+      } else {
+        return List.rev(/* :: */[
+                    $$String.sub(s, pos, len - pos | 0),
+                    to_rev
+                  ]);
+      }
+    }
+  };
+}
+
+function cut_at(s, c) {
+  var pos = $$String.index(s, c);
+  return /* tuple */[
+          $$String.sub(s, 0, pos),
+          $$String.sub(s, pos + 1 | 0, (s.length - pos | 0) - 1 | 0)
+        ];
 }
 
 function ansi_of_color(param) {
@@ -274,14 +956,59 @@ function setup(o) {
   return /* () */0;
 }
 
-var Misc_043 = /* Color */[
-  ansi_of_style_l,
-  default_styles,
-  get_styles,
-  set_styles,
-  setup,
-  set_color_tag_handling
-];
+var Misc = /* module */{
+  fatal_error: fatal_error,
+  Fatal_error: Fatal_error,
+  try_finally: try_finally,
+  map_end: map_end,
+  map_left_right: map_left_right,
+  for_all2: for_all2,
+  replicate_list: replicate_list,
+  list_remove: list_remove,
+  split_last: split_last,
+  samelist: samelist,
+  may: may,
+  may_map: may_map,
+  find_in_path: find_in_path,
+  find_in_path_rel: find_in_path_rel,
+  find_in_path_uncap: find_in_path_uncap,
+  remove_file: remove_file,
+  expand_directory: expand_directory,
+  create_hashtable: create_hashtable,
+  copy_file: copy_file,
+  copy_file_chunk: copy_file_chunk,
+  string_of_file: string_of_file,
+  log2: log2,
+  align: align,
+  no_overflow_add: no_overflow_add,
+  no_overflow_sub: no_overflow_sub,
+  no_overflow_lsl: no_overflow_lsl,
+  chop_extension_if_any: chop_extension_if_any,
+  chop_extensions: chop_extensions,
+  search_substring: search_substring,
+  replace_substring: replace_substring,
+  rev_split_words: rev_split_words,
+  get_ref: get_ref,
+  fst3: fst3,
+  snd3: snd3,
+  thd3: thd3,
+  fst4: fst4,
+  snd4: snd4,
+  thd4: thd4,
+  for4: for4,
+  LongString: LongString,
+  edit_distance: edit_distance,
+  split: split,
+  cut_at: cut_at,
+  Color: [
+    ansi_of_style_l,
+    default_styles,
+    get_styles,
+    set_styles,
+    setup,
+    set_color_tag_handling
+  ]
+};
 
 function number(param) {
   if (typeof param === "number") {
@@ -1505,7 +2232,7 @@ function get_pos_info(pos) {
 }
 
 function setup_colors(param) {
-  return Curry._1(Misc_043[/* setup */4], color[0]);
+  return Curry._1(Misc.Color.setup, color[0]);
 }
 
 function print_loc(ppf, loc) {
@@ -1761,7 +2488,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   var fmt$1 = fmt;
   var buf = $$Buffer.create(64);
   var ppf = Format.formatter_of_buffer(buf);
-  Curry._1(Misc_043[/* set_color_tag_handling */5], ppf);
+  Curry._1(Misc.Color.set_color_tag_handling, ppf);
   if (before !== undefined) {
     Curry._1(before, ppf);
   }
@@ -2421,6 +3148,20 @@ function init(param) {
 
 var default_loc = /* record */[/* contents */none];
 
+function with_default_loc(l, f) {
+  var old = default_loc[0];
+  default_loc[0] = l;
+  try {
+    var r = Curry._1(f, /* () */0);
+    default_loc[0] = old;
+    return r;
+  }
+  catch (exn){
+    default_loc[0] = old;
+    throw exn;
+  }
+}
+
 function mk($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -2442,6 +3183,112 @@ function attr(d, a) {
         };
 }
 
+function any(loc, attrs, param) {
+  return mk(loc, attrs, /* Ptyp_any */0);
+}
+
+function $$var(loc, attrs, a) {
+  return mk(loc, attrs, /* Ptyp_var */Block.__(0, [a]));
+}
+
+function arrow(loc, attrs, a, b, c) {
+  return mk(loc, attrs, /* Ptyp_arrow */Block.__(1, [
+                a,
+                b,
+                c
+              ]));
+}
+
+function tuple(loc, attrs, a) {
+  return mk(loc, attrs, /* Ptyp_tuple */Block.__(2, [a]));
+}
+
+function constr(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_constr */Block.__(3, [
+                a,
+                b
+              ]));
+}
+
+function object_(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_object */Block.__(4, [
+                a,
+                b
+              ]));
+}
+
+function class_(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_class */Block.__(5, [
+                a,
+                b
+              ]));
+}
+
+function alias(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_alias */Block.__(6, [
+                a,
+                b
+              ]));
+}
+
+function variant(loc, attrs, a, b, c) {
+  return mk(loc, attrs, /* Ptyp_variant */Block.__(7, [
+                a,
+                b,
+                c
+              ]));
+}
+
+function poly(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_poly */Block.__(8, [
+                a,
+                b
+              ]));
+}
+
+function $$package(loc, attrs, a, b) {
+  return mk(loc, attrs, /* Ptyp_package */Block.__(9, [/* tuple */[
+                  a,
+                  b
+                ]]));
+}
+
+function extension(loc, attrs, a) {
+  return mk(loc, attrs, /* Ptyp_extension */Block.__(10, [a]));
+}
+
+function force_poly(t) {
+  var match = t.ptyp_desc;
+  var exit = 0;
+  if (typeof match === "number" || match.tag !== 8) {
+    exit = 1;
+  } else {
+    return t;
+  }
+  if (exit === 1) {
+    return poly(t.ptyp_loc, undefined, /* [] */0, t);
+  }
+  
+}
+
+var Typ = /* module */{
+  mk: mk,
+  attr: attr,
+  any: any,
+  var: $$var,
+  arrow: arrow,
+  tuple: tuple,
+  constr: constr,
+  object_: object_,
+  class_: class_,
+  alias: alias,
+  variant: variant,
+  poly: poly,
+  package: $$package,
+  extension: extension,
+  force_poly: force_poly
+};
+
 function mk$1($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -2462,6 +3309,117 @@ function attr$1(d, a) {
               ])
         };
 }
+
+function any$1(loc, attrs, param) {
+  return mk$1(loc, attrs, /* Ppat_any */0);
+}
+
+function $$var$1(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_var */Block.__(0, [a]));
+}
+
+function alias$1(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_alias */Block.__(1, [
+                a,
+                b
+              ]));
+}
+
+function constant(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_constant */Block.__(2, [a]));
+}
+
+function interval(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_interval */Block.__(3, [
+                a,
+                b
+              ]));
+}
+
+function tuple$1(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_tuple */Block.__(4, [a]));
+}
+
+function construct(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_construct */Block.__(5, [
+                a,
+                b
+              ]));
+}
+
+function variant$1(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_variant */Block.__(6, [
+                a,
+                b
+              ]));
+}
+
+function record(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_record */Block.__(7, [
+                a,
+                b
+              ]));
+}
+
+function array(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_array */Block.__(8, [a]));
+}
+
+function or_(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_or */Block.__(9, [
+                a,
+                b
+              ]));
+}
+
+function constraint_(loc, attrs, a, b) {
+  return mk$1(loc, attrs, /* Ppat_constraint */Block.__(10, [
+                a,
+                b
+              ]));
+}
+
+function type_(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_type */Block.__(11, [a]));
+}
+
+function lazy_(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_lazy */Block.__(12, [a]));
+}
+
+function unpack(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_unpack */Block.__(13, [a]));
+}
+
+function exception_(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_exception */Block.__(14, [a]));
+}
+
+function extension$1(loc, attrs, a) {
+  return mk$1(loc, attrs, /* Ppat_extension */Block.__(15, [a]));
+}
+
+var Pat = /* module */{
+  mk: mk$1,
+  attr: attr$1,
+  any: any$1,
+  var: $$var$1,
+  alias: alias$1,
+  constant: constant,
+  interval: interval,
+  tuple: tuple$1,
+  construct: construct,
+  variant: variant$1,
+  record: record,
+  array: array,
+  or_: or_,
+  constraint_: constraint_,
+  type_: type_,
+  lazy_: lazy_,
+  unpack: unpack,
+  exception_: exception_,
+  extension: extension$1
+};
 
 function mk$2($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -2488,7 +3446,7 @@ function ident(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_ident */Block.__(0, [a]));
 }
 
-function constant(loc, attrs, a) {
+function constant$1(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_constant */Block.__(1, [a]));
 }
 
@@ -2534,25 +3492,25 @@ function try_(loc, attrs, a, b) {
               ]));
 }
 
-function tuple(loc, attrs, a) {
+function tuple$2(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_tuple */Block.__(8, [a]));
 }
 
-function construct(loc, attrs, a, b) {
+function construct$1(loc, attrs, a, b) {
   return mk$2(loc, attrs, /* Pexp_construct */Block.__(9, [
                 a,
                 b
               ]));
 }
 
-function variant(loc, attrs, a, b) {
+function variant$2(loc, attrs, a, b) {
   return mk$2(loc, attrs, /* Pexp_variant */Block.__(10, [
                 a,
                 b
               ]));
 }
 
-function record(loc, attrs, a, b) {
+function record$1(loc, attrs, a, b) {
   return mk$2(loc, attrs, /* Pexp_record */Block.__(11, [
                 a,
                 b
@@ -2574,7 +3532,7 @@ function setfield(loc, attrs, a, b, c) {
               ]));
 }
 
-function array(loc, attrs, a) {
+function array$1(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_array */Block.__(14, [a]));
 }
 
@@ -2610,7 +3568,7 @@ function for_(loc, attrs, a, b, c, d, e) {
               ]));
 }
 
-function constraint_(loc, attrs, a, b) {
+function constraint_$1(loc, attrs, a, b) {
   return mk$2(loc, attrs, /* Pexp_constraint */Block.__(19, [
                 a,
                 b
@@ -2659,18 +3617,18 @@ function assert_(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_assert */Block.__(26, [a]));
 }
 
-function lazy_(loc, attrs, a) {
+function lazy_$1(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_lazy */Block.__(27, [a]));
 }
 
-function poly(loc, attrs, a, b) {
+function poly$1(loc, attrs, a, b) {
   return mk$2(loc, attrs, /* Pexp_poly */Block.__(28, [
                 a,
                 b
               ]));
 }
 
-function object_(loc, attrs, a) {
+function object_$1(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_object */Block.__(29, [a]));
 }
 
@@ -2693,7 +3651,7 @@ function open_(loc, attrs, a, b, c) {
               ]));
 }
 
-function extension(loc, attrs, a) {
+function extension$2(loc, attrs, a) {
   return mk$2(loc, attrs, /* Pexp_extension */Block.__(33, [a]));
 }
 
@@ -2726,9 +3684,52 @@ function attr$3(d, a) {
         };
 }
 
-function alias(loc, attrs, a) {
+function ident$1(loc, attrs, a) {
+  return mk$3(loc, attrs, /* Pmty_ident */Block.__(0, [a]));
+}
+
+function alias$2(loc, attrs, a) {
   return mk$3(loc, attrs, /* Pmty_alias */Block.__(6, [a]));
 }
+
+function signature(loc, attrs, a) {
+  return mk$3(loc, attrs, /* Pmty_signature */Block.__(1, [a]));
+}
+
+function functor_(loc, attrs, a, b, c) {
+  return mk$3(loc, attrs, /* Pmty_functor */Block.__(2, [
+                a,
+                b,
+                c
+              ]));
+}
+
+function with_(loc, attrs, a, b) {
+  return mk$3(loc, attrs, /* Pmty_with */Block.__(3, [
+                a,
+                b
+              ]));
+}
+
+function typeof_(loc, attrs, a) {
+  return mk$3(loc, attrs, /* Pmty_typeof */Block.__(4, [a]));
+}
+
+function extension$3(loc, attrs, a) {
+  return mk$3(loc, attrs, /* Pmty_extension */Block.__(5, [a]));
+}
+
+var Mty = /* module */{
+  mk: mk$3,
+  attr: attr$3,
+  ident: ident$1,
+  alias: alias$2,
+  signature: signature,
+  functor_: functor_,
+  with_: with_,
+  typeof_: typeof_,
+  extension: extension$3
+};
 
 function mk$4($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -2751,12 +3752,118 @@ function attr$4(d, a) {
         };
 }
 
+function ident$2(loc, attrs, x) {
+  return mk$4(loc, attrs, /* Pmod_ident */Block.__(0, [x]));
+}
+
+function structure(loc, attrs, x) {
+  return mk$4(loc, attrs, /* Pmod_structure */Block.__(1, [x]));
+}
+
+function functor_$1(loc, attrs, arg, arg_ty, body) {
+  return mk$4(loc, attrs, /* Pmod_functor */Block.__(2, [
+                arg,
+                arg_ty,
+                body
+              ]));
+}
+
+function apply$1(loc, attrs, m1, m2) {
+  return mk$4(loc, attrs, /* Pmod_apply */Block.__(3, [
+                m1,
+                m2
+              ]));
+}
+
+function constraint_$2(loc, attrs, m, mty) {
+  return mk$4(loc, attrs, /* Pmod_constraint */Block.__(4, [
+                m,
+                mty
+              ]));
+}
+
+function unpack$1(loc, attrs, e) {
+  return mk$4(loc, attrs, /* Pmod_unpack */Block.__(5, [e]));
+}
+
+function extension$4(loc, attrs, a) {
+  return mk$4(loc, attrs, /* Pmod_extension */Block.__(6, [a]));
+}
+
+var Mod = /* module */{
+  mk: mk$4,
+  attr: attr$4,
+  ident: ident$2,
+  structure: structure,
+  functor_: functor_$1,
+  apply: apply$1,
+  constraint_: constraint_$2,
+  unpack: unpack$1,
+  extension: extension$4
+};
+
 function mk$5($staropt$star, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */{
           psig_desc: d,
           psig_loc: loc
         };
+}
+
+function value(loc, a) {
+  return mk$5(loc, /* Psig_value */Block.__(0, [a]));
+}
+
+function type_$1(loc, a) {
+  return mk$5(loc, /* Psig_type */Block.__(1, [a]));
+}
+
+function type_extension(loc, a) {
+  return mk$5(loc, /* Psig_typext */Block.__(2, [a]));
+}
+
+function exception_$1(loc, a) {
+  return mk$5(loc, /* Psig_exception */Block.__(3, [a]));
+}
+
+function module_(loc, a) {
+  return mk$5(loc, /* Psig_module */Block.__(4, [a]));
+}
+
+function rec_module(loc, a) {
+  return mk$5(loc, /* Psig_recmodule */Block.__(5, [a]));
+}
+
+function modtype(loc, a) {
+  return mk$5(loc, /* Psig_modtype */Block.__(6, [a]));
+}
+
+function open_$1(loc, a) {
+  return mk$5(loc, /* Psig_open */Block.__(7, [a]));
+}
+
+function include_(loc, a) {
+  return mk$5(loc, /* Psig_include */Block.__(8, [a]));
+}
+
+function class_$1(loc, a) {
+  return mk$5(loc, /* Psig_class */Block.__(9, [a]));
+}
+
+function class_type(loc, a) {
+  return mk$5(loc, /* Psig_class_type */Block.__(10, [a]));
+}
+
+function extension$5(loc, $staropt$star, a) {
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  return mk$5(loc, /* Psig_extension */Block.__(12, [
+                a,
+                attrs
+              ]));
+}
+
+function attribute(loc, a) {
+  return mk$5(loc, /* Psig_attribute */Block.__(11, [a]));
 }
 
 function text(txt) {
@@ -2767,12 +3874,101 @@ function text(txt) {
               }), txt);
 }
 
+var Sig = /* module */{
+  mk: mk$5,
+  value: value,
+  type_: type_$1,
+  type_extension: type_extension,
+  exception_: exception_$1,
+  module_: module_,
+  rec_module: rec_module,
+  modtype: modtype,
+  open_: open_$1,
+  include_: include_,
+  class_: class_$1,
+  class_type: class_type,
+  extension: extension$5,
+  attribute: attribute,
+  text: text
+};
+
 function mk$6($staropt$star, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */{
           pstr_desc: d,
           pstr_loc: loc
         };
+}
+
+function $$eval(loc, $staropt$star, a) {
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  return mk$6(loc, /* Pstr_eval */Block.__(0, [
+                a,
+                attrs
+              ]));
+}
+
+function value$1(loc, a, b) {
+  return mk$6(loc, /* Pstr_value */Block.__(1, [
+                a,
+                b
+              ]));
+}
+
+function primitive(loc, a) {
+  return mk$6(loc, /* Pstr_primitive */Block.__(2, [a]));
+}
+
+function type_$2(loc, a) {
+  return mk$6(loc, /* Pstr_type */Block.__(3, [a]));
+}
+
+function type_extension$1(loc, a) {
+  return mk$6(loc, /* Pstr_typext */Block.__(4, [a]));
+}
+
+function exception_$2(loc, a) {
+  return mk$6(loc, /* Pstr_exception */Block.__(5, [a]));
+}
+
+function module_$1(loc, a) {
+  return mk$6(loc, /* Pstr_module */Block.__(6, [a]));
+}
+
+function rec_module$1(loc, a) {
+  return mk$6(loc, /* Pstr_recmodule */Block.__(7, [a]));
+}
+
+function modtype$1(loc, a) {
+  return mk$6(loc, /* Pstr_modtype */Block.__(8, [a]));
+}
+
+function open_$2(loc, a) {
+  return mk$6(loc, /* Pstr_open */Block.__(9, [a]));
+}
+
+function class_$2(loc, a) {
+  return mk$6(loc, /* Pstr_class */Block.__(10, [a]));
+}
+
+function class_type$1(loc, a) {
+  return mk$6(loc, /* Pstr_class_type */Block.__(11, [a]));
+}
+
+function include_$1(loc, a) {
+  return mk$6(loc, /* Pstr_include */Block.__(12, [a]));
+}
+
+function extension$6(loc, $staropt$star, a) {
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  return mk$6(loc, /* Pstr_extension */Block.__(14, [
+                a,
+                attrs
+              ]));
+}
+
+function attribute$1(loc, a) {
+  return mk$6(loc, /* Pstr_attribute */Block.__(13, [a]));
 }
 
 function text$1(txt) {
@@ -2782,6 +3978,26 @@ function text$1(txt) {
                 return mk$6(loc, /* Pstr_attribute */Block.__(13, [a]));
               }), txt);
 }
+
+var Str = /* module */{
+  mk: mk$6,
+  eval: $$eval,
+  value: value$1,
+  primitive: primitive,
+  type_: type_$2,
+  type_extension: type_extension$1,
+  exception_: exception_$2,
+  module_: module_$1,
+  rec_module: rec_module$1,
+  modtype: modtype$1,
+  open_: open_$2,
+  class_: class_$2,
+  class_type: class_type$1,
+  include_: include_$1,
+  extension: extension$6,
+  attribute: attribute$1,
+  text: text$1
+};
 
 function mk$7($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -2804,6 +4020,64 @@ function attr$5(d, a) {
         };
 }
 
+function constr$1(loc, attrs, a, b) {
+  return mk$7(loc, attrs, /* Pcl_constr */Block.__(0, [
+                a,
+                b
+              ]));
+}
+
+function structure$1(loc, attrs, a) {
+  return mk$7(loc, attrs, /* Pcl_structure */Block.__(1, [a]));
+}
+
+function fun_$1(loc, attrs, a, b, c, d) {
+  return mk$7(loc, attrs, /* Pcl_fun */Block.__(2, [
+                a,
+                b,
+                c,
+                d
+              ]));
+}
+
+function apply$2(loc, attrs, a, b) {
+  return mk$7(loc, attrs, /* Pcl_apply */Block.__(3, [
+                a,
+                b
+              ]));
+}
+
+function let_$1(loc, attrs, a, b, c) {
+  return mk$7(loc, attrs, /* Pcl_let */Block.__(4, [
+                a,
+                b,
+                c
+              ]));
+}
+
+function constraint_$3(loc, attrs, a, b) {
+  return mk$7(loc, attrs, /* Pcl_constraint */Block.__(5, [
+                a,
+                b
+              ]));
+}
+
+function extension$7(loc, attrs, a) {
+  return mk$7(loc, attrs, /* Pcl_extension */Block.__(6, [a]));
+}
+
+var Cl = /* module */{
+  mk: mk$7,
+  attr: attr$5,
+  constr: constr$1,
+  structure: structure$1,
+  fun_: fun_$1,
+  apply: apply$2,
+  let_: let_$1,
+  constraint_: constraint_$3,
+  extension: extension$7
+};
+
 function mk$8($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -2824,6 +4098,38 @@ function attr$6(d, a) {
               ])
         };
 }
+
+function constr$2(loc, attrs, a, b) {
+  return mk$8(loc, attrs, /* Pcty_constr */Block.__(0, [
+                a,
+                b
+              ]));
+}
+
+function signature$1(loc, attrs, a) {
+  return mk$8(loc, attrs, /* Pcty_signature */Block.__(1, [a]));
+}
+
+function arrow$1(loc, attrs, a, b, c) {
+  return mk$8(loc, attrs, /* Pcty_arrow */Block.__(2, [
+                a,
+                b,
+                c
+              ]));
+}
+
+function extension$8(loc, attrs, a) {
+  return mk$8(loc, attrs, /* Pcty_extension */Block.__(3, [a]));
+}
+
+var Cty = /* module */{
+  mk: mk$8,
+  attr: attr$6,
+  constr: constr$2,
+  signature: signature$1,
+  arrow: arrow$1,
+  extension: extension$8
+};
 
 function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -2858,24 +4164,24 @@ function method_(loc, attrs, a, b, c, d) {
                 ]]));
 }
 
-function constraint_$1(loc, attrs, a, b) {
+function constraint_$4(loc, attrs, a, b) {
   return mk$9(loc, attrs, undefined, /* Pctf_constraint */Block.__(3, [/* tuple */[
                   a,
                   b
                 ]]));
 }
 
-function extension$1(loc, attrs, a) {
+function extension$9(loc, attrs, a) {
   return mk$9(loc, attrs, undefined, /* Pctf_extension */Block.__(5, [a]));
 }
 
-function attribute(loc, a) {
+function attribute$2(loc, a) {
   return mk$9(loc, undefined, undefined, /* Pctf_attribute */Block.__(4, [a]));
 }
 
 function text$2(txt) {
   return List.map((function (ds) {
-                return attribute(ds.ds_loc, text_attr(ds));
+                return attribute$2(ds.ds_loc, text_attr(ds));
               }), txt);
 }
 
@@ -2925,7 +4231,7 @@ function method_$1(loc, attrs, a, b, c) {
                 ]]));
 }
 
-function constraint_$2(loc, attrs, a, b) {
+function constraint_$5(loc, attrs, a, b) {
   return mk$10(loc, attrs, undefined, /* Pcf_constraint */Block.__(3, [/* tuple */[
                   a,
                   b
@@ -2936,17 +4242,17 @@ function initializer_(loc, attrs, a) {
   return mk$10(loc, attrs, undefined, /* Pcf_initializer */Block.__(4, [a]));
 }
 
-function extension$2(loc, attrs, a) {
+function extension$10(loc, attrs, a) {
   return mk$10(loc, attrs, undefined, /* Pcf_extension */Block.__(6, [a]));
 }
 
-function attribute$1(loc, a) {
+function attribute$3(loc, a) {
   return mk$10(loc, undefined, undefined, /* Pcf_attribute */Block.__(5, [a]));
 }
 
 function text$3(txt) {
   return List.map((function (ds) {
-                return attribute$1(ds.ds_loc, text_attr(ds));
+                return attribute$3(ds.ds_loc, text_attr(ds));
               }), txt);
 }
 
@@ -2986,6 +4292,10 @@ function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         };
 }
 
+var Val = /* module */{
+  mk: mk$11
+};
+
 function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -2998,6 +4308,10 @@ function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
           pmd_loc: loc
         };
 }
+
+var Md = /* module */{
+  mk: mk$12
+};
 
 function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3012,6 +4326,10 @@ function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         };
 }
 
+var Mtd = /* module */{
+  mk: mk$13
+};
+
 function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -3024,6 +4342,10 @@ function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
           pmb_loc: loc
         };
 }
+
+var Mb = /* module */{
+  mk: mk$14
+};
 
 function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3038,6 +4360,10 @@ function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         };
 }
 
+var Opn = /* module */{
+  mk: mk$15
+};
+
 function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
@@ -3048,6 +4374,10 @@ function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
           pincl_attributes: add_docs_attrs(docs, attrs)
         };
 }
+
+var Incl = /* module */{
+  mk: mk$16
+};
 
 function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3061,6 +4391,10 @@ function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
           pvb_loc: loc
         };
 }
+
+var Vb = /* module */{
+  mk: mk$17
+};
 
 function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3078,6 +4412,10 @@ function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
           pci_attributes: add_text_attrs(text, add_docs_attrs(docs, attrs))
         };
 }
+
+var Ci = /* module */{
+  mk: mk$18
+};
 
 function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3128,6 +4466,12 @@ function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$
         };
 }
 
+var Type = /* module */{
+  mk: mk$19,
+  constructor: constructor,
+  field: field$1
+};
+
 function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
   var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   var docs = $staropt$star$1 !== undefined ? $staropt$star$1 : empty_docs;
@@ -3139,6 +4483,19 @@ function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
           ptyext_constructors: constructors,
           ptyext_private: priv,
           ptyext_attributes: add_docs_attrs(docs, attrs)
+        };
+}
+
+function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, kind) {
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
+  return /* record */{
+          pext_name: name,
+          pext_kind: kind,
+          pext_loc: loc,
+          pext_attributes: add_docs_attrs(docs, add_info_attrs(info, attrs))
         };
 }
 
@@ -3172,72 +4529,123 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
         };
 }
 
-var Ast_helper_004 = /* Exp */[
-  mk$2,
-  attr$2,
-  ident,
-  constant,
-  let_,
-  fun_,
-  function_,
-  apply,
-  match_,
-  try_,
-  tuple,
-  construct,
-  variant,
-  record,
-  field,
-  setfield,
-  array,
-  ifthenelse,
-  sequence,
-  while_,
-  for_,
-  coerce,
-  constraint_,
-  send,
-  new_,
-  setinstvar,
-  override,
-  letmodule,
-  assert_,
-  lazy_,
-  poly,
-  object_,
-  newtype,
-  pack,
-  open_,
-  extension,
-  $$case
-];
+var Te = /* module */{
+  mk: mk$20,
+  constructor: constructor$1,
+  decl: decl,
+  rebind: rebind
+};
 
-var Ast_helper_019 = /* Ctf */[
-  mk$9,
-  attr$7,
-  inherit_,
-  val_,
-  method_,
-  constraint_$1,
-  extension$1,
-  attribute,
-  text$2
-];
+function mk$21(self, fields) {
+  return /* record */{
+          pcsig_self: self,
+          pcsig_fields: fields
+        };
+}
 
-var Ast_helper_021 = /* Cf */[
-  mk$10,
-  attr$8,
-  inherit_$1,
-  val_$1,
-  method_$1,
-  constraint_$2,
-  initializer_,
-  extension$2,
-  attribute$1,
-  text$3,
-  virtual_,
-  concrete
-];
+var Csig = /* module */{
+  mk: mk$21
+};
+
+function mk$22(self, fields) {
+  return /* record */{
+          pcstr_self: self,
+          pcstr_fields: fields
+        };
+}
+
+var Cstr = /* module */{
+  mk: mk$22
+};
+
+var Ast_helper = /* module */{
+  default_loc: default_loc,
+  with_default_loc: with_default_loc,
+  Typ: Typ,
+  Pat: Pat,
+  Exp: [
+    mk$2,
+    attr$2,
+    ident,
+    constant$1,
+    let_,
+    fun_,
+    function_,
+    apply,
+    match_,
+    try_,
+    tuple$2,
+    construct$1,
+    variant$2,
+    record$1,
+    field,
+    setfield,
+    array$1,
+    ifthenelse,
+    sequence,
+    while_,
+    for_,
+    coerce,
+    constraint_$1,
+    send,
+    new_,
+    setinstvar,
+    override,
+    letmodule,
+    assert_,
+    lazy_$1,
+    poly$1,
+    object_$1,
+    newtype,
+    pack,
+    open_,
+    extension$2,
+    $$case
+  ],
+  Val: Val,
+  Type: Type,
+  Te: Te,
+  Mty: Mty,
+  Mod: Mod,
+  Sig: Sig,
+  Str: Str,
+  Md: Md,
+  Mtd: Mtd,
+  Mb: Mb,
+  Opn: Opn,
+  Incl: Incl,
+  Vb: Vb,
+  Cty: Cty,
+  Ctf: [
+    mk$9,
+    attr$7,
+    inherit_,
+    val_,
+    method_,
+    constraint_$4,
+    extension$9,
+    attribute$2,
+    text$2
+  ],
+  Cl: Cl,
+  Cf: [
+    mk$10,
+    attr$8,
+    inherit_$1,
+    val_$1,
+    method_$1,
+    constraint_$5,
+    initializer_,
+    extension$10,
+    attribute$3,
+    text$3,
+    virtual_,
+    concrete
+  ],
+  Ci: Ci,
+  Csig: Csig,
+  Cstr: Cstr
+};
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");
 
@@ -3390,7 +4798,7 @@ function mkpat(d) {
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_rloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper.Exp.mk, symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkmty(d) {
@@ -3418,11 +4826,11 @@ function mkcty(d) {
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_019[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper.Ctf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper.Cf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkoption(d) {
@@ -3465,7 +4873,7 @@ function reloc_exp(x) {
 
 function mkoperator(name, pos) {
   var loc = rhs_loc(pos);
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_ident */Block.__(0, [/* record */{
+  return Curry._3(Ast_helper.Exp.mk, loc, undefined, /* Pexp_ident */Block.__(0, [/* record */{
                   txt: /* Lident */Block.__(0, [name]),
                   loc: loc
                 }]));
@@ -3479,7 +4887,7 @@ function mkpatvar(name, pos) {
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_gloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper.Exp.mk, symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghpat(d) {
@@ -3518,7 +4926,7 @@ function neg_float_string(f) {
 }
 
 function mkexp_cons(consloc, args, loc) {
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_construct */Block.__(9, [
+  return Curry._3(Ast_helper.Exp.mk, loc, undefined, /* Pexp_construct */Block.__(9, [
                 /* record */{
                   txt: /* Lident */Block.__(0, ["::"]),
                   loc: consloc
@@ -3546,7 +4954,7 @@ function mktailexp(nilloc, param) {
       loc_end: exp_el.pexp_loc.loc_end,
       loc_ghost: true
     };
-    var arg = Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
+    var arg = Curry._3(Ast_helper.Exp.mk, loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
               /* :: */[
                 exp_el,
@@ -3568,7 +4976,7 @@ function mktailexp(nilloc, param) {
       txt: /* Lident */Block.__(0, ["[]"]),
       loc: loc$1
     };
-    return Curry._3(Ast_helper_004[/* mk */0], loc$1, undefined, /* Pexp_construct */Block.__(9, [
+    return Curry._3(Ast_helper.Exp.mk, loc$1, undefined, /* Pexp_construct */Block.__(9, [
                   nil,
                   undefined
                 ]));
@@ -3935,11 +5343,11 @@ function wrap_exp_attrs(body, param) {
 }
 
 function text_cstr(pos) {
-  return Curry._1(Ast_helper_021[/* text */9], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper.Cf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_csig(pos) {
-  return Curry._1(Ast_helper_019[/* text */8], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper.Ctf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_def(pos) {
@@ -3956,11 +5364,11 @@ function extra_text(text, pos, items) {
 }
 
 function extra_cstr(pos, items) {
-  return extra_text(Ast_helper_021[/* text */9], pos, items);
+  return extra_text(Ast_helper.Cf.text, pos, items);
 }
 
 function extra_csig(pos, items) {
-  return extra_text(Ast_helper_019[/* text */8], pos, items);
+  return extra_text(Ast_helper.Ctf.text, pos, items);
 }
 
 function add_nonrec(rf, attrs, pos) {
@@ -4829,7 +6237,7 @@ var yyact = /* array */[
       return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, /* record */{
                   txt: _2,
                   loc: rhs_loc(2)
-                }, alias(rhs_loc(4), undefined, /* record */{
+                }, alias$2(rhs_loc(4), undefined, /* record */{
                       txt: _4,
                       loc: rhs_loc(4)
                     }));
@@ -6393,7 +7801,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._2(Ast_helper_004[/* attr */1], _1, _2);
+      return Curry._2(Ast_helper.Exp.attr, _1, _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7093,13 +8501,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, undefined, _3);
+      return Curry._3(Ast_helper.Exp.case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, _3, _5);
+      return Curry._3(Ast_helper.Exp.case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);

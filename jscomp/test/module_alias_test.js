@@ -80,7 +80,7 @@ function f(x) {
 
 var h = f(/* [] */0);
 
-var a = Curry._1(h[/* length */0], /* :: */[
+var a = Curry._1(h.length, /* :: */[
       1,
       /* :: */[
         2,

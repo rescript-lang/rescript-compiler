@@ -793,10 +793,10 @@ var $$Set = [
   of_list
 ];
 
-var M = /* module */[
-  /* x */1,
-  /* Set */$$Set
-];
+var M = /* module */{
+  x: 1,
+  Set: $$Set
+};
 
 var x = 1;
 

@@ -15,24 +15,24 @@ function to_list(q) {
                   }), /* [] */0, q));
 }
 
-var Q = /* module */[
-  /* Empty */Queue.Empty,
-  /* create */Queue.create,
-  /* add */Queue.add,
-  /* push */Queue.push,
-  /* take */Queue.take,
-  /* pop */Queue.pop,
-  /* peek */Queue.peek,
-  /* top */Queue.top,
-  /* clear */Queue.clear,
-  /* copy */Queue.copy,
-  /* is_empty */Queue.is_empty,
-  /* length */Queue.length,
-  /* iter */Queue.iter,
-  /* fold */Queue.fold,
-  /* transfer */Queue.transfer,
-  /* to_list */to_list
-];
+var Q = /* module */{
+  Empty: Queue.Empty,
+  create: Queue.create,
+  add: Queue.add,
+  push: Queue.push,
+  take: Queue.take,
+  pop: Queue.pop,
+  peek: Queue.peek,
+  top: Queue.top,
+  clear: Queue.clear,
+  copy: Queue.copy,
+  is_empty: Queue.is_empty,
+  length: Queue.length,
+  iter: Queue.iter,
+  fold: Queue.fold,
+  transfer: Queue.transfer,
+  to_list: to_list
+};
 
 function does_raise(f, q) {
   try {

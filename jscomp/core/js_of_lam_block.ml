@@ -58,9 +58,10 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
 #end
 | Fld_record comment when comment <> "contents" ->
   E.dot e comment
-| Fld_record comment
-| Fld_module comment
-    -> E.array_index_by_int ~comment e i
+| Fld_record comment ->
+  E.array_index_by_int ~comment e i
+| Fld_module comment ->
+  E.dot e comment
 
 let field_by_exp e i = 
   E.array_index e i 
