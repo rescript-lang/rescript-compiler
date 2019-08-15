@@ -177,7 +177,7 @@ function map_opt(f, l) {
         ];
         continue ;
       } else {
-        return undefined;
+        return ;
       }
     } else {
       return List.rev(acc);
@@ -200,7 +200,7 @@ function list_any(f, e) {
           continue ;
         }
       } else {
-        return undefined;
+        return ;
       }
     };
   }
@@ -239,13 +239,13 @@ function list_all(f, e) {
 
 function _try_atom(e, f) {
   if (e[0] >= 848054398) {
-    return undefined;
+    return ;
   } else {
     try {
       return Caml_option.some(Curry._1(f, e[1]));
     }
     catch (exn){
-      return undefined;
+      return ;
     }
   }
 }
@@ -270,7 +270,7 @@ function to_string(e) {
 
 function to_pair(e) {
   if (typeof e === "number" || e[0] !== 848054398) {
-    return undefined;
+    return ;
   } else {
     var match = e[1];
     if (match) {
@@ -281,10 +281,10 @@ function to_pair(e) {
                 match$1[0]
               ];
       } else {
-        return undefined;
+        return ;
       }
     } else {
-      return undefined;
+      return ;
     }
   }
 }
@@ -305,7 +305,7 @@ function to_pair_with(f1, f2, e) {
 
 function to_triple(e) {
   if (typeof e === "number" || e[0] !== 848054398) {
-    return undefined;
+    return ;
   } else {
     var match = e[1];
     if (match) {
@@ -319,13 +319,13 @@ function to_triple(e) {
                   match$2[0]
                 ];
         } else {
-          return undefined;
+          return ;
         }
       } else {
-        return undefined;
+        return ;
       }
     } else {
-      return undefined;
+      return ;
     }
   }
 }
@@ -409,7 +409,7 @@ function get_field(name, e) {
           }
         }
       } else {
-        return undefined;
+        return ;
       }
     };
   }
@@ -453,7 +453,7 @@ function _get_field_list(name, _l) {
         }
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -477,7 +477,7 @@ function _get_variant(s, args, _l) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -488,12 +488,12 @@ function get_variant(l, e) {
     if (match) {
       var match$1 = match[0];
       if (typeof match$1 === "number" || match$1[0] !== 726615281) {
-        return undefined;
+        return ;
       } else {
         return _get_variant(match$1[1], match[1], l);
       }
     } else {
-      return undefined;
+      return ;
     }
   } else {
     return _get_variant(e[1], /* [] */0, l);

@@ -314,13 +314,11 @@ class virtual map =
            let _x_i1 = o#expression _x_i1 in (_x, _x_i1))
     method property : property -> property = o#unknown
     method program : program -> program =
-      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
-        ->
-        let _x = o#string _x in
-        let _x_i1 = o#block _x_i1 in
-        let _x_i2 = o#exports _x_i2 in
-        let _x_i3 = o#unknown _x_i3
-        in { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3; }
+      fun { block = _x; exports = _x_i1; export_set = _x_i2 } ->
+        let _x = o#block _x in
+        let _x_i1 = o#exports _x_i1 in
+        let _x_i2 = o#unknown _x_i2
+        in { block = _x; exports = _x_i1; export_set = _x_i2; }
     method number : number -> number = o#unknown
     method mutable_flag : mutable_flag -> mutable_flag = o#unknown
     method length_object : length_object -> length_object = o#unknown

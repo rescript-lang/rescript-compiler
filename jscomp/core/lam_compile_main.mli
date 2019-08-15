@@ -38,7 +38,6 @@
     {!Env.get_unit_name ()}
  *)
 val compile :  
-  filename : string -> 
   string -> 
   Env.t ->   
   Lambda.lambda -> 
@@ -46,7 +45,6 @@ val compile :
 
 val lambda_as_module :  
   Env.t ->
-  string -> 
   string ->
   Lambda.lambda -> 
   unit

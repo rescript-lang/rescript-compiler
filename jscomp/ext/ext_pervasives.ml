@@ -29,7 +29,7 @@
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v action f   = 
+let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -40,34 +40,12 @@ let try_it f  =
   try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
+  finally (open_out_bin filename) ~clean:close_out f 
 
 
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
 
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
 
 external id : 'a -> 'a = "%identity"
 

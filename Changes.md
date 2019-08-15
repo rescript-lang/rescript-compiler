@@ -1,5 +1,37 @@
-
 `*` means  potential break changes
+
+# 5.1.0
+
+Features
+- #3731 #3734 #3724 #3714 enable bsc for reason, so that for one file, `bsc hi.re` works
+- #3671 add tool `bstracing` to visualize the building process
+- #3730 #3738 Code gen: simplify `return undefined` as `return`
+- #3713 support ppx with arguments (extended the schema)
+- #3708 #3701 respect NODE_PATH when resolving node modules 
+
+Fixes 
+- #3699 Exit code from bsb in watch mode should be 0 instead of 2
+- #3692, #3693 fix "cyclic dependencies error is swallowed"
+- #3530, #3690 best effort support for shared library support 
+- #3683, #3678 Docs: fix example in Belt.Array
+- #3657, #3669 Fix "For dependencies with namespace, the namespace file is always rebuilt"
+- #3666, #3668 Fix "Ninja fails to compile on alpine linux "
+- #3667, #3664 Fix "Warning number does not concat properly in some cases"
+- #3662, #3515 Fix "bsb doesn't work with non-Unicode characters in the file path "
+- #3653, #3519 Fix "[@react.component] vs .rei " in 4.06 branch
+- #3655  Improve OCaml version file error
+- #3652 Fix pnpm install (again)
+- #3651 Fix "React PPX: Show warning 26 on unused props with default value"
+Internal
+- #3711 not inlining self recursive functions
+- #3740 enable backtrace by default for compiler in dev mode 
+- #3705 dump package path in .sourcedirs.json for troubleshooting
+- #3698 better data format for .bsdeps 
+- #3680, #3684, #3677, #3675, #3672 better encoding for .bsbuild
+- #3673 strip the binary by default on *nix platform
+- #3658 #3545 fix a bunch of edge cases with dev build
+- #3643 Fix nasty out of bound error in string/bytes access
+
 # 5.0.6
 
 Fixes

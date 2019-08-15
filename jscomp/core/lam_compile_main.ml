@@ -43,9 +43,9 @@ let get_cmj_case output_prefix : Ext_namespace.file_kind =
   | false, false -> Upper_js
   
 
-let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
+let compile_group (meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
-  match x, file_name with 
+  match x with 
   (* 
         We need
 
@@ -66,7 +66,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
      so it should be safe
   *)
 
-  | Single (kind, id, lam), _ -> 
+  | Single (kind, id, lam) -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
     (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
@@ -75,14 +75,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
                                     meta
                                   } lam
 
-  | Recursive id_lams, _   -> 
+  | Recursive id_lams   -> 
     Lam_compile.compile_recursive_lets 
       { continuation = EffectCall ReturnFalse; 
         jmp_table = Lam_compile_context.empty_handler_map;
         meta
       } 
       id_lams
-  | Nop lam, _ -> (* TODO: Side effect callls, log and see statistics *)
+  | Nop lam -> (* TODO: Side effect callls, log and see statistics *)
     Lam_compile.compile_lambda {continuation = EffectCall ReturnFalse;
                                 jmp_table = Lam_compile_context.empty_handler_map;
                                 meta
@@ -121,7 +121,7 @@ let _d  = fun env s lam ->
 #if undefined BS_RELEASE_BUILD then 
     Lam_util.dump env s lam ;
     Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
-    ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
+    ignore @@ Lam_check.check !Location.input_name lam;
     Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
 #end
     lam
@@ -130,7 +130,7 @@ let _d  = fun env s lam ->
     it's used or not 
 *)
 let compile  
-    ~filename (output_prefix : string) 
+    (output_prefix : string) 
     (env : Env.t) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
@@ -150,7 +150,7 @@ let compile
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
   let lam = _d  env "flatten0" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename
+    Lam_pass_collect.count_alias_globals env 
       export_idents export_ident_sets lam in
   let lam = 
     let lam =  
@@ -198,7 +198,7 @@ let compile
     |> (fun lam -> 
        let () = 
         Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
-      Lam_check.check (Js_config.get_current_file ()) lam
+      Lam_check.check !Location.input_name lam
     ) 
 #end    
   in
@@ -212,8 +212,8 @@ let compile
     Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
       let f =
-        Ext_filename.new_extension filename  ".lambda" in
-      Ext_pervasives.with_file_as_pp f begin fun fmt ->
+        Ext_filename.new_extension !Location.input_name  ".lambda" in
+      Ext_fmt.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
           (Lam_group.pp_group env) fmt (coerced_input.groups) 
       end;
@@ -236,7 +236,7 @@ let compile
   let meta_exports = meta.exports in 
   let export_set = Ident_set.of_list meta_exports in 
   let js : J.program = 
-      { J.name = filename ; 
+      { 
         exports = meta_exports ; 
         export_set; 
         block = body}
@@ -293,11 +293,10 @@ let (//) = Filename.concat
 
 let lambda_as_module 
     finalenv 
-    (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   let lambda_output = 
-    compile ~filename output_prefix finalenv lam in
+    compile  output_prefix finalenv lam in
   let basename =  
     Ext_namespace.change_ext_ns_suffix 
       (Filename.basename
@@ -305,16 +304,8 @@ let lambda_as_module
       (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
-  if Js_packages_info.is_empty package_info  then 
-    begin 
-      let output_chan chan =         
-        Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
-      (if !Js_config.dump_js then output_chan stdout);
-      if not !Clflags.dont_write_files then 
-        Ext_pervasives.with_file_as_chan 
-          (Filename.dirname filename //  basename)
-          output_chan
-    end
+  if Js_packages_info.is_empty package_info  then     
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout      
   else
     Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
         let output_chan chan  = 
@@ -322,8 +313,6 @@ let lambda_as_module
             module_system 
             lambda_output
             chan in
-        (if !Js_config.dump_js then 
-           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
 #if BS_NATIVE then

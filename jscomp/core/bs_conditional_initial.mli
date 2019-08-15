@@ -33,4 +33,3 @@
 *)
 val setup_env : unit -> unit
 
-val standard_library : string 

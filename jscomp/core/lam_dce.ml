@@ -43,7 +43,7 @@ let transitive_closure
         Ident_hash_set.add visited id;
         match Ident_hashtbl.find_opt ident_freevars id with 
         | None -> 
-          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.stamp)  
+          Ext_fmt.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.stamp)  
         | Some e -> Ident_set.iter e dfs
       end  in 
   Ext_list.iter initial_idents dfs;

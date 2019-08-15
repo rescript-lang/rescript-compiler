@@ -84,7 +84,7 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lconst (_ : Lam_constant.t) -> false
   | Lapply ({fn; args; loc; status} )  ->
     f fn ||
-    List.exists f args
+    Ext_list.exists args f 
   | Lfunction({body; arity;  params } ) ->
     f body
   | Llet(str, id, arg, body) ->
@@ -104,10 +104,10 @@ let inner_exists (l : t) (f : t -> bool) : bool =
     Ext_option.exists default f     
   
   | Lprim {args; primitive ; loc}  ->
-    List.exists f args;
+    Ext_list.exists args f;
   
   | Lstaticraise (id,args) ->
-    List.exists f args;
+    Ext_list.exists args f;
   | Lstaticcatch(e1, vars , e2) ->
     f e1 ||
     f e2
@@ -125,4 +125,4 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lassign(id, e) ->
     f e
   | Lsend (k, met, obj, args, loc) ->
-    f met || f obj || List.exists f args       
+    f met || f obj || Ext_list.exists args f 

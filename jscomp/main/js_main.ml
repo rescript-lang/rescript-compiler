@@ -22,39 +22,89 @@ let setup_reason_context () =
   Lazy.force Super_main.setup;
   Lazy.force Reason_outcome_printer_main.setup
 
-let reason_pp name  = 
+let reason_pp ~sourcefile  = 
   setup_reason_context ();
-  Ast_reason_pp.pp name
+  Ast_reason_pp.pp sourcefile
 
-let process_file ppf name = 
-  match Ocaml_parse.check_suffix  name with 
-  | Ml, opref ->
-    Js_implementation.implementation ppf name opref 
-  | Re, opref ->     
-    Js_implementation.implementation ppf (reason_pp name) opref 
-  | Mli , opref ->   
-    Js_implementation.interface ppf name opref 
-  | Rei, opref ->
-    Js_implementation.interface ppf (reason_pp name) opref 
-  | Mliast, opref 
-    -> Js_implementation.interface_mliast ppf name opref 
-  | Reiast, opref 
+type valid_input = 
+  | Ml 
+  | Mli
+  | Re
+  | Rei
+  | Mlast    
+  | Mliast 
+  | Reast
+  | Reiast
+  | Mlmap
+  | Cmi
+
+(** This is per-file based, 
+    when [ocamlc] [-c -o another_dir/xx.cmi] 
+    it will return (another_dir/xx)
+*)    
+
+
+let process_file ppf sourcefile = 
+  (* This is a better default then "", it will be changed later 
+     The {!Location.input_name} relies on that we write the binary ast 
+     properly
+  *)
+  Location.input_name := sourcefile;  
+  let ext = Ext_filename.get_extension_maybe sourcefile in 
+  let input = 
+    if ext = Literals.suffix_ml  then 
+      Ml
+    else if  ext = Literals.suffix_re then
+      Re
+    else if ext = !Config.interface_suffix then 
+      Mli  
+    else if  ext = Literals.suffix_rei  then
+      Rei
+    else if ext =  Literals.suffix_mlast then 
+      Mlast 
+    else if ext = Literals.suffix_mliast then 
+      Mliast
+    else if ext = Literals.suffix_reast then   
+      Reast 
+    else if ext = Literals.suffix_reiast then   
+      Reiast
+    else if ext =  Literals.suffix_mlmap  then 
+      Mlmap 
+    else if ext =  Literals.suffix_cmi then 
+      Cmi
+    else 
+      raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
+  let opref = Compenv.output_prefix sourcefile in 
+  match input with 
+  | Re ->     
+    setup_reason_context ();
+    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref   
+  | Rei ->
+    setup_reason_context ();
+    Js_implementation.interface ppf (reason_pp ~sourcefile) opref 
+  | Reiast 
     -> 
-      setup_reason_context ();
-      Js_implementation.interface_mliast ppf name opref   
-  | Reast, opref 
+    setup_reason_context ();
+    Js_implementation.interface_mliast ppf sourcefile opref   
+  | Reast 
     -> 
-      setup_reason_context ();
-      Js_implementation.implementation_mlast ppf name opref
-  | Mlast, opref 
-    -> Js_implementation.implementation_mlast ppf name opref
-  | Mlmap, opref 
-    -> Js_implementation.implementation_map ppf name opref
-  | Cmi, _ 
+    setup_reason_context ();
+    Js_implementation.implementation_mlast ppf sourcefile opref
+  | Ml ->
+    Js_implementation.implementation ppf sourcefile opref 
+  | Mli  ->   
+    Js_implementation.interface ppf sourcefile opref   
+  | Mliast 
+    -> Js_implementation.interface_mliast ppf sourcefile opref 
+  | Mlast 
+    -> Js_implementation.implementation_mlast ppf sourcefile opref
+  | Mlmap 
+    -> Js_implementation.implementation_map ppf sourcefile opref
+  | Cmi
     ->
-      let {Cmi_format.cmi_sign } =  Cmi_format.read_cmi name in 
-      Printtyp.signature Format.std_formatter cmi_sign ; 
-      Format.pp_print_newline Format.std_formatter ()
+    let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
+    Printtyp.signature Format.std_formatter cmi_sign ; 
+    Format.pp_print_newline Format.std_formatter ()
       
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
@@ -87,13 +137,14 @@ let intf filename =
 #end      
   ; process_interface_file ppf filename;;
 
-let eval_string = ref ""        
-
-let set_eval_string s = 
-  eval_string :=  s 
 
 
-
+let eval (s : string) ~suffix =
+  let tmpfile = Filename.temp_file "eval" suffix in 
+  Ext_io.write_file tmpfile s;   
+  Ext_pervasives.finally  tmpfile anonymous ~clean:(fun _ ->
+      try Sys.remove tmpfile with _ -> () 
+    )
 
 let (//) = Filename.concat
 
@@ -180,8 +231,13 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " disable binary annotations (by default on)")
   ::
   ("-bs-eval", 
-   Arg.String set_eval_string, 
-   " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
+   Arg.String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
+   " (experimental) Set the string to be evaluated in OCaml syntax"
+  )
+  ::
+  ("-e", 
+   Arg.String (fun  s -> eval s ~suffix:Literals.suffix_re), 
+   " (experimental) Set the string to be evaluated in ReasonML syntax"
   )
   ::
   (
@@ -268,44 +324,27 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.no_assert_false,
     " no code for assert false"
   )  
-  (* :: *)
-  (* ("-bs-list-directives", *)
-  (* ) *)
+
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
+
+  
+
+
 let _ = 
-  (* Default configuration: sync up with 
-    {!Jsoo_main}  *)
-  Clflags.bs_only := true;  
-  Clflags.no_implicit_current_dir := true; 
-  (* default true 
-    otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
-  *)
-  Clflags.assume_no_mli := Clflags.Mli_non_exists;
-  Clflags.unsafe_string := false;
-  Clflags.debug := true;
-  Clflags.record_event_when_debug := false;
-  Clflags.binary_annotations := true; 
-  Clflags.transparent_modules := true;
-  (* Turn on [-no-alias-deps] by default *)
-  Oprint.out_ident := Outcome_printer_ns.out_ident;
+
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
-    Arg.parse buckle_script_flags anonymous usage;
-
-    let eval_string = !eval_string in
-    let task : Ocaml_batch_compile.task = 
-      if eval_string <> "" then 
-        Bsc_task_eval eval_string
-      else Bsc_task_none in
-    exit (Ocaml_batch_compile.batch_compile ppf 
-              task) 
+    Arg.parse buckle_script_flags anonymous usage    
   with x -> 
     begin
+#if undefined BS_RELEASE_BUILD then      
+      Printexc.print_backtrace stderr;
+#end
       Location.report_exception ppf x;
       exit 2
     end

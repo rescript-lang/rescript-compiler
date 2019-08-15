@@ -46,7 +46,7 @@ let magic_sep_char = '\n'
    1. for performance , easy skipping and calcuate the length 
    2. cut dependency, otherwise its type is {!Ast_extract.String_set.t}
 *)      
-let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
+let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
   let oc = open_out_bin output in 
   let output_set = Ast_extract.read_parse_and_extract kind pt in
   let buf = Ext_buffer.create 1000 in
@@ -59,6 +59,6 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
     ) output_set ;  
   output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;
-  Ml_binary.write_ast kind fname pt oc;
+  Ml_binary.write_ast kind sourcefile pt oc;
   close_out oc 
 

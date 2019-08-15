@@ -23,7 +23,7 @@ function b(loc, x) {
 }
 
 function f(param) {
-  return undefined;
+  return ;
 }
 
 function shouldBeNull(param) {

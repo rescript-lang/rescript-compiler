@@ -278,7 +278,7 @@ function one_char(param) {
     if (Caml_obj.caml_equal(i, match[1])) {
       return Caml_option.some(i);
     } else {
-      return undefined;
+      return ;
     }
   }
   
@@ -628,7 +628,7 @@ function first(f, _param) {
         continue ;
       }
     } else {
-      return undefined;
+      return ;
     }
   };
 }
@@ -1200,7 +1200,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                   switch (param.tag | 0) {
                     case 0 : 
                     case 1 : 
-                        return undefined;
+                        return ;
                     case 2 : 
                         return param[0];
                     
@@ -1291,7 +1291,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
           switch (param.tag | 0) {
             case 0 : 
             case 1 : 
-                return undefined;
+                return ;
             case 2 : 
                 return param[0];
             
@@ -3481,12 +3481,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var integer = function (param) {
     if (i[0] === l) {
-      return undefined;
+      return ;
     } else {
       var d = get(/* () */0);
       if (d > 57 || d < 48) {
         i[0] = i[0] - 1 | 0;
-        return undefined;
+        return ;
       } else {
         var _i = d - /* "0" */48 | 0;
         while(true) {

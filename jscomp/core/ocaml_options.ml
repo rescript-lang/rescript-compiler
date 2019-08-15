@@ -11,8 +11,6 @@
 (***********************************************************************)
 
 (** Need sync up with {!Main_args} and {!Optmain} *)
-open Clflags
-open Compenv
 
 let mk_absname f =
   "-absname", Arg.Unit f, " Show absolute filenames in error messages"
@@ -262,16 +260,15 @@ let print_version_string () =
   print_newline (); 
   exit 0 
 
-  
-let print_standard_library () = 
-  print_string Bs_conditional_initial.standard_library; print_newline(); exit 0
+let standard_library =
+#if undefined BS_RELEASE_BUILD then
+      Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+#else
+      Config.standard_library
+#end  
 
-let print_version_and_library compiler =
-  Printf.printf "The OCaml %s, version " compiler;
-  print_string bs_version_string; print_newline();
-  print_string "Standard library directory: ";
-  print_string Bs_conditional_initial.standard_library; print_newline();
-  exit 0 
+let print_standard_library () = 
+  print_string standard_library; print_newline(); exit 0
 
 let ocaml_options = 
   let set r () = r := true in 
@@ -281,58 +278,59 @@ let ocaml_options =
     match Clflags.parse_color_setting option with
     | None -> ()
     | Some setting -> Clflags.color := Some setting in 
-  let _annot = set annotations in 
-  let _binannot = set binary_annotations in 
-  let _c = set compile_only in 
+  (* let _annot = set annotations in  *)
+  let _binannot = set Clflags.binary_annotations in 
+  let _c = set Clflags.compile_only in 
   let _config = show_config in 
-  let _g = set debug in 
-  let _i () = print_types := true; compile_only := true in 
-  let _I s = include_dirs := s :: !include_dirs in 
+  (* let _g = set debug in  *)
+  let _i () = Clflags.print_types := true; Clflags.compile_only := true in 
+  let _I s = Clflags.include_dirs := s :: !Clflags.include_dirs in 
   (* let _impl = impl in  *)
   (* let _intf = intf in  *)
   let _intf_suffix s = Config.interface_suffix := s in 
-  let _keep_docs = set keep_docs in 
-  let _keep_locs = set keep_locs in 
-  let _labels = unset classic in 
-  let _no_alias_deps = set transparent_modules in 
-  let _no_app_funct = unset applicative_functors in 
-  let _noassert = set noassert in 
-  let _nolabels = set classic in 
-  let _nostdlib = set no_std_include in 
-  let _o s = output_name := Some s in 
-  let _open s = open_modules := s :: !open_modules in 
-  let _pp s = preprocessor := Some s in 
-  let _ppx s = first_ppx := s :: !first_ppx in 
-  let _principal = set principal in 
-  let _rectypes = set recursive_types in 
-  let _safe_string = unset unsafe_string in 
-  let _short_paths = unset real_paths in 
-  let _strict_sequence = set strict_sequence in 
-  let _strict_formats = set strict_formats in 
-  let _unsafe = set fast in 
-  let _unsafe_string = set unsafe_string in 
-  let _v () = print_version_and_library "compiler" in 
+  let _keep_docs = set Clflags.keep_docs in 
+  let _keep_locs = set Clflags.keep_locs in 
+  let _labels = unset Clflags.classic in 
+  let _no_alias_deps = set Clflags.transparent_modules in 
+  let _no_app_funct = unset Clflags.applicative_functors in 
+  let _noassert = set Clflags.noassert in 
+  let _nolabels = set Clflags.classic in 
+  let _nostdlib = set Clflags.no_std_include in 
+  let _o s = Clflags.output_name := Some s in 
+  let _open s = Clflags.open_modules := s :: !Clflags.open_modules in 
+  let _pp s = Clflags.preprocessor := Some s in 
+  let _ppx s = Compenv.first_ppx := s :: !Compenv.first_ppx in 
+  let _principal = set Clflags.principal in 
+  let _rectypes = set Clflags.recursive_types in 
+  (* let _safe_string = unset unsafe_string in  *)
+  let _short_paths = unset Clflags.real_paths in 
+  let _strict_sequence = set Clflags.strict_sequence in 
+  let _strict_formats = set Clflags.strict_formats in 
+  let _unsafe = set Clflags.fast in 
+  (* let _unsafe_string = set unsafe_string in  *)
+  (* let _v () = print_version_and_library "compiler" in  *)
+  let _v = print_version_string in 
   let _version = print_version_string in 
   let _vnum = print_version_string in 
   let _w = (Warnings.parse_options false) in
   let _warn_error = (Warnings.parse_options true) in
   let _warn_help = Warnings.help_warnings in
   let _where = print_standard_library in 
-  let _verbose = set verbose in 
-  let _nopervasives = set nopervasives in
-  let _dsource = set dump_source in 
-  let _dparsetree = set dump_parsetree in 
-  let _dtypedtree = set dump_typedtree in
-  let _drawlambda = set dump_rawlambda in
-  let _dlambda = set dump_lambda in
+  let _verbose = set Clflags.verbose in 
+  let _nopervasives = set Clflags.nopervasives in
+  let _dsource = set Clflags.dump_source in 
+  let _dparsetree = set Clflags.dump_parsetree in 
+  let _dtypedtree = set Clflags.dump_typedtree in
+  let _drawlambda = set Clflags.dump_rawlambda in
+  let _dlambda = set Clflags.dump_lambda in
   (* let anonymous = anonymous in *)
 
   [ mk_absname _absname;
-    mk_annot _annot;
+    (* mk_annot _annot; *)
     mk_binannot _binannot;
     mk_c _c;
     mk_config _config;
-    mk_g_byt _g;
+    (* mk_g_byt _g; *)
     mk_i _i;
     mk_I _I;
     mk_color _color;
@@ -353,7 +351,7 @@ let ocaml_options =
     mk_ppx _ppx;
     mk_principal _principal;
     mk_rectypes _rectypes;
-    mk_safe_string _safe_string;
+    (* mk_safe_string _safe_string; *)
     mk_short_paths _short_paths;
     mk_strict_sequence _strict_sequence;
     mk_strict_formats _strict_formats;

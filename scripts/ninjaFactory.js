@@ -12,7 +12,7 @@ function libNinja(config){
 ocamlopt = ${config.ocamlopt}
 ext = ${config.ext}
 INCL = ${config.INCL}
-flags = -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
+flags = -nodynlink -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 rule cc
     command = $ocamlopt $flags $in -o $out ${config.isWin? '' : '&& strip $out'}
     description = Making $out

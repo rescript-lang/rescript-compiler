@@ -55,7 +55,7 @@ function myHandler(match) {
     } else if (match[0] === Js_exn.$$Error) {
       return 2;
     } else {
-      return undefined;
+      return ;
     }
   }
   

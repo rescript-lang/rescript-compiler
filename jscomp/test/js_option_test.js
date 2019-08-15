@@ -137,7 +137,7 @@ var option_suites_001 = /* :: */[
                               return /* Eq */Block.__(0, [
                                         false,
                                         Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function (param) {
-                                                    return undefined;
+                                                    return ;
                                                   }), 2))
                                       ]);
                             })

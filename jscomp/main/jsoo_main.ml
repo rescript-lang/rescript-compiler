@@ -56,14 +56,9 @@ end
      *    type: "error" // or "warning" or "info"
      *  }
 *)
-let () =
-  Clflags.bs_only := true;
-  Oprint.out_ident := Outcome_printer_ns.out_ident;
-  Clflags.assume_no_mli := Clflags.Mli_non_exists;
+let () =  
   Bs_conditional_initial.setup_env ();
-  Clflags.dont_write_files := true;
-  Clflags.unsafe_string := false;
-  Clflags.record_event_when_debug := false
+  Clflags.binary_annotations := false
 
 let error_of_exn e =   
 #if OCAML_VERSION =~ ">4.03.0" then
@@ -121,7 +116,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
       let () = Js_dump_program.pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
                           NodeJS
-                          (Lam_compile_main.compile ~filename:"" ""
+                          (Lam_compile_main.compile ""
                              !finalenv  lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in

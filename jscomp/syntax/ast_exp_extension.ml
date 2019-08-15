@@ -63,7 +63,7 @@ let fromString (x : string) : t =
   if Ext_string.starts_with x Bs_version.version then 
     Marshal.from_string x (String.length Bs_version.version)
   else 
-     Ext_pervasives.failwithf
+     Ext_fmt.failwithf
         ~loc:__LOC__
         "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
 

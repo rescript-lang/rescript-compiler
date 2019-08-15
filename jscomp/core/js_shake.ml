@@ -66,12 +66,6 @@ let get_initial_exports
     ) in result, Ident_set.(diff result export_set)
 
 let shake_program (program : J.program) = 
-  let debug_file = "pervasives.ml" in
-
-  let _d () = 
-    if Ext_string.ends_with program.name  debug_file then 
-      Ext_log.err __LOC__ "@[%s@]@." program.name 
-  in
   let shake_block block export_set = 
     let block = List.rev @@ Js_analyzer.rev_toplevel_flatten block in 
     let  loop block export_set : Ident_set.t = 

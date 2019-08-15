@@ -43,7 +43,7 @@ let find_cmj file : string * Js_cmj_format.t =
             | exception _ 
               -> 
               Ext_log.warn __LOC__ 
-                "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
+                "@[%s corrupted in database, when looking %s while compiling %s please update @]"  file target !Location.input_name  ;
               Js_cmj_format.no_pure_dummy; (* FIXME *)
             | v ->  v 
             (* see {!Js_packages_info.string_of_module_id} *)

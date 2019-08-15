@@ -1043,7 +1043,7 @@ function update_player(player, keys, context) {
                   ]), player.dir, context)
           ];
   } else {
-    return undefined;
+    return ;
   }
 }
 
@@ -1122,7 +1122,7 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
   switch (typ) {
     case 0 : 
         obj.kill = true;
-        return undefined;
+        return ;
     case 1 : 
         var match = make$2(undefined, obj.dir, /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
               obj.pos.x,
@@ -1162,7 +1162,7 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
     } else {
       set_vel_to_speed(obj);
     }
-    return undefined;
+    return ;
   }
   
 }
@@ -1274,7 +1274,7 @@ function check_collision(c1, c2) {
   var b2 = get_aabb(c2);
   var o1 = c1[2];
   if (col_bypass(c1, c2)) {
-    return undefined;
+    return ;
   } else {
     var vx = b1.center.x - b2.center.x;
     var vy = b1.center.y - b2.center.y;
@@ -1299,7 +1299,7 @@ function check_collision(c1, c2) {
         return /* East */2;
       }
     } else {
-      return undefined;
+      return ;
     }
   }
 }

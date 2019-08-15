@@ -1143,6 +1143,15 @@ let int32_lsl ?comment (e1 : J.expression) (e2 : J.expression) : J.expression =
       expression_desc = Bin (Lsl, e1,e2)
     }
 
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise_notrace M.E in 
+  try aux 0 n  with M.E -> -1
 
 let int32_mul ?comment 
     (e1 : J.expression) 
@@ -1159,7 +1168,7 @@ let int32_mul ?comment
   | e , {expression_desc = Number (Int {i = i0} | Uint i0 ); _}
   | {expression_desc = Number (Int {i = i0} | Uint i0 ); _}, e 
     -> 
-    let i =  Ext_pervasives.is_pos_pow i0  in 
+    let i =  is_pos_pow i0  in 
     if i >= 0 then 
       int32_lsl e (small_int i)
     else 

@@ -159,19 +159,10 @@ var version6 = () => {
 function ruleCC(ninjaCwd) {
   return `
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd}  $in
     description = $in -> $out
 rule cc_cmi
-    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags    -I ${ninjaCwd} -c $in
-    description = $in -> $out    
-rule re
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
-    description = $in -> $out
-rule re_cmi
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags   -I ${ninjaCwd} -c -impl $in
-    description = $in -> $out
-rule rei
-    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags   -I ${ninjaCwd} -c -intf $in
+    command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I ${ninjaCwd}  $in
     description = $in -> $out    
 `;
 }
@@ -842,17 +833,17 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         mk([output_cmi], [input_mli]);
         break;
       case "HAS_BOTH_RE":
-        mk([ouptput_cmj], [input_re], "re_cmi");
-        mk([output_cmi], [input_rei], "rei");
+        mk([ouptput_cmj], [input_re], "cc_cmi");
+        mk([output_cmi], [input_rei], "cc");
         break;
       case "HAS_RE":
-        mk([output_cmi, ouptput_cmj], [input_re], "re");
+        mk([output_cmi, ouptput_cmj], [input_re], "cc");
         break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
         break;
       case "HAS_REI":
-        mk([output_cmi], [input_rei], "rei");
+        mk([output_cmi], [input_rei], "cc");
       case "HAS_MLI":
         mk([output_cmi], [input_mli]);
         break;
@@ -1767,6 +1758,7 @@ function main() {
         } catch (e) {
           console.log(e.message);
           console.log(`please run "./scripts/ninja.js config" first`);
+          process.exit(2);
         }
         break;
       case "clean":
@@ -1791,7 +1783,7 @@ function main() {
         break;
       case "docs":
         console.log(`building docs`);
-        require('./doc_gen').main()
+        require("./doc_gen").main();
         break;
       case "help":
         console.log(`supported subcommands:
@@ -1800,7 +1792,7 @@ function main() {
 [exe] docs
 [exe] help
 [exe] clean
-        `)
+        `);
         break;
       default:
         if (process.argv.length === emptyCount) {

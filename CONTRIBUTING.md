@@ -24,6 +24,11 @@ git submodule update --init && node scripts/buildocaml.js
 
 `scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory which will be invoked by `./scripts/ninja.js build`.
 
+### Editor support
+
+Use this deprecated [VSCode extension](https://marketplace.visualstudio.com/items?itemName=hackwaly.ocaml).
+The extension requires using an opam switch for ocaml 4.02.3, where `merlin` and `ocp-indent` are installed.
+
 ### Building docs
 
 ```

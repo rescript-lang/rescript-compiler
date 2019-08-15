@@ -24,10 +24,25 @@
 
 
 let setup_env () =
+  Clflags.compile_only := true;
+  Clflags.bs_only := true;  
+  Clflags.no_implicit_current_dir := true; 
+  (* default true 
+     otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
+  *)
+  Clflags.assume_no_mli := Clflags.Mli_non_exists;
+  Clflags.unsafe_string := false;
+  Clflags.debug := true;
+  Clflags.record_event_when_debug := false;
+  Clflags.binary_annotations := true; 
+  Clflags.transparent_modules := true;
+  (* Turn on [-no-alias-deps] by default -- double check *)
+  Oprint.out_ident := Outcome_printer_ns.out_ident;
+
 #if undefined BS_RELEASE_BUILD then
+    Printexc.record_backtrace true;
     (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 
-     | None -> 
-       Js_config.set_debug_file "caml_obj.ml"
+     | None -> ()       
      | Some s -> 
        Js_config.set_debug_file s 
     );
@@ -40,9 +55,3 @@ let setup_env () =
   ; Switch.cut := 100 (* tweakable but not very useful *)
 #end  
 
-let standard_library =
-#if undefined BS_RELEASE_BUILD then
-  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
-#else
-  Config.standard_library
-#end

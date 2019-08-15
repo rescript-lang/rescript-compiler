@@ -1,3 +1,3 @@
 var p  = require('child_process')
 
-p.execSync(`bsb`)
+p.execSync(`bsb`,{cwd:__dirname,stdio:[0,1,2]})

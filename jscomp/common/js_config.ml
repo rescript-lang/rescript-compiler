@@ -30,7 +30,7 @@
 (* let add_npm_package_path s =
   match !packages_info  with
   | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
   | NonBrowser(name,  envs) ->
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
@@ -38,11 +38,11 @@
         (match Js_packages_info.module_system_of_string package_name with
          | Some x -> x
          | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+           Ext_arg.bad_argf "invalid module system %s" package_name), path
       | [path] ->
         NodeJS, path
       | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+        Ext_arg.bad_argf "invalid npm package path: %s" s
     in
     packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
 (** Browser is not set via command line only for internal use *)
@@ -71,19 +71,14 @@ let no_builtin_ppx_mli = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
+
 let debug_file = ref ""
 
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
 
-let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
 
 let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
+  !debug_file <> "" &&  !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 
@@ -94,9 +89,6 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 
 let sort_imports = ref true
-let dump_js = ref false
-
-
 
 let syntax_only = ref false
 let binary_ast = ref false

@@ -1265,12 +1265,16 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Break -> break_nl f; cxt
 
   | Return {return_value = e} ->
-    begin match e with
-      | {expression_desc = Fun (method_,  l, b, env); _} ->
+    begin match e.expression_desc with
+      | Fun (method_,  l, b, env) ->
         let cxt =
           pp_function method_ cxt f true l b env in
         semi f ; cxt
-      | e ->
+      | Undefined ->  
+        return_sp f;
+        semi f;
+        cxt 
+      | _ ->
         return_sp f ;
         (* P.string f "return ";(\* ASI -- when there is a comment*\) *)
         P.group f return_indent (fun _ ->

@@ -62,22 +62,22 @@ let link link_byte_or_native =
   end
 #end  
 let () =
-  Arg.parse [
-    "-g", Arg.Int (fun i -> dev_group := i ),
+  Bsb_arg.parse_exn [
+    "-g",  Set_int dev_group ,
     " Set the dev group (default to be 0)"
     ;
-    "-bs-ns", Arg.String (fun s -> namespace := Some s),
+    "-bs-ns",  String (fun s -> namespace := Some s),
     " Set namespace";
-    "-hash", Arg.String (fun s -> hash := s),
+    "-hash",  Set_string hash,
     " Set hash(internal)";
 #if BS_NATIVE then    
-    "-MD-bytecode", Arg.String (
+    "-MD-bytecode",  String (
       fun x -> 
         Bsb_helper_depfile_gen.make
           Bytecode 
           x (Bsb_dir_index.of_int !dev_group ) !namespace),          
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-    "-MD-native", Arg.String (fun x -> 
+    "-MD-native",  String (fun x -> 
         Bsb_helper_depfile_gen.make
           Native 
            x (Bsb_dir_index.of_int !dev_group )
@@ -92,7 +92,7 @@ let () =
        out the dependencies graph to do a topological sort before calling 
        ocamlc/ocamlopt.
     *)
-    "-bs-main", (Arg.String set_main_module),
+    "-bs-main", ( String set_main_module),
     " set the main entry module. Only used in conjunction with -link-bytecode and -link-native";
 
     (* This is a way to add a directory to the search path. This is used for the 
@@ -105,7 +105,7 @@ let () =
 
        Then we'll go look for `theExtLib/lib.cma` to link with the final exec.
     *)
-    "-I",  (Arg.String add_include),
+    "-I",  ( String add_include),
     " add dir to search path for the linker and packer";
 
     (* Both linking and packing arguments must come _after_ all of the other args and files have been listed.
@@ -118,13 +118,13 @@ let () =
           bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode -I myLibFolder myIgnoredFile.cmo
 
     *)
-    "-link-bytecode", (Arg.String (fun x -> link (Bsb_helper_linker.LinkBytecode x))),
+    "-link-bytecode", ( String (fun x -> link (Bsb_helper_linker.LinkBytecode x))),
     " link bytecode files into an executable";
 
-    "-link-native", (Arg.String (fun x -> link (Bsb_helper_linker.LinkNative x))),
+    "-link-native", ( String (fun x -> link (Bsb_helper_linker.LinkNative x))),
     " link native files into an executable";
 
-    "-pack-native-library", (Arg.Unit (fun () -> 
+    "-pack-native-library", ( Unit (fun () -> 
         Bsb_helper_packer.pack
           Bsb_helper_packer.PackNative
           ~includes:!includes
@@ -132,7 +132,7 @@ let () =
       )),
     " pack native files (cmx) into a library file (cmxa)";
 
-    "-pack-bytecode-library", (Arg.Unit (fun () -> 
+    "-pack-bytecode-library", ( Unit (fun () -> 
         Bsb_helper_packer.pack
           Bsb_helper_packer.PackBytecode
           ~includes:!includes

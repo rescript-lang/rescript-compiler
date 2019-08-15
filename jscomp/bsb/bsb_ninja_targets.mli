@@ -22,24 +22,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val parse_interface : Format.formatter -> string -> Parsetree.signature
 
-val parse_implementation : Format.formatter -> string -> Parsetree.structure
 
-val parse_implementation_from_string : string -> Parsetree.structure
-val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
 
-val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
-    
-type valid_input = 
-  | Ml
-  | Mli
-  | Re
-  | Rei
-  | Mlast    
-  | Mliast 
-  | Reast 
-  | Reiast
-  | Mlmap
-  | Cmi
-val check_suffix :  string -> valid_input * string
+type override = 
+  | Append of string 
+  | AppendList of string list 
+  | AppendVar of string
+  
+  | Overwrite of string 
+  
+  | OverwriteVar of string 
+
+  | OverwriteVars of string list
+  
+type shadow = { key : string ; op : override }
+(** output should always be marked explicitly,
+   otherwise the build system can not figure out clearly
+   however, for the command we don't need pass `-o`
+*)
+val output_build :
+  ?order_only_deps:string list ->
+  ?implicit_deps:string list ->
+  ?implicit_outputs: string list ->    
+  ?shadows:shadow list ->  
+  outputs:string list ->
+  inputs:string list ->
+  rule:Bsb_ninja_rule.t -> 
+  out_channel -> 
+  unit
+
+
+val phony  :
+  ?order_only_deps:string list ->
+  inputs:string list -> 
+  output:string -> 
+  out_channel -> 
+  unit
+
+val output_kv : string ->  string -> out_channel -> unit 
+val output_kvs : (string * string) array -> out_channel -> unit
+
