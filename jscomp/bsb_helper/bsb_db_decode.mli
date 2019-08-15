@@ -48,7 +48,7 @@ val read_build_cache :
 
 
 type module_info = {
-  case : Bsb_db.case;
+  case : bool (* Bsb_db.case*);
   dir_name : string
 } 
 

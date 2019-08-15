@@ -92,7 +92,7 @@ let rec process_line cwd filedir  line =
           else
             (ml_exists, ml) @> (mli_exists , mli) @> []
         | _
-          ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
+          ->  Ext_fmt.failwithf ~loc:__LOC__ "invalid line %s" line
       end
 and read_lines (cwd : string) (file : string) : string list =    
   Ext_list.fold_left (Ext_io.rev_lines_of_file file) [] (fun acc f ->
@@ -403,7 +403,7 @@ let () =
      match !main_module, files with
      | Some _ , _ :: _
        -> 
-       Ext_pervasives.failwithf ~loc:__LOC__ 
+       Ext_fmt.failwithf ~loc:__LOC__ 
          "-bs-main conflicts with other flags [ %s ]"
          (String.concat ", " files)
      | Some {modulename  = main_module ; export },  []

@@ -60,7 +60,7 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
   | Some a -> hit a   
   and hit_list_snd : 'a. ('a * _ ) list -> bool = fun x ->    
     Ext_list.exists_snd  x  hit
-  and hit_list xs = List.exists hit xs 
+  and hit_list xs = Ext_list.exists xs hit 
   and hit (l : Lam.t) =
     match l  with
     | Lprim {primitive = Pintcomp _ ;
