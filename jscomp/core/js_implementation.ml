@@ -99,7 +99,7 @@ let interface_mliast ppf fname outputprefix  =
 
 let get_lambda = fun   
 #if OCAML_VERSION =~ ">4.03.0" then
-              {code = lambda}
+              {Lambda.code = lambda}
 #else
               lambda
 #end              -> lambda 
