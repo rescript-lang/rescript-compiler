@@ -3,7 +3,9 @@
 var $$String = require("../../lib/js/string.js");
 
 function v(u) {
-  t([$$String.compare]);
+  t(/* module */{
+        compare: $$String.compare
+      });
   return /* () */0;
 }
 

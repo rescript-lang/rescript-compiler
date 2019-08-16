@@ -42,7 +42,7 @@ var N = /* module */{
 var N0 = /* module */{
   a: 0,
   b: 1,
-  "%identity": (function (prim) {
+  f: (function (prim) {
       return prim;
     })
 };
