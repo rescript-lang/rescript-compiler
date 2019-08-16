@@ -17,7 +17,8 @@ function getVersionPrefix() {
   if (cached !== undefined) {
     return cached;
   }
-  var file = path.join(__dirname, "..", "ocaml", "VERSION");
+
+  var file = path.join(__dirname, "..", "OCAML_VERSION");
   if (fs.existsSync(file)) {
     var version = fs.readFileSync(file, "ascii");
     cached = version.substr(0, version.indexOf("+"));
@@ -25,7 +26,7 @@ function getVersionPrefix() {
   }
   console.warn(`cannot find '${file}'`);
 
-  file = path.join(__dirname, "..", "OCAML_VERSION");
+  file = path.join(__dirname, "..", "ocaml", "VERSION");
   if (fs.existsSync(file)) {
     var version = fs.readFileSync(file, "ascii");
     cached = version.substr(0, version.indexOf("+"));
@@ -33,7 +34,9 @@ function getVersionPrefix() {
   }
   console.warn(`cannot find '${file}'`);
 
-  console.warn("You should create OCAML_VERSION or ocaml/VERSION file to specify OCaml version like '4.02.3+buckle-master'");
+  console.warn(
+    "You should create OCAML_VERSION or ocaml/VERSION file to specify OCaml version like '4.02.3+buckle-master'"
+  );
   console.warn(`for example,
 bucklescript>cat ocaml/VERSION 
 4.02.3+BS

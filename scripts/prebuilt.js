@@ -25,7 +25,6 @@ function rebuild() {
     stdio: [0, 1, 2]
   });
 }
-rebuild();
 
 function buildCompiler() {
   // for 4.02.3 it relies on OCAMLLIB to find stdlib path
@@ -48,6 +47,7 @@ function buildCompiler() {
   );
 }
 if (!is_windows) {
+  rebuild();
   require("./ninja.js").updateRelease();
 }
 var os = require("os");

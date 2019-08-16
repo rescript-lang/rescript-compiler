@@ -78,10 +78,14 @@ let process_file ppf sourcefile =
   match input with 
   | Re ->     
     setup_reason_context ();
-    Js_implementation.implementation ppf (reason_pp ~sourcefile) opref   
+    let tmpfile = reason_pp ~sourcefile in 
+    Js_implementation.implementation ppf tmpfile opref ;  
+    Ast_reason_pp.clean tmpfile
   | Rei ->
     setup_reason_context ();
-    Js_implementation.interface ppf (reason_pp ~sourcefile) opref 
+    let tmpfile = (reason_pp ~sourcefile) in 
+    Js_implementation.interface ppf  tmpfile opref ;
+    Ast_reason_pp.clean tmpfile
   | Reiast 
     -> 
     setup_reason_context ();
@@ -142,9 +146,9 @@ let intf filename =
 let eval (s : string) ~suffix =
   let tmpfile = Filename.temp_file "eval" suffix in 
   Ext_io.write_file tmpfile s;   
-  Ext_pervasives.finally  tmpfile anonymous ~clean:(fun _ ->
-      try Sys.remove tmpfile with _ -> () 
-    )
+  anonymous  tmpfile;
+  Ast_reason_pp.clean tmpfile
+  
 
 let (//) = Filename.concat
 
