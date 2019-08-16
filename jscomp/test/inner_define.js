@@ -35,10 +35,10 @@ function f3$1(param, param$1, param$2) {
   return /* () */0;
 }
 
-var N1 = [
-  f2$1,
-  f3$1
-];
+var N1 = /* module */{
+  f2: f2$1,
+  f3: f3$1
+};
 
 exports.N = N;
 exports.N0 = N0;

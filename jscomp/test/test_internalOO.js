@@ -664,32 +664,32 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var Vars = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  merge,
-  compare,
-  equal,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  bindings,
-  min_binding,
-  max_binding,
-  min_binding,
-  split,
-  find,
-  map,
-  mapi
-];
+var Vars = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  merge: merge,
+  compare: compare,
+  equal: equal,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  bindings: bindings,
+  min_binding: min_binding,
+  max_binding: max_binding,
+  choose: min_binding,
+  split: split,
+  find: find,
+  map: map,
+  mapi: mapi
+};
 
 function height$1(param) {
   if (param) {
@@ -1313,32 +1313,32 @@ function bindings$1(s) {
   return bindings_aux$1(/* [] */0, s);
 }
 
-var Meths = [
-  /* Empty */0,
-  is_empty$1,
-  mem$1,
-  add$1,
-  singleton$1,
-  remove$1,
-  merge$1,
-  compare$1,
-  equal$1,
-  iter$1,
-  fold$1,
-  for_all$1,
-  exists$1,
-  filter$1,
-  partition$1,
-  cardinal$1,
-  bindings$1,
-  min_binding$1,
-  max_binding$1,
-  min_binding$1,
-  split$1,
-  find$1,
-  map$1,
-  mapi$1
-];
+var Meths = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty$1,
+  mem: mem$1,
+  add: add$1,
+  singleton: singleton$1,
+  remove: remove$1,
+  merge: merge$1,
+  compare: compare$1,
+  equal: equal$1,
+  iter: iter$1,
+  fold: fold$1,
+  for_all: for_all$1,
+  exists: exists$1,
+  filter: filter$1,
+  partition: partition$1,
+  cardinal: cardinal$1,
+  bindings: bindings$1,
+  min_binding: min_binding$1,
+  max_binding: max_binding$1,
+  choose: min_binding$1,
+  split: split$1,
+  find: find$1,
+  map: map$1,
+  mapi: mapi$1
+};
 
 function height$2(param) {
   if (param) {
@@ -1962,32 +1962,32 @@ function bindings$2(s) {
   return bindings_aux$2(/* [] */0, s);
 }
 
-var Labs = [
-  /* Empty */0,
-  is_empty$2,
-  mem$2,
-  add$2,
-  singleton$2,
-  remove$2,
-  merge$2,
-  compare$2,
-  equal$2,
-  iter$2,
-  fold$2,
-  for_all$2,
-  exists$2,
-  filter$2,
-  partition$2,
-  cardinal$2,
-  bindings$2,
-  min_binding$2,
-  max_binding$2,
-  min_binding$2,
-  split$2,
-  find$2,
-  map$2,
-  mapi$2
-];
+var Labs = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty$2,
+  mem: mem$2,
+  add: add$2,
+  singleton: singleton$2,
+  remove: remove$2,
+  merge: merge$2,
+  compare: compare$2,
+  equal: equal$2,
+  iter: iter$2,
+  fold: fold$2,
+  for_all: for_all$2,
+  exists: exists$2,
+  filter: filter$2,
+  partition: partition$2,
+  cardinal: cardinal$2,
+  bindings: bindings$2,
+  min_binding: min_binding$2,
+  max_binding: max_binding$2,
+  choose: min_binding$2,
+  split: split$2,
+  find: find$2,
+  map: map$2,
+  mapi: mapi$2
+};
 
 var dummy_table = /* record */{
   size: 0,

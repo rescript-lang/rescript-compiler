@@ -1479,34 +1479,34 @@ function of_list(l) {
   }
 }
 
-var PmarkSet = [
-  /* Empty */0,
-  is_empty,
-  mem$1,
-  add$1,
-  singleton,
-  remove,
-  union$1,
-  inter$1,
-  diff$1,
-  compare$2,
-  equal$1,
-  subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split,
-  find,
-  of_list
-];
+var PmarkSet = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem$1,
+  add: add$1,
+  singleton: singleton,
+  remove: remove,
+  union: union$1,
+  inter: inter$1,
+  diff: diff$1,
+  compare: compare$2,
+  equal: equal$1,
+  subset: subset,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  elements: elements,
+  min_elt: min_elt,
+  max_elt: max_elt,
+  choose: min_elt,
+  split: split,
+  find: find,
+  of_list: of_list
+};
 
 function hash_combine(h, accu) {
   return Caml_int32.imul(accu, 65599) + h | 0;
@@ -3055,16 +3055,16 @@ function status(s) {
 }
 
 var Re_automata = /* module */{
-  Category: [
-    $plus$plus,
-    from_char,
-    1,
-    2,
-    4,
-    8,
-    16,
-    32
-  ],
+  Category: /* module */{
+    "++": $plus$plus,
+    from_char: from_char,
+    inexistant: 1,
+    letter: 2,
+    not_letter: 4,
+    newline: 8,
+    lastnewline: 16,
+    search_boundary: 32
+  },
   pp_sem: pp_sem,
   pp_rep_kind: pp_rep_kind,
   Pmark: Pmark,
@@ -3084,13 +3084,15 @@ var Re_automata = /* module */{
   after: after,
   rename: rename,
   PmarkSet: PmarkSet,
-  Marks: [],
-  E: [pp$2],
-  State: [
-    dummy,
-    create$2,
-    Table
-  ],
+  Marks: /* module */{ },
+  E: /* module */{
+    pp: pp$2
+  },
+  State: /* module */{
+    dummy: dummy,
+    create: create$2,
+    Table: Table
+  },
   create_working_area: create_working_area,
   index_count: index_count,
   delta: delta,

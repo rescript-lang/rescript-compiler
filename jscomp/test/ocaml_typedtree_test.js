@@ -1054,14 +1054,14 @@ var Misc = /* module */{
   edit_distance: edit_distance,
   split: split,
   cut_at: cut_at,
-  Color: [
-    ansi_of_style_l,
-    default_styles,
-    get_styles,
-    set_styles,
-    setup,
-    set_color_tag_handling
-  ]
+  Color: /* module */{
+    ansi_of_style_l: ansi_of_style_l,
+    default_styles: default_styles,
+    get_styles: get_styles,
+    set_styles: set_styles,
+    setup: setup,
+    set_color_tag_handling: set_color_tag_handling
+  }
 };
 
 function number(param) {
@@ -3891,32 +3891,32 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var Meths = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add$1,
-  singleton,
-  remove,
-  merge,
-  compare$2,
-  equal$2,
-  iter$1,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  bindings,
-  min_binding,
-  max_binding,
-  min_binding,
-  split$1,
-  find,
-  map,
-  mapi
-];
+var Meths = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add$1,
+  singleton: singleton,
+  remove: remove,
+  merge: merge,
+  compare: compare$2,
+  equal: equal$2,
+  iter: iter$1,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  bindings: bindings,
+  min_binding: min_binding,
+  max_binding: max_binding,
+  choose: min_binding,
+  split: split$1,
+  find: find,
+  map: map,
+  mapi: mapi
+};
 
 function single(param) {
   switch (param) {
@@ -4748,34 +4748,34 @@ function of_list(l) {
   }
 }
 
-var Concr = [
-  /* Empty */0,
-  is_empty$1,
-  mem$2,
-  add$2,
-  singleton$1,
-  remove$1,
-  union$1,
-  inter$1,
-  diff,
-  compare$3,
-  equal$3,
-  subset$1,
-  iter$2,
-  fold$1,
-  for_all$1,
-  exists$1,
-  filter$1,
-  partition$1,
-  cardinal$1,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split$2,
-  find$1,
-  of_list
-];
+var Concr = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty$1,
+  mem: mem$2,
+  add: add$2,
+  singleton: singleton$1,
+  remove: remove$1,
+  union: union$1,
+  inter: inter$1,
+  diff: diff,
+  compare: compare$3,
+  equal: equal$3,
+  subset: subset$1,
+  iter: iter$2,
+  fold: fold$1,
+  for_all: for_all$1,
+  exists: exists$1,
+  filter: filter$1,
+  partition: partition$1,
+  cardinal: cardinal$1,
+  elements: elements,
+  min_elt: min_elt,
+  max_elt: max_elt,
+  choose: min_elt,
+  split: split$2,
+  find: find$1,
+  of_list: of_list
+};
 
 function equal_tag(t1, t2) {
   switch (t1.tag | 0) {
@@ -4815,34 +4815,36 @@ function equal_tag(t1, t2) {
 }
 
 var Types = /* module */{
-  TypeOps: [
-    compare,
-    equal$1,
-    hash
-  ],
+  TypeOps: /* module */{
+    compare: compare,
+    equal: equal$1,
+    hash: hash
+  },
   Meths: Meths,
   Vars: Meths,
-  Variance: [
-    0,
-    127,
-    25,
-    7,
-    union,
-    inter,
-    subset,
-    set$1,
-    mem$1,
-    conjugate,
-    get_upper,
-    get_lower
-  ],
+  Variance: /* module */{
+    null: 0,
+    full: 127,
+    covariant: 25,
+    may_inv: 7,
+    union: union,
+    inter: inter,
+    subset: subset,
+    set: set$1,
+    mem: mem$1,
+    conjugate: conjugate,
+    get_upper: get_upper,
+    get_lower: get_lower
+  },
   Concr: Concr,
   equal_tag: equal_tag
 };
 
 var $$let = Types.TypeOps;
 
-var funarg = [$$let[0]];
+var funarg = /* module */{
+  compare: $$let[0]
+};
 
 function height$2(param) {
   if (param) {
@@ -5251,7 +5253,9 @@ function elements_aux$1(_accu, _param) {
 
 var $$let$1 = Types.TypeOps;
 
-var funarg$1 = [$$let$1[0]];
+var funarg$1 = /* module */{
+  compare: $$let$1[0]
+};
 
 function height$3(param) {
   if (param) {
@@ -5395,10 +5399,10 @@ function fold$3(f, _m, _accu) {
 
 var $$let$2 = Types.TypeOps;
 
-var TypeHash = Hashtbl.Make([
-      $$let$2[1],
-      $$let$2[2]
-    ]);
+var TypeHash = Hashtbl.Make(/* module */{
+      equal: $$let$2[1],
+      hash: $$let$2[2]
+    });
 
 function print_raw(param) {
   throw [
@@ -9392,45 +9396,45 @@ var Ast_helper = /* module */{
   with_default_loc: with_default_loc,
   Typ: Typ,
   Pat: Pat,
-  Exp: [
-    mk$2,
-    attr$2,
-    ident,
-    constant$1,
-    let_,
-    fun_,
-    function_,
-    apply,
-    match_,
-    try_,
-    tuple$2,
-    construct$1,
-    variant$2,
-    record$1,
-    field,
-    setfield,
-    array$1,
-    ifthenelse,
-    sequence,
-    while_,
-    for_,
-    coerce,
-    constraint_$1,
-    send,
-    new_,
-    setinstvar,
-    override,
-    letmodule,
-    assert_,
-    lazy_$1,
-    poly$1,
-    object_$1,
-    newtype,
-    pack,
-    open_,
-    extension$2,
-    $$case
-  ],
+  Exp: /* module */{
+    mk: mk$2,
+    attr: attr$2,
+    ident: ident,
+    constant: constant$1,
+    let_: let_,
+    fun_: fun_,
+    function_: function_,
+    apply: apply,
+    match_: match_,
+    try_: try_,
+    tuple: tuple$2,
+    construct: construct$1,
+    variant: variant$2,
+    record: record$1,
+    field: field,
+    setfield: setfield,
+    array: array$1,
+    ifthenelse: ifthenelse,
+    sequence: sequence,
+    while_: while_,
+    for_: for_,
+    coerce: coerce,
+    constraint_: constraint_$1,
+    send: send,
+    new_: new_,
+    setinstvar: setinstvar,
+    override: override,
+    letmodule: letmodule,
+    assert_: assert_,
+    lazy_: lazy_$1,
+    poly: poly$1,
+    object_: object_$1,
+    newtype: newtype,
+    pack: pack,
+    open_: open_,
+    extension: extension$2,
+    case: $$case
+  },
   Val: Val,
   Type: Type,
   Te: Te,
@@ -9445,32 +9449,32 @@ var Ast_helper = /* module */{
   Incl: Incl,
   Vb: Vb,
   Cty: Cty,
-  Ctf: [
-    mk$9,
-    attr$7,
-    inherit_,
-    val_,
-    method_,
-    constraint_$4,
-    extension$9,
-    attribute$2,
-    text$2
-  ],
+  Ctf: /* module */{
+    mk: mk$9,
+    attr: attr$7,
+    inherit_: inherit_,
+    val_: val_,
+    method_: method_,
+    constraint_: constraint_$4,
+    extension: extension$9,
+    attribute: attribute$2,
+    text: text$2
+  },
   Cl: Cl,
-  Cf: [
-    mk$10,
-    attr$8,
-    inherit_$1,
-    val_$1,
-    method_$1,
-    constraint_$5,
-    initializer_,
-    extension$10,
-    attribute$3,
-    text$3,
-    virtual_,
-    concrete
-  ],
+  Cf: /* module */{
+    mk: mk$10,
+    attr: attr$8,
+    inherit_: inherit_$1,
+    val_: val_$1,
+    method_: method_$1,
+    constraint_: constraint_$5,
+    initializer_: initializer_,
+    extension: extension$10,
+    attribute: attribute$3,
+    text: text$3,
+    virtual_: virtual_,
+    concrete: concrete
+  },
   Ci: Ci,
   Csig: Csig,
   Cstr: Cstr
@@ -25790,16 +25794,16 @@ var TypedtreeMap = /* module */{
                     ci_attributes: cd$1.ci_attributes
                   });
       };
-      return [
-              map_structure,
-              map_pattern,
-              map_structure_item,
-              map_expression,
-              map_class_expr,
-              map_signature,
-              map_signature_item,
-              map_module_type
-            ];
+      return /* module */{
+              map_structure: map_structure,
+              map_pattern: map_pattern,
+              map_structure_item: map_structure_item,
+              map_expression: map_expression,
+              map_class_expr: map_class_expr,
+              map_signature: map_signature,
+              map_signature_item: map_signature_item,
+              map_module_type: map_module_type
+            };
     }),
   DefaultMapArgument: DefaultMapArgument
 };

@@ -8,7 +8,9 @@ var Mt_global = require("./mt_global.js");
 
 var count = /* record */[/* contents */0];
 
-var M = [Offset.M.Set];
+var M = /* module */{
+  Set: Offset.M.Set
+};
 
 function test(set) {
   count[0] = Curry._1(M.Set.cardinal, set) + count[0] | 0;

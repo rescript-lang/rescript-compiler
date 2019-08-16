@@ -5057,34 +5057,34 @@ function of_list(l) {
   }
 }
 
-var SSet = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  union,
-  inter,
-  diff,
-  compare$1,
-  equal,
-  subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split,
-  find,
-  of_list
-];
+var SSet = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  union: union,
+  inter: inter,
+  diff: diff,
+  compare: compare$1,
+  equal: equal,
+  subset: subset,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  elements: elements,
+  min_elt: min_elt,
+  max_elt: max_elt,
+  choose: min_elt,
+  split: split,
+  find: find,
+  of_list: of_list
+};
 
 function debug_string_of_lex_mode(mode) {
   switch (mode) {
@@ -5998,25 +5998,25 @@ var Parser_env = /* module */{
   is_future_reserved: is_future_reserved,
   is_strict_reserved: is_strict_reserved,
   is_restricted: is_restricted,
-  Peek: [
-    token$2,
-    value,
-    loc,
-    errors$1,
-    comments$1,
-    is_line_terminator,
-    is_implicit_semicolon,
-    semicolon_loc,
-    is_identifier,
-    is_function,
-    is_class
-  ],
+  Peek: /* module */{
+    token: token$2,
+    value: value,
+    loc: loc,
+    errors: errors$1,
+    comments: comments$1,
+    is_line_terminator: is_line_terminator,
+    is_implicit_semicolon: is_implicit_semicolon,
+    semicolon_loc: semicolon_loc,
+    is_identifier: is_identifier,
+    is_function: is_function,
+    is_class: is_class
+  },
   Eat: Eat,
   Expect: Expect,
-  Try: [
-    Rollback,
-    to_parse
-  ]
+  Try: /* module */{
+    Rollback: Rollback,
+    to_parse: to_parse
+  }
 };
 
 function height$1(param) {

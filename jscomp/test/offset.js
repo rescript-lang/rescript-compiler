@@ -764,34 +764,34 @@ function of_list(l) {
   }
 }
 
-var $$Set = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  union,
-  inter,
-  diff,
-  compare,
-  equal,
-  subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split,
-  find,
-  of_list
-];
+var $$Set = /* module */{
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  union: union,
+  inter: inter,
+  diff: diff,
+  compare: compare,
+  equal: equal,
+  subset: subset,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  elements: elements,
+  min_elt: min_elt,
+  max_elt: max_elt,
+  choose: min_elt,
+  split: split,
+  find: find,
+  of_list: of_list
+};
 
 var M = /* module */{
   x: 1,
