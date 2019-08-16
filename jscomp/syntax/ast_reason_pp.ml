@@ -25,26 +25,44 @@
 
 
 exception Pp_error
+
+let cmd_nix_quote cmd sourcefile tmpfile : string = 
+  Ext_filename.maybe_quote cmd ^ " --print=binary " ^
+  Ext_filename.maybe_quote sourcefile ^
+  " > " ^ Ext_filename.maybe_quote tmpfile 
+
+let cmd_windows_quote cmd sourcefile tmpfile : string= 
+  "cmd /S/C \"" ^
+  cmd_nix_quote cmd sourcefile tmpfile
+  ^ "\""
+
+
+let clean tmpfile =   
+  (if not !Clflags.verbose then try Sys.remove tmpfile with _ -> () )
+
 (* Sync up with {!Pparse.preprocess} 
   The generated file should not sit 
   in the same directory as sourctree
 *)
-let pp (sourcefile : string) =
-  
-  
+let pp (sourcefile : string) =    
   let tmpfile = Filename.temp_file "bspp" "" in
   let pp = (*TODO: check to avoid double quoting *)
-    Ext_filename.maybe_quote 
       (match !Js_config.refmt with 
        | None ->
          Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" 
        | Some x -> x)
   in 
-  let comm = Printf.sprintf "%s --print=binary %s > %s"
-      pp (Ext_filename.maybe_quote sourcefile) tmpfile
+  let comm = 
+      if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
+      else cmd_nix_quote pp sourcefile tmpfile
   in
+  if !Clflags.verbose then begin 
+    prerr_string "+ ";
+    prerr_endline comm;
+    prerr_newline ()
+  end ;
   if Sys.command comm <> 0 then begin
-    (try Sys.remove tmpfile with _ -> ());
+    clean tmpfile;
     raise Pp_error
   end;
   tmpfile  

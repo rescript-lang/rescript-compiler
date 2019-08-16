@@ -28,3 +28,7 @@ exception Pp_error
 val pp : 
   string -> 
   string
+
+val clean:   
+  string -> 
+  unit
