@@ -47,13 +47,23 @@ function length_aux(_len, _param) {
 
 var length = List.length;
 
+var compare_lengths = List.compare_lengths;
+
+var compare_length_with = List.compare_length_with;
+
+var cons = List.cons;
+
 var hd = List.hd;
 
 var tl = List.tl;
 
 var nth = List.nth;
 
+var nth_opt = List.nth_opt;
+
 var rev = List.rev;
+
+var init = List.init;
 
 var append = List.append;
 
@@ -101,6 +111,8 @@ var memq = List.memq;
 
 var find = List.find;
 
+var find_opt = List.find_opt;
+
 var filter = List.filter;
 
 var find_all = List.find_all;
@@ -109,7 +121,11 @@ var partition = List.partition;
 
 var assoc = List.assoc;
 
+var assoc_opt = List.assoc_opt;
+
 var assq = List.assq;
+
+var assq_opt = List.assq_opt;
 
 var mem_assoc = List.mem_assoc;
 
@@ -142,10 +158,15 @@ exports.ff = ff;
 exports.fff = fff;
 exports.length_aux = length_aux;
 exports.length = length;
+exports.compare_lengths = compare_lengths;
+exports.compare_length_with = compare_length_with;
+exports.cons = cons;
 exports.hd = hd;
 exports.tl = tl;
 exports.nth = nth;
+exports.nth_opt = nth_opt;
 exports.rev = rev;
+exports.init = init;
 exports.append = append;
 exports.rev_append = rev_append;
 exports.concat = concat;
@@ -169,11 +190,14 @@ exports.exists2 = exists2;
 exports.mem = mem;
 exports.memq = memq;
 exports.find = find;
+exports.find_opt = find_opt;
 exports.filter = filter;
 exports.find_all = find_all;
 exports.partition = partition;
 exports.assoc = assoc;
+exports.assoc_opt = assoc_opt;
 exports.assq = assq;
+exports.assq_opt = assq_opt;
 exports.mem_assoc = mem_assoc;
 exports.mem_assq = mem_assq;
 exports.remove_assoc = remove_assoc;

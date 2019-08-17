@@ -23,7 +23,6 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    var exit = 0;
     if (exn === Local) {
       return 3;
     } else if (exn === Caml_builtin_exceptions.not_found) {
@@ -39,27 +38,21 @@ function appf(g, x) {
           if (match$2) {
             return match$2[0];
           } else {
-            exit = 1;
+            return 4;
           }
         } else {
-          exit = 1;
+          return 4;
         }
-      } else {
-        exit = 1;
-      }
-    } else {
-      exit = 1;
-    }
-    if (exit === 1) {
-      if (exn[0] === C) {
-        return exn[1];
-      } else if (exn[0] === D) {
-        return exn[1][0];
       } else {
         return 4;
       }
+    } else if (exn[0] === C) {
+      return exn[1];
+    } else if (exn[0] === D) {
+      return exn[1][0];
+    } else {
+      return 4;
     }
-    
   }
 }
 

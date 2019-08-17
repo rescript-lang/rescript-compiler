@@ -5,7 +5,6 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Stream = require("../../lib/js/stream.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -95,9 +94,8 @@ function utf8_decode(strm) {
                       
                     }
                   }
-                } else {
-                  return Stream.sempty;
                 }
+                
               }));
 }
 
@@ -225,7 +223,9 @@ function eq(loc, param) {
 List.iter((function (param) {
         return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", /* tuple */[
                     true,
-                    eq_list(Caml_obj.caml_equal, to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
+                    eq_list((function (prim, prim$1) {
+                            return prim === prim$1;
+                          }), to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
                   ]);
       }), /* :: */[
       /* tuple */[

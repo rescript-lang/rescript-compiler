@@ -549,7 +549,13 @@ test("File \"tscanf_test.ml\", line 133, characters 5-12", test5(/* () */0));
 
 function test6(param) {
   if (Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("truetrue"), /* Format */[
-              /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
+              /* Bool */Block.__(9, [
+                  /* No_padding */0,
+                  /* Bool */Block.__(9, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ])
+                ]),
               "%B%B"
             ]), (function (b1, b2) {
             return Caml_obj.caml_equal(/* tuple */[
@@ -560,7 +566,13 @@ function test6(param) {
                         true
                       ]);
           })) && Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("truefalse"), /* Format */[
-              /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
+              /* Bool */Block.__(9, [
+                  /* No_padding */0,
+                  /* Bool */Block.__(9, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ])
+                ]),
               "%B%B"
             ]), (function (b1, b2) {
             return Caml_obj.caml_equal(/* tuple */[
@@ -571,7 +583,13 @@ function test6(param) {
                         false
                       ]);
           })) && Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("falsetrue"), /* Format */[
-              /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
+              /* Bool */Block.__(9, [
+                  /* No_padding */0,
+                  /* Bool */Block.__(9, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ])
+                ]),
               "%B%B"
             ]), (function (b1, b2) {
             return Caml_obj.caml_equal(/* tuple */[
@@ -582,7 +600,13 @@ function test6(param) {
                         true
                       ]);
           })) && Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("falsefalse"), /* Format */[
-              /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
+              /* Bool */Block.__(9, [
+                  /* No_padding */0,
+                  /* Bool */Block.__(9, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ])
+                ]),
               "%B%B"
             ]), (function (b1, b2) {
             return Caml_obj.caml_equal(/* tuple */[
@@ -594,10 +618,16 @@ function test6(param) {
                       ]);
           }))) {
     return Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("true false"), /* Format */[
-                    /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                    /* Bool */Block.__(9, [
+                        /* No_padding */0,
+                        /* Char_literal */Block.__(12, [
                             /* " " */32,
-                            /* Bool */Block.__(9, [/* End_of_format */0])
-                          ])]),
+                            /* Bool */Block.__(9, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
                     "%B %B"
                   ]), (function (b1, b2) {
                   return Caml_obj.caml_equal(/* tuple */[
@@ -2749,7 +2779,10 @@ function scan_string_list$2(param) {
 function scan_bool_list(param) {
   return scan_list$4((function (ib) {
                 return Scanf.bscanf(ib, /* Format */[
-                            /* Bool */Block.__(9, [/* End_of_format */0]),
+                            /* Bool */Block.__(9, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ]),
                             "%B"
                           ]);
               }), param);
@@ -3971,7 +4004,7 @@ function test52(param) {
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* Ignored_param */Block.__(23, [
-                          /* Ignored_scan_char_set */Block.__(9, [
+                          /* Ignored_scan_char_set */Block.__(10, [
                               1,
                               "\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
                             ]),
@@ -3989,7 +4022,7 @@ function test52(param) {
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Ignored_param */Block.__(23, [
-                      /* Ignored_scan_char_set */Block.__(9, [
+                      /* Ignored_scan_char_set */Block.__(10, [
                           1,
                           "\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
                         ]),
