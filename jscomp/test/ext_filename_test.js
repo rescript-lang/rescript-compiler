@@ -40,15 +40,7 @@ function path_as_directory(x) {
 
 function absolute_path(s) {
   var s$1 = s;
-  var s$2;
-  if (Curry._1(Filename.is_relative, s$1)) {
-    var tag = cwd.tag | 0;
-    s$2 = Filename.concat(tag === 250 ? cwd[0] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-          ), s$1);
-  } else {
-    s$2 = s$1;
-  }
+  var s$2 = Curry._1(Filename.is_relative, s$1) ? Filename.concat(CamlinternalLazy.force(cwd), s$1) : s$1;
   var aux = function (_s) {
     while(true) {
       var s = _s;
@@ -236,10 +228,7 @@ function find_package_json_dir(cwd) {
 }
 
 var package_dir = Caml_obj.caml_lazy_make((function (param) {
-        var tag = cwd.tag | 0;
-        var cwd$1 = tag === 250 ? cwd[0] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-          );
+        var cwd$1 = CamlinternalLazy.force(cwd);
         return find_root_filename(cwd$1, Test_literals.bsconfig_json);
       }));
 

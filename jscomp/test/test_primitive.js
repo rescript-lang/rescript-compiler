@@ -73,16 +73,7 @@ function f(x) {
   return x.length;
 }
 
-function is_lazy_force(x) {
-  var tag = x.tag | 0;
-  if (tag === 250) {
-    return x[0];
-  } else if (tag === 246) {
-    return CamlinternalLazy.force_lazy_block(x);
-  } else {
-    return x;
-  }
-}
+var is_lazy_force = CamlinternalLazy.force;
 
 function fib(n) {
   if (n === 0 || n === 1) {

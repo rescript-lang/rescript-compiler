@@ -134,10 +134,7 @@ function pr(param) {
 
 function map(f, l) {
   return Caml_obj.caml_lazy_make((function (param) {
-                var tag = l.tag | 0;
-                var match = tag === 250 ? l[0] : (
-                    tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
-                  );
+                var match = CamlinternalLazy.force(l);
                 return /* Cons */[
                         Curry._1(f, match[0]),
                         map(f, match[1])
@@ -147,14 +144,8 @@ function map(f, l) {
 
 function merge(cmp, l1, l2) {
   return Caml_obj.caml_lazy_make((function (param) {
-                var tag = l1.tag | 0;
-                var match = tag === 250 ? l1[0] : (
-                    tag === 246 ? CamlinternalLazy.force_lazy_block(l1) : l1
-                  );
-                var tag$1 = l2.tag | 0;
-                var match$1 = tag$1 === 250 ? l2[0] : (
-                    tag$1 === 246 ? CamlinternalLazy.force_lazy_block(l2) : l2
-                  );
+                var match = CamlinternalLazy.force(l1);
+                var match$1 = CamlinternalLazy.force(l2);
                 var ll2 = match$1[1];
                 var x2 = match$1[0];
                 var ll1 = match[1];
@@ -188,10 +179,7 @@ function iter_interval(f, _l, _param) {
       return /* () */0;
     } else {
       var start = param[0];
-      var tag = l.tag | 0;
-      var match = tag === 250 ? l[0] : (
-          tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
-        );
+      var match = CamlinternalLazy.force(l);
       if (start <= 0) {
         Curry._1(f, match[0]);
       }
@@ -213,39 +201,15 @@ var hamming = Caml_obj.caml_lazy_make((function (param) {
       }));
 
 var ham2 = Caml_obj.caml_lazy_make((function (param) {
-        var lzarg = map(x2, hamming);
-        var tag = lzarg.tag | 0;
-        if (tag === 250) {
-          return lzarg[0];
-        } else if (tag === 246) {
-          return CamlinternalLazy.force_lazy_block(lzarg);
-        } else {
-          return lzarg;
-        }
+        return CamlinternalLazy.force(map(x2, hamming));
       }));
 
 var ham3 = Caml_obj.caml_lazy_make((function (param) {
-        var lzarg = map(x3, hamming);
-        var tag = lzarg.tag | 0;
-        if (tag === 250) {
-          return lzarg[0];
-        } else if (tag === 246) {
-          return CamlinternalLazy.force_lazy_block(lzarg);
-        } else {
-          return lzarg;
-        }
+        return CamlinternalLazy.force(map(x3, hamming));
       }));
 
 var ham5 = Caml_obj.caml_lazy_make((function (param) {
-        var lzarg = map(x5, hamming);
-        var tag = lzarg.tag | 0;
-        if (tag === 250) {
-          return lzarg[0];
-        } else if (tag === 246) {
-          return CamlinternalLazy.force_lazy_block(lzarg);
-        } else {
-          return lzarg;
-        }
+        return CamlinternalLazy.force(map(x5, hamming));
       }));
 
 iter_interval(pr, hamming, /* tuple */[
