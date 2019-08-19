@@ -2397,12 +2397,12 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(/* () */0);
   var p2 = Parsing.symbol_end_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return /* record */[
                         /* docs_pre */get_pre_docs(p1),
                         /* docs_post */get_post_docs(p2)
                       ];
-              })]);
+              }));
 }
 
 function mark_symbol_docs(param) {
@@ -2417,9 +2417,9 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return get_text(pos);
-              })]);
+              }));
 }
 
 function init(param) {

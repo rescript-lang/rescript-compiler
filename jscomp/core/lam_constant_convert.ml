@@ -77,9 +77,12 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Blk_extension_slot -> 
       let t : Lam_tag_info.t = Blk_extension_slot in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
+    | Blk_lazy_general 
+    | Blk_lazy_forward
     | Blk_na -> 
       let t : Lam_tag_info.t = Blk_na in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
+    
 #if OCAML_VERSION =~ ">4.03.0" then
     | Blk_record_inlined (s,ctor,ix)  -> 
       let t : Lam_tag_info.t = Blk_record_inlined (s, ctor,ix) in 

@@ -42,6 +42,15 @@ function lazy y -> y
 let l_from_fun = Lazy.from_fun (fun _ -> 3 )
 let forward_test = (lazy  (let u = ref 3 in incr u; !u))
 (* module Mt = Mock_mt         *)
+
+let f005  = lazy (1 + 2 + 3)
+
+let f006 = lazy (let  x=3 in fun _ -> x)
+
+let f007 = lazy (raise Not_found)
+let f008 = lazy(print_endline "hi"; raise Not_found)
+
+
 ;; Mt.from_pair_suites __MODULE__ Mt.[
 "simple", (fun _ ->
   Eq ((lazy_test ()) ,(3, 32))

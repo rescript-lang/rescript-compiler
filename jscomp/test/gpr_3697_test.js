@@ -1,12 +1,12 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[Block.__(246, [(function (param) {
+  return /* Fix */[Caml_obj.caml_lazy_make((function (param) {
                   return fix(/* () */0);
-                })])];
+                }))];
 }
 
 function unfixLeak(_param) {

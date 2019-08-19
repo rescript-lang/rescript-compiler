@@ -133,7 +133,7 @@ function pr(param) {
 }
 
 function map(f, l) {
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 var tag = l.tag | 0;
                 var match = tag === 250 ? l[0] : (
                     tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
@@ -142,11 +142,11 @@ function map(f, l) {
                         Curry._1(f, match[0]),
                         map(f, match[1])
                       ];
-              })]);
+              }));
 }
 
 function merge(cmp, l1, l2) {
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 var tag = l1.tag | 0;
                 var match = tag === 250 ? l1[0] : (
                     tag === 246 ? CamlinternalLazy.force_lazy_block(l1) : l1
@@ -176,7 +176,7 @@ function merge(cmp, l1, l2) {
                           merge(cmp, l1, ll2)
                         ];
                 }
-              })]);
+              }));
 }
 
 function iter_interval(f, _l, _param) {
@@ -205,56 +205,48 @@ function iter_interval(f, _l, _param) {
   };
 }
 
-var hamming = [];
+var hamming = Caml_obj.caml_lazy_make((function (param) {
+        return /* Cons */[
+                nn1,
+                merge(cmp, ham2, merge(cmp, ham3, ham5))
+              ];
+      }));
 
-var ham2 = [];
+var ham2 = Caml_obj.caml_lazy_make((function (param) {
+        var lzarg = map(x2, hamming);
+        var tag = lzarg.tag | 0;
+        if (tag === 250) {
+          return lzarg[0];
+        } else if (tag === 246) {
+          return CamlinternalLazy.force_lazy_block(lzarg);
+        } else {
+          return lzarg;
+        }
+      }));
 
-var ham3 = [];
+var ham3 = Caml_obj.caml_lazy_make((function (param) {
+        var lzarg = map(x3, hamming);
+        var tag = lzarg.tag | 0;
+        if (tag === 250) {
+          return lzarg[0];
+        } else if (tag === 246) {
+          return CamlinternalLazy.force_lazy_block(lzarg);
+        } else {
+          return lzarg;
+        }
+      }));
 
-var ham5 = [];
-
-Caml_obj.caml_update_dummy(hamming, Block.__(246, [(function (param) {
-            return /* Cons */[
-                    nn1,
-                    merge(cmp, ham2, merge(cmp, ham3, ham5))
-                  ];
-          })]));
-
-Caml_obj.caml_update_dummy(ham2, Block.__(246, [(function (param) {
-            var lzarg = map(x2, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
-
-Caml_obj.caml_update_dummy(ham3, Block.__(246, [(function (param) {
-            var lzarg = map(x3, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
-
-Caml_obj.caml_update_dummy(ham5, Block.__(246, [(function (param) {
-            var lzarg = map(x5, hamming);
-            var tag = lzarg.tag | 0;
-            if (tag === 250) {
-              return lzarg[0];
-            } else if (tag === 246) {
-              return CamlinternalLazy.force_lazy_block(lzarg);
-            } else {
-              return lzarg;
-            }
-          })]));
+var ham5 = Caml_obj.caml_lazy_make((function (param) {
+        var lzarg = map(x5, hamming);
+        var tag = lzarg.tag | 0;
+        if (tag === 250) {
+          return lzarg[0];
+        } else if (tag === 246) {
+          return CamlinternalLazy.force_lazy_block(lzarg);
+        } else {
+          return lzarg;
+        }
+      }));
 
 iter_interval(pr, hamming, /* tuple */[
       88000,

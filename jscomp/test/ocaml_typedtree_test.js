@@ -6552,12 +6552,12 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(/* () */0);
   var p2 = Parsing.symbol_end_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return /* record */[
                         /* docs_pre */get_pre_docs(p1),
                         /* docs_post */get_post_docs(p2)
                       ];
-              })]);
+              }));
 }
 
 function mark_symbol_docs(param) {
@@ -6572,9 +6572,9 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return get_text(pos);
-              })]);
+              }));
 }
 
 function init(param) {
@@ -11843,7 +11843,7 @@ function prefix_idents_and_subst(root, sub, sg) {
   return /* tuple */[
           match[0],
           sub$1,
-          Block.__(246, [(function (param) {
+          Caml_obj.caml_lazy_make((function (param) {
                   var sub$2 = sub$1;
                   var sg$1 = sg;
                   return List.map((function (item) {
@@ -11891,7 +11891,7 @@ function prefix_idents_and_subst(root, sub, sg) {
                                   
                                 }
                               }), sg$1);
-                })])
+                }))
         ];
 }
 
@@ -26731,10 +26731,10 @@ function copy_sep(fixed, free, bound, visited, ty) {
     } else {
       var t = newvar(undefined, /* () */0);
       delayed_copy[0] = /* :: */[
-        Block.__(246, [(function (param) {
+        Caml_obj.caml_lazy_make((function (param) {
                 t[/* desc */0] = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
                 return /* () */0;
-              })]),
+              })),
         delayed_copy[0]
       ];
       return t;
@@ -69092,7 +69092,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var sty$prime = match$1[1];
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level[0], /* Tnil */0), val_env, loc);
     delayed_meth_specs[0] = /* :: */[
-      Block.__(246, [(function (param) {
+      Caml_obj.caml_lazy_make((function (param) {
               var cty = transl_simple_type_univars(val_env, sty$prime);
               var ty = cty[/* ctyp_type */1];
               unif(ty);
@@ -69102,7 +69102,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
                 ]);
               returned_cty[/* ctyp_type */1] = ty;
               return /* () */0;
-            })]),
+            })),
       delayed_meth_specs[0]
     ];
     return returned_cty;
@@ -69660,7 +69660,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$4[1],
                         match$4[2],
                         /* :: */[
-                          Block.__(246, [(function (param) {
+                          Caml_obj.caml_lazy_make((function (param) {
                                   return mkcf(/* Tcf_inherit */Block.__(0, [
                                                 ovf,
                                                 parent,
@@ -69668,7 +69668,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                                 inh_vars,
                                                 inh_meths
                                               ]));
-                                })]),
+                                })),
                           fields
                         ],
                         match$2[1],
@@ -69754,7 +69754,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime,
                           match$9[3],
                           /* :: */[
-                            Block.__(246, [(function (param) {
+                            Caml_obj.caml_lazy_make((function (param) {
                                     return mkcf(/* Tcf_val */Block.__(1, [
                                                   lab,
                                                   mut,
@@ -69765,7 +69765,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                                     ]),
                                                   met_env === met_env$prime
                                                 ]));
-                                  })]),
+                                  })),
                             fields
                           ],
                           concr_meths,
@@ -69792,7 +69792,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime$1,
                           match$10[3],
                           /* :: */[
-                            Block.__(246, [(function (param) {
+                            Caml_obj.caml_lazy_make((function (param) {
                                     return mkcf(/* Tcf_val */Block.__(1, [
                                                   lab,
                                                   mut,
@@ -69800,7 +69800,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                                   /* Tcfk_virtual */Block.__(0, [cty]),
                                                   met_env === met_env$prime$1
                                                 ]));
-                                  })]),
+                                  })),
                             fields
                           ],
                           concr_meths,
@@ -69929,7 +69929,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   var meth_expr = make_method(self_loc$1, cl_num$1, expr$1);
                   var vars_local = vars$1[0];
-                  var field = Block.__(246, [(function (param) {
+                  var field = Caml_obj.caml_lazy_make((function (param) {
                           var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
                                   "",
                                   self_type$1,
@@ -69948,7 +69948,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                             texp
                                           ])
                                       ]));
-                        })]);
+                        }));
                   return /* tuple */[
                           val_env,
                           met_env,
@@ -69970,13 +69970,13 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env,
                           par_env,
                           /* :: */[
-                            Block.__(246, [(function (param) {
+                            Caml_obj.caml_lazy_make((function (param) {
                                     return mkcf(/* Tcf_method */Block.__(2, [
                                                   lab$1,
                                                   priv,
                                                   /* Tcfk_virtual */Block.__(0, [cty$1])
                                                 ]));
-                                  })]),
+                                  })),
                             fields
                           ],
                           concr_meths,
@@ -69996,12 +69996,12 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Block.__(246, [(function (param) {
+                          Caml_obj.caml_lazy_make((function (param) {
                                   return mkcf(/* Tcf_constraint */Block.__(3, [
                                                 cty$2,
                                                 cty$prime$1
                                               ]));
-                                })]),
+                                })),
                           fields
                         ],
                         concr_meths,
@@ -70013,7 +70013,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             case 4 : 
                 var expr$2 = make_method(self_loc$1, cl_num$1, match[0]);
                 var vars_local$1 = vars$1[0];
-                var field$1 = Block.__(246, [(function (param) {
+                var field$1 = Caml_obj.caml_lazy_make((function (param) {
                         raise_nongen_level(/* () */0);
                         var desc_002 = instance_def(type_unit);
                         var desc = /* Tarrow */Block.__(1, [
@@ -70027,7 +70027,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         var texp = type_expect(undefined, met_env, expr$2, meth_type);
                         end_def(/* () */0);
                         return mkcf(/* Tcf_initializer */Block.__(4, [texp]));
-                      })]);
+                      }));
                 return /* tuple */[
                         val_env,
                         met_env,
@@ -70053,9 +70053,9 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Block.__(246, [(function (param) {
+                          Caml_obj.caml_lazy_make((function (param) {
                                   return mkcf(/* Tcf_attribute */Block.__(5, [x]));
-                                })]),
+                                })),
                           fields
                         ],
                         concr_meths,

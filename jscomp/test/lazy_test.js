@@ -3,16 +3,17 @@
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
 var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var u = /* record */[/* contents */3];
 
-var v = Block.__(246, [(function (param) {
+var v = Caml_obj.caml_lazy_make((function (param) {
         u[0] = 32;
         return /* () */0;
-      })]);
+      }));
 
 function lazy_test(param) {
   var h = u[0];
@@ -69,15 +70,15 @@ function f(param) {
 
 var s = /* record */[/* contents */undefined];
 
-var set_true = Block.__(246, [(function (param) {
+var set_true = Caml_obj.caml_lazy_make((function (param) {
         s[0] = 1;
         return /* () */0;
-      })]);
+      }));
 
-var set_false = Block.__(246, [(function (param) {
+var set_false = Caml_obj.caml_lazy_make((function (param) {
         s[0] = undefined;
         return /* () */0;
-      })]);
+      }));
 
 var h;
 
@@ -99,10 +100,10 @@ catch (raw_exn){
 
 var u_v = /* record */[/* contents */0];
 
-var u$1 = Block.__(246, [(function (param) {
+var u$1 = Caml_obj.caml_lazy_make((function (param) {
         u_v[0] = 2;
         return /* () */0;
-      })]);
+      }));
 
 var tag = u$1.tag | 0;
 
@@ -128,11 +129,30 @@ var l_from_fun = Lazy.from_fun((function (param) {
         return 3;
       }));
 
-var forward_test = Block.__(246, [(function (param) {
+var forward_test = Caml_obj.caml_lazy_make((function (param) {
         var u = 3;
         u = u + 1 | 0;
         return u;
-      })]);
+      }));
+
+var f005 = Caml_obj.caml_lazy_make((function (param) {
+        return 6;
+      }));
+
+var f006 = Caml_obj.caml_lazy_make((function (param) {
+        return (function (param) {
+            return 3;
+          });
+      }));
+
+var f007 = Caml_obj.caml_lazy_make((function (param) {
+        throw Caml_builtin_exceptions.not_found;
+      }));
+
+var f008 = Caml_obj.caml_lazy_make((function (param) {
+        console.log("hi");
+        throw Caml_builtin_exceptions.not_found;
+      }));
 
 Mt.from_pair_suites("Lazy_test", /* :: */[
       /* tuple */[
@@ -252,4 +272,8 @@ exports.u = u$1;
 exports.exotic = exotic;
 exports.l_from_fun = l_from_fun;
 exports.forward_test = forward_test;
+exports.f005 = f005;
+exports.f006 = f006;
+exports.f007 = f007;
+exports.f008 = f008;
 /* h Not a pure module */
