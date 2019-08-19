@@ -67,7 +67,6 @@ let init_mod (loc : string * int * int) (shape : shape) =
   loop shape res 0 ;
   res.(0)      
 
-
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
@@ -93,3 +92,14 @@ let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t)
       aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o  i
     done
   |  _ -> assert false 
+
+
+let init_mod (loc : string * int * int) (shape : shape) =
+  ([%raw {|{}|}]: Caml_obj_extern.t)
+
+let module_assign : Caml_obj_extern.t -> Caml_obj_extern.t -> unit [@bs]  = fun%raw o n ->  {|
+Object.assign(o, n);
+|}
+
+let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit =
+  module_assign o n [@bs]
