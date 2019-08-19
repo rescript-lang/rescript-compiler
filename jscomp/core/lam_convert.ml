@@ -219,6 +219,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_record s -> 
       let info : Lam_tag_info.t = Blk_record s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    
 #if OCAML_VERSION =~ ">4.03.0"  then
     | Blk_record_inlined (s,ctor,i) ->
       let info : Lam_tag_info.t = Blk_record_inlined (s, ctor,i) in
@@ -243,7 +244,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 #end       
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
       )
-
+    | Blk_lazy_general  
+      ->       
+        prim 
+          ~primitive:(Pccall {prim_name="caml_lazy_make"; prim_arity = 1; prim_native_name = ""})
+          ~args loc          
+    | Blk_lazy_forward
+    
     | Blk_na -> 
       let info : Lam_tag_info.t = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc

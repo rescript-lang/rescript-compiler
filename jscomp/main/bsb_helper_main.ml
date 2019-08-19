@@ -62,7 +62,7 @@ let link link_byte_or_native =
   end
 #end  
 let () =
-  Bsb_arg.parse_exn [
+  Bsb_helper_arg.parse_exn [
     "-g",  Set_int dev_group ,
     " Set the dev group (default to be 0)"
     ;

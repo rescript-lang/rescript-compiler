@@ -7,6 +7,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var $$String = require("../../lib/js/string.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
@@ -25,9 +26,9 @@ var node_parent = "..";
 
 var node_current = ".";
 
-var cwd = Block.__(246, [(function (param) {
+var cwd = Caml_obj.caml_lazy_make((function (param) {
         return Caml_sys.caml_sys_getcwd(/* () */0);
-      })]);
+      }));
 
 function path_as_directory(x) {
   if (x === "" || Ext_string_test.ends_with(x, Filename.dir_sep)) {
@@ -39,15 +40,7 @@ function path_as_directory(x) {
 
 function absolute_path(s) {
   var s$1 = s;
-  var s$2;
-  if (Curry._1(Filename.is_relative, s$1)) {
-    var tag = cwd.tag | 0;
-    s$2 = Filename.concat(tag === 250 ? cwd[0] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-          ), s$1);
-  } else {
-    s$2 = s$1;
-  }
+  var s$2 = Curry._1(Filename.is_relative, s$1) ? Filename.concat(CamlinternalLazy.force(cwd), s$1) : s$1;
   var aux = function (_s) {
     while(true) {
       var s = _s;
@@ -234,13 +227,10 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-var package_dir = Block.__(246, [(function (param) {
-        var tag = cwd.tag | 0;
-        var cwd$1 = tag === 250 ? cwd[0] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-          );
+var package_dir = Caml_obj.caml_lazy_make((function (param) {
+        var cwd$1 = CamlinternalLazy.force(cwd);
         return find_root_filename(cwd$1, Test_literals.bsconfig_json);
-      })]);
+      }));
 
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));

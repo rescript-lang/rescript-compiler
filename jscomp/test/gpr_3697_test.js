@@ -1,22 +1,18 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[Block.__(246, [(function (param) {
+  return /* Fix */[Caml_obj.caml_lazy_make((function (param) {
                   return fix(/* () */0);
-                })])];
+                }))];
 }
 
 function unfixLeak(_param) {
   while(true) {
     var param = _param;
-    var f = param[0];
-    var tag = f.tag | 0;
-    _param = tag === 250 ? f[0] : (
-        tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
-      );
+    _param = CamlinternalLazy.force(param[0]);
     continue ;
   };
 }
@@ -24,11 +20,7 @@ function unfixLeak(_param) {
 function unfix(p) {
   while(true) {
     var match = p[0];
-    var match$1 = match[0];
-    var tag = match$1.tag | 0;
-    p[0] = tag === 250 ? match$1[0] : (
-        tag === 246 ? CamlinternalLazy.force_lazy_block(match$1) : match$1
-      );
+    p[0] = CamlinternalLazy.force(match[0]);
   };
   return /* () */0;
 }

@@ -2397,12 +2397,12 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(/* () */0);
   var p2 = Parsing.symbol_end_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return /* record */[
                         /* docs_pre */get_pre_docs(p1),
                         /* docs_post */get_post_docs(p2)
                       ];
-              })]);
+              }));
 }
 
 function mark_symbol_docs(param) {
@@ -2417,9 +2417,9 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(/* () */0);
-  return Block.__(246, [(function (param) {
+  return Caml_obj.caml_lazy_make((function (param) {
                 return get_text(pos);
-              })]);
+              }));
 }
 
 function init(param) {
@@ -4510,15 +4510,7 @@ var yyact = /* array */[
               ];
         }
         var bindings$1 = List.map((function (lb) {
-                var lzarg = lb[/* lb_docs */3];
-                var tag = lzarg.tag | 0;
-                var lzarg$1 = lb[/* lb_text */4];
-                var tag$1 = lzarg$1.tag | 0;
-                return mk$17(lb[/* lb_loc */5], lb[/* lb_attributes */2], tag === 250 ? lzarg[0] : (
-                              tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
-                            ), tag$1 === 250 ? lzarg$1[0] : (
-                              tag$1 === 246 ? CamlinternalLazy.force_lazy_block(lzarg$1) : lzarg$1
-                            ), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+                return mk$17(lb[/* lb_loc */5], lb[/* lb_attributes */2], CamlinternalLazy.force(lb[/* lb_docs */3]), CamlinternalLazy.force(lb[/* lb_text */4]), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
               }), bindings);
         str = mkstr(/* Pstr_value */Block.__(1, [
                 lbs[/* lbs_rec */1],

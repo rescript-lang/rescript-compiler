@@ -20,19 +20,21 @@ function getVersionPrefix() {
 
   var file = path.join(__dirname, "..", "OCAML_VERSION");
   if (fs.existsSync(file)) {
+    console.log(`${file} is used in version detection`)
     var version = fs.readFileSync(file, "ascii");
     cached = version.substr(0, version.indexOf("+"));
     return cached;
   }
-  console.warn(`cannot find '${file}'`);
+  
 
   file = path.join(__dirname, "..", "ocaml", "VERSION");
   if (fs.existsSync(file)) {
+    console.log(`${file} is used in version detection`)
     var version = fs.readFileSync(file, "ascii");
     cached = version.substr(0, version.indexOf("+"));
     return cached;
   }
-  console.warn(`cannot find '${file}'`);
+  
 
   console.warn(
     "You should create OCAML_VERSION or ocaml/VERSION file to specify OCaml version like '4.02.3+buckle-master'"
