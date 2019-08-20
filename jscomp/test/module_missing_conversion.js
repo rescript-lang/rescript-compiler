@@ -33,33 +33,33 @@ var XX = /* module */{
   f: f
 };
 
-var u = /* array */[/* String */[
-    $$String.make,
-    $$String.init,
-    $$String.copy,
-    $$String.sub,
-    $$String.fill,
-    $$String.blit,
-    $$String.concat,
-    $$String.iter,
-    $$String.iteri,
-    $$String.map,
-    $$String.mapi,
-    $$String.trim,
-    $$String.escaped,
-    $$String.index,
-    $$String.rindex,
-    $$String.index_from,
-    $$String.rindex_from,
-    $$String.contains,
-    $$String.contains_from,
-    $$String.rcontains_from,
-    $$String.uppercase,
-    $$String.lowercase,
-    $$String.capitalize,
-    $$String.uncapitalize,
-    $$String.compare
-  ]];
+var u = /* array */[/* String */{
+    make: $$String.make,
+    init: $$String.init,
+    copy: $$String.copy,
+    sub: $$String.sub,
+    fill: $$String.fill,
+    blit: $$String.blit,
+    concat: $$String.concat,
+    iter: $$String.iter,
+    iteri: $$String.iteri,
+    map: $$String.map,
+    mapi: $$String.mapi,
+    trim: $$String.trim,
+    escaped: $$String.escaped,
+    index: $$String.index,
+    rindex: $$String.rindex,
+    index_from: $$String.index_from,
+    rindex_from: $$String.rindex_from,
+    contains: $$String.contains,
+    contains_from: $$String.contains_from,
+    rcontains_from: $$String.rcontains_from,
+    uppercase: $$String.uppercase,
+    lowercase: $$String.lowercase,
+    capitalize: $$String.capitalize,
+    uncapitalize: $$String.uncapitalize,
+    compare: $$String.compare
+  }];
 
 var ghh = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
 
