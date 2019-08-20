@@ -1781,6 +1781,12 @@ function main() {
         updateRelease();
 
         break;
+      case "cleanbuild":
+        console.log(`run cleaning first`)
+        cp.execSync(`node ${__filename} clean`,{cwd:__dirname,stdio:[0,1,2]})
+        cp.execSync(`node ${__filename} config`,{cwd:__dirname,stdio:[0,1,2]})
+        cp.execSync(`node ${__filename} build`,{cwd:__dirname,stdio:[0,1,2]})
+        break;
       case "docs":
         console.log(`building docs`);
         require("./doc_gen").main();
@@ -1789,6 +1795,7 @@ function main() {
         console.log(`supported subcommands:
 [exe] config        
 [exe] build
+[exe] cleanbuild
 [exe] docs
 [exe] help
 [exe] clean
