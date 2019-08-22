@@ -4843,7 +4843,7 @@ var Types = /* module */{
 var $$let = Types.TypeOps;
 
 var funarg = /* module */{
-  compare: $$let[0]
+  compare: $$let.compare
 };
 
 function height$2(param) {
@@ -5254,7 +5254,7 @@ function elements_aux$1(_accu, _param) {
 var $$let$1 = Types.TypeOps;
 
 var funarg$1 = /* module */{
-  compare: $$let$1[0]
+  compare: $$let$1.compare
 };
 
 function height$3(param) {
@@ -5400,8 +5400,8 @@ function fold$3(f, _m, _accu) {
 var $$let$2 = Types.TypeOps;
 
 var TypeHash = Hashtbl.Make(/* module */{
-      equal: $$let$2[1],
-      hash: $$let$2[2]
+      equal: $$let$2.equal,
+      hash: $$let$2.hash
     });
 
 function print_raw(param) {

@@ -61,7 +61,7 @@ Caml_module.update_mod([[0]], M, /* module */{
       fact: fact
     });
 
-var fact$1 = M[0];
+var fact$1 = M.fact;
 
 var Fact = /* module */{
   M: M,

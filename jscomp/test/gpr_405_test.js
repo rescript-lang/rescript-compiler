@@ -8,8 +8,8 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 function Make(funarg) {
   var $$let = funarg.V;
   var H = Hashtbl.Make(/* module */{
-        equal: $$let[2],
-        hash: $$let[1]
+        equal: $$let.equal,
+        hash: $$let.hash
       });
   var find_default = function (htbl, x) {
     try {
