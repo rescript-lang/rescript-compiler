@@ -12,7 +12,7 @@ function Make(X) {
 
 var B = Caml_module.init_mod([
       "recursive_unbound_module_test.ml",
-      15,
+      18,
       0
     ], [[[[0]]]]);
 

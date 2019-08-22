@@ -10579,7 +10579,7 @@ module Ext_obj : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 val dump : 'a -> string 
 val pp_any : Format.formatter -> 'a -> unit 
-
+val bt : unit -> unit
 end = struct
 #1 "ext_obj.ml"
 (* Copyright (C) 2019-Present Authors of BuckleScript 
@@ -10692,6 +10692,26 @@ let pp_any fmt v =
   (dump v )
 
 
+let bt () = 
+  let raw_bt = Printexc.backtrace_slots (Printexc.get_raw_backtrace()) in       
+  match raw_bt with 
+  | None -> ()
+  | Some raw_bt ->
+    let acc = ref [] in 
+    (for i =  Array.length raw_bt - 1  downto 0 do 
+       let slot =  raw_bt.(i) in 
+       match Printexc.Slot.location slot with 
+       | None
+         -> ()
+       | Some bt ->
+         (match !acc with 
+          | [] -> acc := [bt]
+          | hd::tl -> if hd <> bt then acc := bt :: !acc )
+
+     done); 
+    Ext_list.iter !acc (fun bt ->       
+        Printf.eprintf "File \"%s\", line %d, characters %d-%d\n"
+          bt.filename bt.line_number bt.start_char bt.end_char )
 
 end
 module Ounit_hashtbl_tests
