@@ -3,7 +3,6 @@
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function f(param) {
-  var exit = 0;
   switch (param.tag | 0) {
     case 0 : 
         var match = param[0];
@@ -16,7 +15,6 @@ function f(param) {
         }
     case 1 : 
     case 2 : 
-        exit = 1;
         break;
     
   }

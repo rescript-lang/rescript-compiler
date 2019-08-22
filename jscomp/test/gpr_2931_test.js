@@ -11,13 +11,10 @@ function eq(loc, x, y) {
 }
 
 function fake_c2(a_type, b_type) {
-  var exit = 0;
   switch (a_type) {
     case "number" : 
         if (b_type === "number") {
           return 33;
-        } else {
-          exit = 1;
         }
         break;
     case "string" : 
@@ -25,7 +22,7 @@ function fake_c2(a_type, b_type) {
     case "undefined" : 
         return -1;
     default:
-      exit = 1;
+      
   }
   if (b_type === "undefined") {
     return 1;

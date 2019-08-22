@@ -2,7 +2,6 @@
 
 
 function actionKey(key, a, b, c, d, e) {
-  var exit = 0;
   switch (key) {
     case 98 : 
         return c;
@@ -27,13 +26,12 @@ function actionKey(key, a, b, c, d, e) {
     case 114 : 
     case 115 : 
     case 117 : 
-        exit = 1;
         break;
     case 99 : 
     case 118 : 
         return a;
     default:
-      exit = 1;
+      
   }
   return (function (param) {
       return /* () */0;

@@ -35,19 +35,14 @@ function compare(context, state, _a, _b) {
     var da;
     var nb;
     var db;
-    var exit$1 = 0;
-    var exit$2 = 0;
-    var exit$3 = 0;
     switch (a.tag | 0) {
       case 0 : 
           switch (b.tag | 0) {
             case 0 : 
                 return 111;
             case 1 : 
-                exit$3 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
                 break;
             case 4 : 
                 throw [
@@ -70,7 +65,6 @@ function compare(context, state, _a, _b) {
           continue ;
       case 2 : 
       case 3 : 
-          exit$3 = 5;
           break;
       case 4 : 
           switch (b.tag | 0) {
@@ -84,10 +78,8 @@ function compare(context, state, _a, _b) {
                       ]
                     ];
             case 1 : 
-                exit$3 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
                 break;
             case 4 : 
                 na = a[0];
@@ -106,10 +98,8 @@ function compare(context, state, _a, _b) {
       case 5 : 
           switch (b.tag | 0) {
             case 1 : 
-                exit$3 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
                 break;
             case 5 : 
                 na = a[0];
@@ -119,7 +109,7 @@ function compare(context, state, _a, _b) {
                 exit = 2;
                 break;
             default:
-              exit$1 = 3;
+              
           }
           break;
       
@@ -127,15 +117,17 @@ function compare(context, state, _a, _b) {
     if (b.tag === 1) {
       _b = b[0];
       continue ;
-    } else if (a.tag === 2 && is_number(b)) {
-      return 1;
-    } else {
-      exit$2 = 4;
+    } else if (a.tag === 2) {
+      if (is_number(b)) {
+        return 1;
+      }
+      
     }
-    if (b.tag === 2 && is_number(a)) {
-      return -1;
-    } else {
-      exit$1 = 3;
+    if (b.tag === 2) {
+      if (is_number(a)) {
+        return -1;
+      }
+      
     }
     switch (a.tag | 0) {
       case 2 : 
@@ -149,25 +141,27 @@ function compare(context, state, _a, _b) {
           return 1;
       
     }
-    if (exit === 1) {
-      switch (b.tag | 0) {
-        case 3 : 
-            return 1;
-        case 5 : 
-            return -1;
-        default:
-          return -1;
-      }
-    } else {
-      var denom = compare(context, state, da, db);
-      var match = denom === 0;
-      if (match) {
-        _b = nb;
-        _a = na;
-        continue ;
-      } else {
-        return denom;
-      }
+    switch (exit) {
+      case 1 : 
+          switch (b.tag | 0) {
+            case 3 : 
+                return 1;
+            case 5 : 
+                return -1;
+            default:
+              return -1;
+          }
+      case 2 : 
+          var denom = compare(context, state, da, db);
+          var match = denom === 0;
+          if (match) {
+            _b = nb;
+            _a = na;
+            continue ;
+          } else {
+            return denom;
+          }
+      
     }
   };
 }

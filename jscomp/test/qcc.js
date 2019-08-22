@@ -193,12 +193,9 @@ function next(param) {
   }
   if (match !== undefined) {
     var c = match;
-    var exit = 0;
     if (c !== 34) {
       if (c >= 48) {
-        if (c >= 58) {
-          exit = 1;
-        } else {
+        if (c < 58) {
           var _n = c - 48 | 0;
           while(true) {
             var n = _n;
@@ -211,9 +208,8 @@ function next(param) {
             }
           };
         }
-      } else if (c !== 39) {
-        exit = 1;
-      } else {
+        
+      } else if (c === 39) {
         var ch = getq(/* () */0);
         var qt = Curry._1(getch, /* () */0);
         if (qt !== /* "'" */39) {
@@ -224,6 +220,7 @@ function next(param) {
         }
         return /* ILit */Block.__(1, [ch]);
       }
+      
     } else {
       var b = gpos[0];
       var _e = gpos[0];
@@ -966,7 +963,6 @@ function postfix(stk) {
     return Curry._1(unnext, t);
   } else {
     var op = t[0];
-    var exit = 0;
     switch (op) {
       case "(" : 
           var emitargs = function (_l, _rl) {
@@ -1024,7 +1020,6 @@ function postfix(stk) {
           }
       case "++" : 
       case "--" : 
-          exit = 1;
           break;
       default:
         return Curry._1(unnext, t);
@@ -1230,7 +1225,6 @@ function stmt(brk, stk) {
     return /* () */0;
   };
   var t = Curry._1(next$1, /* () */0);
-  var exit = 0;
   if (Caml_obj.caml_equal(t, tokif)) {
     pexpr(stk);
     var loc = test(0, 0);
@@ -1328,16 +1322,14 @@ function stmt(brk, stk) {
     le(32, brkl[0]);
     brkl[0] = loc$4;
     return /* () */0;
-  } else if (t.tag) {
-    exit = 1;
-  } else {
+  } else if (!t.tag) {
     switch (t[0]) {
       case ";" : 
           return /* () */0;
       case "{" : 
           return block(brk, stk);
       default:
-        exit = 1;
+        
     }
   }
   Curry._1(unnext, t);

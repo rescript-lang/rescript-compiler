@@ -1425,7 +1425,6 @@ function kwd(ppf, s) {
 }
 
 function pr_exp0(ppf, lam) {
-  var exit = 0;
   switch (lam.tag | 0) {
     case 1 : 
         return Curry._2(Format.fprintf(ppf, /* Format */[
@@ -1434,7 +1433,6 @@ function pr_exp0(ppf, lam) {
                       ]), ident, lam[0]);
     case 0 : 
     case 2 : 
-        exit = 1;
         break;
     
   }

@@ -631,7 +631,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
          default: (exit 1))
          with (1) 2))
       *)
-and compile_staticraise i (largs : Lam.t list) lambda_cxt  =    
+and compile_staticraise i (largs : Lam.t list) lambda_cxt  : Js_output.t =    
  (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
     match Lam_compile_context.find_exn i lambda_cxt  with
     | {exit_id; bindings ; order_id} ->
@@ -649,11 +649,11 @@ and compile_staticraise i (largs : Lam.t list) lambda_cxt  =
                     {lambda_cxt with continuation = Assign bind } larg
             in Js_output.append_output new_output acc
            )
-#if undefined BS_RELEASE_BUILD then            
+(* #if undefined BS_RELEASE_BUILD then             *)
     | exception Not_found ->
-          assert false          
+          Js_output.dummy
     (* Invariant: staticraise is always enclosed by catch  *)
-#end
+(* #end *)
     (* Invariant: exit_code can not be reused
         (catch l with (32)
         (handler))
@@ -720,11 +720,18 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                                  we don't know if it's complete
                               *)                           
     | EffectCall ret ->
+      begin match ret,code_table with 
+      | ReturnTrue _, [ {label}] when label > 0 ->
+        let lbody = compile_lambda lambda_cxt body in      
+        (Js_output.append_output lbody
+           (Js_output.make (compile_cases lambda_cxt exit_expr handlers Complete )))
+      | _ ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases new_cxt exit_expr handlers (if ret = ReturnFalse then NonComplete else Complete))))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete )))
+    end            
     | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in

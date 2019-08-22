@@ -436,7 +436,6 @@ function partition(p, param) {
 
 function of_sorted_list(l) {
   var sub = function (n, l) {
-    var exit = 0;
     switch (n) {
       case 0 : 
           return /* tuple */[
@@ -454,8 +453,6 @@ function of_sorted_list(l) {
                     ],
                     l[1]
                   ];
-          } else {
-            exit = 1;
           }
           break;
       case 2 : 
@@ -476,11 +473,8 @@ function of_sorted_list(l) {
                       ],
                       match[1]
                     ];
-            } else {
-              exit = 1;
             }
-          } else {
-            exit = 1;
+            
           }
           break;
       case 3 : 
@@ -508,18 +502,14 @@ function of_sorted_list(l) {
                         ],
                         match$2[1]
                       ];
-              } else {
-                exit = 1;
               }
-            } else {
-              exit = 1;
+              
             }
-          } else {
-            exit = 1;
+            
           }
           break;
       default:
-        exit = 1;
+        
     }
     var nl = n / 2 | 0;
     var match$3 = sub(nl, l);

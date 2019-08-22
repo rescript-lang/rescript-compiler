@@ -1445,11 +1445,8 @@ function scan_elems$2(ib, accu) {
                           ])]),
                     "%c %i"
                   ]), (function (c, i) {
-                  var exit = 0;
                   if (c >= 91) {
-                    if (c >= 94) {
-                      exit = 1;
-                    } else {
+                    if (c < 94) {
                       switch (c - 91 | 0) {
                         case 0 : 
                             if (accu === /* [] */0) {
@@ -1457,12 +1454,9 @@ function scan_elems$2(ib, accu) {
                                           i,
                                           accu
                                         ]);
-                            } else {
-                              exit = 1;
                             }
                             break;
                         case 1 : 
-                            exit = 1;
                             break;
                         case 2 : 
                             return List.rev(/* :: */[
@@ -1472,9 +1466,8 @@ function scan_elems$2(ib, accu) {
                         
                       }
                     }
-                  } else if (c !== 59) {
-                    exit = 1;
-                  } else {
+                    
+                  } else if (c === 59) {
                     return scan_elems$2(ib, /* :: */[
                                 i,
                                 accu

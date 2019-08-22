@@ -69,11 +69,14 @@ function read_lines2(inc) {
         throw exn;
       }
     }
-    _acc = /* :: */[
-      l,
-      acc
-    ];
-    continue ;
+    if (exit === 1) {
+      _acc = /* :: */[
+        l,
+        acc
+      ];
+      continue ;
+    }
+    
   };
 }
 

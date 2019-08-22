@@ -20,7 +20,10 @@ function test_js_error(param) {
       throw exn;
     }
   }
-  return Caml_option.some(e);
+  if (exit === 1) {
+    return Caml_option.some(e);
+  }
+  
 }
 
 function test_js_error2(param) {
@@ -54,7 +57,10 @@ function example1(param) {
       throw exn;
     }
   }
-  return Caml_option.some(v);
+  if (exit === 1) {
+    return Caml_option.some(v);
+  }
+  
 }
 
 function example2(param) {

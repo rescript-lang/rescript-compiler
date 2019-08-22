@@ -588,7 +588,6 @@ function Make(Ord) {
   };
   var of_sorted_list = function (l) {
     var sub = function (n, l) {
-      var exit = 0;
       switch (n) {
         case 0 : 
             return /* tuple */[
@@ -606,8 +605,6 @@ function Make(Ord) {
                       ],
                       l[1]
                     ];
-            } else {
-              exit = 1;
             }
             break;
         case 2 : 
@@ -628,11 +625,8 @@ function Make(Ord) {
                         ],
                         match[1]
                       ];
-              } else {
-                exit = 1;
               }
-            } else {
-              exit = 1;
+              
             }
             break;
         case 3 : 
@@ -660,18 +654,14 @@ function Make(Ord) {
                           ],
                           match$2[1]
                         ];
-                } else {
-                  exit = 1;
                 }
-              } else {
-                exit = 1;
+                
               }
-            } else {
-              exit = 1;
+              
             }
             break;
         default:
-          exit = 1;
+          
       }
       var nl = n / 2 | 0;
       var match$3 = sub(nl, l);

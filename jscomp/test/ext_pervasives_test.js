@@ -27,8 +27,11 @@ function $$finally(v, action, f) {
     Curry._1(action, v);
     throw e$1;
   }
-  Curry._1(action, v);
-  return e;
+  if (exit === 1) {
+    Curry._1(action, v);
+    return e;
+  }
+  
 }
 
 function with_file_as_chan(filename, f) {

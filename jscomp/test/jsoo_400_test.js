@@ -14,7 +14,10 @@ function u(param) {
   catch (exn){
     return 42;
   }
-  return Caml_int32.div(3, 0);
+  if (exit === 1) {
+    return Caml_int32.div(3, 0);
+  }
+  
 }
 
 Mt.from_pair_suites("Jsoo_400_test", /* :: */[

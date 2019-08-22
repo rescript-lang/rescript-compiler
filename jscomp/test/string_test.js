@@ -109,18 +109,21 @@ function xsplit(delim, s) {
             throw exn;
           }
         }
-        var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-        var l$1 = /* :: */[
-          l_000,
-          l
-        ];
-        var l$2 = i$prime === 0 ? /* :: */[
-            "",
-            l$1
-          ] : l$1;
-        _i = i$prime;
-        _l = l$2;
-        continue ;
+        if (exit === 1) {
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+          var l$1 = /* :: */[
+            l_000,
+            l
+          ];
+          var l$2 = i$prime === 0 ? /* :: */[
+              "",
+              l$1
+            ] : l$1;
+          _i = i$prime;
+          _l = l$2;
+          continue ;
+        }
+        
       } else {
         return l;
       }

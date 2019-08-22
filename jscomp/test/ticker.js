@@ -37,18 +37,21 @@ function split(delim, s) {
             throw exn;
           }
         }
-        var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-        var l$1 = /* :: */[
-          l_000,
-          l
-        ];
-        var l$2 = i$prime === 0 ? /* :: */[
-            "",
-            l$1
-          ] : l$1;
-        _i = i$prime;
-        _l = l$2;
-        continue ;
+        if (exit === 1) {
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+          var l$1 = /* :: */[
+            l_000,
+            l
+          ];
+          var l$2 = i$prime === 0 ? /* :: */[
+              "",
+              l$1
+            ] : l$1;
+          _i = i$prime;
+          _l = l$2;
+          continue ;
+        }
+        
       } else {
         return l;
       }
@@ -551,18 +554,14 @@ function split$1(x, param) {
 }
 
 function merge(f, s1, s2) {
-  var exit = 0;
   if (s1) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split$1(v1, s2);
       return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
-    } else {
-      exit = 1;
     }
-  } else if (s2) {
-    exit = 1;
-  } else {
+    
+  } else if (!s2) {
     return /* Empty */0;
   }
   if (s2) {

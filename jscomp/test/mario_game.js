@@ -1118,7 +1118,6 @@ function reverse_left_right(obj) {
 }
 
 function evolve_enemy(player_dir, typ, spr, obj, context) {
-  var exit = 0;
   switch (typ) {
     case 0 : 
         obj[/* kill */8] = true;
@@ -1151,7 +1150,6 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
                 ]);
     case 3 : 
     case 4 : 
-        exit = 1;
         break;
     
   }
@@ -1659,15 +1657,15 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2[2];
               var t = c2[0];
               if (dir !== 0) {
-                var exit$1 = 0;
-                if (typeof t === "number" && t === 4) {
-                  game_win(state[/* ctx */1]);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                } else {
-                  exit$1 = 4;
+                if (typeof t === "number") {
+                  if (t === 4) {
+                    game_win(state[/* ctx */1]);
+                    return /* tuple */[
+                            undefined,
+                            undefined
+                          ];
+                  }
+                  
                 }
                 if (dir !== 1) {
                   collide_block(undefined, dir, o1$3);
@@ -1757,7 +1755,6 @@ function process_collision(dir, c1, c2, state) {
               var s2$3 = c2[1];
               var o2$5 = c2[2];
               var dir$1 = dir;
-              var exit$2 = 0;
               if (t1$1 !== 3) {
                 if (t1$1 >= 4) {
                   if (t2$2 >= 3) {
@@ -1767,9 +1764,8 @@ function process_collision(dir, c1, c2, state) {
                             undefined,
                             undefined
                           ];
-                  } else {
-                    exit$2 = 1;
                   }
+                  
                 } else if (t2$2 >= 3) {
                   if (o2$5[/* vel */2][/* x */0] === 0) {
                     rev_dir(o1$6, t1$1, s1$5);
@@ -1804,8 +1800,6 @@ function process_collision(dir, c1, c2, state) {
                         undefined,
                         undefined
                       ];
-              } else {
-                exit$2 = 1;
               }
               if (o1$6[/* vel */2][/* x */0] === 0) {
                 rev_dir(o2$5, t2$2, s2$3);

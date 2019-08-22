@@ -992,13 +992,16 @@ function replace_substring(before, after, str) {
           throw exn;
         }
       }
-      var prefix = $$String.sub(str, curr, next - curr | 0);
-      _curr = next + before.length | 0;
-      _acc = /* :: */[
-        prefix,
-        acc
-      ];
-      continue ;
+      if (exit === 1) {
+        var prefix = $$String.sub(str, curr, next - curr | 0);
+        _curr = next + before.length | 0;
+        _acc = /* :: */[
+          prefix,
+          acc
+        ];
+        continue ;
+      }
+      
     };
   };
   return $$String.concat(after, search(/* [] */0, 0));
@@ -1039,20 +1042,16 @@ function rev_split_words(s) {
               ];
       } else {
         var match = Caml_string.get(s, j);
-        var exit = 0;
         var switcher = match - 9 | 0;
         if (switcher > 4 || switcher < 0) {
           if (switcher !== 23) {
             _j = j + 1 | 0;
             continue ;
-          } else {
-            exit = 1;
           }
+          
         } else if (switcher === 3 || switcher === 2) {
           _j = j + 1 | 0;
           continue ;
-        } else {
-          exit = 1;
         }
         return split1(/* :: */[
                     $$String.sub(s, i, j - i | 0),
@@ -2243,11 +2242,14 @@ function message(param) {
       case 23 : 
           var slist$2 = param[1];
           var ty = param[0];
-          var exit = 0;
-          if (slist$2 && !(slist$2[1] || param[2])) {
-            return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
-          } else {
-            exit = 1;
+          if (slist$2) {
+            if (!slist$2[1]) {
+              if (!param[2]) {
+                return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
+              }
+              
+            }
+            
           }
           if (param[2]) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
@@ -2264,11 +2266,14 @@ function message(param) {
           break;
       case 24 : 
           var slist$3 = param[0];
-          var exit$1 = 0;
-          if (slist$3 && !(slist$3[1] || param[2])) {
-            return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
-          } else {
-            exit$1 = 1;
+          if (slist$3) {
+            if (!slist$3[1]) {
+              if (!param[2]) {
+                return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
+              }
+              
+            }
+            
           }
           if (param[2]) {
             return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
@@ -4465,11 +4470,11 @@ function extension(loc, attrs, a) {
 
 function force_poly(t) {
   var match = t[/* ptyp_desc */0];
-  var exit = 0;
-  if (typeof match === "number" || match.tag !== 8) {
-    exit = 1;
-  } else {
-    return t;
+  if (typeof match !== "number") {
+    if (match.tag === 8) {
+      return t;
+    }
+    
   }
   return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
 }
@@ -8680,8 +8685,6 @@ var yyact = /* array */[
       var name = _1;
       var arg = _2;
       var match = arg[/* pexp_desc */0];
-      var exit = 0;
-      var exit$1 = 0;
       switch (name) {
         case "-" : 
             if (match.tag === 1) {
@@ -8696,27 +8699,21 @@ var yyact = /* array */[
                 case 6 : 
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_nativeint */Block.__(6, [-match$1[0]])]));
                 default:
-                  exit$1 = 2;
+                  
               }
-            } else {
-              exit$1 = 2;
             }
             break;
         case "-." : 
-            exit$1 = 2;
             break;
         default:
-          exit = 1;
+          
       }
       if (match.tag === 1) {
         var match$2 = match[0];
         if (match$2.tag === 3) {
           return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
-        } else {
-          exit = 1;
         }
-      } else {
-        exit = 1;
+        
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     mkoperator("~" + name, 1),
@@ -8735,8 +8732,6 @@ var yyact = /* array */[
       var name = _1;
       var arg = _2;
       var desc = arg[/* pexp_desc */0];
-      var exit = 0;
-      var exit$1 = 0;
       switch (name) {
         case "+" : 
             if (desc.tag === 1) {
@@ -8744,25 +8739,22 @@ var yyact = /* array */[
                 case 1 : 
                 case 2 : 
                 case 3 : 
-                    exit$1 = 2;
                     break;
                 default:
                   return mkexp(desc);
               }
-            } else {
-              exit$1 = 2;
             }
             break;
         case "+." : 
-            exit$1 = 2;
             break;
         default:
-          exit = 1;
+          
       }
-      if (desc.tag === 1 && desc[0].tag === 3) {
-        return mkexp(desc);
-      } else {
-        exit = 1;
+      if (desc.tag === 1) {
+        if (desc[0].tag === 3) {
+          return mkexp(desc);
+        }
+        
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     mkoperator("~" + name, 1),
@@ -8851,7 +8843,6 @@ var yyact = /* array */[
       var newval = _7;
       var set = fast[0] ? "unsafe_set" : "set";
       var coords = bigarray_untuplify(arg);
-      var exit = 0;
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -8859,9 +8850,7 @@ var yyact = /* array */[
           var match$1 = match[1];
           var c2 = match[0];
           if (match$1) {
-            if (match$1[1]) {
-              exit = 1;
-            } else {
+            if (!match$1[1]) {
               return mkexp(/* Pexp_apply */Block.__(5, [
                             ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", set)])),
                             /* :: */[
@@ -8897,6 +8886,7 @@ var yyact = /* array */[
                             ]
                           ]));
             }
+            
           } else {
             return mkexp(/* Pexp_apply */Block.__(5, [
                           ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", set)])),
@@ -8951,8 +8941,6 @@ var yyact = /* array */[
                         ]
                       ]));
         }
-      } else {
-        exit = 1;
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
@@ -9160,7 +9148,6 @@ var yyact = /* array */[
       var arg = _4;
       var get = fast[0] ? "unsafe_get" : "get";
       var coords = bigarray_untuplify(arg);
-      var exit = 0;
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -9168,9 +9155,7 @@ var yyact = /* array */[
           var match$1 = match[1];
           var c2 = match[0];
           if (match$1) {
-            if (match$1[1]) {
-              exit = 1;
-            } else {
+            if (!match$1[1]) {
               return mkexp(/* Pexp_apply */Block.__(5, [
                             ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", get)])),
                             /* :: */[
@@ -9200,6 +9185,7 @@ var yyact = /* array */[
                             ]
                           ]));
             }
+            
           } else {
             return mkexp(/* Pexp_apply */Block.__(5, [
                           ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", get)])),
@@ -9242,8 +9228,6 @@ var yyact = /* array */[
                         ]
                       ]));
         }
-      } else {
-        exit = 1;
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
@@ -12520,11 +12504,14 @@ function defined(str) {
       return false;
     }
   }
-  if (typeof val === "number") {
-    return false;
-  } else {
-    return true;
+  if (exit === 1) {
+    if (typeof val === "number") {
+      return false;
+    } else {
+      return true;
+    }
   }
+  
 }
 
 function query(loc, str) {
@@ -12549,31 +12536,37 @@ function query(loc, str) {
           throw exn$1;
         }
       }
-      try {
-        return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
-      }
-      catch (exn$2){
+      if (exit$1 === 2) {
         try {
-          return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
+          return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
         }
-        catch (exn$3){
+        catch (exn$2){
           try {
-            return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
+            return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
           }
-          catch (exn$4){
-            return /* Dir_string */Block.__(3, [v$1]);
+          catch (exn$3){
+            try {
+              return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
+            }
+            catch (exn$4){
+              return /* Dir_string */Block.__(3, [v$1]);
+            }
           }
         }
       }
+      
     } else {
       throw exn;
     }
   }
-  if (typeof v === "number") {
-    return /* Dir_bool */Block.__(0, [false]);
-  } else {
-    return v;
+  if (exit === 1) {
+    if (typeof v === "number") {
+      return /* Dir_bool */Block.__(0, [false]);
+    } else {
+      return v;
+    }
   }
+  
 }
 
 function define_key_value(key, v) {
@@ -12690,13 +12683,11 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var token_op = function (calc, no, lhs) {
     var op = token(/* () */0);
-    var exit = 0;
     if (typeof op === "number") {
       switch (op) {
         case 26 : 
         case 34 : 
         case 51 : 
-            exit = 1;
             break;
         default:
           return Curry._1(no, op);
@@ -12705,26 +12696,26 @@ function directive_parse(token_with_comments, lexbuf) {
       switch (op[0]) {
         case "=~" : 
             if (calc) {
-              var exit$1 = 0;
-              if (typeof lhs === "number" || lhs.tag !== 3) {
-                exit$1 = 2;
-              } else {
-                var curr_loc = curr(lexbuf);
-                var rhs = value_of_token(curr_loc, token(/* () */0));
-                var exit$2 = 0;
-                if (typeof rhs === "number" || rhs.tag !== 3) {
-                  exit$2 = 3;
-                } else {
-                  return semver(curr_loc, lhs[0], rhs[0]);
+              if (typeof lhs !== "number") {
+                if (lhs.tag === 3) {
+                  var curr_loc = curr(lexbuf);
+                  var rhs = value_of_token(curr_loc, token(/* () */0));
+                  if (typeof rhs !== "number") {
+                    if (rhs.tag === 3) {
+                      return semver(curr_loc, lhs[0], rhs[0]);
+                    }
+                    
+                  }
+                  throw [
+                        $$Error$2,
+                        /* Conditional_expr_expected_type */Block.__(7, [
+                            /* Dir_type_string */3,
+                            type_of_directive(lhs)
+                          ]),
+                        curr(lexbuf)
+                      ];
                 }
-                throw [
-                      $$Error$2,
-                      /* Conditional_expr_expected_type */Block.__(7, [
-                          /* Dir_type_string */3,
-                          type_of_directive(lhs)
-                        ]),
-                      curr(lexbuf)
-                    ];
+                
               }
               throw [
                     $$Error$2,
@@ -12741,7 +12732,6 @@ function directive_parse(token_with_comments, lexbuf) {
         case "<=" : 
         case "<>" : 
         case ">=" : 
-            exit = 1;
             break;
         default:
           return Curry._1(no, op);
@@ -12750,7 +12740,7 @@ function directive_parse(token_with_comments, lexbuf) {
       return Curry._1(no, op);
     }
     var f;
-    var exit$3 = 0;
+    var exit = 0;
     if (typeof op === "number") {
       switch (op) {
         case 26 : 
@@ -12763,7 +12753,7 @@ function directive_parse(token_with_comments, lexbuf) {
             f = Caml_obj.caml_lessthan;
             break;
         default:
-          exit$3 = 2;
+          exit = 1;
       }
     } else if (op.tag === 2) {
       switch (op[0]) {
@@ -12774,12 +12764,12 @@ function directive_parse(token_with_comments, lexbuf) {
             f = Caml_obj.caml_notequal;
             break;
         default:
-          exit$3 = 2;
+          exit = 1;
       }
     } else {
-      exit$3 = 2;
+      exit = 1;
     }
-    if (exit$3 === 2) {
+    if (exit === 1) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -12853,11 +12843,9 @@ function directive_parse(token_with_comments, lexbuf) {
                         }), /* Dir_int */Block.__(2, [v$1]));
         case 11 : 
             var r = curr_token[0];
-            var exit = 0;
             switch (r) {
               case "defined" : 
               case "undefined" : 
-                  exit = 1;
                   break;
               default:
                 throw [
@@ -12908,11 +12896,11 @@ function directive_parse(token_with_comments, lexbuf) {
             var value_v = query(curr_loc, curr_token[0]);
             return token_op(calc, (function (e) {
                           push(e);
-                          var exit = 0;
-                          if (typeof value_v === "number" || value_v.tag) {
-                            exit = 1;
-                          } else {
-                            return value_v[0];
+                          if (typeof value_v !== "number") {
+                            if (!value_v.tag) {
+                              return value_v[0];
+                            }
+                            
                           }
                           var ty = type_of_directive(value_v);
                           throw [
@@ -14438,7 +14426,6 @@ function token_with_comments(lexbuf) {
 function interpret_directive(lexbuf, cont, look_ahead) {
   var if_then_else$1 = if_then_else[0];
   var match = token_with_comments(lexbuf);
-  var exit = 0;
   if (typeof match === "number") {
     switch (match) {
       case 23 : 
@@ -14449,7 +14436,6 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                   curr(lexbuf)
                 ];
           }
-          exit = 1;
           break;
       case 24 : 
           if (if_then_else$1 >= 2) {
@@ -14479,7 +14465,6 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                 }
                 if (token === /* SHARP */84 && at_bol(lexbuf)) {
                   var token$1 = token_with_comments(lexbuf);
-                  var exit$1 = 0;
                   if (typeof token$1 === "number") {
                     var switcher = token$1 - 23 | 0;
                     if (switcher === 0 || switcher === 1) {
@@ -14490,17 +14475,14 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                         if_then_else[0] = /* Dir_if_false */1;
                         return Curry._1(cont, lexbuf);
                       }
-                    } else if (switcher !== 14) {
-                      exit$1 = 1;
-                    } else {
+                    } else if (switcher === 14) {
                       throw [
                             $$Error$2,
                             /* Unexpected_directive */6,
                             curr(lexbuf)
                           ];
                     }
-                  } else {
-                    exit$1 = 1;
+                    
                   }
                   if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf)) {
                     if_then_else[0] = /* Dir_if_true */0;
@@ -14533,7 +14515,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
             curr(lexbuf)
           ];
     }
-    exit = 1;
+    
   } else {
     return Curry._1(look_ahead, match);
   }
@@ -14553,7 +14535,6 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       }
       if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
         var token$3 = token_with_comments(lexbuf);
-        var exit$2 = 0;
         if (typeof token$3 === "number") {
           var switcher$1 = token$3 - 23 | 0;
           if (switcher$1 === 0 || switcher$1 === 1) {
@@ -14571,17 +14552,14 @@ function interpret_directive(lexbuf, cont, look_ahead) {
               _else_seen = true;
               continue ;
             }
-          } else if (switcher$1 !== 14) {
-            exit$2 = 1;
-          } else {
+          } else if (switcher$1 === 14) {
             throw [
                   $$Error$2,
                   /* Unexpected_directive */6,
                   curr(lexbuf)
                 ];
           }
-        } else {
-          exit$2 = 1;
+          
         }
         if (else_seen && is_elif(token$3)) {
           throw [
@@ -14635,7 +14613,6 @@ function token$1(lexbuf) {
       var docs = _docs;
       var lines = _lines;
       var tok = token_with_comments(lexbuf);
-      var exit = 0;
       if (typeof tok === "number") {
         switch (tok) {
           case 84 : 
@@ -14648,8 +14625,6 @@ function token$1(lexbuf) {
                               sharp_look_ahead[0] = token;
                               return /* SHARP */84;
                             }));
-              } else {
-                exit = 1;
               }
               break;
           case 100 : 
@@ -14657,7 +14632,7 @@ function token$1(lexbuf) {
               _lines = lines$prime;
               continue ;
           default:
-            exit = 1;
+            
         }
       } else {
         switch (tok.tag | 0) {
@@ -14723,7 +14698,7 @@ function token$1(lexbuf) {
               _lines = /* NoLine */0;
               continue ;
           default:
-            exit = 1;
+            
         }
       }
       attach(lines, docs, lexbuf[/* lex_start_p */10]);
@@ -14884,30 +14859,32 @@ function wrap(parsing_fun, lexbuf) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
-      } else {
-        skip_phrase(lexbuf);
+      if (typeof tmp !== "number") {
+        if (!tmp.tag) {
+          if (input_name[0] === "//toplevel//") {
+            skip_phrase(lexbuf);
+            throw err;
+          }
+          
+        }
+        
+      }
+      
+    }
+    if (err[0] === $$Error$1) {
+      if (input_name[0] === "//toplevel//") {
+        maybe_skip_phrase(lexbuf);
         throw err;
       }
-    } else {
-      exit$2 = 3;
+      
     }
-    if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
-      maybe_skip_phrase(lexbuf);
-      throw err;
-    } else {
-      exit$1 = 2;
-    }
-    if (err === Parsing.Parse_error || err === Escape_error) {
-      exit = 1;
-    } else {
-      throw err;
+    if (err !== Parsing.Parse_error) {
+      if (err !== Escape_error) {
+        throw err;
+      }
+      
     }
     var loc = curr(lexbuf);
     if (input_name[0] === "//toplevel//") {

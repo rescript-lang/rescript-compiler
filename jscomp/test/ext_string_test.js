@@ -459,16 +459,12 @@ function is_valid_module_file(s) {
   var len = s.length;
   if (len > 0) {
     var match = s.charCodeAt(0);
-    var exit = 0;
     if (match >= 91) {
       if (match > 122 || match < 97) {
         return false;
-      } else {
-        exit = 1;
       }
-    } else if (match >= 65) {
-      exit = 1;
-    } else {
+      
+    } else if (match < 65) {
       return false;
     }
     return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
@@ -494,17 +490,13 @@ function is_valid_npm_package_name(s) {
   var len = s.length;
   if (len <= 214 && len > 0) {
     var match = s.charCodeAt(0);
-    var exit = 0;
     if (match >= 97) {
       if (match >= 123) {
         return false;
-      } else {
-        exit = 1;
       }
+      
     } else if (match !== 64) {
       return false;
-    } else {
-      exit = 1;
     }
     return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
                   if (x >= 58) {

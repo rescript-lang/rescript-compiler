@@ -7,17 +7,13 @@ function $plus$colon(_f, _g) {
   while(true) {
     var g = _g;
     var f = _f;
-    var exit = 0;
-    if (f.tag) {
-      exit = 1;
-    } else {
+    if (!f.tag) {
       var n = f[0];
       if (g.tag) {
-        if (n !== 0) {
-          exit = 1;
-        } else {
+        if (n === 0) {
           return g;
         }
+        
       } else {
         return /* Int */Block.__(0, [n + g[0] | 0]);
       }
@@ -51,32 +47,28 @@ function $star$colon(_f, _g) {
   while(true) {
     var g = _g;
     var f = _f;
-    var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
-    if (f.tag) {
-      exit$2 = 3;
-    } else {
+    if (!f.tag) {
       var n = f[0];
       if (g.tag) {
-        if (n !== 0) {
-          exit$2 = 3;
-        } else {
+        if (n === 0) {
           return /* Int */Block.__(0, [0]);
         }
+        
       } else {
         return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
       }
     }
-    if (g.tag || g[0] !== 0) {
-      exit$1 = 2;
-    } else {
-      return /* Int */Block.__(0, [0]);
+    if (!g.tag) {
+      if (g[0] === 0) {
+        return /* Int */Block.__(0, [0]);
+      }
+      
     }
-    if (f.tag || f[0] !== 1) {
-      exit = 1;
-    } else {
-      return g;
+    if (!f.tag) {
+      if (f[0] === 1) {
+        return g;
+      }
+      
     }
     switch (g.tag | 0) {
       case 0 : 

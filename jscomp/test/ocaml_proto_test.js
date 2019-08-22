@@ -198,7 +198,10 @@ function file_option(file_options, name) {
       throw exn;
     }
   }
-  return x;
+  if (exit === 1) {
+    return x;
+  }
+  
 }
 
 function rev_split_by_char(c, s) {
@@ -652,12 +655,9 @@ function prepare_error(param) {
 }
 
 function add_loc(loc, exn) {
-  var exit = 0;
   if (exn[0] === Compilation_error) {
     var tmp = exn[1];
-    if (typeof tmp === "number") {
-      exit = 1;
-    } else {
+    if (typeof tmp !== "number") {
       switch (tmp.tag | 0) {
         case 5 : 
         case 9 : 
@@ -667,11 +667,10 @@ function add_loc(loc, exn) {
         case 14 : 
             return exn;
         default:
-          exit = 1;
+          
       }
     }
-  } else {
-    exit = 1;
+    
   }
   var file_name$1 = option_default("", file_name(loc));
   var line$1 = line(loc);
@@ -2160,11 +2159,9 @@ function gen_decode_record(and_, param, sc) {
   var r_name = param[/* r_name */0];
   var all_lists = List.fold_left((function (acc, param) {
           var rf_field_type = param[/* rf_field_type */1];
-          var exit = 0;
           switch (rf_field_type.tag | 0) {
             case 2 : 
             case 3 : 
-                exit = 1;
                 break;
             default:
               return acc;
@@ -2949,11 +2946,11 @@ function endline(s) {
 }
 
 function gen_pp_field(field_type) {
-  var exit = 0;
-  if (typeof field_type === "number" || !field_type.tag) {
-    exit = 1;
-  } else {
-    return function_name_of_user_defined("pp", field_type[0]);
+  if (typeof field_type !== "number") {
+    if (field_type.tag) {
+      return function_name_of_user_defined("pp", field_type[0]);
+    }
+    
   }
   return Curry._1(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -3921,7 +3918,10 @@ function find_field_option(field_options, option_name) {
       throw exn;
     }
   }
-  return Caml_option.some(x);
+  if (exit === 1) {
+    return Caml_option.some(x);
+  }
+  
 }
 
 function field_option(param, option_name) {
@@ -4142,7 +4142,10 @@ function get_default(field_name, field_options, field_type) {
       throw exn;
     }
   }
-  return Caml_option.some(constant);
+  if (exit === 1) {
+    return Caml_option.some(constant);
+  }
+  
 }
 
 function compile_field_p1(field_parsed) {
@@ -6353,7 +6356,10 @@ function module_of_file_name(file_name) {
     }
     throw exn;
   }
-  return constructor_name($$String.sub(file_name$1, 0, dot_index) + "_pb");
+  if (exit === 1) {
+    return constructor_name($$String.sub(file_name$1, 0, dot_index) + "_pb");
+  }
+  
 }
 
 function type_name(message_scope, name) {
@@ -6520,28 +6526,31 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       }
       throw exn;
     }
-    if (is_empty_message(t)) {
-      return /* Ft_unit */0;
-    } else {
-      var udt_nested;
-      udt_nested = t[/* spec */4].tag ? true : false;
-      var field_type_module = module_of_file_name(t[/* file_name */2]);
-      var match$6 = type_scope_of_type(t);
-      var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
-      if (field_type_module === module_) {
-        return /* Ft_user_defined_type */Block.__(1, [/* record */[
-                    /* udt_module */undefined,
-                    /* udt_type_name */udt_type_name,
-                    /* udt_nested */udt_nested
-                  ]]);
+    if (exit === 1) {
+      if (is_empty_message(t)) {
+        return /* Ft_unit */0;
       } else {
-        return /* Ft_user_defined_type */Block.__(1, [/* record */[
-                    /* udt_module */field_type_module,
-                    /* udt_type_name */udt_type_name,
-                    /* udt_nested */udt_nested
-                  ]]);
+        var udt_nested;
+        udt_nested = t[/* spec */4].tag ? true : false;
+        var field_type_module = module_of_file_name(t[/* file_name */2]);
+        var match$6 = type_scope_of_type(t);
+        var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
+        if (field_type_module === module_) {
+          return /* Ft_user_defined_type */Block.__(1, [/* record */[
+                      /* udt_module */undefined,
+                      /* udt_type_name */udt_type_name,
+                      /* udt_nested */udt_nested
+                    ]]);
+        } else {
+          return /* Ft_user_defined_type */Block.__(1, [/* record */[
+                      /* udt_module */field_type_module,
+                      /* udt_type_name */udt_type_name,
+                      /* udt_nested */udt_nested
+                    ]]);
+        }
       }
     }
+    
   }
 }
 
@@ -6686,14 +6695,11 @@ function compile(proto_definition) {
                           var message_names = scope$1[/* message_names */1];
                           var message_body = message[/* message_body */2];
                           var message_name = message[/* message_name */1];
-                          var exit = 0;
                           if (message_body) {
                             var match$1 = message_body[0];
                             switch (match$1.tag | 0) {
                               case 1 : 
-                                  if (message_body[1]) {
-                                    exit = 1;
-                                  } else {
+                                  if (!message_body[1]) {
                                     var outer_message_names = Pervasives.$at(message_names, /* :: */[
                                           message_name,
                                           /* [] */0
@@ -6710,7 +6716,6 @@ function compile(proto_definition) {
                                   break;
                               case 0 : 
                               case 2 : 
-                                  exit = 1;
                                   break;
                               
                             }
