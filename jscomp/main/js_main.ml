@@ -347,7 +347,7 @@ let _ =
   with x -> 
     begin
 #if undefined BS_RELEASE_BUILD then      
-      Printexc.print_backtrace stderr;
+      Ext_obj.bt ();
 #end
       Location.report_exception ppf x;
       exit 2
