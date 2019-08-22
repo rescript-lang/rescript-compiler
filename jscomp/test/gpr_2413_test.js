@@ -20,11 +20,8 @@ function f(param) {
         break;
     
   }
-  if (exit === 1) {
-    var a$2 = param[0][0];
-    return Caml_int32.imul(a$2, a$2);
-  }
-  
+  var a$2 = param[0][0];
+  return Caml_int32.imul(a$2, a$2);
 }
 
 function ff(c) {

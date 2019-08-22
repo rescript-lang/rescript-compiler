@@ -1155,16 +1155,13 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         break;
     
   }
-  if (exit === 1) {
-    obj[/* dir */6] = player_dir;
-    if (obj[/* vel */2][/* x */0] !== 0) {
-      obj[/* vel */2][/* x */0] = 0;
-    } else {
-      set_vel_to_speed(obj);
-    }
-    return ;
+  obj[/* dir */6] = player_dir;
+  if (obj[/* vel */2][/* x */0] !== 0) {
+    obj[/* vel */2][/* x */0] = 0;
+  } else {
+    set_vel_to_speed(obj);
   }
-  
+  return ;
 }
 
 function rev_dir(o, t, s) {
@@ -1672,23 +1669,20 @@ function process_collision(dir, c1, c2, state) {
                 } else {
                   exit$1 = 4;
                 }
-                if (exit$1 === 4) {
-                  if (dir !== 1) {
-                    collide_block(undefined, dir, o1$3);
-                    return /* tuple */[
-                            undefined,
-                            undefined
-                          ];
-                  } else {
-                    state[/* multiplier */6] = 1;
-                    collide_block(undefined, dir, o1$3);
-                    return /* tuple */[
-                            undefined,
-                            undefined
-                          ];
-                  }
+                if (dir !== 1) {
+                  collide_block(undefined, dir, o1$3);
+                  return /* tuple */[
+                          undefined,
+                          undefined
+                        ];
+                } else {
+                  state[/* multiplier */6] = 1;
+                  collide_block(undefined, dir, o1$3);
+                  return /* tuple */[
+                          undefined,
+                          undefined
+                        ];
                 }
-                
               } else if (typeof t === "number") {
                 if (t !== 1) {
                   if (t !== 4) {
@@ -1813,22 +1807,20 @@ function process_collision(dir, c1, c2, state) {
               } else {
                 exit$2 = 1;
               }
-              if (exit$2 === 1) {
-                if (o1$6[/* vel */2][/* x */0] === 0) {
-                  rev_dir(o2$5, t2$2, s2$3);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                } else {
-                  dec_health(o2$5);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                }
+              if (o1$6[/* vel */2][/* x */0] === 0) {
+                rev_dir(o2$5, t2$2, s2$3);
+                return /* tuple */[
+                        undefined,
+                        undefined
+                      ];
+              } else {
+                dec_health(o2$5);
+                return /* tuple */[
+                        undefined,
+                        undefined
+                      ];
               }
-              case 2 : 
+          case 2 : 
               return /* tuple */[
                       undefined,
                       undefined

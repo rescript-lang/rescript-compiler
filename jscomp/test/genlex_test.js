@@ -49,14 +49,11 @@ function to_list(s) {
         throw exn;
       }
     }
-    if (exit === 1) {
-      _acc = /* :: */[
-        v,
-        acc
-      ];
-      continue ;
-    }
-    
+    _acc = /* :: */[
+      v,
+      acc
+    ];
+    continue ;
   };
 }
 

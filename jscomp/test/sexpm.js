@@ -539,11 +539,8 @@ function expr_starting_with(c, k, t) {
     }
     exit = 1;
   }
-  if (exit === 1) {
-    $$Buffer.add_char(t[/* atom */2], c);
-    return atom(k, t);
-  }
-  
+  $$Buffer.add_char(t[/* atom */2], c);
+  return atom(k, t);
 }
 
 function expr_list(acc, k, t) {
@@ -570,42 +567,39 @@ function expr_list(acc, k, t) {
       } else {
         exit = 1;
       }
-      if (exit === 1) {
-        return expr_starting_with(c, (function (last, e) {
-                      if (last !== undefined) {
-                        var match = last;
-                        if (match !== 40) {
-                          if (match !== 41) {
-                            return expr_list(/* :: */[
-                                        e,
-                                        acc
-                                      ], k, t);
-                          } else {
-                            return Curry._2(k, undefined, /* `List */[
-                                        848054398,
-                                        List.rev(/* :: */[
-                                              e,
-                                              acc
-                                            ])
-                                      ]);
-                          }
+      return expr_starting_with(c, (function (last, e) {
+                    if (last !== undefined) {
+                      var match = last;
+                      if (match !== 40) {
+                        if (match !== 41) {
+                          return expr_list(/* :: */[
+                                      e,
+                                      acc
+                                    ], k, t);
                         } else {
-                          return expr_list(/* [] */0, (function (param, l) {
-                                        return expr_list(/* :: */[
-                                                    l,
-                                                    acc
-                                                  ], k, t);
-                                      }), t);
+                          return Curry._2(k, undefined, /* `List */[
+                                      848054398,
+                                      List.rev(/* :: */[
+                                            e,
+                                            acc
+                                          ])
+                                    ]);
                         }
                       } else {
-                        return expr_list(/* :: */[
-                                    e,
-                                    acc
-                                  ], k, t);
+                        return expr_list(/* [] */0, (function (param, l) {
+                                      return expr_list(/* :: */[
+                                                  l,
+                                                  acc
+                                                ], k, t);
+                                    }), t);
                       }
-                    }), t);
-      }
-      
+                    } else {
+                      return expr_list(/* :: */[
+                                  e,
+                                  acc
+                                ], k, t);
+                    }
+                  }), t);
     }
   };
 }
@@ -671,13 +665,11 @@ function atom(k, t) {
       } else {
         exit = c >= 9 ? 2 : 1;
       }
-      switch (exit) {
-        case 1 : 
-            $$Buffer.add_char(t[/* atom */2], c);
-            continue ;
-        case 2 : 
-            return _return_atom(c, k, t);
-        
+      if (exit === 1) {
+        $$Buffer.add_char(t[/* atom */2], c);
+        continue ;
+      } else {
+        return _return_atom(c, k, t);
       }
     }
   };
@@ -761,25 +753,22 @@ function escaped(k, t) {
     } else {
       return Curry._1(k, /* "\"" */34);
     }
-    if (exit === 1) {
-      if (_is_digit(c)) {
-        return read2int(c - /* "0" */48 | 0, (function (n) {
-                      return Curry._1(k, Char.chr(n));
-                    }), t);
-      } else {
-        return Curry._1(_error(t, /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "unexpected escaped char '",
-                            /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
-                                    /* "'" */39,
-                                    /* End_of_format */0
-                                  ])])
-                          ]),
-                        "unexpected escaped char '%c'"
-                      ]), c);
-      }
+    if (_is_digit(c)) {
+      return read2int(c - /* "0" */48 | 0, (function (n) {
+                    return Curry._1(k, Char.chr(n));
+                  }), t);
+    } else {
+      return Curry._1(_error(t, /* Format */[
+                      /* String_literal */Block.__(11, [
+                          "unexpected escaped char '",
+                          /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                  /* "'" */39,
+                                  /* End_of_format */0
+                                ])])
+                        ]),
+                      "unexpected escaped char '%c'"
+                    ]), c);
     }
-    
   }
 }
 
@@ -1160,11 +1149,8 @@ function MakeDecode(funarg) {
       }
       exit = 1;
     }
-    if (exit === 1) {
-      $$Buffer.add_char(t[/* atom */2], c);
-      return atom(k, t);
-    }
-    
+    $$Buffer.add_char(t[/* atom */2], c);
+    return atom(k, t);
   };
   var expr_list = function (acc, k, t) {
     while(true) {
@@ -1190,42 +1176,39 @@ function MakeDecode(funarg) {
         } else {
           exit = 1;
         }
-        if (exit === 1) {
-          return expr_starting_with(c, (function (last, e) {
-                        if (last !== undefined) {
-                          var match = last;
-                          if (match !== 40) {
-                            if (match !== 41) {
-                              return expr_list(/* :: */[
-                                          e,
-                                          acc
-                                        ], k, t);
-                            } else {
-                              return Curry._2(k, undefined, /* `List */[
-                                          848054398,
-                                          List.rev(/* :: */[
-                                                e,
-                                                acc
-                                              ])
-                                        ]);
-                            }
+        return expr_starting_with(c, (function (last, e) {
+                      if (last !== undefined) {
+                        var match = last;
+                        if (match !== 40) {
+                          if (match !== 41) {
+                            return expr_list(/* :: */[
+                                        e,
+                                        acc
+                                      ], k, t);
                           } else {
-                            return expr_list(/* [] */0, (function (param, l) {
-                                          return expr_list(/* :: */[
-                                                      l,
-                                                      acc
-                                                    ], k, t);
-                                        }), t);
+                            return Curry._2(k, undefined, /* `List */[
+                                        848054398,
+                                        List.rev(/* :: */[
+                                              e,
+                                              acc
+                                            ])
+                                      ]);
                           }
                         } else {
-                          return expr_list(/* :: */[
-                                      e,
-                                      acc
-                                    ], k, t);
+                          return expr_list(/* [] */0, (function (param, l) {
+                                        return expr_list(/* :: */[
+                                                    l,
+                                                    acc
+                                                  ], k, t);
+                                      }), t);
                         }
-                      }), t);
-        }
-        
+                      } else {
+                        return expr_list(/* :: */[
+                                    e,
+                                    acc
+                                  ], k, t);
+                      }
+                    }), t);
       }
     };
   };
@@ -1289,13 +1272,11 @@ function MakeDecode(funarg) {
         } else {
           exit = c >= 9 ? 2 : 1;
         }
-        switch (exit) {
-          case 1 : 
-              $$Buffer.add_char(t[/* atom */2], c);
-              continue ;
-          case 2 : 
-              return _return_atom(c, k, t);
-          
+        if (exit === 1) {
+          $$Buffer.add_char(t[/* atom */2], c);
+          continue ;
+        } else {
+          return _return_atom(c, k, t);
         }
       }
     };
@@ -1377,25 +1358,22 @@ function MakeDecode(funarg) {
       } else {
         return Curry._1(k, /* "\"" */34);
       }
-      if (exit === 1) {
-        if (_is_digit(c)) {
-          return read2int(c - /* "0" */48 | 0, (function (n) {
-                        return Curry._1(k, Char.chr(n));
-                      }), t);
-        } else {
-          return Curry._1(_error(t, /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "unexpected escaped char '",
-                              /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
-                                      /* "'" */39,
-                                      /* End_of_format */0
-                                    ])])
-                            ]),
-                          "unexpected escaped char '%c'"
-                        ]), c);
-        }
+      if (_is_digit(c)) {
+        return read2int(c - /* "0" */48 | 0, (function (n) {
+                      return Curry._1(k, Char.chr(n));
+                    }), t);
+      } else {
+        return Curry._1(_error(t, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "unexpected escaped char '",
+                            /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                    /* "'" */39,
+                                    /* End_of_format */0
+                                  ])])
+                          ]),
+                        "unexpected escaped char '%c'"
+                      ]), c);
       }
-      
     }
   };
   var read2int = function (i, k, t) {

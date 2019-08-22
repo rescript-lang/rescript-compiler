@@ -50,16 +50,13 @@ function appf(g, x) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      if (exn[0] === C) {
-        return exn[1];
-      } else if (exn[0] === D) {
-        return exn[1][0];
-      } else {
-        return 4;
-      }
+    if (exn[0] === C) {
+      return exn[1];
+    } else if (exn[0] === D) {
+      return exn[1][0];
+    } else {
+      return 4;
     }
-    
   }
 }
 

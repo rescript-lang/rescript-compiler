@@ -471,23 +471,20 @@ function is_valid_module_file(s) {
     } else {
       return false;
     }
-    if (exit === 1) {
-      return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                    if (x >= 65) {
-                      var switcher = x - 91 | 0;
-                      if (switcher > 5 || switcher < 0) {
-                        return switcher < 32;
-                      } else {
-                        return switcher === 4;
-                      }
-                    } else if (x >= 48) {
-                      return x < 58;
+    return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+                  if (x >= 65) {
+                    var switcher = x - 91 | 0;
+                    if (switcher > 5 || switcher < 0) {
+                      return switcher < 32;
                     } else {
-                      return x === 39;
+                      return switcher === 4;
                     }
-                  }));
-    }
-    
+                  } else if (x >= 48) {
+                    return x < 58;
+                  } else {
+                    return x === 39;
+                  }
+                }));
   } else {
     return false;
   }
@@ -509,22 +506,19 @@ function is_valid_npm_package_name(s) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                    if (x >= 58) {
-                      if (x >= 97) {
-                        return x < 123;
-                      } else {
-                        return x === 95;
-                      }
-                    } else if (x !== 45) {
-                      return x >= 48;
+    return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+                  if (x >= 58) {
+                    if (x >= 97) {
+                      return x < 123;
                     } else {
-                      return true;
+                      return x === 95;
                     }
-                  }));
-    }
-    
+                  } else if (x !== 45) {
+                    return x >= 48;
+                  } else {
+                    return true;
+                  }
+                }));
   } else {
     return false;
   }

@@ -22,31 +22,28 @@ function $plus$colon(_f, _g) {
         return /* Int */Block.__(0, [n + g[0] | 0]);
       }
     }
-    if (exit === 1) {
-      switch (g.tag | 0) {
-        case 0 : 
-            if (g[0] !== 0) {
-              return /* Add */Block.__(2, [
-                        f,
-                        g
-                      ]);
-            } else {
-              return f;
-            }
-        case 2 : 
-            _g = g[1];
-            _f = $plus$colon(f, g[0]);
-            continue ;
-        case 1 : 
-        case 3 : 
+    switch (g.tag | 0) {
+      case 0 : 
+          if (g[0] !== 0) {
             return /* Add */Block.__(2, [
                       f,
                       g
                     ]);
-        
-      }
+          } else {
+            return f;
+          }
+      case 2 : 
+          _g = g[1];
+          _f = $plus$colon(f, g[0]);
+          continue ;
+      case 1 : 
+      case 3 : 
+          return /* Add */Block.__(2, [
+                    f,
+                    g
+                  ]);
+      
     }
-    
   };
 }
 
@@ -71,45 +68,38 @@ function $star$colon(_f, _g) {
         return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
       }
     }
-    if (exit$2 === 3) {
-      if (g.tag || g[0] !== 0) {
-        exit$1 = 2;
-      } else {
-        return /* Int */Block.__(0, [0]);
-      }
+    if (g.tag || g[0] !== 0) {
+      exit$1 = 2;
+    } else {
+      return /* Int */Block.__(0, [0]);
     }
-    if (exit$1 === 2) {
-      if (f.tag || f[0] !== 1) {
-        exit = 1;
-      } else {
-        return g;
-      }
+    if (f.tag || f[0] !== 1) {
+      exit = 1;
+    } else {
+      return g;
     }
-    if (exit === 1) {
-      switch (g.tag | 0) {
-        case 0 : 
-            if (g[0] !== 1) {
-              return /* Mul */Block.__(3, [
-                        f,
-                        g
-                      ]);
-            } else {
-              return f;
-            }
-        case 1 : 
-        case 2 : 
+    switch (g.tag | 0) {
+      case 0 : 
+          if (g[0] !== 1) {
             return /* Mul */Block.__(3, [
                       f,
                       g
                     ]);
-        case 3 : 
-            _g = g[1];
-            _f = $star$colon(f, g[0]);
-            continue ;
-        
-      }
+          } else {
+            return f;
+          }
+      case 1 : 
+      case 2 : 
+          return /* Mul */Block.__(3, [
+                    f,
+                    g
+                  ]);
+      case 3 : 
+          _g = g[1];
+          _f = $star$colon(f, g[0]);
+          continue ;
+      
     }
-    
   };
 }
 

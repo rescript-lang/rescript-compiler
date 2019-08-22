@@ -73,51 +73,46 @@ function balance_left(l, x, r) {
     } else {
       exit$1 = 3;
     }
-    if (exit$1 === 3) {
-      var match = l[3];
-      if (match && match[0]) {
-        a = a$1;
-        x$1 = l[2];
-        b = match[1];
-        y = match[2];
-        c = match[3];
-        z = x;
-        d = r;
-        exit = 2;
-      } else {
-        exit = 1;
-      }
+    var match = l[3];
+    if (match && match[0]) {
+      a = a$1;
+      x$1 = l[2];
+      b = match[1];
+      y = match[2];
+      c = match[3];
+      z = x;
+      d = r;
+      exit = 2;
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
-  switch (exit) {
-    case 1 : 
-        return /* Node */[
-                /* Black */0,
-                l,
-                x,
-                r
-              ];
-    case 2 : 
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  a,
-                  x$1,
-                  b
-                ],
-                y,
-                /* Node */[
-                  /* Black */0,
-                  c,
-                  z,
-                  d
-                ]
-              ];
-    
+  if (exit === 1) {
+    return /* Node */[
+            /* Black */0,
+            l,
+            x,
+            r
+          ];
+  } else {
+    return /* Node */[
+            /* Red */1,
+            /* Node */[
+              /* Black */0,
+              a,
+              x$1,
+              b
+            ],
+            y,
+            /* Node */[
+              /* Black */0,
+              c,
+              z,
+              d
+            ]
+          ];
   }
 }
 
@@ -145,51 +140,46 @@ function balance_right(l, x, r) {
     } else {
       exit$1 = 3;
     }
-    if (exit$1 === 3) {
-      var match = r[3];
-      if (match && match[0]) {
-        a = l;
-        x$1 = x;
-        b = b$1;
-        y = r[2];
-        c = match[1];
-        z = match[2];
-        d = match[3];
-        exit = 2;
-      } else {
-        exit = 1;
-      }
+    var match = r[3];
+    if (match && match[0]) {
+      a = l;
+      x$1 = x;
+      b = b$1;
+      y = r[2];
+      c = match[1];
+      z = match[2];
+      d = match[3];
+      exit = 2;
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
-  switch (exit) {
-    case 1 : 
-        return /* Node */[
-                /* Black */0,
-                l,
-                x,
-                r
-              ];
-    case 2 : 
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  a,
-                  x$1,
-                  b
-                ],
-                y,
-                /* Node */[
-                  /* Black */0,
-                  c,
-                  z,
-                  d
-                ]
-              ];
-    
+  if (exit === 1) {
+    return /* Node */[
+            /* Black */0,
+            l,
+            x,
+            r
+          ];
+  } else {
+    return /* Node */[
+            /* Red */1,
+            /* Node */[
+              /* Black */0,
+              a,
+              x$1,
+              b
+            ],
+            y,
+            /* Node */[
+              /* Black */0,
+              c,
+              z,
+              d
+            ]
+          ];
   }
 }
 
@@ -261,17 +251,14 @@ function unbalanced_left(param) {
   } else {
     exit = 1;
   }
-  if (exit === 1) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "rbset.ml",
-            57,
-            9
-          ]
-        ];
-  }
-  
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "rbset.ml",
+          57,
+          9
+        ]
+      ];
 }
 
 function unbalanced_right(param) {
@@ -335,17 +322,14 @@ function unbalanced_right(param) {
   } else {
     exit = 1;
   }
-  if (exit === 1) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "rbset.ml",
-            63,
-            9
-          ]
-        ];
-  }
-  
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "rbset.ml",
+          63,
+          9
+        ]
+      ];
 }
 
 function lbalance(x1, x2, x3) {
@@ -373,35 +357,32 @@ function lbalance(x1, x2, x3) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      if (r && r[0]) {
-        var y = r[2];
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  l,
-                  y,
-                  r[1]
-                ],
-                y,
-                /* Node */[
-                  /* Black */0,
-                  r[3],
-                  x2,
-                  x3
-                ]
-              ];
-      } else {
-        return /* Node */[
+    if (r && r[0]) {
+      var y = r[2];
+      return /* Node */[
+              /* Red */1,
+              /* Node */[
                 /* Black */0,
-                x1,
+                l,
+                y,
+                r[1]
+              ],
+              y,
+              /* Node */[
+                /* Black */0,
+                r[3],
                 x2,
                 x3
-              ];
-      }
+              ]
+            ];
+    } else {
+      return /* Node */[
+              /* Black */0,
+              x1,
+              x2,
+              x3
+            ];
     }
-    
   } else {
     return /* Node */[
             /* Black */0,
@@ -437,42 +418,36 @@ function rbalance(x1, x2, x3) {
     } else {
       exit$1 = 2;
     }
-    if (exit$1 === 2) {
-      var match = x3[3];
-      if (match && match[0]) {
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  x1,
-                  x2,
-                  b
-                ],
-                x3[2],
-                /* Node */[
-                  /* Black */0,
-                  match[1],
-                  match[2],
-                  match[3]
-                ]
-              ];
-      } else {
-        exit = 1;
-      }
+    var match = x3[3];
+    if (match && match[0]) {
+      return /* Node */[
+              /* Red */1,
+              /* Node */[
+                /* Black */0,
+                x1,
+                x2,
+                b
+              ],
+              x3[2],
+              /* Node */[
+                /* Black */0,
+                match[1],
+                match[2],
+                match[3]
+              ]
+            ];
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
-  if (exit === 1) {
-    return /* Node */[
-            /* Black */0,
-            x1,
-            x2,
-            x3
-          ];
-  }
-  
+  return /* Node */[
+          /* Black */0,
+          x1,
+          x2,
+          x3
+        ];
 }
 
 function ins(x, s) {
@@ -587,34 +562,31 @@ function remove_min(param) {
               ];
       }
     }
-    if (exit === 1) {
-      var match$1 = remove_min(param[1]);
-      var y = match$1[1];
-      var s_001 = match$1[0];
-      var s_002 = param[2];
-      var s_003 = param[3];
-      var s = /* Node */[
-        c,
-        s_001,
-        s_002,
-        s_003
-      ];
-      if (match$1[2]) {
-        var match$2 = unbalanced_right(s);
-        return /* tuple */[
-                match$2[0],
-                y,
-                match$2[1]
-              ];
-      } else {
-        return /* tuple */[
-                s,
-                y,
-                false
-              ];
-      }
+    var match$1 = remove_min(param[1]);
+    var y = match$1[1];
+    var s_001 = match$1[0];
+    var s_002 = param[2];
+    var s_003 = param[3];
+    var s = /* Node */[
+      c,
+      s_001,
+      s_002,
+      s_003
+    ];
+    if (match$1[2]) {
+      var match$2 = unbalanced_right(s);
+      return /* tuple */[
+              match$2[0],
+              y,
+              match$2[1]
+            ];
+    } else {
+      return /* tuple */[
+              s,
+              y,
+              false
+            ];
     }
-    
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

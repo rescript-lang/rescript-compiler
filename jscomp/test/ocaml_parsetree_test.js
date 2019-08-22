@@ -999,19 +999,17 @@ function message(param) {
           } else {
             exit = 1;
           }
-          if (exit === 1) {
-            if (param[2]) {
-              return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "warnings.ml",
-                      365,
-                      39
-                    ]
-                  ];
-            }
+          if (param[2]) {
+            return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "warnings.ml",
+                    365,
+                    39
+                  ]
+                ];
           }
           break;
       case 24 : 
@@ -1022,19 +1020,17 @@ function message(param) {
           } else {
             exit$1 = 1;
           }
-          if (exit$1 === 1) {
-            if (param[2]) {
-              return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "warnings.ml",
-                      374,
-                      36
-                    ]
-                  ];
-            }
+          if (param[2]) {
+            return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "warnings.ml",
+                    374,
+                    36
+                  ]
+                ];
           }
           break;
       case 25 : 
@@ -6097,31 +6093,26 @@ var yyact = /* array */[
         default:
           exit = 1;
       }
-      if (exit$1 === 2) {
-        if (match.tag === 1) {
-          var match$2 = match[0];
-          if (match$2.tag === 3) {
-            return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
-          } else {
-            exit = 1;
-          }
+      if (match.tag === 1) {
+        var match$2 = match[0];
+        if (match$2.tag === 3) {
+          return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
         } else {
           exit = 1;
         }
+      } else {
+        exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      mkoperator("~" + name, 1),
-                      /* :: */[
-                        /* tuple */[
-                          "",
-                          arg
-                        ],
-                        /* [] */0
-                      ]
-                    ]));
-      }
-      
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    mkoperator("~" + name, 1),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arg
+                      ],
+                      /* [] */0
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
@@ -6153,26 +6144,21 @@ var yyact = /* array */[
         default:
           exit = 1;
       }
-      if (exit$1 === 2) {
-        if (desc.tag === 1 && desc[0].tag === 3) {
-          return mkexp(desc);
-        } else {
-          exit = 1;
-        }
+      if (desc.tag === 1 && desc[0].tag === 3) {
+        return mkexp(desc);
+      } else {
+        exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      mkoperator("~" + name, 1),
-                      /* :: */[
-                        /* tuple */[
-                          "",
-                          arg
-                        ],
-                        /* [] */0
-                      ]
-                    ]));
-      }
-      
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    mkoperator("~" + name, 1),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arg
+                      ],
+                      /* [] */0
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
@@ -6353,31 +6339,28 @@ var yyact = /* array */[
       } else {
         exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arr
+                      ],
                       /* :: */[
                         /* tuple */[
                           "",
-                          arr
+                          ghexp(/* Pexp_array */Block.__(14, [coords]))
                         ],
                         /* :: */[
                           /* tuple */[
                             "",
-                            ghexp(/* Pexp_array */Block.__(14, [coords]))
+                            newval
                           ],
-                          /* :: */[
-                            /* tuple */[
-                              "",
-                              newval
-                            ],
-                            /* [] */0
-                          ]
+                          /* [] */0
                         ]
                       ]
-                    ]));
-      }
-      
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -6647,25 +6630,22 @@ var yyact = /* array */[
       } else {
         exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arr
+                      ],
                       /* :: */[
                         /* tuple */[
                           "",
-                          arr
+                          ghexp(/* Pexp_array */Block.__(14, [coords]))
                         ],
-                        /* :: */[
-                          /* tuple */[
-                            "",
-                            ghexp(/* Pexp_array */Block.__(14, [coords]))
-                          ],
-                          /* [] */0
-                        ]
+                        /* [] */0
                       ]
-                    ]));
-      }
-      
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 4);
@@ -9713,14 +9693,11 @@ function defined(str) {
       return false;
     }
   }
-  if (exit === 1) {
-    if (typeof val === "number") {
-      return false;
-    } else {
-      return true;
-    }
+  if (typeof val === "number") {
+    return false;
+  } else {
+    return true;
   }
-  
 }
 
 function query(loc, str) {
@@ -9745,37 +9722,31 @@ function query(loc, str) {
           throw exn$1;
         }
       }
-      if (exit$1 === 2) {
+      try {
+        return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
+      }
+      catch (exn$2){
         try {
-          return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
+          return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
         }
-        catch (exn$2){
+        catch (exn$3){
           try {
-            return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
+            return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
           }
-          catch (exn$3){
-            try {
-              return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
-            }
-            catch (exn$4){
-              return /* Dir_string */Block.__(3, [v$1]);
-            }
+          catch (exn$4){
+            return /* Dir_string */Block.__(3, [v$1]);
           }
         }
       }
-      
     } else {
       throw exn;
     }
   }
-  if (exit === 1) {
-    if (typeof v === "number") {
-      return /* Dir_bool */Block.__(0, [false]);
-    } else {
-      return v;
-    }
+  if (typeof v === "number") {
+    return /* Dir_bool */Block.__(0, [false]);
+  } else {
+    return v;
   }
-  
 }
 
 function value_of_token(loc, t) {
@@ -9999,19 +9970,6 @@ function directive_parse(token_with_comments, lexbuf) {
                     return Caml_obj.caml_greaterequal(lversion, version);
                   }
                 }
-                if (exit$2 === 3) {
-                  throw [
-                        $$Error$2,
-                        /* Conditional_expr_expected_type */Block.__(7, [
-                            /* Dir_type_string */3,
-                            type_of_directive(lhs)
-                          ]),
-                        curr(lexbuf)
-                      ];
-                }
-                
-              }
-              if (exit$1 === 2) {
                 throw [
                       $$Error$2,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -10021,7 +9979,14 @@ function directive_parse(token_with_comments, lexbuf) {
                       curr(lexbuf)
                     ];
               }
-              
+              throw [
+                    $$Error$2,
+                    /* Conditional_expr_expected_type */Block.__(7, [
+                        /* Dir_type_string */3,
+                        type_of_directive(lhs)
+                      ]),
+                    curr(lexbuf)
+                  ];
             } else {
               return true;
             }
@@ -10037,56 +10002,53 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       return Curry._1(no, op);
     }
-    if (exit === 1) {
-      var f;
-      var exit$4 = 0;
-      if (typeof op === "number") {
-        switch (op) {
-          case 26 : 
-              f = Caml_obj.caml_equal;
-              break;
-          case 34 : 
-              f = Caml_obj.caml_greaterthan;
-              break;
-          case 51 : 
-              f = Caml_obj.caml_lessthan;
-              break;
-          default:
-            exit$4 = 2;
-        }
-      } else if (op.tag === 2) {
-        switch (op[0]) {
-          case "<=" : 
-              f = Caml_obj.caml_lessequal;
-              break;
-          case "<>" : 
-              f = Caml_obj.caml_notequal;
-              break;
-          default:
-            exit$4 = 2;
-        }
-      } else {
-        exit$4 = 2;
+    var f;
+    var exit$4 = 0;
+    if (typeof op === "number") {
+      switch (op) {
+        case 26 : 
+            f = Caml_obj.caml_equal;
+            break;
+        case 34 : 
+            f = Caml_obj.caml_greaterthan;
+            break;
+        case 51 : 
+            f = Caml_obj.caml_lessthan;
+            break;
+        default:
+          exit$4 = 2;
       }
-      if (exit$4 === 2) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "lexer.mll",
-                331,
-                17
-              ]
-            ];
+    } else if (op.tag === 2) {
+      switch (op[0]) {
+        case "<=" : 
+            f = Caml_obj.caml_lessequal;
+            break;
+        case "<>" : 
+            f = Caml_obj.caml_notequal;
+            break;
+        default:
+          exit$4 = 2;
       }
-      var curr_loc$1 = curr(lexbuf);
-      var rhs$1 = value_of_token(curr_loc$1, token(/* () */0));
-      if (calc) {
-        return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
-      } else {
-        return true;
-      }
+    } else {
+      exit$4 = 2;
     }
-    
+    if (exit$4 === 2) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "lexer.mll",
+              331,
+              17
+            ]
+          ];
+    }
+    var curr_loc$1 = curr(lexbuf);
+    var rhs$1 = value_of_token(curr_loc$1, token(/* () */0));
+    if (calc) {
+      return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
+    } else {
+      return true;
+    }
   };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
@@ -10157,33 +10119,31 @@ function directive_parse(token_with_comments, lexbuf) {
                       curr_loc
                     ];
             }
-            if (exit === 1) {
-              var t = token(/* () */0);
-              var loc = curr(lexbuf);
-              if (typeof t === "number") {
-                throw [
-                      $$Error$2,
-                      /* Unexpected_token_in_conditional */4,
-                      loc
-                    ];
-              } else if (t.tag === 17) {
-                var s = t[0];
-                if (calc) {
-                  if (Caml_string.get(r, 0) === /* "u" */117) {
-                    return !defined(s);
-                  } else {
-                    return defined(s);
-                  }
+            var t = token(/* () */0);
+            var loc = curr(lexbuf);
+            if (typeof t === "number") {
+              throw [
+                    $$Error$2,
+                    /* Unexpected_token_in_conditional */4,
+                    loc
+                  ];
+            } else if (t.tag === 17) {
+              var s = t[0];
+              if (calc) {
+                if (Caml_string.get(r, 0) === /* "u" */117) {
+                  return !defined(s);
                 } else {
-                  return true;
+                  return defined(s);
                 }
               } else {
-                throw [
-                      $$Error$2,
-                      /* Unexpected_token_in_conditional */4,
-                      loc
-                    ];
+                return true;
               }
+            } else {
+              throw [
+                    $$Error$2,
+                    /* Unexpected_token_in_conditional */4,
+                    loc
+                  ];
             }
             break;
         case 16 : 
@@ -10207,18 +10167,15 @@ function directive_parse(token_with_comments, lexbuf) {
                           } else {
                             return value_v[0];
                           }
-                          if (exit === 1) {
-                            var ty = type_of_directive(value_v);
-                            throw [
-                                  $$Error$2,
-                                  /* Conditional_expr_expected_type */Block.__(7, [
-                                      /* Dir_type_bool */0,
-                                      ty
-                                    ]),
-                                  curr_loc
-                                ];
-                          }
-                          
+                          var ty = type_of_directive(value_v);
+                          throw [
+                                $$Error$2,
+                                /* Conditional_expr_expected_type */Block.__(7, [
+                                    /* Dir_type_bool */0,
+                                    ty
+                                  ]),
+                                curr_loc
+                              ];
                         }), value_v);
         default:
           throw [
@@ -11816,16 +11773,13 @@ function token$1(lexbuf) {
                                 } else {
                                   exit$2 = 1;
                                 }
-                                if (exit$2 === 1) {
-                                  if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf$1)) {
-                                    if_then_else[0] = /* Dir_if_true */0;
-                                    return Curry._1(cont, lexbuf$1);
-                                  } else {
-                                    _param = /* () */0;
-                                    continue ;
-                                  }
+                                if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf$1)) {
+                                  if_then_else[0] = /* Dir_if_true */0;
+                                  return Curry._1(cont, lexbuf$1);
+                                } else {
+                                  _param = /* () */0;
+                                  continue ;
                                 }
-                                
                               } else {
                                 _param = /* () */0;
                                 continue ;
@@ -11854,71 +11808,65 @@ function token$1(lexbuf) {
                 } else {
                   return Curry._1(look_ahead, match);
                 }
-                if (exit$1 === 1) {
-                  if (if_then_else$1 !== 0) {
-                    return Curry._1(look_ahead, match);
-                  } else {
-                    var _else_seen = match === /* ELSE */23;
-                    while(true) {
-                      var else_seen = _else_seen;
-                      var token$2 = token_with_comments(lexbuf$1);
-                      if (token$2 === /* EOF */25) {
+                if (if_then_else$1 !== 0) {
+                  return Curry._1(look_ahead, match);
+                } else {
+                  var _else_seen = match === /* ELSE */23;
+                  while(true) {
+                    var else_seen = _else_seen;
+                    var token$2 = token_with_comments(lexbuf$1);
+                    if (token$2 === /* EOF */25) {
+                      throw [
+                            $$Error$2,
+                            /* Unterminated_else */3,
+                            curr(lexbuf$1)
+                          ];
+                    }
+                    if (token$2 === /* SHARP */84 && at_bol(lexbuf$1)) {
+                      var token$3 = token_with_comments(lexbuf$1);
+                      var exit$3 = 0;
+                      if (typeof token$3 === "number") {
+                        var switcher$1 = token$3 - 23 | 0;
+                        if (switcher$1 === 0 || switcher$1 === 1) {
+                          if (switcher$1 !== 0) {
+                            if_then_else[0] = /* Dir_out */2;
+                            return Curry._1(cont, lexbuf$1);
+                          } else {
+                            if (else_seen) {
+                              throw [
+                                    $$Error$2,
+                                    /* Unexpected_directive */6,
+                                    curr(lexbuf$1)
+                                  ];
+                            }
+                            _else_seen = true;
+                            continue ;
+                          }
+                        } else if (switcher$1 !== 14) {
+                          exit$3 = 1;
+                        } else {
+                          throw [
+                                $$Error$2,
+                                /* Unexpected_directive */6,
+                                curr(lexbuf$1)
+                              ];
+                        }
+                      } else {
+                        exit$3 = 1;
+                      }
+                      if (else_seen && is_elif(token$3)) {
                         throw [
                               $$Error$2,
-                              /* Unterminated_else */3,
+                              /* Unexpected_directive */6,
                               curr(lexbuf$1)
                             ];
                       }
-                      if (token$2 === /* SHARP */84 && at_bol(lexbuf$1)) {
-                        var token$3 = token_with_comments(lexbuf$1);
-                        var exit$3 = 0;
-                        if (typeof token$3 === "number") {
-                          var switcher$1 = token$3 - 23 | 0;
-                          if (switcher$1 === 0 || switcher$1 === 1) {
-                            if (switcher$1 !== 0) {
-                              if_then_else[0] = /* Dir_out */2;
-                              return Curry._1(cont, lexbuf$1);
-                            } else {
-                              if (else_seen) {
-                                throw [
-                                      $$Error$2,
-                                      /* Unexpected_directive */6,
-                                      curr(lexbuf$1)
-                                    ];
-                              }
-                              _else_seen = true;
-                              continue ;
-                            }
-                          } else if (switcher$1 !== 14) {
-                            exit$3 = 1;
-                          } else {
-                            throw [
-                                  $$Error$2,
-                                  /* Unexpected_directive */6,
-                                  curr(lexbuf$1)
-                                ];
-                          }
-                        } else {
-                          exit$3 = 1;
-                        }
-                        if (exit$3 === 1) {
-                          if (else_seen && is_elif(token$3)) {
-                            throw [
-                                  $$Error$2,
-                                  /* Unexpected_directive */6,
-                                  curr(lexbuf$1)
-                                ];
-                          }
-                          continue ;
-                        }
-                        
-                      } else {
-                        continue ;
-                      }
-                    };
-                  }
+                      continue ;
+                    } else {
+                      continue ;
+                    }
+                  };
                 }
-                
               } else {
                 exit = 1;
               }
@@ -11997,11 +11945,8 @@ function token$1(lexbuf) {
             exit = 1;
         }
       }
-      if (exit === 1) {
-        attach(lines, docs, lexbuf[/* lex_start_p */10]);
-        return tok;
-      }
-      
+      attach(lines, docs, lexbuf[/* lex_start_p */10]);
+      return tok;
     };
   };
   var match = sharp_look_ahead[0];
@@ -12097,32 +12042,25 @@ function wrap(parsing_fun, lexbuf) {
     } else {
       exit$2 = 3;
     }
-    if (exit$2 === 3) {
-      if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
-        maybe_skip_phrase(lexbuf);
-        throw err;
-      } else {
-        exit$1 = 2;
-      }
+    if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
+      maybe_skip_phrase(lexbuf);
+      throw err;
+    } else {
+      exit$1 = 2;
     }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
-        throw err;
-      }
+    if (err === Parsing.Parse_error || err === Escape_error) {
+      exit = 1;
+    } else {
+      throw err;
     }
-    if (exit === 1) {
-      var loc = curr(lexbuf);
-      if (input_name[0] === "//toplevel//") {
-        maybe_skip_phrase(lexbuf);
-      }
-      throw [
-            $$Error$1,
-            /* Other */Block.__(5, [loc])
-          ];
+    var loc = curr(lexbuf);
+    if (input_name[0] === "//toplevel//") {
+      maybe_skip_phrase(lexbuf);
     }
-    
+    throw [
+          $$Error$1,
+          /* Other */Block.__(5, [loc])
+        ];
   }
 }
 

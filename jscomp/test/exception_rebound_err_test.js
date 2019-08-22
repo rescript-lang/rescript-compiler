@@ -50,23 +50,18 @@ function test_js_error4(param) {
     } else {
       exit$1 = 2;
     }
-    if (exit$1 === 2) {
-      if (e[0] === A && e[1] === 2) {
-        return 4;
-      } else {
-        exit = 1;
-      }
+    if (e[0] === A && e[1] === 2) {
+      return 4;
+    } else {
+      exit = 1;
     }
-    if (exit === 1) {
-      if (e === B) {
-        return 5;
-      } else if (e[0] === C && !(e[1] !== 1 || e[2] !== 2)) {
-        return 6;
-      } else {
-        return 7;
-      }
+    if (e === B) {
+      return 5;
+    } else if (e[0] === C && !(e[1] !== 1 || e[2] !== 2)) {
+      return 6;
+    } else {
+      return 7;
     }
-    
   }
 }
 

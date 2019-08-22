@@ -14,14 +14,11 @@ function scanf_bad_input(ib, x) {
   } else {
     throw x;
   }
-  if (exit === 1) {
-    for(var i = 0; i <= 100; ++i){
-      console.log(s);
-      console.log("don't inlinie");
-    }
-    return /* () */0;
+  for(var i = 0; i <= 100; ++i){
+    console.log(s);
+    console.log("don't inlinie");
   }
-  
+  return /* () */0;
 }
 
 exports.Scan_failure = Scan_failure;

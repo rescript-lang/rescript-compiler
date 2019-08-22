@@ -1438,31 +1438,28 @@ function pr_exp0(ppf, lam) {
         break;
     
   }
-  if (exit === 1) {
-    return Curry._2(Format.fprintf(ppf, /* Format */[
-                    /* Formatting_gen */Block.__(18, [
-                        /* Open_box */Block.__(1, [/* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "<1>",
-                                  /* End_of_format */0
-                                ]),
-                              "<1>"
-                            ]]),
-                        /* Char_literal */Block.__(12, [
-                            /* "(" */40,
-                            /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                    /* ")" */41,
-                                    /* Formatting_lit */Block.__(17, [
-                                        /* Close_box */0,
-                                        /* End_of_format */0
-                                      ])
-                                  ])])
-                          ])
-                      ]),
-                    "@[<1>(%a)@]"
-                  ]), pr_lambda, lam);
-  }
-  
+  return Curry._2(Format.fprintf(ppf, /* Format */[
+                  /* Formatting_gen */Block.__(18, [
+                      /* Open_box */Block.__(1, [/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "<1>",
+                                /* End_of_format */0
+                              ]),
+                            "<1>"
+                          ]]),
+                      /* Char_literal */Block.__(12, [
+                          /* "(" */40,
+                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                  /* ")" */41,
+                                  /* Formatting_lit */Block.__(17, [
+                                      /* Close_box */0,
+                                      /* End_of_format */0
+                                    ])
+                                ])])
+                        ])
+                    ]),
+                  "@[<1>(%a)@]"
+                ]), pr_lambda, lam);
 }
 
 function pr_app(ppf, e) {

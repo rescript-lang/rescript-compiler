@@ -1480,14 +1480,11 @@ function scan_elems$2(ib, accu) {
                                 accu
                               ]);
                   }
-                  if (exit === 1) {
-                    console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "scan_elems"
-                        ];
-                  }
-                  
+                  console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
                 }));
   }
   catch (raw_exn){

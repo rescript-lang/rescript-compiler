@@ -124,58 +124,50 @@ function compare(context, state, _a, _b) {
           break;
       
     }
-    if (exit$3 === 5) {
-      if (b.tag === 1) {
-        _b = b[0];
-        continue ;
-      } else if (a.tag === 2 && is_number(b)) {
-        return 1;
-      } else {
-        exit$2 = 4;
-      }
+    if (b.tag === 1) {
+      _b = b[0];
+      continue ;
+    } else if (a.tag === 2 && is_number(b)) {
+      return 1;
+    } else {
+      exit$2 = 4;
     }
-    if (exit$2 === 4) {
-      if (b.tag === 2 && is_number(a)) {
-        return -1;
-      } else {
-        exit$1 = 3;
-      }
+    if (b.tag === 2 && is_number(a)) {
+      return -1;
+    } else {
+      exit$1 = 3;
     }
-    if (exit$1 === 3) {
-      switch (a.tag | 0) {
-        case 2 : 
-            exit = 1;
-            break;
-        case 3 : 
-            return -1;
-        case 0 : 
-        case 4 : 
-        case 5 : 
-            return 1;
-        
-      }
-    }
-    switch (exit) {
-      case 1 : 
-          switch (b.tag | 0) {
-            case 3 : 
-                return 1;
-            case 5 : 
-                return -1;
-            default:
-              return -1;
-          }
+    switch (a.tag | 0) {
       case 2 : 
-          var denom = compare(context, state, da, db);
-          var match = denom === 0;
-          if (match) {
-            _b = nb;
-            _a = na;
-            continue ;
-          } else {
-            return denom;
-          }
+          exit = 1;
+          break;
+      case 3 : 
+          return -1;
+      case 0 : 
+      case 4 : 
+      case 5 : 
+          return 1;
       
+    }
+    if (exit === 1) {
+      switch (b.tag | 0) {
+        case 3 : 
+            return 1;
+        case 5 : 
+            return -1;
+        default:
+          return -1;
+      }
+    } else {
+      var denom = compare(context, state, da, db);
+      var match = denom === 0;
+      if (match) {
+        _b = nb;
+        _a = na;
+        continue ;
+      } else {
+        return denom;
+      }
     }
   };
 }

@@ -857,47 +857,44 @@ function stable_sort(cmp, l) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      var n1 = (n >> 1);
-      var n2 = n - n1 | 0;
-      var l2 = chop(n1, l);
-      var s1 = rev_sort(n1, l);
-      var s2 = rev_sort(n2, l2);
-      var _l1 = s1;
-      var _l2 = s2;
-      var _accu = /* [] */0;
-      while(true) {
-        var accu = _accu;
-        var l2$1 = _l2;
-        var l1 = _l1;
-        if (l1) {
-          if (l2$1) {
-            var h2 = l2$1[0];
-            var h1 = l1[0];
-            if (Curry._2(cmp, h1, h2) > 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l1 = l1[1];
-              continue ;
-            } else {
-              _accu = /* :: */[
-                h2,
-                accu
-              ];
-              _l2 = l2$1[1];
-              continue ;
-            }
+    var n1 = (n >> 1);
+    var n2 = n - n1 | 0;
+    var l2 = chop(n1, l);
+    var s1 = rev_sort(n1, l);
+    var s2 = rev_sort(n2, l2);
+    var _l1 = s1;
+    var _l2 = s2;
+    var _accu = /* [] */0;
+    while(true) {
+      var accu = _accu;
+      var l2$1 = _l2;
+      var l1 = _l1;
+      if (l1) {
+        if (l2$1) {
+          var h2 = l2$1[0];
+          var h1 = l1[0];
+          if (Curry._2(cmp, h1, h2) > 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l1 = l1[1];
+            continue ;
           } else {
-            return rev_append(l1, accu);
+            _accu = /* :: */[
+              h2,
+              accu
+            ];
+            _l2 = l2$1[1];
+            continue ;
           }
         } else {
-          return rev_append(l2$1, accu);
+          return rev_append(l1, accu);
         }
-      };
-    }
-    
+      } else {
+        return rev_append(l2$1, accu);
+      }
+    };
   };
   var rev_sort = function (n, l) {
     var exit = 0;
@@ -1016,47 +1013,44 @@ function stable_sort(cmp, l) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      var n1 = (n >> 1);
-      var n2 = n - n1 | 0;
-      var l2 = chop(n1, l);
-      var s1 = sort(n1, l);
-      var s2 = sort(n2, l2);
-      var _l1 = s1;
-      var _l2 = s2;
-      var _accu = /* [] */0;
-      while(true) {
-        var accu = _accu;
-        var l2$1 = _l2;
-        var l1 = _l1;
-        if (l1) {
-          if (l2$1) {
-            var h2 = l2$1[0];
-            var h1 = l1[0];
-            if (Curry._2(cmp, h1, h2) <= 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l1 = l1[1];
-              continue ;
-            } else {
-              _accu = /* :: */[
-                h2,
-                accu
-              ];
-              _l2 = l2$1[1];
-              continue ;
-            }
+    var n1 = (n >> 1);
+    var n2 = n - n1 | 0;
+    var l2 = chop(n1, l);
+    var s1 = sort(n1, l);
+    var s2 = sort(n2, l2);
+    var _l1 = s1;
+    var _l2 = s2;
+    var _accu = /* [] */0;
+    while(true) {
+      var accu = _accu;
+      var l2$1 = _l2;
+      var l1 = _l1;
+      if (l1) {
+        if (l2$1) {
+          var h2 = l2$1[0];
+          var h1 = l1[0];
+          if (Curry._2(cmp, h1, h2) <= 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l1 = l1[1];
+            continue ;
           } else {
-            return rev_append(l1, accu);
+            _accu = /* :: */[
+              h2,
+              accu
+            ];
+            _l2 = l2$1[1];
+            continue ;
           }
         } else {
-          return rev_append(l2$1, accu);
+          return rev_append(l1, accu);
         }
-      };
-    }
-    
+      } else {
+        return rev_append(l2$1, accu);
+      }
+    };
   };
   var len = length_aux(0, l);
   if (len < 2) {
@@ -1257,58 +1251,55 @@ function sort_uniq(cmp, l) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      var n1 = (n >> 1);
-      var n2 = n - n1 | 0;
-      var l2 = chop(n1, l);
-      var s1 = rev_sort(n1, l);
-      var s2 = rev_sort(n2, l2);
-      var _l1 = s1;
-      var _l2 = s2;
-      var _accu = /* [] */0;
-      while(true) {
-        var accu = _accu;
-        var l2$1 = _l2;
-        var l1 = _l1;
-        if (l1) {
-          if (l2$1) {
-            var t2 = l2$1[1];
-            var h2 = l2$1[0];
-            var t1 = l1[1];
-            var h1 = l1[0];
-            var c$7 = Curry._2(cmp, h1, h2);
-            if (c$7 === 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l2 = t2;
-              _l1 = t1;
-              continue ;
-            } else if (c$7 > 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l1 = t1;
-              continue ;
-            } else {
-              _accu = /* :: */[
-                h2,
-                accu
-              ];
-              _l2 = t2;
-              continue ;
-            }
+    var n1 = (n >> 1);
+    var n2 = n - n1 | 0;
+    var l2 = chop(n1, l);
+    var s1 = rev_sort(n1, l);
+    var s2 = rev_sort(n2, l2);
+    var _l1 = s1;
+    var _l2 = s2;
+    var _accu = /* [] */0;
+    while(true) {
+      var accu = _accu;
+      var l2$1 = _l2;
+      var l1 = _l1;
+      if (l1) {
+        if (l2$1) {
+          var t2 = l2$1[1];
+          var h2 = l2$1[0];
+          var t1 = l1[1];
+          var h1 = l1[0];
+          var c$7 = Curry._2(cmp, h1, h2);
+          if (c$7 === 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l2 = t2;
+            _l1 = t1;
+            continue ;
+          } else if (c$7 > 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l1 = t1;
+            continue ;
           } else {
-            return rev_append(l1, accu);
+            _accu = /* :: */[
+              h2,
+              accu
+            ];
+            _l2 = t2;
+            continue ;
           }
         } else {
-          return rev_append(l2$1, accu);
+          return rev_append(l1, accu);
         }
-      };
-    }
-    
+      } else {
+        return rev_append(l2$1, accu);
+      }
+    };
   };
   var rev_sort = function (n, l) {
     var exit = 0;
@@ -1500,58 +1491,55 @@ function sort_uniq(cmp, l) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
-      var n1 = (n >> 1);
-      var n2 = n - n1 | 0;
-      var l2 = chop(n1, l);
-      var s1 = sort(n1, l);
-      var s2 = sort(n2, l2);
-      var _l1 = s1;
-      var _l2 = s2;
-      var _accu = /* [] */0;
-      while(true) {
-        var accu = _accu;
-        var l2$1 = _l2;
-        var l1 = _l1;
-        if (l1) {
-          if (l2$1) {
-            var t2 = l2$1[1];
-            var h2 = l2$1[0];
-            var t1 = l1[1];
-            var h1 = l1[0];
-            var c$7 = Curry._2(cmp, h1, h2);
-            if (c$7 === 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l2 = t2;
-              _l1 = t1;
-              continue ;
-            } else if (c$7 < 0) {
-              _accu = /* :: */[
-                h1,
-                accu
-              ];
-              _l1 = t1;
-              continue ;
-            } else {
-              _accu = /* :: */[
-                h2,
-                accu
-              ];
-              _l2 = t2;
-              continue ;
-            }
+    var n1 = (n >> 1);
+    var n2 = n - n1 | 0;
+    var l2 = chop(n1, l);
+    var s1 = sort(n1, l);
+    var s2 = sort(n2, l2);
+    var _l1 = s1;
+    var _l2 = s2;
+    var _accu = /* [] */0;
+    while(true) {
+      var accu = _accu;
+      var l2$1 = _l2;
+      var l1 = _l1;
+      if (l1) {
+        if (l2$1) {
+          var t2 = l2$1[1];
+          var h2 = l2$1[0];
+          var t1 = l1[1];
+          var h1 = l1[0];
+          var c$7 = Curry._2(cmp, h1, h2);
+          if (c$7 === 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l2 = t2;
+            _l1 = t1;
+            continue ;
+          } else if (c$7 < 0) {
+            _accu = /* :: */[
+              h1,
+              accu
+            ];
+            _l1 = t1;
+            continue ;
           } else {
-            return rev_append(l1, accu);
+            _accu = /* :: */[
+              h2,
+              accu
+            ];
+            _l2 = t2;
+            continue ;
           }
         } else {
-          return rev_append(l2$1, accu);
+          return rev_append(l1, accu);
         }
-      };
-    }
-    
+      } else {
+        return rev_append(l2$1, accu);
+      }
+    };
   };
   var len = length_aux(0, l);
   if (len < 2) {

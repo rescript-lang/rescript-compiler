@@ -521,28 +521,25 @@ function of_sorted_list(l) {
       default:
         exit = 1;
     }
-    if (exit === 1) {
-      var nl = n / 2 | 0;
-      var match$3 = sub(nl, l);
-      var l$1 = match$3[1];
-      if (l$1) {
-        var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
-        return /* tuple */[
-                create(match$3[0], l$1[0], match$4[0]),
-                match$4[1]
-              ];
-      } else {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "set_gen.ml",
-                361,
-                14
-              ]
+    var nl = n / 2 | 0;
+    var match$3 = sub(nl, l);
+    var l$1 = match$3[1];
+    if (l$1) {
+      var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
+      return /* tuple */[
+              create(match$3[0], l$1[0], match$4[0]),
+              match$4[1]
             ];
-      }
+    } else {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "set_gen.ml",
+              361,
+              14
+            ]
+          ];
     }
-    
   };
   return sub(List.length(l), l)[0];
 }

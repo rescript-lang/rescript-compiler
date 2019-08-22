@@ -678,27 +678,22 @@ function seq$1(ids, kind, x, y) {
   } else {
     exit$1 = 2;
   }
-  if (exit$1 === 2) {
-    if (typeof match$1 === "number") {
-      if (kind === /* First */332064784) {
-        return x;
-      } else {
-        exit = 1;
-      }
-    } else if (match$1.tag === 1 && !match$1[0]) {
-      return y;
+  if (typeof match$1 === "number") {
+    if (kind === /* First */332064784) {
+      return x;
     } else {
       exit = 1;
     }
+  } else if (match$1.tag === 1 && !match$1[0]) {
+    return y;
+  } else {
+    exit = 1;
   }
-  if (exit === 1) {
-    return mk_expr(ids, /* Seq */Block.__(2, [
-                  kind,
-                  x,
-                  y
-                ]));
-  }
-  
+  return mk_expr(ids, /* Seq */Block.__(2, [
+                kind,
+                x,
+                y
+              ]));
 }
 
 function is_eps(expr) {
@@ -884,17 +879,14 @@ function tseq(kind, x, y, rem) {
   } else {
     return rem;
   }
-  if (exit === 1) {
-    return /* :: */[
-            /* TSeq */Block.__(0, [
-                x,
-                y,
-                kind
-              ]),
-            rem
-          ];
-  }
-  
+  return /* :: */[
+          /* TSeq */Block.__(0, [
+              x,
+              y,
+              kind
+            ]),
+          rem
+        ];
 }
 
 var dummy = /* record */[
@@ -963,17 +955,14 @@ function mark_used_indices(tbl) {
                           break;
                       
                     }
-                    if (exit === 1) {
-                      return List.iter((function (param) {
-                                    var i = param[1];
-                                    if (i >= 0) {
-                                      return Caml_array.caml_array_set(tbl, i, true);
-                                    } else {
-                                      return 0;
-                                    }
-                                  }), param[0][/* marks */0]);
-                    }
-                    
+                    return List.iter((function (param) {
+                                  var i = param[1];
+                                  if (i >= 0) {
+                                    return Caml_array.caml_array_set(tbl, i, true);
+                                  } else {
+                                    return 0;
+                                  }
+                                }), param[0][/* marks */0]);
                   }), param);
     });
 }
@@ -2139,16 +2128,13 @@ function merge_sequences(_param) {
                 } else {
                   exit$1 = 2;
                 }
-                if (exit$1 === 2) {
-                  return /* :: */[
-                          /* Sequence */Block.__(1, [/* :: */[
-                                x$1,
-                                y
-                              ]]),
-                          r$prime
-                        ];
-                }
-                
+                return /* :: */[
+                        /* Sequence */Block.__(1, [/* :: */[
+                              x$1,
+                              y
+                            ]]),
+                        r$prime
+                      ];
               } else {
                 exit = 1;
               }
@@ -2160,13 +2146,10 @@ function merge_sequences(_param) {
             exit = 1;
         }
       }
-      if (exit === 1) {
-        return /* :: */[
-                x,
-                merge_sequences(param[1])
-              ];
-      }
-      
+      return /* :: */[
+              x,
+              merge_sequences(param[1])
+            ];
     } else {
       return /* [] */0;
     }
@@ -2277,17 +2260,15 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             } else {
               exit = 1;
             }
-            if (exit === 1) {
-              return /* tuple */[
-                      alt(ids, List.map((function(ign_group,greedy){
-                              return function (r$prime) {
-                                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
-                                return enforce_kind(ids, kind, match[1], match[0]);
-                              }
-                              }(ign_group,greedy)), merged_sequences)),
-                      kind
-                    ];
-            }
+            return /* tuple */[
+                    alt(ids, List.map((function(ign_group,greedy){
+                            return function (r$prime) {
+                              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
+                              return enforce_kind(ids, kind, match[1], match[0]);
+                            }
+                            }(ign_group,greedy)), merged_sequences)),
+                    kind
+                  ];
             break;
         case 3 : 
             var j = param[2];

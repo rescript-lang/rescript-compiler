@@ -37,21 +37,18 @@ function split(delim, s) {
             throw exn;
           }
         }
-        if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-          var l$1 = /* :: */[
-            l_000,
-            l
-          ];
-          var l$2 = i$prime === 0 ? /* :: */[
-              "",
-              l$1
-            ] : l$1;
-          _i = i$prime;
-          _l = l$2;
-          continue ;
-        }
-        
+        var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+        var l$1 = /* :: */[
+          l_000,
+          l
+        ];
+        var l$2 = i$prime === 0 ? /* :: */[
+            "",
+            l$1
+          ] : l$1;
+        _i = i$prime;
+        _l = l$2;
+        continue ;
       } else {
         return l;
       }
@@ -568,23 +565,20 @@ function merge(f, s1, s2) {
   } else {
     return /* Empty */0;
   }
-  if (exit === 1) {
-    if (s2) {
-      var v2 = s2[1];
-      var match$1 = split$1(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
-    } else {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "map.ml",
-              270,
-              10
-            ]
-          ];
-    }
+  if (s2) {
+    var v2 = s2[1];
+    var match$1 = split$1(v2, s1);
+    return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "map.ml",
+            270,
+            10
+          ]
+        ];
   }
-  
 }
 
 function filter(p, param) {

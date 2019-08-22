@@ -35,12 +35,9 @@ function actionKey(key, a, b, c, d, e) {
     default:
       exit = 1;
   }
-  if (exit === 1) {
-    return (function (param) {
-        return /* () */0;
-      });
-  }
-  
+  return (function (param) {
+      return /* () */0;
+    });
 }
 
 exports.actionKey = actionKey;

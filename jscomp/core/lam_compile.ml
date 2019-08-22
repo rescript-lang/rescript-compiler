@@ -719,7 +719,13 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
-    | EffectCall _ | Assign _  ->
+    | EffectCall ret ->
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
+      let lbody = compile_lambda new_cxt body in
+      Js_output.append_output (Js_output.make declares)
+        (Js_output.append_output lbody
+           (Js_output.make (compile_cases new_cxt exit_expr handlers (if ret = ReturnFalse then NonComplete else Complete))))
+    | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)

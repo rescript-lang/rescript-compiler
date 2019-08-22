@@ -198,10 +198,7 @@ function file_option(file_options, name) {
       throw exn;
     }
   }
-  if (exit === 1) {
-    return x;
-  }
-  
+  return x;
 }
 
 function rev_split_by_char(c, s) {
@@ -676,20 +673,17 @@ function add_loc(loc, exn) {
   } else {
     exit = 1;
   }
-  if (exit === 1) {
-    var file_name$1 = option_default("", file_name(loc));
-    var line$1 = line(loc);
-    var detail = Printexc.to_string(exn);
-    return [
-            Compilation_error,
-            /* Parsing_error */Block.__(15, [
-                file_name$1,
-                line$1,
-                detail
-              ])
-          ];
-  }
-  
+  var file_name$1 = option_default("", file_name(loc));
+  var line$1 = line(loc);
+  var detail = Printexc.to_string(exn);
+  return [
+          Compilation_error,
+          /* Parsing_error */Block.__(15, [
+              file_name$1,
+              line$1,
+              detail
+            ])
+        ];
 }
 
 Printexc.register_printer((function (exn) {
@@ -2175,17 +2169,14 @@ function gen_decode_record(and_, param, sc) {
             default:
               return acc;
           }
-          if (exit === 1) {
-            if (rf_field_type[0][0]) {
-              return acc;
-            } else {
-              return /* :: */[
-                      param[/* rf_label */0],
-                      acc
-                    ];
-            }
+          if (rf_field_type[0][0]) {
+            return acc;
+          } else {
+            return /* :: */[
+                    param[/* rf_label */0],
+                    acc
+                  ];
           }
-          
         }), /* [] */0, r_fields);
   var process_field_common = function (sc, encoding_number, pk_as_string, f) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
@@ -2964,19 +2955,16 @@ function gen_pp_field(field_type) {
   } else {
     return function_name_of_user_defined("pp", field_type[0]);
   }
-  if (exit === 1) {
-    return Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */Block.__(11, [
-                        "Pbrt.Pp.pp_",
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* End_of_format */0
-                          ])
-                      ]),
-                    "Pbrt.Pp.pp_%s"
-                  ]), string_of_field_type(field_type));
-  }
-  
+  return Curry._1(Printf.sprintf(/* Format */[
+                  /* String_literal */Block.__(11, [
+                      "Pbrt.Pp.pp_",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* End_of_format */0
+                        ])
+                    ]),
+                  "Pbrt.Pp.pp_%s"
+                ]), string_of_field_type(field_type));
 }
 
 function gen_pp_record(and_, param, sc) {
@@ -3933,10 +3921,7 @@ function find_field_option(field_options, option_name) {
       throw exn;
     }
   }
-  if (exit === 1) {
-    return Caml_option.some(x);
-  }
-  
+  return Caml_option.some(x);
 }
 
 function field_option(param, option_name) {
@@ -4157,10 +4142,7 @@ function get_default(field_name, field_options, field_type) {
       throw exn;
     }
   }
-  if (exit === 1) {
-    return Caml_option.some(constant);
-  }
-  
+  return Caml_option.some(constant);
 }
 
 function compile_field_p1(field_parsed) {
@@ -6371,10 +6353,7 @@ function module_of_file_name(file_name) {
     }
     throw exn;
   }
-  if (exit === 1) {
-    return constructor_name($$String.sub(file_name$1, 0, dot_index) + "_pb");
-  }
-  
+  return constructor_name($$String.sub(file_name$1, 0, dot_index) + "_pb");
 }
 
 function type_name(message_scope, name) {
@@ -6541,31 +6520,28 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       }
       throw exn;
     }
-    if (exit === 1) {
-      if (is_empty_message(t)) {
-        return /* Ft_unit */0;
+    if (is_empty_message(t)) {
+      return /* Ft_unit */0;
+    } else {
+      var udt_nested;
+      udt_nested = t[/* spec */4].tag ? true : false;
+      var field_type_module = module_of_file_name(t[/* file_name */2]);
+      var match$6 = type_scope_of_type(t);
+      var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
+      if (field_type_module === module_) {
+        return /* Ft_user_defined_type */Block.__(1, [/* record */[
+                    /* udt_module */undefined,
+                    /* udt_type_name */udt_type_name,
+                    /* udt_nested */udt_nested
+                  ]]);
       } else {
-        var udt_nested;
-        udt_nested = t[/* spec */4].tag ? true : false;
-        var field_type_module = module_of_file_name(t[/* file_name */2]);
-        var match$6 = type_scope_of_type(t);
-        var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
-        if (field_type_module === module_) {
-          return /* Ft_user_defined_type */Block.__(1, [/* record */[
-                      /* udt_module */undefined,
-                      /* udt_type_name */udt_type_name,
-                      /* udt_nested */udt_nested
-                    ]]);
-        } else {
-          return /* Ft_user_defined_type */Block.__(1, [/* record */[
-                      /* udt_module */field_type_module,
-                      /* udt_type_name */udt_type_name,
-                      /* udt_nested */udt_nested
-                    ]]);
-        }
+        return /* Ft_user_defined_type */Block.__(1, [/* record */[
+                    /* udt_module */field_type_module,
+                    /* udt_type_name */udt_type_name,
+                    /* udt_nested */udt_nested
+                  ]]);
       }
     }
-    
   }
 }
 
@@ -6741,210 +6717,207 @@ function compile(proto_definition) {
                           } else {
                             return /* [] */0;
                           }
-                          if (exit === 1) {
-                            var match$2 = List.fold_left((function (param, param$1) {
-                                    var fields = param[1];
-                                    var variants = param[0];
-                                    switch (param$1.tag | 0) {
-                                      case 0 : 
-                                          var field = param$1[0];
-                                          var match = encoding_of_field(all_types$1, field);
-                                          var encoding_number = match[1];
-                                          var pk = match[0];
-                                          var field_name$1 = field_name(field);
-                                          var field_options$1 = field_options(field);
-                                          var field_type$1 = compile_field_type(field_name$1, all_types$1, file_options, field_options$1, file_name$1, field_type(field));
-                                          var field_default$1 = field_default(field);
-                                          var mutable_ = is_mutable(field_name$1, field_options$1);
-                                          var match$1 = field_label(field);
-                                          var record_field_type;
-                                          if (match$1 !== -132092992) {
-                                            if (match$1 >= 202657151) {
-                                              record_field_type = /* Rft_required */Block.__(0, [/* tuple */[
-                                                    field_type$1,
-                                                    encoding_number,
-                                                    pk,
-                                                    field_default$1
-                                                  ]]);
-                                            } else {
-                                              var match$2 = ocaml_container(field_options$1);
-                                              var repeated_type;
-                                              if (match$2 !== undefined) {
-                                                if (match$2 === "repeated_field") {
-                                                  repeated_type = /* Rt_repeated_field */1;
-                                                } else {
-                                                  throw [
-                                                        Caml_builtin_exceptions.failure,
-                                                        "Invalid ocaml_container attribute value"
-                                                      ];
-                                                }
-                                              } else {
-                                                repeated_type = /* Rt_list */0;
-                                              }
-                                              record_field_type = /* Rft_repeated_field */Block.__(2, [/* tuple */[
-                                                    repeated_type,
-                                                    field_type$1,
-                                                    encoding_number,
-                                                    pk,
-                                                    match[2]
-                                                  ]]);
-                                            }
-                                          } else {
-                                            record_field_type = /* Rft_optional */Block.__(1, [/* tuple */[
+                          var match$2 = List.fold_left((function (param, param$1) {
+                                  var fields = param[1];
+                                  var variants = param[0];
+                                  switch (param$1.tag | 0) {
+                                    case 0 : 
+                                        var field = param$1[0];
+                                        var match = encoding_of_field(all_types$1, field);
+                                        var encoding_number = match[1];
+                                        var pk = match[0];
+                                        var field_name$1 = field_name(field);
+                                        var field_options$1 = field_options(field);
+                                        var field_type$1 = compile_field_type(field_name$1, all_types$1, file_options, field_options$1, file_name$1, field_type(field));
+                                        var field_default$1 = field_default(field);
+                                        var mutable_ = is_mutable(field_name$1, field_options$1);
+                                        var match$1 = field_label(field);
+                                        var record_field_type;
+                                        if (match$1 !== -132092992) {
+                                          if (match$1 >= 202657151) {
+                                            record_field_type = /* Rft_required */Block.__(0, [/* tuple */[
                                                   field_type$1,
                                                   encoding_number,
                                                   pk,
                                                   field_default$1
                                                 ]]);
-                                          }
-                                          var record_field_000 = /* rf_label */label_name_of_field_name(field_name$1);
-                                          var record_field = /* record */[
-                                            record_field_000,
-                                            /* rf_field_type */record_field_type,
-                                            /* rf_mutable */mutable_
-                                          ];
-                                          return /* tuple */[
-                                                  variants,
-                                                  /* :: */[
-                                                    record_field,
-                                                    fields
-                                                  ]
-                                                ];
-                                      case 1 : 
-                                          var field$1 = param$1[0];
-                                          var outer_message_names = Pervasives.$at(message_names, /* :: */[
-                                                message_name,
-                                                /* [] */0
-                                              ]);
-                                          var variant = variant_of_oneof(/* () */0, outer_message_names, all_types$1, file_options, file_name$1, field$1);
-                                          var record_field_000$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
-                                          var record_field_001 = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
-                                          var record_field$1 = /* record */[
-                                            record_field_000$1,
-                                            record_field_001,
-                                            /* rf_mutable */false
-                                          ];
-                                          var variants_000 = /* record */[
-                                            /* module_ */module_,
-                                            /* spec : Variant */Block.__(1, [variant])
-                                          ];
-                                          var variants$1 = /* :: */[
-                                            variants_000,
-                                            variants
-                                          ];
-                                          var fields$1 = /* :: */[
-                                            record_field$1,
-                                            fields
-                                          ];
-                                          return /* tuple */[
-                                                  variants$1,
-                                                  fields$1
-                                                ];
-                                      case 2 : 
-                                          var mf = param$1[0];
-                                          var map_options = mf[/* map_options */4];
-                                          var map_value_type = mf[/* map_value_type */3];
-                                          var map_key_type = mf[/* map_key_type */2];
-                                          var map_name = mf[/* map_name */0];
-                                          var key_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "key of ",
-                                                            /* String */Block.__(2, [
-                                                                /* No_padding */0,
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ]),
-                                                        "key of %s"
-                                                      ]), map_name), all_types$1, file_options, map_options, file_name$1, map_key_type);
-                                          var key_pk = encoding_info_of_field_type(all_types$1, map_key_type);
-                                          var key_type$1;
-                                          if (typeof key_type === "number") {
-                                            throw [
-                                                  Caml_builtin_exceptions.failure,
-                                                  "Only Basic Types are supported for map keys"
-                                                ];
-                                          } else if (key_type.tag) {
-                                            throw [
-                                                  Caml_builtin_exceptions.failure,
-                                                  "Only Basic Types are supported for map keys"
-                                                ];
                                           } else {
-                                            key_type$1 = key_type[0];
-                                          }
-                                          var value_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "value of ",
-                                                            /* String */Block.__(2, [
-                                                                /* No_padding */0,
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ]),
-                                                        "value of %s"
-                                                      ]), map_name), all_types$1, file_options, map_options, file_name$1, map_value_type);
-                                          var value_pk = encoding_info_of_field_type(all_types$1, map_value_type);
-                                          var match$3 = ocaml_container(map_options);
-                                          var associative_type;
-                                          if (match$3 !== undefined) {
-                                            if (match$3 === "hashtbl") {
-                                              associative_type = /* At_hashtable */1;
+                                            var match$2 = ocaml_container(field_options$1);
+                                            var repeated_type;
+                                            if (match$2 !== undefined) {
+                                              if (match$2 === "repeated_field") {
+                                                repeated_type = /* Rt_repeated_field */1;
+                                              } else {
+                                                throw [
+                                                      Caml_builtin_exceptions.failure,
+                                                      "Invalid ocaml_container attribute value"
+                                                    ];
+                                              }
                                             } else {
-                                              throw [
-                                                    Caml_builtin_exceptions.failure,
-                                                    "Invalid ocaml_container attribute value for map"
-                                                  ];
+                                              repeated_type = /* Rt_list */0;
                                             }
-                                          } else {
-                                            associative_type = /* At_list */0;
+                                            record_field_type = /* Rft_repeated_field */Block.__(2, [/* tuple */[
+                                                  repeated_type,
+                                                  field_type$1,
+                                                  encoding_number,
+                                                  pk,
+                                                  match[2]
+                                                ]]);
                                           }
-                                          var record_field_type$1 = /* Rft_associative_field */Block.__(3, [/* tuple */[
-                                                associative_type,
-                                                mf[/* map_number */1],
-                                                /* tuple */[
-                                                  key_type$1,
-                                                  key_pk
-                                                ],
-                                                /* tuple */[
-                                                  value_type,
-                                                  value_pk
-                                                ]
+                                        } else {
+                                          record_field_type = /* Rft_optional */Block.__(1, [/* tuple */[
+                                                field_type$1,
+                                                encoding_number,
+                                                pk,
+                                                field_default$1
                                               ]]);
-                                          var record_field_000$2 = /* rf_label */label_name_of_field_name(map_name);
-                                          var record_field_002 = /* rf_mutable */is_mutable(map_name, map_options);
-                                          var record_field$2 = /* record */[
-                                            record_field_000$2,
-                                            /* rf_field_type */record_field_type$1,
-                                            record_field_002
-                                          ];
-                                          return /* tuple */[
-                                                  variants,
-                                                  /* :: */[
-                                                    record_field$2,
-                                                    fields
-                                                  ]
+                                        }
+                                        var record_field_000 = /* rf_label */label_name_of_field_name(field_name$1);
+                                        var record_field = /* record */[
+                                          record_field_000,
+                                          /* rf_field_type */record_field_type,
+                                          /* rf_mutable */mutable_
+                                        ];
+                                        return /* tuple */[
+                                                variants,
+                                                /* :: */[
+                                                  record_field,
+                                                  fields
+                                                ]
+                                              ];
+                                    case 1 : 
+                                        var field$1 = param$1[0];
+                                        var outer_message_names = Pervasives.$at(message_names, /* :: */[
+                                              message_name,
+                                              /* [] */0
+                                            ]);
+                                        var variant = variant_of_oneof(/* () */0, outer_message_names, all_types$1, file_options, file_name$1, field$1);
+                                        var record_field_000$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
+                                        var record_field_001 = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
+                                        var record_field$1 = /* record */[
+                                          record_field_000$1,
+                                          record_field_001,
+                                          /* rf_mutable */false
+                                        ];
+                                        var variants_000 = /* record */[
+                                          /* module_ */module_,
+                                          /* spec : Variant */Block.__(1, [variant])
+                                        ];
+                                        var variants$1 = /* :: */[
+                                          variants_000,
+                                          variants
+                                        ];
+                                        var fields$1 = /* :: */[
+                                          record_field$1,
+                                          fields
+                                        ];
+                                        return /* tuple */[
+                                                variants$1,
+                                                fields$1
+                                              ];
+                                    case 2 : 
+                                        var mf = param$1[0];
+                                        var map_options = mf[/* map_options */4];
+                                        var map_value_type = mf[/* map_value_type */3];
+                                        var map_key_type = mf[/* map_key_type */2];
+                                        var map_name = mf[/* map_name */0];
+                                        var key_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "key of ",
+                                                          /* String */Block.__(2, [
+                                                              /* No_padding */0,
+                                                              /* End_of_format */0
+                                                            ])
+                                                        ]),
+                                                      "key of %s"
+                                                    ]), map_name), all_types$1, file_options, map_options, file_name$1, map_key_type);
+                                        var key_pk = encoding_info_of_field_type(all_types$1, map_key_type);
+                                        var key_type$1;
+                                        if (typeof key_type === "number") {
+                                          throw [
+                                                Caml_builtin_exceptions.failure,
+                                                "Only Basic Types are supported for map keys"
+                                              ];
+                                        } else if (key_type.tag) {
+                                          throw [
+                                                Caml_builtin_exceptions.failure,
+                                                "Only Basic Types are supported for map keys"
+                                              ];
+                                        } else {
+                                          key_type$1 = key_type[0];
+                                        }
+                                        var value_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "value of ",
+                                                          /* String */Block.__(2, [
+                                                              /* No_padding */0,
+                                                              /* End_of_format */0
+                                                            ])
+                                                        ]),
+                                                      "value of %s"
+                                                    ]), map_name), all_types$1, file_options, map_options, file_name$1, map_value_type);
+                                        var value_pk = encoding_info_of_field_type(all_types$1, map_value_type);
+                                        var match$3 = ocaml_container(map_options);
+                                        var associative_type;
+                                        if (match$3 !== undefined) {
+                                          if (match$3 === "hashtbl") {
+                                            associative_type = /* At_hashtable */1;
+                                          } else {
+                                            throw [
+                                                  Caml_builtin_exceptions.failure,
+                                                  "Invalid ocaml_container attribute value for map"
                                                 ];
-                                      
-                                    }
-                                  }), /* tuple */[
-                                  /* [] */0,
-                                  /* [] */0
-                                ], message_body);
-                            var record_000 = /* r_name */type_name(message_names, message_name);
-                            var record_001 = /* r_fields */List.rev(match$2[1]);
-                            var record = /* record */[
-                              record_000,
-                              record_001
-                            ];
-                            var type__001 = /* spec : Record */Block.__(0, [record]);
-                            var type_ = /* record */[
-                              /* module_ */module_,
-                              type__001
-                            ];
-                            return List.rev(/* :: */[
-                                        type_,
-                                        match$2[0]
-                                      ]);
-                          }
-                          
+                                          }
+                                        } else {
+                                          associative_type = /* At_list */0;
+                                        }
+                                        var record_field_type$1 = /* Rft_associative_field */Block.__(3, [/* tuple */[
+                                              associative_type,
+                                              mf[/* map_number */1],
+                                              /* tuple */[
+                                                key_type$1,
+                                                key_pk
+                                              ],
+                                              /* tuple */[
+                                                value_type,
+                                                value_pk
+                                              ]
+                                            ]]);
+                                        var record_field_000$2 = /* rf_label */label_name_of_field_name(map_name);
+                                        var record_field_002 = /* rf_mutable */is_mutable(map_name, map_options);
+                                        var record_field$2 = /* record */[
+                                          record_field_000$2,
+                                          /* rf_field_type */record_field_type$1,
+                                          record_field_002
+                                        ];
+                                        return /* tuple */[
+                                                variants,
+                                                /* :: */[
+                                                  record_field$2,
+                                                  fields
+                                                ]
+                                              ];
+                                    
+                                  }
+                                }), /* tuple */[
+                                /* [] */0,
+                                /* [] */0
+                              ], message_body);
+                          var record_000 = /* r_name */type_name(message_names, message_name);
+                          var record_001 = /* r_fields */List.rev(match$2[1]);
+                          var record = /* record */[
+                            record_000,
+                            record_001
+                          ];
+                          var type__001 = /* spec : Record */Block.__(0, [record]);
+                          var type_ = /* record */[
+                            /* module_ */module_,
+                            type__001
+                          ];
+                          return List.rev(/* :: */[
+                                      type_,
+                                      match$2[0]
+                                    ]);
                         } else {
                           return /* :: */[
                                   compile_enum(file_name, scope, match[0]),
