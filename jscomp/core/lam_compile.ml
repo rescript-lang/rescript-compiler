@@ -28,7 +28,7 @@ module S = Js_stmt_make
 
 let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
-let change_return_type_in_try 
+let change_tail_type_in_try 
   (x : Lam_compile_context.tail_type)
   : Lam_compile_context.tail_type = 
   match x with 
@@ -38,16 +38,17 @@ let change_return_type_in_try
     -> x
 
 (* assume outer is [Lstaticcatch] *)
-let rec flat_catches (acc : Lam_compile_context.handler list) (x : Lam.t)
+let rec flat_catches 
+  (acc : Lam_compile_context.handler list) (x : Lam.t)
   : Lam_compile_context.handler list * Lam.t =
   match x with
-  | Lstaticcatch(l, (code, bindings), handler)
+  | Lstaticcatch(l, (label, bindings), handler)
     when
       acc = [] ||
-      (not @@ Lam_exit_code.has_exit_code handler
-         (fun exit -> Ext_list.exists acc (fun { label } -> label = exit) ) )
+      (not ( Lam_exit_code.has_exit_code handler
+         (fun exit -> Ext_list.exists acc (fun x -> x.label = exit) ) ))
     -> (* #1698 should not crush exit code here without checking *)
-    flat_catches ( {label = code; handler; bindings} ::acc) l
+    flat_catches ( {label ; handler; bindings} ::acc) l
   | _ -> acc, x
 
 let flatten_nested_caches  (x : Lam.t) 
@@ -641,7 +642,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
       *)
 and compile_staticraise i (largs : Lam.t list) lambda_cxt  =    
  (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
-    match Lam_compile_context.find_exn i lambda_cxt  with
+    match Lam_compile_context.find_exn lambda_cxt  i with
     | {exit_id; bindings ; order_id} ->
           Ext_list.fold_right2 largs bindings
            (Js_output.make [S.assign exit_id (E.small_int  order_id)]
@@ -691,8 +692,8 @@ and compile_staticraise i (largs : Lam.t list) lambda_cxt  =
 
          ]}
       *)
-and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=  
-    let code_table, body = flatten_nested_caches cur_lam in
+and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=  
+    let code_table, body = flatten_nested_caches lam in
     let exit_id = Ext_ident.create_tmp ~name:"exit" () in
     let exit_expr = E.var exit_id in
     let jmp_table, handlers =
@@ -727,7 +728,13 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
-    | EffectCall _ | Assign _  ->
+    | EffectCall tail_type ->
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
+      let lbody = compile_lambda new_cxt body in
+      Js_output.append_output (Js_output.make declares)
+        (Js_output.append_output lbody
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
+    | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
@@ -968,7 +975,7 @@ and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =
       Js_output.make (S.declare_variable ~kind:Variable v :: 
                       aux context context)  ~value:(E.var v )
     | EffectCall return_type -> 
-      let new_return_type = change_return_type_in_try return_type in 
+      let new_return_type = change_tail_type_in_try return_type in 
       if new_return_type == return_type then 
         Js_output.make (aux lambda_cxt lambda_cxt)
       else 

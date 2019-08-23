@@ -102,9 +102,13 @@ type handler = {
 } 
 
 val add_jmps :
-    jmp_table -> 
-    Ident.t ->
-    handler list ->
-    jmp_table * (jbl_label * Lam.t) list
+  jmp_table -> 
+  Ident.t ->
+  handler list ->
+  jmp_table * (jbl_label * Lam.t) list
 
-val find_exn : jbl_label -> t -> value
+
+val find_exn : 
+  t -> 
+  jbl_label -> 
+  value

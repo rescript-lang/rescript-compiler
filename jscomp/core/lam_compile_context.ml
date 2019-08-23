@@ -114,5 +114,5 @@ let add_jmps
   map, List.rev handlers
 
 
-let find_exn i cxt = 
+let find_exn cxt i = 
   Int_map.find_exn cxt.jmp_table i 
