@@ -203,8 +203,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
       comment 
     }
   | Blk_module des ->
-    let des = Array.of_list des in
-    let property_map = List.mapi (fun i e -> (des.(i), e)) es in
+    let property_map = List.combine des es in
     {
       expression_desc = Object property_map;
       comment 
