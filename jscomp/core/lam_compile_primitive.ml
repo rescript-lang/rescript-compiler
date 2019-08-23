@@ -36,9 +36,9 @@ module E = Js_exp_make
 *)
 let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t = 
   match st with 
-  | EffectCall (ReturnTrue _ ) | NeedValue (ReturnTrue _)
+  | EffectCall (Maybe_tail _ ) | NeedValue (Maybe_tail _)
   | Assign _ | Declare _ | NeedValue _  -> E.seq e E.unit
-  | EffectCall ReturnFalse -> e 
+  | EffectCall Not_tail -> e 
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc
