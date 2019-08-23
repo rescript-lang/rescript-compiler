@@ -32,5 +32,5 @@ module E = Js_exp_make
 let make ?comment names (args : J.expression list) =
   E.make_block
     ?comment E.zero_int_literal
-    (Blk_module (Some names)) args Immutable
+    (Blk_module names) args Immutable
 
