@@ -36,7 +36,7 @@ module E = Js_exp_make
 *)
 let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t = 
   match st with 
-  | EffectCall (Maybe_tail _ ) | NeedValue (Maybe_tail _)
+  | EffectCall (Maybe_tail_is_return _ ) | NeedValue (Maybe_tail_is_return _)
   | Assign _ | Declare _ | NeedValue _  -> E.seq e E.unit
   | EffectCall Not_tail -> e 
 (* NeedValue should return a meaningful expression*)

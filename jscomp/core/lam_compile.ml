@@ -32,9 +32,9 @@ let change_tail_type_in_try
   (x : Lam_compile_context.tail_type)
   : Lam_compile_context.tail_type = 
   match x with 
-  | Maybe_tail (Tail_with_name _ | Tail_no_name_lambda) ->
-    Maybe_tail Tail_in_try
-  | Not_tail | Maybe_tail Tail_in_try
+  | Maybe_tail_is_return (Tail_with_name _ ) ->
+    Maybe_tail_is_return Tail_in_try
+  | Not_tail | Maybe_tail_is_return Tail_in_try
     -> x
 
 (* assume outer is [Lstaticcatch] *)
@@ -262,7 +262,7 @@ and compile_recursive_let ~all_bindings
     let output =
       compile_lambda
         { cxt with
-          continuation = EffectCall (Maybe_tail (Tail_with_name ret ));
+          continuation = EffectCall (Maybe_tail_is_return (Tail_with_name (Some ret )));
           jmp_table = Lam_compile_context.empty_handler_map}  body in
     let result =
       if ret.triggered then
@@ -1203,7 +1203,7 @@ and compile_ifthenelse
                   (Js_output.output_as_block (
                       compile_lambda lambda_cxt t_branch))
                   ?else_))
-        | Maybe_tail _, {block = []; value =  Some out1},
+        | Maybe_tail_is_return _, {block = []; value =  Some out1},
           {block = []; value =  Some out2} ->
           Js_output.make
             (Ext_list.append_one b  (S.return_stmt  (E.econd e  out1 out2)))
@@ -1256,7 +1256,7 @@ and compile_apply
           )  in
       match fn, lambda_cxt.continuation with
       | (Lvar fn_id,
-         (EffectCall (Maybe_tail (Tail_with_name ret)) | NeedValue (Maybe_tail (Tail_with_name ret))))
+         (EffectCall (Maybe_tail_is_return (Tail_with_name (Some ret))) | NeedValue (Maybe_tail_is_return (Tail_with_name (Some ret)))))
         when Ident.same ret.id fn_id ->
         ret.triggered <- true;
         (* Here we mark [finished] true, since the continuation
@@ -1439,7 +1439,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               *)
               (Js_output.output_as_block
                  ( compile_lambda
-                     { lambda_cxt with continuation = EffectCall ( Maybe_tail Tail_no_name_lambda);                                 
+                     { lambda_cxt with continuation = EffectCall ( Maybe_tail_is_return (Tail_with_name None));                                 
                                        jmp_table = Lam_compile_context.empty_handler_map}
                      body)))
        | _ -> assert false)      
@@ -1492,7 +1492,7 @@ and compile_lambda
            (Js_output.output_as_block
               ( compile_lambda
                   { lambda_cxt with 
-                    continuation = EffectCall (Maybe_tail Tail_no_name_lambda); 
+                    continuation = EffectCall (Maybe_tail_is_return (Tail_with_name None)); 
                     jmp_table = Lam_compile_context.empty_handler_map}
                   body)))
     | Lapply appinfo -> 

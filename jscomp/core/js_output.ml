@@ -62,7 +62,7 @@ let output_of_expression
     make [ S.define_variable ~kind n  exp]
   | Assign n  ->
     make [S.assign n exp ]
-  | EffectCall (Maybe_tail _) ->
+  | EffectCall (Maybe_tail_is_return _) ->
     make [S.return_stmt  exp] ~output_finished:True
   | NeedValue _ ->
     {block = []; value = Some exp; output_finished = False }
@@ -73,7 +73,7 @@ let output_of_block_and_expression
     (block : J.block) exp : t =
   match continuation with
   | EffectCall Not_tail -> make block ~value:exp
-  | EffectCall (Maybe_tail _) -> 
+  | EffectCall (Maybe_tail_is_return _) -> 
     make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
   | Declare (kind,n) ->
     make (Ext_list.append_one block (S.define_variable ~kind  n exp))

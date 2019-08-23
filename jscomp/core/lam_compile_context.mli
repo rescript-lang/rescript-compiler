@@ -58,13 +58,12 @@ type value = {
 type let_kind = Lam_compat.let_kind
 
 type maybe_tail = 
-    | Tail_in_try
-    | Tail_no_name_lambda
-    | Tail_with_name of return_label 
+    | Tail_in_try    
+    | Tail_with_name of return_label option
 
 type tail_type = 
   | Not_tail 
-  | Maybe_tail of maybe_tail
+  | Maybe_tail_is_return of maybe_tail
   (* anonoymous function does not have identifier *)
 
 (* delegate to the callee to generate expression 
@@ -87,6 +86,8 @@ type jmp_table
 val continuation_is_return:
   continuation -> 
   bool 
+
+
 type t = {
   continuation : continuation ;
   jmp_table : jmp_table;

@@ -48,15 +48,14 @@ type return_label = {
 
 type maybe_tail = 
   | Tail_in_try
-  | Tail_no_name_lambda
-  | Tail_with_name of return_label
+  | Tail_with_name of return_label option
 
 type tail_type = 
   | Not_tail 
-  | Maybe_tail of maybe_tail
+  | Maybe_tail_is_return of maybe_tail
   (* Note [return] does indicate it is a tail position in most cases
      however, in an exception handler, return may not be in tail position
-     to fix #1701 we play a trick that (Maybe_tail None) 
+     to fix #1701 we play a trick that (Maybe_tail_is_return None) 
      would never trigger tailcall, however, it preserves [return] 
      semantics
   *)
@@ -75,7 +74,7 @@ type jmp_table =   value  HandlerMap.t
 
 let continuation_is_return ( x : continuation) =  
   match x with 
-  | EffectCall (Maybe_tail _) | NeedValue (Maybe_tail _) 
+  | EffectCall (Maybe_tail_is_return _) | NeedValue (Maybe_tail_is_return _) 
     -> true 
   | EffectCall Not_tail | NeedValue Not_tail 
   | Declare _ | Assign _
