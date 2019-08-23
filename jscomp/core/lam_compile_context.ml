@@ -46,12 +46,16 @@ type return_label = {
   mutable triggered : bool
 }
 
-type return_type = 
-  | ReturnFalse 
-  | ReturnTrue of return_label option 
+type maybe_tail = 
+  | Tail_in_try
+  | Tail_with_name of return_label option
+
+type tail_type = 
+  | Not_tail 
+  | Maybe_tail_is_return of maybe_tail
   (* Note [return] does indicate it is a tail position in most cases
      however, in an exception handler, return may not be in tail position
-     to fix #1701 we play a trick that (ReturnTrue None) 
+     to fix #1701 we play a trick that (Maybe_tail_is_return None) 
      would never trigger tailcall, however, it preserves [return] 
      semantics
   *)
@@ -61,8 +65,8 @@ type return_type =
 type let_kind = Lam_compat.let_kind
 
 type continuation = 
-  | EffectCall of return_type
-  | NeedValue of return_type
+  | EffectCall of tail_type
+  | NeedValue of tail_type
   | Declare of let_kind * J.ident (* bound value *)
   | Assign of J.ident (* when use [Assign], var is not needed, since it's already declared  *)
 
@@ -70,9 +74,9 @@ type jmp_table =   value  HandlerMap.t
 
 let continuation_is_return ( x : continuation) =  
   match x with 
-  | EffectCall (ReturnTrue _) | NeedValue (ReturnTrue _) 
+  | EffectCall (Maybe_tail_is_return _) | NeedValue (Maybe_tail_is_return _) 
     -> true 
-  | EffectCall ReturnFalse | NeedValue ReturnFalse 
+  | EffectCall Not_tail | NeedValue Not_tail 
   | Declare _ | Assign _
     -> false
     
@@ -109,5 +113,5 @@ let add_jmps
   map, List.rev handlers
 
 
-let find_exn i cxt = 
+let find_exn cxt i = 
   Int_map.find_exn cxt.jmp_table i 

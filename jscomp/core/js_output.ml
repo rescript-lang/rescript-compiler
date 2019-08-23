@@ -54,7 +54,7 @@ let output_of_expression
     (continuation : continuation)
     (exp : J.expression) ~(no_effects: bool Lazy.t)  =
   match continuation with
-  | EffectCall  ReturnFalse ->
+  | EffectCall  Not_tail ->
     if Lazy.force no_effects 
     then dummy
     else {block = []; value  = Some exp ; output_finished = False}
@@ -62,7 +62,7 @@ let output_of_expression
     make [ S.define_variable ~kind n  exp]
   | Assign n  ->
     make [S.assign n exp ]
-  | EffectCall (ReturnTrue _) ->
+  | EffectCall (Maybe_tail_is_return _) ->
     make [S.return_stmt  exp] ~output_finished:True
   | NeedValue _ ->
     {block = []; value = Some exp; output_finished = False }
@@ -72,8 +72,8 @@ let output_of_block_and_expression
     (continuation : continuation)
     (block : J.block) exp : t =
   match continuation with
-  | EffectCall ReturnFalse -> make block ~value:exp
-  | EffectCall (ReturnTrue _) -> 
+  | EffectCall Not_tail -> make block ~value:exp
+  | EffectCall (Maybe_tail_is_return _) -> 
     make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
   | Declare (kind,n) ->
     make (Ext_list.append_one block (S.define_variable ~kind  n exp))

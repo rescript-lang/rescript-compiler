@@ -77,13 +77,13 @@ let compile_group (meta : Lam_stats.t)
 
   | Recursive id_lams   -> 
     Lam_compile.compile_recursive_lets 
-      { continuation = EffectCall ReturnFalse; 
+      { continuation = EffectCall Not_tail; 
         jmp_table = Lam_compile_context.empty_handler_map;
         meta
       } 
       id_lams
   | Nop lam -> (* TODO: Side effect callls, log and see statistics *)
-    Lam_compile.compile_lambda {continuation = EffectCall ReturnFalse;
+    Lam_compile.compile_lambda {continuation = EffectCall Not_tail;
                                 jmp_table = Lam_compile_context.empty_handler_map;
                                 meta
                                } lam

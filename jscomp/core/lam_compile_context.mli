@@ -57,17 +57,22 @@ type value = {
 
 type let_kind = Lam_compat.let_kind
 
-type return_type = 
-  | ReturnFalse 
-  | ReturnTrue of return_label option (* anonoymous function does not have identifier *)
+type maybe_tail = 
+    | Tail_in_try    
+    | Tail_with_name of return_label option
+
+type tail_type = 
+  | Not_tail 
+  | Maybe_tail_is_return of maybe_tail
+  (* anonoymous function does not have identifier *)
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
   *)
 
 type continuation = 
-  | EffectCall of return_type
-  | NeedValue of return_type
+  | EffectCall of tail_type
+  | NeedValue of tail_type
   | Declare of let_kind * J.ident (* bound value *)
   | Assign of J.ident 
   (** when use [Assign], var is not needed, since it's already declared 
@@ -81,6 +86,8 @@ type jmp_table
 val continuation_is_return:
   continuation -> 
   bool 
+
+
 type t = {
   continuation : continuation ;
   jmp_table : jmp_table;
@@ -96,9 +103,13 @@ type handler = {
 } 
 
 val add_jmps :
-    jmp_table -> 
-    Ident.t ->
-    handler list ->
-    jmp_table * (jbl_label * Lam.t) list
+  jmp_table -> 
+  Ident.t ->
+  handler list ->
+  jmp_table * (jbl_label * Lam.t) list
 
-val find_exn : jbl_label -> t -> value
+
+val find_exn : 
+  t -> 
+  jbl_label -> 
+  value
