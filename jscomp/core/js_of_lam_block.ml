@@ -49,7 +49,6 @@ let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  =
   (*        :: args) *)
 
 let field (field_info : Lam_compat.field_dbg_info) e i =
-  let () = if field_info = Fld_na && Js_dump.string_of_expression e = "MXXX" then assert false in
   match field_info with 
   | Fld_na ->
     (* let comment = "NA" in *)
