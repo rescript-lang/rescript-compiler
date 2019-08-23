@@ -47,7 +47,7 @@ let expand_global_module_as_lam id env =
              -> 
              let names = Ocaml_types.map (fun name -> name) signature in
              Lam.prim
-                 ~primitive:(Pmakeblock(0, Blk_module (Some names), Immutable))  
+                 ~primitive:(Pmakeblock(0, Blk_module names, Immutable))  
                  ~args:(
                    let len = Ocaml_types.length signature in 
                    Ext_list.init len (fun i  -> 

@@ -181,7 +181,7 @@ let make_block ?comment
         if i <> 0 then merge_outer_comment des.(i-1) e else e) 
 #end         
     (* TODO: may overriden its previous comments *)
-    | Blk_module (Some des) 
+    | Blk_module des
       ->  Ext_list.map2 des es merge_outer_comment             
     | _ -> es 
   in
@@ -202,7 +202,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
       expression_desc = Object property_map;
       comment 
     }
-  | Blk_module Some(des) ->
+  | Blk_module des ->
     let des = Array.of_list des in
     let property_map = List.mapi (fun i e -> (des.(i), e)) es in
     {
