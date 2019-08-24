@@ -35,13 +35,12 @@ type shape =
    | Module of shape array
    | Value of Caml_obj_extern.t
 (* ATTENTION: check across versions *)
-
+module Array = Caml_array_extern 
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
  *)
-let init_mod (loc : string * int * int) (shape : shape) =  
-  let module Array = Caml_array_extern in 
+let init_mod (loc : string * int * int) (shape : shape) =    
   let undef_module _ = raise (Undefined_recursive_module loc) in
   let rec loop (shape : shape) (struct_ : Caml_obj_extern.t array) idx = 
     match shape with 
@@ -67,17 +66,14 @@ let init_mod (loc : string * int * int) (shape : shape) =
   loop shape res 0 ;
   res.(0)      
 
-
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
 let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit = 
-  let module Array = Caml_array_extern in 
   let rec aux (shape : shape) o n parent i  =
     match shape with
     | Function 
       -> Caml_obj_extern.set_field parent i n 
-
     | Lazy 
     | Class -> 
       Caml_obj.caml_update_dummy o n 

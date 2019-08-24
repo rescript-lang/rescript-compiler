@@ -18,8 +18,36 @@ module  rec Int3 : sig
   val u : int -> int 
 end = Int3
 
+module rec Inta : sig 
+  val a : int lazy_t
+end = struct 
+  let a = lazy (Lazy.force Intb.a)
+end 
+and Intb : sig 
+  val a : int lazy_t
+end = struct 
+  let a = lazy (Lazy.force Inta.a + 1)
+end 
 
+;; 
+eq __LOC__ 
+  (-1)
+  (try Lazy.force (Intb.a) with Lazy.Undefined -> -1)
 
+module A = struct   
+  module rec Inta : sig 
+    val a : int lazy_t
+  end = struct 
+    let a = lazy (Lazy.force Intb.a + 1)
+  end 
+  and Intb : sig 
+    val a : int lazy_t
+  end = struct 
+    let a = lazy 2
+  end 
+end 
+
+;; eq __LOC__ (Lazy.force A.Inta.a)  3
 (* expect raise Undefined_recursive_module *)
 ;; eq __LOC__ 4
  (try ignore (Int3.u 3); 3
