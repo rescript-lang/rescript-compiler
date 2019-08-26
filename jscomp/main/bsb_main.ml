@@ -36,6 +36,7 @@ let regen = "-regen"
 let separator = "--"
 let watch_mode = ref false
 let make_world = ref false 
+let do_install = ref false
 let set_make_world () = make_world := true
 let bs_version_string = Bs_version.version
 
@@ -62,6 +63,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
+    "-install", Arg.Set do_install,
+    " Install public interface files into lib/ocaml";
     "-init", Arg.String (fun path -> generate_theme_with_path := Some path),
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
@@ -131,6 +134,23 @@ let handle_anonymous_arg arg =
 let program_exit () =
   exit 0
 
+let install_target config_opt =
+  let config =
+    match config_opt with
+    | None ->
+    let config = Bsb_config_parse.interpret_json ~toplevel_package_specs:None ~per_proj_dir:Bsb_global_paths.cwd in
+    let _ = Ext_list.iter config.file_groups.files (fun group -> 
+    let check_file = match group.public with
+      | Export_all -> fun _ -> true
+      | Export_none -> fun _ -> false
+      | Export_set set ->  
+        fun module_name ->
+        String_set.mem set module_name in
+    String_map.iter group.sources (fun  module_name module_info -> if check_file module_name then begin String_hash_set.add config.files_to_install module_info.name_sans_extension end)) in 
+    config
+    | Some config -> config in
+  Bsb_world.install_targets Bsb_global_paths.cwd (Some config)
+
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   try begin 
@@ -155,8 +175,9 @@ let () =
             | None -> 
               (* [-make-world] should never be combined with [-package-specs] *)
               let make_world = !make_world in 
-              let force_regenerate = !force_regenerate in  
-              if not make_world && not force_regenerate then
+              let force_regenerate = !force_regenerate in
+              let do_install = !do_install in 
+              if not make_world && not force_regenerate && not do_install then
                 (* [regenerate_ninja] is not triggered in this case
                    There are several cases we wish ninja will not be triggered.
                    [bsb -clean-world]
@@ -180,7 +201,9 @@ let () =
                       [bsb -regen ]
                    *)
                  end else if make_world then begin
-                   ninja_command_exit  [||] 
+                   ninja_command_exit [||] 
+                 end else if do_install then begin
+                   install_target config_opt
                  end)
           end
         | `Split (bsb_args,ninja_args)
@@ -195,6 +218,8 @@ let () =
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+            if !do_install then
+              install_target config_opt;
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end
