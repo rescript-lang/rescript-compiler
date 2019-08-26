@@ -1657,15 +1657,12 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2[2];
               var t = c2[0];
               if (dir !== 0) {
-                if (typeof t === "number") {
-                  if (t === 4) {
-                    game_win(state[/* ctx */1]);
-                    return /* tuple */[
-                            undefined,
-                            undefined
-                          ];
-                  }
-                  
+                if (typeof t === "number" && t === 4) {
+                  game_win(state[/* ctx */1]);
+                  return /* tuple */[
+                          undefined,
+                          undefined
+                        ];
                 }
                 if (dir !== 1) {
                   collide_block(undefined, dir, o1$3);

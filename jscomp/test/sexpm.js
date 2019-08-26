@@ -79,11 +79,8 @@ function _must_escape(s) {
         }
         exit = 1;
       }
-      if (exit === 1) {
-        if (c > 127) {
-          throw Pervasives.Exit;
-        }
-        
+      if (exit === 1 && c > 127) {
+        throw Pervasives.Exit;
       }
       
     }

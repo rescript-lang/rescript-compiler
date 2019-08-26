@@ -2237,14 +2237,8 @@ function message(param) {
       case 23 : 
           var slist$2 = param[1];
           var ty = param[0];
-          if (slist$2) {
-            if (!slist$2[1]) {
-              if (!param[2]) {
-                return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
-              }
-              
-            }
-            
+          if (slist$2 && !slist$2[1] && !param[2]) {
+            return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
           }
           if (param[2]) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
@@ -2261,14 +2255,8 @@ function message(param) {
           break;
       case 24 : 
           var slist$3 = param[0];
-          if (slist$3) {
-            if (!slist$3[1]) {
-              if (!param[2]) {
-                return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
-              }
-              
-            }
-            
+          if (slist$3 && !slist$3[1] && !param[2]) {
+            return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
           }
           if (param[2]) {
             return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
@@ -8707,13 +8695,10 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2) {
-        if (match.tag === 1) {
-          var match$2 = match[0];
-          if (match$2.tag === 3) {
-            return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
-          }
-          
+      if (exit === 2 && match.tag === 1) {
+        var match$2 = match[0];
+        if (match$2.tag === 3) {
+          return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
         }
         
       }
@@ -8757,14 +8742,8 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2) {
-        if (desc.tag === 1) {
-          if (desc[0].tag === 3) {
-            return mkexp(desc);
-          }
-          
-        }
-        
+      if (exit === 2 && desc.tag === 1 && desc[0].tag === 3) {
+        return mkexp(desc);
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     mkoperator("~" + name, 1),
@@ -14886,14 +14865,8 @@ function wrap(parsing_fun, lexbuf) {
         exit = 2;
       }
     }
-    if (exit === 2) {
-      if (err !== Parsing.Parse_error) {
-        if (err !== Escape_error) {
-          throw err;
-        }
-        
-      }
-      
+    if (exit === 2 && err !== Parsing.Parse_error && err !== Escape_error) {
+      throw err;
     }
     var loc = curr(lexbuf);
     if (input_name[0] === "//toplevel//") {

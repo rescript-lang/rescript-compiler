@@ -70,14 +70,8 @@ function $star$colon(_f, _g) {
         return /* Int */Block.__(0, [0]);
       }
     }
-    if (exit === 2) {
-      if (!f.tag) {
-        if (f[0] === 1) {
-          return g;
-        }
-        
-      }
-      
+    if (exit === 2 && !f.tag && f[0] === 1) {
+      return g;
     }
     switch (g.tag | 0) {
       case 0 : 

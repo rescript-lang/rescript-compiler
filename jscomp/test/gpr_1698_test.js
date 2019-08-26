@@ -133,14 +133,8 @@ function compare(context, state, _a, _b) {
         exit$1 = 4;
       }
     }
-    if (exit$1 === 4) {
-      if (b.tag === 2) {
-        if (is_number(a)) {
-          return -1;
-        }
-        
-      }
-      
+    if (exit$1 === 4 && b.tag === 2 && is_number(a)) {
+      return -1;
     }
     switch (a.tag | 0) {
       case 2 : 

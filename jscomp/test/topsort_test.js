@@ -1328,14 +1328,10 @@ catch (raw_exn){
         var match$2 = match$1[1];
         if (match$2 && match$2[0] === "eat") {
           var match$3 = match$2[1];
-          if (match$3 && match$3[0] === "go") {
-            if (match$3[1]) {
-              exit = 1;
-            }
-            
-          } else {
+          if (!(match$3 && match$3[0] === "go" && !match$3[1])) {
             exit = 1;
           }
+          
         } else {
           exit = 1;
         }
