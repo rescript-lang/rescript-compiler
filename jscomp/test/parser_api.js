@@ -975,11 +975,9 @@ function replace_substring(before, after, str) {
     while(true) {
       var curr = _curr;
       var acc = _acc;
-      var exit = 0;
       var next;
       try {
         next = search_substring(before, str, curr);
-        exit = 1;
       }
       catch (exn){
         if (exn === Caml_builtin_exceptions.not_found) {
@@ -992,16 +990,13 @@ function replace_substring(before, after, str) {
           throw exn;
         }
       }
-      if (exit === 1) {
-        var prefix = $$String.sub(str, curr, next - curr | 0);
-        _curr = next + before.length | 0;
-        _acc = /* :: */[
-          prefix,
-          acc
-        ];
-        continue ;
-      }
-      
+      var prefix = $$String.sub(str, curr, next - curr | 0);
+      _curr = next + before.length | 0;
+      _acc = /* :: */[
+        prefix,
+        acc
+      ];
+      continue ;
     };
   };
   return $$String.concat(after, search(/* [] */0, 0));
@@ -1042,28 +1037,21 @@ function rev_split_words(s) {
               ];
       } else {
         var match = Caml_string.get(s, j);
-        var exit = 0;
         var switcher = match - 9 | 0;
         if (switcher > 4 || switcher < 0) {
           if (switcher !== 23) {
             _j = j + 1 | 0;
             continue ;
-          } else {
-            exit = 1;
           }
+          
         } else if (switcher === 3 || switcher === 2) {
           _j = j + 1 | 0;
           continue ;
-        } else {
-          exit = 1;
         }
-        if (exit === 1) {
-          return split1(/* :: */[
-                      $$String.sub(s, i, j - i | 0),
-                      res
-                    ], j + 1 | 0);
-        }
-        
+        return split1(/* :: */[
+                    $$String.sub(s, i, j - i | 0),
+                    res
+                  ], j + 1 | 0);
       }
     };
   };
@@ -2249,48 +2237,50 @@ function message(param) {
       case 23 : 
           var slist$2 = param[1];
           var ty = param[0];
-          var exit = 0;
-          if (slist$2 && !(slist$2[1] || param[2])) {
-            return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
-          } else {
-            exit = 1;
-          }
-          if (exit === 1) {
-            if (param[2]) {
-              return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "warnings.ml",
-                      365,
-                      39
-                    ]
-                  ];
+          if (slist$2) {
+            if (!slist$2[1]) {
+              if (!param[2]) {
+                return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
+              }
+              
             }
+            
+          }
+          if (param[2]) {
+            return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "warnings.ml",
+                    365,
+                    39
+                  ]
+                ];
           }
           break;
       case 24 : 
           var slist$3 = param[0];
-          var exit$1 = 0;
-          if (slist$3 && !(slist$3[1] || param[2])) {
-            return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
-          } else {
-            exit$1 = 1;
-          }
-          if (exit$1 === 1) {
-            if (param[2]) {
-              return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "warnings.ml",
-                      374,
-                      36
-                    ]
-                  ];
+          if (slist$3) {
+            if (!slist$3[1]) {
+              if (!param[2]) {
+                return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
+              }
+              
             }
+            
+          }
+          if (param[2]) {
+            return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "warnings.ml",
+                    374,
+                    36
+                  ]
+                ];
           }
           break;
       case 25 : 
@@ -4475,16 +4465,13 @@ function extension(loc, attrs, a) {
 
 function force_poly(t) {
   var match = t[/* ptyp_desc */0];
-  var exit = 0;
-  if (typeof match === "number" || match.tag !== 8) {
-    exit = 1;
-  } else {
-    return t;
+  if (typeof match !== "number") {
+    if (match.tag === 8) {
+      return t;
+    }
+    
   }
-  if (exit === 1) {
-    return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
-  }
-  
+  return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
 }
 
 var Typ = /* module */[
@@ -8694,7 +8681,6 @@ var yyact = /* array */[
       var arg = _2;
       var match = arg[/* pexp_desc */0];
       var exit = 0;
-      var exit$1 = 0;
       switch (name) {
         case "-" : 
             if (match.tag === 1) {
@@ -8709,43 +8695,38 @@ var yyact = /* array */[
                 case 6 : 
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_nativeint */Block.__(6, [-match$1[0]])]));
                 default:
-                  exit$1 = 2;
+                  exit = 2;
               }
             } else {
-              exit$1 = 2;
+              exit = 2;
             }
             break;
         case "-." : 
-            exit$1 = 2;
+            exit = 2;
             break;
         default:
-          exit = 1;
+          
       }
-      if (exit$1 === 2) {
+      if (exit === 2) {
         if (match.tag === 1) {
           var match$2 = match[0];
           if (match$2.tag === 3) {
             return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
-          } else {
-            exit = 1;
           }
-        } else {
-          exit = 1;
+          
         }
+        
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      mkoperator("~" + name, 1),
-                      /* :: */[
-                        /* tuple */[
-                          "",
-                          arg
-                        ],
-                        /* [] */0
-                      ]
-                    ]));
-      }
-      
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    mkoperator("~" + name, 1),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arg
+                      ],
+                      /* [] */0
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
@@ -8754,7 +8735,6 @@ var yyact = /* array */[
       var arg = _2;
       var desc = arg[/* pexp_desc */0];
       var exit = 0;
-      var exit$1 = 0;
       switch (name) {
         case "+" : 
             if (desc.tag === 1) {
@@ -8762,41 +8742,40 @@ var yyact = /* array */[
                 case 1 : 
                 case 2 : 
                 case 3 : 
-                    exit$1 = 2;
+                    exit = 2;
                     break;
                 default:
                   return mkexp(desc);
               }
             } else {
-              exit$1 = 2;
+              exit = 2;
             }
             break;
         case "+." : 
-            exit$1 = 2;
+            exit = 2;
             break;
         default:
-          exit = 1;
+          
       }
-      if (exit$1 === 2) {
-        if (desc.tag === 1 && desc[0].tag === 3) {
-          return mkexp(desc);
-        } else {
-          exit = 1;
+      if (exit === 2) {
+        if (desc.tag === 1) {
+          if (desc[0].tag === 3) {
+            return mkexp(desc);
+          }
+          
         }
+        
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      mkoperator("~" + name, 1),
-                      /* :: */[
-                        /* tuple */[
-                          "",
-                          arg
-                        ],
-                        /* [] */0
-                      ]
-                    ]));
-      }
-      
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    mkoperator("~" + name, 1),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arg
+                      ],
+                      /* [] */0
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
@@ -8874,7 +8853,6 @@ var yyact = /* array */[
       var newval = _7;
       var set = fast[0] ? "unsafe_set" : "set";
       var coords = bigarray_untuplify(arg);
-      var exit = 0;
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -8882,9 +8860,7 @@ var yyact = /* array */[
           var match$1 = match[1];
           var c2 = match[0];
           if (match$1) {
-            if (match$1[1]) {
-              exit = 1;
-            } else {
+            if (!match$1[1]) {
               return mkexp(/* Pexp_apply */Block.__(5, [
                             ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", set)])),
                             /* :: */[
@@ -8920,6 +8896,7 @@ var yyact = /* array */[
                             ]
                           ]));
             }
+            
           } else {
             return mkexp(/* Pexp_apply */Block.__(5, [
                           ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", set)])),
@@ -8974,34 +8951,29 @@ var yyact = /* array */[
                         ]
                       ]));
         }
-      } else {
-        exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arr
+                      ],
                       /* :: */[
                         /* tuple */[
                           "",
-                          arr
+                          ghexp(/* Pexp_array */Block.__(14, [coords]))
                         ],
                         /* :: */[
                           /* tuple */[
                             "",
-                            ghexp(/* Pexp_array */Block.__(14, [coords]))
+                            newval
                           ],
-                          /* :: */[
-                            /* tuple */[
-                              "",
-                              newval
-                            ],
-                            /* [] */0
-                          ]
+                          /* [] */0
                         ]
                       ]
-                    ]));
-      }
-      
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -9186,7 +9158,6 @@ var yyact = /* array */[
       var arg = _4;
       var get = fast[0] ? "unsafe_get" : "get";
       var coords = bigarray_untuplify(arg);
-      var exit = 0;
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -9194,9 +9165,7 @@ var yyact = /* array */[
           var match$1 = match[1];
           var c2 = match[0];
           if (match$1) {
-            if (match$1[1]) {
-              exit = 1;
-            } else {
+            if (!match$1[1]) {
               return mkexp(/* Pexp_apply */Block.__(5, [
                             ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", get)])),
                             /* :: */[
@@ -9226,6 +9195,7 @@ var yyact = /* array */[
                             ]
                           ]));
             }
+            
           } else {
             return mkexp(/* Pexp_apply */Block.__(5, [
                           ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", get)])),
@@ -9268,28 +9238,23 @@ var yyact = /* array */[
                         ]
                       ]));
         }
-      } else {
-        exit = 1;
       }
-      if (exit === 1) {
-        return mkexp(/* Pexp_apply */Block.__(5, [
-                      ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
+      return mkexp(/* Pexp_apply */Block.__(5, [
+                    ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
+                    /* :: */[
+                      /* tuple */[
+                        "",
+                        arr
+                      ],
                       /* :: */[
                         /* tuple */[
                           "",
-                          arr
+                          ghexp(/* Pexp_array */Block.__(14, [coords]))
                         ],
-                        /* :: */[
-                          /* tuple */[
-                            "",
-                            ghexp(/* Pexp_array */Block.__(14, [coords]))
-                          ],
-                          /* [] */0
-                        ]
+                        /* [] */0
                       ]
-                    ]));
-      }
-      
+                    ]
+                  ]));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 4);
@@ -12534,11 +12499,9 @@ function list_variables(fmt) {
 }
 
 function defined(str) {
-  var exit = 0;
   var val;
   try {
     val = Hashtbl.find(directive_built_in_values, str);
-    exit = 1;
   }
   catch (exn){
     try {
@@ -12549,30 +12512,25 @@ function defined(str) {
       return false;
     }
   }
-  if (exit === 1) {
-    if (typeof val === "number") {
-      return false;
-    } else {
-      return true;
-    }
+  if (typeof val === "number") {
+    return false;
+  } else {
+    return true;
   }
-  
 }
 
 function query(loc, str) {
-  var exit = 0;
   var v;
   try {
     v = Hashtbl.find(directive_built_in_values, str);
-    exit = 1;
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      var exit$1 = 0;
+      var exit = 0;
       var v$1;
       try {
         v$1 = Caml_sys.caml_sys_getenv(str);
-        exit$1 = 2;
+        exit = 2;
       }
       catch (exn$1){
         if (exn$1 === Caml_builtin_exceptions.not_found) {
@@ -12581,7 +12539,7 @@ function query(loc, str) {
           throw exn$1;
         }
       }
-      if (exit$1 === 2) {
+      if (exit === 2) {
         try {
           return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
         }
@@ -12604,14 +12562,11 @@ function query(loc, str) {
       throw exn;
     }
   }
-  if (exit === 1) {
-    if (typeof v === "number") {
-      return /* Dir_bool */Block.__(0, [false]);
-    } else {
-      return v;
-    }
+  if (typeof v === "number") {
+    return /* Dir_bool */Block.__(0, [false]);
+  } else {
+    return v;
   }
-  
 }
 
 function define_key_value(key, v) {
@@ -12728,13 +12683,11 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var token_op = function (calc, no, lhs) {
     var op = token(/* () */0);
-    var exit = 0;
     if (typeof op === "number") {
       switch (op) {
         case 26 : 
         case 34 : 
         case 51 : 
-            exit = 1;
             break;
         default:
           return Curry._1(no, op);
@@ -12743,19 +12696,19 @@ function directive_parse(token_with_comments, lexbuf) {
       switch (op[0]) {
         case "=~" : 
             if (calc) {
-              var exit$1 = 0;
+              var exit = 0;
               if (typeof lhs === "number" || lhs.tag !== 3) {
-                exit$1 = 2;
+                exit = 2;
               } else {
                 var curr_loc = curr(lexbuf);
                 var rhs = value_of_token(curr_loc, token(/* () */0));
-                var exit$2 = 0;
+                var exit$1 = 0;
                 if (typeof rhs === "number" || rhs.tag !== 3) {
-                  exit$2 = 3;
+                  exit$1 = 3;
                 } else {
                   return semver(curr_loc, lhs[0], rhs[0]);
                 }
-                if (exit$2 === 3) {
+                if (exit$1 === 3) {
                   throw [
                         $$Error$2,
                         /* Conditional_expr_expected_type */Block.__(7, [
@@ -12767,7 +12720,7 @@ function directive_parse(token_with_comments, lexbuf) {
                 }
                 
               }
-              if (exit$1 === 2) {
+              if (exit === 2) {
                 throw [
                       $$Error$2,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -12785,7 +12738,6 @@ function directive_parse(token_with_comments, lexbuf) {
         case "<=" : 
         case "<>" : 
         case ">=" : 
-            exit = 1;
             break;
         default:
           return Curry._1(no, op);
@@ -12793,56 +12745,53 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       return Curry._1(no, op);
     }
-    if (exit === 1) {
-      var f;
-      var exit$3 = 0;
-      if (typeof op === "number") {
-        switch (op) {
-          case 26 : 
-              f = Caml_obj.caml_equal;
-              break;
-          case 34 : 
-              f = Caml_obj.caml_greaterthan;
-              break;
-          case 51 : 
-              f = Caml_obj.caml_lessthan;
-              break;
-          default:
-            exit$3 = 2;
-        }
-      } else if (op.tag === 2) {
-        switch (op[0]) {
-          case "<=" : 
-              f = Caml_obj.caml_lessequal;
-              break;
-          case "<>" : 
-              f = Caml_obj.caml_notequal;
-              break;
-          default:
-            exit$3 = 2;
-        }
-      } else {
-        exit$3 = 2;
+    var f;
+    var exit$2 = 0;
+    if (typeof op === "number") {
+      switch (op) {
+        case 26 : 
+            f = Caml_obj.caml_equal;
+            break;
+        case 34 : 
+            f = Caml_obj.caml_greaterthan;
+            break;
+        case 51 : 
+            f = Caml_obj.caml_lessthan;
+            break;
+        default:
+          exit$2 = 1;
       }
-      if (exit$3 === 2) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "lexer.mll",
-                331,
-                17
-              ]
-            ];
+    } else if (op.tag === 2) {
+      switch (op[0]) {
+        case "<=" : 
+            f = Caml_obj.caml_lessequal;
+            break;
+        case "<>" : 
+            f = Caml_obj.caml_notequal;
+            break;
+        default:
+          exit$2 = 1;
       }
-      var curr_loc$1 = curr(lexbuf);
-      var rhs$1 = value_of_token(curr_loc$1, token(/* () */0));
-      if (calc) {
-        return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
-      } else {
-        return true;
-      }
+    } else {
+      exit$2 = 1;
     }
-    
+    if (exit$2 === 1) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "lexer.mll",
+              331,
+              17
+            ]
+          ];
+    }
+    var curr_loc$1 = curr(lexbuf);
+    var rhs$1 = value_of_token(curr_loc$1, token(/* () */0));
+    if (calc) {
+      return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
+    } else {
+      return true;
+    }
   };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
@@ -12900,11 +12849,9 @@ function directive_parse(token_with_comments, lexbuf) {
                         }), /* Dir_int */Block.__(2, [v$1]));
         case 11 : 
             var r = curr_token[0];
-            var exit = 0;
             switch (r) {
               case "defined" : 
               case "undefined" : 
-                  exit = 1;
                   break;
               default:
                 throw [
@@ -12913,33 +12860,31 @@ function directive_parse(token_with_comments, lexbuf) {
                       curr_loc
                     ];
             }
-            if (exit === 1) {
-              var t = token(/* () */0);
-              var loc = curr(lexbuf);
-              if (typeof t === "number") {
-                throw [
-                      $$Error$2,
-                      /* Unexpected_token_in_conditional */4,
-                      loc
-                    ];
-              } else if (t.tag === 17) {
-                var s = t[0];
-                if (calc) {
-                  if (Caml_string.get(r, 0) === /* "u" */117) {
-                    return !defined(s);
-                  } else {
-                    return defined(s);
-                  }
+            var t = token(/* () */0);
+            var loc = curr(lexbuf);
+            if (typeof t === "number") {
+              throw [
+                    $$Error$2,
+                    /* Unexpected_token_in_conditional */4,
+                    loc
+                  ];
+            } else if (t.tag === 17) {
+              var s = t[0];
+              if (calc) {
+                if (Caml_string.get(r, 0) === /* "u" */117) {
+                  return !defined(s);
                 } else {
-                  return true;
+                  return defined(s);
                 }
               } else {
-                throw [
-                      $$Error$2,
-                      /* Unexpected_token_in_conditional */4,
-                      loc
-                    ];
+                return true;
               }
+            } else {
+              throw [
+                    $$Error$2,
+                    /* Unexpected_token_in_conditional */4,
+                    loc
+                  ];
             }
             break;
         case 16 : 
@@ -12957,24 +12902,21 @@ function directive_parse(token_with_comments, lexbuf) {
             var value_v = query(curr_loc, curr_token[0]);
             return token_op(calc, (function (e) {
                           push(e);
-                          var exit = 0;
-                          if (typeof value_v === "number" || value_v.tag) {
-                            exit = 1;
-                          } else {
-                            return value_v[0];
+                          if (typeof value_v !== "number") {
+                            if (!value_v.tag) {
+                              return value_v[0];
+                            }
+                            
                           }
-                          if (exit === 1) {
-                            var ty = type_of_directive(value_v);
-                            throw [
-                                  $$Error$2,
-                                  /* Conditional_expr_expected_type */Block.__(7, [
-                                      /* Dir_type_bool */0,
-                                      ty
-                                    ]),
-                                  curr_loc
-                                ];
-                          }
-                          
+                          var ty = type_of_directive(value_v);
+                          throw [
+                                $$Error$2,
+                                /* Conditional_expr_expected_type */Block.__(7, [
+                                    /* Dir_type_bool */0,
+                                    ty
+                                  ]),
+                                curr_loc
+                              ];
                         }), value_v);
         default:
           throw [
@@ -14490,7 +14432,6 @@ function token_with_comments(lexbuf) {
 function interpret_directive(lexbuf, cont, look_ahead) {
   var if_then_else$1 = if_then_else[0];
   var match = token_with_comments(lexbuf);
-  var exit = 0;
   if (typeof match === "number") {
     switch (match) {
       case 23 : 
@@ -14501,7 +14442,6 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                   curr(lexbuf)
                 ];
           }
-          exit = 1;
           break;
       case 24 : 
           if (if_then_else$1 >= 2) {
@@ -14531,7 +14471,6 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                 }
                 if (token === /* SHARP */84 && at_bol(lexbuf)) {
                   var token$1 = token_with_comments(lexbuf);
-                  var exit$1 = 0;
                   if (typeof token$1 === "number") {
                     var switcher = token$1 - 23 | 0;
                     if (switcher === 0 || switcher === 1) {
@@ -14542,28 +14481,22 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                         if_then_else[0] = /* Dir_if_false */1;
                         return Curry._1(cont, lexbuf);
                       }
-                    } else if (switcher !== 14) {
-                      exit$1 = 1;
-                    } else {
+                    } else if (switcher === 14) {
                       throw [
                             $$Error$2,
                             /* Unexpected_directive */6,
                             curr(lexbuf)
                           ];
                     }
+                    
+                  }
+                  if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf)) {
+                    if_then_else[0] = /* Dir_if_true */0;
+                    return Curry._1(cont, lexbuf);
                   } else {
-                    exit$1 = 1;
+                    _param = /* () */0;
+                    continue ;
                   }
-                  if (exit$1 === 1) {
-                    if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf)) {
-                      if_then_else[0] = /* Dir_if_true */0;
-                      return Curry._1(cont, lexbuf);
-                    } else {
-                      _param = /* () */0;
-                      continue ;
-                    }
-                  }
-                  
                 } else {
                   _param = /* () */0;
                   continue ;
@@ -14588,75 +14521,65 @@ function interpret_directive(lexbuf, cont, look_ahead) {
             curr(lexbuf)
           ];
     }
-    exit = 1;
+    
   } else {
     return Curry._1(look_ahead, match);
   }
-  if (exit === 1) {
-    if (if_then_else$1 !== 0) {
-      return Curry._1(look_ahead, match);
-    } else {
-      var _else_seen = match === /* ELSE */23;
-      while(true) {
-        var else_seen = _else_seen;
-        var token$2 = token_with_comments(lexbuf);
-        if (token$2 === /* EOF */25) {
+  if (if_then_else$1 !== 0) {
+    return Curry._1(look_ahead, match);
+  } else {
+    var _else_seen = match === /* ELSE */23;
+    while(true) {
+      var else_seen = _else_seen;
+      var token$2 = token_with_comments(lexbuf);
+      if (token$2 === /* EOF */25) {
+        throw [
+              $$Error$2,
+              /* Unterminated_else */3,
+              curr(lexbuf)
+            ];
+      }
+      if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
+        var token$3 = token_with_comments(lexbuf);
+        if (typeof token$3 === "number") {
+          var switcher$1 = token$3 - 23 | 0;
+          if (switcher$1 === 0 || switcher$1 === 1) {
+            if (switcher$1 !== 0) {
+              if_then_else[0] = /* Dir_out */2;
+              return Curry._1(cont, lexbuf);
+            } else {
+              if (else_seen) {
+                throw [
+                      $$Error$2,
+                      /* Unexpected_directive */6,
+                      curr(lexbuf)
+                    ];
+              }
+              _else_seen = true;
+              continue ;
+            }
+          } else if (switcher$1 === 14) {
+            throw [
+                  $$Error$2,
+                  /* Unexpected_directive */6,
+                  curr(lexbuf)
+                ];
+          }
+          
+        }
+        if (else_seen && is_elif(token$3)) {
           throw [
                 $$Error$2,
-                /* Unterminated_else */3,
+                /* Unexpected_directive */6,
                 curr(lexbuf)
               ];
         }
-        if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
-          var token$3 = token_with_comments(lexbuf);
-          var exit$2 = 0;
-          if (typeof token$3 === "number") {
-            var switcher$1 = token$3 - 23 | 0;
-            if (switcher$1 === 0 || switcher$1 === 1) {
-              if (switcher$1 !== 0) {
-                if_then_else[0] = /* Dir_out */2;
-                return Curry._1(cont, lexbuf);
-              } else {
-                if (else_seen) {
-                  throw [
-                        $$Error$2,
-                        /* Unexpected_directive */6,
-                        curr(lexbuf)
-                      ];
-                }
-                _else_seen = true;
-                continue ;
-              }
-            } else if (switcher$1 !== 14) {
-              exit$2 = 1;
-            } else {
-              throw [
-                    $$Error$2,
-                    /* Unexpected_directive */6,
-                    curr(lexbuf)
-                  ];
-            }
-          } else {
-            exit$2 = 1;
-          }
-          if (exit$2 === 1) {
-            if (else_seen && is_elif(token$3)) {
-              throw [
-                    $$Error$2,
-                    /* Unexpected_directive */6,
-                    curr(lexbuf)
-                  ];
-            }
-            continue ;
-          }
-          
-        } else {
-          continue ;
-        }
-      };
-    }
+        continue ;
+      } else {
+        continue ;
+      }
+    };
   }
-  
 }
 
 function token$1(lexbuf) {
@@ -14696,7 +14619,6 @@ function token$1(lexbuf) {
       var docs = _docs;
       var lines = _lines;
       var tok = token_with_comments(lexbuf);
-      var exit = 0;
       if (typeof tok === "number") {
         switch (tok) {
           case 84 : 
@@ -14709,8 +14631,6 @@ function token$1(lexbuf) {
                               sharp_look_ahead[0] = token;
                               return /* SHARP */84;
                             }));
-              } else {
-                exit = 1;
               }
               break;
           case 100 : 
@@ -14718,7 +14638,7 @@ function token$1(lexbuf) {
               _lines = lines$prime;
               continue ;
           default:
-            exit = 1;
+            
         }
       } else {
         switch (tok.tag | 0) {
@@ -14784,14 +14704,11 @@ function token$1(lexbuf) {
               _lines = /* NoLine */0;
               continue ;
           default:
-            exit = 1;
+            
         }
       }
-      if (exit === 1) {
-        attach(lines, docs, lexbuf[/* lex_start_p */10]);
-        return tok;
-      }
-      
+      attach(lines, docs, lexbuf[/* lex_start_p */10]);
+      return tok;
     };
   };
   var match = sharp_look_ahead[0];
@@ -14950,44 +14867,42 @@ function wrap(parsing_fun, lexbuf) {
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     var exit = 0;
     var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
       if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
+        exit$1 = 3;
       } else {
         skip_phrase(lexbuf);
         throw err;
       }
     } else {
-      exit$2 = 3;
+      exit$1 = 3;
     }
-    if (exit$2 === 3) {
+    if (exit$1 === 3) {
       if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
       } else {
-        exit$1 = 2;
+        exit = 2;
       }
     }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
-        throw err;
+    if (exit === 2) {
+      if (err !== Parsing.Parse_error) {
+        if (err !== Escape_error) {
+          throw err;
+        }
+        
       }
+      
     }
-    if (exit === 1) {
-      var loc = curr(lexbuf);
-      if (input_name[0] === "//toplevel//") {
-        maybe_skip_phrase(lexbuf);
-      }
-      throw [
-            $$Error$1,
-            /* Other */Block.__(5, [loc])
-          ];
+    var loc = curr(lexbuf);
+    if (input_name[0] === "//toplevel//") {
+      maybe_skip_phrase(lexbuf);
     }
-    
+    throw [
+          $$Error$1,
+          /* Other */Block.__(5, [loc])
+        ];
   }
 }
 

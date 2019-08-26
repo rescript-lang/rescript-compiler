@@ -37,17 +37,16 @@ function compare(context, state, _a, _b) {
     var db;
     var exit$1 = 0;
     var exit$2 = 0;
-    var exit$3 = 0;
     switch (a.tag | 0) {
       case 0 : 
           switch (b.tag | 0) {
             case 0 : 
                 return 111;
             case 1 : 
-                exit$3 = 5;
+                exit$2 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
+                exit$1 = 4;
                 break;
             case 4 : 
                 throw [
@@ -70,7 +69,7 @@ function compare(context, state, _a, _b) {
           continue ;
       case 2 : 
       case 3 : 
-          exit$3 = 5;
+          exit$2 = 5;
           break;
       case 4 : 
           switch (b.tag | 0) {
@@ -84,10 +83,10 @@ function compare(context, state, _a, _b) {
                       ]
                     ];
             case 1 : 
-                exit$3 = 5;
+                exit$2 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
+                exit$1 = 4;
                 break;
             case 4 : 
                 na = a[0];
@@ -106,10 +105,10 @@ function compare(context, state, _a, _b) {
       case 5 : 
           switch (b.tag | 0) {
             case 1 : 
-                exit$3 = 5;
+                exit$2 = 5;
                 break;
             case 2 : 
-                exit$2 = 4;
+                exit$1 = 4;
                 break;
             case 5 : 
                 na = a[0];
@@ -119,41 +118,41 @@ function compare(context, state, _a, _b) {
                 exit = 2;
                 break;
             default:
-              exit$1 = 3;
+              
           }
           break;
       
     }
-    if (exit$3 === 5) {
+    if (exit$2 === 5) {
       if (b.tag === 1) {
         _b = b[0];
         continue ;
       } else if (a.tag === 2 && is_number(b)) {
         return 1;
       } else {
-        exit$2 = 4;
+        exit$1 = 4;
       }
     }
-    if (exit$2 === 4) {
-      if (b.tag === 2 && is_number(a)) {
-        return -1;
-      } else {
-        exit$1 = 3;
-      }
-    }
-    if (exit$1 === 3) {
-      switch (a.tag | 0) {
-        case 2 : 
-            exit = 1;
-            break;
-        case 3 : 
-            return -1;
-        case 0 : 
-        case 4 : 
-        case 5 : 
-            return 1;
+    if (exit$1 === 4) {
+      if (b.tag === 2) {
+        if (is_number(a)) {
+          return -1;
+        }
         
       }
+      
+    }
+    switch (a.tag | 0) {
+      case 2 : 
+          exit = 1;
+          break;
+      case 3 : 
+          return -1;
+      case 0 : 
+      case 4 : 
+      case 5 : 
+          return 1;
+      
     }
     switch (exit) {
       case 1 : 

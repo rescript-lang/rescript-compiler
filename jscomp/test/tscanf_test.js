@@ -1445,11 +1445,8 @@ function scan_elems$2(ib, accu) {
                           ])]),
                     "%c %i"
                   ]), (function (c, i) {
-                  var exit = 0;
                   if (c >= 91) {
-                    if (c >= 94) {
-                      exit = 1;
-                    } else {
+                    if (c < 94) {
                       switch (c - 91 | 0) {
                         case 0 : 
                             if (accu === /* [] */0) {
@@ -1457,12 +1454,9 @@ function scan_elems$2(ib, accu) {
                                           i,
                                           accu
                                         ]);
-                            } else {
-                              exit = 1;
                             }
                             break;
                         case 1 : 
-                            exit = 1;
                             break;
                         case 2 : 
                             return List.rev(/* :: */[
@@ -1472,22 +1466,18 @@ function scan_elems$2(ib, accu) {
                         
                       }
                     }
-                  } else if (c !== 59) {
-                    exit = 1;
-                  } else {
+                    
+                  } else if (c === 59) {
                     return scan_elems$2(ib, /* :: */[
                                 i,
                                 accu
                               ]);
                   }
-                  if (exit === 1) {
-                    console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "scan_elems"
-                        ];
-                  }
-                  
+                  console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
                 }));
   }
   catch (raw_exn){

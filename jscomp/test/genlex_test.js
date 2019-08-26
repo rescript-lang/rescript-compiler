@@ -36,11 +36,9 @@ function to_list(s) {
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var exit = 0;
     var v;
     try {
       v = Stream.next(s);
-      exit = 1;
     }
     catch (exn){
       if (exn === Stream.Failure) {
@@ -49,14 +47,11 @@ function to_list(s) {
         throw exn;
       }
     }
-    if (exit === 1) {
-      _acc = /* :: */[
-        v,
-        acc
-      ];
-      continue ;
-    }
-    
+    _acc = /* :: */[
+      v,
+      acc
+    ];
+    continue ;
   };
 }
 

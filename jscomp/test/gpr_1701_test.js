@@ -56,11 +56,9 @@ function read_lines2(inc) {
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var exit = 0;
     var l;
     try {
       l = Pervasives.input_line(inc);
-      exit = 1;
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {
@@ -69,14 +67,11 @@ function read_lines2(inc) {
         throw exn;
       }
     }
-    if (exit === 1) {
-      _acc = /* :: */[
-        l,
-        acc
-      ];
-      continue ;
-    }
-    
+    _acc = /* :: */[
+      l,
+      acc
+    ];
+    continue ;
   };
 }
 

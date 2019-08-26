@@ -137,6 +137,15 @@ let () =
   e -> 
     eq __LOC__ (Js.Exn.asJsExn e <> None) false
 
+
+let fff0 x g = match x () with | exception _ -> 1 | _ -> g ()
+
+let rec input_lines ic acc = 
+  match input_line ic with 
+  | exception _ -> List.rev acc 
+  | line -> input_lines ic (line::acc)
+
+
 let () = 
   eq __LOC__ ((fun%raw  a b c _ -> {|return a + b + c |} : _ -> _ -> _ -> _ -> _ ) 1 2 3 4) 6
 ;; Mt.from_pair_suites __MODULE__ !suites

@@ -1,9 +1,11 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -23,7 +25,6 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    var exit = 0;
     if (exn === Local) {
       return 3;
     } else if (exn === Caml_builtin_exceptions.not_found) {
@@ -38,28 +39,20 @@ function appf(g, x) {
           var match$2 = match$1[1];
           if (match$2) {
             return match$2[0];
-          } else {
-            exit = 1;
           }
-        } else {
-          exit = 1;
+          
         }
-      } else {
-        exit = 1;
+        
       }
+      
+    }
+    if (exn[0] === C) {
+      return exn[1];
+    } else if (exn[0] === D) {
+      return exn[1][0];
     } else {
-      exit = 1;
+      return 4;
     }
-    if (exit === 1) {
-      if (exn[0] === C) {
-        return exn[1];
-      } else if (exn[0] === D) {
-        return exn[1][0];
-      } else {
-        return 4;
-      }
-    }
-    
   }
 }
 
@@ -201,7 +194,36 @@ catch (raw_e$3){
   eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== undefined, false);
 }
 
-eq("File \"exception_raise_test.ml\", line 141, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
+function fff0(x, g) {
+  var val;
+  try {
+    val = Curry._1(x, /* () */0);
+  }
+  catch (exn){
+    return 1;
+  }
+  return Curry._1(g, /* () */0);
+}
+
+function input_lines(ic, _acc) {
+  while(true) {
+    var acc = _acc;
+    var line;
+    try {
+      line = Pervasives.input_line(ic);
+    }
+    catch (exn){
+      return List.rev(acc);
+    }
+    _acc = /* :: */[
+      line,
+      acc
+    ];
+    continue ;
+  };
+}
+
+eq("File \"exception_raise_test.ml\", line 150, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
 
 Mt.from_pair_suites("Exception_raise_test", suites[0]);
 
@@ -220,4 +242,6 @@ exports.a2 = a2;
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
+exports.fff0 = fff0;
+exports.input_lines = input_lines;
 /* f Not a pure module */

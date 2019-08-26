@@ -338,31 +338,15 @@ function map2_last(f, l1, l2) {
   if (l1) {
     var l1$1 = l1[1];
     var u = l1[0];
-    var exit = 0;
-    if (l1$1) {
-      exit = 1;
-    } else if (l2) {
-      if (l2[1]) {
-        exit = 1;
-      } else {
-        return /* :: */[
-                Curry._3(f, true, u, l2[0]),
-                /* [] */0
-              ];
-      }
-    } else {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.map2_last"
-          ];
-    }
-    if (exit === 1) {
+    if (!l1$1) {
       if (l2) {
-        var r = Curry._3(f, false, u, l2[0]);
-        return /* :: */[
-                r,
-                map2_last(f, l1$1, l2[1])
-              ];
+        if (!l2[1]) {
+          return /* :: */[
+                  Curry._3(f, true, u, l2[0]),
+                  /* [] */0
+                ];
+        }
+        
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -370,7 +354,18 @@ function map2_last(f, l1, l2) {
             ];
       }
     }
-    
+    if (l2) {
+      var r = Curry._3(f, false, u, l2[0]);
+      return /* :: */[
+              r,
+              map2_last(f, l1$1, l2[1])
+            ];
+    } else {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "List.map2_last"
+          ];
+    }
   } else if (l2) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -406,24 +401,12 @@ function fold_right2_last(f, l1, l2, accu) {
   if (l1) {
     var l1$1 = l1[1];
     var last1 = l1[0];
-    var exit = 0;
-    if (l1$1) {
-      exit = 1;
-    } else if (l2) {
-      if (l2[1]) {
-        exit = 1;
-      } else {
-        return Curry._4(f, true, last1, l2[0], accu);
-      }
-    } else {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.fold_right2"
-          ];
-    }
-    if (exit === 1) {
+    if (!l1$1) {
       if (l2) {
-        return Curry._4(f, false, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
+        if (!l2[1]) {
+          return Curry._4(f, true, last1, l2[0], accu);
+        }
+        
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -431,7 +414,14 @@ function fold_right2_last(f, l1, l2, accu) {
             ];
       }
     }
-    
+    if (l2) {
+      return Curry._4(f, false, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
+    } else {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "List.fold_right2"
+          ];
+    }
   } else {
     if (l2) {
       throw [

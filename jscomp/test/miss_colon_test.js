@@ -7,46 +7,39 @@ function $plus$colon(_f, _g) {
   while(true) {
     var g = _g;
     var f = _f;
-    var exit = 0;
-    if (f.tag) {
-      exit = 1;
-    } else {
+    if (!f.tag) {
       var n = f[0];
       if (g.tag) {
-        if (n !== 0) {
-          exit = 1;
-        } else {
+        if (n === 0) {
           return g;
         }
+        
       } else {
         return /* Int */Block.__(0, [n + g[0] | 0]);
       }
     }
-    if (exit === 1) {
-      switch (g.tag | 0) {
-        case 0 : 
-            if (g[0] !== 0) {
-              return /* Add */Block.__(2, [
-                        f,
-                        g
-                      ]);
-            } else {
-              return f;
-            }
-        case 2 : 
-            _g = g[1];
-            _f = $plus$colon(f, g[0]);
-            continue ;
-        case 1 : 
-        case 3 : 
+    switch (g.tag | 0) {
+      case 0 : 
+          if (g[0] !== 0) {
             return /* Add */Block.__(2, [
                       f,
                       g
                     ]);
-        
-      }
+          } else {
+            return f;
+          }
+      case 2 : 
+          _g = g[1];
+          _f = $plus$colon(f, g[0]);
+          continue ;
+      case 1 : 
+      case 3 : 
+          return /* Add */Block.__(2, [
+                    f,
+                    g
+                  ]);
+      
     }
-    
   };
 }
 
@@ -56,14 +49,13 @@ function $star$colon(_f, _g) {
     var f = _f;
     var exit = 0;
     var exit$1 = 0;
-    var exit$2 = 0;
     if (f.tag) {
-      exit$2 = 3;
+      exit$1 = 3;
     } else {
       var n = f[0];
       if (g.tag) {
         if (n !== 0) {
-          exit$2 = 3;
+          exit$1 = 3;
         } else {
           return /* Int */Block.__(0, [0]);
         }
@@ -71,45 +63,44 @@ function $star$colon(_f, _g) {
         return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
       }
     }
-    if (exit$2 === 3) {
+    if (exit$1 === 3) {
       if (g.tag || g[0] !== 0) {
-        exit$1 = 2;
+        exit = 2;
       } else {
         return /* Int */Block.__(0, [0]);
       }
     }
-    if (exit$1 === 2) {
-      if (f.tag || f[0] !== 1) {
-        exit = 1;
-      } else {
-        return g;
+    if (exit === 2) {
+      if (!f.tag) {
+        if (f[0] === 1) {
+          return g;
+        }
+        
       }
+      
     }
-    if (exit === 1) {
-      switch (g.tag | 0) {
-        case 0 : 
-            if (g[0] !== 1) {
-              return /* Mul */Block.__(3, [
-                        f,
-                        g
-                      ]);
-            } else {
-              return f;
-            }
-        case 1 : 
-        case 2 : 
+    switch (g.tag | 0) {
+      case 0 : 
+          if (g[0] !== 1) {
             return /* Mul */Block.__(3, [
                       f,
                       g
                     ]);
-        case 3 : 
-            _g = g[1];
-            _f = $star$colon(f, g[0]);
-            continue ;
-        
-      }
+          } else {
+            return f;
+          }
+      case 1 : 
+      case 2 : 
+          return /* Mul */Block.__(3, [
+                    f,
+                    g
+                  ]);
+      case 3 : 
+          _g = g[1];
+          _f = $star$colon(f, g[0]);
+          continue ;
+      
     }
-    
   };
 }
 
