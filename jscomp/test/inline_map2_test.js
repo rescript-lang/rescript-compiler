@@ -422,37 +422,30 @@ function Make(Ord) {
     }
   };
   var merge = function (f, s1, s2) {
-    var exit = 0;
     if (s1) {
       var v1 = s1[1];
       if (s1[4] >= height(s2)) {
         var match = split(v1, s2);
         return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
-      } else {
-        exit = 1;
       }
-    } else if (s2) {
-      exit = 1;
-    } else {
+      
+    } else if (!s2) {
       return /* Empty */0;
     }
-    if (exit === 1) {
-      if (s2) {
-        var v2 = s2[1];
-        var match$1 = split(v2, s1);
-        return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
-      } else {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "inline_map2_test.ml",
-                270,
-                10
-              ]
-            ];
-      }
+    if (s2) {
+      var v2 = s2[1];
+      var match$1 = split(v2, s1);
+      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
+    } else {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "inline_map2_test.ml",
+              270,
+              10
+            ]
+          ];
     }
-    
   };
   var filter = function (p, param) {
     if (param) {
@@ -1074,37 +1067,30 @@ function split(x, param) {
 }
 
 function merge(f, s1, s2) {
-  var exit = 0;
   if (s1) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split(v1, s2);
       return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
-    } else {
-      exit = 1;
     }
-  } else if (s2) {
-    exit = 1;
-  } else {
+    
+  } else if (!s2) {
     return /* Empty */0;
   }
-  if (exit === 1) {
-    if (s2) {
-      var v2 = s2[1];
-      var match$1 = split(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
-    } else {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "inline_map2_test.ml",
-              270,
-              10
-            ]
-          ];
-    }
+  if (s2) {
+    var v2 = s2[1];
+    var match$1 = split(v2, s1);
+    return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "inline_map2_test.ml",
+            270,
+            10
+          ]
+        ];
   }
-  
 }
 
 function filter(p, param) {
@@ -1762,37 +1748,30 @@ function split$1(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  var exit = 0;
   if (s1) {
     var v1 = s1[1];
     if (s1[4] >= height$1(s2)) {
       var match = split$1(v1, s2);
       return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge$1(f, s1[3], match[2]));
-    } else {
-      exit = 1;
     }
-  } else if (s2) {
-    exit = 1;
-  } else {
+    
+  } else if (!s2) {
     return /* Empty */0;
   }
-  if (exit === 1) {
-    if (s2) {
-      var v2 = s2[1];
-      var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$1(f, match$1[2], s2[3]));
-    } else {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "inline_map2_test.ml",
-              270,
-              10
-            ]
-          ];
-    }
+  if (s2) {
+    var v2 = s2[1];
+    var match$1 = split$1(v2, s1);
+    return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$1(f, match$1[2], s2[3]));
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "inline_map2_test.ml",
+            270,
+            10
+          ]
+        ];
   }
-  
 }
 
 function filter$1(p, param) {

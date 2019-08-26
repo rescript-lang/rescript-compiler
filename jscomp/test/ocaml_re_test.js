@@ -670,35 +670,32 @@ function seq$1(ids, kind, x, y) {
   var match = x[/* def */1];
   var match$1 = y[/* def */1];
   var exit = 0;
-  var exit$1 = 0;
   if (typeof match === "number") {
     return y;
   } else if (match.tag === 1 && !match[0]) {
     return x;
   } else {
-    exit$1 = 2;
+    exit = 2;
   }
-  if (exit$1 === 2) {
+  if (exit === 2) {
     if (typeof match$1 === "number") {
       if (kind === /* First */332064784) {
         return x;
-      } else {
-        exit = 1;
       }
-    } else if (match$1.tag === 1 && !match$1[0]) {
-      return y;
-    } else {
-      exit = 1;
+      
+    } else if (match$1.tag === 1) {
+      if (!match$1[0]) {
+        return y;
+      }
+      
     }
+    
   }
-  if (exit === 1) {
-    return mk_expr(ids, /* Seq */Block.__(2, [
-                  kind,
-                  x,
-                  y
-                ]));
-  }
-  
+  return mk_expr(ids, /* Seq */Block.__(2, [
+                kind,
+                x,
+                y
+              ]));
 }
 
 function is_eps(expr) {
@@ -858,43 +855,39 @@ function hash$1(_l, _accu) {
 }
 
 function tseq(kind, x, y, rem) {
-  var exit = 0;
   if (x) {
     var match = x[0];
     switch (match.tag | 0) {
       case 1 : 
-          if (typeof match[1][/* def */1] === "number" && !x[1]) {
-            return /* :: */[
-                    /* TExp */Block.__(1, [
-                        match[0],
-                        y
-                      ]),
-                    rem
-                  ];
-          } else {
-            exit = 1;
+          if (typeof match[1][/* def */1] === "number") {
+            if (!x[1]) {
+              return /* :: */[
+                      /* TExp */Block.__(1, [
+                          match[0],
+                          y
+                        ]),
+                      rem
+                    ];
+            }
+            
           }
           break;
       case 0 : 
       case 2 : 
-          exit = 1;
           break;
       
     }
   } else {
     return rem;
   }
-  if (exit === 1) {
-    return /* :: */[
-            /* TSeq */Block.__(0, [
-                x,
-                y,
-                kind
-              ]),
-            rem
-          ];
-  }
-  
+  return /* :: */[
+          /* TSeq */Block.__(0, [
+              x,
+              y,
+              kind
+            ]),
+          rem
+        ];
 }
 
 var dummy = /* record */[
@@ -953,27 +946,22 @@ function reset_table(a) {
 function mark_used_indices(tbl) {
   return (function (param) {
       return List.iter((function (param) {
-                    var exit = 0;
                     switch (param.tag | 0) {
                       case 0 : 
                           return mark_used_indices(tbl)(param[0]);
                       case 1 : 
                       case 2 : 
-                          exit = 1;
                           break;
                       
                     }
-                    if (exit === 1) {
-                      return List.iter((function (param) {
-                                    var i = param[1];
-                                    if (i >= 0) {
-                                      return Caml_array.caml_array_set(tbl, i, true);
-                                    } else {
-                                      return 0;
-                                    }
-                                  }), param[0][/* marks */0]);
-                    }
-                    
+                    return List.iter((function (param) {
+                                  var i = param[1];
+                                  if (i >= 0) {
+                                    return Caml_array.caml_array_set(tbl, i, true);
+                                  } else {
+                                    return 0;
+                                  }
+                                }), param[0][/* marks */0]);
                   }), param);
     });
 }
@@ -2097,10 +2085,7 @@ function merge_sequences(_param) {
     var param = _param;
     if (param) {
       var x = param[0];
-      var exit = 0;
-      if (typeof x === "number") {
-        exit = 1;
-      } else {
+      if (typeof x !== "number") {
         switch (x.tag | 0) {
           case 1 : 
               var match = x[0];
@@ -2108,11 +2093,11 @@ function merge_sequences(_param) {
                 var y = match[1];
                 var x$1 = match[0];
                 var r$prime = merge_sequences(param[1]);
-                var exit$1 = 0;
+                var exit = 0;
                 if (r$prime) {
                   var match$1 = r$prime[0];
                   if (typeof match$1 === "number" || match$1.tag !== 1) {
-                    exit$1 = 2;
+                    exit = 2;
                   } else {
                     var match$2 = match$1[0];
                     if (match$2 && equal$2(x$1, match$2[0])) {
@@ -2133,13 +2118,13 @@ function merge_sequences(_param) {
                               r$prime[1]
                             ];
                     } else {
-                      exit$1 = 2;
+                      exit = 2;
                     }
                   }
                 } else {
-                  exit$1 = 2;
+                  exit = 2;
                 }
-                if (exit$1 === 2) {
+                if (exit === 2) {
                   return /* :: */[
                           /* Sequence */Block.__(1, [/* :: */[
                                 x$1,
@@ -2149,24 +2134,19 @@ function merge_sequences(_param) {
                         ];
                 }
                 
-              } else {
-                exit = 1;
               }
               break;
           case 2 : 
               _param = Pervasives.$at(x[0], param[1]);
               continue ;
           default:
-            exit = 1;
+            
         }
       }
-      if (exit === 1) {
-        return /* :: */[
-                x,
-                merge_sequences(param[1])
-              ];
-      }
-      
+      return /* :: */[
+              x,
+              merge_sequences(param[1])
+            ];
     } else {
       return /* [] */0;
     }
@@ -2267,28 +2247,25 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
                   ];
         case 2 : 
             var merged_sequences = merge_sequences(param[0]);
-            var exit = 0;
-            if (merged_sequences && !merged_sequences[1]) {
-              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
-              return /* tuple */[
-                      enforce_kind(ids, kind, match[1], match[0]),
-                      kind
-                    ];
-            } else {
-              exit = 1;
+            if (merged_sequences) {
+              if (!merged_sequences[1]) {
+                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
+                return /* tuple */[
+                        enforce_kind(ids, kind, match[1], match[0]),
+                        kind
+                      ];
+              }
+              
             }
-            if (exit === 1) {
-              return /* tuple */[
-                      alt(ids, List.map((function(ign_group,greedy){
-                              return function (r$prime) {
-                                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
-                                return enforce_kind(ids, kind, match[1], match[0]);
-                              }
-                              }(ign_group,greedy)), merged_sequences)),
-                      kind
-                    ];
-            }
-            break;
+            return /* tuple */[
+                    alt(ids, List.map((function(ign_group,greedy){
+                            return function (r$prime) {
+                              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
+                              return enforce_kind(ids, kind, match[1], match[0]);
+                            }
+                            }(ign_group,greedy)), merged_sequences)),
+                    kind
+                  ];
         case 3 : 
             var j = param[2];
             var i = param[1];

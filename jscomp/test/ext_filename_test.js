@@ -119,20 +119,20 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     while(true) {
       var dir2 = _dir2;
       var dir1 = _dir1;
-      var exit = 0;
-      if (dir1 && dir2 && dir1[0] === dir2[0]) {
-        _dir2 = dir2[1];
-        _dir1 = dir1[1];
-        continue ;
-      } else {
-        exit = 1;
+      if (dir1) {
+        if (dir2) {
+          if (dir1[0] === dir2[0]) {
+            _dir2 = dir2[1];
+            _dir1 = dir1[1];
+            continue ;
+          }
+          
+        }
+        
       }
-      if (exit === 1) {
-        return Pervasives.$at(List.map((function (param) {
-                          return node_parent;
-                        }), dir2), dir1);
-      }
-      
+      return Pervasives.$at(List.map((function (param) {
+                        return node_parent;
+                      }), dir2), dir1);
     };
   };
   var ys = go(dir1, dir2);

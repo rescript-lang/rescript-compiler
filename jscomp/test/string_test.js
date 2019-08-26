@@ -93,11 +93,9 @@ function xsplit(delim, s) {
       var i = _i;
       var l = _l;
       if (i !== 0) {
-        var exit = 0;
         var i$prime;
         try {
           i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
-          exit = 1;
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
@@ -109,21 +107,18 @@ function xsplit(delim, s) {
             throw exn;
           }
         }
-        if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-          var l$1 = /* :: */[
-            l_000,
-            l
-          ];
-          var l$2 = i$prime === 0 ? /* :: */[
-              "",
-              l$1
-            ] : l$1;
-          _i = i$prime;
-          _l = l$2;
-          continue ;
-        }
-        
+        var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+        var l$1 = /* :: */[
+          l_000,
+          l
+        ];
+        var l$2 = i$prime === 0 ? /* :: */[
+            "",
+            l$1
+          ] : l$1;
+        _i = i$prime;
+        _l = l$2;
+        continue ;
       } else {
         return l;
       }

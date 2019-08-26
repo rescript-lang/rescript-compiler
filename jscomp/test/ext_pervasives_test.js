@@ -17,21 +17,16 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$finally(v, action, f) {
-  var exit = 0;
   var e;
   try {
     e = Curry._1(f, v);
-    exit = 1;
   }
   catch (e$1){
     Curry._1(action, v);
     throw e$1;
   }
-  if (exit === 1) {
-    Curry._1(action, v);
-    return e;
-  }
-  
+  Curry._1(action, v);
+  return e;
 }
 
 function with_file_as_chan(filename, f) {
