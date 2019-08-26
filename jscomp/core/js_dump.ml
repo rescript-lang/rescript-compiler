@@ -1126,17 +1126,17 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     P.space f;
     let cxt = block cxt f s1 in
     (match s2 with
-     | None | (Some [])
-     | Some [{statement_desc = (Block [] | Exp {expression_desc = Var _;} ); }]
+     | []
+     | [{statement_desc = (Block [] | Exp {expression_desc = Var _;} ); }]
        -> P.newline f; cxt
-     | Some [{statement_desc = If _} as nest]
-     | Some [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
+     | [{statement_desc = If _} as nest]
+     | [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
        ->
        P.space f;
        P.string f L.else_;
        P.space f;
        statement false cxt f nest
-     | Some s2 ->
+     | (_::_) as s2 ->
        P.space f;
        P.string f L.else_;
        P.space f ;
@@ -1340,11 +1340,11 @@ and function_body cxt f b =
     begin match s.statement_desc with
     | If (bool,
           then_,
-          Some [{
+           [{
               statement_desc =
                 Return {return_value = {expression_desc = Undefined}} }])
         ->
-        statement false cxt f {s with statement_desc = If(bool,then_,None)}
+        statement false cxt f {s with statement_desc = If(bool,then_, [])}
     | _ ->        
       statement false  cxt f  s
     end

@@ -278,7 +278,7 @@ and statement_desc =
   | Variable of variable_declaration
         (* Function declaration and Variable declaration  *)
   | Exp of expression
-  | If of expression * block * block option
+  | If of expression * block * block 
   | While of label option *  expression * block 
         * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
   | ForRange of for_ident_expression option * finish_ident_expression * 

@@ -64,8 +64,7 @@ class virtual map =
       | If (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
           let _x_i1 = o#block _x_i1 in
-          let _x_i2 = o#option (fun o -> o#block) _x_i2
-          in If (_x, _x_i1, _x_i2)
+          let _x_i2 = o#block _x_i2 in If (_x, _x_i1, _x_i2)
       | While (_x, _x_i1, _x_i2, _x_i3) ->
           let _x = o#option (fun o -> o#label) _x in
           let _x_i1 = o#expression _x_i1 in

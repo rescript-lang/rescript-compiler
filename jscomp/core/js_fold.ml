@@ -54,8 +54,7 @@ class virtual fold =
       | Exp _x -> let o = o#expression _x in o
       | If (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in
-          let o = o#block _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
+          let o = o#block _x_i1 in let o = o#block _x_i2 in o
       | While (_x, _x_i1, _x_i2, _x_i3) ->
           let o = o#option (fun o -> o#label) _x in
           let o = o#expression _x_i1 in
