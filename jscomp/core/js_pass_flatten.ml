@@ -46,7 +46,7 @@ let flatten_map =
           S.block ( List.rev_map self#statement (Js_analyzer.rev_flatten_seq v ))
       |  Exp ({expression_desc = Cond(a,b,c); comment} ) -> 
           { statement_desc = If (a, [ self#statement (S.exp b)],  
-                                 Some [ self#statement (S.exp c)]); comment}
+                                  [ self#statement (S.exp c)]); comment}
 
       |  Exp ({expression_desc = Bin(Eq, a, ({expression_desc = Seq _; _ } as v)); _} )
         ->
@@ -67,7 +67,7 @@ let flatten_map =
       | Return ( {return_value = {expression_desc = Cond (a,b,c);  comment}}) 
         -> 
           { statement_desc = If (a, [self#statement (S.return_stmt b)],  
-                                 Some [ self#statement (S.return_stmt c)]); comment}
+                                  [ self#statement (S.return_stmt c)]); comment}
 
       | Return ({return_value = {expression_desc = Seq _; _} as v}) ->
           let block = Js_analyzer.rev_flatten_seq v  in

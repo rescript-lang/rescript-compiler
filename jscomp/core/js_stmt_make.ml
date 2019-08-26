@@ -223,7 +223,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       |  [], [] -> exp e 
       |  [], _ ->
         {
-          statement_desc = If ( E.not e, ifnot, None); comment
+          statement_desc = If ( E.not e, ifnot, []); comment
         }
       | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
         [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
@@ -250,21 +250,21 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
         ->
         exp (E.econd e exp_ifso exp_ifnot)
               
-      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+      | [ {statement_desc = If (pred1, ifso1, ifnot1) }],
         _ when Js_analyzer.eq_block ifnot1 ifnot
         ->
         aux ?comment (E.and_ e pred1) ifso1 ifnot1 
-      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+      | [ {statement_desc = If (pred1, ifso1, ifnot1) }],
         _  when Js_analyzer.eq_block ifso1 ifnot
         ->
         aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 
       | _ , 
-        [ {statement_desc = If (pred1,  ifso1, Some (else_ )) }]
+        [ {statement_desc = If (pred1,  ifso1, (else_ )) }]
         when Js_analyzer.eq_block ifso ifso1 
         ->
         aux ?comment (E.or_ e pred1) ifso else_
       | _  , 
-        [ {statement_desc = If (pred1, ifso1, Some ifnot1 ) }]
+        [ {statement_desc = If (pred1, ifso1, ifnot1 ) }]
         when Js_analyzer.eq_block ifso ifnot1
         ->
         aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 
@@ -280,8 +280,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
         { statement_desc =
             If (e, 
                 ifso,
-                if ifnot = [] then None 
-                else Some  ifnot); 
+                  ifnot); 
           comment } in
   let if_block = 
     aux ?comment e then_ (match else_ with None -> [] | Some v -> v)  in

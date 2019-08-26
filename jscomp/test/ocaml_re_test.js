@@ -683,11 +683,8 @@ function seq$1(ids, kind, x, y) {
         return x;
       }
       
-    } else if (match$1.tag === 1) {
-      if (!match$1[0]) {
-        return y;
-      }
-      
+    } else if (match$1.tag === 1 && !match$1[0]) {
+      return y;
     }
     
   }
@@ -859,17 +856,14 @@ function tseq(kind, x, y, rem) {
     var match = x[0];
     switch (match.tag | 0) {
       case 1 : 
-          if (typeof match[1][/* def */1] === "number") {
-            if (!x[1]) {
-              return /* :: */[
-                      /* TExp */Block.__(1, [
-                          match[0],
-                          y
-                        ]),
-                      rem
-                    ];
-            }
-            
+          if (typeof match[1][/* def */1] === "number" && !x[1]) {
+            return /* :: */[
+                    /* TExp */Block.__(1, [
+                        match[0],
+                        y
+                      ]),
+                    rem
+                  ];
           }
           break;
       case 0 : 
@@ -2247,15 +2241,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
                   ];
         case 2 : 
             var merged_sequences = merge_sequences(param[0]);
-            if (merged_sequences) {
-              if (!merged_sequences[1]) {
-                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
-                return /* tuple */[
-                        enforce_kind(ids, kind, match[1], match[0]),
-                        kind
-                      ];
-              }
-              
+            if (merged_sequences && !merged_sequences[1]) {
+              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
+              return /* tuple */[
+                      enforce_kind(ids, kind, match[1], match[0]),
+                      kind
+                    ];
             }
             return /* tuple */[
                     alt(ids, List.map((function(ign_group,greedy){
@@ -2604,14 +2595,11 @@ function repn(r, i, j) {
           "Re.repn"
         ];
   }
-  if (j !== undefined) {
-    if (j < i) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Re.repn"
-          ];
-    }
-    
+  if (j !== undefined && j < i) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Re.repn"
+        ];
   }
   return /* Repeat */Block.__(3, [
             r,
@@ -3183,11 +3171,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (!accept(/* "}" */125)) {
           throw Parse_error;
         }
-        if (j !== undefined) {
-          if (j < i$1) {
-            throw Parse_error;
-          }
-          
+        if (j !== undefined && j < i$1) {
+          throw Parse_error;
         }
         return greedy_mod(repn(r, i$1, j));
       } else {
