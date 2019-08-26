@@ -46,9 +46,14 @@ type return_label = {
   mutable triggered : bool
 }
 
+type tail = {
+  label : return_label option;
+  in_staticcatch : bool;
+}
+
 type maybe_tail = 
   | Tail_in_try
-  | Tail_with_name of return_label option
+  | Tail_with_name of tail
 
 type tail_type = 
   | Not_tail 
@@ -94,11 +99,18 @@ type handler = {
   bindings : Ident.t list; 
 }
 
-(* always keep key id positive, specifically no [0] generated *)
+(* always keep key id positive, specifically no [0] generated 
+   return a tuple
+   [tbl, handlers]
+   [tbl] is used for compiling [staticraise]
+   [handlers] is used for compiling [staticcatch]
+*)
 let add_jmps 
     (m  : jmp_table)
-    exit_id code_table
-    = 
+    (exit_id : Ident.t)  
+    (code_table : handler list)
+  : jmp_table * (int * Lam.t) list 
+  = 
   let map, handlers = 
     Ext_list.fold_left_with_offset 
       code_table (m,[]) 
@@ -111,6 +123,17 @@ let add_jmps
           (order_id,handler)::handlers
       )   in 
   map, List.rev handlers
+
+let add_pseudo_jmp 
+    (m  : jmp_table)
+    (exit_id : Ident.t)  (* TODO not needed, remove it later *)
+    (code_table : handler) :
+    jmp_table * Lam.t
+     = 
+   HandlerMap.add m 
+    code_table.label {exit_id; bindings = code_table.bindings; order_id = -1}, 
+   code_table.handler
+
 
 
 let find_exn cxt i = 

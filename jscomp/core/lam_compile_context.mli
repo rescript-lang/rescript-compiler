@@ -57,9 +57,13 @@ type value = {
 
 type let_kind = Lam_compat.let_kind
 
+type tail = {
+  label : return_label option;
+  in_staticcatch : bool;
+}
 type maybe_tail = 
     | Tail_in_try    
-    | Tail_with_name of return_label option
+    | Tail_with_name of tail
 
 type tail_type = 
   | Not_tail 
@@ -81,7 +85,7 @@ type continuation =
 
 
 
-type jmp_table 
+type jmp_table = value Int_map.t
 
 val continuation_is_return:
   continuation -> 
@@ -94,7 +98,7 @@ type t = {
   meta : Lam_stats.t ;
 }
 
- val empty_handler_map : jmp_table  
+val empty_handler_map : jmp_table  
 
 type handler = {
   label : jbl_label ; 
@@ -107,6 +111,12 @@ val add_jmps :
   Ident.t ->
   handler list ->
   jmp_table * (jbl_label * Lam.t) list
+
+val add_pseudo_jmp :
+  jmp_table ->
+  Ident.t ->
+  handler ->
+  jmp_table * Lam.t 
 
 
 val find_exn : 

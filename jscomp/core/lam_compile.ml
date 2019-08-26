@@ -37,6 +37,16 @@ let change_tail_type_in_try
   | Not_tail | Maybe_tail_is_return Tail_in_try
     -> x
 
+let change_tail_type_in_static
+  (x : Lam_compile_context.tail_type)
+  : Lam_compile_context.tail_type = 
+  match x with 
+  | Maybe_tail_is_return (Tail_with_name ({in_staticcatch=false} as z) ) ->
+    Maybe_tail_is_return (Tail_with_name {z with in_staticcatch=true})
+  | Maybe_tail_is_return (Tail_with_name {in_staticcatch=true} ) 
+  | Not_tail | Maybe_tail_is_return Tail_in_try
+    -> x
+
 (* assume outer is [Lstaticcatch] *)
 let rec flat_catches 
   (acc : Lam_compile_context.handler list) (x : Lam.t)
@@ -262,7 +272,7 @@ and compile_recursive_let ~all_bindings
     let output =
       compile_lambda
         { cxt with
-          continuation = EffectCall (Maybe_tail_is_return (Tail_with_name (Some ret )));
+          continuation = EffectCall (Maybe_tail_is_return (Tail_with_name {label = Some ret; in_staticcatch = false} ));
           jmp_table = Lam_compile_context.empty_handler_map}  body in
     let result =
       if ret.triggered then
@@ -640,13 +650,16 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
          default: (exit 1))
          with (1) 2))
       *)
-and compile_staticraise i (largs : Lam.t list) lambda_cxt  =    
+and compile_staticraise i (largs : Lam.t list) (lambda_cxt : Lam_compile_context.t) =    
  (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
     match Lam_compile_context.find_exn lambda_cxt  i with
     | {exit_id; bindings ; order_id} ->
           Ext_list.fold_right2 largs bindings
-           (Js_output.make [S.assign exit_id (E.small_int  order_id)]
-              ~value:E.undefined)
+           (             
+             Js_output.make 
+             (if order_id  >= 0 then [S.assign exit_id (E.small_int  order_id)]
+              else [])
+          )
            (fun larg bind acc ->
             let new_output =
                 match larg with
@@ -695,6 +708,31 @@ and compile_staticraise i (largs : Lam.t list) lambda_cxt  =
 and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=  
     let code_table, body = flatten_nested_caches lam in
     let exit_id = Ext_ident.create_tmp ~name:"exit" () in
+    match lambda_cxt.continuation, code_table with         
+    | EffectCall (Maybe_tail_is_return (Tail_with_name ({in_staticcatch = false} as z))),
+      [ code_table ]  (* tail position and only one exit code *) 
+      ->
+      let jmp_table, handler = 
+          Lam_compile_context.add_pseudo_jmp
+            lambda_cxt.jmp_table 
+            exit_id code_table in 
+      let new_cxt = 
+          {lambda_cxt with 
+            jmp_table = jmp_table ;
+            continuation = 
+            EffectCall (Maybe_tail_is_return (Tail_with_name { z with in_staticcatch = true}))
+            } in 
+
+      let lbody = compile_lambda new_cxt body in
+      let declares =           
+          Ext_list.map code_table.bindings 
+              (fun x -> S.declare_variable ~kind:Variable x) in 
+      Js_output.append_output (Js_output.make declares)
+        (Js_output.append_output lbody
+           (compile_lambda lambda_cxt  handler ))
+    | _ ->  
+
+
     let exit_expr = E.var exit_id in
     let jmp_table, handlers =
       Lam_compile_context.add_jmps lambda_cxt.jmp_table exit_id code_table  in
@@ -1256,7 +1294,7 @@ and compile_apply
           )  in
       match fn, lambda_cxt.continuation with
       | (Lvar fn_id,
-         (EffectCall (Maybe_tail_is_return (Tail_with_name (Some ret))) | NeedValue (Maybe_tail_is_return (Tail_with_name (Some ret)))))
+         (EffectCall (Maybe_tail_is_return (Tail_with_name ( {label = Some ret}))) | NeedValue (Maybe_tail_is_return (Tail_with_name ( {label = Some ret})))))
         when Ident.same ret.id fn_id ->
         ret.triggered <- true;
         (* Here we mark [finished] true, since the continuation
@@ -1439,7 +1477,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               *)
               (Js_output.output_as_block
                  ( compile_lambda
-                     { lambda_cxt with continuation = EffectCall ( Maybe_tail_is_return (Tail_with_name None));                                 
+                     { lambda_cxt with continuation = EffectCall ( Maybe_tail_is_return (Tail_with_name {label = None; in_staticcatch=false}));                                 
                                        jmp_table = Lam_compile_context.empty_handler_map}
                      body)))
        | _ -> assert false)      
@@ -1492,7 +1530,7 @@ and compile_lambda
            (Js_output.output_as_block
               ( compile_lambda
                   { lambda_cxt with 
-                    continuation = EffectCall (Maybe_tail_is_return (Tail_with_name None)); 
+                    continuation = EffectCall (Maybe_tail_is_return (Tail_with_name {label =None; in_staticcatch=false})); 
                     jmp_table = Lam_compile_context.empty_handler_map}
                   body)))
     | Lapply appinfo -> 
