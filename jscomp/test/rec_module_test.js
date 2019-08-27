@@ -12,13 +12,19 @@ var A = Caml_module.init_mod([
       "rec_module_test.ml",
       3,
       6
-    ], [[0]]);
+    ], [[[
+          0,
+          "even"
+        ]]]);
 
 var B = Caml_module.init_mod([
       "rec_module_test.ml",
       11,
       6
-    ], [[0]]);
+    ], [[[
+          0,
+          "odd"
+        ]]]);
 
 function even(n) {
   if (n === 0) {
@@ -30,7 +36,10 @@ function even(n) {
   }
 }
 
-Caml_module.update_mod([[0]], A, /* module */{
+Caml_module.update_mod([[[
+          0,
+          "even"
+        ]]], A, /* module */{
       even: even
     });
 
@@ -44,7 +53,10 @@ function odd(n) {
   }
 }
 
-Caml_module.update_mod([[0]], B, /* module */{
+Caml_module.update_mod([[[
+          0,
+          "odd"
+        ]]], B, /* module */{
       odd: odd
     });
 
@@ -53,8 +65,14 @@ var AA = Caml_module.init_mod([
       21,
       6
     ], [[
-        0,
-        0
+        [
+          0,
+          "even"
+        ],
+        [
+          0,
+          "x"
+        ]
       ]]);
 
 var BB = Caml_module.init_mod([
@@ -62,8 +80,14 @@ var BB = Caml_module.init_mod([
       31,
       6
     ], [[
-        0,
-        0
+        [
+          0,
+          "odd"
+        ],
+        [
+          0,
+          "y"
+        ]
       ]]);
 
 function even$1(n) {
@@ -81,8 +105,14 @@ function x(param) {
 }
 
 Caml_module.update_mod([[
-        0,
-        0
+        [
+          0,
+          "even"
+        ],
+        [
+          0,
+          "x"
+        ]
       ]], AA, /* module */{
       even: even$1,
       x: x
@@ -103,8 +133,14 @@ function y(param) {
 }
 
 Caml_module.update_mod([[
-        0,
-        0
+        [
+          0,
+          "odd"
+        ],
+        [
+          0,
+          "y"
+        ]
       ]], BB, /* module */{
       odd: odd$1,
       y: y
@@ -114,7 +150,10 @@ var AAA = Caml_module.init_mod([
       "rec_module_test.ml",
       55,
       2
-    ], [[0]]);
+    ], [[[
+          0,
+          "compare"
+        ]]]);
 
 function height(param) {
   if (param) {
@@ -904,7 +943,10 @@ function compare$1(t1, t2) {
   }
 }
 
-Caml_module.update_mod([[0]], AAA, /* module */{
+Caml_module.update_mod([[[
+          0,
+          "compare"
+        ]]], AAA, /* module */{
       compare: compare$1
     });
 
