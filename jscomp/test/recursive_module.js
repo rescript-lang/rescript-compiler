@@ -19,28 +19,64 @@ var Int32 = Caml_module.init_mod([
       14,
       6
     ], [[
-        0,
-        0,
-        0,
-        0,
-        0
+        [
+          0,
+          "buffer"
+        ],
+        [
+          0,
+          "get"
+        ],
+        [
+          0,
+          "set"
+        ],
+        [
+          0,
+          "create"
+        ],
+        [
+          0,
+          "of_buffer"
+        ]
       ]]);
 
 Caml_module.update_mod([[
-        0,
-        0,
-        0,
-        0,
-        0
+        [
+          0,
+          "buffer"
+        ],
+        [
+          0,
+          "get"
+        ],
+        [
+          0,
+          "set"
+        ],
+        [
+          0,
+          "create"
+        ],
+        [
+          0,
+          "of_buffer"
+        ]
       ]], Int32, Int32);
 
 var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
       19,
       6
-    ], [[0]]);
+    ], [[[
+          0,
+          "u"
+        ]]]);
 
-Caml_module.update_mod([[0]], Int3, Int3);
+Caml_module.update_mod([[[
+          0,
+          "u"
+        ]]], Int3, Int3);
 
 var tmp;
 
