@@ -742,68 +742,33 @@ function chop(_k, _l) {
 function stable_sort(cmp, l) {
   var sort = function (n, l) {
     if (n !== 2) {
-      if (n === 3) {
-        if (l) {
-          var match = l[1];
-          if (match) {
-            var match$1 = match[1];
-            if (match$1) {
-              var x3 = match$1[0];
-              var x2 = match[0];
-              var x1 = l[0];
-              if (Curry._2(cmp, x1, x2) <= 0) {
-                if (Curry._2(cmp, x2, x3) <= 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else if (Curry._2(cmp, x1, x3) <= 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x3,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  return /* :: */[
-                          x3,
-                          /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                }
-              } else if (Curry._2(cmp, x1, x3) <= 0) {
+      if (n === 3 && l) {
+        var match = l[1];
+        if (match) {
+          var match$1 = match[1];
+          if (match$1) {
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
+            if (Curry._2(cmp, x1, x2) <= 0) {
+              if (Curry._2(cmp, x2, x3) <= 0) {
                 return /* :: */[
-                        x2,
+                        x1,
                         /* :: */[
-                          x1,
+                          x2,
                           /* :: */[
                             x3,
                             /* [] */0
                           ]
                         ]
                       ];
-              } else if (Curry._2(cmp, x2, x3) <= 0) {
+              } else if (Curry._2(cmp, x1, x3) <= 0) {
                 return /* :: */[
-                        x2,
+                        x1,
                         /* :: */[
                           x3,
                           /* :: */[
-                            x1,
+                            x2,
                             /* [] */0
                           ]
                         ]
@@ -812,16 +777,48 @@ function stable_sort(cmp, l) {
                 return /* :: */[
                         x3,
                         /* :: */[
-                          x2,
+                          x1,
                           /* :: */[
-                            x1,
+                            x2,
                             /* [] */0
                           ]
                         ]
                       ];
               }
+            } else if (Curry._2(cmp, x1, x3) <= 0) {
+              return /* :: */[
+                      x2,
+                      /* :: */[
+                        x1,
+                        /* :: */[
+                          x3,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
+            } else if (Curry._2(cmp, x2, x3) <= 0) {
+              return /* :: */[
+                      x2,
+                      /* :: */[
+                        x3,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
+            } else {
+              return /* :: */[
+                      x3,
+                      /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
             }
-            
           }
           
         }
@@ -894,68 +891,33 @@ function stable_sort(cmp, l) {
   };
   var rev_sort = function (n, l) {
     if (n !== 2) {
-      if (n === 3) {
-        if (l) {
-          var match = l[1];
-          if (match) {
-            var match$1 = match[1];
-            if (match$1) {
-              var x3 = match$1[0];
-              var x2 = match[0];
-              var x1 = l[0];
-              if (Curry._2(cmp, x1, x2) > 0) {
-                if (Curry._2(cmp, x2, x3) > 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else if (Curry._2(cmp, x1, x3) > 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x3,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  return /* :: */[
-                          x3,
-                          /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                }
-              } else if (Curry._2(cmp, x1, x3) > 0) {
+      if (n === 3 && l) {
+        var match = l[1];
+        if (match) {
+          var match$1 = match[1];
+          if (match$1) {
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
+            if (Curry._2(cmp, x1, x2) > 0) {
+              if (Curry._2(cmp, x2, x3) > 0) {
                 return /* :: */[
-                        x2,
+                        x1,
                         /* :: */[
-                          x1,
+                          x2,
                           /* :: */[
                             x3,
                             /* [] */0
                           ]
                         ]
                       ];
-              } else if (Curry._2(cmp, x2, x3) > 0) {
+              } else if (Curry._2(cmp, x1, x3) > 0) {
                 return /* :: */[
-                        x2,
+                        x1,
                         /* :: */[
                           x3,
                           /* :: */[
-                            x1,
+                            x2,
                             /* [] */0
                           ]
                         ]
@@ -964,16 +926,48 @@ function stable_sort(cmp, l) {
                 return /* :: */[
                         x3,
                         /* :: */[
-                          x2,
+                          x1,
                           /* :: */[
-                            x1,
+                            x2,
                             /* [] */0
                           ]
                         ]
                       ];
               }
+            } else if (Curry._2(cmp, x1, x3) > 0) {
+              return /* :: */[
+                      x2,
+                      /* :: */[
+                        x1,
+                        /* :: */[
+                          x3,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
+            } else if (Curry._2(cmp, x2, x3) > 0) {
+              return /* :: */[
+                      x2,
+                      /* :: */[
+                        x3,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
+            } else {
+              return /* :: */[
+                      x3,
+                      /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ]
+                    ];
             }
-            
           }
           
         }
@@ -1055,29 +1049,134 @@ function stable_sort(cmp, l) {
 function sort_uniq(cmp, l) {
   var sort = function (n, l) {
     if (n !== 2) {
-      if (n === 3) {
-        if (l) {
-          var match = l[1];
-          if (match) {
-            var match$1 = match[1];
-            if (match$1) {
-              var x3 = match$1[0];
-              var x2 = match[0];
-              var x1 = l[0];
-              var c = Curry._2(cmp, x1, x2);
-              if (c === 0) {
-                var c$1 = Curry._2(cmp, x2, x3);
-                if (c$1 === 0) {
-                  return /* :: */[
+      if (n === 3 && l) {
+        var match = l[1];
+        if (match) {
+          var match$1 = match[1];
+          if (match$1) {
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
+            var c = Curry._2(cmp, x1, x2);
+            if (c === 0) {
+              var c$1 = Curry._2(cmp, x2, x3);
+              if (c$1 === 0) {
+                return /* :: */[
+                        x2,
+                        /* [] */0
+                      ];
+              } else if (c$1 < 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x3,
+                          /* [] */0
+                        ]
+                      ];
+              } else {
+                return /* :: */[
+                        x3,
+                        /* :: */[
                           x2,
                           /* [] */0
-                        ];
-                } else if (c$1 < 0) {
-                  return /* :: */[
+                        ]
+                      ];
+              }
+            } else if (c < 0) {
+              var c$2 = Curry._2(cmp, x2, x3);
+              if (c$2 === 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$2 < 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
                           x2,
                           /* :: */[
                             x3,
                             /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$3 = Curry._2(cmp, x1, x3);
+                if (c$3 === 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x2,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$3 < 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x1,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+              }
+            } else {
+              var c$4 = Curry._2(cmp, x1, x3);
+              if (c$4 === 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$4 < 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$5 = Curry._2(cmp, x2, x3);
+                if (c$5 === 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x1,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$5 < 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
                           ]
                         ];
                 } else {
@@ -1085,123 +1184,15 @@ function sort_uniq(cmp, l) {
                           x3,
                           /* :: */[
                             x2,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              } else if (c < 0) {
-                var c$2 = Curry._2(cmp, x2, x3);
-                if (c$2 === 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* [] */0
-                          ]
-                        ];
-                } else if (c$2 < 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  var c$3 = Curry._2(cmp, x1, x3);
-                  if (c$3 === 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ];
-                  } else if (c$3 < 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x3,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    return /* :: */[
-                            x3,
-                            /* :: */[
-                              x1,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  }
-                }
-              } else {
-                var c$4 = Curry._2(cmp, x1, x3);
-                if (c$4 === 0) {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* [] */0
-                          ]
-                        ];
-                } else if (c$4 < 0) {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  var c$5 = Curry._2(cmp, x2, x3);
-                  if (c$5 === 0) {
-                    return /* :: */[
-                            x2,
                             /* :: */[
                               x1,
                               /* [] */0
                             ]
-                          ];
-                  } else if (c$5 < 0) {
-                    return /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    return /* :: */[
-                            x3,
-                            /* :: */[
-                              x2,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  }
+                          ]
+                        ];
                 }
               }
             }
-            
           }
           
         }
@@ -1291,29 +1282,134 @@ function sort_uniq(cmp, l) {
   };
   var rev_sort = function (n, l) {
     if (n !== 2) {
-      if (n === 3) {
-        if (l) {
-          var match = l[1];
-          if (match) {
-            var match$1 = match[1];
-            if (match$1) {
-              var x3 = match$1[0];
-              var x2 = match[0];
-              var x1 = l[0];
-              var c = Curry._2(cmp, x1, x2);
-              if (c === 0) {
-                var c$1 = Curry._2(cmp, x2, x3);
-                if (c$1 === 0) {
-                  return /* :: */[
+      if (n === 3 && l) {
+        var match = l[1];
+        if (match) {
+          var match$1 = match[1];
+          if (match$1) {
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
+            var c = Curry._2(cmp, x1, x2);
+            if (c === 0) {
+              var c$1 = Curry._2(cmp, x2, x3);
+              if (c$1 === 0) {
+                return /* :: */[
+                        x2,
+                        /* [] */0
+                      ];
+              } else if (c$1 > 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x3,
+                          /* [] */0
+                        ]
+                      ];
+              } else {
+                return /* :: */[
+                        x3,
+                        /* :: */[
                           x2,
                           /* [] */0
-                        ];
-                } else if (c$1 > 0) {
-                  return /* :: */[
+                        ]
+                      ];
+              }
+            } else if (c > 0) {
+              var c$2 = Curry._2(cmp, x2, x3);
+              if (c$2 === 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$2 > 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
                           x2,
                           /* :: */[
                             x3,
                             /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$3 = Curry._2(cmp, x1, x3);
+                if (c$3 === 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x2,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$3 > 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x1,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+              }
+            } else {
+              var c$4 = Curry._2(cmp, x1, x3);
+              if (c$4 === 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$4 > 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$5 = Curry._2(cmp, x2, x3);
+                if (c$5 === 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x1,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$5 > 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
                           ]
                         ];
                 } else {
@@ -1321,123 +1417,15 @@ function sort_uniq(cmp, l) {
                           x3,
                           /* :: */[
                             x2,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              } else if (c > 0) {
-                var c$2 = Curry._2(cmp, x2, x3);
-                if (c$2 === 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* [] */0
-                          ]
-                        ];
-                } else if (c$2 > 0) {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  var c$3 = Curry._2(cmp, x1, x3);
-                  if (c$3 === 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* [] */0
-                            ]
-                          ];
-                  } else if (c$3 > 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x3,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    return /* :: */[
-                            x3,
-                            /* :: */[
-                              x1,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  }
-                }
-              } else {
-                var c$4 = Curry._2(cmp, x1, x3);
-                if (c$4 === 0) {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* [] */0
-                          ]
-                        ];
-                } else if (c$4 > 0) {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* :: */[
-                              x3,
-                              /* [] */0
-                            ]
-                          ]
-                        ];
-                } else {
-                  var c$5 = Curry._2(cmp, x2, x3);
-                  if (c$5 === 0) {
-                    return /* :: */[
-                            x2,
                             /* :: */[
                               x1,
                               /* [] */0
                             ]
-                          ];
-                  } else if (c$5 > 0) {
-                    return /* :: */[
-                            x2,
-                            /* :: */[
-                              x3,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    return /* :: */[
-                            x3,
-                            /* :: */[
-                              x2,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  }
+                          ]
+                        ];
                 }
               }
             }
-            
           }
           
         }
