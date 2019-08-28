@@ -7,6 +7,7 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -37,9 +38,15 @@ Caml_module.update_mod([[
         0
       ]], Int32, Int32);
 
+var Xx = /* module */[/* hfiehi */(function (prim, prim$1) {
+      return Caml_external_polyfill.resolve("hfiehi")(prim, prim$1);
+    })];
+
+var uuu = Xx[/* f */0];
+
 var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
-      19,
+      27,
       6
     ], [[0]]);
 
@@ -47,13 +54,13 @@ Caml_module.update_mod([[0]], Int3, Int3);
 
 var Inta = Caml_module.init_mod([
       "recursive_module.ml",
-      23,
+      31,
       6
     ], [[1]]);
 
 var Intb = Caml_module.init_mod([
       "recursive_module.ml",
-      28,
+      36,
       6
     ], [[1]]);
 
@@ -82,17 +89,17 @@ catch (exn){
   }
 }
 
-eq("File \"recursive_module.ml\", line 33, characters 3-10", -1, tmp);
+eq("File \"recursive_module.ml\", line 41, characters 3-10", -1, tmp);
 
 var Inta$1 = Caml_module.init_mod([
       "recursive_module.ml",
-      40,
+      48,
       8
     ], [[1]]);
 
 var Intb$1 = Caml_module.init_mod([
       "recursive_module.ml",
-      45,
+      53,
       8
     ], [[1]]);
 
@@ -109,7 +116,7 @@ var A = /* module */[
   /* Intb */Intb$1
 ];
 
-eq("File \"recursive_module.ml\", line 50, characters 6-13", CamlinternalLazy.force(Inta$1[/* a */0]), 3);
+eq("File \"recursive_module.ml\", line 58, characters 6-13", CamlinternalLazy.force(Inta$1[/* a */0]), 3);
 
 var tmp$1;
 
@@ -126,7 +133,7 @@ catch (raw_exn){
   }
 }
 
-eq("File \"recursive_module.ml\", line 52, characters 6-13", 4, tmp$1);
+eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 
 Mt.from_pair_suites("Recursive_module", suites[0]);
 
@@ -134,6 +141,8 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.Int32 = Int32;
+exports.Xx = Xx;
+exports.uuu = uuu;
 exports.Int3 = Int3;
 exports.Inta = Inta;
 exports.Intb = Intb;

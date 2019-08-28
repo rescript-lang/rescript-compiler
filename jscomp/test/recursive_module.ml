@@ -13,6 +13,14 @@ module  rec Int32 : sig
   external of_buffer : buffer -> t = "Int32Array" [@@js.new]
 end = Int32
 
+module Xx : sig
+  val f : int -> int -> int 
+end = struct 
+  external f : int -> int -> int = "hfiehi"
+end 
+
+let uuu = Xx.f 
+
 
 module  rec Int3 : sig
   val u : int -> int 
