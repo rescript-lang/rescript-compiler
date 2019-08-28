@@ -134,53 +134,53 @@ if (tst02("\0\0\0\x03") !== 3) {
 
 function tst03(s) {
   switch (s) {
-    case "app_const" : 
+    case "app_const" :
         return 5;
-    case "app_const_const" : 
+    case "app_const_const" :
         return 9;
-    case "app_const_env" : 
+    case "app_const_env" :
         return 11;
-    case "app_const_meth" : 
+    case "app_const_meth" :
         return 12;
-    case "app_const_var" : 
+    case "app_const_var" :
         return 10;
-    case "app_env" : 
+    case "app_env" :
         return 7;
-    case "app_env_const" : 
+    case "app_env_const" :
         return 14;
-    case "app_meth" : 
+    case "app_meth" :
         return 8;
-    case "app_meth_const" : 
+    case "app_meth_const" :
         return 15;
-    case "app_var" : 
+    case "app_var" :
         return 6;
-    case "app_var_const" : 
+    case "app_var_const" :
         return 13;
-    case "get_const" : 
+    case "get_const" :
         return 0;
-    case "get_env" : 
+    case "get_env" :
         return 2;
-    case "get_meth" : 
+    case "get_meth" :
         return 3;
-    case "get_var" : 
+    case "get_var" :
         return 1;
-    case "meth_app_const" : 
+    case "meth_app_const" :
         return 16;
-    case "meth_app_env" : 
+    case "meth_app_env" :
         return 18;
-    case "meth_app_meth" : 
+    case "meth_app_meth" :
         return 19;
-    case "meth_app_var" : 
+    case "meth_app_var" :
         return 17;
-    case "send_const" : 
+    case "send_const" :
         return 20;
-    case "send_env" : 
+    case "send_env" :
         return 22;
-    case "send_meth" : 
+    case "send_meth" :
         return 23;
-    case "send_var" : 
+    case "send_var" :
         return 21;
-    case "set_var" : 
+    case "set_var" :
         return 4;
     default:
       return -1;
@@ -717,29 +717,29 @@ if (tst03("tend_mesh") !== -1) {
 
 function tst04(s) {
   switch (s) {
-    case "AAAAAAAA" : 
+    case "AAAAAAAA" :
         return 0;
-    case "AAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAA" :
         return 1;
-    case "AAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAA" :
         return 2;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 3;
-    case "BBBBBBBB" : 
+    case "BBBBBBBB" :
         return 4;
-    case "BBBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBBB" :
         return 5;
-    case "BBBBBBBBBBBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBBBBBBBBBBB" :
         return 6;
-    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" :
         return 7;
-    case "CCCCCCCC" : 
+    case "CCCCCCCC" :
         return 8;
-    case "CCCCCCCCCCCCCCCC" : 
+    case "CCCCCCCCCCCCCCCC" :
         return 9;
-    case "CCCCCCCCCCCCCCCCCCCCCCCC" : 
+    case "CCCCCCCCCCCCCCCCCCCCCCCC" :
         return 10;
-    case "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" : 
+    case "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" :
         return 11;
     default:
       return -1;
@@ -957,31 +957,31 @@ if (tst04("AAAAAAAAAAAAAAADDDD") !== -1) {
 
 function tst05(s) {
   switch (s) {
-    case "AAA" : 
+    case "AAA" :
         return 0;
-    case "AAAA" : 
+    case "AAAA" :
         return 1;
-    case "AAAAA" : 
+    case "AAAAA" :
         return 2;
-    case "AAAAAA" : 
+    case "AAAAAA" :
         return 3;
-    case "AAAAAAA" : 
+    case "AAAAAAA" :
         return 4;
-    case "AAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAA" :
         return 5;
-    case "AAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAA" :
         return 6;
-    case "AAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAA" :
         return 7;
-    case "BBB" : 
+    case "BBB" :
         return 8;
-    case "BBBB" : 
+    case "BBBB" :
         return 9;
-    case "BBBBB" : 
+    case "BBBBB" :
         return 10;
-    case "BBBBBB" : 
+    case "BBBBBB" :
         return 11;
-    case "BBBBBBB" : 
+    case "BBBBBBB" :
         return 12;
     default:
       return -1;
@@ -1600,189 +1600,189 @@ var t91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
 function tst06(s) {
   switch (s) {
-    case "A" : 
+    case "A" :
         return 55;
-    case "AA" : 
+    case "AA" :
         return 56;
-    case "AAA" : 
+    case "AAA" :
         return 57;
-    case "AAAA" : 
+    case "AAAA" :
         return 58;
-    case "AAAAA" : 
+    case "AAAAA" :
         return 59;
-    case "AAAAAA" : 
+    case "AAAAAA" :
         return 60;
-    case "AAAAAAA" : 
+    case "AAAAAAA" :
         return 61;
-    case "AAAAAAAA" : 
+    case "AAAAAAAA" :
         return 62;
-    case "AAAAAAAAA" : 
+    case "AAAAAAAAA" :
         return 63;
-    case "AAAAAAAAAA" : 
+    case "AAAAAAAAAA" :
         return 64;
-    case "AAAAAAAAAAA" : 
+    case "AAAAAAAAAAA" :
         return 65;
-    case "AAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAA" :
         return 66;
-    case "AAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAA" :
         return 67;
-    case "AAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAA" :
         return 68;
-    case "AAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAA" :
         return 69;
-    case "AAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAA" :
         return 70;
-    case "AAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAA" :
         return 71;
-    case "AAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAA" :
         return 72;
-    case "AAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAA" :
         return 73;
-    case "AAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAA" :
         return 74;
-    case "AAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAA" :
         return 75;
-    case "AAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAA" :
         return 76;
-    case "AAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAA" :
         return 77;
-    case "AAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAA" :
         return 78;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 79;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 80;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 81;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 82;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 83;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 84;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 85;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 86;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 87;
-    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" : 
+    case "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" :
         return 88;
-    case "BBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBB" :
         return 89;
-    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" :
         return 90;
-    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" : 
+    case "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" :
         return 91;
-    case "and" : 
+    case "and" :
         return 0;
-    case "as" : 
+    case "as" :
         return 1;
-    case "asr" : 
+    case "asr" :
         return 54;
-    case "assert" : 
+    case "assert" :
         return 2;
-    case "begin" : 
+    case "begin" :
         return 3;
-    case "class" : 
+    case "class" :
         return 4;
-    case "constraint" : 
+    case "constraint" :
         return 5;
-    case "do" : 
+    case "do" :
         return 6;
-    case "done" : 
+    case "done" :
         return 7;
-    case "downto" : 
+    case "downto" :
         return 8;
-    case "else" : 
+    case "else" :
         return 9;
-    case "end" : 
+    case "end" :
         return 10;
-    case "exception" : 
+    case "exception" :
         return 11;
-    case "external" : 
+    case "external" :
         return 12;
-    case "false" : 
+    case "false" :
         return 13;
-    case "for" : 
+    case "for" :
         return 14;
-    case "fun" : 
+    case "fun" :
         return 15;
-    case "function" : 
+    case "function" :
         return 16;
-    case "functor" : 
+    case "functor" :
         return 17;
-    case "if" : 
+    case "if" :
         return 18;
-    case "in" : 
+    case "in" :
         return 19;
-    case "include" : 
+    case "include" :
         return 20;
-    case "inherit" : 
+    case "inherit" :
         return 21;
-    case "initializer" : 
+    case "initializer" :
         return 22;
-    case "land" : 
+    case "land" :
         return 49;
-    case "lazy" : 
+    case "lazy" :
         return 23;
-    case "let" : 
+    case "let" :
         return 24;
-    case "lor" : 
+    case "lor" :
         return 50;
-    case "lsl" : 
+    case "lsl" :
         return 52;
-    case "lsr" : 
+    case "lsr" :
         return 53;
-    case "lxor" : 
+    case "lxor" :
         return 51;
-    case "match" : 
+    case "match" :
         return 25;
-    case "method" : 
+    case "method" :
         return 26;
-    case "mod" : 
+    case "mod" :
         return 48;
-    case "module" : 
+    case "module" :
         return 27;
-    case "mutable" : 
+    case "mutable" :
         return 28;
-    case "new" : 
+    case "new" :
         return 29;
-    case "object" : 
+    case "object" :
         return 30;
-    case "of" : 
+    case "of" :
         return 31;
-    case "open" : 
+    case "open" :
         return 32;
-    case "or" : 
+    case "or" :
         return 33;
-    case "private" : 
+    case "private" :
         return 34;
-    case "rec" : 
+    case "rec" :
         return 35;
-    case "sig" : 
+    case "sig" :
         return 36;
-    case "struct" : 
+    case "struct" :
         return 37;
-    case "then" : 
+    case "then" :
         return 38;
-    case "to" : 
+    case "to" :
         return 39;
-    case "true" : 
+    case "true" :
         return 40;
-    case "try" : 
+    case "try" :
         return 41;
-    case "type" : 
+    case "type" :
         return 42;
-    case "val" : 
+    case "val" :
         return 43;
-    case "virtual" : 
+    case "virtual" :
         return 44;
-    case "when" : 
+    case "when" :
         return 45;
-    case "while" : 
+    case "while" :
         return 46;
-    case "with" : 
+    case "with" :
         return 47;
     default:
       return -1;

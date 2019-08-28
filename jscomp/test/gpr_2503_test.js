@@ -20,9 +20,9 @@ function makeWrapper(foo, param) {
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
-            case 97 : 
+            case 97 :
                 return "a";
-            case 98 : 
+            case 98 :
                 return "b";
             
           }
@@ -36,9 +36,9 @@ function makeWrapper2(foo, param) {
   console.log({
         foo: (function () {
               switch (foo) {
-                case 97 : 
+                case 97 :
                     return "a";
-                case 98 : 
+                case 98 :
                     return "b";
                 
               }
@@ -55,9 +55,9 @@ function makeWrapper3(foo, param) {
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
-            case 97 : 
+            case 97 :
                 return "a";
-            case 98 : 
+            case 98 :
                 return "b";
             
           }
@@ -75,9 +75,9 @@ function makeWrapper4(foo, param) {
   if (tmp$1 !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(tmp$1)) {
-            case 97 : 
+            case 97 :
                 return "a";
-            case 98 : 
+            case 98 :
                 return "b";
             
           }

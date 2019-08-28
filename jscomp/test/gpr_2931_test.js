@@ -12,14 +12,14 @@ function eq(loc, x, y) {
 
 function fake_c2(a_type, b_type) {
   switch (a_type) {
-    case "number" : 
+    case "number" :
         if (b_type === "number") {
           return 33;
         }
         break;
-    case "string" : 
+    case "string" :
         return 1;
-    case "undefined" : 
+    case "undefined" :
         return -1;
     default:
       

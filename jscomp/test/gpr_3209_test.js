@@ -10,11 +10,11 @@ function f9(param) {
     }
   } else {
     switch (param.tag | 0) {
-      case 0 : 
-      case 1 : 
+      case 0 :
+      case 1 :
           return 2;
-      case 2 : 
-      case 3 : 
+      case 2 :
+      case 3 :
           return 3;
       
     }

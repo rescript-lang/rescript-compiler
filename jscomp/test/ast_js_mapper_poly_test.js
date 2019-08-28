@@ -116,13 +116,13 @@ function eqVOpt(x, y) {
 
 function s(param) {
   switch (param) {
-    case 0 : 
+    case 0 :
         return "A0";
-    case 1 : 
+    case 1 :
         return "A1";
-    case 2 : 
+    case 2 :
         return "A2";
-    case 3 : 
+    case 3 :
         return "A3";
     
   }

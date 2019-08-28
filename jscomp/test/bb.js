@@ -16,11 +16,11 @@ function f(x) {
 
 function ff(x) {
   switch (x) {
-    case "a" : 
+    case "a" :
         return /* a */97;
-    case "b" : 
+    case "b" :
         return /* b */98;
-    case "c" : 
+    case "c" :
         return /* c */99;
     default:
       throw [
@@ -37,13 +37,13 @@ function ff(x) {
 function test(x) {
   var match;
   switch (x) {
-    case "a" : 
+    case "a" :
         match = /* a */97;
         break;
-    case "b" : 
+    case "b" :
         match = /* b */98;
         break;
-    case "c" : 
+    case "c" :
         match = /* c */99;
         break;
     default:

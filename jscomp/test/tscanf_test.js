@@ -1448,7 +1448,7 @@ function scan_elems$2(ib, accu) {
                   if (c >= 91) {
                     if (c < 94) {
                       switch (c - 91 | 0) {
-                        case 0 : 
+                        case 0 :
                             if (accu === /* [] */0) {
                               return scan_elems$2(ib, /* :: */[
                                           i,
@@ -1456,9 +1456,9 @@ function scan_elems$2(ib, accu) {
                                         ]);
                             }
                             break;
-                        case 1 : 
+                        case 1 :
                             break;
-                        case 2 : 
+                        case 2 :
                             return List.rev(/* :: */[
                                         i,
                                         accu
@@ -1563,12 +1563,12 @@ function scan_elems$3(ib, accu) {
                   " %i%[]; \t\n\r]"
                 ]), (function (i, s) {
                 switch (s) {
-                  case ";" : 
+                  case ";" :
                       return scan_elems$3(ib, /* :: */[
                                   i,
                                   accu
                                 ]);
-                  case "]" : 
+                  case "]" :
                       return List.rev(/* :: */[
                                   i,
                                   accu
@@ -1867,9 +1867,9 @@ function scan_rest$1(ib, accu) {
                                                 "%1[];]"
                                               ]), (function (param) {
                                               switch (param) {
-                                                case ";" : 
+                                                case ";" :
                                                     return scan_rest$1(ib$2, accu$2);
-                                                case "]" : 
+                                                case "]" :
                                                     return accu$2;
                                                 default:
                                                   var s = Printf.sprintf(/* Format */[
@@ -3690,10 +3690,10 @@ function writer(ib, ob) {
                   "%s\n"
                 ]), (function (s) {
                 switch (s) {
-                  case "start" : 
+                  case "start" :
                       send_string(ob, "Hello World!");
                       return reader(ib, ob);
-                  case "stop" : 
+                  case "stop" :
                       return Curry._1(Scanf.bscanf(ib, /* Format */[
                                       /* Int */Block.__(4, [
                                           /* Int_i */3,

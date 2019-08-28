@@ -13,11 +13,11 @@ function ff(x) {
 function fff(x) {
   var match = /* A */Block.__(0, [x]);
   switch (match.tag | 0) {
-    case 0 : 
+    case 0 :
         return x;
-    case 1 : 
+    case 1 :
         return 1;
-    case 2 : 
+    case 2 :
         return 2;
     
   }

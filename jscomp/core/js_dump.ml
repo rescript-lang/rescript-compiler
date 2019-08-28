@@ -508,7 +508,6 @@ and pp_one_case_clause : 'a .
               pp_cond  f switch_case; (* could be integer or string *)
               P.space f ;
               P.string f L.colon  );
-          P.space f;
           P.group f 1 (fun _ ->
               let cxt =
                 match switch_body with
