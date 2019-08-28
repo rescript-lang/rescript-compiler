@@ -347,15 +347,15 @@ var ID_MONAD = /* module */{
 function make($staropt$star, refill) {
   var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
-  return /* record */[
-          /* buf */Caml_bytes.caml_create_bytes(bufsize$1),
-          /* refill */refill,
-          /* atom */$$Buffer.create(32),
-          /* i */0,
-          /* len */0,
-          /* line */1,
-          /* col */1
-        ];
+  return /* record */{
+          buf: Caml_bytes.caml_create_bytes(bufsize$1),
+          refill: refill,
+          atom: $$Buffer.create(32),
+          i: 0,
+          len: 0,
+          line: 1,
+          col: 1
+        };
 }
 
 function _is_digit(c) {
@@ -367,9 +367,9 @@ function _is_digit(c) {
 }
 
 function _refill(t, k_succ, k_fail) {
-  var n = Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length);
-  t[/* i */3] = 0;
-  t[/* len */4] = n;
+  var n = Curry._3(t.refill, t.buf, 0, t.buf.length);
+  t.i = 0;
+  t.len = n;
   if (n === 0) {
     return Curry._1(k_fail, t);
   } else {
@@ -378,7 +378,7 @@ function _refill(t, k_succ, k_fail) {
 }
 
 function _get(t) {
-  if (t[/* i */3] >= t[/* len */4]) {
+  if (t.i >= t.len) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -388,13 +388,13 @@ function _get(t) {
           ]
         ];
   }
-  var c = Caml_bytes.get(t[/* buf */0], t[/* i */3]);
-  t[/* i */3] = t[/* i */3] + 1 | 0;
+  var c = Caml_bytes.get(t.buf, t.i);
+  t.i = t.i + 1 | 0;
   if (c === /* "\n" */10) {
-    t[/* col */6] = 1;
-    t[/* line */5] = t[/* line */5] + 1 | 0;
+    t.col = 1;
+    t.line = t.line + 1 | 0;
   } else {
-    t[/* col */6] = t[/* col */6] + 1 | 0;
+    t.col = t.col + 1 | 0;
   }
   return c;
 }
@@ -423,7 +423,7 @@ function _error(t, msg) {
                   ])
               ]),
             "at %d, %d: "
-          ]), t[/* line */5], t[/* col */6]);
+          ]), t.line, t.col);
   return Printf.kbprintf((function (b) {
                 var msg$prime = $$Buffer.contents(b);
                 return /* `Error */[
@@ -445,7 +445,7 @@ function _error_eof(t) {
 
 function expr(k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return expr(k, param);
                   }), _error_eof);
@@ -529,13 +529,13 @@ function expr_starting_with(c, k, t) {
           ]
         ];
   }
-  $$Buffer.add_char(t[/* atom */2], c);
+  $$Buffer.add_char(t.atom, c);
   return atom(k, t);
 }
 
 function expr_list(acc, k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return expr_list(acc, k, param);
                   }), _error_eof);
@@ -591,8 +591,8 @@ function expr_list(acc, k, t) {
 }
 
 function _return_atom(last, k, t) {
-  var s = $$Buffer.contents(t[/* atom */2]);
-  t[/* atom */2][/* position */1] = 0;
+  var s = $$Buffer.contents(t.atom);
+  t.atom.position = 0;
   return Curry._2(k, last, /* `Atom */[
               726615281,
               s
@@ -601,7 +601,7 @@ function _return_atom(last, k, t) {
 
 function atom(k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return atom(k, param);
                   }), (function (param) {
@@ -653,7 +653,7 @@ function atom(k, t) {
       }
       switch (exit) {
         case 1 : 
-            $$Buffer.add_char(t[/* atom */2], c);
+            $$Buffer.add_char(t.atom, c);
             continue ;
         case 2 : 
             return _return_atom(c, k, t);
@@ -665,7 +665,7 @@ function atom(k, t) {
 
 function quoted(k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return quoted(k, param);
                   }), _error_eof);
@@ -673,11 +673,11 @@ function quoted(k, t) {
       var c = _get(t);
       if (c !== 34) {
         if (c !== 92) {
-          $$Buffer.add_char(t[/* atom */2], c);
+          $$Buffer.add_char(t.atom, c);
           continue ;
         } else {
           return escaped((function (c) {
-                        $$Buffer.add_char(t[/* atom */2], c);
+                        $$Buffer.add_char(t.atom, c);
                         return quoted(k, t);
                       }), t);
         }
@@ -689,7 +689,7 @@ function quoted(k, t) {
 }
 
 function escaped(k, t) {
-  if (t[/* i */3] === t[/* len */4]) {
+  if (t.i === t.len) {
     return _refill(t, (function (param) {
                   return escaped(k, param);
                 }), _error_eof);
@@ -756,7 +756,7 @@ function escaped(k, t) {
 }
 
 function read2int(i, k, t) {
-  if (t[/* i */3] === t[/* len */4]) {
+  if (t.i === t.len) {
     return _refill(t, (function (param) {
                   return read2int(i, k, param);
                 }), _error_eof);
@@ -780,7 +780,7 @@ function read2int(i, k, t) {
 }
 
 function read1int(i, k, t) {
-  if (t[/* i */3] === t[/* len */4]) {
+  if (t.i === t.len) {
     return _refill(t, (function (param) {
                   return read1int(i, k, param);
                 }), _error_eof);
@@ -805,7 +805,7 @@ function read1int(i, k, t) {
 
 function skip_comment(k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return skip_comment(k, param);
                   }), _error_eof);
@@ -822,7 +822,7 @@ function skip_comment(k, t) {
 
 function expr_or_end(k, t) {
   while(true) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return expr_or_end(k, param);
                   }), (function (param) {
@@ -949,15 +949,15 @@ function MakeDecode(funarg) {
   var make = function ($staropt$star, refill) {
     var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
-    return /* record */[
-            /* buf */Caml_bytes.caml_create_bytes(bufsize$1),
-            /* refill */refill,
-            /* atom */$$Buffer.create(32),
-            /* i */0,
-            /* len */0,
-            /* line */1,
-            /* col */1
-          ];
+    return /* record */{
+            buf: Caml_bytes.caml_create_bytes(bufsize$1),
+            refill: refill,
+            atom: $$Buffer.create(32),
+            i: 0,
+            len: 0,
+            line: 1,
+            col: 1
+          };
   };
   var _is_digit = function (c) {
     if (/* "0" */48 <= c) {
@@ -967,9 +967,9 @@ function MakeDecode(funarg) {
     }
   };
   var _refill = function (t, k_succ, k_fail) {
-    return Curry._2($great$great$eq, Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length), (function (n) {
-                  t[/* i */3] = 0;
-                  t[/* len */4] = n;
+    return Curry._2($great$great$eq, Curry._3(t.refill, t.buf, 0, t.buf.length), (function (n) {
+                  t.i = 0;
+                  t.len = n;
                   if (n === 0) {
                     return Curry._1(k_fail, t);
                   } else {
@@ -978,7 +978,7 @@ function MakeDecode(funarg) {
                 }));
   };
   var _get = function (t) {
-    if (t[/* i */3] >= t[/* len */4]) {
+    if (t.i >= t.len) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -988,13 +988,13 @@ function MakeDecode(funarg) {
             ]
           ];
     }
-    var c = Caml_bytes.get(t[/* buf */0], t[/* i */3]);
-    t[/* i */3] = t[/* i */3] + 1 | 0;
+    var c = Caml_bytes.get(t.buf, t.i);
+    t.i = t.i + 1 | 0;
     if (c === /* "\n" */10) {
-      t[/* col */6] = 1;
-      t[/* line */5] = t[/* line */5] + 1 | 0;
+      t.col = 1;
+      t.line = t.line + 1 | 0;
     } else {
-      t[/* col */6] = t[/* col */6] + 1 | 0;
+      t.col = t.col + 1 | 0;
     }
     return c;
   };
@@ -1022,7 +1022,7 @@ function MakeDecode(funarg) {
                     ])
                 ]),
               "at %d, %d: "
-            ]), t[/* line */5], t[/* col */6]);
+            ]), t.line, t.col);
     return Printf.kbprintf((function (b) {
                   var msg$prime = $$Buffer.contents(b);
                   return Curry._1(funarg.return, /* `Error */[
@@ -1042,7 +1042,7 @@ function MakeDecode(funarg) {
   };
   var expr = function (k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return expr(k, param);
                     }), _error_eof);
@@ -1125,12 +1125,12 @@ function MakeDecode(funarg) {
             ]
           ];
     }
-    $$Buffer.add_char(t[/* atom */2], c);
+    $$Buffer.add_char(t.atom, c);
     return atom(k, t);
   };
   var expr_list = function (acc, k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return expr_list(acc, k, param);
                     }), _error_eof);
@@ -1185,8 +1185,8 @@ function MakeDecode(funarg) {
     };
   };
   var _return_atom = function (last, k, t) {
-    var s = $$Buffer.contents(t[/* atom */2]);
-    t[/* atom */2][/* position */1] = 0;
+    var s = $$Buffer.contents(t.atom);
+    t.atom.position = 0;
     return Curry._2(k, last, /* `Atom */[
                 726615281,
                 s
@@ -1194,7 +1194,7 @@ function MakeDecode(funarg) {
   };
   var atom = function (k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return atom(k, param);
                     }), (function (param) {
@@ -1246,7 +1246,7 @@ function MakeDecode(funarg) {
         }
         switch (exit) {
           case 1 : 
-              $$Buffer.add_char(t[/* atom */2], c);
+              $$Buffer.add_char(t.atom, c);
               continue ;
           case 2 : 
               return _return_atom(c, k, t);
@@ -1257,7 +1257,7 @@ function MakeDecode(funarg) {
   };
   var quoted = function (k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return quoted(k, param);
                     }), _error_eof);
@@ -1265,11 +1265,11 @@ function MakeDecode(funarg) {
         var c = _get(t);
         if (c !== 34) {
           if (c !== 92) {
-            $$Buffer.add_char(t[/* atom */2], c);
+            $$Buffer.add_char(t.atom, c);
             continue ;
           } else {
             return escaped((function (c) {
-                          $$Buffer.add_char(t[/* atom */2], c);
+                          $$Buffer.add_char(t.atom, c);
                           return quoted(k, t);
                         }), t);
           }
@@ -1280,7 +1280,7 @@ function MakeDecode(funarg) {
     };
   };
   var escaped = function (k, t) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return escaped(k, param);
                   }), _error_eof);
@@ -1346,7 +1346,7 @@ function MakeDecode(funarg) {
     }
   };
   var read2int = function (i, k, t) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return read2int(i, k, param);
                   }), _error_eof);
@@ -1369,7 +1369,7 @@ function MakeDecode(funarg) {
     }
   };
   var read1int = function (i, k, t) {
-    if (t[/* i */3] === t[/* len */4]) {
+    if (t.i === t.len) {
       return _refill(t, (function (param) {
                     return read1int(i, k, param);
                   }), _error_eof);
@@ -1393,7 +1393,7 @@ function MakeDecode(funarg) {
   };
   var skip_comment = function (k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return skip_comment(k, param);
                     }), _error_eof);
@@ -1409,7 +1409,7 @@ function MakeDecode(funarg) {
   };
   var expr_or_end = function (k, t) {
     while(true) {
-      if (t[/* i */3] === t[/* len */4]) {
+      if (t.i === t.len) {
         return _refill(t, (function (param) {
                       return expr_or_end(k, param);
                     }), (function (param) {

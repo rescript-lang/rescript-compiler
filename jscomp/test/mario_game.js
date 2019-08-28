@@ -31,16 +31,16 @@ function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, 
         0
       ]) ? frame_size : bbox_size;
   var img_src$1 = "./sprites/" + img_src;
-  return /* record */[
-          /* max_frames */max_frames,
-          /* max_ticks */max_ticks,
-          /* img_src */img_src$1,
-          /* frame_size */frame_size,
-          /* src_offset */src_offset,
-          /* bbox_offset */bbox_offset,
-          /* bbox_size */bbox_size$1,
-          /* loop */loop
-        ];
+  return /* record */{
+          max_frames: max_frames,
+          max_ticks: max_ticks,
+          img_src: img_src$1,
+          frame_size: frame_size,
+          src_offset: src_offset,
+          bbox_offset: bbox_offset,
+          bbox_size: bbox_size$1,
+          loop: loop
+        };
 }
 
 function make_enemy(param) {
@@ -626,14 +626,14 @@ function make_type(typ, dir) {
 
 function make_from_params(params, context) {
   var img = document.createElement("img");
-  img.src = params[/* img_src */2];
-  return /* record */[
-          /* params */params,
-          /* context */context,
-          /* frame : record */[/* contents */0],
-          /* ticks : record */[/* contents */0],
-          /* img */img
-        ];
+  img.src = params.img_src;
+  return /* record */{
+          params: params,
+          context: context,
+          frame: /* record */[/* contents */0],
+          ticks: /* record */[/* contents */0],
+          img: img
+        };
 }
 
 function make(spawn, dir, context) {
@@ -663,24 +663,24 @@ function transform_enemy(enemy_typ, spr, dir) {
         dir
       ]);
   var img = document.createElement("img");
-  img.src = params[/* img_src */2];
-  spr[/* params */0] = params;
-  spr[/* img */4] = img;
+  img.src = params.img_src;
+  spr.params = params;
+  spr.img = img;
   return /* () */0;
 }
 
 function update_animation(spr) {
-  var curr_ticks = spr[/* ticks */3][0];
-  if (curr_ticks >= spr[/* params */0][/* max_ticks */1]) {
-    spr[/* ticks */3][0] = 0;
-    if (spr[/* params */0][/* loop */7]) {
-      spr[/* frame */2][0] = Caml_int32.mod_(spr[/* frame */2][0] + 1 | 0, spr[/* params */0][/* max_frames */0]);
+  var curr_ticks = spr.ticks[0];
+  if (curr_ticks >= spr.params.max_ticks) {
+    spr.ticks[0] = 0;
+    if (spr.params.loop) {
+      spr.frame[0] = Caml_int32.mod_(spr.frame[0] + 1 | 0, spr.params.max_frames);
       return /* () */0;
     } else {
       return 0;
     }
   } else {
-    spr[/* ticks */3][0] = curr_ticks + 1 | 0;
+    spr.ticks[0] = curr_ticks + 1 | 0;
     return /* () */0;
   }
 }
@@ -695,25 +695,25 @@ var Sprite = /* module */{
 };
 
 function pair_to_xy(pair) {
-  return /* record */[
-          /* x */pair[0],
-          /* y */pair[1]
-        ];
+  return /* record */{
+          x: pair[0],
+          y: pair[1]
+        };
 }
 
 function make_type$1(typ, ctx) {
   if (typ === 2 || typ === 1) {
-    return /* record */[
-            /* sprite */make_particle$1(typ, ctx),
-            /* rot */0,
-            /* lifetime */300
-          ];
+    return /* record */{
+            sprite: make_particle$1(typ, ctx),
+            rot: 0,
+            lifetime: 300
+          };
   } else {
-    return /* record */[
-            /* sprite */make_particle$1(typ, ctx),
-            /* rot */0,
-            /* lifetime */30
-          ];
+    return /* record */{
+            sprite: make_particle$1(typ, ctx),
+            rot: 0,
+            lifetime: 30
+          };
   }
 }
 
@@ -730,15 +730,15 @@ function make$1($staropt$star, $staropt$star$1, part_type, pos, ctx) {
   var pos$1 = pair_to_xy(pos);
   var vel$1 = pair_to_xy(vel);
   var acc$1 = pair_to_xy(acc);
-  return /* record */[
-          /* params */params,
-          /* part_type */part_type,
-          /* pos */pos$1,
-          /* vel */vel$1,
-          /* acc */acc$1,
-          /* kill */false,
-          /* life */params[/* lifetime */2]
-        ];
+  return /* record */{
+          params: params,
+          part_type: part_type,
+          pos: pos$1,
+          vel: vel$1,
+          acc: acc$1,
+          kill: false,
+          life: params.lifetime
+        };
 }
 
 function make_score(score, pos, ctx) {
@@ -768,20 +768,20 @@ function make_score(score, pos, ctx) {
 }
 
 function update_vel(part) {
-  part[/* vel */3][/* x */0] = part[/* vel */3][/* x */0] + part[/* acc */4][/* x */0];
-  part[/* vel */3][/* y */1] = part[/* vel */3][/* y */1] + part[/* acc */4][/* y */1];
+  part.vel.x = part.vel.x + part.acc.x;
+  part.vel.y = part.vel.y + part.acc.y;
   return /* () */0;
 }
 
 function $$process(part) {
-  part[/* life */6] = part[/* life */6] - 1 | 0;
-  if (part[/* life */6] === 0) {
-    part[/* kill */5] = true;
+  part.life = part.life - 1 | 0;
+  if (part.life === 0) {
+    part.kill = true;
   }
   update_vel(part);
   var part$1 = part;
-  part$1[/* pos */2][/* x */0] = part$1[/* vel */3][/* x */0] + part$1[/* pos */2][/* x */0];
-  part$1[/* pos */2][/* y */1] = part$1[/* vel */3][/* y */1] + part$1[/* pos */2][/* y */1];
+  part$1.pos.x = part$1.vel.x + part$1.pos.x;
+  part$1.pos.y = part$1.vel.y + part$1.pos.y;
   return /* () */0;
 }
 
@@ -796,20 +796,20 @@ var id_counter = /* record */[/* contents */Pervasives.min_int];
 function setup_obj($staropt$star, $staropt$star$1, param) {
   var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
   var speed = $staropt$star$1 !== undefined ? $staropt$star$1 : 1;
-  return /* record */[
-          /* has_gravity */has_gravity,
-          /* speed */speed
-        ];
+  return /* record */{
+          has_gravity: has_gravity,
+          speed: speed
+        };
 }
 
 function set_vel_to_speed(obj) {
-  var speed = obj[/* params */0][/* speed */1];
-  var match = obj[/* dir */6];
+  var speed = obj.params.speed;
+  var match = obj.dir;
   if (match) {
-    obj[/* vel */2][/* x */0] = speed;
+    obj.vel.x = speed;
     return /* () */0;
   } else {
-    obj[/* vel */2][/* x */0] = -speed;
+    obj.vel.x = -speed;
     return /* () */0;
   }
 }
@@ -849,26 +849,26 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
   var id$1 = id !== undefined ? id : new_id(/* () */0);
-  var obj = /* record */[
-    /* params */params,
-    /* pos : record */[
-      /* x */param[0],
-      /* y */param[1]
-    ],
-    /* vel : record */[
-      /* x */0.0,
-      /* y */0.0
-    ],
-    /* id */id$1,
-    /* jumping */false,
-    /* grounded */false,
-    /* dir */dir,
-    /* invuln */0,
-    /* kill */false,
-    /* health */1,
-    /* crouch */false,
-    /* score */0
-  ];
+  var obj = /* record */{
+    params: params,
+    pos: /* record */{
+      x: param[0],
+      y: param[1]
+    },
+    vel: /* record */{
+      x: 0.0,
+      y: 0.0
+    },
+    id: id$1,
+    jumping: false,
+    grounded: false,
+    dir: dir,
+    invuln: 0,
+    kill: false,
+    health: 1,
+    crouch: false,
+    score: 0
+  };
   return /* tuple */[
           spr,
           obj
@@ -937,60 +937,60 @@ function is_enemy(param) {
 }
 
 function equals(col1, col2) {
-  return col1[2][/* id */3] === col2[2][/* id */3];
+  return col1[2].id === col2[2].id;
 }
 
 function normalize_pos(pos, p1, p2) {
-  var match = p1[/* bbox_offset */5];
-  var match$1 = p2[/* bbox_offset */5];
-  var match$2 = p1[/* bbox_size */6];
-  var match$3 = p2[/* bbox_size */6];
-  pos[/* x */0] = pos[/* x */0] - (match$3[0] + match$1[0]) + (match$2[0] + match[0]);
-  pos[/* y */1] = pos[/* y */1] - (match$3[1] + match$1[1]) + (match$2[1] + match[1]);
+  var match = p1.bbox_offset;
+  var match$1 = p2.bbox_offset;
+  var match$2 = p1.bbox_size;
+  var match$3 = p2.bbox_size;
+  pos.x = pos.x - (match$3[0] + match$1[0]) + (match$2[0] + match[0]);
+  pos.y = pos.y - (match$3[1] + match$1[1]) + (match$2[1] + match[1]);
   return /* () */0;
 }
 
 function update_player(player, keys, context) {
-  var prev_jumping = player[/* jumping */4];
-  var prev_dir = player[/* dir */6];
-  var prev_vx = Math.abs(player[/* vel */2][/* x */0]);
+  var prev_jumping = player.jumping;
+  var prev_dir = player.dir;
+  var prev_vx = Math.abs(player.vel.x);
   List.iter((function (param) {
           var player$1 = player;
           var controls = param;
-          var lr_acc = player$1[/* vel */2][/* x */0] * 0.2;
+          var lr_acc = player$1.vel.x * 0.2;
           switch (controls) {
             case 0 : 
-                if (player$1[/* crouch */10]) {
+                if (player$1.crouch) {
                   return 0;
                 } else {
-                  if (player$1[/* vel */2][/* x */0] > -player$1[/* params */0][/* speed */1]) {
-                    player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] - (0.4 - lr_acc);
+                  if (player$1.vel.x > -player$1.params.speed) {
+                    player$1.vel.x = player$1.vel.x - (0.4 - lr_acc);
                   }
-                  player$1[/* dir */6] = /* Left */0;
+                  player$1.dir = /* Left */0;
                   return /* () */0;
                 }
             case 1 : 
-                if (player$1[/* crouch */10]) {
+                if (player$1.crouch) {
                   return 0;
                 } else {
-                  if (player$1[/* vel */2][/* x */0] < player$1[/* params */0][/* speed */1]) {
-                    player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] + (0.4 + lr_acc);
+                  if (player$1.vel.x < player$1.params.speed) {
+                    player$1.vel.x = player$1.vel.x + (0.4 + lr_acc);
                   }
-                  player$1[/* dir */6] = /* Right */1;
+                  player$1.dir = /* Right */1;
                   return /* () */0;
                 }
             case 2 : 
-                if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
-                  player$1[/* jumping */4] = true;
-                  player$1[/* grounded */5] = false;
-                  player$1[/* vel */2][/* y */1] = Caml_primitive.caml_float_max(player$1[/* vel */2][/* y */1] - (5.7 + Math.abs(player$1[/* vel */2][/* x */0]) * 0.25), -6);
+                if (!player$1.jumping && player$1.grounded) {
+                  player$1.jumping = true;
+                  player$1.grounded = false;
+                  player$1.vel.y = Caml_primitive.caml_float_max(player$1.vel.y - (5.7 + Math.abs(player$1.vel.x) * 0.25), -6);
                   return /* () */0;
                 } else {
                   return 0;
                 }
             case 3 : 
-                if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
-                  player$1[/* crouch */10] = true;
+                if (!player$1.jumping && player$1.grounded) {
+                  player$1.crouch = true;
                   return /* () */0;
                 } else {
                   return 0;
@@ -998,49 +998,49 @@ function update_player(player, keys, context) {
             
           }
         }), keys);
-  var v = player[/* vel */2][/* x */0] * 0.9;
+  var v = player.vel.x * 0.9;
   var vel_damped = Math.abs(v) < 0.1 ? 0 : v;
-  player[/* vel */2][/* x */0] = vel_damped;
-  var pl_typ = player[/* health */9] <= 1 ? /* SmallM */1 : /* BigM */0;
-  if (!prev_jumping && player[/* jumping */4]) {
+  player.vel.x = vel_damped;
+  var pl_typ = player.health <= 1 ? /* SmallM */1 : /* BigM */0;
+  if (!prev_jumping && player.jumping) {
     return /* tuple */[
             pl_typ,
             make(/* SPlayer */Block.__(0, [
                     pl_typ,
                     /* Jumping */1
-                  ]), player[/* dir */6], context)
+                  ]), player.dir, context)
           ];
-  } else if (prev_dir !== player[/* dir */6] || prev_vx === 0 && Math.abs(player[/* vel */2][/* x */0]) > 0 && !player[/* jumping */4]) {
+  } else if (prev_dir !== player.dir || prev_vx === 0 && Math.abs(player.vel.x) > 0 && !player.jumping) {
     return /* tuple */[
             pl_typ,
             make(/* SPlayer */Block.__(0, [
                     pl_typ,
                     /* Running */2
-                  ]), player[/* dir */6], context)
+                  ]), player.dir, context)
           ];
-  } else if (prev_dir !== player[/* dir */6] && player[/* jumping */4] && prev_jumping) {
+  } else if (prev_dir !== player.dir && player.jumping && prev_jumping) {
     return /* tuple */[
             pl_typ,
             make(/* SPlayer */Block.__(0, [
                     pl_typ,
                     /* Jumping */1
-                  ]), player[/* dir */6], context)
+                  ]), player.dir, context)
           ];
-  } else if (player[/* vel */2][/* y */1] === 0 && player[/* crouch */10]) {
+  } else if (player.vel.y === 0 && player.crouch) {
     return /* tuple */[
             pl_typ,
             make(/* SPlayer */Block.__(0, [
                     pl_typ,
                     /* Crouching */3
-                  ]), player[/* dir */6], context)
+                  ]), player.dir, context)
           ];
-  } else if (player[/* vel */2][/* y */1] === 0 && player[/* vel */2][/* x */0] === 0) {
+  } else if (player.vel.y === 0 && player.vel.x === 0) {
     return /* tuple */[
             pl_typ,
             make(/* SPlayer */Block.__(0, [
                     pl_typ,
                     /* Standing */0
-                  ]), player[/* dir */6], context)
+                  ]), player.dir, context)
           ];
   } else {
     return ;
@@ -1048,11 +1048,11 @@ function update_player(player, keys, context) {
 }
 
 function update_vel$1(obj) {
-  if (obj[/* grounded */5]) {
-    obj[/* vel */2][/* y */1] = 0;
+  if (obj.grounded) {
+    obj.vel.y = 0;
     return /* () */0;
-  } else if (obj[/* params */0][/* has_gravity */0]) {
-    obj[/* vel */2][/* y */1] = Caml_primitive.caml_float_min(obj[/* vel */2][/* y */1] + 0.2 + Math.abs(obj[/* vel */2][/* y */1]) * 0.01, 4.5);
+  } else if (obj.params.has_gravity) {
+    obj.vel.y = Caml_primitive.caml_float_min(obj.vel.y + 0.2 + Math.abs(obj.vel.y) * 0.01, 4.5);
     return /* () */0;
   } else {
     return 0;
@@ -1060,9 +1060,9 @@ function update_vel$1(obj) {
 }
 
 function update_pos(obj) {
-  obj[/* pos */1][/* x */0] = obj[/* vel */2][/* x */0] + obj[/* pos */1][/* x */0];
-  if (obj[/* params */0][/* has_gravity */0]) {
-    obj[/* pos */1][/* y */1] = obj[/* vel */2][/* y */1] + obj[/* pos */1][/* y */1];
+  obj.pos.x = obj.vel.x + obj.pos.x;
+  if (obj.params.has_gravity) {
+    obj.pos.y = obj.vel.y + obj.pos.y;
     return /* () */0;
   } else {
     return 0;
@@ -1072,8 +1072,8 @@ function update_pos(obj) {
 function process_obj(obj, mapy) {
   update_vel$1(obj);
   update_pos(obj);
-  if (obj[/* pos */1][/* y */1] > mapy) {
-    obj[/* kill */8] = true;
+  if (obj.pos.y > mapy) {
+    obj.kill = true;
     return /* () */0;
   } else {
     return 0;
@@ -1081,11 +1081,11 @@ function process_obj(obj, mapy) {
 }
 
 function normalize_origin(pos, spr) {
-  var p = spr[/* params */0];
-  var match = p[/* bbox_offset */5];
-  var match$1 = p[/* bbox_size */6];
-  pos[0] -= match[0];
-  pos[1] -= (match[1] + match$1[1]);
+  var p = spr.params;
+  var match = p.bbox_offset;
+  var match$1 = p.bbox_size;
+  pos.x = pos.x - match[0];
+  pos.y = pos.y - (match[1] + match$1[1]);
   return /* () */0;
 }
 
@@ -1094,55 +1094,55 @@ function collide_block($staropt$star, dir, obj) {
   if (dir !== 1) {
     if (dir !== 0) {
       if (check_x) {
-        obj[/* vel */2][/* x */0] = 0;
+        obj.vel.x = 0;
         return /* () */0;
       } else {
         return 0;
       }
     } else {
-      obj[/* vel */2][/* y */1] = -0.001;
+      obj.vel.y = -0.001;
       return /* () */0;
     }
   } else {
-    obj[/* vel */2][/* y */1] = 0;
-    obj[/* grounded */5] = true;
-    obj[/* jumping */4] = false;
+    obj.vel.y = 0;
+    obj.grounded = true;
+    obj.jumping = false;
     return /* () */0;
   }
 }
 
 function reverse_left_right(obj) {
-  obj[/* vel */2][/* x */0] = -obj[/* vel */2][/* x */0];
-  obj[/* dir */6] = obj[/* dir */6] ? /* Left */0 : /* Right */1;
+  obj.vel.x = -obj.vel.x;
+  obj.dir = obj.dir ? /* Left */0 : /* Right */1;
   return /* () */0;
 }
 
 function evolve_enemy(player_dir, typ, spr, obj, context) {
   switch (typ) {
     case 0 : 
-        obj[/* kill */8] = true;
+        obj.kill = true;
         return ;
     case 1 : 
-        var match = make$2(undefined, obj[/* dir */6], /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
-              obj[/* pos */1][/* x */0],
-              obj[/* pos */1][/* y */1]
+        var match = make$2(undefined, obj.dir, /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
+              obj.pos.x,
+              obj.pos.y
             ]);
         var new_obj = match[1];
         var new_spr = match[0];
-        normalize_pos(new_obj[/* pos */1], spr[/* params */0], new_spr[/* params */0]);
+        normalize_pos(new_obj.pos, spr.params, new_spr.params);
         return /* Enemy */Block.__(1, [
                   /* GKoopaShell */3,
                   new_spr,
                   new_obj
                 ]);
     case 2 : 
-        var match$1 = make$2(undefined, obj[/* dir */6], /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
-              obj[/* pos */1][/* x */0],
-              obj[/* pos */1][/* y */1]
+        var match$1 = make$2(undefined, obj.dir, /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
+              obj.pos.x,
+              obj.pos.y
             ]);
         var new_obj$1 = match$1[1];
         var new_spr$1 = match$1[0];
-        normalize_pos(new_obj$1[/* pos */1], spr[/* params */0], new_spr$1[/* params */0]);
+        normalize_pos(new_obj$1.pos, spr.params, new_spr$1.params);
         return /* Enemy */Block.__(1, [
                   /* RKoopaShell */4,
                   new_spr$1,
@@ -1153,9 +1153,9 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         break;
     
   }
-  obj[/* dir */6] = player_dir;
-  if (obj[/* vel */2][/* x */0] !== 0) {
-    obj[/* vel */2][/* x */0] = 0;
+  obj.dir = player_dir;
+  if (obj.vel.x !== 0) {
+    obj.vel.x = 0;
   } else {
     set_vel_to_speed(obj);
   }
@@ -1164,18 +1164,18 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
 
 function rev_dir(o, t, s) {
   reverse_left_right(o);
-  var old_params = s[/* params */0];
-  transform_enemy(t, s, o[/* dir */6]);
-  return normalize_pos(o[/* pos */1], old_params, s[/* params */0]);
+  var old_params = s.params;
+  transform_enemy(t, s, o.dir);
+  return normalize_pos(o.pos, old_params, s.params);
 }
 
 function dec_health(obj) {
-  var health = obj[/* health */9] - 1 | 0;
+  var health = obj.health - 1 | 0;
   if (health === 0) {
-    obj[/* kill */8] = true;
+    obj.kill = true;
     return /* () */0;
-  } else if (obj[/* invuln */7] === 0) {
-    obj[/* health */9] = health;
+  } else if (obj.invuln === 0) {
+    obj.health = health;
     return /* () */0;
   } else {
     return 0;
@@ -1185,8 +1185,8 @@ function dec_health(obj) {
 function evolve_block(obj, context) {
   dec_health(obj);
   var match = make$2(undefined, undefined, /* SBlock */Block.__(3, [/* QBlockUsed */0]), context, /* tuple */[
-        obj[/* pos */1][/* x */0],
-        obj[/* pos */1][/* y */1]
+        obj.pos.x,
+        obj.pos.y
       ]);
   return /* Block */Block.__(3, [
             /* QBlockUsed */0,
@@ -1197,35 +1197,35 @@ function evolve_block(obj, context) {
 
 function spawn_above(player_dir, obj, typ, context) {
   var item = spawn(/* SItem */Block.__(2, [typ]), context, /* tuple */[
-        obj[/* pos */1][/* x */0],
-        obj[/* pos */1][/* y */1]
+        obj.pos.x,
+        obj.pos.y
       ]);
   var item_obj = item[2];
-  item_obj[/* pos */1][/* y */1] = item_obj[/* pos */1][/* y */1] - item[1][/* params */0][/* frame_size */3][1];
-  item_obj[/* dir */6] = player_dir ? /* Left */0 : /* Right */1;
+  item_obj.pos.y = item_obj.pos.y - item[1].params.frame_size[1];
+  item_obj.dir = player_dir ? /* Left */0 : /* Right */1;
   set_vel_to_speed(item_obj);
   return item;
 }
 
 function get_aabb(obj) {
-  var spr = obj[1][/* params */0];
+  var spr = obj[1].params;
   var obj$1 = obj[2];
-  var match = spr[/* bbox_offset */5];
-  var box = obj$1[/* pos */1][/* x */0] + match[0];
-  var boy = obj$1[/* pos */1][/* y */1] + match[1];
-  var match$1 = spr[/* bbox_size */6];
+  var match = spr.bbox_offset;
+  var box = obj$1.pos.x + match[0];
+  var boy = obj$1.pos.y + match[1];
+  var match$1 = spr.bbox_size;
   var sy = match$1[1];
   var sx = match$1[0];
-  return /* record */[
-          /* center : record */[
-            /* x */box + sx / 2,
-            /* y */boy + sy / 2
-          ],
-          /* half : record */[
-            /* x */sx / 2,
-            /* y */sy / 2
-          ]
-        ];
+  return /* record */{
+          center: /* record */{
+            x: box + sx / 2,
+            y: boy + sy / 2
+          },
+          half: /* record */{
+            x: sx / 2,
+            y: sy / 2
+          }
+        };
 }
 
 function col_bypass(c1, c2) {
@@ -1234,7 +1234,7 @@ function col_bypass(c1, c2) {
   var ctypes;
   switch (c1.tag | 0) {
     case 0 : 
-        ctypes = c2.tag === 1 ? c1[2][/* invuln */7] > 0 : false;
+        ctypes = c2.tag === 1 ? c1[2].invuln > 0 : false;
         break;
     case 1 : 
         ctypes = c2.tag === 2 ? true : false;
@@ -1257,7 +1257,7 @@ function col_bypass(c1, c2) {
         break;
     
   }
-  if (o1[/* kill */8] || o2[/* kill */8]) {
+  if (o1.kill || o2.kill) {
     return true;
   } else {
     return ctypes;
@@ -1271,26 +1271,26 @@ function check_collision(c1, c2) {
   if (col_bypass(c1, c2)) {
     return ;
   } else {
-    var vx = b1[/* center */0][/* x */0] - b2[/* center */0][/* x */0];
-    var vy = b1[/* center */0][/* y */1] - b2[/* center */0][/* y */1];
-    var hwidths = b1[/* half */1][/* x */0] + b2[/* half */1][/* x */0];
-    var hheights = b1[/* half */1][/* y */1] + b2[/* half */1][/* y */1];
+    var vx = b1.center.x - b2.center.x;
+    var vy = b1.center.y - b2.center.y;
+    var hwidths = b1.half.x + b2.half.x;
+    var hheights = b1.half.y + b2.half.y;
     if (Math.abs(vx) < hwidths && Math.abs(vy) < hheights) {
       var ox = hwidths - Math.abs(vx);
       var oy = hheights - Math.abs(vy);
       if (ox >= oy) {
         if (vy > 0) {
-          o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] + oy;
+          o1.pos.y = o1.pos.y + oy;
           return /* North */0;
         } else {
-          o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] - oy;
+          o1.pos.y = o1.pos.y - oy;
           return /* South */1;
         }
       } else if (vx > 0) {
-        o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] + ox;
+        o1.pos.x = o1.pos.x + ox;
         return /* West */3;
       } else {
-        o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] - ox;
+        o1.pos.x = o1.pos.x - ox;
         return /* East */2;
       }
     } else {
@@ -1305,14 +1305,14 @@ function kill(collid, ctx) {
         return /* [] */0;
     case 1 : 
         var o = collid[2];
-        var pos_000 = o[/* pos */1][/* x */0];
-        var pos_001 = o[/* pos */1][/* y */1];
+        var pos_000 = o.pos.x;
+        var pos_001 = o.pos.y;
         var pos = /* tuple */[
           pos_000,
           pos_001
         ];
-        var score = o[/* score */11] > 0 ? /* :: */[
-            make_score(o[/* score */11], pos, ctx),
+        var score = o.score > 0 ? /* :: */[
+            make_score(o.score, pos, ctx),
             /* [] */0
           ] : /* [] */0;
         var remains = collid[0] !== 0 ? /* [] */0 : /* :: */[
@@ -1326,9 +1326,9 @@ function kill(collid, ctx) {
           return /* [] */0;
         } else {
           return /* :: */[
-                  make_score(o$1[/* score */11], /* tuple */[
-                        o$1[/* pos */1][/* x */0],
-                        o$1[/* pos */1][/* y */1]
+                  make_score(o$1.score, /* tuple */[
+                        o$1.pos.x,
+                        o$1.pos.y
                       ], ctx),
                   /* [] */0
                 ];
@@ -1337,8 +1337,8 @@ function kill(collid, ctx) {
         var o$2 = collid[2];
         var t = collid[0];
         if (typeof t === "number" && t === 1) {
-          var pos_000$1 = o$2[/* pos */1][/* x */0];
-          var pos_001$1 = o$2[/* pos */1][/* y */1];
+          var pos_000$1 = o$2.pos.x;
+          var pos_001$1 = o$2.pos.y;
           var pos$1 = /* tuple */[
             pos_000$1,
             pos_001$1
@@ -1416,21 +1416,21 @@ var $$Object = /* module */{
 };
 
 function render_bbox(sprite, param) {
-  var context = sprite[/* context */1];
-  var match = sprite[/* params */0][/* bbox_offset */5];
-  var match$1 = sprite[/* params */0][/* bbox_size */6];
+  var context = sprite.context;
+  var match = sprite.params.bbox_offset;
+  var match$1 = sprite.params.bbox_size;
   context.strokeStyle = "#FF0000";
   return context.strokeRect(param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
 }
 
 function render(sprite, param) {
-  var context = sprite[/* context */1];
-  var match = sprite[/* params */0][/* src_offset */4];
-  var match$1 = sprite[/* params */0][/* frame_size */3];
+  var context = sprite.context;
+  var match = sprite.params.src_offset;
+  var match$1 = sprite.params.frame_size;
   var sw = match$1[0];
-  var match$2 = sprite[/* params */0][/* frame_size */3];
-  var sx = match[0] + sprite[/* frame */2][0] * sw;
-  return context.drawImage(sprite[/* img */4], sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
+  var match$2 = sprite.params.frame_size;
+  var sx = match[0] + sprite.frame[0] * sw;
+  return context.drawImage(sprite.img, sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
 }
 
 function draw_bgd(bgd, off_x) {
@@ -1439,7 +1439,7 @@ function draw_bgd(bgd, off_x) {
         0
       ]);
   return render(bgd, /* tuple */[
-              bgd[/* params */0][/* frame_size */3][0] - off_x,
+              bgd.params.frame_size[0] - off_x,
               0
             ]);
 }
@@ -1507,20 +1507,20 @@ var Draw = /* module */{
 };
 
 function make$3(param, param$1) {
-  return /* record */[
-          /* pos : record */[
-            /* x */0,
-            /* y */0
-          ],
-          /* v_dim : record */[
-            /* x */param[0],
-            /* y */param[1]
-          ],
-          /* m_dim : record */[
-            /* x */param$1[0],
-            /* y */param$1[1]
-          ]
-        ];
+  return /* record */{
+          pos: /* record */{
+            x: 0,
+            y: 0
+          },
+          v_dim: /* record */{
+            x: param[0],
+            y: param[1]
+          },
+          m_dim: /* record */{
+            x: param$1[0],
+            y: param$1[1]
+          }
+        };
 }
 
 function calc_viewport_point(cc, vc, mc) {
@@ -1529,12 +1529,12 @@ function calc_viewport_point(cc, vc, mc) {
 }
 
 function in_viewport(v, pos) {
-  var v_min_x = v[/* pos */0][/* x */0] - 32;
-  var v_max_x = v[/* pos */0][/* x */0] + v[/* v_dim */1][/* x */0];
-  var v_min_y = v[/* pos */0][/* y */1] - 32;
-  var v_max_y = v[/* pos */0][/* y */1] + v[/* v_dim */1][/* y */1];
-  var x = pos[/* x */0];
-  var y = pos[/* y */1];
+  var v_min_x = v.pos.x - 32;
+  var v_max_x = v.pos.x + v.v_dim.x;
+  var v_min_y = v.pos.y - 32;
+  var v_max_y = v.pos.y + v.v_dim.y;
+  var x = pos.x;
+  var y = pos.y;
   if (x >= v_min_x && x <= v_max_x && y >= v_min_y) {
     return y <= v_max_y;
   } else {
@@ -1543,29 +1543,29 @@ function in_viewport(v, pos) {
 }
 
 function out_of_viewport_below(v, y) {
-  var v_max_y = v[/* pos */0][/* y */1] + v[/* v_dim */1][/* y */1];
+  var v_max_y = v.pos.y + v.v_dim.y;
   return y >= v_max_y;
 }
 
 function coord_to_viewport(viewport, coord) {
-  return /* record */[
-          /* x */coord[/* x */0] - viewport[/* pos */0][/* x */0],
-          /* y */coord[/* y */1] - viewport[/* pos */0][/* y */1]
-        ];
+  return /* record */{
+          x: coord.x - viewport.pos.x,
+          y: coord.y - viewport.pos.y
+        };
 }
 
 function update(vpt, ctr) {
-  var new_x = calc_viewport_point(ctr[/* x */0], vpt[/* v_dim */1][/* x */0], vpt[/* m_dim */2][/* x */0]);
-  var new_y = calc_viewport_point(ctr[/* y */1], vpt[/* v_dim */1][/* y */1], vpt[/* m_dim */2][/* y */1]);
-  var pos = /* record */[
-    /* x */new_x,
-    /* y */new_y
-  ];
-  return /* record */[
-          /* pos */pos,
-          /* v_dim */vpt[/* v_dim */1],
-          /* m_dim */vpt[/* m_dim */2]
-        ];
+  var new_x = calc_viewport_point(ctr.x, vpt.v_dim.x, vpt.m_dim.x);
+  var new_y = calc_viewport_point(ctr.y, vpt.v_dim.y, vpt.m_dim.y);
+  var pos = /* record */{
+    x: new_x,
+    y: new_y
+  };
+  return /* record */{
+          pos: pos,
+          v_dim: vpt.v_dim,
+          m_dim: vpt.m_dim
+        };
 }
 
 var Viewport = /* module */{
@@ -1577,13 +1577,13 @@ var Viewport = /* module */{
   update: update
 };
 
-var pressed_keys = /* record */[
-  /* left */false,
-  /* right */false,
-  /* up */false,
-  /* down */false,
-  /* bbox */0
-];
+var pressed_keys = /* record */{
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+  bbox: 0
+};
 
 var collid_objs = /* record */[/* contents : [] */0];
 
@@ -1597,12 +1597,12 @@ function calc_fps(t0, t1) {
 }
 
 function update_score(state, i) {
-  state[/* score */4] = state[/* score */4] + i | 0;
+  state.score = state.score + i | 0;
   return /* () */0;
 }
 
 function process_collision(dir, c1, c2, state) {
-  var context = state[/* ctx */1];
+  var context = state.ctx;
   var exit = 0;
   var s1;
   var o1;
@@ -1658,7 +1658,7 @@ function process_collision(dir, c1, c2, state) {
               var t = c2[0];
               if (dir !== 0) {
                 if (typeof t === "number" && t === 4) {
-                  game_win(state[/* ctx */1]);
+                  game_win(state.ctx);
                   return /* tuple */[
                           undefined,
                           undefined
@@ -1671,7 +1671,7 @@ function process_collision(dir, c1, c2, state) {
                           undefined
                         ];
                 } else {
-                  state[/* multiplier */6] = 1;
+                  state.multiplier = 1;
                   collide_block(undefined, dir, o1$3);
                   return /* tuple */[
                           undefined,
@@ -1687,7 +1687,7 @@ function process_collision(dir, c1, c2, state) {
                             undefined
                           ];
                   } else {
-                    game_win(state[/* ctx */1]);
+                    game_win(state.ctx);
                     return /* tuple */[
                             undefined,
                             undefined
@@ -1709,7 +1709,7 @@ function process_collision(dir, c1, c2, state) {
                 }
               } else {
                 var updated_block = evolve_block(o2$4, context);
-                var spawned_item = spawn_above(o1$3[/* dir */6], o2$4, t[0], context);
+                var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
                 collide_block(undefined, dir, o1$3);
                 return /* tuple */[
                         spawned_item,
@@ -1764,7 +1764,7 @@ function process_collision(dir, c1, c2, state) {
                   }
                   
                 } else if (t2$2 >= 3) {
-                  if (o2$5[/* vel */2][/* x */0] === 0) {
+                  if (o2$5.vel.x === 0) {
                     rev_dir(o1$6, t1$1, s1$5);
                     return /* tuple */[
                             undefined,
@@ -1798,7 +1798,7 @@ function process_collision(dir, c1, c2, state) {
                         undefined
                       ];
               }
-              if (o1$6[/* vel */2][/* x */0] === 0) {
+              if (o1$6.vel.x === 0) {
                 rev_dir(o2$5, t2$2, s2$3);
                 return /* tuple */[
                         undefined,
@@ -1838,7 +1838,7 @@ function process_collision(dir, c1, c2, state) {
                     }
                   } else {
                     var updated_block$1 = evolve_block(o2$6, context);
-                    var spawned_item$1 = spawn_above(o1$4[/* dir */6], o2$6, t2$3[0], context);
+                    var spawned_item$1 = spawn_above(o1$4.dir, o2$6, t2$3[0], context);
                     rev_dir(o1$4, t1, s1$3);
                     return /* tuple */[
                             updated_block$1,
@@ -1909,35 +1909,35 @@ function process_collision(dir, c1, c2, state) {
         var o2$8 = o2;
         var state$1 = state;
         var context$1 = context;
-        o1$7[/* invuln */7] = 10;
-        o1$7[/* jumping */4] = false;
-        o1$7[/* grounded */5] = true;
+        o1$7.invuln = 10;
+        o1$7.jumping = false;
+        o1$7.grounded = true;
         if (typ$2 >= 3) {
-          var r2 = evolve_enemy(o1$7[/* dir */6], typ$2, s2$4, o2$8, context$1);
-          o1$7[/* vel */2][/* y */1] = -4;
-          o1$7[/* pos */1][/* y */1] = o1$7[/* pos */1][/* y */1] - 5;
+          var r2 = evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1);
+          o1$7.vel.y = -4;
+          o1$7.pos.y = o1$7.pos.y - 5;
           return /* tuple */[
                   undefined,
                   r2
                 ];
         } else {
           dec_health(o2$8);
-          o1$7[/* vel */2][/* y */1] = -4;
-          if (state$1[/* multiplier */6] === 8) {
+          o1$7.vel.y = -4;
+          if (state$1.multiplier === 8) {
             update_score(state$1, 800);
-            o2$8[/* score */11] = 800;
+            o2$8.score = 800;
             return /* tuple */[
                     undefined,
-                    evolve_enemy(o1$7[/* dir */6], typ$2, s2$4, o2$8, context$1)
+                    evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1)
                   ];
           } else {
-            var score = Caml_int32.imul(100, state$1[/* multiplier */6]);
+            var score = Caml_int32.imul(100, state$1.multiplier);
             update_score(state$1, score);
-            o2$8[/* score */11] = score;
-            state$1[/* multiplier */6] = (state$1[/* multiplier */6] << 1);
+            o2$8.score = score;
+            state$1.multiplier = (state$1.multiplier << 1);
             return /* tuple */[
                     undefined,
-                    evolve_enemy(o1$7[/* dir */6], typ$2, s2$4, o2$8, context$1)
+                    evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1)
                   ];
           }
         }
@@ -1948,14 +1948,14 @@ function process_collision(dir, c1, c2, state) {
         var o2$9 = o2$1;
         var context$2 = context;
         if (t2$4 >= 3) {
-          var r2$1 = o2$9[/* vel */2][/* x */0] === 0 ? evolve_enemy(o1$8[/* dir */6], t2$4, s2$5, o2$9, context$2) : (dec_health(o1$8), o1$8[/* invuln */7] = 60, undefined);
+          var r2$1 = o2$9.vel.x === 0 ? evolve_enemy(o1$8.dir, t2$4, s2$5, o2$9, context$2) : (dec_health(o1$8), o1$8.invuln = 60, undefined);
           return /* tuple */[
                   undefined,
                   r2$1
                 ];
         } else {
           dec_health(o1$8);
-          o1$8[/* invuln */7] = 60;
+          o1$8.invuln = 60;
           return /* tuple */[
                   undefined,
                   undefined
@@ -1964,7 +1964,7 @@ function process_collision(dir, c1, c2, state) {
     case 3 : 
         if (t2$1 !== 0) {
           if (t2$1 >= 3) {
-            state[/* coins */5] = state[/* coins */5] + 1 | 0;
+            state.coins = state.coins + 1 | 0;
             dec_health(o2$2);
             update_score(state, 100);
             return /* tuple */[
@@ -1981,13 +1981,13 @@ function process_collision(dir, c1, c2, state) {
           }
         } else {
           dec_health(o2$2);
-          if (o1$2[/* health */9] !== 2) {
-            o1$2[/* health */9] = o1$2[/* health */9] + 1 | 0;
+          if (o1$2.health !== 2) {
+            o1$2.health = o1$2.health + 1 | 0;
           }
-          o1$2[/* vel */2][/* x */0] = 0;
-          o1$2[/* vel */2][/* y */1] = 0;
+          o1$2.vel.x = 0;
+          o1$2.vel.y = 0;
           update_score(state, 1000);
-          o2$2[/* score */11] = 1000;
+          o2$2.score = 1000;
           return /* tuple */[
                   undefined,
                   undefined
@@ -2000,10 +2000,10 @@ function process_collision(dir, c1, c2, state) {
 function broad_phase(collid, all_collids, state) {
   var obj = collid[2];
   return List.filter((function (c) {
-                  if (in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid)) {
+                  if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
                     return true;
                   } else {
-                    return out_of_viewport_below(state[/* vpt */2], obj[/* pos */1][/* y */1]);
+                    return out_of_viewport_below(state.vpt, obj.pos.y);
                   }
                 }))(all_collids);
 }
@@ -2034,7 +2034,7 @@ function check_collisions(collid, all_collids, state) {
           ];
         } else {
           var match = check_collision(c$1, h);
-          new_objs = match !== undefined && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match, c$1, h, state$2) : /* tuple */[
+          new_objs = match !== undefined && h[2].id !== c_obj.id ? process_collision(match, c$1, h, state$2) : /* tuple */[
               undefined,
               undefined
             ];
@@ -2074,24 +2074,24 @@ function check_collisions(collid, all_collids, state) {
 function update_collidable(state, collid, all_collids) {
   var obj = collid[2];
   var spr = collid[1];
-  obj[/* invuln */7] = obj[/* invuln */7] > 0 ? obj[/* invuln */7] - 1 | 0 : 0;
-  var viewport_filter = in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid) || out_of_viewport_below(state[/* vpt */2], obj[/* pos */1][/* y */1]);
-  if (!obj[/* kill */8] && viewport_filter) {
-    obj[/* grounded */5] = false;
-    process_obj(obj, state[/* map */3]);
+  obj.invuln = obj.invuln > 0 ? obj.invuln - 1 | 0 : 0;
+  var viewport_filter = in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(state.vpt, obj.pos.y);
+  if (!obj.kill && viewport_filter) {
+    obj.grounded = false;
+    process_obj(obj, state.map);
     var evolved = check_collisions(collid, all_collids, state);
-    var vpt_adj_xy = coord_to_viewport(state[/* vpt */2], obj[/* pos */1]);
+    var vpt_adj_xy = coord_to_viewport(state.vpt, obj.pos);
     render(spr, /* tuple */[
-          vpt_adj_xy[/* x */0],
-          vpt_adj_xy[/* y */1]
+          vpt_adj_xy.x,
+          vpt_adj_xy.y
         ]);
-    if (pressed_keys[/* bbox */4] === 1) {
+    if (pressed_keys.bbox === 1) {
       render_bbox(spr, /* tuple */[
-            vpt_adj_xy[/* x */0],
-            vpt_adj_xy[/* y */1]
+            vpt_adj_xy.x,
+            vpt_adj_xy.y
           ]);
     }
-    if (obj[/* vel */2][/* x */0] !== 0 || !is_enemy(collid)) {
+    if (obj.vel.x !== 0 || !is_enemy(collid)) {
       update_animation(spr);
     }
     return evolved;
@@ -2102,22 +2102,22 @@ function update_collidable(state, collid, all_collids) {
 
 function translate_keys(param) {
   var ctrls_000 = /* tuple */[
-    pressed_keys[/* left */0],
+    pressed_keys.left,
     /* CLeft */0
   ];
   var ctrls_001 = /* :: */[
     /* tuple */[
-      pressed_keys[/* right */1],
+      pressed_keys.right,
       /* CRight */1
     ],
     /* :: */[
       /* tuple */[
-        pressed_keys[/* up */2],
+        pressed_keys.up,
         /* CUp */2
       ],
       /* :: */[
         /* tuple */[
-          pressed_keys[/* down */3],
+          pressed_keys.down,
           /* CDown */3
         ],
         /* [] */0
@@ -2144,25 +2144,25 @@ function run_update_collid(state, collid, all_collids) {
   if (collid.tag) {
     var obj = collid[2];
     var evolved = update_collidable(state, collid, all_collids);
-    if (!obj[/* kill */8]) {
+    if (!obj.kill) {
       collid_objs[0] = /* :: */[
         collid,
         Pervasives.$at(collid_objs[0], evolved)
       ];
     }
-    var new_parts = obj[/* kill */8] ? kill(collid, state[/* ctx */1]) : /* [] */0;
+    var new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
     particles[0] = Pervasives.$at(particles[0], new_parts);
     return collid;
   } else {
     var o = collid[2];
     var keys = translate_keys(/* () */0);
-    o[/* crouch */10] = false;
-    var match = update_player(o, keys, state[/* ctx */1]);
+    o.crouch = false;
+    var match = update_player(o, keys, state.ctx);
     var player;
     if (match !== undefined) {
       var match$1 = match;
       var new_spr = match$1[1];
-      normalize_pos(o[/* pos */1], collid[1][/* params */0], new_spr[/* params */0]);
+      normalize_pos(o.pos, collid[1].params, new_spr.params);
       player = /* Player */Block.__(0, [
           match$1[0],
           new_spr,
@@ -2186,43 +2186,43 @@ function update_loop(canvas, param, map_dim) {
         cwidth,
         cheight
       ], map_dim);
-  var state = /* record */[
-    /* bgd */make_bgd(ctx),
-    /* ctx */ctx,
-    /* vpt */update(viewport, player[2][/* pos */1]),
-    /* map */map_dim[1],
-    /* score */0,
-    /* coins */0,
-    /* multiplier */1,
-    /* game_over */false
-  ];
-  state[/* ctx */1].scale(1, 1);
+  var state = /* record */{
+    bgd: make_bgd(ctx),
+    ctx: ctx,
+    vpt: update(viewport, player[2].pos),
+    map: map_dim[1],
+    score: 0,
+    coins: 0,
+    multiplier: 1,
+    game_over: false
+  };
+  state.ctx.scale(1, 1);
   var update_helper = function (time, state, player, objs, parts) {
-    if (state[/* game_over */7] === true) {
-      return game_win(state[/* ctx */1]);
+    if (state.game_over === true) {
+      return game_win(state.ctx);
     } else {
       collid_objs[0] = /* [] */0;
       particles[0] = /* [] */0;
       var fps$1 = calc_fps(last_time[0], time);
       last_time[0] = time;
       clear_canvas(canvas);
-      var vpos_x_int = state[/* vpt */2][/* pos */0][/* x */0] / 5 | 0;
-      var bgd_width = state[/* bgd */0][/* params */0][/* frame_size */3][0] | 0;
-      draw_bgd(state[/* bgd */0], Caml_int32.mod_(vpos_x_int, bgd_width));
+      var vpos_x_int = state.vpt.pos.x / 5 | 0;
+      var bgd_width = state.bgd.params.frame_size[0] | 0;
+      draw_bgd(state.bgd, Caml_int32.mod_(vpos_x_int, bgd_width));
       var player$1 = run_update_collid(state, player, objs);
-      if (player$1[2][/* kill */8] === true) {
-        return game_loss(state[/* ctx */1]);
+      if (player$1[2].kill === true) {
+        return game_loss(state.ctx);
       } else {
-        var state$1 = /* record */[
-          /* bgd */state[/* bgd */0],
-          /* ctx */state[/* ctx */1],
-          /* vpt */update(state[/* vpt */2], player$1[2][/* pos */1]),
-          /* map */state[/* map */3],
-          /* score */state[/* score */4],
-          /* coins */state[/* coins */5],
-          /* multiplier */state[/* multiplier */6],
-          /* game_over */state[/* game_over */7]
-        ];
+        var state$1 = /* record */{
+          bgd: state.bgd,
+          ctx: state.ctx,
+          vpt: update(state.vpt, player$1[2].pos),
+          map: state.map,
+          score: state.score,
+          coins: state.coins,
+          multiplier: state.multiplier,
+          game_over: state.game_over
+        };
         List.iter((function (obj) {
                 run_update_collid(state$1, obj, objs);
                 return /* () */0;
@@ -2231,13 +2231,13 @@ function update_loop(canvas, param, map_dim) {
                 var state$2 = state$1;
                 var part$1 = part;
                 $$process(part$1);
-                var x = part$1[/* pos */2][/* x */0] - state$2[/* vpt */2][/* pos */0][/* x */0];
-                var y = part$1[/* pos */2][/* y */1] - state$2[/* vpt */2][/* pos */0][/* y */1];
-                render(part$1[/* params */0][/* sprite */0], /* tuple */[
+                var x = part$1.pos.x - state$2.vpt.pos.x;
+                var y = part$1.pos.y - state$2.vpt.pos.y;
+                render(part$1.params.sprite, /* tuple */[
                       x,
                       y
                     ]);
-                if (part$1[/* kill */5]) {
+                if (part$1.kill) {
                   return 0;
                 } else {
                   particles[0] = /* :: */[
@@ -2248,7 +2248,7 @@ function update_loop(canvas, param, map_dim) {
                 }
               }), parts);
         fps(canvas, fps$1);
-        hud(canvas, state$1[/* score */4], state$1[/* coins */5]);
+        hud(canvas, state$1.score, state$1.coins);
         requestAnimationFrame((function (t) {
                 return update_helper(t, state$1, player$1, collid_objs[0], particles[0]);
               }));
@@ -2264,16 +2264,16 @@ function keydown(evt) {
   if (match >= 41) {
     switch (match) {
       case 65 : 
-          pressed_keys[/* left */0] = true;
+          pressed_keys.left = true;
           break;
       case 66 : 
-          pressed_keys[/* bbox */4] = (pressed_keys[/* bbox */4] + 1 | 0) % 2;
+          pressed_keys.bbox = (pressed_keys.bbox + 1 | 0) % 2;
           break;
       case 68 : 
-          pressed_keys[/* right */1] = true;
+          pressed_keys.right = true;
           break;
       case 83 : 
-          pressed_keys[/* down */3] = true;
+          pressed_keys.down = true;
           break;
       case 67 : 
       case 69 : 
@@ -2295,7 +2295,7 @@ function keydown(evt) {
       case 86 : 
           break;
       case 87 : 
-          pressed_keys[/* up */2] = true;
+          pressed_keys.up = true;
           break;
       default:
         
@@ -2308,17 +2308,17 @@ function keydown(evt) {
       case 4 : 
           break;
       case 5 : 
-          pressed_keys[/* left */0] = true;
+          pressed_keys.left = true;
           break;
       case 0 : 
       case 6 : 
-          pressed_keys[/* up */2] = true;
+          pressed_keys.up = true;
           break;
       case 7 : 
-          pressed_keys[/* right */1] = true;
+          pressed_keys.right = true;
           break;
       case 8 : 
-          pressed_keys[/* down */3] = true;
+          pressed_keys.down = true;
           break;
       
     }
@@ -2334,17 +2334,17 @@ function keyup(evt) {
         if (match >= 69) {
           
         } else {
-          pressed_keys[/* right */1] = false;
+          pressed_keys.right = false;
         }
       } else {
-        pressed_keys[/* up */2] = false;
+        pressed_keys.up = false;
       }
     } else {
-      pressed_keys[/* down */3] = false;
+      pressed_keys.down = false;
     }
   } else if (match >= 41) {
     if (match === 65) {
-      pressed_keys[/* left */0] = false;
+      pressed_keys.left = false;
     }
     
   } else if (match >= 32) {
@@ -2355,17 +2355,17 @@ function keyup(evt) {
       case 4 : 
           break;
       case 5 : 
-          pressed_keys[/* left */0] = false;
+          pressed_keys.left = false;
           break;
       case 0 : 
       case 6 : 
-          pressed_keys[/* up */2] = false;
+          pressed_keys.up = false;
           break;
       case 7 : 
-          pressed_keys[/* right */1] = false;
+          pressed_keys.right = false;
           break;
       case 8 : 
-          pressed_keys[/* down */3] = false;
+          pressed_keys.down = false;
           break;
       
     }

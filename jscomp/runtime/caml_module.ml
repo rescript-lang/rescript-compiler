@@ -50,6 +50,7 @@ return o[n];
     in the lambda layer
  *)
 let init_mod (loc : string * int * int) (shape : shape) =    
+  let module Array = Caml_array_extern in 
   let undef_module _ = raise (Undefined_recursive_module loc) in
   let rec loop (shape : shape) (struct_ : Caml_obj_extern.t) name = 
     match shape with 
