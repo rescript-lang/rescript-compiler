@@ -213,18 +213,16 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
   let common_prefix_blocks = ref [] in 
   let add_prefix b = common_prefix_blocks := b :: !common_prefix_blocks in 
   let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ): t  =
-    match e.expression_desc with 
-    | Bool boolean -> 
+    match e.expression_desc,ifnot  with 
+    | Bool boolean, _ -> 
       block (if boolean then ifso else ifnot) 
-    | Js_not pred_not
+    | Js_not pred_not, (_::_)
       -> aux ?comment pred_not ifnot ifso
     | _ -> 
       match ifso, ifnot with 
       |  [], [] -> exp e 
       |  [], _ ->
-        {
-          statement_desc = If ( E.not e, ifnot, []); comment
-        }
+         aux ?comment (E.not e) ifnot [] (*Make sure no infinite loop*)        
       | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
         [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
         ->      

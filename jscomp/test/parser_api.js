@@ -4453,11 +4453,8 @@ function extension(loc, attrs, a) {
 
 function force_poly(t) {
   var match = t[/* ptyp_desc */0];
-  if (typeof match !== "number") {
-    if (match.tag === 8) {
-      return t;
-    }
-    
+  if (typeof match !== "number" && match.tag === 8) {
+    return t;
   }
   return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
 }
@@ -12881,11 +12878,8 @@ function directive_parse(token_with_comments, lexbuf) {
             var value_v = query(curr_loc, curr_token[0]);
             return token_op(calc, (function (e) {
                           push(e);
-                          if (typeof value_v !== "number") {
-                            if (!value_v.tag) {
-                              return value_v[0];
-                            }
-                            
+                          if (typeof value_v !== "number" && !value_v.tag) {
+                            return value_v[0];
                           }
                           var ty = type_of_directive(value_v);
                           throw [

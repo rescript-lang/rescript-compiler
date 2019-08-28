@@ -49,8 +49,7 @@ module MakeComparableU (M : sig
   end) =
 struct
   type identity
-  type t = M.t
-  let cmp = M.cmp
+  include M
 end
 
 module MakeComparable (M : sig
@@ -69,11 +68,11 @@ let comparableU
   (type key)
   ~cmp
   =
-  let module N = MakeComparableU(struct
+  (module MakeComparableU(struct
       type t = key
       let cmp = cmp
-    end) in
-  (module N : Comparable with type t = key)
+    end) 
+  : Comparable with type t = key)
 
 let comparable
   (type key)
@@ -101,9 +100,7 @@ module MakeHashableU (M : sig
   end) =
 struct
   type identity
-  type t = M.t
-  let hash = M.hash
-  let eq = M.eq
+  include M
 end
 
 module MakeHashable (M : sig
@@ -121,12 +118,11 @@ struct
 end
 
 let hashableU (type key) ~hash ~eq =
-  let module N = MakeHashableU(struct
-    type t = key
-    let hash = hash
-    let eq = eq
-  end) in
-  (module N : Hashable with type t = key)
+  (module MakeHashableU(struct
+       type t = key
+       let hash = hash
+       let eq = eq
+     end) : Hashable with type t = key)
 
 let hashable (type key) ~hash ~eq =
   let module N = MakeHashable(struct

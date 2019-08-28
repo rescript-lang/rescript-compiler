@@ -2941,11 +2941,8 @@ function endline(s) {
 }
 
 function gen_pp_field(field_type) {
-  if (typeof field_type !== "number") {
-    if (field_type.tag) {
-      return function_name_of_user_defined("pp", field_type[0]);
-    }
-    
+  if (typeof field_type !== "number" && field_type.tag) {
+    return function_name_of_user_defined("pp", field_type[0]);
   }
   return Curry._1(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
