@@ -5,7 +5,7 @@ var $$String = require("../../lib/js/string.js");
 var Test_order = require("./test_order.js");
 
 function Make(U) {
-  var compare = U[0];
+  var compare = U[/* compare */0];
   return /* module */[
           /* compare */compare,
           /* v */compare

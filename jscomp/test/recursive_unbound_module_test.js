@@ -14,7 +14,13 @@ var B = Caml_module.init_mod([
       "recursive_unbound_module_test.ml",
       18,
       0
-    ], [[[[0]]]]);
+    ], [[[
+          [[[
+                0,
+                "f"
+              ]]],
+          "M"
+        ]]]);
 
 function f(param) {
   return /* () */0;
@@ -22,7 +28,13 @@ function f(param) {
 
 var M = /* module */[/* f */f];
 
-Caml_module.update_mod([[[[0]]]], B, /* module */[/* M */M]);
+Caml_module.update_mod([[[
+          [[[
+                0,
+                "f"
+              ]]],
+          "M"
+        ]]], B, /* module */[/* M */M]);
 
 var A = /* () */0;
 

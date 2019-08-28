@@ -1376,21 +1376,21 @@ function status(s) {
   }
 }
 
-var Re_automata_000 = /* Category */[
-  $plus$plus,
-  from_char,
-  1,
-  2,
-  4,
-  8,
-  16,
-  32
+var Re_automata_000 = /* Category : module */[
+  /* ++ */$plus$plus,
+  /* from_char */from_char,
+  /* inexistant */1,
+  /* letter */2,
+  /* not_letter */4,
+  /* newline */8,
+  /* lastnewline */16,
+  /* search_boundary */32
 ];
 
-var Re_automata_022 = /* State */[
-  dummy,
-  create$2,
-  Table
+var Re_automata_022 = /* State : module */[
+  /* dummy */dummy,
+  /* create */create$2,
+  /* Table */Table
 ];
 
 function iter(_n, f, _v) {

@@ -1439,15 +1439,15 @@ function MakeDecode(funarg) {
                             ]);
                 }), t);
   };
-  return [
-          make,
-          next
+  return /* module */[
+          /* make */make,
+          /* next */next
         ];
 }
 
-var D = [
-  make,
-  next
+var D = /* module */[
+  /* make */make,
+  /* next */next
 ];
 
 exports.to_buf = to_buf;
