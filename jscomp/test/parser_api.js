@@ -1456,13 +1456,13 @@ function setup(o) {
   return /* () */0;
 }
 
-var Misc_043 = /* Color */[
-  ansi_of_style_l,
-  default_styles,
-  get_styles,
-  set_styles,
-  setup,
-  set_color_tag_handling
+var Misc_043 = /* Color : module */[
+  /* ansi_of_style_l */ansi_of_style_l,
+  /* default_styles */default_styles,
+  /* get_styles */get_styles,
+  /* set_styles */set_styles,
+  /* setup */setup,
+  /* set_color_tag_handling */set_color_tag_handling
 ];
 
 var Misc = /* module */[
@@ -5726,71 +5726,71 @@ function mk$22(self, fields) {
 
 var Cstr = /* module */[/* mk */mk$22];
 
-var Ast_helper_004 = /* Exp */[
-  mk$2,
-  attr$2,
-  ident,
-  constant$1,
-  let_,
-  fun_,
-  function_,
-  apply,
-  match_,
-  try_,
-  tuple$2,
-  construct$1,
-  variant$2,
-  record$1,
-  field,
-  setfield,
-  array$1,
-  ifthenelse,
-  sequence,
-  while_,
-  for_,
-  coerce,
-  constraint_$1,
-  send,
-  new_,
-  setinstvar,
-  override,
-  letmodule,
-  assert_,
-  lazy_$1,
-  poly$1,
-  object_$1,
-  newtype,
-  pack,
-  open_,
-  extension$2,
-  $$case
+var Ast_helper_004 = /* Exp : module */[
+  /* mk */mk$2,
+  /* attr */attr$2,
+  /* ident */ident,
+  /* constant */constant$1,
+  /* let_ */let_,
+  /* fun_ */fun_,
+  /* function_ */function_,
+  /* apply */apply,
+  /* match_ */match_,
+  /* try_ */try_,
+  /* tuple */tuple$2,
+  /* construct */construct$1,
+  /* variant */variant$2,
+  /* record */record$1,
+  /* field */field,
+  /* setfield */setfield,
+  /* array */array$1,
+  /* ifthenelse */ifthenelse,
+  /* sequence */sequence,
+  /* while_ */while_,
+  /* for_ */for_,
+  /* coerce */coerce,
+  /* constraint_ */constraint_$1,
+  /* send */send,
+  /* new_ */new_,
+  /* setinstvar */setinstvar,
+  /* override */override,
+  /* letmodule */letmodule,
+  /* assert_ */assert_,
+  /* lazy_ */lazy_$1,
+  /* poly */poly$1,
+  /* object_ */object_$1,
+  /* newtype */newtype,
+  /* pack */pack,
+  /* open_ */open_,
+  /* extension */extension$2,
+  /* case */$$case
 ];
 
-var Ast_helper_019 = /* Ctf */[
-  mk$9,
-  attr$7,
-  inherit_,
-  val_,
-  method_,
-  constraint_$4,
-  extension$9,
-  attribute$2,
-  text$2
+var Ast_helper_019 = /* Ctf : module */[
+  /* mk */mk$9,
+  /* attr */attr$7,
+  /* inherit_ */inherit_,
+  /* val_ */val_,
+  /* method_ */method_,
+  /* constraint_ */constraint_$4,
+  /* extension */extension$9,
+  /* attribute */attribute$2,
+  /* text */text$2
 ];
 
-var Ast_helper_021 = /* Cf */[
-  mk$10,
-  attr$8,
-  inherit_$1,
-  val_$1,
-  method_$1,
-  constraint_$5,
-  initializer_,
-  extension$10,
-  attribute$3,
-  text$3,
-  virtual_,
-  concrete
+var Ast_helper_021 = /* Cf : module */[
+  /* mk */mk$10,
+  /* attr */attr$8,
+  /* inherit_ */inherit_$1,
+  /* val_ */val_$1,
+  /* method_ */method_$1,
+  /* constraint_ */constraint_$5,
+  /* initializer_ */initializer_,
+  /* extension */extension$10,
+  /* attribute */attribute$3,
+  /* text */text$3,
+  /* virtual_ */virtual_,
+  /* concrete */concrete
 ];
 
 var Ast_helper = /* module */[

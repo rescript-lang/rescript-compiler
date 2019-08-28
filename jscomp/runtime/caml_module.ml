@@ -32,7 +32,7 @@ type shape =
    | Function
    | Lazy
    | Class
-   | Module of shape array
+   | Module of (shape * string) array
    | Value of Caml_obj_extern.t
 (* ATTENTION: check across versions *)
 module Array = Caml_array_extern 
@@ -58,7 +58,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
       struct_.(idx)<- v ;
       let len = Array.length comps in
       for i = 0 to len - 1 do 
-        loop comps.(i) v i       
+        loop (fst comps.(i)) v i       
       done
     | Value v ->
        struct_.(idx) <- v in
@@ -80,12 +80,12 @@ let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t)
     | Module comps 
       -> 
       for i = 0 to Array.length comps - 1 do 
-        aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o i       
+        aux (fst comps.(i)) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o i       
       done
     | Value _ -> () in 
   match shape with 
   | Module comps -> 
     for i = 0 to Array.length comps - 1 do  
-      aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o  i
+      aux (fst comps.(i)) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o  i
     done
   |  _ -> assert false 

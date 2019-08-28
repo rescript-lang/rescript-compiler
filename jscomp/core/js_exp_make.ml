@@ -181,7 +181,7 @@ let make_block ?comment
         if i <> 0 then merge_outer_comment des.(i-1) e else e) 
 #end         
     (* TODO: may overriden its previous comments *)
-    | Blk_module (Some des) 
+    | Blk_module des
       ->  Ext_list.map2 des es merge_outer_comment             
     | _ -> es 
   in

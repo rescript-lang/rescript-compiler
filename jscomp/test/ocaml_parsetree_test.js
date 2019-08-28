@@ -278,13 +278,13 @@ function setup(o) {
   return /* () */0;
 }
 
-var Misc_043 = /* Color */[
-  ansi_of_style_l,
-  default_styles,
-  get_styles,
-  set_styles,
-  setup,
-  set_color_tag_handling
+var Misc_043 = /* Color : module */[
+  /* ansi_of_style_l */ansi_of_style_l,
+  /* default_styles */default_styles,
+  /* get_styles */get_styles,
+  /* set_styles */set_styles,
+  /* setup */setup,
+  /* set_color_tag_handling */set_color_tag_handling
 ];
 
 function number(param) {
@@ -3174,71 +3174,71 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
         ];
 }
 
-var Ast_helper_004 = /* Exp */[
-  mk$2,
-  attr$2,
-  ident,
-  constant,
-  let_,
-  fun_,
-  function_,
-  apply,
-  match_,
-  try_,
-  tuple,
-  construct,
-  variant,
-  record,
-  field,
-  setfield,
-  array,
-  ifthenelse,
-  sequence,
-  while_,
-  for_,
-  coerce,
-  constraint_,
-  send,
-  new_,
-  setinstvar,
-  override,
-  letmodule,
-  assert_,
-  lazy_,
-  poly,
-  object_,
-  newtype,
-  pack,
-  open_,
-  extension,
-  $$case
+var Ast_helper_004 = /* Exp : module */[
+  /* mk */mk$2,
+  /* attr */attr$2,
+  /* ident */ident,
+  /* constant */constant,
+  /* let_ */let_,
+  /* fun_ */fun_,
+  /* function_ */function_,
+  /* apply */apply,
+  /* match_ */match_,
+  /* try_ */try_,
+  /* tuple */tuple,
+  /* construct */construct,
+  /* variant */variant,
+  /* record */record,
+  /* field */field,
+  /* setfield */setfield,
+  /* array */array,
+  /* ifthenelse */ifthenelse,
+  /* sequence */sequence,
+  /* while_ */while_,
+  /* for_ */for_,
+  /* coerce */coerce,
+  /* constraint_ */constraint_,
+  /* send */send,
+  /* new_ */new_,
+  /* setinstvar */setinstvar,
+  /* override */override,
+  /* letmodule */letmodule,
+  /* assert_ */assert_,
+  /* lazy_ */lazy_,
+  /* poly */poly,
+  /* object_ */object_,
+  /* newtype */newtype,
+  /* pack */pack,
+  /* open_ */open_,
+  /* extension */extension,
+  /* case */$$case
 ];
 
-var Ast_helper_019 = /* Ctf */[
-  mk$9,
-  attr$7,
-  inherit_,
-  val_,
-  method_,
-  constraint_$1,
-  extension$1,
-  attribute,
-  text$2
+var Ast_helper_019 = /* Ctf : module */[
+  /* mk */mk$9,
+  /* attr */attr$7,
+  /* inherit_ */inherit_,
+  /* val_ */val_,
+  /* method_ */method_,
+  /* constraint_ */constraint_$1,
+  /* extension */extension$1,
+  /* attribute */attribute,
+  /* text */text$2
 ];
 
-var Ast_helper_021 = /* Cf */[
-  mk$10,
-  attr$8,
-  inherit_$1,
-  val_$1,
-  method_$1,
-  constraint_$2,
-  initializer_,
-  extension$2,
-  attribute$1,
-  text$3,
-  virtual_,
-  concrete
+var Ast_helper_021 = /* Cf : module */[
+  /* mk */mk$10,
+  /* attr */attr$8,
+  /* inherit_ */inherit_$1,
+  /* val_ */val_$1,
+  /* method_ */method_$1,
+  /* constraint_ */constraint_$2,
+  /* initializer_ */initializer_,
+  /* extension */extension$2,
+  /* attribute */attribute$1,
+  /* text */text$3,
+  /* virtual_ */virtual_,
+  /* concrete */concrete
 ];
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");

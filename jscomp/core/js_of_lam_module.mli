@@ -29,5 +29,6 @@
 
 val make :
   ?comment:string ->
+  string list ->
   J.expression list -> J.expression
 

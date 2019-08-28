@@ -27,9 +27,9 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var Y0 = Functor_def.Make(/* Functor_inst */[Functor_inst.say]);
+var Y0 = Functor_def.Make(/* Functor_inst */[/* say */Functor_inst.say]);
 
-var Y1 = Functor_def.Make(/* Functor_inst */[Functor_inst.say]);
+var Y1 = Functor_def.Make(/* Functor_inst */[/* say */Functor_inst.say]);
 
 eq("File \"functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0[/* h */0], 1, 2), 4);
 

@@ -620,31 +620,31 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var IntMap = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  merge,
-  compare,
-  equal,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  bindings,
-  min_binding,
-  max_binding,
-  min_binding,
-  split,
-  find,
-  map,
-  mapi
+var IntMap = /* module */[
+  /* empty : Empty */0,
+  /* is_empty */is_empty,
+  /* mem */mem,
+  /* add */add,
+  /* singleton */singleton,
+  /* remove */remove,
+  /* merge */merge,
+  /* compare */compare,
+  /* equal */equal,
+  /* iter */iter,
+  /* fold */fold,
+  /* for_all */for_all,
+  /* exists */exists,
+  /* filter */filter,
+  /* partition */partition,
+  /* cardinal */cardinal,
+  /* bindings */bindings,
+  /* min_binding */min_binding,
+  /* max_binding */max_binding,
+  /* choose */min_binding,
+  /* split */split,
+  /* find */find,
+  /* map */map,
+  /* mapi */mapi
 ];
 
 function assertion_test(param) {

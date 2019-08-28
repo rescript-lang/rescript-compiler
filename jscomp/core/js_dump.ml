@@ -890,7 +890,7 @@ and expression_desc cxt (level:int) f x : cxt  =
                                  E.array mutable_flag 
                                    (Ext_list.map el drop_comment) ]
                             )
-        | Blk_module (Some labels) ->         
+        | Blk_module labels ->         
           dbg_local_module f;
           P.paren_group f 1 (fun _ -> arguments cxt f 
                                 [E.array Immutable
@@ -930,7 +930,7 @@ and expression_desc cxt (level:int) f x : cxt  =
 #end      
         | Blk_extension_slot
         | Blk_na
-        | Blk_module None ->           
+           ->           
           dbg_block_create f;
           P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
     )
