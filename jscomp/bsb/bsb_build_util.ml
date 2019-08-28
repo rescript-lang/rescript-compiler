@@ -44,10 +44,16 @@ let ppx_flags (xs : Bsb_config_types.ppx list) =
 let pp_flag (xs : string) = 
    "-pp " ^ Ext_filename.maybe_quote xs
 
-let include_dirs = flag_concat "-I"
+let include_dirs dirs = 
+  String.concat Ext_string.single_space
+    (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote x]))
 
-let include_dirs_by xs fn = 
-  include_dirs (Ext_list.map xs fn)
+
+let include_dirs_by dirs fn = 
+  String.concat Ext_string.single_space
+    (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote (fn x)]))
+
+
 (* we use lazy $src_root_dir *)
 
 

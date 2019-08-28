@@ -99,7 +99,9 @@ function provideNinja() {
       "ninja binary is already cached and installed: ",
       ninja_bin_output
     );
-  } else if (fs.existsSync(ninja_os_path)) {
+    return;
+  }
+  if (fs.existsSync(ninja_os_path)) {
     if (fs.copyFileSync) {
       // ninja binary size is small
       fs.copyFileSync(ninja_os_path, ninja_bin_output);
@@ -108,12 +110,10 @@ function provideNinja() {
     }
     if (test_ninja_compatible(ninja_bin_output)) {
       console.log("ninja binary is copied from pre-distribution");
-    } else {
-      build_ninja();
+      return;
     }
-  } else {
-    build_ninja();
   }
+  build_ninja();
 }
 /**
  *
@@ -358,7 +358,7 @@ function provideCompiler() {
       ocamlopt: "ocamlopt.opt",
       ext: ".exe",
       INCL: ocamlVersion,
-      isWin : is_windows
+      isWin: is_windows
     });
 
     var filePath = path.join(lib_dir, "release.ninja");
