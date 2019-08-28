@@ -4,21 +4,24 @@ var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var u = /* record */[/* contents */3];
+var u = /* record */{
+  contents: 3
+};
 
 var v = Caml_obj.caml_lazy_make((function (param) {
-        u[0] = 32;
+        u.contents = 32;
         return /* () */0;
       }));
 
 function lazy_test(param) {
-  var h = u[0];
+  var h = u.contents;
   CamlinternalLazy.force(v);
-  var g = u[0];
+  var g = u.contents;
   return /* tuple */[
           h,
           g
@@ -27,10 +30,10 @@ function lazy_test(param) {
 
 function f(param) {
   CamlinternalLazy.force(param[0]);
-  var match = param[2][/* contents */0];
+  var match = param[2].contents;
   if (match !== undefined) {
     CamlinternalLazy.force(param[1]);
-    var match$1 = param[2][/* contents */0];
+    var match$1 = param[2].contents;
     if (match$1 !== undefined) {
       return 1;
     } else {
@@ -48,15 +51,17 @@ function f(param) {
   }
 }
 
-var s = /* record */[/* contents */undefined];
+var s = /* record */{
+  contents: undefined
+};
 
 var set_true = Caml_obj.caml_lazy_make((function (param) {
-        s[0] = 1;
+        s.contents = 1;
         return /* () */0;
       }));
 
 var set_false = Caml_obj.caml_lazy_make((function (param) {
-        s[0] = undefined;
+        s.contents = undefined;
         return /* () */0;
       }));
 
@@ -78,10 +83,12 @@ catch (raw_exn){
   }
 }
 
-var u_v = /* record */[/* contents */0];
+var u_v = /* record */{
+  contents: 0
+};
 
 var u$1 = Caml_obj.caml_lazy_make((function (param) {
-        u_v[0] = 2;
+        u_v.contents = 2;
         return /* () */0;
       }));
 
@@ -94,9 +101,11 @@ var l_from_fun = Lazy.from_fun((function (param) {
       }));
 
 var forward_test = Caml_obj.caml_lazy_make((function (param) {
-        var u = 3;
-        u = u + 1 | 0;
-        return u;
+        var u = /* record */{
+          contents: 3
+        };
+        Pervasives.incr(u);
+        return u.contents;
       }));
 
 var f005 = Caml_obj.caml_lazy_make((function (param) {
@@ -146,7 +155,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
             "lazy_force",
             (function (param) {
                 return /* Eq */Block.__(0, [
-                          u_v[0],
+                          u_v.contents,
                           2
                         ]);
               })

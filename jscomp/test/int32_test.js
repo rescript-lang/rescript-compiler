@@ -153,7 +153,8 @@ var shift_left_tests = /* tuple */[
 
 var $star$tilde = Caml_int32.imul;
 
-var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
+var suites = /* record */{
+  contents: Pervasives.$at(/* :: */[
         /* tuple */[
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
@@ -238,9 +239,12 @@ var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
                                               ]);
                                     })
                                 ];
-                        }), shift_left_tests_000, shift_left_tests_001)))))];
+                        }), shift_left_tests_000, shift_left_tests_001)))))
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -250,7 +254,7 @@ eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.caml_int32_bit
 
 eq("File \"int32_test.ml\", line 48, characters 5-12", Caml_float.caml_int32_float_of_bits(1050253722), 0.300000011920928955);
 
-Mt.from_pair_suites("Int32_test", suites[0]);
+Mt.from_pair_suites("Int32_test", suites.contents);
 
 var test_div = 30;
 

@@ -3,9 +3,13 @@
 var Mt = require("./mt.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -56,7 +60,7 @@ eq("File \"gpr_3142_test.ml\", line 33, characters 6-13", tFromJs("我"), /* c *
 
 eq("File \"gpr_3142_test.ml\", line 34, characters 6-13", tFromJs("xx"), undefined);
 
-Mt.from_pair_suites("Gpr_3142_test", suites[0]);
+Mt.from_pair_suites("Gpr_3142_test", suites.contents);
 
 var v = tToJs;
 

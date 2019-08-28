@@ -1,19 +1,26 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var v = /* record */[/* contents */0];
+var v = /* record */{
+  contents: 0
+};
 
 function gen(param) {
-  v[0] = v[0] + 1 | 0;
-  return v[0];
+  Pervasives.incr(v);
+  return v.contents;
 }
 
-var h = /* record */[/* contents */0];
+var h = /* record */{
+  contents: 0
+};
 
 var a = 0;
 
-var c = /* record */[/* contents */0];
+var c = /* record */{
+  contents: 0
+};
 
 var not_real_escape = a;
 

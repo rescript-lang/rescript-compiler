@@ -50,7 +50,7 @@ function f_01(param) {
 
 function f_02(xs) {
   return hi((function () {
-                xs[0] = /* () */0;
+                xs.contents = /* () */0;
                 console.log("x");
                 return /* () */0;
               }));

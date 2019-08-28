@@ -7,7 +7,9 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function test(param) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   var f = function (_n, _acc) {
     while(true) {
       var acc = _acc;
@@ -17,7 +19,7 @@ function test(param) {
       } else {
         _acc = (function(n,acc){
         return function (param) {
-          v[0] = v[0] + n | 0;
+          v.contents = v.contents + n | 0;
           return Curry._1(acc, /* () */0);
         }
         }(n,acc));
@@ -29,11 +31,13 @@ function test(param) {
   f(10, (function (param) {
           return /* () */0;
         }));
-  return v[0];
+  return v.contents;
 }
 
 function test_closure(param) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));
@@ -45,14 +49,16 @@ function test_closure(param) {
         }(i)));
   }
   $$Array.iter((function (i) {
-          v[0] = v[0] + Curry._1(i, 0) | 0;
+          v.contents = v.contents + Curry._1(i, 0) | 0;
           return /* () */0;
         }), arr);
-  return v[0];
+  return v.contents;
 }
 
 function test_closure2(param) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));
@@ -65,10 +71,10 @@ function test_closure2(param) {
         }(j)));
   }
   $$Array.iter((function (i) {
-          v[0] = v[0] + Curry._1(i, 0) | 0;
+          v.contents = v.contents + Curry._1(i, 0) | 0;
           return /* () */0;
         }), arr);
-  return v[0];
+  return v.contents;
 }
 
 Mt.from_pair_suites("Cps_test", /* :: */[

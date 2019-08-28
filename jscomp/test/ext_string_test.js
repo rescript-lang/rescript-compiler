@@ -6,6 +6,7 @@ var Curry = require("../../lib/js/curry.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Ext_bytes_test = require("./ext_bytes_test.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -54,30 +55,34 @@ function split_by($staropt$star, is_delim, str) {
 }
 
 function trim(s) {
-  var i = 0;
+  var i = /* record */{
+    contents: 0
+  };
   var j = s.length;
   while((function () {
           var tmp = false;
-          if (i < j) {
-            var u = s.charCodeAt(i);
+          if (i.contents < j) {
+            var u = s.charCodeAt(i.contents);
             tmp = u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32;
           }
           return tmp;
         })()) {
-    i = i + 1 | 0;
+    Pervasives.incr(i);
   };
-  var k = j - 1 | 0;
+  var k = /* record */{
+    contents: j - 1 | 0
+  };
   while((function () {
           var tmp = false;
-          if (k >= i) {
-            var u = s.charCodeAt(k);
+          if (k.contents >= i.contents) {
+            var u = s.charCodeAt(k.contents);
             tmp = u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32;
           }
           return tmp;
         })()) {
-    k = k - 1 | 0;
+    Pervasives.decr(k);
   };
-  return $$String.sub(s, i, (k - i | 0) + 1 | 0);
+  return $$String.sub(s, i.contents, (k.contents - i.contents | 0) + 1 | 0);
 }
 
 function split(keep_empty, str, on) {
@@ -104,11 +109,13 @@ function starts_with(s, beg) {
   var beg_len = beg.length;
   var s_len = s.length;
   if (beg_len <= s_len) {
-    var i = 0;
-    while(i < beg_len && s[i] === beg[i]) {
-      i = i + 1 | 0;
+    var i = /* record */{
+      contents: 0
     };
-    return i === beg_len;
+    while(i.contents < beg_len && s[i.contents] === beg[i.contents]) {
+      Pervasives.incr(i);
+    };
+    return i.contents === beg_len;
   } else {
     return false;
   }
@@ -277,19 +284,21 @@ function find($staropt$star, sub, s) {
   var start = $staropt$star !== undefined ? $staropt$star : 0;
   var n = sub.length;
   var s_len = s.length;
-  var i = start;
+  var i = /* record */{
+    contents: start
+  };
   try {
-    while((i + n | 0) <= s_len) {
-      if (unsafe_is_sub(sub, 0, s, i, n)) {
+    while((i.contents + n | 0) <= s_len) {
+      if (unsafe_is_sub(sub, 0, s, i.contents, n)) {
         throw Local_exit;
       }
-      i = i + 1 | 0;
+      Pervasives.incr(i);
     };
     return -1;
   }
   catch (exn){
     if (exn === Local_exit) {
-      return i;
+      return i.contents;
     } else {
       throw exn;
     }
@@ -326,19 +335,21 @@ function non_overlap_count(sub, s) {
 
 function rfind(sub, s) {
   var n = sub.length;
-  var i = s.length - n | 0;
+  var i = /* record */{
+    contents: s.length - n | 0
+  };
   try {
-    while(i >= 0) {
-      if (unsafe_is_sub(sub, 0, s, i, n)) {
+    while(i.contents >= 0) {
+      if (unsafe_is_sub(sub, 0, s, i.contents, n)) {
         throw Local_exit;
       }
-      i = i - 1 | 0;
+      Pervasives.decr(i);
     };
     return -1;
   }
   catch (exn){
     if (exn === Local_exit) {
-      return i;
+      return i.contents;
     } else {
       throw exn;
     }
@@ -383,11 +394,13 @@ function starts_with_and_number(s, offset, beg) {
   if (finish_delim > s_len) {
     return -1;
   } else {
-    var i = offset;
-    while(i < finish_delim && s[i] === beg[i - offset | 0]) {
-      i = i + 1 | 0;
+    var i = /* record */{
+      contents: offset
     };
-    if (i === finish_delim) {
+    while(i.contents < finish_delim && s[i.contents] === beg[i.contents - offset | 0]) {
+      Pervasives.incr(i);
+    };
+    if (i.contents === finish_delim) {
       return digits_of_str(s, finish_delim, 2);
     } else {
       return -1;
@@ -406,13 +419,15 @@ function unsafe_concat_with_length(len, sep, l) {
     var hd_len = hd.length;
     var sep_len = sep.length;
     Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
-    var pos = /* record */[/* contents */hd_len];
+    var pos = /* record */{
+      contents: hd_len
+    };
     List.iter((function (s) {
             var s_len = s.length;
-            Caml_bytes.caml_blit_string(sep, 0, r, pos[0], sep_len);
-            pos[0] = pos[0] + sep_len | 0;
-            Caml_bytes.caml_blit_string(s, 0, r, pos[0], s_len);
-            pos[0] = pos[0] + s_len | 0;
+            Caml_bytes.caml_blit_string(sep, 0, r, pos.contents, sep_len);
+            pos.contents = pos.contents + sep_len | 0;
+            Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
+            pos.contents = pos.contents + s_len | 0;
             return /* () */0;
           }), l[1]);
     return Caml_bytes.bytes_to_string(r);

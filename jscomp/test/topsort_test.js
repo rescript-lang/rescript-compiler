@@ -268,14 +268,16 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
 }
 
 function dfs3(nodes, graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = /* record */{
+    contents: /* [] */0
+  };
   var aux = function (node, graph) {
-    if (List.mem(node, visited[0])) {
+    if (List.mem(node, visited.contents)) {
       return 0;
     } else {
-      visited[0] = /* :: */[
+      visited.contents = /* :: */[
         node,
-        visited[0]
+        visited.contents
       ];
       return List.iter((function (x) {
                     return aux(x, graph);
@@ -285,7 +287,7 @@ function dfs3(nodes, graph) {
   List.iter((function (node) {
           return aux(node, graph);
         }), nodes);
-  return List.rev(visited[0]);
+  return List.rev(visited.contents);
 }
 
 if (!Caml_obj.caml_equal(dfs3(/* :: */[
@@ -397,16 +399,18 @@ var grwork = /* :: */[
 ];
 
 function unsafe_topsort(graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = /* record */{
+    contents: /* [] */0
+  };
   var sort_node = function (node) {
-    if (List.mem(node, visited[0])) {
+    if (List.mem(node, visited.contents)) {
       return 0;
     } else {
       var nodes = nexts(node, graph);
       List.iter(sort_node, nodes);
-      visited[0] = /* :: */[
+      visited.contents = /* :: */[
         node,
-        visited[0]
+        visited.contents
       ];
       return /* () */0;
     }
@@ -414,7 +418,7 @@ function unsafe_topsort(graph) {
   List.iter((function (param) {
           return sort_node(param[0]);
         }), graph);
-  return visited[0];
+  return visited.contents;
 }
 
 if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
@@ -1223,7 +1227,9 @@ var String_set = {
 var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
 
 function pathsort(graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = /* record */{
+    contents: /* [] */0
+  };
   var empty_path = /* tuple */[
     /* Empty */0,
     /* [] */0
@@ -1254,13 +1260,13 @@ function pathsort(graph) {
                 }), nodes);
   };
   var sort_node = function (path, node) {
-    if (List.mem(node, visited[0])) {
+    if (List.mem(node, visited.contents)) {
       return 0;
     } else {
       sort_nodes($plus$great(node, path), nexts(node, graph));
-      visited[0] = /* :: */[
+      visited.contents = /* :: */[
         node,
-        visited[0]
+        visited.contents
       ];
       return /* () */0;
     }
@@ -1268,7 +1274,7 @@ function pathsort(graph) {
   List.iter((function (param) {
           return sort_node(empty_path, param[0]);
         }), graph);
-  return visited[0];
+  return visited.contents;
 }
 
 if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[

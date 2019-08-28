@@ -2,9 +2,13 @@
 
 var Mt = require("./mt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -36,7 +40,7 @@ eq("File \"inline_const_test.ml\", line 32, characters 5-12", true, true);
 
 eq("File \"inline_const_test.ml\", line 33, characters 5-12", 1, 1);
 
-Mt.from_pair_suites("File \"inline_const_test.ml\", line 36, characters 22-29", suites[0]);
+Mt.from_pair_suites("File \"inline_const_test.ml\", line 36, characters 22-29", suites.contents);
 
 var f5 = true;
 

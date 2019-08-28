@@ -1070,19 +1070,23 @@ type 'a ref = { mutable contents : 'a }
 external ref : 'a -> 'a ref = "%makemutable"
 (** Return a fresh reference containing the given value. *)
 
-external ( ! ) : 'a ref -> 'a = "%field0"
+val ( ! ) : 'a ref -> 'a
+(* external ( ! ) : 'a ref -> 'a = "%field0" *)
 (** [!r] returns the current contents of reference [r].
    Equivalent to [fun r -> r.contents]. *)
 
-external ( := ) : 'a ref -> 'a -> unit = "%setfield0"
+val ( := ) : 'a ref -> 'a -> unit
+(* external ( := ) : 'a ref -> 'a -> unit = "%setfield0" *)
 (** [r := a] stores the value of [a] in reference [r].
    Equivalent to [fun r v -> r.contents <- v]. *)
 
-external incr : int ref -> unit = "%incr"
+val incr : int ref -> unit
+(* external incr : int ref -> unit = "%incr" *)
 (** Increment the integer contained in the given reference.
    Equivalent to [fun r -> r := succ !r]. *)
 
-external decr : int ref -> unit = "%decr"
+val decr : int ref -> unit
+(* external decr : int ref -> unit = "%decr" *)
 (** Decrement the integer contained in the given reference.
    Equivalent to [fun r -> r := pred !r]. *)
 

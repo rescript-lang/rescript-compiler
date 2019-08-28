@@ -6,27 +6,29 @@ var BUI = require("@blp/ui");
 var Runtime = require("@runtime");
 
 var data = /* array */[
-  /* record */[
-    /* ticker */"GOOG",
-    /* price */700.0
-  ],
-  /* record */[
-    /* ticker */"AAPL",
-    /* price */500.0
-  ],
-  /* record */[
-    /* ticker */"MSFT",
-    /* price */300.0
-  ]
+  /* record */{
+    ticker: "GOOG",
+    price: 700.0
+  },
+  /* record */{
+    ticker: "AAPL",
+    price: 500.0
+  },
+  /* record */{
+    ticker: "MSFT",
+    price: 300.0
+  }
 ];
 
 function ui_layout(compile, lookup, appContext) {
   var init = Curry._1(compile, "bid  - ask");
-  var computeFunction = /* record */[/* contents */(function (env) {
+  var computeFunction = /* record */{
+    contents: (function (env) {
         return Curry._1(init, (function (key) {
                       return Curry._2(lookup, env, key);
                     }));
-      })];
+      })
+  };
   var hw1 = new BUI.HostedWindow();
   var hc = new BUI.HostedContent();
   var stackPanel = new UI.StackPanel();
@@ -90,7 +92,7 @@ function ui_layout(compile, lookup, appContext) {
   button.on("click", (function (_event) {
           try {
             var hot_function = Curry._1(compile, inputCode.text);
-            computeFunction[0] = (function (env) {
+            computeFunction.contents = (function (env) {
                 return Curry._1(hot_function, (function (key) {
                               return Curry._2(lookup, env, key);
                             }));
@@ -103,15 +105,15 @@ function ui_layout(compile, lookup, appContext) {
         }));
   Runtime.setInterval((function () {
           grid.dataSource = Array.prototype.map.call(data, (function (param) {
-                  var price = param[/* price */1];
+                  var price = param.price;
                   var bid = price + 20 * Math.random();
                   var ask = price + 20 * Math.random();
-                  var result = Curry._1(computeFunction[0], {
+                  var result = Curry._1(computeFunction.contents, {
                         bid: bid,
                         ask: ask
                       });
                   return /* array */[
-                          mk_titleRow(param[/* ticker */0]),
+                          mk_titleRow(param.ticker),
                           mk_titleRow(bid.toFixed(2)),
                           mk_titleRow(ask.toFixed(2)),
                           mk_titleRow(result.toFixed(2))

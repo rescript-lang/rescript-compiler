@@ -7,9 +7,13 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -366,7 +370,7 @@ eq("File \"bs_set_int_test.ml\", line 175, characters 5-12", Belt_SetInt.get(v$1
 
 eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
 
-Mt.from_pair_suites("Bs_set_int_test", suites[0]);
+Mt.from_pair_suites("Bs_set_int_test", suites.contents);
 
 var N = 0;
 

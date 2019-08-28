@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var keys = ( function (x){return Object.keys(x)});
 
@@ -14,17 +15,21 @@ var keys = ( function (x){return Object.keys(x)});
 
 ;
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -32,7 +37,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -106,15 +111,17 @@ eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
       0
     ]);
 
-var u = /* record */[/* contents */3];
+var u = /* record */{
+  contents: 3
+};
 
-var side_effect_config = (u[0] = u[0] + 1 | 0, {
+var side_effect_config = (Pervasives.incr(u), {
     hi: 3,
     low: 32
   });
 
 eq("File \"ffi_js_test.ml\", line 54, characters 5-12", /* tuple */[
-      u[0],
+      u.contents,
       4
     ]);
 
@@ -173,7 +180,7 @@ function ffff(x) {
   return /* () */0;
 }
 
-Mt.from_pair_suites("Ffi_js_test", suites[0]);
+Mt.from_pair_suites("Ffi_js_test", suites.contents);
 
 exports.keys = keys;
 exports.suites = suites;

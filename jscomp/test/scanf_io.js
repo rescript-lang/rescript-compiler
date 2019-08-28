@@ -59,7 +59,9 @@ function write_tscanf_data_file(fname, lines) {
 
 function get_lines(fname) {
   var ib = Scanf.Scanning.from_file(fname);
-  var l = /* record */[/* contents : [] */0];
+  var l = /* record */{
+    contents: /* [] */0
+  };
   try {
     while(!Scanf.Scanning.end_of_input(ib)) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
@@ -81,17 +83,17 @@ function get_lines(fname) {
                   ]),
                 " %S -> %S; "
               ]), (function (x, y) {
-              l[0] = /* :: */[
+              l.contents = /* :: */[
                 /* tuple */[
                   x,
                   y
                 ],
-                l[0]
+                l.contents
               ];
               return /* () */0;
             }));
     };
-    return List.rev(l[0]);
+    return List.rev(l.contents);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -191,7 +193,7 @@ function test55(param) {
   var ob = $$Buffer.create(42);
   create_tscanf_data(ob, tscanf_data_file_lines);
   var s = $$Buffer.contents(ob);
-  ob[/* position */1] = 0;
+  ob.position = 0;
   var ib = Scanf.Scanning.from_string(s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = $$Buffer.contents(ob);

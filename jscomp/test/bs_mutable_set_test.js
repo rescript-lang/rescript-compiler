@@ -11,9 +11,13 @@ var Belt_MutableSetInt = require("../../lib/js/belt_MutableSetInt.js");
 var Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 var Belt_internalSetInt = require("../../lib/js/belt_internalSetInt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -809,7 +813,7 @@ b("File \"bs_mutable_set_test.ml\", line 317, characters 4-11", Belt_MutableSetI
           data: Belt_internalSetInt.fromArray(xs$54)
         }));
 
-Mt.from_pair_suites("Bs_mutable_set_test", suites[0]);
+Mt.from_pair_suites("Bs_mutable_set_test", suites.contents);
 
 var N = 0;
 

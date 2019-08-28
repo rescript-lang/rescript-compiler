@@ -6,9 +6,13 @@ var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
@@ -71,7 +75,7 @@ eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
       "1 %s"
     ]);
 
-Mt.from_pair_suites("Sprintf_reg_test", suites[0]);
+Mt.from_pair_suites("Sprintf_reg_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

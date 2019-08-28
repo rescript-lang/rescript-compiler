@@ -2,22 +2,29 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var v = /* record */[/* contents */1];
+var v = /* record */{
+  contents: 1
+};
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-var a = v[0];
+var a = v.contents;
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -25,16 +32,16 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
 eq("File \"condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);
 
-eq("File \"condition_compilation_test.ml\", line 99, characters 5-12", v[0], 2);
+eq("File \"condition_compilation_test.ml\", line 99, characters 5-12", v.contents, 2);
 
-Mt.from_pair_suites("Condition_compilation_test", suites[0]);
+Mt.from_pair_suites("Condition_compilation_test", suites.contents);
 
 var b = "u";
 

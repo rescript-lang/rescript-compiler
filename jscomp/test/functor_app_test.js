@@ -3,18 +3,23 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Functor_def = require("./functor_def.js");
 var Functor_inst = require("./functor_inst.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -22,7 +27,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -39,7 +44,7 @@ var v = Functor_def.$$return(/* () */0);
 
 eq("File \"functor_app_test.ml\", line 29, characters 6-13", v, 2);
 
-Mt.from_pair_suites("Functor_app_test", suites[0]);
+Mt.from_pair_suites("Functor_app_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

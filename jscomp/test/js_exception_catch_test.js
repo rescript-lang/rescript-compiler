@@ -4,23 +4,28 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var counter = /* record */[/* contents */0];
+var counter = /* record */{
+  contents: 0
+};
 
 function add_test(loc, test) {
-  counter[0] = counter[0] + 1 | 0;
-  var id = loc + (" id " + String(counter[0]));
-  suites[0] = /* :: */[
+  Pervasives.incr(counter);
+  var id = loc + (" id " + String(counter.contents));
+  suites.contents = /* :: */[
     /* tuple */[
       id,
       test
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -181,7 +186,7 @@ eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test((functi
                 ];
           })), /* Any */3257036);
 
-Mt.from_pair_suites("Js_exception_catch_test", suites[0]);
+Mt.from_pair_suites("Js_exception_catch_test", suites.contents);
 
 exports.suites = suites;
 exports.add_test = add_test;

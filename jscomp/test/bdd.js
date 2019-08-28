@@ -2,6 +2,7 @@
 
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$eval(_bdd, vars) {
@@ -31,20 +32,28 @@ function getId(bdd) {
   }
 }
 
-var nodeC = /* record */[/* contents */1];
+var nodeC = /* record */{
+  contents: 1
+};
 
-var sz_1 = /* record */[/* contents */8191];
+var sz_1 = /* record */{
+  contents: 8191
+};
 
-var htab = /* record */[/* contents */Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
+var htab = /* record */{
+  contents: Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0)
+};
 
-var n_items = /* record */[/* contents */0];
+var n_items = /* record */{
+  contents: 0
+};
 
 function hashVal(x, y, v) {
   return ((x << 1) + y | 0) + (v << 2) | 0;
 }
 
 function resize(newSize) {
-  var arr = htab[0];
+  var arr = htab.contents;
   var newSz_1 = newSize - 1 | 0;
   var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
@@ -74,37 +83,36 @@ function resize(newSize) {
       }
     };
   };
-  for(var n = 0 ,n_finish = sz_1[0]; n <= n_finish; ++n){
+  for(var n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
     copyBucket(Caml_array.caml_array_get(arr, n));
   }
-  htab[0] = newArr;
-  sz_1[0] = newSz_1;
+  htab.contents = newArr;
+  sz_1.contents = newSz_1;
   return /* () */0;
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
-  if (n_items[0] <= sz_1[0]) {
-    Caml_array.caml_array_set(htab[0], ind, /* :: */[
+  if (n_items.contents <= sz_1.contents) {
+    Caml_array.caml_array_set(htab.contents, ind, /* :: */[
           newNode,
           bucket
         ]);
-    n_items[0] = n_items[0] + 1 | 0;
-    return /* () */0;
+    return Pervasives.incr(n_items);
   } else {
-    resize((sz_1[0] + sz_1[0] | 0) + 2 | 0);
-    var ind$1 = hashVal(idl, idh, v) & sz_1[0];
-    return Caml_array.caml_array_set(htab[0], ind$1, /* :: */[
+    resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
+    var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
+    return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */[
                 newNode,
-                Caml_array.caml_array_get(htab[0], ind$1)
+                Caml_array.caml_array_get(htab.contents, ind$1)
               ]);
   }
 }
 
 function resetUnique(param) {
-  sz_1[0] = 8191;
-  htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0);
-  n_items[0] = 0;
-  nodeC[0] = 1;
+  sz_1.contents = 8191;
+  htab.contents = Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0);
+  n_items.contents = 0;
+  nodeC.contents = 1;
   return /* () */0;
 }
 
@@ -114,8 +122,8 @@ function mkNode(low, v, high) {
   if (idl === idh) {
     return low;
   } else {
-    var ind = hashVal(idl, idh, v) & sz_1[0];
-    var bucket = Caml_array.caml_array_get(htab[0], ind);
+    var ind = hashVal(idl, idh, v) & sz_1.contents;
+    var bucket = Caml_array.caml_array_get(htab.contents, ind);
     var _b = bucket;
     while(true) {
       var b = _b;
@@ -138,7 +146,7 @@ function mkNode(low, v, high) {
           continue ;
         }
       } else {
-        var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);
+        var n_002 = (Pervasives.incr(nodeC), nodeC.contents);
         var n$1 = /* Node */[
           low,
           v,
@@ -325,11 +333,13 @@ function hwb(n) {
   return h(0, n - 1 | 0);
 }
 
-var seed = /* record */[/* contents */0];
+var seed = /* record */{
+  contents: 0
+};
 
 function random(param) {
-  seed[0] = Caml_int32.imul(seed[0], 25173) + 17431 | 0;
-  return (seed[0] & 1) > 0;
+  seed.contents = Caml_int32.imul(seed.contents, 25173) + 17431 | 0;
+  return (seed.contents & 1) > 0;
 }
 
 function random_vars(n) {
@@ -355,14 +365,16 @@ function bool_equal(a, b) {
 }
 
 function test_hwb(bdd, vars) {
-  var ntrue = 0;
+  var ntrue = /* record */{
+    contents: 0
+  };
   for(var i = 0 ,i_finish = vars.length - 1 | 0; i <= i_finish; ++i){
     if (Caml_array.caml_array_get(vars, i)) {
-      ntrue = ntrue + 1 | 0;
+      Pervasives.incr(ntrue);
     }
     
   }
-  return bool_equal($$eval(bdd, vars), ntrue > 0 ? Caml_array.caml_array_get(vars, ntrue - 1 | 0) : false);
+  return bool_equal($$eval(bdd, vars), ntrue.contents > 0 ? Caml_array.caml_array_get(vars, ntrue.contents - 1 | 0) : false);
 }
 
 function main(param) {

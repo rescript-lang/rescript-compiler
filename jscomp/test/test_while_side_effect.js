@@ -1,9 +1,12 @@
 'use strict';
 
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var v = /* record */[/* contents */0];
+var v = /* record */{
+  contents: 0
+};
 
-while(console.log(String(v[0])), v[0] = v[0] + 1 | 0, v[0] < 10) {
+while(console.log(String(v.contents)), Pervasives.incr(v), v.contents < 10) {
   
 };
 
@@ -15,14 +18,18 @@ function fib(n) {
   }
 }
 
-var x = /* record */[/* contents */3];
+var x = /* record */{
+  contents: 3
+};
 
 while((function () {
-        var y = 3;
-        console.log(String(x[0]));
-        y = y + 1 | 0;
-        x[0] = x[0] + 1 | 0;
-        return (fib(x[0]) + fib(x[0]) | 0) < 20;
+        var y = /* record */{
+          contents: 3
+        };
+        console.log(String(x.contents));
+        Pervasives.incr(y);
+        Pervasives.incr(x);
+        return (fib(x.contents) + fib(x.contents) | 0) < 20;
       })()) {
   console.log(String(3));
 };

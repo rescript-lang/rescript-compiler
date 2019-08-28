@@ -1,11 +1,12 @@
 'use strict';
 
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var u = 0;
+var u = /* record */{
+  contents: 0
+};
 
-u = u + 1 | 0;
-
-var v = /* () */0;
+var v = Pervasives.incr(u);
 
 exports.v = v;
 /* v Not a pure module */

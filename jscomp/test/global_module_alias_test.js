@@ -4,16 +4,21 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -21,17 +26,19 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
-var v = /* record */[/* contents */0];
+var v = /* record */{
+  contents: 0
+};
 
 function Make(U) {
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
   return {
           length: U.length,
           hd: U.hd,
@@ -81,12 +88,12 @@ function Make(U) {
 }
 
 function f(param) {
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
   return {
           length: List.length,
           hd: List.hd,
@@ -143,29 +150,29 @@ eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length
           ]
         ]), 2);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
 var H = {
   length: List.length,
@@ -214,7 +221,7 @@ var H = {
   merge: List.merge
 };
 
-eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v[0], 12);
+eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v.contents, 12);
 
 function g(param) {
   return List.length(/* :: */[
@@ -233,9 +240,9 @@ function g(param) {
 }
 
 function xx(param) {
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
+  Pervasives.incr(v);
+  Pervasives.incr(v);
   return {
           length: List.length,
           hd: List.hd,
@@ -286,11 +293,11 @@ function xx(param) {
 
 eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(/* () */0), 4);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
-v[0] = v[0] + 1 | 0;
+Pervasives.incr(v);
 
 eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", List.length(/* :: */[
           1,
@@ -303,7 +310,7 @@ eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", List.length
           ]
         ]), 3);
 
-eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v[0], 15);
+eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents, 15);
 
 var H$1 = f(/* () */0);
 
@@ -315,9 +322,9 @@ eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$
           ]
         ]), 2);
 
-eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v[0], 21);
+eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v.contents, 21);
 
-Mt.from_pair_suites("Global_module_alias_test", suites[0]);
+Mt.from_pair_suites("Global_module_alias_test", suites.contents);
 
 var A = 0;
 

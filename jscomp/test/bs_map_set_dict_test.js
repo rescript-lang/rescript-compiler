@@ -11,9 +11,13 @@ var Belt_SetDict = require("../../lib/js/belt_SetDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -149,7 +153,7 @@ eq("File \"bs_map_set_dict_test.ml\", line 94, characters 4-11", Belt_Array.make
                   ];
           })), Belt_MapDict.toArray(u.data));
 
-Mt.from_pair_suites("Bs_map_set_dict_test", suites[0]);
+Mt.from_pair_suites("Bs_map_set_dict_test", suites.contents);
 
 var M = 0;
 

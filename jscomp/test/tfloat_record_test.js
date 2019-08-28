@@ -34,9 +34,11 @@ function print_newline(param) {
             ]);
 }
 
-var s = /* record */[/* f */1.0];
+var s = /* record */{
+  f: 1.0
+};
 
-print_float(s[/* f */0]);
+print_float(s.f);
 
 print_newline(/* () */0);
 
@@ -56,9 +58,13 @@ print_array(b[0]);
 
 print_array(c[0]);
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);
@@ -66,7 +72,7 @@ function eq(f, a, b) {
 
 eq("File \"tfloat_record_test.ml\", line 43, characters 5-12", $$Buffer.contents(buf), "1.\n1.\n2.\n3.\n\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n\n");
 
-Mt.from_pair_suites("Tfloat_record_test", suites[0]);
+Mt.from_pair_suites("Tfloat_record_test", suites.contents);
 
 exports.buf = buf;
 exports.fmt = fmt;

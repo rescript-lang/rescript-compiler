@@ -3,9 +3,13 @@
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -78,7 +82,7 @@ eq("File \"int_switch_test.ml\", line 39, characters 6-13", f((function (param) 
             return -1;
           })), /* "x" */120);
 
-Mt.from_pair_suites("Int_switch_test", suites[0]);
+Mt.from_pair_suites("Int_switch_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

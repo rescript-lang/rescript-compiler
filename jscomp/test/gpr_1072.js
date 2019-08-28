@@ -1,5 +1,6 @@
 'use strict';
 
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var u = {
   y: 3
@@ -149,7 +150,9 @@ again3(3);
 
 again3(2);
 
-var side_effect = /* record */[/* contents */0];
+var side_effect = /* record */{
+  contents: 0
+};
 
 again4(undefined, /* () */0, 166);
 
@@ -161,13 +164,13 @@ again4(/* () */0, /* () */0, 169);
 
 again4(undefined, /* () */0, 170);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), /* () */0, 171);
+again4((Pervasives.incr(side_effect), /* () */0), /* () */0, 171);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), (side_effect[0] = side_effect[0] - 1 | 0, /* () */0), 172);
+again4((Pervasives.incr(side_effect), /* () */0), (Pervasives.decr(side_effect), /* () */0), 172);
 
-again4(undefined, (side_effect[0] = side_effect[0] - 1 | 0, /* () */0), 173);
+again4(undefined, (Pervasives.decr(side_effect), /* () */0), 173);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), /* () */0, 174);
+again4(Pervasives.incr(side_effect), /* () */0, 174);
 
 exports.u = u;
 exports.v_ice_cream3 = v_ice_cream3;

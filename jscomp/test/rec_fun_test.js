@@ -4,16 +4,21 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -21,23 +26,27 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
-var called = /* record */[/* contents */0];
+var called = /* record */{
+  contents: 0
+};
 
 function g(param) {
   var v = [];
   var next = function (i, b) {
-    called[0] = called[0] + 1 | 0;
+    Pervasives.incr(called);
     if (b) {
-      Curry._2(v[0], i, false);
+      Curry._2(v.contents, i, false);
     }
     return i + 1 | 0;
   };
-  Caml_obj.caml_update_dummy(v, /* record */[/* contents */next]);
+  Caml_obj.caml_update_dummy(v, /* record */{
+        contents: next
+      });
   console.log(String(next(0, true)));
   return /* () */0;
 }
@@ -58,9 +67,9 @@ Caml_obj.caml_update_dummy(y, /* :: */[
       x
     ]);
 
-eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
+eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called.contents, 2);
 
-Mt.from_pair_suites("Rec_fun_test", suites[0]);
+Mt.from_pair_suites("Rec_fun_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

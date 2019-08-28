@@ -7,9 +7,13 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -24,21 +28,25 @@ function $$throw(loc, x) {
 }
 
 function sum(xs) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   Belt_List.forEach(xs, (function (x) {
-          v[0] = v[0] + x | 0;
+          v.contents = v.contents + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v.contents;
 }
 
 function sum2(xs, ys) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   Belt_List.forEach2(xs, ys, (function (x, y) {
-          v[0] = (v[0] + x | 0) + y | 0;
+          v.contents = (v.contents + x | 0) + y | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v.contents;
 }
 
 var u = Belt_List.makeBy(5, (function (i) {
@@ -2475,7 +2483,7 @@ b("File \"bs_list_test.ml\", line 349, characters 4-11", Belt_List.keepMap(/* ::
             
           })) === /* [] */0);
 
-Mt.from_pair_suites("Bs_list_test", suites[0]);
+Mt.from_pair_suites("Bs_list_test", suites.contents);
 
 var N = 0;
 

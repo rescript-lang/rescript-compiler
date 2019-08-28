@@ -6,22 +6,27 @@ var Block = require("../../lib/js/block.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 var Js_json = require("../../lib/js/js_json.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var counter = /* record */[/* contents */0];
+var counter = /* record */{
+  contents: 0
+};
 
 function add_test(loc, test) {
-  counter[0] = counter[0] + 1 | 0;
-  var id = loc + (" id " + String(counter[0]));
-  suites[0] = /* :: */[
+  Pervasives.incr(counter);
+  var id = loc + (" id " + String(counter.contents));
+  suites.contents = /* :: */[
     /* tuple */[
       id,
       test
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -586,7 +591,7 @@ eq("File \"js_json_test.ml\", line 387, characters 5-12", Js_json.decodeNull({ }
 
 eq("File \"js_json_test.ml\", line 389, characters 5-12", Js_json.decodeNull(1.23), undefined);
 
-Mt.from_pair_suites("Js_json_test", suites[0]);
+Mt.from_pair_suites("Js_json_test", suites.contents);
 
 exports.suites = suites;
 exports.add_test = add_test;

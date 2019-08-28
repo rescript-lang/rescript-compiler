@@ -3,9 +3,13 @@
 var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -41,7 +45,7 @@ eq("File \"optional_regression_test.ml\", line 23, characters 6-13", Caml_option
 
 console.log(hh);
 
-Mt.from_pair_suites("Optional_regression_test", suites[0]);
+Mt.from_pair_suites("Optional_regression_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

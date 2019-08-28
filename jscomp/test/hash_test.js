@@ -8,9 +8,13 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Mt_global = require("./mt_global.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f) {
   return (function (param, param$1) {
@@ -166,7 +170,7 @@ var param$8 = Hashtbl.hash(/* :: */[
 
 Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 39, characters 5-12", param$8, 100650590);
 
-Mt.from_pair_suites("Hash_test", suites[0]);
+Mt.from_pair_suites("Hash_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

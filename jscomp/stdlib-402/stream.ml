@@ -30,11 +30,14 @@ and buffio =
 exception Failure;;
 exception Error of string;;
 
-external count : 'a t -> int = "%field0";;
-external set_count : 'a t -> int -> unit = "%setfield0";;
+let count {count} = count
+module Mutable = struct
+  type 'a t = { mutable count : int; mutable data : 'a data }
+end
+let set_count (s : 'a t) n =
+ (Obj.magic s).Mutable.count <- n
 let set_data (s : 'a t) (d : 'a data) =
-  Obj.set_field (Obj.repr s) 1 (Obj.repr d)
-;;
+ (Obj.magic s).Mutable.data <- d
 
 let fill_buff b =
   b.len <- input b.ic b.buff 0 (Bytes.length b.buff); b.ind <- 0

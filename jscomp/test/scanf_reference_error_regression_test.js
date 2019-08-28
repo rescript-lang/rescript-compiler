@@ -9,9 +9,13 @@ var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
@@ -99,6 +103,6 @@ eq("File \"scanf_reference_error_regression_test.ml\", line 36, characters 5-12"
       /* [] */0
     ]);
 
-Mt.from_pair_suites("Scanf_reference_error_regression_test", suites[0]);
+Mt.from_pair_suites("Scanf_reference_error_regression_test", suites.contents);
 
 /*  Not a pure module */

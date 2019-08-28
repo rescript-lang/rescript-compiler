@@ -39,7 +39,7 @@ let get_double_feild (field_info : Lam_compat.field_dbg_info) e i =
 #end
   | Fld_record s 
   | Fld_module s 
-    -> E.array_index_by_int ~comment:s e i
+    -> E.dot e s
 
 let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 = 
   let v = 
@@ -52,7 +52,7 @@ let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 =
     | Fld_record_extension_set s 
 #end      
     | Fld_record_set s -> 
-      E.array_index_by_int ~comment:s e i 
+      E.dot e s
   in 
   E.assign v  e0
 

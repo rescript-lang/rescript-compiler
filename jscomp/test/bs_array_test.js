@@ -9,12 +9,17 @@ var Belt_List = require("../../lib/js/belt_List.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -29,10 +34,10 @@ function $$throw(loc, x) {
 }
 
 function neq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Neq */Block.__(1, [
                     x,
@@ -40,7 +45,7 @@ function neq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -1165,12 +1170,14 @@ eq("File \"bs_array_test.ml\", line 260, characters 5-12", Belt_Array.unzip(/* a
     ]);
 
 function sumUsingForEach(xs) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   Belt_Array.forEach(xs, (function (x) {
-          v[0] = v[0] + x | 0;
+          v.contents = v.contents + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v.contents;
 }
 
 eq("File \"bs_array_test.ml\", line 270, characters 5-12", sumUsingForEach(/* array */[
@@ -1213,16 +1220,18 @@ b("File \"bs_array_test.ml\", line 274, characters 4-11", !Belt_Array.eq(/* arra
           1
         ], /* array */[1], Caml_obj.caml_equal));
 
-var c$1 = /* record */[/* contents */0];
+var c$1 = /* record */{
+  contents: 0
+};
 
 b("File \"bs_array_test.ml\", line 275, characters 4-11", (Belt_Array.forEachWithIndex(/* array */[
             1,
             1,
             1
           ], (function (i, v) {
-              c$1[0] = (c$1[0] + i | 0) + v | 0;
+              c$1.contents = (c$1.contents + i | 0) + v | 0;
               return /* () */0;
-            })), c$1[0] === 6));
+            })), c$1.contents === 6));
 
 function id$1(loc, x) {
   var u = x.slice(0);
@@ -1574,7 +1583,7 @@ eq("File \"bs_array_test.ml\", line 339, characters 5-12", Belt_Array.getIndexBy
             return x > 3;
           })), undefined);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites[0]);
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites.contents);
 
 var A = 0;
 

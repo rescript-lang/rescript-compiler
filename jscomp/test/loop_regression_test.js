@@ -2,17 +2,22 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function f(param) {
-  var v = /* record */[/* contents */0];
-  var acc = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
+  var acc = /* record */{
+    contents: 0
+  };
   var n = 10;
   while(true) {
-    if (v[0] > n) {
-      return acc[0];
+    if (v.contents > n) {
+      return acc.contents;
     } else {
-      acc[0] = acc[0] + v[0] | 0;
-      v[0] = v[0] + 1 | 0;
+      acc.contents = acc.contents + v.contents | 0;
+      Pervasives.incr(v);
       continue ;
     }
   };

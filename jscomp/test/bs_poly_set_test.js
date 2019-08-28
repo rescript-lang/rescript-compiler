@@ -11,9 +11,13 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -211,27 +215,31 @@ var m$3 = {
 b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(m$3.data) === undefined);
 
 function testIterToList(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */{
+    contents: /* [] */0
+  };
   Belt_Set.forEach(xs, (function (x) {
-          v[0] = /* :: */[
+          v.contents = /* :: */[
             x,
-            v[0]
+            v.contents
           ];
           return /* () */0;
         }));
-  return Belt_List.reverse(v[0]);
+  return Belt_List.reverse(v.contents);
 }
 
 function testIterToList2(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */{
+    contents: /* [] */0
+  };
   Belt_SetDict.forEach(xs.data, (function (x) {
-          v[0] = /* :: */[
+          v.contents = /* :: */[
             x,
-            v[0]
+            v.contents
           ];
           return /* () */0;
         }));
-  return Belt_List.reverse(v[0]);
+  return Belt_List.reverse(v.contents);
 }
 
 var u0$1 = Belt_Set.fromArray(Array_data_util.randomRange(0, 20), IntCmp);
@@ -406,7 +414,7 @@ b("File \"bs_poly_set_test.ml\", line 158, characters 4-11", Belt_SetDict.isEmpt
 
 b("File \"bs_poly_set_test.ml\", line 159, characters 4-11", !match$5[1]);
 
-Mt.from_pair_suites("Bs_poly_set_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_set_test", suites.contents);
 
 var N = 0;
 

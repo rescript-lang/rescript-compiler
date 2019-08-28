@@ -4,9 +4,13 @@ var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -26,7 +30,7 @@ eq("File \"gpr_3536_test.ml\", line 32, characters 6-13", xx(3, (function (prim,
             return prim + prim$1 | 0;
           }), 4, Caml_int32.imul, 3), 11);
 
-Mt.from_pair_suites("Gpr_3536_test", suites[0]);
+Mt.from_pair_suites("Gpr_3536_test", suites.contents);
 
 var v = 5;
 

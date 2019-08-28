@@ -13,10 +13,10 @@ function sum(v) {
 
 function init(v) {
   for(var i = 0 ,i_finish = Caml_external_polyfill.resolve("caml_ba_dim_1")(v) - 1 | 0; i <= i_finish; ++i){
-    v[i] = /* record */[
-      /* re */Caml_int32.imul(i, i),
-      /* im */Caml_int32.imul(Caml_int32.imul(i, i), i)
-    ];
+    v[i] = /* record */{
+      re: Caml_int32.imul(i, i),
+      im: Caml_int32.imul(Caml_int32.imul(i, i), i)
+    };
   }
   return /* () */0;
 }

@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function f(v) {
   if (v % 2 === 0) {
@@ -45,13 +46,14 @@ function u() {
   return 3;
 }
 
-var vvv = /* record */[/* contents */0];
+var vvv = /* record */{
+  contents: 0
+};
 
 function fff(param) {
   console.log("x");
   console.log("x");
-  vvv[0] = vvv[0] + 1 | 0;
-  return /* () */0;
+  return Pervasives.incr(vvv);
 }
 
 function g() {

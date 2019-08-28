@@ -5,9 +5,13 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -61,7 +65,7 @@ b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(
 
 eq("File \"block_alias_test.ml\", line 34, characters 6-13", v0, v1);
 
-Mt.from_pair_suites("Block_alias_test", suites[0]);
+Mt.from_pair_suites("Block_alias_test", suites.contents);
 
 var h = List.length;
 

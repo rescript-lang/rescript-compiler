@@ -55,21 +55,19 @@ function even2(n) {
   }
 }
 
-var v = /* record */[/* contents */0];
+var v = /* record */{
+  contents: 0
+};
 
-function obj_000(param) {
-  return v[0];
-}
-
-function obj_001(i) {
-  v[0] = i;
-  return /* () */0;
-}
-
-var obj = /* record */[
-  obj_000,
-  obj_001
-];
+var obj = /* record */{
+  get: (function (param) {
+      return v.contents;
+    }),
+  set: (function (i) {
+      v.contents = i;
+      return /* () */0;
+    })
+};
 
 exports.xs = xs;
 exports.even = even;

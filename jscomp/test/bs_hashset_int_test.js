@@ -8,9 +8,13 @@ var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -25,12 +29,14 @@ function add(x, y) {
 }
 
 function sum2(h) {
-  var v = /* record */[/* contents */0];
+  var v = /* record */{
+    contents: 0
+  };
   Belt_HashSetInt.forEach(h, (function (x) {
-          v[0] = v[0] + x | 0;
+          v.contents = v.contents + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v.contents;
 }
 
 var u = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
@@ -97,7 +103,7 @@ var histo = Belt_HashSetInt.getBucketHistogram(h);
 
 b("File \"bs_hashset_int_test.ml\", line 62, characters 4-11", histo.length <= 10);
 
-Mt.from_pair_suites("Bs_hashset_int_test", suites[0]);
+Mt.from_pair_suites("Bs_hashset_int_test", suites.contents);
 
 var N = 0;
 

@@ -5,6 +5,7 @@ var Oo = require("../../lib/js/oo.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -33,15 +34,19 @@ var shared$5 = ["x"];
 
 var shared$6 = ["window"];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -49,7 +54,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -348,7 +353,7 @@ function widget_init($$class) {
 
 var widget = CamlinternalOO.make_class(shared$6, widget_init);
 
-Mt.from_pair_suites("Class7_test", suites[0]);
+Mt.from_pair_suites("Class7_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

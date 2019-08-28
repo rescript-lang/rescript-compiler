@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function fib(n) {
   if (n === 0 || n === 1) {
@@ -61,11 +62,13 @@ function map(f, x) {
 }
 
 function f(x) {
-  var v = x;
+  var v = /* record */{
+    contents: x
+  };
   var sum = 0;
-  while(v > 0) {
-    sum = sum + v | 0;
-    v = v - 1 | 0;
+  while(v.contents > 0) {
+    sum = sum + v.contents | 0;
+    Pervasives.decr(v);
   };
   return sum;
 }

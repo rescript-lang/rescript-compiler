@@ -4,9 +4,13 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -48,7 +52,7 @@ function adapterFromJs(param) {
 
 eq("File \"re_first_test.re\", line 18, characters 3-10", adapterToJs(/* idb */5243943), "idb");
 
-Mt.from_pair_suites("Re_first_test", suites[0]);
+Mt.from_pair_suites("Re_first_test", suites.contents);
 
 var u = 3;
 

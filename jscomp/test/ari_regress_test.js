@@ -3,14 +3,17 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var g = 7;
 
-var h = /* record */[/* contents */0];
+var h = /* record */{
+  contents: 0
+};
 
 function g1(x, y) {
   var u = x + y | 0;
-  h[0] = h[0] + 1 | 0;
+  Pervasives.incr(h);
   return (function (xx, yy) {
       return (xx + yy | 0) + u | 0;
     });
@@ -63,7 +66,7 @@ var suites_001 = /* :: */[
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      h[0],
+                      h.contents,
                       1
                     ]);
           })

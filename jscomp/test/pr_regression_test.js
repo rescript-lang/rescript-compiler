@@ -3,11 +3,14 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var v = /* record */[/* contents */3];
+var v = /* record */{
+  contents: 3
+};
 
 function f(h) {
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
   var partial_arg = 3;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -22,12 +25,14 @@ f((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var a = v[0];
+var a = v.contents;
 
-var v$1 = /* record */[/* contents */3];
+var v$1 = /* record */{
+  contents: 3
+};
 
 function f$1(h) {
-  v$1[0] = v$1[0] + 1 | 0;
+  Pervasives.incr(v$1);
   var partial_arg = 3;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -42,12 +47,14 @@ f$1((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var b = v$1[0];
+var b = v$1.contents;
 
-var v$2 = /* record */[/* contents */3];
+var v$2 = /* record */{
+  contents: 3
+};
 
 function f$2(h) {
-  return Curry._2(h, 2, (v$2[0] = v$2[0] + 1 | 0, 3));
+  return Curry._2(h, 2, (Pervasives.incr(v$2), 3));
 }
 
 f$2((function (prim, prim$1) {
@@ -58,12 +65,14 @@ f$2((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var c = v$2[0];
+var c = v$2.contents;
 
-var v$3 = /* record */[/* contents */3];
+var v$3 = /* record */{
+  contents: 3
+};
 
 function f$3(h, g) {
-  v$3[0] = v$3[0] + 1 | 0;
+  Pervasives.incr(v$3);
   var partial_arg = 9;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -78,7 +87,7 @@ f$3((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }), 3);
 
-var d = v$3[0];
+var d = v$3.contents;
 
 Mt.from_pair_suites("Pr_regression_test", /* :: */[
       /* tuple */[

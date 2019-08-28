@@ -4,9 +4,13 @@ var Mt = require("./mt.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -34,7 +38,7 @@ d0["foo"] = undefined;
 
 eq("File \"gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
 
-Mt.from_pair_suites("Gpr_3154_test", suites[0]);
+Mt.from_pair_suites("Gpr_3154_test", suites.contents);
 
 var J = 0;
 

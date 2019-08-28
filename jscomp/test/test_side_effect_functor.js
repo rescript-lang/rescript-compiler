@@ -1,11 +1,14 @@
 'use strict';
 
+var Pervasives = require("../../lib/js/pervasives.js");
 
-var v = 0;
+var v = /* record */{
+  contents: 0
+};
 
-v = v + 1 | 0;
+Pervasives.incr(v);
 
-console.log(String(v));
+console.log(String(v.contents));
 
 function unuse_v(param) {
   return 35;

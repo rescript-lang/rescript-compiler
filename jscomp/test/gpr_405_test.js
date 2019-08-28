@@ -28,8 +28,12 @@ function Make(funarg) {
     var l_labels = Curry._1(H.create, 97);
     var already_processed = Curry._1(H.create, 97);
     var on_the_stack = Curry._1(H.create, 97);
-    var cut_set = /* record */[/* contents : [] */0];
-    var counter = /* record */[/* contents */1];
+    var cut_set = /* record */{
+      contents: /* [] */0
+    };
+    var counter = /* record */{
+      contents: 1
+    };
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw [
@@ -52,8 +56,8 @@ function Make(funarg) {
             ];
       }
       Curry._3(H.add, on_the_stack, top, true);
-      Curry._3(H.add, n_labels, top, counter[0]);
-      counter[0] = counter[0] + 1 | 0;
+      Curry._3(H.add, n_labels, top, counter.contents);
+      counter.contents = counter.contents + 1 | 0;
       Curry._3(H.add, l_labels, top, 0);
       Curry._3(H.add, already_processed, top, true);
       var _successors = Curry._2(funarg.succ, gr, top);
@@ -81,9 +85,9 @@ function Make(funarg) {
           }
         } else {
           if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
-            cut_set[0] = /* :: */[
+            cut_set.contents = /* :: */[
               top$1,
-              cut_set[0]
+              cut_set.contents
             ];
             Curry._3(H.add, l_labels, top$1, 0);
           }
@@ -103,7 +107,7 @@ function Make(funarg) {
             _successors = match[1];
             continue ;
           } else {
-            return cut_set[0];
+            return cut_set.contents;
           }
         }
       };

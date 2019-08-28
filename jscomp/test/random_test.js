@@ -9,9 +9,13 @@ var Random = require("../../lib/js/random.js");
 var Mt_global = require("./mt_global.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-var id = /* record */[/* contents */0];
+var id = /* record */{
+  contents: 0
+};
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
 function eq(f) {
   return (function (param, param$1) {
@@ -66,10 +70,10 @@ Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5
 
 var f = Random.int64(Int64.max_int);
 
-var h = Random.int64(/* int64 */[
-      /* hi */0,
-      /* lo */3
-    ]);
+var h = Random.int64(/* int64 */{
+      hi: 0,
+      lo: 3
+    });
 
 var vv = Random.bits(/* () */0);
 
@@ -122,7 +126,7 @@ Curry._5(Printf.printf(/* Format */[
           "%Ld %Ld %d %f %ld \n"
         ]), f, h, vv, xx, xxx);
 
-Mt.from_pair_suites("Random_test", suites[0]);
+Mt.from_pair_suites("Random_test", suites.contents);
 
 exports.id = id;
 exports.suites = suites;

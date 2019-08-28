@@ -119,7 +119,7 @@ let caml_lazy_make (fn : _ -> _) =
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
+(* let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
   (* let len = Caml_obj_extern.length y in   
      for i = 0 to len - 1 do 
      Array.unsafe_set x i (Caml_obj_extern.field y i)
@@ -132,10 +132,12 @@ let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
   done ; 
   let y_tag = Caml_obj_extern.tag y in 
   if y_tag <> 0 then
-    Caml_obj_extern.set_tag x y_tag
+    Caml_obj_extern.set_tag x y_tag *)
 (* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
+
+external caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit = "Object.assign" [@@bs.val]
 
 type 'a selector = 'a -> 'a -> 'a 
 
@@ -271,15 +273,15 @@ and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
     if not (O.hasOwnProperty b key) ||
        caml_compare (O.get_value a key) (O.get_value b key) > 0
     then
-      match !min_key with
-      | None -> min_key := Some key
+      match min_key.contents with
+      | None -> min_key.contents <- Some key
       | Some mk ->
-        if key < mk then min_key := Some key in
+        if key < mk then min_key.contents <- Some key in
   let do_key_a = do_key (a, b, min_key_rhs) in
   let do_key_b = do_key (b, a, min_key_lhs) in
   O.for_in a do_key_a;
   O.for_in b do_key_b;
-  let res = match !min_key_lhs, !min_key_rhs with
+  let res = match min_key_lhs.contents, min_key_rhs.contents with
     | None, None -> 0
     | (Some _), None -> -1
     | None, (Some _) -> 1
@@ -349,14 +351,14 @@ and aux_obj_equal (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let result = ref true in
   let do_key_a key =
     if not (O.hasOwnProperty b key)
-    then result := false in
+    then result.contents <- false in
   let do_key_b key =
     if not (O.hasOwnProperty a key) ||
        not (caml_equal (O.get_value b key) (O.get_value a key))
-    then result := false in
+    then result.contents <- false in
   O.for_in a do_key_a ;
-  if !result then O.for_in b do_key_b;
-  !result
+  if result.contents then O.for_in b do_key_b;
+  result.contents
 
 let caml_equal_null (x : Caml_obj_extern.t) (y : Caml_obj_extern.t Js.null) = 
   match Js.nullToOption y with    

@@ -5,9 +5,13 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -39,38 +43,38 @@ var f5_min = Caml_obj.caml_min;
 
 var f5_max = Caml_obj.caml_max;
 
-b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(/* int64 */[
-              /* hi */0,
-              /* lo */0
-            ], /* int64 */[
-              /* hi */0,
-              /* lo */1
-            ]), /* int64 */[
-          /* hi */0,
-          /* lo */0
-        ]));
+b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(/* int64 */{
+              hi: 0,
+              lo: 0
+            }, /* int64 */{
+              hi: 0,
+              lo: 1
+            }), /* int64 */{
+          hi: 0,
+          lo: 0
+        }));
 
-b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
-              /* hi */0,
-              /* lo */22
-            ], /* int64 */[
-              /* hi */0,
-              /* lo */1
-            ]), /* int64 */[
-          /* hi */0,
-          /* lo */22
-        ]));
+b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */{
+              hi: 0,
+              lo: 22
+            }, /* int64 */{
+              hi: 0,
+              lo: 1
+            }), /* int64 */{
+          hi: 0,
+          lo: 22
+        }));
 
-b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
-              /* hi */-1,
-              /* lo */4294967293
-            ], /* int64 */[
-              /* hi */0,
-              /* lo */3
-            ]), /* int64 */[
-          /* hi */0,
-          /* lo */3
-        ]));
+b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */{
+              hi: -1,
+              lo: 4294967293
+            }, /* int64 */{
+              hi: 0,
+              lo: 3
+            }), /* int64 */{
+          hi: 0,
+          lo: 3
+        }));
 
 eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
 
@@ -88,7 +92,7 @@ b("File \"bs_min_max_test.ml\", line 37, characters 4-11", true);
 
 b("File \"bs_min_max_test.ml\", line 38, characters 4-11", true);
 
-Mt.from_pair_suites("Bs_min_max_test", suites[0]);
+Mt.from_pair_suites("Bs_min_max_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

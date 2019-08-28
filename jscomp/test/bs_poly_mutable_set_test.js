@@ -10,9 +10,13 @@ var Array_data_util = require("./array_data_util.js");
 var Belt_MutableSet = require("../../lib/js/belt_MutableSet.js");
 var Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -314,7 +318,7 @@ Belt_List.forEach(/* :: */[
         return Belt_internalAVLset.checkInvariantInternal(x.data);
       }));
 
-Mt.from_pair_suites("Bs_poly_mutable_set_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_mutable_set_test", suites.contents);
 
 var N = 0;
 

@@ -2,9 +2,13 @@
 
 var Mt = require("./mt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -35,7 +39,7 @@ function fake_c2(a_type, b_type) {
 
 eq("File \"gpr_2931_test.ml\", line 19, characters 6-13", 3, fake_c2("number", "xx"));
 
-Mt.from_pair_suites("Gpr_2931_test", suites[0]);
+Mt.from_pair_suites("Gpr_2931_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

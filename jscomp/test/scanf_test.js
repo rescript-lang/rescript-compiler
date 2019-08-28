@@ -6,9 +6,13 @@ var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Mt_global = require("./mt_global.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
@@ -49,13 +53,13 @@ eq("File \"scanf_test.ml\", line 7, characters 5-12", /* tuple */[
               ]), (function (i) {
               return i;
             })),
-      /* int64 */[
-        /* hi */-1429646511,
-        /* lo */235324607
-      ]
+      /* int64 */{
+        hi: -1429646511,
+        lo: 235324607
+      }
     ]);
 
-Mt.from_pair_suites("Scanf_test", suites[0]);
+Mt.from_pair_suites("Scanf_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

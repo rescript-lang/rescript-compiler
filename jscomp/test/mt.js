@@ -7,6 +7,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Assert = require("assert");
 var Process = require("process");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function assert_fail(msg) {
   Assert.fail(/* () */0, /* () */0, msg, "");
@@ -230,10 +231,10 @@ function from_promise_suites(name, suites) {
 }
 
 function eq_suites(test_id, suites, loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -241,35 +242,35 @@ function eq_suites(test_id, suites, loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
 function bool_suites(test_id, suites, loc, x) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Ok */Block.__(4, [x]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
 function throw_suites(test_id, suites, loc, x) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* ThrowAny */Block.__(7, [x]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }

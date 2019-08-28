@@ -9,9 +9,13 @@ var Array_data_util = require("./array_data_util.js");
 var Belt_MutableMap = require("../../lib/js/belt_MutableMap.js");
 var Belt_internalAVLtree = require("../../lib/js/belt_internalAVLtree.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -71,7 +75,7 @@ Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
 
-Mt.from_pair_suites("Bs_poly_mutable_map_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_mutable_map_test", suites.contents);
 
 var M = 0;
 

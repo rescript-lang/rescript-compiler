@@ -61,15 +61,19 @@ var shared$9 = [
   "len"
 ];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -77,7 +81,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -223,7 +227,9 @@ var p$1 = Curry._2(printable_point[0], 0, 7);
 
 eq("File \"class3_test.ml\", line 49, characters 11-18", Caml_oo_curry.js1(-930392019, 4, p$1), 7);
 
-var ints = /* record */[/* contents : [] */0];
+var ints = /* record */{
+  contents: /* [] */0
+};
 
 var $$class = CamlinternalOO.create_table(shared$9);
 
@@ -242,15 +248,15 @@ CamlinternalOO.set_methods($$class, /* array */[
         }),
       register,
       (function (self$5) {
-          ints[0] = /* :: */[
+          ints.contents = /* :: */[
             self$5,
-            ints[0]
+            ints.contents
           ];
           return /* () */0;
         }),
       len,
       (function (self$5) {
-          return List.length(ints[0]);
+          return List.length(ints.contents);
         })
     ]);
 
@@ -555,7 +561,7 @@ var hhhh = Caml_oo_curry.js1(291546447, 25, p$5);
 
 eq("File \"class3_test.ml\", line 195, characters 12-19", hhhh, 305);
 
-Mt.from_pair_suites("Class3_test", suites[0]);
+Mt.from_pair_suites("Class3_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

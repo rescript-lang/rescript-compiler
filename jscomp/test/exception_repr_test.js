@@ -5,18 +5,23 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Printexc = require("../../lib/js/printexc.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -24,7 +29,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -73,7 +78,7 @@ eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to
           3
         ]));
 
-Mt.from_pair_suites("Exception_repr_test", suites[0]);
+Mt.from_pair_suites("Exception_repr_test", suites.contents);
 
 var AAA = Exception_def.A;
 

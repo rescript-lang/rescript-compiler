@@ -3,9 +3,13 @@
 var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -96,7 +100,7 @@ b("File \"gpr_2503_test.ml\", line 40, characters 5-12", "b" === makeWrapper4(11
 
 b("File \"gpr_2503_test.ml\", line 43, characters 5-12", undefined === makeWrapper4(111, /* () */0).foo);
 
-Mt.from_pair_suites("Gpr_2503_test", suites[0]);
+Mt.from_pair_suites("Gpr_2503_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -10,10 +10,12 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var all_tests_ok = /* record */[/* contents */true];
+var all_tests_ok = /* record */{
+  contents: true
+};
 
 function finish(param) {
-  var match = all_tests_ok[0];
+  var match = all_tests_ok.contents;
   if (match) {
     console.log("\nAll tests succeeded.");
     return /* () */0;
@@ -25,16 +27,18 @@ function finish(param) {
 
 Pervasives.at_exit(finish);
 
-var test_num = /* record */[/* contents */-1];
+var test_num = /* record */{
+  contents: -1
+};
 
 function print_test_number(param) {
   Pervasives.print_string(" ");
-  Pervasives.print_int(test_num[0]);
+  Pervasives.print_int(test_num.contents);
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
 function print_failure_test_fail(param) {
-  all_tests_ok[0] = false;
+  all_tests_ok.contents = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
                           "\n********* Failure Test number ",
@@ -49,11 +53,11 @@ function print_failure_test_fail(param) {
                             ])
                         ]),
                       "\n********* Failure Test number %i incorrectly failed ***********\n"
-                    ]), test_num[0]));
+                    ]), test_num.contents));
 }
 
 function print_failure_test_succeed(param) {
-  all_tests_ok[0] = false;
+  all_tests_ok.contents = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
                           "\n********* Failure Test number ",
@@ -68,16 +72,16 @@ function print_failure_test_succeed(param) {
                             ])
                         ]),
                       "\n********* Failure Test number %i failed to fail ***********\n"
-                    ]), test_num[0]));
+                    ]), test_num.contents));
 }
 
 function test(b) {
-  test_num[0] = test_num[0] + 1 | 0;
+  Pervasives.incr(test_num);
   print_test_number(/* () */0);
   if (b) {
     return 0;
   } else {
-    all_tests_ok[0] = false;
+    all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "\n********* Test number ",
@@ -92,12 +96,12 @@ function test(b) {
                               ])
                           ]),
                         "\n********* Test number %i failed ***********\n"
-                      ]), test_num[0]));
+                      ]), test_num.contents));
   }
 }
 
 function test_raises_exc_p(pred, f, x) {
-  test_num[0] = test_num[0] + 1 | 0;
+  Pervasives.incr(test_num);
   print_test_number(/* () */0);
   try {
     Curry._1(f, x);

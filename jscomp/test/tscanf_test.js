@@ -20,9 +20,13 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
@@ -3664,7 +3668,7 @@ function next_char(ob, param) {
     throw Caml_builtin_exceptions.end_of_file;
   }
   var c = Caml_string.get(s, 0);
-  ob[/* position */1] = 0;
+  ob.position = 0;
   $$Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
   return c;
 }
@@ -3713,11 +3717,13 @@ function writer(ib, ob) {
               }));
 }
 
-var count = /* record */[/* contents */0];
+var count = /* record */{
+  contents: 0
+};
 
 function reader(ib, ob) {
   if (Scanf.Scanning.beginning_of_input(ib)) {
-    count[0] = 0;
+    count.contents = 0;
     send_string(ob, "start");
     return writer(ib, ob);
   } else {
@@ -3737,10 +3743,11 @@ function reader(ib, ob) {
                     return writer(ib, ob);
                   } else {
                     var l = s.length;
-                    count[0] = l + count[0] | 0;
-                    if (count[0] >= 100) {
+                    count.contents = l + count.contents | 0;
+                    if (count.contents >= 100) {
                       send_string(ob, "stop");
-                      send_string(ob, String(count[0]));
+                      var i = count.contents;
+                      send_string(ob, String(i));
                     } else {
                       send_string(ob, String(l));
                     }
@@ -4132,10 +4139,10 @@ function test53(param) {
                       /* End_of_format */0
                     ]),
                   "%Ld"
-                ]), id), /* int64 */[
-          /* hi */0,
-          /* lo */123
-        ])) {
+                ]), id), /* int64 */{
+          hi: 0,
+          lo: 123
+        })) {
     return Curry._1(Scanf.sscanf("124", /* Format */[
                     /* Int64 */Block.__(7, [
                         /* Int_d */0,
@@ -4145,13 +4152,13 @@ function test53(param) {
                       ]),
                     "%Ld"
                   ]), (function (i) {
-                  return Caml_int64.eq(Caml_int64.sub(i, /* int64 */[
-                                  /* hi */0,
-                                  /* lo */1
-                                ]), /* int64 */[
-                              /* hi */0,
-                              /* lo */123
-                            ]);
+                  return Caml_int64.eq(Caml_int64.sub(i, /* int64 */{
+                                  hi: 0,
+                                  lo: 1
+                                }), /* int64 */{
+                              hi: 0,
+                              lo: 123
+                            });
                 }));
   } else {
     return false;
@@ -4525,7 +4532,7 @@ function test60(param) {
 
 test("File \"tscanf_test.ml\", line 1414, characters 5-12", test60(/* () */0));
 
-Mt.from_pair_suites("Tscanf_test", suites[0]);
+Mt.from_pair_suites("Tscanf_test", suites.contents);
 
 var tscanf_data_file_lines = /* :: */[
   /* tuple */[

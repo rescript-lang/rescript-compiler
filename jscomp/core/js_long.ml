@@ -53,9 +53,8 @@ let make ~lo ~hi =
     ~comment:"int64" (E.zero_int_literal) 
     record_info [   hi; E.to_uint32 lo ]
     Immutable
-let get_lo x = E.array_index_by_int x 1l
-let get_hi x = E.array_index_by_int x 0l
-
+let get_lo x = E.dot x "lo"
+let get_hi x = E.dot x "hi"
 
 (* below should  not depend on layout *)
 

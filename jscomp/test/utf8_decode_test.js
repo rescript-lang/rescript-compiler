@@ -7,6 +7,7 @@ var Curry = require("../../lib/js/curry.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function classify(chr) {
@@ -102,15 +103,17 @@ function utf8_decode(strm) {
 }
 
 function to_list(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */{
+    contents: /* [] */0
+  };
   Stream.iter((function (x) {
-          v[0] = /* :: */[
+          v.contents = /* :: */[
             x,
-            v[0]
+            v.contents
           ];
           return /* () */0;
         }), xs);
-  return List.rev(v[0]);
+  return List.rev(v.contents);
 }
 
 function utf8_list(s) {
@@ -195,21 +198,25 @@ function eq_list(cmp, _xs, _ys) {
   };
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[0] = test_id[0] + 1 | 0;
+  Pervasives.incr(test_id);
   console.log(/* tuple */[
         x,
         y
       ]);
-  suites[0] = /* :: */[
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -217,7 +224,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -358,7 +365,7 @@ List.iter((function (param) {
       ]
     ]);
 
-Mt.from_pair_suites("Utf8_decode_test", suites[0]);
+Mt.from_pair_suites("Utf8_decode_test", suites.contents);
 
 exports.classify = classify;
 exports.utf8_decode = utf8_decode;

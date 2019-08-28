@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function fib(n) {
   if (n !== 1 && n !== 23) {
@@ -14,7 +15,9 @@ function fib(n) {
 }
 
 function escaped(s) {
-  var n = 0;
+  var n = /* record */{
+    contents: 0
+  };
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     var match = s[i];
     var tmp;
@@ -32,13 +35,13 @@ function escaped(s) {
           match >= 8 ? 2 : 4
         );
     }
-    n = n + tmp | 0;
+    n.contents = n.contents + tmp | 0;
   }
-  if (n === s.length) {
+  if (n.contents === s.length) {
     return Bytes.copy(s);
   } else {
-    var s$prime = Caml_bytes.caml_create_bytes(n);
-    n = 0;
+    var s$prime = Caml_bytes.caml_create_bytes(n.contents);
+    n.contents = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
       var c = s[i$1];
       var exit = 0;
@@ -47,7 +50,7 @@ function escaped(s) {
           if (c >= 127) {
             exit = 1;
           } else {
-            s$prime[n] = c;
+            s$prime[n.contents] = c;
           }
         } else {
           exit = 2;
@@ -56,26 +59,26 @@ function escaped(s) {
         if (c >= 34) {
           exit = 2;
         } else {
-          s$prime[n] = c;
+          s$prime[n.contents] = c;
         }
       } else if (c >= 14) {
         exit = 1;
       } else {
         switch (c) {
           case 8 :
-              s$prime[n] = /* "\\" */92;
-              n = n + 1 | 0;
-              s$prime[n] = /* "b" */98;
+              s$prime[n.contents] = /* "\\" */92;
+              Pervasives.incr(n);
+              s$prime[n.contents] = /* "b" */98;
               break;
           case 9 :
-              s$prime[n] = /* "\\" */92;
-              n = n + 1 | 0;
-              s$prime[n] = /* "t" */116;
+              s$prime[n.contents] = /* "\\" */92;
+              Pervasives.incr(n);
+              s$prime[n.contents] = /* "t" */116;
               break;
           case 10 :
-              s$prime[n] = /* "\\" */92;
-              n = n + 1 | 0;
-              s$prime[n] = /* "n" */110;
+              s$prime[n.contents] = /* "\\" */92;
+              Pervasives.incr(n);
+              s$prime[n.contents] = /* "n" */110;
               break;
           case 0 :
           case 1 :
@@ -90,31 +93,31 @@ function escaped(s) {
               exit = 1;
               break;
           case 13 :
-              s$prime[n] = /* "\\" */92;
-              n = n + 1 | 0;
-              s$prime[n] = /* "r" */114;
+              s$prime[n.contents] = /* "\\" */92;
+              Pervasives.incr(n);
+              s$prime[n.contents] = /* "r" */114;
               break;
           
         }
       }
       switch (exit) {
         case 1 :
-            s$prime[n] = /* "\\" */92;
-            n = n + 1 | 0;
-            s$prime[n] = 48 + (c / 100 | 0) | 0;
-            n = n + 1 | 0;
-            s$prime[n] = 48 + (c / 10 | 0) % 10 | 0;
-            n = n + 1 | 0;
-            s$prime[n] = 48 + c % 10 | 0;
+            s$prime[n.contents] = /* "\\" */92;
+            Pervasives.incr(n);
+            s$prime[n.contents] = 48 + (c / 100 | 0) | 0;
+            Pervasives.incr(n);
+            s$prime[n.contents] = 48 + (c / 10 | 0) % 10 | 0;
+            Pervasives.incr(n);
+            s$prime[n.contents] = 48 + c % 10 | 0;
             break;
         case 2 :
-            s$prime[n] = /* "\\" */92;
-            n = n + 1 | 0;
-            s$prime[n] = c;
+            s$prime[n.contents] = /* "\\" */92;
+            Pervasives.incr(n);
+            s$prime[n.contents] = c;
             break;
         
       }
-      n = n + 1 | 0;
+      Pervasives.incr(n);
     }
     return s$prime;
   }

@@ -39,9 +39,13 @@ function g(match) {
   
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -72,7 +76,7 @@ catch (raw_e){
 
 eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
 
-Mt.from_pair_suites("Exn_error_pattern", suites[0]);
+Mt.from_pair_suites("Exn_error_pattern", suites.contents);
 
 exports.f = f;
 exports.A = A;

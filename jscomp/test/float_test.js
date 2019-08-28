@@ -11,9 +11,13 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
 function eq(loc) {
   return (function (param, param$1) {
@@ -27,10 +31,10 @@ function approx(loc) {
     });
 }
 
-var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
-      /* hi */1018167296,
-      /* lo */0
-    ]);
+var epsilon_float = Caml_int64.float_of_bits(/* int64 */{
+      hi: 1018167296,
+      lo: 0
+    });
 
 var match = Caml_float.caml_frexp_float(12.0);
 
@@ -281,7 +285,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */[
               ]
             ]
           ]
-        ], Pervasives.$at(from_pairs(results), suites[0])));
+        ], Pervasives.$at(from_pairs(results), suites.contents)));
 
 exports.test_id = test_id;
 exports.suites = suites;

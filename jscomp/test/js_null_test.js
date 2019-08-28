@@ -83,14 +83,16 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "iter - empty",
                 (function (param) {
-                    var hit = /* record */[/* contents */false];
+                    var hit = /* record */{
+                      contents: false
+                    };
                     Js_null.iter(null, (function (param) {
-                            hit[0] = true;
+                            hit.contents = true;
                             return /* () */0;
                           }));
                     return /* Eq */Block.__(0, [
                               false,
-                              hit[0]
+                              hit.contents
                             ]);
                   })
               ],
@@ -98,14 +100,16 @@ var suites_001 = /* :: */[
                 /* tuple */[
                   "iter - 'a",
                   (function (param) {
-                      var hit = /* record */[/* contents */0];
+                      var hit = /* record */{
+                        contents: 0
+                      };
                       Js_null.iter(2, (function (v) {
-                              hit[0] = v;
+                              hit.contents = v;
                               return /* () */0;
                             }));
                       return /* Eq */Block.__(0, [
                                 2,
-                                hit[0]
+                                hit.contents
                               ]);
                     })
                 ],

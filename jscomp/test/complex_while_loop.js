@@ -1,8 +1,11 @@
 'use strict';
 
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function f(param) {
-  var n = 0;
+  var n = /* record */{
+    contents: 0
+  };
   while((function () {
           var fib = function (n) {
             if (n === 0 || n === 1) {
@@ -11,10 +14,10 @@ function f(param) {
               return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
             }
           };
-          return fib(n) > 10;
+          return fib(n.contents) > 10;
         })()) {
-    console.log(String(n));
-    n = n + 1 | 0;
+    console.log(String(n.contents));
+    Pervasives.incr(n);
   };
   return /* () */0;
 }

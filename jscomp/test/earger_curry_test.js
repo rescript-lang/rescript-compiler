@@ -69,15 +69,19 @@ function f2(param) {
 
 f2(/* () */0);
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -85,14 +89,18 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
 
-var v = /* record */[/* contents */0];
+var v = /* record */{
+  contents: 0
+};
 
-var all_v = /* record */[/* contents : [] */0];
+var all_v = /* record */{
+  contents: /* [] */0
+};
 
 function add5(a0, a1, a2, a3, a4) {
   console.log(/* tuple */[
@@ -102,17 +110,17 @@ function add5(a0, a1, a2, a3, a4) {
         a3,
         a4
       ]);
-  all_v[0] = /* :: */[
-    v[0],
-    all_v[0]
+  all_v.contents = /* :: */[
+    v.contents,
+    all_v.contents
   ];
   return (((a0 + a1 | 0) + a2 | 0) + a3 | 0) + a4 | 0;
 }
 
 function f(x) {
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
   var partial_arg = 2;
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
   var partial_arg$1 = 1;
   return (function (param, param$1) {
       return add5(x, partial_arg$1, partial_arg, param, param$1);
@@ -120,16 +128,16 @@ function f(x) {
 }
 
 function g(x) {
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
   var partial_arg = 2;
-  v[0] = v[0] + 1 | 0;
+  Pervasives.incr(v);
   var partial_arg$1 = 1;
   var u = function (param, param$1) {
     return add5(x, partial_arg$1, partial_arg, param, param$1);
   };
-  all_v[0] = /* :: */[
-    v[0],
-    all_v[0]
+  all_v.contents = /* :: */[
+    v.contents,
+    all_v.contents
   ];
   return u;
 }
@@ -150,7 +158,7 @@ eq("File \"earger_curry_test.ml\", line 120, characters 7-14", c, 10);
 
 eq("File \"earger_curry_test.ml\", line 121, characters 7-14", d, 11);
 
-eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: */[
+eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v.contents, /* :: */[
       8,
       /* :: */[
         8,
@@ -170,7 +178,7 @@ eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: *
       ]
     ]);
 
-Mt.from_pair_suites("Earger_curry_test", suites[0]);
+Mt.from_pair_suites("Earger_curry_test", suites.contents);
 
 exports.map = map;
 exports.init = init;

@@ -3,9 +3,12 @@
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_char = require("../../lib/js/caml_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function escaped(s) {
-  var n = 0;
+  var n = /* record */{
+    contents: 0
+  };
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     var c = s[i];
     var tmp;
@@ -30,13 +33,13 @@ function escaped(s) {
     if (exit === 1) {
       tmp = Caml_char.caml_is_printable(c) ? 1 : 4;
     }
-    n = n + tmp | 0;
+    n.contents = n.contents + tmp | 0;
   }
-  if (n === s.length) {
+  if (n.contents === s.length) {
     return Bytes.copy(s);
   } else {
-    var s$prime = Caml_bytes.caml_create_bytes(n);
-    n = 0;
+    var s$prime = Caml_bytes.caml_create_bytes(n.contents);
+    n.contents = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
@@ -47,19 +50,19 @@ function escaped(s) {
         } else {
           switch (switcher + 34 | 0) {
             case 8 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "b" */98;
+                s$prime[n.contents] = /* "\\" */92;
+                Pervasives.incr(n);
+                s$prime[n.contents] = /* "b" */98;
                 break;
             case 9 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "t" */116;
+                s$prime[n.contents] = /* "\\" */92;
+                Pervasives.incr(n);
+                s$prime[n.contents] = /* "t" */116;
                 break;
             case 10 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "n" */110;
+                s$prime[n.contents] = /* "\\" */92;
+                Pervasives.incr(n);
+                s$prime[n.contents] = /* "n" */110;
                 break;
             case 0 :
             case 1 :
@@ -74,34 +77,34 @@ function escaped(s) {
                 exit$1 = 1;
                 break;
             case 13 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "r" */114;
+                s$prime[n.contents] = /* "\\" */92;
+                Pervasives.incr(n);
+                s$prime[n.contents] = /* "r" */114;
                 break;
             
           }
         }
       } else if (switcher > 57 || switcher < 1) {
-        s$prime[n] = /* "\\" */92;
-        n = n + 1 | 0;
-        s$prime[n] = c$1;
+        s$prime[n.contents] = /* "\\" */92;
+        Pervasives.incr(n);
+        s$prime[n.contents] = c$1;
       } else {
         exit$1 = 1;
       }
       if (exit$1 === 1) {
         if (Caml_char.caml_is_printable(c$1)) {
-          s$prime[n] = c$1;
+          s$prime[n.contents] = c$1;
         } else {
-          s$prime[n] = /* "\\" */92;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + c$1 % 10 | 0;
+          s$prime[n.contents] = /* "\\" */92;
+          Pervasives.incr(n);
+          s$prime[n.contents] = 48 + (c$1 / 100 | 0) | 0;
+          Pervasives.incr(n);
+          s$prime[n.contents] = 48 + (c$1 / 10 | 0) % 10 | 0;
+          Pervasives.incr(n);
+          s$prime[n.contents] = 48 + c$1 % 10 | 0;
         }
       }
-      n = n + 1 | 0;
+      Pervasives.incr(n);
     }
     return s$prime;
   }

@@ -179,14 +179,20 @@ let make_block ?comment
   (tag_info : J.tag_info) 
   (es : t list) 
   (mutable_flag : J.mutable_flag) : t = 
-  match tag_info with 
-  | Blk_module _ -> 
-    {expression_desc = Caml_block(es,mutable_flag, tag,tag_info); comment}
-  | _ -> 
-  let comment = 
+  let comment_with_tag = 
     match comment with 
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
     | _ -> comment in
+  match tag_info with 
+  | Blk_module _ -> 
+    {expression_desc = Caml_block(es,mutable_flag, tag,tag_info); comment}
+  | Blk_record des ->
+    let property_map = List.mapi (fun i e -> (des.(i), e)) es in
+    {
+      expression_desc = Object property_map;
+      comment=comment_with_tag 
+    }
+  | _ -> 
   let es = 
     match tag_info with 
     | Blk_record des
@@ -210,9 +216,9 @@ let make_block ?comment
   in
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
-    comment 
-  }    
-
+    comment = comment_with_tag
+  }
+  
 
 module L = Literals
 
@@ -1319,6 +1325,3 @@ let resolve_and_apply
        "resolve" 
        [str s ]
     ) args 
-
-
-

@@ -8,9 +8,13 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -405,7 +409,7 @@ eq("File \"bs_sort_test.ml\", line 143, characters 5-12", Belt_SortArray.strictl
           0
         ], lt), -5);
 
-Mt.from_pair_suites("Bs_sort_test", suites[0]);
+Mt.from_pair_suites("Bs_sort_test", suites.contents);
 
 var I = 0;
 

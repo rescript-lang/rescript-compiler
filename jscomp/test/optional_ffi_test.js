@@ -2,19 +2,24 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */{
+  contents: /* [] */0
+};
 
-var test_id = /* record */[/* contents */0];
+var test_id = /* record */{
+  contents: 0
+};
 
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  Pervasives.incr(test_id);
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -22,7 +27,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -50,11 +55,13 @@ eq("File \"optional_ffi_test.ml\", line 23, characters 5-12", /* tuple */[
       ]
     ]);
 
-var counter = /* record */[/* contents */0];
+var counter = /* record */{
+  contents: 0
+};
 
 function side_effect(x) {
-  x[0] = x[0] + 1 | 0;
-  return x[0];
+  Pervasives.incr(x);
+  return x.contents;
 }
 
 function bug_to_fix(f, x) {
@@ -65,18 +72,20 @@ function bug_to_fix2(f, x) {
   return hey(Caml_option.option_get(f(x)), 3);
 }
 
-var counter2 = /* record */[/* contents */0];
+var counter2 = /* record */{
+  contents: 0
+};
 
 function side_effect2(x) {
-  x[0] = x[0] + 1 | 0;
-  return x[0];
+  Pervasives.incr(x);
+  return x.contents;
 }
 
 var v = bug_to_fix(side_effect, counter);
 
 var pair_000 = /* tuple */[
   v,
-  counter[0]
+  counter.contents
 ];
 
 var pair_001 = /* tuple */[
@@ -93,7 +102,7 @@ var v2 = bug_to_fix2(side_effect2, counter2);
 
 var pair2_000 = /* tuple */[
   v2,
-  counter[0]
+  counter.contents
 ];
 
 var pair2_001 = /* tuple */[
@@ -127,7 +136,7 @@ var pair$1 = /* tuple */[
 
 eq("File \"optional_ffi_test.ml\", line 58, characters 5-12", pair$1);
 
-Mt.from_pair_suites("Optional_ffi_test", suites[0]);
+Mt.from_pair_suites("Optional_ffi_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -775,18 +775,20 @@ var suites_001 = /* :: */[
                                                                                       /* tuple */[
                                                                                         "typed_array - forEach",
                                                                                         (function (param) {
-                                                                                            var sum = /* record */[/* contents */0];
+                                                                                            var sum = /* record */{
+                                                                                              contents: 0
+                                                                                            };
                                                                                             new Int8Array(/* array */[
                                                                                                     1,
                                                                                                     2,
                                                                                                     3
                                                                                                   ]).forEach((function (n) {
-                                                                                                    sum[0] = sum[0] + n | 0;
+                                                                                                    sum.contents = sum.contents + n | 0;
                                                                                                     return /* () */0;
                                                                                                   }));
                                                                                             return /* Eq */Block.__(0, [
                                                                                                       6,
-                                                                                                      sum[0]
+                                                                                                      sum.contents
                                                                                                     ]);
                                                                                           })
                                                                                       ],
@@ -794,18 +796,20 @@ var suites_001 = /* :: */[
                                                                                         /* tuple */[
                                                                                           "typed_array - forEachi",
                                                                                           (function (param) {
-                                                                                              var sum = /* record */[/* contents */0];
+                                                                                              var sum = /* record */{
+                                                                                                contents: 0
+                                                                                              };
                                                                                               new Int8Array(/* array */[
                                                                                                       1,
                                                                                                       2,
                                                                                                       3
                                                                                                     ]).forEach((function (param, i) {
-                                                                                                      sum[0] = sum[0] + i | 0;
+                                                                                                      sum.contents = sum.contents + i | 0;
                                                                                                       return /* () */0;
                                                                                                     }));
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         3,
-                                                                                                        sum[0]
+                                                                                                        sum.contents
                                                                                                       ]);
                                                                                             })
                                                                                         ],
