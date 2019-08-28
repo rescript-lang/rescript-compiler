@@ -26,6 +26,12 @@
 external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
   "slice"  [@@bs.send]
 
+let record_copy = fun%raw r ->  {|
+return Object.assign({}, r)
+|}
+
+let caml_array_dup : 'a array -> 'a array = record_copy
+
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = Caml_array_extern.new_uninitialized len  in
   let j = ref 0 and i = ref offset in

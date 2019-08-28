@@ -3745,12 +3745,13 @@ let gen_sig ?and_ t sc =
     F.line sc @@ sp "(** [decode_%s decoder] decodes a [%s] value from [decoder] *)" type_name type_name; 
   in 
 
-  let (), has_encoded = match t with 
+   let (), has_encoded = match t with 
     | {T.spec = T.Record {T.r_name; _ } } -> f r_name, true
     | {T.spec = T.Variant {T.v_name; _ }} -> f v_name, true 
     | {T.spec = T.Const_variant {T.cv_name; _ }} -> f cv_name, true
   in
   has_encoded
+
 
 let ocamldoc_title = "Protobuf Decoding"
 

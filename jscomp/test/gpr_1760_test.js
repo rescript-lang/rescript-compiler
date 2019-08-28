@@ -69,13 +69,13 @@ catch (exn$3){
 var a6;
 
 try {
-  Caml_int64.div(/* int64 */[
-        /* hi */0,
-        /* lo */0
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */0
-      ]);
+  Caml_int64.div(/* int64 */{
+        hi: 0,
+        lo: 0
+      }, /* int64 */{
+        hi: 0,
+        lo: 0
+      });
   a6 = 0;
 }
 catch (exn$4){
@@ -85,13 +85,13 @@ catch (exn$4){
 var a7;
 
 try {
-  Caml_int64.mod_(/* int64 */[
-        /* hi */0,
-        /* lo */0
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */0
-      ]);
+  Caml_int64.mod_(/* int64 */{
+        hi: 0,
+        lo: 0
+      }, /* int64 */{
+        hi: 0,
+        lo: 0
+      });
   a7 = 0;
 }
 catch (exn$5){

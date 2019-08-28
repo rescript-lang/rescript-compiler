@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -37,7 +36,7 @@ function g(param) {
     }
     return i + 1 | 0;
   };
-  Caml_obj.caml_update_dummy(v, /* record */[/* contents */next]);
+  Object.assign(v, /* record */[/* contents */next]);
   console.log(String(next(0, true)));
   return /* () */0;
 }
@@ -48,15 +47,15 @@ var x = [];
 
 var y = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
-      1,
-      y
-    ]);
+Object.assign(x, /* :: */[
+    1,
+    y
+  ]);
 
-Caml_obj.caml_update_dummy(y, /* :: */[
-      2,
-      x
-    ]);
+Object.assign(y, /* :: */[
+    2,
+    x
+  ]);
 
 eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
 

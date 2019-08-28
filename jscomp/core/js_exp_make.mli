@@ -329,3 +329,5 @@ val resolve_and_apply :
   string ->
   t list ->
   t
+
+val object_assign : ?comment:string -> (t option) -> t -> t

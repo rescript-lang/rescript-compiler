@@ -10,17 +10,17 @@ function g(x) {
 }
 
 function ff(v, u) {
-  return /* record */[
-          /* v */v,
-          /* u */u
-        ];
+  return /* record */{
+          v: v,
+          u: u
+        };
 }
 
 function fff(vv, uu) {
-  return /* record */[
-          /* vv */vv,
-          /* uu */uu
-        ];
+  return /* record */{
+          vv: vv,
+          uu: uu
+        };
 }
 
 function a(x) {
@@ -32,11 +32,11 @@ function aa(x) {
 }
 
 function aaa(x) {
-  return x[/* v */0];
+  return x.v;
 }
 
 function aaaa(x) {
-  return x[/* vv */0];
+  return x.vv;
 }
 
 function f(x) {

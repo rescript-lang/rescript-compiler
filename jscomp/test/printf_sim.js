@@ -15,10 +15,10 @@ Curry._1(Printf.printf(/* Format */[
                 ])
             ]),
           "%Ld\n"
-        ]), /* int64 */[
-      /* hi */0,
-      /* lo */32
-    ]);
+        ]), /* int64 */{
+      hi: 0,
+      lo: 32
+    });
 
 Printf.printf(/* Format */[
       /* String_literal */Block.__(11, [

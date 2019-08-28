@@ -131,6 +131,7 @@ and expression_desc =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *) 
+  | Object_assign of (expression option) * expression
   | String_index of expression * expression 
     (* str.[i])*)
   | Array_index of expression * expression 

@@ -30,10 +30,10 @@ function id(x) {
   return Caml_format.caml_int64_of_string(Caml_format.caml_int64_format("%d", x));
 }
 
-var i = /* int64 */[
-  /* hi */2074848171,
-  /* lo */2880154539
-];
+var i = /* int64 */{
+  hi: 2074848171,
+  lo: 2880154539
+};
 
 var s = Caml_format.caml_int64_format("%d", i);
 

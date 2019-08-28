@@ -482,10 +482,10 @@ function read(param) {
   }
 }
 
-var globs = Caml_array.caml_make_vect(100, /* record */[
-      /* loc */0,
-      /* va */-1
-    ]);
+var globs = Caml_array.caml_make_vect(100, /* record */{
+      loc: 0,
+      va: -1
+    });
 
 var lvls = /* :: */[
   /* tuple */[
@@ -945,11 +945,11 @@ function unary(stk) {
           out(18616);
           var g = Caml_array.caml_array_get(globs, i);
           var loc = opos[0];
-          le(64, g[/* loc */0]);
-          Caml_array.caml_array_set(globs, i, /* record */[
-                /* loc */loc,
-                /* va */g[/* va */1]
-              ]);
+          le(64, g.loc);
+          Caml_array.caml_array_set(globs, i, /* record */{
+                loc: loc,
+                va: g.va
+              });
           read(/* Int */0);
         }
         return postfix(stk);
@@ -1122,17 +1122,17 @@ function decl(g, _n, _stk) {
               var stk$prime;
               if (g) {
                 var glo = Caml_array.caml_array_get(globs, s);
-                if (glo[/* va */1] >= 0) {
+                if (glo.va >= 0) {
                   throw [
                         Caml_builtin_exceptions.failure,
                         "symbol defined twice"
                       ];
                 }
                 var va = (gpos[0] + 232 | 0) + 4194304 | 0;
-                Caml_array.caml_array_set(globs, s, /* record */[
-                      /* loc */glo[/* loc */0],
-                      /* va */va
-                    ]);
+                Caml_array.caml_array_set(globs, s, /* record */{
+                      loc: glo.loc,
+                      va: va
+                    });
                 gpos[0] = gpos[0] + 8 | 0;
                 stk$prime = stk;
               } else {
@@ -1369,16 +1369,16 @@ function top(_param) {
       if (match.tag === 3) {
         var f = match[0];
         var g = Caml_array.caml_array_get(globs, f);
-        if (g[/* va */1] >= 0) {
+        if (g.va >= 0) {
           throw [
                 Caml_builtin_exceptions.failure,
                 "symbol defined twice"
               ];
         }
-        Caml_array.caml_array_set(globs, f, /* record */[
-              /* loc */g[/* loc */0],
-              /* va */opos[0]
-            ]);
+        Caml_array.caml_array_set(globs, f, /* record */{
+              loc: g.loc,
+              va: opos[0]
+            });
         var emitargs = function (_regs, _n, _stk) {
           while(true) {
             var stk = _stk;
@@ -1548,11 +1548,11 @@ function elfgen(outf) {
   out(1217084452);
   out(-1921768440);
   out(18616);
-  le(64, gmain[/* loc */0]);
-  Caml_array.caml_array_set(globs, main, /* record */[
-        /* loc */opos[0] - 8 | 0,
-        /* va */gmain[/* va */1]
-      ]);
+  le(64, gmain.loc);
+  Caml_array.caml_array_set(globs, main, /* record */{
+        loc: opos[0] - 8 | 0,
+        va: gmain.va
+      });
   out(65488);
   out(35271);
   load(0, 60);
@@ -1561,8 +1561,8 @@ function elfgen(outf) {
   var itr = function (f) {
     return symitr((function (i, s) {
                   var g = Caml_array.caml_array_get(globs, i);
-                  if (g[/* va */1] < 0 && g[/* loc */0] !== 0) {
-                    return Curry._3(f, s, s.length, g[/* loc */0]);
+                  if (g.va < 0 && g.loc !== 0) {
+                    return Curry._3(f, s, s.length, g.loc);
                   } else {
                     return 0;
                   }
@@ -1573,10 +1573,10 @@ function elfgen(outf) {
   };
   var patchloc = function (i, param) {
     var g = Caml_array.caml_array_get(globs, i);
-    if (g[/* va */1] >= 0 && g[/* va */1] < 4194304) {
-      return patch(false, g[/* loc */0], va(g[/* va */1]));
-    } else if (g[/* va */1] >= 0) {
-      return patch(false, g[/* loc */0], g[/* va */1]);
+    if (g.va >= 0 && g.va < 4194304) {
+      return patch(false, g.loc, va(g.va));
+    } else if (g.va >= 0) {
+      return patch(false, g.loc, g.va);
     } else {
       return 0;
     }
