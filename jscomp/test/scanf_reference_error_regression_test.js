@@ -60,9 +60,9 @@ function scan_rest(ib, accu) {
                                                 "%1[];]"
                                               ]), (function (param) {
                                               switch (param) {
-                                                case ";" : 
+                                                case ";" :
                                                     return scan_rest(ib$2, accu$2);
-                                                case "]" : 
+                                                case "]" :
                                                     return accu$2;
                                                 default:
                                                   var s = Printf.sprintf(/* Format */[

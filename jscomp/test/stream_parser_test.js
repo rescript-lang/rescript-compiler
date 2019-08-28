@@ -31,7 +31,7 @@ function parse(token) {
   var parse_atom = function (param) {
     var e = token$1(/* () */0);
     switch (e.tag | 0) {
-      case 0 : 
+      case 0 :
           if (e[0] === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(/* () */0)));
             var match = token$1(/* () */0);
@@ -55,7 +55,7 @@ function parse(token) {
                   "unexpected token"
                 ];
           }
-      case 2 : 
+      case 2 :
           return e[0];
       default:
         Queue.push(e, look_ahead);
@@ -72,9 +72,9 @@ function parse(token) {
       return e1;
     } else {
       switch (e[0]) {
-        case "*" : 
+        case "*" :
             return Caml_int32.imul(e1, parse_term_aux(parse_atom(/* () */0)));
-        case "/" : 
+        case "/" :
             return Caml_int32.div(e1, parse_term_aux(parse_atom(/* () */0)));
         default:
           Queue.push(e, look_ahead);
@@ -89,9 +89,9 @@ function parse(token) {
       return e1;
     } else {
       switch (e[0]) {
-        case "+" : 
+        case "+" :
             return e1 + parse_expr_aux(parse_term_aux(parse_atom(/* () */0))) | 0;
-        case "-" : 
+        case "-" :
             return e1 - parse_expr_aux(parse_term_aux(parse_atom(/* () */0))) | 0;
         default:
           Queue.push(e, look_ahead);
@@ -158,7 +158,7 @@ function l_parse(token) {
   var parse_f = function (param) {
     var t = token$1(/* () */0);
     switch (t.tag | 0) {
-      case 0 : 
+      case 0 :
           if (t[0] === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
             var t$1 = token$1(/* () */0);
@@ -181,7 +181,7 @@ function l_parse(token) {
                   "Unexpected token"
                 ];
           }
-      case 2 : 
+      case 2 :
           return t[0];
       default:
         throw [
@@ -199,10 +199,10 @@ function l_parse(token) {
         return a;
       } else {
         switch (t[0]) {
-          case "*" : 
+          case "*" :
               _a = Caml_int32.imul(a, parse_f(/* () */0));
               continue ;
-          case "/" : 
+          case "/" :
               _a = Caml_int32.div(a, parse_f(/* () */0));
               continue ;
           default:
@@ -221,10 +221,10 @@ function l_parse(token) {
         return a;
       } else {
         switch (t[0]) {
-          case "+" : 
+          case "+" :
               _a = a + parse_f_aux(parse_f(/* () */0)) | 0;
               continue ;
-          case "-" : 
+          case "-" :
               _a = a - parse_f_aux(parse_f(/* () */0)) | 0;
               continue ;
           default:

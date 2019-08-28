@@ -885,7 +885,7 @@ function process_input_line(ticker_map, all_tickers, line) {
   var tokens = split(/* "|" */124, line);
   if (tokens) {
     switch (tokens[0]) {
-      case "Q" : 
+      case "Q" :
           var match = tokens[1];
           if (match) {
             var match$1 = match[1];
@@ -915,14 +915,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-      case "R" : 
+      case "R" :
           var match$2 = tokens[1];
           if (match$2) {
             var match$3 = match$2[1];
             if (match$3) {
               var ticker_name = match$2[0];
               switch (match$3[0]) {
-                case "+" : 
+                case "+" :
                     var match$4 = match$3[1];
                     if (match$4) {
                       var match$5 = match$4[1];
@@ -952,7 +952,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                case "-" : 
+                case "-" :
                     var match$6 = match$3[1];
                     if (match$6) {
                       var match$7 = match$6[1];
@@ -982,7 +982,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                case "S" : 
+                case "S" :
                     if (match$3[1]) {
                       throw [
                             Caml_builtin_exceptions.failure,

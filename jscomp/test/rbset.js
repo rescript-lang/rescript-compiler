@@ -87,14 +87,14 @@ function balance_left(l, x, r) {
     exit = 1;
   }
   switch (exit) {
-    case 1 : 
+    case 1 :
         return /* Node */[
                 /* Black */0,
                 l,
                 x,
                 r
               ];
-    case 2 : 
+    case 2 :
         return /* Node */[
                 /* Red */1,
                 /* Node */[
@@ -153,14 +153,14 @@ function balance_right(l, x, r) {
     exit = 1;
   }
   switch (exit) {
-    case 1 : 
+    case 1 :
         return /* Node */[
                 /* Black */0,
                 l,
                 x,
                 r
               ];
-    case 2 : 
+    case 2 :
         return /* Node */[
                 /* Red */1,
                 /* Node */[

@@ -106,9 +106,9 @@ function read$1(name) {
 function test(readline, x) {
   readline.on((function () {
             switch (x[0]) {
-              case -944564236 : 
+              case -944564236 :
                   return "line";
-              case -933029960 : 
+              case -933029960 :
                   return "close";
               
             }
@@ -121,9 +121,9 @@ Mt.from_pair_suites("Poly_variant_test", suites[0]);
 function on2(prim, prim$1) {
   prim.on2((function () {
             switch (prim$1[0]) {
-              case -944564236 : 
+              case -944564236 :
                   return "line";
-              case -933029960 : 
+              case -933029960 :
                   return "close";
               
             }

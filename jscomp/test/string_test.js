@@ -12,18 +12,18 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 function ff(x) {
   var a;
   switch (x) {
-    case "0" : 
-    case "1" : 
-    case "2" : 
+    case "0" :
+    case "1" :
+    case "2" :
         a = 3;
         break;
-    case "3" : 
+    case "3" :
         a = 4;
         break;
-    case "4" : 
+    case "4" :
         a = 6;
         break;
-    case "7" : 
+    case "7" :
         a = 7;
         break;
     default:
@@ -35,23 +35,23 @@ function ff(x) {
 function gg(x) {
   var a;
   switch (x) {
-    case 0 : 
-    case 1 : 
-    case 2 : 
+    case 0 :
+    case 1 :
+    case 2 :
         a = 3;
         break;
-    case 3 : 
+    case 3 :
         a = 4;
         break;
-    case 4 : 
+    case 4 :
         a = 6;
         break;
-    case 5 : 
-    case 6 : 
-    case 7 : 
+    case 5 :
+    case 6 :
+    case 7 :
         a = 8;
         break;
-    case 8 : 
+    case 8 :
         a = 7;
         break;
     default:

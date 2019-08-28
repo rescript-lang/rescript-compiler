@@ -118,9 +118,9 @@ function string_of_bool(b) {
 
 function bool_of_string(param) {
   switch (param) {
-    case "false" : 
+    case "false" :
         return false;
-    case "true" : 
+    case "true" :
         return true;
     default:
       throw [

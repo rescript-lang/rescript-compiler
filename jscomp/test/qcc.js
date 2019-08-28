@@ -828,17 +828,17 @@ function binary(stk, lvl) {
 function unary(stk) {
   var match = Curry._1(next$1, /* () */0);
   switch (match.tag | 0) {
-    case 0 : 
+    case 0 :
         var o = match[0];
         switch (o) {
-          case "&" : 
+          case "&" :
               unary(stk);
               return patchlval(/* () */0);
-          case "(" : 
+          case "(" :
               expr(stk);
               Curry._1(next$1, /* () */0);
               return postfix(stk);
-          case "*" : 
+          case "*" :
               Curry._1(next$1, /* () */0);
               var t = Curry._1(next$1, /* () */0);
               var match$1;
@@ -916,12 +916,12 @@ function unary(stk) {
               return 0;
             }
         }
-    case 1 : 
+    case 1 :
         return load(0, match[0]);
-    case 2 : 
+    case 2 :
         out(18616);
         return le(64, match[0]);
-    case 3 : 
+    case 3 :
         var i = match[0];
         if (List.mem_assoc(i, stk)) {
           var l = List.assoc(i, stk);
@@ -964,7 +964,7 @@ function postfix(stk) {
   } else {
     var op = t[0];
     switch (op) {
-      case "(" : 
+      case "(" :
           var emitargs = function (_l, _rl) {
             while(true) {
               var rl = _rl;
@@ -1018,8 +1018,8 @@ function postfix(stk) {
           } else {
             return 0;
           }
-      case "++" : 
-      case "--" : 
+      case "++" :
+      case "--" :
           break;
       default:
         return Curry._1(unnext, t);
@@ -1324,9 +1324,9 @@ function stmt(brk, stk) {
     return /* () */0;
   } else if (!t.tag) {
     switch (t[0]) {
-      case ";" : 
+      case ";" :
           return /* () */0;
-      case "{" : 
+      case "{" :
           return block(brk, stk);
       default:
         
@@ -1386,7 +1386,7 @@ function top(_param) {
             var regs = _regs;
             var match = Curry._1(next$1, /* () */0);
             switch (match.tag | 0) {
-              case 0 : 
+              case 0 :
                   if (match[0] === ")") {
                     return stk;
                   } else {
@@ -1395,13 +1395,13 @@ function top(_param) {
                           "[var] or ) expected"
                         ];
                   }
-              case 1 : 
-              case 2 : 
+              case 1 :
+              case 2 :
                   throw [
                         Caml_builtin_exceptions.failure,
                         "[var] or ) expected"
                       ];
-              case 3 : 
+              case 3 :
                   var r = List.hd(regs);
                   push(r);
                   if (nextis(/* Op */Block.__(0, [","]))) {
@@ -1719,7 +1719,7 @@ function elfgen(outf) {
 function main(param) {
   var ppsym = function (param) {
     switch (param.tag | 0) {
-      case 0 : 
+      case 0 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Operator '",
@@ -1733,7 +1733,7 @@ function main(param) {
                             ]),
                           "Operator '%s'\n"
                         ]), param[0]);
-      case 1 : 
+      case 1 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Int literal ",
@@ -1749,7 +1749,7 @@ function main(param) {
                             ]),
                           "Int literal %d\n"
                         ]), param[0]);
-      case 2 : 
+      case 2 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Str literal ",
@@ -1763,7 +1763,7 @@ function main(param) {
                             ]),
                           "Str literal %S\n"
                         ]), param[1]);
-      case 3 : 
+      case 3 :
           var i = param[0];
           return Curry._2(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
@@ -1791,7 +1791,7 @@ function main(param) {
   };
   var f = Sys.argv.length < 2 ? "-blk" : Caml_array.caml_array_get(Sys.argv, 1);
   switch (f) {
-    case "-blk" : 
+    case "-blk" :
         var partial_arg_000 = /* record */[/* contents */0];
         var partial_arg = /* tuple */[
           partial_arg_000,
@@ -1804,7 +1804,7 @@ function main(param) {
         opos[0] = 0;
         Curry._1(c, stk);
         return Pervasives.print_bytes(Bytes.sub(obuf, 0, opos[0]));
-    case "-lex" : 
+    case "-lex" :
         var _param = /* () */0;
         while(true) {
           var tok = Curry._1(next$1, /* () */0);

@@ -4,9 +4,9 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function f(param) {
   switch (param) {
-    case "abcd" : 
+    case "abcd" :
         return 0;
-    case "bcde" : 
+    case "bcde" :
         return 1;
     default:
       throw [

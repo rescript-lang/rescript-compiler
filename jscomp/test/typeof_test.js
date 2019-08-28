@@ -8,21 +8,21 @@ function string_or_number(x) {
   var ty = Js_types.classify(x);
   if (typeof ty === "number") {
     switch (ty) {
-      case 0 : 
-      case 1 : 
+      case 0 :
+      case 1 :
           return false;
       default:
         return false;
     }
   } else {
     switch (ty.tag | 0) {
-      case 0 : 
+      case 0 :
           console.log(ty[0] + 3);
           return true;
-      case 1 : 
+      case 1 :
           console.log(ty[0] + "hei");
           return true;
-      case 2 : 
+      case 2 :
           console.log("Function");
           return false;
       default:

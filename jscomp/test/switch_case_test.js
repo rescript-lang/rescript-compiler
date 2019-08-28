@@ -26,13 +26,13 @@ function eq(loc, x, y) {
 
 function f(x) {
   switch (x) {
-    case "xx\"" : 
+    case "xx\"" :
         return 1;
-    case "xx'''" : 
+    case "xx'''" :
         return 0;
-    case "xx\\\"" : 
+    case "xx\\\"" :
         return 2;
-    case "xx\\\"\"" : 
+    case "xx\\\"\"" :
         return 3;
     default:
       return 4;
