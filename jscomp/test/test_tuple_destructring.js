@@ -1,7 +1,9 @@
 'use strict';
 
 
-var N = /* module */[/* b */3];
+var N = /* module */{
+  b: 3
+};
 
 var v = 3;
 

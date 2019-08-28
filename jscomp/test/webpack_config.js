@@ -10,11 +10,15 @@ var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js")
 
 var configx = WebpackConfigJs;
 
-var WebpackConfig = /* module */[/* configx */configx];
+var WebpackConfig = /* module */{
+  configx: configx
+};
 
 var configx$1 = WebpackMiddlewareConfigJs;
 
-var WebpackDevMiddlewareConfig = /* module */[/* configx */configx$1];
+var WebpackDevMiddlewareConfig = /* module */{
+  configx: configx$1
+};
 
 function configX(prim) {
   return WebpackMiddlewareConfigJs.configX();
@@ -24,11 +28,13 @@ function configX$1(prim) {
   return WebpackConfigJs.configX();
 }
 
-var U = /* module */[/* configX */configX$1];
+var U = /* module */{
+  configX: configX$1
+};
 
-var A = /* module */[];
+var A = /* module */{ };
 
-var B = /* module */[];
+var B = /* module */{ };
 
 function f(param) {
   return /* tuple */[

@@ -32,60 +32,78 @@ type shape =
    | Function
    | Lazy
    | Class
-   | Module of shape array
+   | Module of (shape * string) array
    | Value of Caml_obj_extern.t
 (* ATTENTION: check across versions *)
-module Array = Caml_array_extern 
+
+let set_field : Caml_obj_extern.t -> string -> Caml_obj_extern.t -> unit [@bs]  = fun%raw o n v ->  {|
+o[n] = v;
+|}
+
+let get_field : Caml_obj_extern.t -> string -> Caml_obj_extern.t [@bs]  = fun%raw o n ->  {|
+return o[n];
+|}
+
+
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
  *)
 let init_mod (loc : string * int * int) (shape : shape) =    
+  let module Array = Caml_array_extern in 
   let undef_module _ = raise (Undefined_recursive_module loc) in
-  let rec loop (shape : shape) (struct_ : Caml_obj_extern.t array) idx = 
+  let rec loop (shape : shape) (struct_ : Caml_obj_extern.t) name = 
     match shape with 
-    | Function -> struct_.(idx)<-(Obj.magic undef_module)
-    | Lazy -> struct_.(idx)<- (Obj.magic (lazy undef_module))
-    | Class ->  
-      struct_.(idx)<- 
+    | Function ->
+      set_field struct_ name (Obj.magic undef_module) [@bs]
+    | Lazy ->
+      set_field struct_ name (Obj.magic (lazy undef_module)) [@bs]
+    | Class ->
+      set_field struct_ name      
         (Obj.magic (*ref {!CamlinternalOO.dummy_class loc} *)
            (undef_module, undef_module, undef_module,  0)
            (* depends on dummy class representation *)
-        )
+        ) [@bs]
     | Module comps 
       -> 
-      let v =  (Obj.magic [||]) in
-      struct_.(idx)<- v ;
+      let v = [%raw {|{}|}] in
+      set_field struct_ name v [@bs];
       let len = Array.length comps in
-      for i = 0 to len - 1 do 
-        loop comps.(i) v i       
+      for i = 0 to len - 1 do
+        let shape, name = comps.(i) in
+        loop shape v name       
       done
     | Value v ->
-       struct_.(idx) <- v in
-  let res = (Obj.magic [||] : Caml_obj_extern.t array) in
-  loop shape res 0 ;
-  res.(0)      
+      set_field struct_ name v [@bs] in
+  let res = ([%raw {|{}|}] : Caml_obj_extern.t) in
+  let dummy_name = "module" in
+  loop shape res dummy_name;
+  get_field res dummy_name [@bs]
 
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
 let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit = 
-  let rec aux (shape : shape) o n parent i  =
+  let module Array = Caml_array_extern in 
+  let rec aux (shape : shape) o n parent name  =
     match shape with
     | Function 
-      -> Caml_obj_extern.set_field parent i n 
+      -> set_field parent name n [@bs]
+
     | Lazy 
     | Class -> 
       Caml_obj.caml_update_dummy o n 
     | Module comps 
       -> 
       for i = 0 to Array.length comps - 1 do 
-        aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o i       
+        let shape, name = comps.(i) in
+        aux shape (get_field o name [@bs]) (get_field n name [@bs]) o name       
       done
     | Value _ -> () in 
   match shape with 
   | Module comps -> 
-    for i = 0 to Array.length comps - 1 do  
-      aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o  i
+    for i = 0 to Array.length comps - 1 do
+      let shape, name = comps.(i) in
+      aux shape (get_field o name [@bs]) (get_field n name [@bs]) o name
     done
   |  _ -> assert false 

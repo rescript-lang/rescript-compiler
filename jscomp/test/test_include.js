@@ -5,22 +5,22 @@ var $$String = require("../../lib/js/string.js");
 var Test_order = require("./test_order.js");
 
 function Make(U) {
-  var compare = U[0];
-  return /* module */[
-          /* compare */compare,
-          /* v */compare
-        ];
+  var compare = U.compare;
+  return /* module */{
+          compare: compare,
+          v: compare
+        };
 }
 
-var X = /* module */[
-  /* compare */$$String.compare,
-  /* v */$$String.compare
-];
+var X = /* module */{
+  compare: $$String.compare,
+  v: $$String.compare
+};
 
-var U = /* module */[
-  /* compare */Test_order.compare,
-  /* v */Test_order.compare
-];
+var U = /* module */{
+  compare: Test_order.compare,
+  v: Test_order.compare
+};
 
 var N = 0;
 

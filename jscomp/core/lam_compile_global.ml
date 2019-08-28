@@ -45,8 +45,9 @@ let expand_global_module_as_lam id env =
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature ; _} 
              -> 
-               Lam.prim
-                 ~primitive:(Pmakeblock(0, Blk_module None, Immutable))  
+             let names = Ocaml_types.map (fun name -> name) signature in
+             Lam.prim
+                 ~primitive:(Pmakeblock(0, Blk_module names, Immutable))  
                  ~args:(
                    let len = Ocaml_types.length signature in 
                    Ext_list.init len (fun i  -> 
@@ -63,8 +64,9 @@ let expand_global_module  id env  : J.expression =
     (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun _ -> assert false)
-    ~found:(fun   {signature; _} -> 
-        Js_of_lam_module.make ~comment:id.name 
+    ~found:(fun   {signature; _} ->
+        let names = Ocaml_types.map (fun name -> name) signature in
+        Js_of_lam_module.make ~comment:id.name names
           (Ocaml_types.map (fun name -> E.ml_var_dot id name) signature )
       )
 

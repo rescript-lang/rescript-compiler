@@ -350,6 +350,10 @@ var array_suites = /* :: */[
   array_suites_001
 ];
 
-Mt.from_pair_suites("Array_test", /* array_suites */array_suites);
+Mt.from_pair_suites("Array_test", /* module */({
+        starts_with: starts_with,
+        is_sorted: is_sorted,
+        array_suites: array_suites
+      }).array_suites);
 
 /*  Not a pure module */

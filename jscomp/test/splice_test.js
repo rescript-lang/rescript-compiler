@@ -12,7 +12,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var Caml_splice_call$1 = /* module */[];
+var Caml_splice_call$1 = /* module */{ };
 
 Math.max(1);
 
@@ -100,7 +100,9 @@ dynamic$1(/* array */[
       3
     ]);
 
-var Pipe = /* module */[/* dynamic */dynamic$1];
+var Pipe = /* module */{
+  dynamic: dynamic$1
+};
 
 function f1(c) {
   return Caml_splice_call.spliceApply(Math.max, [

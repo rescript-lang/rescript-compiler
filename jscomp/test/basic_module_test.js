@@ -8,14 +8,16 @@ var Mt_global = require("./mt_global.js");
 
 var count = /* record */[/* contents */0];
 
-var M = [Offset.M[/* Set */1]];
+var M = /* module */{
+  Set: Offset.M.Set
+};
 
 function test(set) {
-  count[0] = Curry._1(M[/* Set */0][/* cardinal */18], set) + count[0] | 0;
+  count[0] = Curry._1(M.Set.cardinal, set) + count[0] | 0;
   return /* () */0;
 }
 
-test(Curry._1(Offset.M[/* Set */1][/* singleton */4], "42"));
+test(Curry._1(Offset.M.Set.singleton, "42"));
 
 var suites = /* record */[/* contents : [] */0];
 

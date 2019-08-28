@@ -81,7 +81,7 @@ function Make(Ord) {
       var r = t[2];
       var v = t[1];
       var l = t[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return t;
       } else if (c < 0) {
@@ -213,7 +213,7 @@ function Make(Ord) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return /* tuple */[
                 l,
@@ -254,7 +254,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Curry._2(Ord[/* compare */0], x, param[1]);
+        var c = Curry._2(Ord.compare, x, param[1]);
         if (c === 0) {
           return true;
         } else {
@@ -271,7 +271,7 @@ function Make(Ord) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return merge(l, r);
       } else if (c < 0) {
@@ -369,7 +369,7 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Curry._2(Ord[/* compare */0], e1[0], e2[0]);
+          var c = Curry._2(Ord.compare, e1[0], e2[0]);
           if (c !== 0) {
             return c;
           } else {
@@ -404,7 +404,7 @@ function Make(Ord) {
           var r1 = s1[2];
           var v1 = s1[1];
           var l1 = s1[0];
-          var c = Curry._2(Ord[/* compare */0], v1, s2[1]);
+          var c = Curry._2(Ord.compare, v1, s2[1]);
           if (c === 0) {
             if (subset(l1, l2)) {
               _s2 = r2;
@@ -574,7 +574,7 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         var v = param[1];
-        var c = Curry._2(Ord[/* compare */0], x, v);
+        var c = Curry._2(Ord.compare, x, v);
         if (c === 0) {
           return v;
         } else {
@@ -700,7 +700,7 @@ function Make(Ord) {
             var x3 = match$2[0];
             if (match$3) {
               if (match$3[1]) {
-                return of_sorted_list(List.sort_uniq(Ord[/* compare */0], l));
+                return of_sorted_list(List.sort_uniq(Ord.compare, l));
               } else {
                 return add(match$3[0], add(x3, add(x2, add(x1, singleton(x0)))));
               }
@@ -720,50 +720,52 @@ function Make(Ord) {
       return /* Empty */0;
     }
   };
-  return /* module */[
-          /* height */height,
-          /* create */create,
-          /* bal */bal,
-          /* add */add,
-          /* singleton */singleton,
-          /* add_min_element */add_min_element,
-          /* add_max_element */add_max_element,
-          /* join */join,
-          /* min_elt */min_elt,
-          /* max_elt */max_elt,
-          /* remove_min_elt */remove_min_elt,
-          /* merge */merge,
-          /* concat */concat,
-          /* split */split,
-          /* empty : Empty */0,
-          /* is_empty */is_empty,
-          /* mem */mem,
-          /* remove */remove,
-          /* union */union,
-          /* inter */inter,
-          /* diff */diff,
-          /* cons_enum */cons_enum,
-          /* compare_aux */compare_aux,
-          /* compare */compare,
-          /* equal */equal,
-          /* subset */subset,
-          /* iter */iter,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
-          /* filter */filter,
-          /* partition */partition,
-          /* cardinal */cardinal,
-          /* elements_aux */elements_aux,
-          /* elements */elements,
-          /* choose */min_elt,
-          /* find */find,
-          /* of_sorted_list */of_sorted_list,
-          /* of_list */of_list
-        ];
+  return /* module */{
+          height: height,
+          create: create,
+          bal: bal,
+          add: add,
+          singleton: singleton,
+          add_min_element: add_min_element,
+          add_max_element: add_max_element,
+          join: join,
+          min_elt: min_elt,
+          max_elt: max_elt,
+          remove_min_elt: remove_min_elt,
+          merge: merge,
+          concat: concat,
+          split: split,
+          empty: /* Empty */0,
+          is_empty: is_empty,
+          mem: mem,
+          remove: remove,
+          union: union,
+          inter: inter,
+          diff: diff,
+          cons_enum: cons_enum,
+          compare_aux: compare_aux,
+          compare: compare,
+          equal: equal,
+          subset: subset,
+          iter: iter,
+          fold: fold,
+          for_all: for_all,
+          exists: exists,
+          filter: filter,
+          partition: partition,
+          cardinal: cardinal,
+          elements_aux: elements_aux,
+          elements: elements,
+          choose: min_elt,
+          find: find,
+          of_sorted_list: of_sorted_list,
+          of_list: of_list
+        };
 }
 
-var N = /* module */[/* a */3];
+var N = /* module */{
+  a: 3
+};
 
 exports.Make = Make;
 exports.N = N;

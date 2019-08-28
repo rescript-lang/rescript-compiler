@@ -10,7 +10,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var H = /* module */[];
+var H = /* module */{ };
 
 var f = "hello";
 

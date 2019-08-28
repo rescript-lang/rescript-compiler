@@ -85,7 +85,7 @@ var suites_001 = /* :: */[
     /* tuple */[
       "More_labels_regressionfix_374",
       (function (param) {
-          var tbl = Curry._2(MoreLabels.Hashtbl[/* create */0], undefined, 30);
+          var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return /* Eq */Block.__(0, [
                     tbl.size,

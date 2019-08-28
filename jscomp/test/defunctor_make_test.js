@@ -8,14 +8,16 @@ function getcompare(x) {
 }
 
 function Make(M) {
-  var compare = M[/* compare */0];
-  return /* module */[/* compare */compare];
+  var compare = M.compare;
+  return /* module */{
+          compare: compare
+        };
 }
 
-var Comparable = /* module */[
-  /* getcompare */getcompare,
-  /* Make */Make
-];
+var Comparable = /* module */{
+  getcompare: getcompare,
+  Make: Make
+};
 
 function height(param) {
   if (param) {
@@ -130,7 +132,7 @@ function add$1(x, data, v) {
   var X = v.compare;
   return /* record */{
           compare: v.compare,
-          data: add(x, data, X[/* compare */0], v.data)
+          data: add(x, data, X.compare, v.data)
         };
 }
 
@@ -143,11 +145,15 @@ function empty(v) {
 
 var compare = Caml_primitive.caml_int_compare;
 
-var V0 = /* module */[/* compare */compare];
+var V0 = /* module */{
+  compare: compare
+};
 
 var compare$1 = Caml_primitive.caml_int_compare;
 
-var V1 = /* module */[/* compare */compare$1];
+var V1 = /* module */{
+  compare: compare$1
+};
 
 var v0 = /* record */{
   compare: V0,

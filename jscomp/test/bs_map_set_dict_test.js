@@ -28,7 +28,7 @@ var Icmp = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 var Icmp2 = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 
 var m0 = {
-  cmp: Icmp[/* cmp */0],
+  cmp: Icmp.cmp,
   data: Belt_MapDict.empty
 };
 
@@ -37,12 +37,12 @@ var I2 = Belt_Id.comparable((function (x, y) {
       }));
 
 var m = {
-  cmp: Icmp2[/* cmp */0],
+  cmp: Icmp2.cmp,
   data: Belt_MapDict.empty
 };
 
 var m2 = {
-  cmp: I2[/* cmp */0],
+  cmp: I2.cmp,
   data: Belt_MapDict.empty
 };
 
@@ -53,30 +53,30 @@ Belt_Map.getId(m2);
 var m_dict = Belt_Map.getId(m);
 
 for(var i = 0; i <= 100000; ++i){
-  data = Belt_MapDict.set(data, i, i, m_dict[/* cmp */0]);
+  data = Belt_MapDict.set(data, i, i, m_dict.cmp);
 }
 
 var data$1 = data;
 
 var newm = {
-  cmp: m_dict[/* cmp */0],
+  cmp: m_dict.cmp,
   data: data$1
 };
 
 console.log(newm);
 
-var m11 = Belt_MapDict.set(Belt_MapDict.empty, 1, 1, Icmp[/* cmp */0]);
+var m11 = Belt_MapDict.set(Belt_MapDict.empty, 1, 1, Icmp.cmp);
 
 console.log(m11);
 
 var v = {
-  cmp: Icmp2[/* cmp */0],
+  cmp: Icmp2.cmp,
   data: Belt_SetDict.empty
 };
 
 var m_dict$1 = Belt_Map.getId(m);
 
-var cmp = m_dict$1[/* cmp */0];
+var cmp = m_dict$1.cmp;
 
 var data$2 = v.data;
 

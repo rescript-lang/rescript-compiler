@@ -17,30 +17,32 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var Block$1 = /* module */[];
+var Block$1 = /* module */{ };
 
 var v0 = /* A */Block.__(1, [
     0,
     1
   ]);
 
-var Block$2 = /* module */[];
+var Block$2 = /* module */{ };
 
 var v1 = /* A */Block.__(1, [
     0,
     1
   ]);
 
-var N = /* module */[
-  /* Block */Block$2,
-  /* v1 */v1
-];
+var N = /* module */{
+  Block: Block$2,
+  v1: v1
+};
 
-var Caml_obj$1 = /* module */[];
+var Caml_obj$1 = /* module */{ };
 
-var List$1 = /* module */[];
+var List$1 = /* module */{ };
 
-var V = /* module */[/* List */List$1];
+var V = /* module */{
+  List: List$1
+};
 
 var f = Caml_obj.caml_equal;
 

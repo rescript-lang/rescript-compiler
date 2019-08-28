@@ -34,7 +34,7 @@ function setOfArray(x) {
 
 function emptyMap(param) {
   return {
-          cmp: Icmp[/* cmp */0],
+          cmp: Icmp.cmp,
           data: Belt_MapDict.empty
         };
 }
@@ -196,7 +196,7 @@ function acc(m, is) {
 }
 
 var m = {
-  cmp: Icmp[/* cmp */0],
+  cmp: Icmp.cmp,
   data: Belt_MapDict.empty
 };
 
@@ -214,7 +214,7 @@ b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Bel
           })));
 
 var v0 = {
-  cmp: Icmp[/* cmp */0],
+  cmp: Icmp.cmp,
   data: Belt_MapDict.empty
 };
 
@@ -269,14 +269,14 @@ var match$4 = Belt_Map.get(v4, -10);
 b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
 
 var map = Belt_Map.remove({
-      cmp: Icmp[/* cmp */0],
+      cmp: Icmp.cmp,
       data: Belt_MapDict.empty
     }, 0);
 
 b("File \"bs_poly_map_test.ml\", line 129, characters 4-11", Belt_MapDict.isEmpty(map.data));
 
 var map$1 = Belt_Map.removeMany({
-      cmp: Icmp[/* cmp */0],
+      cmp: Icmp.cmp,
       data: Belt_MapDict.empty
     }, /* array */[0]);
 

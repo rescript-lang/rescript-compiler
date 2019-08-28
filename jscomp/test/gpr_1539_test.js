@@ -6,11 +6,19 @@ var Point = Caml_module.init_mod([
       "gpr_1539_test.ml",
       10,
       6
-    ], [[0]]);
+    ], [[[
+          0,
+          "add"
+        ]]]);
 
-Caml_module.update_mod([[0]], Point, /* module */[/* add */(function (prim, prim$1) {
+Caml_module.update_mod([[[
+          0,
+          "add"
+        ]]], Point, /* module */{
+      add: (function (prim, prim$1) {
           return prim.add(prim$1);
-        })]);
+        })
+    });
 
 var CRS = /* () */0;
 
