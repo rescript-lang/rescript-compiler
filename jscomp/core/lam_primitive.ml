@@ -185,6 +185,9 @@ let eq_field_dbg_info (x : Lam_compat.field_dbg_info) (y : Lam_compat.field_dbg_
 let eq_set_field_dbg_info (x : Lam_compat.set_field_dbg_info) (y : Lam_compat.set_field_dbg_info) = 
   x = y (* save it to avoid conditional compilation, fix it later *)
 
+let eq_tag_info ( x : Lam_tag_info.t) y = 
+  x = y  
+
 let eq_record_representation ( p : record_representation) ( p1 : record_representation) = 
   match p with 
   | Record_float -> p1 = Record_float
@@ -280,9 +283,9 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
     (match rhs with Psetfield(i1, info1) ->  i0 = i1 && eq_set_field_dbg_info info0 info1 | _ -> false)  
   | Psetfloatfield (i0, info0) ->  
     (match rhs with Psetfloatfield(i1,info1) -> i0 = i1 && eq_set_field_dbg_info info0 info1 | _ -> false)
-  | Pmakeblock (i, info0, flag0) -> 
+  | Pmakeblock (i0, info0, flag0) -> 
     (match rhs with Pmakeblock(i1,info1,flag1) ->  
-      i = i1 && flag0 = flag1 && info0 = info1 | _ -> false)  
+      i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  
   
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
   | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
