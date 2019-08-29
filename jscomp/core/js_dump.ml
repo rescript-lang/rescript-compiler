@@ -855,6 +855,8 @@ and expression_desc cxt (level:int) f x : cxt  =
       (if identity then e 
        else       
          E.runtime_call Js_runtime_modules.option "some" [e])
+  | Caml_block(el,_, _, Blk_module fields) ->        
+      expression_desc cxt (level:int) f (Object (List.combine fields el))
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
@@ -949,7 +951,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         let cxt = expression 15 cxt f e in
         P.bracket_group f 1 @@ fun _ ->
         expression 0 cxt f p )
-  | Static_index (e, s) ->
+  | Static_index (e, s,_) ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
         let cxt = expression 15 cxt f e in
         Js_dump_property.property_access f s ;

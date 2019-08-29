@@ -31,6 +31,7 @@ class virtual fold =
         function
         | [] -> o
         | _x :: _x_i1 -> let o = _f_a o _x in let o = o#list _f_a _x_i1 in o
+    method int32 : int32 -> 'self_type = o#unknown
     method int : int -> 'self_type = o#unknown
     method bool : bool -> 'self_type = function | false -> o | true -> o
     method vident : vident -> 'self_type =
@@ -340,8 +341,10 @@ class virtual fold =
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Array_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Static_index (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#string _x_i1 in o
+      | Static_index (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#string _x_i1 in
+          let o = o#option (fun o -> o#int32) _x_i2 in o
       | New (_x, _x_i1) ->
           let o = o#expression _x in
           let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1

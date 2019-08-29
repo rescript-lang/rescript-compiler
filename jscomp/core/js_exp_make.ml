@@ -155,11 +155,34 @@ let optional_not_nest_block e : J.expression =
     comment = None
   } 
 
+(** used in normal property
+    like [e.length], no dependency introduced
+*)
+let dot ?comment (e0 : t)  (e1 : string) : t = 
+  { expression_desc = Static_index (e0,  e1,None); comment} 
+
+
+let module_access (e : t) (name : string) (pos : int32) =    
+  match e.expression_desc with 
+  | Caml_block (l, _, _,_) when no_side_effect e -> 
+    (match Ext_list.nth_opt l (Int32.to_int pos) with 
+    | Some x -> x 
+    | None -> 
+      { expression_desc = Static_index (e, name,Some pos); comment=None} 
+    ) 
+  | _ -> 
+  { expression_desc = Static_index (e, name,Some pos); comment=None} 
+    
+
 let make_block ?comment 
   (tag : t) 
   (tag_info : J.tag_info) 
   (es : t list) 
   (mutable_flag : J.mutable_flag) : t = 
+  match tag_info with 
+  | Blk_module _ -> 
+    {expression_desc = Caml_block(es,mutable_flag, tag,tag_info); comment}
+  | _ -> 
   let comment = 
     match comment with 
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
@@ -393,12 +416,6 @@ let assign_by_int
   assign_by_exp ?comment e0 (int ?comment index) value
 
 
-(** used in normal property
-    like [e.length], no dependency introduced
-*)
-let dot ?comment (e0 : t)  (e1 : string) : t = 
-  { expression_desc = Static_index (e0,  e1); comment} 
-
 
 
 
@@ -436,7 +453,7 @@ let function_length ?comment (e : t) : t =
 
 (** no dependency introduced *)
 let js_global_dot ?comment (x : string)  (e1 : string) : t = 
-  { expression_desc = Static_index (js_global x,  e1); comment} 
+  { expression_desc = Static_index (js_global x,  e1,None); comment} 
 
 let char_of_int ?comment (v : t) : t = 
   match v.expression_desc with

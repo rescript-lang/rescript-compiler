@@ -5,7 +5,9 @@ function f(x) {
   return x;
 }
 
-var U = /* module */[/* f */f];
+var U = {
+  f: f
+};
 
 var v = /* H */[/* OT */0];
 

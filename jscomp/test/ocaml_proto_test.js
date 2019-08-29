@@ -2910,11 +2910,11 @@ function gen_sig(and_, t, sc) {
   return tmp[1];
 }
 
-var Codegen_decode = /* module */[
-  /* gen_sig */gen_sig,
-  /* gen_struct */gen_struct,
-  /* ocamldoc_title */"Protobuf Decoding"
-];
+var Codegen_decode = {
+  gen_sig: gen_sig,
+  gen_struct: gen_struct,
+  ocamldoc_title: "Protobuf Decoding"
+};
 
 var __log__ = /* record */[/* contents */undefined];
 
@@ -3416,11 +3416,11 @@ function gen_sig$1(and_, t, sc) {
   return true;
 }
 
-var Codegen_pp = /* module */[
-  /* gen_sig */gen_sig$1,
-  /* gen_struct */gen_struct$1,
-  /* ocamldoc_title */"Formatters"
-];
+var Codegen_pp = {
+  gen_sig: gen_sig$1,
+  gen_struct: gen_struct$1,
+  ocamldoc_title: "Formatters"
+};
 
 function height(param) {
   if (param) {
@@ -4885,11 +4885,11 @@ function gen_sig$2(and_, t, scope) {
   return true;
 }
 
-var Codegen_type = /* module */[
-  /* gen_sig */gen_sig$2,
-  /* gen_struct */gen_struct$2,
-  /* ocamldoc_title */"Types"
-];
+var Codegen_type = {
+  gen_sig: gen_sig$2,
+  gen_struct: gen_struct$2,
+  ocamldoc_title: "Types"
+};
 
 function gen_encode_field_key(sc, number, pk, is_packed) {
   var s = string_of_payload_kind(undefined, pk, is_packed);
@@ -5547,11 +5547,11 @@ function gen_sig$3(and_, t, sc) {
   return tmp[1];
 }
 
-var Codegen_encode = /* module */[
-  /* gen_sig */gen_sig$3,
-  /* gen_struct */gen_struct$3,
-  /* ocamldoc_title */"Protobuf Toding"
-];
+var Codegen_encode = {
+  gen_sig: gen_sig$3,
+  gen_struct: gen_struct$3,
+  ocamldoc_title: "Protobuf Toding"
+};
 
 function default_value_of_field_type(field_name, field_type, field_default) {
   if (typeof field_type === "number") {
@@ -6189,11 +6189,11 @@ function gen_sig$4(and_, t, sc) {
   return tmp[1];
 }
 
-var Codegen_default = /* module */[
-  /* gen_sig */gen_sig$4,
-  /* gen_struct */gen_struct$4,
-  /* ocamldoc_title */"Default values"
-];
+var Codegen_default = {
+  gen_sig: gen_sig$4,
+  gen_struct: gen_struct$4,
+  ocamldoc_title: "Default values"
+};
 
 function rev_split_by_naming_convention(s) {
   var is_uppercase = function (c) {
@@ -6946,7 +6946,7 @@ function compile(proto_definition) {
   line$1(sc, "");
   gen(otypes, sc, List.map((function (m) {
               return /* tuple */[
-                      m[/* gen_struct */1],
+                      m.gen_struct,
                       undefined
                     ];
             }), all_code_gen));
@@ -6967,8 +6967,8 @@ function compile(proto_definition) {
               ]), Curry._1(Filename.basename, proto_file_name)));
   gen(otypes, sc$1, List.map((function (m) {
               return /* tuple */[
-                      m[/* gen_sig */0],
-                      m[/* ocamldoc_title */2]
+                      m.gen_sig,
+                      m.ocamldoc_title
                     ];
             }), all_code_gen));
   var sig_string = print(sc$1);

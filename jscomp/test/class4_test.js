@@ -95,7 +95,9 @@ function restricted_point2$prime_init($$class) {
 
 var restricted_point2$prime = CamlinternalOO.make_class(shared$2, restricted_point2$prime_init);
 
-var Point = /* module */[/* restricted_point' */restricted_point];
+var Point = {
+  "restricted_point'": restricted_point
+};
 
 function abstract_point_001($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");

@@ -187,54 +187,54 @@ function print_config(oc) {
   return Caml_io.caml_ml_flush(oc);
 }
 
-var Config = /* module */[
-  /* version */Sys.ocaml_version,
-  /* standard_library */standard_library,
-  /* standard_runtime */standard_runtime,
-  /* ccomp_type */ccomp_type,
-  /* bytecomp_c_compiler */bytecomp_c_compiler,
-  /* bytecomp_c_libraries */bytecomp_c_libraries,
-  /* native_c_compiler */native_c_compiler,
-  /* native_c_libraries */native_c_libraries,
-  /* native_pack_linker */native_pack_linker,
-  /* mkdll */"gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind",
-  /* mkexe */"gcc -Wl,-no_compact_unwind",
-  /* mkmaindll */"gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind",
-  /* ranlib */ranlib,
-  /* ar */"ar",
-  /* cc_profile */cc_profile,
-  /* load_path */load_path,
-  /* interface_suffix */interface_suffix,
-  /* exec_magic_number */exec_magic_number,
-  /* cmi_magic_number */cmi_magic_number,
-  /* cmo_magic_number */cmo_magic_number,
-  /* cma_magic_number */cma_magic_number,
-  /* cmx_magic_number */cmx_magic_number,
-  /* cmxa_magic_number */cmxa_magic_number,
-  /* ast_intf_magic_number */ast_intf_magic_number,
-  /* ast_impl_magic_number */ast_impl_magic_number,
-  /* cmxs_magic_number */cmxs_magic_number,
-  /* cmt_magic_number */cmt_magic_number,
-  /* max_tag */245,
-  /* lazy_tag */246,
-  /* max_young_wosize */256,
-  /* stack_threshold */256,
-  /* architecture */architecture,
-  /* model */model,
-  /* system */system,
-  /* asm */asm,
-  /* asm_cfi_supported */true,
-  /* with_frame_pointers */false,
-  /* ext_obj */ext_obj,
-  /* ext_asm */ext_asm,
-  /* ext_lib */ext_lib,
-  /* ext_dll */ext_dll,
-  /* default_executable_name */default_executable_name,
-  /* systhread_supported */true,
-  /* host */host,
-  /* target */target,
-  /* print_config */print_config
-];
+var Config = {
+  version: Sys.ocaml_version,
+  standard_library: standard_library,
+  standard_runtime: standard_runtime,
+  ccomp_type: ccomp_type,
+  bytecomp_c_compiler: bytecomp_c_compiler,
+  bytecomp_c_libraries: bytecomp_c_libraries,
+  native_c_compiler: native_c_compiler,
+  native_c_libraries: native_c_libraries,
+  native_pack_linker: native_pack_linker,
+  mkdll: "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind",
+  mkexe: "gcc -Wl,-no_compact_unwind",
+  mkmaindll: "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind",
+  ranlib: ranlib,
+  ar: "ar",
+  cc_profile: cc_profile,
+  load_path: load_path,
+  interface_suffix: interface_suffix,
+  exec_magic_number: exec_magic_number,
+  cmi_magic_number: cmi_magic_number,
+  cmo_magic_number: cmo_magic_number,
+  cma_magic_number: cma_magic_number,
+  cmx_magic_number: cmx_magic_number,
+  cmxa_magic_number: cmxa_magic_number,
+  ast_intf_magic_number: ast_intf_magic_number,
+  ast_impl_magic_number: ast_impl_magic_number,
+  cmxs_magic_number: cmxs_magic_number,
+  cmt_magic_number: cmt_magic_number,
+  max_tag: 245,
+  lazy_tag: 246,
+  max_young_wosize: 256,
+  stack_threshold: 256,
+  architecture: architecture,
+  model: model,
+  system: system,
+  asm: asm,
+  asm_cfi_supported: true,
+  with_frame_pointers: false,
+  ext_obj: ext_obj,
+  ext_asm: ext_asm,
+  ext_lib: ext_lib,
+  ext_dll: ext_dll,
+  default_executable_name: default_executable_name,
+  systhread_supported: true,
+  host: host,
+  target: target,
+  print_config: print_config
+};
 
 var objfiles = /* record */[/* contents : [] */0];
 
@@ -462,104 +462,104 @@ function parse_color_setting(param) {
 
 var color = /* record */[/* contents */undefined];
 
-var Clflags = /* module */[
-  /* objfiles */objfiles,
-  /* ccobjs */ccobjs,
-  /* dllibs */dllibs,
-  /* compile_only */compile_only,
-  /* output_name */output_name,
-  /* include_dirs */include_dirs,
-  /* no_std_include */no_std_include,
-  /* print_types */print_types,
-  /* make_archive */make_archive,
-  /* debug */debug,
-  /* fast */fast,
-  /* link_everything */link_everything,
-  /* custom_runtime */custom_runtime,
-  /* no_check_prims */no_check_prims,
-  /* bytecode_compatible_32 */bytecode_compatible_32,
-  /* output_c_object */output_c_object,
-  /* output_complete_object */output_complete_object,
-  /* all_ccopts */all_ccopts,
-  /* classic */classic,
-  /* nopervasives */nopervasives,
-  /* open_modules */open_modules,
-  /* preprocessor */preprocessor,
-  /* all_ppx */all_ppx,
-  /* annotations */annotations,
-  /* binary_annotations */binary_annotations,
-  /* use_threads */use_threads,
-  /* use_vmthreads */use_vmthreads,
-  /* noassert */noassert,
-  /* verbose */verbose,
-  /* noprompt */noprompt,
-  /* nopromptcont */nopromptcont,
-  /* init_file */init_file,
-  /* noinit */noinit,
-  /* use_prims */use_prims,
-  /* use_runtime */use_runtime,
-  /* principal */principal,
-  /* real_paths */real_paths,
-  /* recursive_types */recursive_types,
-  /* strict_sequence */strict_sequence,
-  /* strict_formats */strict_formats,
-  /* applicative_functors */applicative_functors,
-  /* make_runtime */make_runtime,
-  /* gprofile */gprofile,
-  /* c_compiler */c_compiler,
-  /* no_auto_link */no_auto_link,
-  /* dllpaths */dllpaths,
-  /* make_package */make_package,
-  /* for_package */for_package,
-  /* error_size */error_size,
-  /* float_const_prop */float_const_prop,
-  /* transparent_modules */transparent_modules,
-  /* dump_source */dump_source,
-  /* dump_parsetree */dump_parsetree,
-  /* dump_typedtree */dump_typedtree,
-  /* dump_rawlambda */dump_rawlambda,
-  /* dump_lambda */dump_lambda,
-  /* dump_clambda */dump_clambda,
-  /* dump_instr */dump_instr,
-  /* keep_asm_file */keep_asm_file,
-  /* optimize_for_speed */optimize_for_speed,
-  /* dump_cmm */dump_cmm,
-  /* dump_selection */dump_selection,
-  /* dump_cse */dump_cse,
-  /* dump_live */dump_live,
-  /* dump_spill */dump_spill,
-  /* dump_split */dump_split,
-  /* dump_interf */dump_interf,
-  /* dump_prefer */dump_prefer,
-  /* dump_regalloc */dump_regalloc,
-  /* dump_reload */dump_reload,
-  /* dump_scheduling */dump_scheduling,
-  /* dump_linear */dump_linear,
-  /* keep_startup_file */keep_startup_file,
-  /* dump_combine */dump_combine,
-  /* native_code */native_code,
-  /* inline_threshold */inline_threshold,
-  /* dont_write_files */dont_write_files,
-  /* std_include_flag */std_include_flag,
-  /* std_include_dir */std_include_dir,
-  /* shared */shared,
-  /* dlcode */dlcode,
-  /* runtime_variant */runtime_variant,
-  /* force_slash */force_slash,
-  /* keep_docs */keep_docs,
-  /* keep_locs */keep_locs,
-  /* unsafe_string */unsafe_string,
-  /* opaque */opaque,
-  /* no_implicit_current_dir */no_implicit_current_dir,
-  /* assume_no_mli */assume_no_mli,
-  /* record_event_when_debug */record_event_when_debug,
-  /* bs_vscode */bs_vscode,
-  /* dont_record_crc_unit */dont_record_crc_unit,
-  /* bs_only */bs_only,
-  /* no_assert_false */no_assert_false,
-  /* parse_color_setting */parse_color_setting,
-  /* color */color
-];
+var Clflags = {
+  objfiles: objfiles,
+  ccobjs: ccobjs,
+  dllibs: dllibs,
+  compile_only: compile_only,
+  output_name: output_name,
+  include_dirs: include_dirs,
+  no_std_include: no_std_include,
+  print_types: print_types,
+  make_archive: make_archive,
+  debug: debug,
+  fast: fast,
+  link_everything: link_everything,
+  custom_runtime: custom_runtime,
+  no_check_prims: no_check_prims,
+  bytecode_compatible_32: bytecode_compatible_32,
+  output_c_object: output_c_object,
+  output_complete_object: output_complete_object,
+  all_ccopts: all_ccopts,
+  classic: classic,
+  nopervasives: nopervasives,
+  open_modules: open_modules,
+  preprocessor: preprocessor,
+  all_ppx: all_ppx,
+  annotations: annotations,
+  binary_annotations: binary_annotations,
+  use_threads: use_threads,
+  use_vmthreads: use_vmthreads,
+  noassert: noassert,
+  verbose: verbose,
+  noprompt: noprompt,
+  nopromptcont: nopromptcont,
+  init_file: init_file,
+  noinit: noinit,
+  use_prims: use_prims,
+  use_runtime: use_runtime,
+  principal: principal,
+  real_paths: real_paths,
+  recursive_types: recursive_types,
+  strict_sequence: strict_sequence,
+  strict_formats: strict_formats,
+  applicative_functors: applicative_functors,
+  make_runtime: make_runtime,
+  gprofile: gprofile,
+  c_compiler: c_compiler,
+  no_auto_link: no_auto_link,
+  dllpaths: dllpaths,
+  make_package: make_package,
+  for_package: for_package,
+  error_size: error_size,
+  float_const_prop: float_const_prop,
+  transparent_modules: transparent_modules,
+  dump_source: dump_source,
+  dump_parsetree: dump_parsetree,
+  dump_typedtree: dump_typedtree,
+  dump_rawlambda: dump_rawlambda,
+  dump_lambda: dump_lambda,
+  dump_clambda: dump_clambda,
+  dump_instr: dump_instr,
+  keep_asm_file: keep_asm_file,
+  optimize_for_speed: optimize_for_speed,
+  dump_cmm: dump_cmm,
+  dump_selection: dump_selection,
+  dump_cse: dump_cse,
+  dump_live: dump_live,
+  dump_spill: dump_spill,
+  dump_split: dump_split,
+  dump_interf: dump_interf,
+  dump_prefer: dump_prefer,
+  dump_regalloc: dump_regalloc,
+  dump_reload: dump_reload,
+  dump_scheduling: dump_scheduling,
+  dump_linear: dump_linear,
+  keep_startup_file: keep_startup_file,
+  dump_combine: dump_combine,
+  native_code: native_code,
+  inline_threshold: inline_threshold,
+  dont_write_files: dont_write_files,
+  std_include_flag: std_include_flag,
+  std_include_dir: std_include_dir,
+  shared: shared,
+  dlcode: dlcode,
+  runtime_variant: runtime_variant,
+  force_slash: force_slash,
+  keep_docs: keep_docs,
+  keep_locs: keep_locs,
+  unsafe_string: unsafe_string,
+  opaque: opaque,
+  no_implicit_current_dir: no_implicit_current_dir,
+  assume_no_mli: assume_no_mli,
+  record_event_when_debug: record_event_when_debug,
+  bs_vscode: bs_vscode,
+  dont_record_crc_unit: dont_record_crc_unit,
+  bs_only: bs_only,
+  no_assert_false: no_assert_false,
+  parse_color_setting: parse_color_setting,
+  color: color
+};
 
 var Fatal_error = Caml_exceptions.create("Parser_api.Misc.Fatal_error");
 
@@ -1145,16 +1145,16 @@ function input_bytes(ic, len) {
   return tbl;
 }
 
-var LongString = /* module */[
-  /* create */create,
-  /* length */length,
-  /* get */get,
-  /* set */set,
-  /* blit */blit,
-  /* output */output,
-  /* unsafe_blit_to_bytes */unsafe_blit_to_bytes,
-  /* input_bytes */input_bytes
-];
+var LongString = {
+  create: create,
+  length: length,
+  get: get,
+  set: set,
+  blit: blit,
+  output: output,
+  unsafe_blit_to_bytes: unsafe_blit_to_bytes,
+  input_bytes: input_bytes
+};
 
 function edit_distance(a, b, cutoff) {
   var la = a.length;
@@ -1456,63 +1456,63 @@ function setup(o) {
   return /* () */0;
 }
 
-var Misc_043 = /* Color : module */[
-  /* ansi_of_style_l */ansi_of_style_l,
-  /* default_styles */default_styles,
-  /* get_styles */get_styles,
-  /* set_styles */set_styles,
-  /* setup */setup,
-  /* set_color_tag_handling */set_color_tag_handling
-];
+var Misc_Color = {
+  ansi_of_style_l: ansi_of_style_l,
+  default_styles: default_styles,
+  get_styles: get_styles,
+  set_styles: set_styles,
+  setup: setup,
+  set_color_tag_handling: set_color_tag_handling
+};
 
-var Misc = /* module */[
-  /* fatal_error */fatal_error,
-  /* Fatal_error */Fatal_error,
-  /* try_finally */try_finally,
-  /* map_end */map_end,
-  /* map_left_right */map_left_right,
-  /* for_all2 */for_all2,
-  /* replicate_list */replicate_list,
-  /* list_remove */list_remove,
-  /* split_last */split_last,
-  /* samelist */samelist,
-  /* may */may,
-  /* may_map */may_map,
-  /* find_in_path */find_in_path,
-  /* find_in_path_rel */find_in_path_rel,
-  /* find_in_path_uncap */find_in_path_uncap,
-  /* remove_file */remove_file,
-  /* expand_directory */expand_directory,
-  /* create_hashtable */create_hashtable,
-  /* copy_file */copy_file,
-  /* copy_file_chunk */copy_file_chunk,
-  /* string_of_file */string_of_file,
-  /* log2 */log2,
-  /* align */align,
-  /* no_overflow_add */no_overflow_add,
-  /* no_overflow_sub */no_overflow_sub,
-  /* no_overflow_lsl */no_overflow_lsl,
-  /* chop_extension_if_any */chop_extension_if_any,
-  /* chop_extensions */chop_extensions,
-  /* search_substring */search_substring,
-  /* replace_substring */replace_substring,
-  /* rev_split_words */rev_split_words,
-  /* get_ref */get_ref,
-  /* fst3 */fst3,
-  /* snd3 */snd3,
-  /* thd3 */thd3,
-  /* fst4 */fst4,
-  /* snd4 */snd4,
-  /* thd4 */thd4,
-  /* for4 */for4,
-  /* LongString */LongString,
-  /* edit_distance */edit_distance,
-  /* split */split,
-  /* cut_at */cut_at,
-  Misc_043
-];
+var Misc = {
+  fatal_error: fatal_error,
+  Fatal_error: Fatal_error,
+  try_finally: try_finally,
+  map_end: map_end,
+  map_left_right: map_left_right,
+  for_all2: for_all2,
+  replicate_list: replicate_list,
+  list_remove: list_remove,
+  split_last: split_last,
+  samelist: samelist,
+  may: may,
+  may_map: may_map,
+  find_in_path: find_in_path,
+  find_in_path_rel: find_in_path_rel,
+  find_in_path_uncap: find_in_path_uncap,
+  remove_file: remove_file,
+  expand_directory: expand_directory,
+  create_hashtable: create_hashtable,
+  copy_file: copy_file,
+  copy_file_chunk: copy_file_chunk,
+  string_of_file: string_of_file,
+  log2: log2,
+  align: align,
+  no_overflow_add: no_overflow_add,
+  no_overflow_sub: no_overflow_sub,
+  no_overflow_lsl: no_overflow_lsl,
+  chop_extension_if_any: chop_extension_if_any,
+  chop_extensions: chop_extensions,
+  search_substring: search_substring,
+  replace_substring: replace_substring,
+  rev_split_words: rev_split_words,
+  get_ref: get_ref,
+  fst3: fst3,
+  snd3: snd3,
+  thd3: thd3,
+  fst4: fst4,
+  snd4: snd4,
+  thd4: thd4,
+  for4: for4,
+  LongString: LongString,
+  edit_distance: edit_distance,
+  split: split,
+  cut_at: cut_at,
+  Color: Misc_Color
+};
 
-var Terminfo = /* module */[];
+var Terminfo = { };
 
 function number(param) {
   if (typeof param === "number") {
@@ -2830,22 +2830,22 @@ function help_warnings(param) {
   return Pervasives.exit(0);
 }
 
-var Warnings = /* module */[
-  /* parse_options */parse_options,
-  /* is_active */is_active,
-  /* is_error */is_error,
-  /* defaults_w */defaults_w,
-  /* defaults_warn_error */defaults_warn_error,
-  /* print */print,
-  /* Errors */Errors,
-  /* check_fatal */check_fatal,
-  /* help_warnings */help_warnings,
-  /* backup */backup,
-  /* restore */restore,
-  /* message */message,
-  /* number */number,
-  /* super_print */super_print
-];
+var Warnings = {
+  parse_options: parse_options,
+  is_active: is_active,
+  is_error: is_error,
+  defaults_w: defaults_w,
+  defaults_warn_error: defaults_warn_error,
+  print: print,
+  Errors: Errors,
+  check_fatal: check_fatal,
+  help_warnings: help_warnings,
+  backup: backup,
+  restore: restore,
+  message: message,
+  number: number,
+  super_print: super_print
+};
 
 var absname = /* record */[/* contents */false];
 
@@ -3224,7 +3224,7 @@ function get_pos_info(pos) {
 }
 
 function setup_colors(param) {
-  return Curry._1(Misc_043[/* setup */4], color[0]);
+  return Curry._1(Misc_Color.setup, color[0]);
 }
 
 function print_loc(ppf, loc) {
@@ -3459,7 +3459,7 @@ function mknoloc(txt) {
 function pp_ksprintf(before, k, fmt) {
   var buf = $$Buffer.create(64);
   var ppf = Format.formatter_of_buffer(buf);
-  Curry._1(Misc_043[/* set_color_tag_handling */5], ppf);
+  Curry._1(Misc_Color.set_color_tag_handling, ppf);
   if (before !== undefined) {
     Curry._1(before, ppf);
   }
@@ -3702,52 +3702,52 @@ function raise_errorf($staropt$star, $staropt$star$1, $staropt$star$2) {
     });
 }
 
-var $$Location = /* module */[
-  /* none */none,
-  /* in_file */in_file,
-  /* init */init,
-  /* curr */curr,
-  /* symbol_rloc */symbol_rloc,
-  /* symbol_gloc */symbol_gloc,
-  /* rhs_loc */rhs_loc,
-  /* input_name */input_name,
-  /* input_lexbuf */input_lexbuf,
-  /* get_pos_info */get_pos_info,
-  /* print_loc */print_loc,
-  /* print_error */print_error,
-  /* print_error_cur_file */print_error_cur_file,
-  /* print_warning */print_warning,
-  /* formatter_for_warnings */formatter_for_warnings,
-  /* prerr_warning */prerr_warning,
-  /* echo_eof */echo_eof,
-  /* reset */reset,
-  /* warning_printer */warning_printer,
-  /* default_warning_printer */default_warning_printer,
-  /* highlight_locations */highlight_locations,
-  /* mknoloc */mknoloc,
-  /* mkloc */mkloc,
-  /* print */print$1,
-  /* print_filename */print_filename,
-  /* absolute_path */absolute_path,
-  /* show_filename */show_filename,
-  /* absname */absname,
-  /* Error */$$Error,
-  /* print_error_prefix */print_error_prefix,
-  /* error */error,
-  /* pp_ksprintf */pp_ksprintf,
-  /* errorf */errorf,
-  /* raise_errorf */raise_errorf,
-  /* error_of_printer */error_of_printer,
-  /* error_of_printer_file */error_of_printer_file,
-  /* error_of_exn */error_of_exn$1,
-  /* register_error_of_exn */register_error_of_exn,
-  /* report_error */report_error,
-  /* error_reporter */error_reporter,
-  /* default_error_reporter */default_error_reporter,
-  /* report_exception */report_exception
-];
+var $$Location = {
+  none: none,
+  in_file: in_file,
+  init: init,
+  curr: curr,
+  symbol_rloc: symbol_rloc,
+  symbol_gloc: symbol_gloc,
+  rhs_loc: rhs_loc,
+  input_name: input_name,
+  input_lexbuf: input_lexbuf,
+  get_pos_info: get_pos_info,
+  print_loc: print_loc,
+  print_error: print_error,
+  print_error_cur_file: print_error_cur_file,
+  print_warning: print_warning,
+  formatter_for_warnings: formatter_for_warnings,
+  prerr_warning: prerr_warning,
+  echo_eof: echo_eof,
+  reset: reset,
+  warning_printer: warning_printer,
+  default_warning_printer: default_warning_printer,
+  highlight_locations: highlight_locations,
+  mknoloc: mknoloc,
+  mkloc: mkloc,
+  print: print$1,
+  print_filename: print_filename,
+  absolute_path: absolute_path,
+  show_filename: show_filename,
+  absname: absname,
+  Error: $$Error,
+  print_error_prefix: print_error_prefix,
+  error: error,
+  pp_ksprintf: pp_ksprintf,
+  errorf: errorf,
+  raise_errorf: raise_errorf,
+  error_of_printer: error_of_printer,
+  error_of_printer_file: error_of_printer_file,
+  error_of_exn: error_of_exn$1,
+  register_error_of_exn: register_error_of_exn,
+  report_error: report_error,
+  error_reporter: error_reporter,
+  default_error_reporter: default_error_reporter,
+  report_exception: report_exception
+};
 
-var Asttypes = /* module */[];
+var Asttypes = { };
 
 function flatten(lid) {
   var _accu = /* [] */0;
@@ -3821,13 +3821,13 @@ function parse(s) {
   }
 }
 
-var Longident = /* module */[
-  /* flatten */flatten,
-  /* last */last,
-  /* parse */parse
-];
+var Longident = {
+  flatten: flatten,
+  last: last,
+  parse: parse
+};
 
-var Parsetree = /* module */[];
+var Parsetree = { };
 
 var docstrings = /* record */[/* contents : [] */0];
 
@@ -4302,43 +4302,43 @@ function init$1(param) {
   return Hashtbl.reset(post_extra_table);
 }
 
-var Docstrings = /* module */[
-  /* init */init$1,
-  /* warn_bad_docstrings */warn_bad_docstrings,
-  /* docstring */docstring,
-  /* docstring_body */docstring_body,
-  /* docstring_loc */docstring_loc,
-  /* set_pre_docstrings */set_pre_docstrings,
-  /* set_post_docstrings */set_post_docstrings,
-  /* set_floating_docstrings */set_floating_docstrings,
-  /* set_pre_extra_docstrings */set_pre_extra_docstrings,
-  /* set_post_extra_docstrings */set_post_extra_docstrings,
-  /* empty_docs */empty_docs,
-  /* docs_attr */docs_attr,
-  /* add_docs_attrs */add_docs_attrs,
-  /* symbol_docs */symbol_docs,
-  /* symbol_docs_lazy */symbol_docs_lazy,
-  /* rhs_docs */rhs_docs,
-  /* rhs_docs_lazy */rhs_docs_lazy,
-  /* mark_symbol_docs */mark_symbol_docs,
-  /* mark_rhs_docs */mark_rhs_docs,
-  /* empty_info */undefined,
-  /* info_attr */docs_attr,
-  /* add_info_attrs */add_info_attrs,
-  /* symbol_info */symbol_info,
-  /* rhs_info */rhs_info,
-  /* empty_text : [] */0,
-  /* text_attr */text_attr,
-  /* add_text_attrs */add_text_attrs,
-  /* symbol_text */symbol_text,
-  /* symbol_text_lazy */symbol_text_lazy,
-  /* rhs_text */rhs_text,
-  /* rhs_text_lazy */rhs_text_lazy,
-  /* symbol_pre_extra_text */symbol_pre_extra_text,
-  /* symbol_post_extra_text */symbol_post_extra_text,
-  /* rhs_pre_extra_text */rhs_pre_extra_text,
-  /* rhs_post_extra_text */rhs_post_extra_text
-];
+var Docstrings = {
+  init: init$1,
+  warn_bad_docstrings: warn_bad_docstrings,
+  docstring: docstring,
+  docstring_body: docstring_body,
+  docstring_loc: docstring_loc,
+  set_pre_docstrings: set_pre_docstrings,
+  set_post_docstrings: set_post_docstrings,
+  set_floating_docstrings: set_floating_docstrings,
+  set_pre_extra_docstrings: set_pre_extra_docstrings,
+  set_post_extra_docstrings: set_post_extra_docstrings,
+  empty_docs: empty_docs,
+  docs_attr: docs_attr,
+  add_docs_attrs: add_docs_attrs,
+  symbol_docs: symbol_docs,
+  symbol_docs_lazy: symbol_docs_lazy,
+  rhs_docs: rhs_docs,
+  rhs_docs_lazy: rhs_docs_lazy,
+  mark_symbol_docs: mark_symbol_docs,
+  mark_rhs_docs: mark_rhs_docs,
+  empty_info: undefined,
+  info_attr: docs_attr,
+  add_info_attrs: add_info_attrs,
+  symbol_info: symbol_info,
+  rhs_info: rhs_info,
+  empty_text: /* [] */0,
+  text_attr: text_attr,
+  add_text_attrs: add_text_attrs,
+  symbol_text: symbol_text,
+  symbol_text_lazy: symbol_text_lazy,
+  rhs_text: rhs_text,
+  rhs_text_lazy: rhs_text_lazy,
+  symbol_pre_extra_text: symbol_pre_extra_text,
+  symbol_post_extra_text: symbol_post_extra_text,
+  rhs_pre_extra_text: rhs_pre_extra_text,
+  rhs_post_extra_text: rhs_post_extra_text
+};
 
 var default_loc = /* record */[/* contents */none];
 
@@ -4459,23 +4459,23 @@ function force_poly(t) {
   return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
 }
 
-var Typ = /* module */[
-  /* mk */mk,
-  /* attr */attr,
-  /* any */any,
-  /* var */$$var,
-  /* arrow */arrow,
-  /* tuple */tuple,
-  /* constr */constr,
-  /* object_ */object_,
-  /* class_ */class_,
-  /* alias */alias,
-  /* variant */variant,
-  /* poly */poly,
-  /* package */$$package,
-  /* extension */extension,
-  /* force_poly */force_poly
-];
+var Typ = {
+  mk: mk,
+  attr: attr,
+  any: any,
+  var: $$var,
+  arrow: arrow,
+  tuple: tuple,
+  constr: constr,
+  object_: object_,
+  class_: class_,
+  alias: alias,
+  variant: variant,
+  poly: poly,
+  package: $$package,
+  extension: extension,
+  force_poly: force_poly
+};
 
 function mk$1($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -4587,27 +4587,27 @@ function extension$1(loc, attrs, a) {
   return mk$1(loc, attrs, /* Ppat_extension */Block.__(15, [a]));
 }
 
-var Pat = /* module */[
-  /* mk */mk$1,
-  /* attr */attr$1,
-  /* any */any$1,
-  /* var */$$var$1,
-  /* alias */alias$1,
-  /* constant */constant,
-  /* interval */interval,
-  /* tuple */tuple$1,
-  /* construct */construct,
-  /* variant */variant$1,
-  /* record */record,
-  /* array */array,
-  /* or_ */or_,
-  /* constraint_ */constraint_,
-  /* type_ */type_,
-  /* lazy_ */lazy_,
-  /* unpack */unpack,
-  /* exception_ */exception_,
-  /* extension */extension$1
-];
+var Pat = {
+  mk: mk$1,
+  attr: attr$1,
+  any: any$1,
+  var: $$var$1,
+  alias: alias$1,
+  constant: constant,
+  interval: interval,
+  tuple: tuple$1,
+  construct: construct,
+  variant: variant$1,
+  record: record,
+  array: array,
+  or_: or_,
+  constraint_: constraint_,
+  type_: type_,
+  lazy_: lazy_,
+  unpack: unpack,
+  exception_: exception_,
+  extension: extension$1
+};
 
 function mk$2($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -4907,17 +4907,17 @@ function extension$3(loc, attrs, a) {
   return mk$3(loc, attrs, /* Pmty_extension */Block.__(5, [a]));
 }
 
-var Mty = /* module */[
-  /* mk */mk$3,
-  /* attr */attr$3,
-  /* ident */ident$1,
-  /* alias */alias$2,
-  /* signature */signature,
-  /* functor_ */functor_,
-  /* with_ */with_,
-  /* typeof_ */typeof_,
-  /* extension */extension$3
-];
+var Mty = {
+  mk: mk$3,
+  attr: attr$3,
+  ident: ident$1,
+  alias: alias$2,
+  signature: signature,
+  functor_: functor_,
+  with_: with_,
+  typeof_: typeof_,
+  extension: extension$3
+};
 
 function mk$4($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -4978,17 +4978,17 @@ function extension$4(loc, attrs, a) {
   return mk$4(loc, attrs, /* Pmod_extension */Block.__(6, [a]));
 }
 
-var Mod = /* module */[
-  /* mk */mk$4,
-  /* attr */attr$4,
-  /* ident */ident$2,
-  /* structure */structure,
-  /* functor_ */functor_$1,
-  /* apply */apply$1,
-  /* constraint_ */constraint_$2,
-  /* unpack */unpack$1,
-  /* extension */extension$4
-];
+var Mod = {
+  mk: mk$4,
+  attr: attr$4,
+  ident: ident$2,
+  structure: structure,
+  functor_: functor_$1,
+  apply: apply$1,
+  constraint_: constraint_$2,
+  unpack: unpack$1,
+  extension: extension$4
+};
 
 function mk$5($staropt$star, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5062,23 +5062,23 @@ function text(txt) {
               }), txt);
 }
 
-var Sig = /* module */[
-  /* mk */mk$5,
-  /* value */value,
-  /* type_ */type_$1,
-  /* type_extension */type_extension,
-  /* exception_ */exception_$1,
-  /* module_ */module_,
-  /* rec_module */rec_module,
-  /* modtype */modtype,
-  /* open_ */open_$1,
-  /* include_ */include_,
-  /* class_ */class_$1,
-  /* class_type */class_type,
-  /* extension */extension$5,
-  /* attribute */attribute,
-  /* text */text
-];
+var Sig = {
+  mk: mk$5,
+  value: value,
+  type_: type_$1,
+  type_extension: type_extension,
+  exception_: exception_$1,
+  module_: module_,
+  rec_module: rec_module,
+  modtype: modtype,
+  open_: open_$1,
+  include_: include_,
+  class_: class_$1,
+  class_type: class_type,
+  extension: extension$5,
+  attribute: attribute,
+  text: text
+};
 
 function mk$6($staropt$star, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5167,25 +5167,25 @@ function text$1(txt) {
               }), txt);
 }
 
-var Str = /* module */[
-  /* mk */mk$6,
-  /* eval */$$eval,
-  /* value */value$1,
-  /* primitive */primitive,
-  /* type_ */type_$2,
-  /* type_extension */type_extension$1,
-  /* exception_ */exception_$2,
-  /* module_ */module_$1,
-  /* rec_module */rec_module$1,
-  /* modtype */modtype$1,
-  /* open_ */open_$2,
-  /* class_ */class_$2,
-  /* class_type */class_type$1,
-  /* include_ */include_$1,
-  /* extension */extension$6,
-  /* attribute */attribute$1,
-  /* text */text$1
-];
+var Str = {
+  mk: mk$6,
+  eval: $$eval,
+  value: value$1,
+  primitive: primitive,
+  type_: type_$2,
+  type_extension: type_extension$1,
+  exception_: exception_$2,
+  module_: module_$1,
+  rec_module: rec_module$1,
+  modtype: modtype$1,
+  open_: open_$2,
+  class_: class_$2,
+  class_type: class_type$1,
+  include_: include_$1,
+  extension: extension$6,
+  attribute: attribute$1,
+  text: text$1
+};
 
 function mk$7($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5254,17 +5254,17 @@ function extension$7(loc, attrs, a) {
   return mk$7(loc, attrs, /* Pcl_extension */Block.__(6, [a]));
 }
 
-var Cl = /* module */[
-  /* mk */mk$7,
-  /* attr */attr$5,
-  /* constr */constr$1,
-  /* structure */structure$1,
-  /* fun_ */fun_$1,
-  /* apply */apply$2,
-  /* let_ */let_$1,
-  /* constraint_ */constraint_$3,
-  /* extension */extension$7
-];
+var Cl = {
+  mk: mk$7,
+  attr: attr$5,
+  constr: constr$1,
+  structure: structure$1,
+  fun_: fun_$1,
+  apply: apply$2,
+  let_: let_$1,
+  constraint_: constraint_$3,
+  extension: extension$7
+};
 
 function mk$8($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5310,14 +5310,14 @@ function extension$8(loc, attrs, a) {
   return mk$8(loc, attrs, /* Pcty_extension */Block.__(3, [a]));
 }
 
-var Cty = /* module */[
-  /* mk */mk$8,
-  /* attr */attr$6,
-  /* constr */constr$2,
-  /* signature */signature$1,
-  /* arrow */arrow$1,
-  /* extension */extension$8
-];
+var Cty = {
+  mk: mk$8,
+  attr: attr$6,
+  constr: constr$2,
+  signature: signature$1,
+  arrow: arrow$1,
+  extension: extension$8
+};
 
 function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5480,7 +5480,9 @@ function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Val = /* module */[/* mk */mk$11];
+var Val = {
+  mk: mk$11
+};
 
 function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5495,7 +5497,9 @@ function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Md = /* module */[/* mk */mk$12];
+var Md = {
+  mk: mk$12
+};
 
 function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5510,7 +5514,9 @@ function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Mtd = /* module */[/* mk */mk$13];
+var Mtd = {
+  mk: mk$13
+};
 
 function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5525,7 +5531,9 @@ function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Mb = /* module */[/* mk */mk$14];
+var Mb = {
+  mk: mk$14
+};
 
 function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5540,7 +5548,9 @@ function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Opn = /* module */[/* mk */mk$15];
+var Opn = {
+  mk: mk$15
+};
 
 function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5553,7 +5563,9 @@ function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
         ];
 }
 
-var Incl = /* module */[/* mk */mk$16];
+var Incl = {
+  mk: mk$16
+};
 
 function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5568,7 +5580,9 @@ function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Vb = /* module */[/* mk */mk$17];
+var Vb = {
+  mk: mk$17
+};
 
 function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5587,7 +5601,9 @@ function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         ];
 }
 
-var Ci = /* module */[/* mk */mk$18];
+var Ci = {
+  mk: mk$18
+};
 
 function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -5638,11 +5654,11 @@ function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$
         ];
 }
 
-var Type = /* module */[
-  /* mk */mk$19,
-  /* constructor */constructor,
-  /* field */field$1
-];
+var Type = {
+  mk: mk$19,
+  constructor: constructor,
+  field: field$1
+};
 
 function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
   var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
@@ -5701,12 +5717,12 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
         ];
 }
 
-var Te = /* module */[
-  /* mk */mk$20,
-  /* constructor */constructor$1,
-  /* decl */decl,
-  /* rebind */rebind
-];
+var Te = {
+  mk: mk$20,
+  constructor: constructor$1,
+  decl: decl,
+  rebind: rebind
+};
 
 function mk$21(self, fields) {
   return /* record */[
@@ -5715,7 +5731,9 @@ function mk$21(self, fields) {
         ];
 }
 
-var Csig = /* module */[/* mk */mk$21];
+var Csig = {
+  mk: mk$21
+};
 
 function mk$22(self, fields) {
   return /* record */[
@@ -5724,102 +5742,104 @@ function mk$22(self, fields) {
         ];
 }
 
-var Cstr = /* module */[/* mk */mk$22];
+var Cstr = {
+  mk: mk$22
+};
 
-var Ast_helper_004 = /* Exp : module */[
-  /* mk */mk$2,
-  /* attr */attr$2,
-  /* ident */ident,
-  /* constant */constant$1,
-  /* let_ */let_,
-  /* fun_ */fun_,
-  /* function_ */function_,
-  /* apply */apply,
-  /* match_ */match_,
-  /* try_ */try_,
-  /* tuple */tuple$2,
-  /* construct */construct$1,
-  /* variant */variant$2,
-  /* record */record$1,
-  /* field */field,
-  /* setfield */setfield,
-  /* array */array$1,
-  /* ifthenelse */ifthenelse,
-  /* sequence */sequence,
-  /* while_ */while_,
-  /* for_ */for_,
-  /* coerce */coerce,
-  /* constraint_ */constraint_$1,
-  /* send */send,
-  /* new_ */new_,
-  /* setinstvar */setinstvar,
-  /* override */override,
-  /* letmodule */letmodule,
-  /* assert_ */assert_,
-  /* lazy_ */lazy_$1,
-  /* poly */poly$1,
-  /* object_ */object_$1,
-  /* newtype */newtype,
-  /* pack */pack,
-  /* open_ */open_,
-  /* extension */extension$2,
-  /* case */$$case
-];
+var Ast_helper_Exp = {
+  mk: mk$2,
+  attr: attr$2,
+  ident: ident,
+  constant: constant$1,
+  let_: let_,
+  fun_: fun_,
+  function_: function_,
+  apply: apply,
+  match_: match_,
+  try_: try_,
+  tuple: tuple$2,
+  construct: construct$1,
+  variant: variant$2,
+  record: record$1,
+  field: field,
+  setfield: setfield,
+  array: array$1,
+  ifthenelse: ifthenelse,
+  sequence: sequence,
+  while_: while_,
+  for_: for_,
+  coerce: coerce,
+  constraint_: constraint_$1,
+  send: send,
+  new_: new_,
+  setinstvar: setinstvar,
+  override: override,
+  letmodule: letmodule,
+  assert_: assert_,
+  lazy_: lazy_$1,
+  poly: poly$1,
+  object_: object_$1,
+  newtype: newtype,
+  pack: pack,
+  open_: open_,
+  extension: extension$2,
+  case: $$case
+};
 
-var Ast_helper_019 = /* Ctf : module */[
-  /* mk */mk$9,
-  /* attr */attr$7,
-  /* inherit_ */inherit_,
-  /* val_ */val_,
-  /* method_ */method_,
-  /* constraint_ */constraint_$4,
-  /* extension */extension$9,
-  /* attribute */attribute$2,
-  /* text */text$2
-];
+var Ast_helper_Ctf = {
+  mk: mk$9,
+  attr: attr$7,
+  inherit_: inherit_,
+  val_: val_,
+  method_: method_,
+  constraint_: constraint_$4,
+  extension: extension$9,
+  attribute: attribute$2,
+  text: text$2
+};
 
-var Ast_helper_021 = /* Cf : module */[
-  /* mk */mk$10,
-  /* attr */attr$8,
-  /* inherit_ */inherit_$1,
-  /* val_ */val_$1,
-  /* method_ */method_$1,
-  /* constraint_ */constraint_$5,
-  /* initializer_ */initializer_,
-  /* extension */extension$10,
-  /* attribute */attribute$3,
-  /* text */text$3,
-  /* virtual_ */virtual_,
-  /* concrete */concrete
-];
+var Ast_helper_Cf = {
+  mk: mk$10,
+  attr: attr$8,
+  inherit_: inherit_$1,
+  val_: val_$1,
+  method_: method_$1,
+  constraint_: constraint_$5,
+  initializer_: initializer_,
+  extension: extension$10,
+  attribute: attribute$3,
+  text: text$3,
+  virtual_: virtual_,
+  concrete: concrete
+};
 
-var Ast_helper = /* module */[
-  /* default_loc */default_loc,
-  /* with_default_loc */with_default_loc,
-  /* Typ */Typ,
-  /* Pat */Pat,
-  Ast_helper_004,
-  /* Val */Val,
-  /* Type */Type,
-  /* Te */Te,
-  /* Mty */Mty,
-  /* Mod */Mod,
-  /* Sig */Sig,
-  /* Str */Str,
-  /* Md */Md,
-  /* Mtd */Mtd,
-  /* Mb */Mb,
-  /* Opn */Opn,
-  /* Incl */Incl,
-  /* Vb */Vb,
-  /* Cty */Cty,
-  Ast_helper_019,
-  /* Cl */Cl,
-  Ast_helper_021,
-  /* Ci */Ci,
-  /* Csig */Csig,
-  /* Cstr */Cstr
-];
+var Ast_helper = {
+  default_loc: default_loc,
+  with_default_loc: with_default_loc,
+  Typ: Typ,
+  Pat: Pat,
+  Exp: Ast_helper_Exp,
+  Val: Val,
+  Type: Type,
+  Te: Te,
+  Mty: Mty,
+  Mod: Mod,
+  Sig: Sig,
+  Str: Str,
+  Md: Md,
+  Mtd: Mtd,
+  Mb: Mb,
+  Opn: Opn,
+  Incl: Incl,
+  Vb: Vb,
+  Cty: Cty,
+  Ctf: Ast_helper_Ctf,
+  Cl: Cl,
+  Cf: Ast_helper_Cf,
+  Ci: Ci,
+  Csig: Csig,
+  Cstr: Cstr
+};
 
 var $$Error$1 = Caml_exceptions.create("Parser_api.Syntaxerr.Error");
 
@@ -5981,13 +6001,13 @@ function ill_formed_ast(loc, s) {
       ];
 }
 
-var Syntaxerr = /* module */[
-  /* Error */$$Error$1,
-  /* Escape_error */Escape_error,
-  /* report_error */report_error$1,
-  /* location_of_error */location_of_error,
-  /* ill_formed_ast */ill_formed_ast
-];
+var Syntaxerr = {
+  Error: $$Error$1,
+  Escape_error: Escape_error,
+  report_error: report_error$1,
+  location_of_error: location_of_error,
+  ill_formed_ast: ill_formed_ast
+};
 
 function mktyp(d) {
   return mk(symbol_rloc(/* () */0), undefined, d);
@@ -5998,7 +6018,7 @@ function mkpat(d) {
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_rloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkmty(d) {
@@ -6026,11 +6046,11 @@ function mkcty(d) {
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_019[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Ctf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Cf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkoption(d) {
@@ -6075,7 +6095,7 @@ function reloc_exp(x) {
 
 function mkoperator(name, pos) {
   var loc = rhs_loc(pos);
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
+  return Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
                   /* txt : Lident */Block.__(0, [name]),
                   /* loc */loc
                 ]]));
@@ -6089,7 +6109,7 @@ function mkpatvar(name, pos) {
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_gloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghpat(d) {
@@ -6128,7 +6148,7 @@ function neg_float_string(f) {
 }
 
 function mkexp_cons(consloc, args, loc) {
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_construct */Block.__(9, [
+  return Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_construct */Block.__(9, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
@@ -6158,7 +6178,7 @@ function mktailexp(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
+    var arg = Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
               /* :: */[
                 exp_el,
@@ -6183,7 +6203,7 @@ function mktailexp(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return Curry._3(Ast_helper_004[/* mk */0], loc$1, undefined, /* Pexp_construct */Block.__(9, [
+    return Curry._3(Ast_helper_Exp.mk, loc$1, undefined, /* Pexp_construct */Block.__(9, [
                   nil,
                   undefined
                 ]));
@@ -6558,11 +6578,11 @@ function wrap_exp_attrs(body, param) {
 }
 
 function text_cstr(pos) {
-  return Curry._1(Ast_helper_021[/* text */9], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_csig(pos) {
-  return Curry._1(Ast_helper_019[/* text */8], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_def(pos) {
@@ -6579,11 +6599,11 @@ function extra_text(text, pos, items) {
 }
 
 function extra_cstr(pos, items) {
-  return extra_text(Ast_helper_021[/* text */9], pos, items);
+  return extra_text(Ast_helper_Cf.text, pos, items);
 }
 
 function extra_csig(pos, items) {
-  return extra_text(Ast_helper_019[/* text */8], pos, items);
+  return extra_text(Ast_helper_Ctf.text, pos, items);
 }
 
 function add_nonrec(rf, attrs, pos) {
@@ -8985,7 +9005,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._2(Ast_helper_004[/* attr */1], _1, _2);
+      return Curry._2(Ast_helper_Exp.attr, _1, _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -9678,13 +9698,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, undefined, _3);
+      return Curry._3(Ast_helper_Exp.case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, _3, _5);
+      return Curry._3(Ast_helper_Exp.case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -12150,15 +12170,15 @@ function parse_pattern(lexfun, lexbuf) {
   return Parsing.yyparse(yytables, 7, lexfun, lexbuf);
 }
 
-var Parser = /* module */[
-  /* implementation */implementation,
-  /* interface */$$interface,
-  /* toplevel_phrase */toplevel_phrase,
-  /* use_file */use_file,
-  /* parse_core_type */parse_core_type,
-  /* parse_expression */parse_expression,
-  /* parse_pattern */parse_pattern
-];
+var Parser = {
+  implementation: implementation,
+  interface: $$interface,
+  toplevel_phrase: toplevel_phrase,
+  use_file: use_file,
+  parse_core_type: parse_core_type,
+  parse_expression: parse_expression,
+  parse_pattern: parse_pattern
+};
 
 function type_of_directive(x) {
   if (typeof x === "number") {
@@ -14760,27 +14780,27 @@ function set_preprocessor(init, preprocess) {
   return /* () */0;
 }
 
-var Lexer = /* module */[
-  /* init */init$2,
-  /* token */token$1,
-  /* skip_sharp_bang */skip_sharp_bang,
-  /* Error */$$Error$2,
-  /* report_error */report_error$2,
-  /* in_comment */in_comment,
-  /* in_string */in_string,
-  /* print_warnings */print_warnings,
-  /* comments */comments,
-  /* token_with_comments */token_with_comments,
-  /* set_preprocessor */set_preprocessor,
-  /* semver */semver,
-  /* filter_directive_from_lexbuf */filter_directive_from_lexbuf,
-  /* replace_directive_int */replace_directive_int,
-  /* replace_directive_string */replace_directive_string,
-  /* replace_directive_bool */replace_directive_bool,
-  /* remove_directive_built_in_value */remove_directive_built_in_value,
-  /* define_key_value */define_key_value,
-  /* list_variables */list_variables
-];
+var Lexer = {
+  init: init$2,
+  token: token$1,
+  skip_sharp_bang: skip_sharp_bang,
+  Error: $$Error$2,
+  report_error: report_error$2,
+  in_comment: in_comment,
+  in_string: in_string,
+  print_warnings: print_warnings,
+  comments: comments,
+  token_with_comments: token_with_comments,
+  set_preprocessor: set_preprocessor,
+  semver: semver,
+  filter_directive_from_lexbuf: filter_directive_from_lexbuf,
+  replace_directive_int: replace_directive_int,
+  replace_directive_string: replace_directive_string,
+  replace_directive_bool: replace_directive_bool,
+  remove_directive_built_in_value: remove_directive_built_in_value,
+  define_key_value: define_key_value,
+  list_variables: list_variables
+};
 
 function skip_phrase(lexbuf) {
   while(true) {
@@ -14901,15 +14921,15 @@ function pattern(param) {
   return wrap(parse_pattern, param);
 }
 
-var Parse = /* module */[
-  /* implementation */implementation$1,
-  /* interface */$$interface$1,
-  /* toplevel_phrase */toplevel_phrase$1,
-  /* use_file */use_file$1,
-  /* core_type */core_type,
-  /* expression */expression,
-  /* pattern */pattern
-];
+var Parse = {
+  implementation: implementation$1,
+  interface: $$interface$1,
+  toplevel_phrase: toplevel_phrase$1,
+  use_file: use_file$1,
+  core_type: core_type,
+  expression: expression,
+  pattern: pattern
+};
 
 var from_string = Lexing.from_string;
 

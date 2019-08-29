@@ -1,7 +1,7 @@
 'use strict';
 
 
-var Foo = /* module */[];
+var Foo = { };
 
 exports.Foo = Foo;
 /* No side effect */

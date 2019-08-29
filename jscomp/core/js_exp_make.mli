@@ -128,6 +128,12 @@ val is_out : ?comment:string -> t -> t -> t
 
 val dot : ?comment:string -> t -> string -> t
 
+val module_access : 
+  t -> 
+  string -> 
+  int32 ->
+  t 
+
 val array_length : ?comment:string -> t -> t 
 
 val string_length : ?comment:string -> t -> t 

@@ -32,14 +32,16 @@ function even(n) {
   } else if (n === 1) {
     return false;
   } else {
-    return Curry._1(B[/* odd */0], n - 1 | 0);
+    return Curry._1(B.odd, n - 1 | 0);
   }
 }
 
 Caml_module.update_mod([[[
           0,
           "even"
-        ]]], A, /* module */[/* even */even]);
+        ]]], A, {
+      even: even
+    });
 
 function odd(n) {
   if (n === 1) {
@@ -47,14 +49,16 @@ function odd(n) {
   } else if (n === 0) {
     return false;
   } else {
-    return Curry._1(A[/* even */0], n - 1 | 0);
+    return Curry._1(A.even, n - 1 | 0);
   }
 }
 
 Caml_module.update_mod([[[
           0,
           "odd"
-        ]]], B, /* module */[/* odd */odd]);
+        ]]], B, {
+      odd: odd
+    });
 
 var AA = Caml_module.init_mod([
       "rec_module_test.ml",
@@ -92,12 +96,12 @@ function even$1(n) {
   } else if (n === 1) {
     return false;
   } else {
-    return Curry._1(BB[/* odd */0], n - 1 | 0);
+    return Curry._1(BB.odd, n - 1 | 0);
   }
 }
 
 function x(param) {
-  return Curry._1(BB[/* y */1], /* () */0) + 3 | 0;
+  return Curry._1(BB.y, /* () */0) + 3 | 0;
 }
 
 Caml_module.update_mod([[
@@ -109,10 +113,10 @@ Caml_module.update_mod([[
           0,
           "x"
         ]
-      ]], AA, /* module */[
-      /* even */even$1,
-      /* x */x
-    ]);
+      ]], AA, {
+      even: even$1,
+      x: x
+    });
 
 function odd$1(n) {
   if (n === 1) {
@@ -120,7 +124,7 @@ function odd$1(n) {
   } else if (n === 0) {
     return false;
   } else {
-    return Curry._1(AA[/* even */0], n - 1 | 0);
+    return Curry._1(AA.even, n - 1 | 0);
   }
 }
 
@@ -137,10 +141,10 @@ Caml_module.update_mod([[
           0,
           "y"
         ]
-      ]], BB, /* module */[
-      /* odd */odd$1,
-      /* y */y
-    ]);
+      ]], BB, {
+      odd: odd$1,
+      y: y
+    });
 
 var AAA = Caml_module.init_mod([
       "rec_module_test.ml",
@@ -230,7 +234,7 @@ function add(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Curry._2(AAA[/* compare */0], x, v);
+    var c = Curry._2(AAA.compare, x, v);
     if (c === 0) {
       return t;
     } else if (c < 0) {
@@ -360,7 +364,7 @@ function split(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Curry._2(AAA[/* compare */0], x, v);
+    var c = Curry._2(AAA.compare, x, v);
     if (c === 0) {
       return /* tuple */[
               l,
@@ -403,7 +407,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Curry._2(AAA[/* compare */0], x, param[1]);
+      var c = Curry._2(AAA.compare, x, param[1]);
       if (c === 0) {
         return true;
       } else {
@@ -421,7 +425,7 @@ function remove(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Curry._2(AAA[/* compare */0], x, v);
+    var c = Curry._2(AAA.compare, x, v);
     if (c === 0) {
       var t1 = l;
       var t2 = r;
@@ -536,7 +540,7 @@ function compare(s1, s2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Curry._2(AAA[/* compare */0], e1[0], e2[0]);
+        var c = Curry._2(AAA.compare, e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {
@@ -570,7 +574,7 @@ function subset(_s1, _s2) {
         var r1 = s1[2];
         var v1 = s1[1];
         var l1 = s1[0];
-        var c = Curry._2(AAA[/* compare */0], v1, s2[1]);
+        var c = Curry._2(AAA.compare, v1, s2[1]);
         if (c === 0) {
           if (subset(l1, l2)) {
             _s2 = r2;
@@ -750,7 +754,7 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var v = param[1];
-      var c = Curry._2(AAA[/* compare */0], x, v);
+      var c = Curry._2(AAA.compare, x, v);
       if (c === 0) {
         return v;
       } else {
@@ -778,7 +782,7 @@ function of_list(l) {
           var x3 = match$2[0];
           if (match$3) {
             if (match$3[1]) {
-              var l$1 = List.sort_uniq(AAA[/* compare */0], l);
+              var l$1 = List.sort_uniq(AAA.compare, l);
               var sub = function (n, l) {
                 switch (n) {
                   case 0 :
@@ -896,34 +900,34 @@ function of_list(l) {
   }
 }
 
-var ASet = /* module */[
-  /* empty : Empty */0,
-  /* is_empty */is_empty,
-  /* mem */mem,
-  /* add */add,
-  /* singleton */singleton,
-  /* remove */remove,
-  /* union */union,
-  /* inter */inter,
-  /* diff */diff,
-  /* compare */compare,
-  /* equal */equal,
-  /* subset */subset,
-  /* iter */iter,
-  /* fold */fold,
-  /* for_all */for_all,
-  /* exists */exists,
-  /* filter */filter,
-  /* partition */partition,
-  /* cardinal */cardinal,
-  /* elements */elements,
-  /* min_elt */min_elt,
-  /* max_elt */max_elt,
-  /* choose */min_elt,
-  /* split */split,
-  /* find */find,
-  /* of_list */of_list
-];
+var ASet = {
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  union: union,
+  inter: inter,
+  diff: diff,
+  compare: compare,
+  equal: equal,
+  subset: subset,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  elements: elements,
+  min_elt: min_elt,
+  max_elt: max_elt,
+  choose: min_elt,
+  split: split,
+  find: find,
+  of_list: of_list
+};
 
 function compare$1(t1, t2) {
   if (t1.tag) {
@@ -942,7 +946,9 @@ function compare$1(t1, t2) {
 Caml_module.update_mod([[[
           0,
           "compare"
-        ]]], AAA, /* module */[/* compare */compare$1]);
+        ]]], AAA, {
+      compare: compare$1
+    });
 
 var suites_000 = /* tuple */[
   "test1",
@@ -955,10 +961,10 @@ var suites_000 = /* tuple */[
                   false
                 ],
                 /* tuple */[
-                  Curry._1(A[/* even */0], 2),
-                  Curry._1(AA[/* even */0], 4),
-                  Curry._1(B[/* odd */0], 2),
-                  Curry._1(BB[/* odd */0], 4)
+                  Curry._1(A.even, 2),
+                  Curry._1(AA.even, 4),
+                  Curry._1(B.odd, 2),
+                  Curry._1(BB.odd, 4)
                 ]
               ]);
     })
@@ -969,7 +975,7 @@ var suites_001 = /* :: */[
     "test2",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Curry._1(BB[/* y */1], /* () */0),
+                  Curry._1(BB.y, /* () */0),
                   32
                 ]);
       })
@@ -979,7 +985,7 @@ var suites_001 = /* :: */[
       "test3",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    Curry._1(AA[/* x */1], /* () */0),
+                    Curry._1(AA.x, /* () */0),
                     35
                   ]);
         })
@@ -990,7 +996,7 @@ var suites_001 = /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       true,
-                      Curry._1(A[/* even */0], 2)
+                      Curry._1(A.even, 2)
                     ]);
           })
       ],
@@ -1000,7 +1006,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         true,
-                        Curry._1(AA[/* even */0], 4)
+                        Curry._1(AA.even, 4)
                       ]);
             })
         ],
@@ -1010,7 +1016,7 @@ var suites_001 = /* :: */[
             (function (param) {
                 return /* Eq */Block.__(0, [
                           false,
-                          Curry._1(B[/* odd */0], 2)
+                          Curry._1(B.odd, 2)
                         ]);
               })
           ],

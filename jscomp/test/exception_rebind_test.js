@@ -5,9 +5,13 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var E = Caml_exceptions.create("Exception_rebind_test.A.E");
 
-var A = /* module */[/* E */E];
+var A = {
+  E: E
+};
 
-var B = /* module */[/* F */E];
+var B = {
+  F: E
+};
 
 var H = Exception_def.A;
 

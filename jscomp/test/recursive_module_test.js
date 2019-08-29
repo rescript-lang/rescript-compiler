@@ -62,21 +62,23 @@ function fact(n) {
   if (n <= 1) {
     return 1;
   } else {
-    return Caml_int32.imul(n, Curry._1(M[/* fact */0], n - 1 | 0));
+    return Caml_int32.imul(n, Curry._1(M.fact, n - 1 | 0));
   }
 }
 
 Caml_module.update_mod([[[
           0,
           "fact"
-        ]]], M, /* module */[/* fact */fact]);
+        ]]], M, {
+      fact: fact
+    });
 
-var fact$1 = M[/* fact */0];
+var fact$1 = M.fact;
 
-var Fact = /* module */[
-  /* M */M,
-  /* fact */fact$1
-];
+var Fact = {
+  M: M,
+  fact: fact$1
+};
 
 eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
 
@@ -84,7 +86,7 @@ add(/* tuple */[
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
-                        Curry._1(Int3[/* u */0], 3);
+                        Curry._1(Int3.u, 3);
                         return /* () */0;
                       })]);
         })

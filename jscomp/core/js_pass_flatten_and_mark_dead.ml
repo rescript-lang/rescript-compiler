@@ -238,8 +238,14 @@ let subst_map () = object (self)
                let v' = self#expression x in 
                let match_id =
                  Ext_ident.create
-                   (Printf.sprintf "%s_%03d"
-                      ident.name i) in
+                   (ident.name ^ "_" ^
+                    (match tag_info with 
+                     | Blk_module fields -> 
+                       (match Ext_list.nth_opt fields i with 
+                        | None -> Printf.sprintf "%03d" i                      
+                        | Some x -> x )
+                     | _ -> Printf.sprintf "%03d" i    
+                    )) in
                (i + 1, E.var match_id :: e, (match_id, v') :: acc))  in
       let e = 
         {block with 
@@ -267,7 +273,9 @@ let subst_map () = object (self)
   method! expression x =
     match x.expression_desc with 
     | Array_index ({expression_desc = Var (Id (id))}, 
-              {expression_desc = Number (Int {i; _})}) -> 
+              {expression_desc = Number (Int {i; _})})
+    | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
+     -> 
       (match Ident_hashtbl.find_opt self#get_substitution id with 
        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
          -> 

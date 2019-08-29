@@ -34,6 +34,7 @@ class virtual map =
         | _x :: _x_i1 ->
             let _x = _f_a o _x in
             let _x_i1 = o#list _f_a _x_i1 in _x :: _x_i1
+    method int32 : int32 -> int32 = o#unknown
     method int : int -> int = o#unknown
     method bool : bool -> bool = function | false -> false | true -> true
     method vident : vident -> vident =
@@ -372,9 +373,11 @@ class virtual map =
       | Array_index (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Array_index (_x, _x_i1)
-      | Static_index (_x, _x_i1) ->
+      | Static_index (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
-          let _x_i1 = o#string _x_i1 in Static_index (_x, _x_i1)
+          let _x_i1 = o#string _x_i1 in
+          let _x_i2 = o#option (fun o -> o#int32) _x_i2
+          in Static_index (_x, _x_i1, _x_i2)
       | New (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 =
