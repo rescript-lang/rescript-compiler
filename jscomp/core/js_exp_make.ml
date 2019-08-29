@@ -106,8 +106,8 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
   {expression_desc = Var (Qualified(id, External name,  dot)); comment }
 
 
-(* let ml_var ?comment (id : Ident.t) : t  = 
-  {expression_desc = Var (Qualified (id, Ml, None)); comment} *)
+let ml_module_as_var ?comment (id : Ident.t) : t  = 
+  {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
 (* Static_index .....................**)        
 let runtime_call ?comment module_name fn_name args = 

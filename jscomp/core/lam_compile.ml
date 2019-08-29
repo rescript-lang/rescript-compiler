@@ -1565,9 +1565,9 @@ and compile_lambda
       (* introduced by
          1. {[ include Array --> let include  = Array  ]}
          2. inline functor application
-      *)
-      let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
-      Js_output.output_of_block_and_expression lambda_cxt.continuation [] exp
+      *)      
+      Js_output.output_of_block_and_expression lambda_cxt.continuation [] 
+        (E.ml_module_as_var i )
 
     | Lprim prim_info -> 
         compile_prim prim_info lambda_cxt

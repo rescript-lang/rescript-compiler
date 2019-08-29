@@ -75,6 +75,11 @@ val external_var_dot :
   Ident.t ->
   t
 
+val ml_module_as_var :  
+  ?comment:string -> 
+  Ident.t -> 
+  t
+
 val runtime_call : 
   ?comment:string -> 
   string -> (* module_name *)
