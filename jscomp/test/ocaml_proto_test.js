@@ -2898,7 +2898,17 @@ function gen_sig(and_, t, sc) {
   var tmp;
   switch (match.tag | 0) {
     case 0 :
+        tmp = /* tuple */[
+          f(match[0][/* r_name */0]),
+          true
+        ];
+        break;
     case 1 :
+        tmp = /* tuple */[
+          f(match[0][/* v_name */0]),
+          true
+        ];
+        break;
     case 2 :
         tmp = /* tuple */[
           f(match[0][/* cv_name */0]),
@@ -3407,7 +3417,11 @@ function gen_sig$1(and_, t, sc) {
   var match = t[/* spec */1];
   switch (match.tag | 0) {
     case 0 :
+        f(match[0][/* r_name */0]);
+        break;
     case 1 :
+        f(match[0][/* v_name */0]);
+        break;
     case 2 :
         f(match[0][/* cv_name */0]);
         break;
@@ -5535,7 +5549,17 @@ function gen_sig$3(and_, t, sc) {
   var tmp;
   switch (match.tag | 0) {
     case 0 :
+        tmp = /* tuple */[
+          f(match[0][/* r_name */0]),
+          true
+        ];
+        break;
     case 1 :
+        tmp = /* tuple */[
+          f(match[0][/* v_name */0]),
+          true
+        ];
+        break;
     case 2 :
         tmp = /* tuple */[
           f(match[0][/* cv_name */0]),
@@ -6178,6 +6202,11 @@ function gen_sig$4(and_, t, sc) {
         ];
         break;
     case 1 :
+        tmp = /* tuple */[
+          f(match[0][/* v_name */0]),
+          true
+        ];
+        break;
     case 2 :
         tmp = /* tuple */[
           f(match[0][/* cv_name */0]),
