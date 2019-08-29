@@ -64,10 +64,10 @@ function string_of_float_option(param) {
   }
 }
 
-var Util = /* module */[
-  /* split */split,
-  /* string_of_float_option */string_of_float_option
-];
+var Util = {
+  split: split,
+  string_of_float_option: string_of_float_option
+};
 
 function string_of_rank(param) {
   if (typeof param === "number") {
@@ -727,32 +727,32 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var Ticker_map = /* module */[
-  /* empty : Empty */0,
-  /* is_empty */is_empty,
-  /* mem */mem,
-  /* add */add,
-  /* singleton */singleton,
-  /* remove */remove,
-  /* merge */merge,
-  /* compare */compare,
-  /* equal */equal,
-  /* iter */iter,
-  /* fold */fold,
-  /* for_all */for_all,
-  /* exists */exists,
-  /* filter */filter,
-  /* partition */partition,
-  /* cardinal */cardinal,
-  /* bindings */bindings,
-  /* min_binding */min_binding,
-  /* max_binding */max_binding,
-  /* choose */min_binding,
-  /* split */split$1,
-  /* find */find,
-  /* map */map,
-  /* mapi */mapi
-];
+var Ticker_map = {
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  merge: merge,
+  compare: compare,
+  equal: equal,
+  iter: iter,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  bindings: bindings,
+  min_binding: min_binding,
+  max_binding: max_binding,
+  choose: min_binding,
+  split: split$1,
+  find: find,
+  map: map,
+  mapi: mapi
+};
 
 function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {

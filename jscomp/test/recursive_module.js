@@ -68,11 +68,13 @@ Caml_module.update_mod([[
         ]
       ]], Int32, Int32);
 
-var Xx = /* module */[/* f */(function (prim, prim$1) {
+var Xx = {
+  f: (function (prim, prim$1) {
       return Caml_external_polyfill.resolve("hfiehi")(prim, prim$1);
-    })];
+    })
+};
 
-var uuu = Xx[/* f */0];
+var uuu = Xx.f;
 
 var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
@@ -107,27 +109,31 @@ var Intb = Caml_module.init_mod([
         ]]]);
 
 var a = Caml_obj.caml_lazy_make((function (param) {
-        return CamlinternalLazy.force(Intb[/* a */0]);
+        return CamlinternalLazy.force(Intb.a);
       }));
 
 Caml_module.update_mod([[[
           1,
           "a"
-        ]]], Inta, /* module */[/* a */a]);
+        ]]], Inta, {
+      a: a
+    });
 
 var a$1 = Caml_obj.caml_lazy_make((function (param) {
-        return CamlinternalLazy.force(Inta[/* a */0]) + 1 | 0;
+        return CamlinternalLazy.force(Inta.a) + 1 | 0;
       }));
 
 Caml_module.update_mod([[[
           1,
           "a"
-        ]]], Intb, /* module */[/* a */a$1]);
+        ]]], Intb, {
+      a: a$1
+    });
 
 var tmp;
 
 try {
-  tmp = CamlinternalLazy.force(Intb[/* a */0]);
+  tmp = CamlinternalLazy.force(Intb.a);
 }
 catch (exn){
   if (exn === Lazy.Undefined) {
@@ -158,30 +164,34 @@ var Intb$1 = Caml_module.init_mod([
         ]]]);
 
 var a$2 = Caml_obj.caml_lazy_make((function (param) {
-        return CamlinternalLazy.force(Intb$1[/* a */0]) + 1 | 0;
+        return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
       }));
 
 Caml_module.update_mod([[[
           1,
           "a"
-        ]]], Inta$1, /* module */[/* a */a$2]);
+        ]]], Inta$1, {
+      a: a$2
+    });
 
 Caml_module.update_mod([[[
           1,
           "a"
-        ]]], Intb$1, /* module */[/* a */2]);
+        ]]], Intb$1, {
+      a: 2
+    });
 
-var A = /* module */[
-  /* Inta */Inta$1,
-  /* Intb */Intb$1
-];
+var A = {
+  Inta: Inta$1,
+  Intb: Intb$1
+};
 
-eq("File \"recursive_module.ml\", line 58, characters 6-13", CamlinternalLazy.force(Inta$1[/* a */0]), 3);
+eq("File \"recursive_module.ml\", line 58, characters 6-13", CamlinternalLazy.force(Inta$1.a), 3);
 
 var tmp$1;
 
 try {
-  Curry._1(Int3[/* u */0], 3);
+  Curry._1(Int3.u, 3);
   tmp$1 = 3;
 }
 catch (raw_exn){

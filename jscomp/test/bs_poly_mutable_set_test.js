@@ -30,7 +30,7 @@ function fromArray(param) {
 
 function empty(param) {
   return {
-          cmp: IntCmp[/* cmp */0],
+          cmp: IntCmp.cmp,
           data: Belt_internalAVLset.empty
         };
 }
@@ -146,7 +146,7 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 67, characters 5-12", indeedAded,
 eq("File \"bs_poly_mutable_set_test.ml\", line 68, characters 5-12", Belt_internalAVLset.size(v.data), 1501);
 
 b("File \"bs_poly_mutable_set_test.ml\", line 69, characters 4-11", Belt_MutableSet.isEmpty({
-          cmp: IntCmp[/* cmp */0],
+          cmp: IntCmp.cmp,
           data: Belt_internalAVLset.empty
         }));
 
@@ -235,12 +235,12 @@ var dd = Belt_MutableSet.intersect(aa$2, bb$2);
 b("File \"bs_poly_mutable_set_test.ml\", line 111, characters 4-11", Belt_MutableSet.eq(dd, fromArray(Array_data_util.randomRange(40, 100))));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 112, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(21, 40))), {
-          cmp: IntCmp[/* cmp */0],
+          cmp: IntCmp.cmp,
           data: Belt_internalAVLset.empty
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(21, 40)), fromArray(Array_data_util.randomRange(0, 20))), {
-          cmp: IntCmp[/* cmp */0],
+          cmp: IntCmp.cmp,
           data: Belt_internalAVLset.empty
         }));
 

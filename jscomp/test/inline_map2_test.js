@@ -106,7 +106,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return /* Node */[
                 l,
@@ -134,7 +134,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Curry._2(Ord[/* compare */0], x, param[1]);
+        var c = Curry._2(Ord.compare, x, param[1]);
         if (c === 0) {
           return param[2];
         } else {
@@ -150,7 +150,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Curry._2(Ord[/* compare */0], x, param[1]);
+        var c = Curry._2(Ord.compare, x, param[1]);
         if (c === 0) {
           return true;
         } else {
@@ -221,7 +221,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         var t1 = l;
         var t2 = r;
@@ -391,7 +391,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Curry._2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return /* tuple */[
                 l,
@@ -518,7 +518,7 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Curry._2(Ord[/* compare */0], e1[0], e2[0]);
+          var c = Curry._2(Ord.compare, e1[0], e2[0]);
           if (c !== 0) {
             return c;
           } else {
@@ -548,7 +548,7 @@ function Make(Ord) {
       var e2 = _e2;
       var e1 = _e1;
       if (e1) {
-        if (e2 && Curry._2(Ord[/* compare */0], e1[0], e2[0]) === 0 && Curry._2(cmp, e1[1], e2[1])) {
+        if (e2 && Curry._2(Ord.compare, e1[0], e2[0]) === 0 && Curry._2(cmp, e1[1], e2[1])) {
           _e2 = cons_enum(e2[2], e2[3]);
           _e1 = cons_enum(e1[2], e1[3]);
           continue ;
@@ -591,43 +591,43 @@ function Make(Ord) {
   var bindings = function (s) {
     return bindings_aux(/* [] */0, s);
   };
-  return /* module */[
-          /* height */height,
-          /* create */create,
-          /* singleton */singleton,
-          /* bal */bal,
-          /* empty : Empty */0,
-          /* is_empty */is_empty,
-          /* add */add,
-          /* find */find,
-          /* mem */mem,
-          /* min_binding */min_binding,
-          /* max_binding */max_binding,
-          /* remove_min_binding */remove_min_binding,
-          /* remove */remove,
-          /* iter */iter,
-          /* map */map,
-          /* mapi */mapi,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
-          /* add_min_binding */add_min_binding,
-          /* add_max_binding */add_max_binding,
-          /* join */join,
-          /* concat */concat,
-          /* concat_or_join */concat_or_join,
-          /* split */split,
-          /* merge */merge,
-          /* filter */filter,
-          /* partition */partition,
-          /* cons_enum */cons_enum,
-          /* compare */compare,
-          /* equal */equal,
-          /* cardinal */cardinal,
-          /* bindings_aux */bindings_aux,
-          /* bindings */bindings,
-          /* choose */min_binding
-        ];
+  return {
+          height: height,
+          create: create,
+          singleton: singleton,
+          bal: bal,
+          empty: /* Empty */0,
+          is_empty: is_empty,
+          add: add,
+          find: find,
+          mem: mem,
+          min_binding: min_binding,
+          max_binding: max_binding,
+          remove_min_binding: remove_min_binding,
+          remove: remove,
+          iter: iter,
+          map: map,
+          mapi: mapi,
+          fold: fold,
+          for_all: for_all,
+          exists: exists,
+          add_min_binding: add_min_binding,
+          add_max_binding: add_max_binding,
+          join: join,
+          concat: concat,
+          concat_or_join: concat_or_join,
+          split: split,
+          merge: merge,
+          filter: filter,
+          partition: partition,
+          cons_enum: cons_enum,
+          compare: compare,
+          equal: equal,
+          cardinal: cardinal,
+          bindings_aux: bindings_aux,
+          bindings: bindings,
+          choose: min_binding
+        };
 }
 
 function height(param) {
@@ -1245,43 +1245,43 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var IntMap = /* module */[
-  /* height */height,
-  /* create */create,
-  /* singleton */singleton,
-  /* bal */bal,
-  /* empty : Empty */0,
-  /* is_empty */is_empty,
-  /* add */add,
-  /* find */find,
-  /* mem */mem,
-  /* min_binding */min_binding,
-  /* max_binding */max_binding,
-  /* remove_min_binding */remove_min_binding,
-  /* remove */remove,
-  /* iter */iter,
-  /* map */map,
-  /* mapi */mapi,
-  /* fold */fold,
-  /* for_all */for_all,
-  /* exists */exists,
-  /* add_min_binding */add_min_binding,
-  /* add_max_binding */add_max_binding,
-  /* join */join,
-  /* concat */concat,
-  /* concat_or_join */concat_or_join,
-  /* split */split,
-  /* merge */merge,
-  /* filter */filter,
-  /* partition */partition,
-  /* cons_enum */cons_enum,
-  /* compare */compare,
-  /* equal */equal,
-  /* cardinal */cardinal,
-  /* bindings_aux */bindings_aux,
-  /* bindings */bindings,
-  /* choose */min_binding
-];
+var IntMap = {
+  height: height,
+  create: create,
+  singleton: singleton,
+  bal: bal,
+  empty: /* Empty */0,
+  is_empty: is_empty,
+  add: add,
+  find: find,
+  mem: mem,
+  min_binding: min_binding,
+  max_binding: max_binding,
+  remove_min_binding: remove_min_binding,
+  remove: remove,
+  iter: iter,
+  map: map,
+  mapi: mapi,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  add_min_binding: add_min_binding,
+  add_max_binding: add_max_binding,
+  join: join,
+  concat: concat,
+  concat_or_join: concat_or_join,
+  split: split,
+  merge: merge,
+  filter: filter,
+  partition: partition,
+  cons_enum: cons_enum,
+  compare: compare,
+  equal: equal,
+  cardinal: cardinal,
+  bindings_aux: bindings_aux,
+  bindings: bindings,
+  choose: min_binding
+};
 
 var m = List.fold_left((function (acc, param) {
         return add(param[0], param[1], acc);
@@ -1926,43 +1926,43 @@ function bindings$1(s) {
   return bindings_aux$1(/* [] */0, s);
 }
 
-var SMap = /* module */[
-  /* height */height$1,
-  /* create */create$1,
-  /* singleton */singleton$1,
-  /* bal */bal$1,
-  /* empty : Empty */0,
-  /* is_empty */is_empty$1,
-  /* add */add$1,
-  /* find */find$1,
-  /* mem */mem$1,
-  /* min_binding */min_binding$1,
-  /* max_binding */max_binding$1,
-  /* remove_min_binding */remove_min_binding$1,
-  /* remove */remove$1,
-  /* iter */iter$1,
-  /* map */map$1,
-  /* mapi */mapi$1,
-  /* fold */fold$1,
-  /* for_all */for_all$1,
-  /* exists */exists$1,
-  /* add_min_binding */add_min_binding$1,
-  /* add_max_binding */add_max_binding$1,
-  /* join */join$1,
-  /* concat */concat$1,
-  /* concat_or_join */concat_or_join$1,
-  /* split */split$1,
-  /* merge */merge$1,
-  /* filter */filter$1,
-  /* partition */partition$1,
-  /* cons_enum */cons_enum$1,
-  /* compare */compare$1,
-  /* equal */equal$1,
-  /* cardinal */cardinal$1,
-  /* bindings_aux */bindings_aux$1,
-  /* bindings */bindings$1,
-  /* choose */min_binding$1
-];
+var SMap = {
+  height: height$1,
+  create: create$1,
+  singleton: singleton$1,
+  bal: bal$1,
+  empty: /* Empty */0,
+  is_empty: is_empty$1,
+  add: add$1,
+  find: find$1,
+  mem: mem$1,
+  min_binding: min_binding$1,
+  max_binding: max_binding$1,
+  remove_min_binding: remove_min_binding$1,
+  remove: remove$1,
+  iter: iter$1,
+  map: map$1,
+  mapi: mapi$1,
+  fold: fold$1,
+  for_all: for_all$1,
+  exists: exists$1,
+  add_min_binding: add_min_binding$1,
+  add_max_binding: add_max_binding$1,
+  join: join$1,
+  concat: concat$1,
+  concat_or_join: concat_or_join$1,
+  split: split$1,
+  merge: merge$1,
+  filter: filter$1,
+  partition: partition$1,
+  cons_enum: cons_enum$1,
+  compare: compare$1,
+  equal: equal$1,
+  cardinal: cardinal$1,
+  bindings_aux: bindings_aux$1,
+  bindings: bindings$1,
+  choose: min_binding$1
+};
 
 var s = List.fold_left((function (acc, param) {
         return add$1(param[0], param[1], acc);

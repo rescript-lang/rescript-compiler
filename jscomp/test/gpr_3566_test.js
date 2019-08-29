@@ -16,25 +16,25 @@ function eq_A(x, y) {
 function Test($star) {
   console.log("no inline");
   var u = /* A */Block.__(0, [3]);
-  var Block$1 = /* module */[];
+  var Block$1 = { };
   var b = eq_A(/* A */Block.__(0, [3]), u);
-  return /* module */[
-          /* u */u,
-          /* Block */Block$1,
-          /* y */32,
-          /* b */b
-        ];
+  return {
+          u: u,
+          Block: Block$1,
+          y: 32,
+          b: b
+        };
 }
 
 function Test2($star) {
   console.log("no inline");
-  var Block$1 = /* module */[];
+  var Block$1 = { };
   var b = eq_A(/* A */Block.__(0, [3]), /* A */Block.__(0, [3]));
-  return /* module */[
-          /* Block */Block$1,
-          /* y */32,
-          /* b */b
-        ];
+  return {
+          Block: Block$1,
+          y: 32,
+          b: b
+        };
 }
 
 function f(i, y) {
@@ -44,74 +44,78 @@ function f(i, y) {
 
 function Test3($star) {
   var f = Caml_obj.caml_equal;
-  var Caml_obj$1 = /* module */[];
-  return /* module */[
-          /* f */f,
-          /* Caml_obj */Caml_obj$1
-        ];
+  var Caml_obj$1 = { };
+  return {
+          f: f,
+          Caml_obj: Caml_obj$1
+        };
 }
 
 function Test4($star) {
-  var Caml_obj$1 = /* module */[];
+  var Caml_obj$1 = { };
   var f = Caml_obj.caml_equal;
-  return /* module */[
-          /* Caml_obj */Caml_obj$1,
-          /* f */f
-        ];
+  return {
+          Caml_obj: Caml_obj$1,
+          f: f
+        };
 }
 
 function Test5($star) {
   var f = function (x) {
     return Caml_option.some(x);
   };
-  var Caml_option$1 = /* module */[];
-  return /* module */[
-          /* f */f,
-          /* Caml_option */Caml_option$1
-        ];
+  var Caml_option$1 = { };
+  return {
+          f: f,
+          Caml_option: Caml_option$1
+        };
 }
 
 function Test6($star) {
-  var Caml_option$1 = /* module */[];
+  var Caml_option$1 = { };
   var f = function (x) {
     return Caml_option.some(x);
   };
-  return /* module */[
-          /* Caml_option */Caml_option$1,
-          /* f */f
-        ];
+  return {
+          Caml_option: Caml_option$1,
+          f: f
+        };
 }
 
 function Test7($star) {
-  var Caml_option = /* module */[];
-  return /* module */[/* Caml_option */Caml_option];
+  var Caml_option = { };
+  return {
+          Caml_option: Caml_option
+        };
 }
 
 function Test8($star) {
-  var Curry$1 = /* module */[];
+  var Curry$1 = { };
   var f = function (x) {
     return Curry._1(x, 1);
   };
-  return /* module */[
-          /* Curry */Curry$1,
-          /* f */f
-        ];
+  return {
+          Curry: Curry$1,
+          f: f
+        };
 }
 
 function Test9($star) {
   var f = function (x) {
     return Curry._1(x, 1);
   };
-  var Curry$1 = /* module */[];
-  return /* module */[
-          /* f */f,
-          /* Curry */Curry$1
-        ];
+  var Curry$1 = { };
+  return {
+          f: f,
+          Curry: Curry$1
+        };
 }
 
 function Test10($star) {
-  var Curry = /* module */[];
-  return /* module */[/* Curry */Curry];
+  var Curry = { };
+  return {
+          Curry: Curry
+        };
 }
 
 var x = 3;

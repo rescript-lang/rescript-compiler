@@ -34,19 +34,19 @@ function to_list(s) {
   return l[0];
 }
 
-var S = /* module */[
-  /* Empty */Stack.Empty,
-  /* create */Stack.create,
-  /* push */Stack.push,
-  /* pop */Stack.pop,
-  /* top */Stack.top,
-  /* clear */Stack.clear,
-  /* copy */Stack.copy,
-  /* is_empty */Stack.is_empty,
-  /* length */Stack.length,
-  /* iter */Stack.iter,
-  /* to_list */to_list
-];
+var S = {
+  Empty: Stack.Empty,
+  create: Stack.create,
+  push: Stack.push,
+  pop: Stack.pop,
+  top: Stack.top,
+  clear: Stack.clear,
+  copy: Stack.copy,
+  is_empty: Stack.is_empty,
+  length: Stack.length,
+  iter: Stack.iter,
+  to_list: to_list
+};
 
 function does_raise(f, s) {
   try {

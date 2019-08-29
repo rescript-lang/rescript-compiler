@@ -278,14 +278,14 @@ function setup(o) {
   return /* () */0;
 }
 
-var Misc_043 = /* Color : module */[
-  /* ansi_of_style_l */ansi_of_style_l,
-  /* default_styles */default_styles,
-  /* get_styles */get_styles,
-  /* set_styles */set_styles,
-  /* setup */setup,
-  /* set_color_tag_handling */set_color_tag_handling
-];
+var Misc_Color = {
+  ansi_of_style_l: ansi_of_style_l,
+  default_styles: default_styles,
+  get_styles: get_styles,
+  set_styles: set_styles,
+  setup: setup,
+  set_color_tag_handling: set_color_tag_handling
+};
 
 function number(param) {
   if (typeof param === "number") {
@@ -1499,7 +1499,7 @@ function get_pos_info(pos) {
 }
 
 function setup_colors(param) {
-  return Curry._1(Misc_043[/* setup */4], color[0]);
+  return Curry._1(Misc_Color.setup, color[0]);
 }
 
 function print_loc(ppf, loc) {
@@ -1755,7 +1755,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   var fmt$1 = fmt;
   var buf = $$Buffer.create(64);
   var ppf = Format.formatter_of_buffer(buf);
-  Curry._1(Misc_043[/* set_color_tag_handling */5], ppf);
+  Curry._1(Misc_Color.set_color_tag_handling, ppf);
   if (before !== undefined) {
     Curry._1(before, ppf);
   }
@@ -3174,72 +3174,72 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
         ];
 }
 
-var Ast_helper_004 = /* Exp : module */[
-  /* mk */mk$2,
-  /* attr */attr$2,
-  /* ident */ident,
-  /* constant */constant,
-  /* let_ */let_,
-  /* fun_ */fun_,
-  /* function_ */function_,
-  /* apply */apply,
-  /* match_ */match_,
-  /* try_ */try_,
-  /* tuple */tuple,
-  /* construct */construct,
-  /* variant */variant,
-  /* record */record,
-  /* field */field,
-  /* setfield */setfield,
-  /* array */array,
-  /* ifthenelse */ifthenelse,
-  /* sequence */sequence,
-  /* while_ */while_,
-  /* for_ */for_,
-  /* coerce */coerce,
-  /* constraint_ */constraint_,
-  /* send */send,
-  /* new_ */new_,
-  /* setinstvar */setinstvar,
-  /* override */override,
-  /* letmodule */letmodule,
-  /* assert_ */assert_,
-  /* lazy_ */lazy_,
-  /* poly */poly,
-  /* object_ */object_,
-  /* newtype */newtype,
-  /* pack */pack,
-  /* open_ */open_,
-  /* extension */extension,
-  /* case */$$case
-];
+var Ast_helper_Exp = {
+  mk: mk$2,
+  attr: attr$2,
+  ident: ident,
+  constant: constant,
+  let_: let_,
+  fun_: fun_,
+  function_: function_,
+  apply: apply,
+  match_: match_,
+  try_: try_,
+  tuple: tuple,
+  construct: construct,
+  variant: variant,
+  record: record,
+  field: field,
+  setfield: setfield,
+  array: array,
+  ifthenelse: ifthenelse,
+  sequence: sequence,
+  while_: while_,
+  for_: for_,
+  coerce: coerce,
+  constraint_: constraint_,
+  send: send,
+  new_: new_,
+  setinstvar: setinstvar,
+  override: override,
+  letmodule: letmodule,
+  assert_: assert_,
+  lazy_: lazy_,
+  poly: poly,
+  object_: object_,
+  newtype: newtype,
+  pack: pack,
+  open_: open_,
+  extension: extension,
+  case: $$case
+};
 
-var Ast_helper_019 = /* Ctf : module */[
-  /* mk */mk$9,
-  /* attr */attr$7,
-  /* inherit_ */inherit_,
-  /* val_ */val_,
-  /* method_ */method_,
-  /* constraint_ */constraint_$1,
-  /* extension */extension$1,
-  /* attribute */attribute,
-  /* text */text$2
-];
+var Ast_helper_Ctf = {
+  mk: mk$9,
+  attr: attr$7,
+  inherit_: inherit_,
+  val_: val_,
+  method_: method_,
+  constraint_: constraint_$1,
+  extension: extension$1,
+  attribute: attribute,
+  text: text$2
+};
 
-var Ast_helper_021 = /* Cf : module */[
-  /* mk */mk$10,
-  /* attr */attr$8,
-  /* inherit_ */inherit_$1,
-  /* val_ */val_$1,
-  /* method_ */method_$1,
-  /* constraint_ */constraint_$2,
-  /* initializer_ */initializer_,
-  /* extension */extension$2,
-  /* attribute */attribute$1,
-  /* text */text$3,
-  /* virtual_ */virtual_,
-  /* concrete */concrete
-];
+var Ast_helper_Cf = {
+  mk: mk$10,
+  attr: attr$8,
+  inherit_: inherit_$1,
+  val_: val_$1,
+  method_: method_$1,
+  constraint_: constraint_$2,
+  initializer_: initializer_,
+  extension: extension$2,
+  attribute: attribute$1,
+  text: text$3,
+  virtual_: virtual_,
+  concrete: concrete
+};
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");
 
@@ -3392,7 +3392,7 @@ function mkpat(d) {
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_rloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkmty(d) {
@@ -3420,11 +3420,11 @@ function mkcty(d) {
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_019[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Ctf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Cf.mk, symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkoption(d) {
@@ -3469,7 +3469,7 @@ function reloc_exp(x) {
 
 function mkoperator(name, pos) {
   var loc = rhs_loc(pos);
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
+  return Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
                   /* txt : Lident */Block.__(0, [name]),
                   /* loc */loc
                 ]]));
@@ -3483,7 +3483,7 @@ function mkpatvar(name, pos) {
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], symbol_gloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghpat(d) {
@@ -3522,7 +3522,7 @@ function neg_float_string(f) {
 }
 
 function mkexp_cons(consloc, args, loc) {
-  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_construct */Block.__(9, [
+  return Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_construct */Block.__(9, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
@@ -3552,7 +3552,7 @@ function mktailexp(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
+    var arg = Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
               /* :: */[
                 exp_el,
@@ -3577,7 +3577,7 @@ function mktailexp(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return Curry._3(Ast_helper_004[/* mk */0], loc$1, undefined, /* Pexp_construct */Block.__(9, [
+    return Curry._3(Ast_helper_Exp.mk, loc$1, undefined, /* Pexp_construct */Block.__(9, [
                   nil,
                   undefined
                 ]));
@@ -3952,11 +3952,11 @@ function wrap_exp_attrs(body, param) {
 }
 
 function text_cstr(pos) {
-  return Curry._1(Ast_helper_021[/* text */9], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_csig(pos) {
-  return Curry._1(Ast_helper_019[/* text */8], get_text(Parsing.rhs_start_pos(pos)));
+  return Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(pos)));
 }
 
 function text_def(pos) {
@@ -3973,11 +3973,11 @@ function extra_text(text, pos, items) {
 }
 
 function extra_cstr(pos, items) {
-  return extra_text(Ast_helper_021[/* text */9], pos, items);
+  return extra_text(Ast_helper_Cf.text, pos, items);
 }
 
 function extra_csig(pos, items) {
-  return extra_text(Ast_helper_019[/* text */8], pos, items);
+  return extra_text(Ast_helper_Ctf.text, pos, items);
 }
 
 function add_nonrec(rf, attrs, pos) {
@@ -6379,7 +6379,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._2(Ast_helper_004[/* attr */1], _1, _2);
+      return Curry._2(Ast_helper_Exp.attr, _1, _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7072,13 +7072,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, undefined, _3);
+      return Curry._3(Ast_helper_Exp.case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, _3, _5);
+      return Curry._3(Ast_helper_Exp.case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);

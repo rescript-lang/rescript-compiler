@@ -1,9 +1,13 @@
 'use strict';
 
 
-var List = /* module */[/* u */3];
+var List = {
+  u: 3
+};
 
-var X = /* module */[/* List */List];
+var X = {
+  List: List
+};
 
 var Hashtbl = 0;
 

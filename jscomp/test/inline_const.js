@@ -1,10 +1,10 @@
 'use strict';
 
 
-var N = /* module */[];
+var N = { };
 
 function N1($star) {
-  return /* module */[];
+  return { };
 }
 
 var x = true;
