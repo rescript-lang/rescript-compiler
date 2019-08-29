@@ -45,7 +45,7 @@ val getExn: 'a array -> int -> 'a
 *)
 
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
-(** [getUnasfe arr i]
+(** [getUnsafe arr i]
 
     {b Unsafe}
 
