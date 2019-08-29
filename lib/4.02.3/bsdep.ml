@@ -446,6 +446,7 @@ val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
 val bs_gentype : string option ref
+val bs_version : string ref
 val no_assert_false : bool ref
 val bs_quiet : bool ref 
 
@@ -587,6 +588,7 @@ let bs_vscode =
 let dont_record_crc_unit : string option ref = ref None
 let bs_only = ref false
 let bs_gentype = ref None
+let bs_version = ref ""
 let no_assert_false = ref false
 let bs_quiet = ref false
 
@@ -20548,6 +20550,7 @@ end = struct
 let setup_env () =
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
+  Clflags.bs_version := Bs_version.version;
   Clflags.no_implicit_current_dir := true; 
   (* default true 
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path

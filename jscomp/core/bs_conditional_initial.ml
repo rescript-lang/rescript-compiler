@@ -26,6 +26,7 @@
 let setup_env () =
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
+  Clflags.bs_version := Bs_version.version;
   Clflags.no_implicit_current_dir := true; 
   (* default true 
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
