@@ -27,6 +27,22 @@ let print_if ppf flag printer arg =
   arg
 
 
+let process_with_gentype filename =    
+  match !Clflags.bs_gentype with
+  | None -> ()
+  | Some cmd -> 
+    let comm = (cmd ^ 
+                " -cmt-add " ^ 
+                filename ^ 
+                ( ":" ^ !Location.input_name)) in 
+    if !Clflags.verbose then begin 
+      prerr_string "+ ";
+      prerr_endline comm;
+      prerr_newline ()
+    end ;                        
+    ignore 
+      (Sys.command comm
+      )
 
 let after_parsing_sig ppf  outputprefix ast  =
   if !Js_config.binary_ast then
@@ -76,6 +92,7 @@ let after_parsing_sig ppf  outputprefix ast  =
 #end        
         Typemod.save_signature modulename tsg outputprefix !Location.input_name
           initial_env sg ;
+        process_with_gentype (outputprefix ^ ".cmti");  
       end
     end
 
@@ -142,7 +159,7 @@ let after_parsing_impl ppf  outputprefix ast =
               outputprefix 
           );
       end;
-        Stypes.dump (Some (outputprefix ^ ".annot"));
+      process_with_gentype (outputprefix ^ ".cmt")        
     end
 let implementation ppf fname outputprefix =
   Compmisc.init_path false;
