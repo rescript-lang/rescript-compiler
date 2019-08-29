@@ -231,10 +231,11 @@ let rec eq_expression
           opts0 = opts1
         | _ -> false
       end
-    | Static_index (e0,p0) -> 
+    | Static_index (e0,p0,off0) -> 
       begin match y0 with 
-        | Static_index(e1,p1) -> 
+        | Static_index(e1,p1,off1) -> 
           p0 = p1 && eq_expression e0 e1
+          && off0 = off1 (* could be relaxed *)
         |  _ -> false 
       end
     | Seq (a0,b0) -> 
@@ -368,5 +369,5 @@ let rec is_okay_to_duplicate (e : J.expression) =
   | Bool _ 
   | Str _ 
   | Number _ -> true
-  | Static_index (e, _s) -> is_okay_to_duplicate e 
+  | Static_index (e, _s,_off) -> is_okay_to_duplicate e 
   | _ -> false 
