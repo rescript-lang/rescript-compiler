@@ -181,7 +181,7 @@ let init_sample_project ~cwd ~theme name =
       else
         begin
           Format.fprintf Format.err_formatter
-            "@{<error>Invalid package name@} %S.@} The project name must be a valid npm name, thus can't contain upper-case letters, for example."
+            "@{<error>Invalid package name@} %S@}: the project name must be both a valid npm package name and a valid name as namespace@."
             name ;
           exit 2
         end
