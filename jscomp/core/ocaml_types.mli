@@ -36,7 +36,7 @@
 type t
 
 val empty : t 
-val length : t -> int 
+
 
 
 
@@ -47,4 +47,4 @@ val find_serializable_signatures_by_path :
 
 val get_name : t -> int -> string
 
-val map : (string -> 'a) -> t -> 'a list 
+
