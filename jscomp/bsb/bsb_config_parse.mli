@@ -31,7 +31,7 @@ val package_specs_from_bsconfig :
 val interpret_json : 
     toplevel_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
-    cwd:string -> 
+    per_proj_dir:string -> 
     Bsb_config_types.t
 
 

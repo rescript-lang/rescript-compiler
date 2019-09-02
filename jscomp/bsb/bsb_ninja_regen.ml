@@ -62,7 +62,7 @@ let regenerate_ninja
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
         ~bsc_dir
-        ~cwd in 
+        ~per_proj_dir:cwd in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
