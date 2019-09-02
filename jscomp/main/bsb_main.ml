@@ -86,10 +86,10 @@ let exec_command_then_exit  command =
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit  vendor_ninja ninja_args  =
+let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
-    let path_ninja = Filename.quote vendor_ninja in 
+    let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
@@ -106,7 +106,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
     Bsb_log.info_args args ;      
-    Unix.execvp vendor_ninja args      
+    Unix.execvp Bsb_global_paths.vendor_ninja args      
 
 
 
@@ -133,8 +133,6 @@ let program_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-
-  let vendor_ninja = Bsb_global_paths.vendor_ninja in  
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
@@ -142,7 +140,7 @@ let () =
         ~toplevel_package_specs:None 
         ~forced:false 
         ~cwd:Bsb_global_paths.cwd  |> ignore;
-      ninja_command_exit  vendor_ninja [||] 
+      ninja_command_exit  [||] 
 
     | argv -> 
       begin
@@ -182,7 +180,7 @@ let () =
                       [bsb -regen ]
                    *)
                  end else if make_world then begin
-                   ninja_command_exit  vendor_ninja [||] 
+                   ninja_command_exit  [||] 
                  end)
           end
         | `Split (bsb_args,ninja_args)
@@ -198,7 +196,7 @@ let () =
             if !make_world then
               Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
             if !watch_mode then program_exit ()
-            else ninja_command_exit  vendor_ninja ninja_args 
+            else ninja_command_exit  ninja_args 
           end
       end
   end
