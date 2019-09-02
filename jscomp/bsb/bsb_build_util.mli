@@ -67,18 +67,6 @@ val mkp : string -> unit
 
 
 
-(**
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
-
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
-*)
-val get_bsc_dir : cwd:string -> string                               
 
 
 val get_list_string_acc : 

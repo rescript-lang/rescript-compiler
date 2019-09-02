@@ -63,8 +63,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
 
 let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
 
-  let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
@@ -76,7 +75,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              ~cwd ~bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~cwd  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = cwd // Bsb_config.lib_bs;

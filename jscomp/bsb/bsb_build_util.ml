@@ -116,21 +116,6 @@ let resolve_bsb_magic_file ~cwd ~desc p : result  =
 
 (** converting a file from Linux path format to Windows *)
 
-(**
-   If [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done.
-   
-   If [Sys.executable_name] is not an absolute path, for example
-   (rlwrap ./ocaml)
-   it is a relative path, 
-   it needs be adapted based on cwd
-*)
-
-let get_bsc_dir ~cwd = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
-
 
 
 (** 

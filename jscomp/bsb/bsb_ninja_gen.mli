@@ -27,6 +27,5 @@
 *)
 val output_ninja_and_namespace_map :
   cwd:string ->  
-  bsc_dir:string ->  
   toplevel:bool -> 
   Bsb_config_types.t -> unit 

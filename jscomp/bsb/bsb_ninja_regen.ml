@@ -34,7 +34,7 @@ let (//) = Ext_path.combine
 *)
 let regenerate_ninja 
     ~(toplevel_package_specs : Bsb_package_specs.t option)
-    ~forced ~cwd ~bsc_dir
+    ~forced ~cwd 
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
   let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
@@ -55,13 +55,12 @@ let regenerate_ninja
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self bsc_dir cwd; 
+      Bsb_clean.clean_self  cwd; 
     end ; 
     
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
-        ~bsc_dir
         ~per_proj_dir:cwd in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
@@ -75,9 +74,9 @@ let regenerate_ninja
         config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
-      (bsc_dir // bsppx_exe) config;       
+      (Bsb_global_paths.bsc_dir // bsppx_exe) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~toplevel config ;             
+      ~cwd  ~toplevel config ;             
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  

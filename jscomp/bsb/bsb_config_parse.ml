@@ -375,7 +375,6 @@ let extract_js_post_build (map : json_map) cwd : string option =
     With a given [cwd] it works anywhere*)
 let interpret_json 
     ~toplevel_package_specs
-    ~bsc_dir 
     ~per_proj_dir:(cwd:string)
 
   : Bsb_config_types.t =
