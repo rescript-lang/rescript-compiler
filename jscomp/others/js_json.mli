@@ -229,7 +229,7 @@ external stringifyAny : 'a -> string option = "stringify"
 
 @example {[
 (* prints `["foo", "bar"]` *)
-Js.log \@\@ Js.Json.stringify [| "foo"; "bar" |]
+Js.log \@\@ Js.Json.stringifyAny [| "foo"; "bar" |]
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
