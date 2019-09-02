@@ -31,8 +31,6 @@ let (//) = Ext_path.combine
 
 
 
-let bsc_exe = "bsc.exe"
-let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
@@ -96,8 +94,7 @@ let output_static_resources
 
 
 let output_ninja_and_namespace_map
-    ~cwd 
-    ~bsc_dir
+    ~per_proj_dir 
     ~toplevel           
     ({
       bs_suffix;
@@ -124,7 +121,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
+  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -157,11 +154,11 @@ let output_ninja_and_namespace_map
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
+        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
@@ -247,7 +244,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        cwd // Bsb_config.lib_bs  in
+        per_proj_dir // Bsb_config.lib_bs  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 

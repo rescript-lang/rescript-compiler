@@ -24,8 +24,6 @@
 
 let bsdeps = ".bsdeps"
 
-let bsppx_exe = "bsppx.exe"
-
 let (//) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
@@ -34,14 +32,14 @@ let (//) = Ext_path.combine
 *)
 let regenerate_ninja 
     ~(toplevel_package_specs : Bsb_package_specs.t option)
-    ~forced ~cwd ~bsc_dir
+    ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
-      ~cwd  
+      ~per_proj_dir:per_proj_dir  
       ~forced ~file:output_deps in
   Bsb_log.info
     "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
@@ -55,33 +53,32 @@ let regenerate_ninja
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self bsc_dir cwd; 
+      Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
-        ~bsc_dir
-        ~cwd in 
+        ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> 
-        let dir = cwd // x in (*Unix.EEXIST error*)
+        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-    Bsb_merlin_gen.merlin_file_gen ~cwd
-      (bsc_dir // bsppx_exe) config;       
+    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+      (Bsb_global_paths.vendor_bsppx) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~toplevel config ;             
+      ~per_proj_dir  ~toplevel config ;             
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~cwd ~file:output_deps 
+    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 

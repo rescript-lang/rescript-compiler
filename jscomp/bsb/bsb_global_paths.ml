@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,18 +22,48 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
+let cwd = Sys.getcwd ()
 
 
+(**
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
+
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+
+let bsc_dir  = 
+  Filename.dirname 
+    (Ext_path.normalize_absolute_path 
+       (Ext_path.combine cwd  Sys.executable_name))
+
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
 
 
-val interpret_json : 
-    toplevel_package_specs:Bsb_package_specs.t option -> 
-    per_proj_dir:string -> 
-    Bsb_config_types.t
+let vendor_ninja = 
+    Filename.concat bsc_dir "ninja.exe"      
+
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
 
 
-
+let vendor_bsppx = 
+  Filename.concat bsc_dir "bsppx.exe"
+  
+;; assert (Sys.file_exists bsc_dir)       
 
 

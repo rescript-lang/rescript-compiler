@@ -9573,21 +9573,9 @@ val mkp : string -> unit
    path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
    [bsdep.exe] [bsc.exe] etc.
 *)
-val get_bsc_bsdep : string -> string * string
 
 
-(**
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
 
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
-*)
-val get_bsc_dir : cwd:string -> string                               
 
 
 val get_list_string_acc : 
@@ -9612,7 +9600,7 @@ val resolve_bsb_magic_file :
   result
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -9738,26 +9726,7 @@ let resolve_bsb_magic_file ~cwd ~desc p : result  =
 
 (** converting a file from Linux path format to Windows *)
 
-(**
-   If [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done.
-   
-   If [Sys.executable_name] is not an absolute path, for example
-   (rlwrap ./ocaml)
-   it is a relative path, 
-   it needs be adapted based on cwd
-*)
 
-let get_bsc_dir ~cwd = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
-
-
-let get_bsc_bsdep cwd = 
-  let dir = get_bsc_dir ~cwd in    
-  Filename.concat dir  "bsc.exe", 
-  Filename.concat dir  "bsb_helper.exe"
 
 (** 
    {[
@@ -9795,7 +9764,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -9861,7 +9830,7 @@ let rec walk_all_deps_aux
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
-        cb {top ; cwd = dir};
+        cb {top ; proj_dir = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()
@@ -9872,6 +9841,117 @@ let rec walk_all_deps_aux
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
   walk_all_deps_aux visited [] true dir cb 
+
+end
+module Bsb_global_paths : sig 
+#1 "bsb_global_paths.mli"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val cwd : string 
+
+val bsc_dir : string 
+
+val vendor_bsc : string
+
+val vendor_ninja : string
+
+val vendor_bsdep : string
+
+val vendor_bsppx : string
+end = struct
+#1 "bsb_global_paths.ml"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let cwd = Sys.getcwd ()
+
+
+(**
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
+
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+
+let bsc_dir  = 
+  Filename.dirname 
+    (Ext_path.normalize_absolute_path 
+       (Ext_path.combine cwd  Sys.executable_name))
+
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
+
+
+let vendor_ninja = 
+    Filename.concat bsc_dir "ninja.exe"      
+
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
+
+
+let vendor_bsppx = 
+  Filename.concat bsc_dir "bsppx.exe"
+  
+;; assert (Sys.file_exists bsc_dir)       
+
+
 
 end
 module Bsb_db_util : sig 
@@ -10877,9 +10957,13 @@ module Bsb_clean : sig
   TODO: clean staled in source js artifacts
 *)
 
-val clean_bs_deps : string -> string -> unit
+val clean_bs_deps : 
+  string -> 
+  unit
 
-val clean_self : string -> string -> unit
+val clean_self : 
+  string -> 
+  unit
 
 end = struct
 #1 "bsb_clean.ml"
@@ -10911,9 +10995,9 @@ end = struct
 let (//) = Ext_path.combine
 
 
-let ninja_clean bsc_dir proj_dir =
+let ninja_clean  proj_dir =
   try
-    let cmd = bsc_dir // "ninja.exe" in
+    let cmd = Bsb_global_paths.vendor_ninja in
     let cwd = proj_dir // Bsb_config.lib_bs in
     if Sys.file_exists cwd then
       let eid =
@@ -10923,7 +11007,7 @@ let ninja_clean bsc_dir proj_dir =
   with  e ->
     Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
 
-let clean_bs_garbage bsc_dir proj_dir =
+let clean_bs_garbage proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
   let try_remove x =
     let x = proj_dir // x in
@@ -10931,20 +11015,21 @@ let clean_bs_garbage bsc_dir proj_dir =
       Bsb_unix.remove_dir_recursive x  in
   try
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
-    ninja_clean bsc_dir proj_dir ;
+    ninja_clean  proj_dir ;
     Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
-let clean_bs_deps bsc_dir proj_dir =
+let clean_bs_deps  proj_dir =
   Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage bsc_dir pkg_cxt.cwd
+      clean_bs_garbage  pkg_cxt.proj_dir
     )
 
-let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
+let clean_self  proj_dir = 
+    clean_bs_garbage  proj_dir
 
 end
 module Bsb_config_parse : sig 
@@ -10981,8 +11066,7 @@ val package_specs_from_bsconfig :
 
 val interpret_json : 
     toplevel_package_specs:Bsb_package_specs.t option -> 
-    bsc_dir:string -> 
-    cwd:string -> 
+    per_proj_dir:string -> 
     Bsb_config_types.t
 
 
@@ -11335,8 +11419,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
     With a given [cwd] it works anywhere*)
 let interpret_json 
     ~toplevel_package_specs
-    ~bsc_dir 
-    ~cwd  
+    ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
 
@@ -11357,15 +11440,15 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match  Ext_json_parse.parse_json_from_file (cwd // Literals.bsconfig_json) with
+  match  Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json) with
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map cwd in 
-    let gentype_config  = extract_gentype_config map cwd in  
+    let refmt = extract_refmt map per_proj_dir in 
+    let gentype_config  = extract_gentype_config map per_proj_dir in  
     let bs_suffix = extract_bs_suffix_exn map in   
     (* The default situation is empty *)
-    let built_in_package = check_stdlib map cwd in
+    let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
       match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
@@ -11377,14 +11460,14 @@ let interpret_json
         if p = "" then 
           Bsb_exception.invalid_spec "invalid pp, empty string found"
         else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
+          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in 
     let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
-        extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
+        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
@@ -11393,7 +11476,7 @@ let interpret_json
         let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
-            ~root: cwd
+            ~root: per_proj_dir
             ~cut_generators
             ~bs_suffix
             ~namespace
@@ -11406,7 +11489,7 @@ let interpret_json
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
+          ppx_files = extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
@@ -11420,7 +11503,7 @@ let interpret_json
              ]}
           *)          
           refmt;
-          js_post_build_cmd = (extract_js_post_build map cwd);
+          js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match toplevel_package_specs with 
              | None ->  package_specs
@@ -11566,7 +11649,7 @@ module Bsb_merlin_gen : sig
 
 
 val merlin_file_gen : 
-    cwd:string -> string  -> Bsb_config_types.t ->  unit 
+    per_proj_dir:string -> string  -> Bsb_config_types.t ->  unit 
 end = struct
 #1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11668,7 +11751,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
   merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
-let merlin_file_gen ~cwd
+let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
     built_in_ppx
     ({file_groups = res_files ; 
       generate_merlin;
@@ -11756,7 +11839,7 @@ let merlin_file_gen ~cwd
           end
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin (cwd // merlin) buffer 
+    revise_merlin (per_proj_dir // merlin) buffer 
   end
 
 
@@ -11825,7 +11908,7 @@ val pp_check_result :
     [build.ninja] should be regenerated
 *)
 val record : 
-  cwd:string -> 
+  per_proj_dir:string -> 
   file:string -> 
   string list -> 
   unit
@@ -11833,7 +11916,7 @@ val record :
 
 (** check if [build.ninja] should be regenerated *)
 val check :
-  cwd:string ->  
+  per_proj_dir:string ->  
   forced:bool -> 
   file:string -> 
   check_result
@@ -11929,18 +12012,18 @@ let read (fname : string) (cont : t -> check_result) =
       cont res
   | exception _ -> Bsb_file_not_exist
 
-let record ~cwd ~file  (file_or_dirs : string list) : unit =
+let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
   let dir_or_files = Array.of_list file_or_dirs in 
   let st_mtimes = 
     Ext_array.map dir_or_files
       (fun  x ->      
-           (Unix.stat (Filename.concat cwd  x )).st_mtime
+           (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
   write file
     { st_mtimes ;
       dir_or_files;
-      source_directory = cwd ;
+      source_directory = per_proj_dir ;
     }
 
 (** check time stamp for all files
@@ -11949,15 +12032,15 @@ let record ~cwd ~file  (file_or_dirs : string list) : unit =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd ~forced ~file : check_result =
+let check ~(per_proj_dir:string) ~forced ~file : check_result =
   read file  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
-      if cwd <> source_directory then Bsb_source_directory_changed else
+      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
-          check_aux cwd dir_or_files st_mtimes  0 (Array.length dir_or_files)
+          check_aux per_proj_dir dir_or_files st_mtimes  0 (Array.length dir_or_files)
         with e ->
           begin
             Bsb_log.info
@@ -13192,11 +13275,10 @@ module Bsb_ninja_gen : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** 
-  generate ninja file based on [cwd] and [bsc_dir]
+  generate ninja file based on [cwd] 
 *)
 val output_ninja_and_namespace_map :
-  cwd:string ->  
-  bsc_dir:string ->  
+  per_proj_dir:string ->  
   toplevel:bool -> 
   Bsb_config_types.t -> unit 
 
@@ -13235,8 +13317,6 @@ let (//) = Ext_path.combine
 
 
 
-let bsc_exe = "bsc.exe"
-let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
@@ -13300,8 +13380,7 @@ let output_static_resources
 
 
 let output_ninja_and_namespace_map
-    ~cwd 
-    ~bsc_dir
+    ~per_proj_dir 
     ~toplevel           
     ({
       bs_suffix;
@@ -13328,7 +13407,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
+  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -13361,11 +13440,11 @@ let output_ninja_and_namespace_map
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
+        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (bsc_dir // bsc_exe));
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (bsc_dir // bsb_helper_exe)) ;
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
@@ -13451,7 +13530,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        cwd // Bsb_config.lib_bs  in
+        per_proj_dir // Bsb_config.lib_bs  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
@@ -13806,8 +13885,7 @@ module Bsb_ninja_regen : sig
 val regenerate_ninja :
   toplevel_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
-  cwd:string -> 
-  bsc_dir:string -> 
+  per_proj_dir:string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -13837,8 +13915,6 @@ end = struct
 
 let bsdeps = ".bsdeps"
 
-let bsppx_exe = "bsppx.exe"
-
 let (//) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
@@ -13847,14 +13923,14 @@ let (//) = Ext_path.combine
 *)
 let regenerate_ninja 
     ~(toplevel_package_specs : Bsb_package_specs.t option)
-    ~forced ~cwd ~bsc_dir
+    ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
-      ~cwd  
+      ~per_proj_dir:per_proj_dir  
       ~forced ~file:output_deps in
   Bsb_log.info
     "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
@@ -13868,33 +13944,32 @@ let regenerate_ninja
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self bsc_dir cwd; 
+      Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
-        ~bsc_dir
-        ~cwd in 
+        ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> 
-        let dir = cwd // x in (*Unix.EEXIST error*)
+        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-    Bsb_merlin_gen.merlin_file_gen ~cwd
-      (bsc_dir // bsppx_exe) config;       
+    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+      (Bsb_global_paths.vendor_bsppx) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd ~bsc_dir ~toplevel config ;             
+      ~per_proj_dir  ~toplevel config ;             
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~cwd ~file:output_deps 
+    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
@@ -16744,23 +16819,22 @@ let install_targets cwd (config : Bsb_config_types.t option) =
 
 let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
 
-  let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
-  Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
+  Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
           let config_opt = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              ~cwd ~bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = cwd // Bsb_config.lib_bs;
+             cwd = proj_dir // Bsb_config.lib_bs;
              args 
             } in     
           let eid =
@@ -16773,7 +16847,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          install_targets cwd config_opt;
+          install_targets proj_dir config_opt;
         end
     )
 
@@ -16823,8 +16897,6 @@ end = struct
 
 
 
-let cwd = Sys.getcwd ()
-let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd 
 let () =  Bsb_log.setup () 
 let (//) = Ext_path.combine
 let force_regenerate = ref false
@@ -16856,10 +16928,10 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     "-clean-world", Arg.Unit (fun _ -> 
-        Bsb_clean.clean_bs_deps bsc_dir cwd),
+        Bsb_clean.clean_bs_deps  Bsb_global_paths.cwd),
     " Clean all bs dependencies";
     "-clean", Arg.Unit (fun _ -> 
-        Bsb_clean.clean_self bsc_dir cwd),
+        Bsb_clean.clean_self  Bsb_global_paths.cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
@@ -16887,10 +16959,10 @@ let exec_command_then_exit  command =
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit  vendor_ninja ninja_args  =
+let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
-    let path_ninja = Filename.quote vendor_ninja in 
+    let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
@@ -16907,7 +16979,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
     Bsb_log.info_args args ;      
-    Unix.execvp vendor_ninja args      
+    Unix.execvp Bsb_global_paths.vendor_ninja args      
 
 
 
@@ -16934,16 +17006,14 @@ let program_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-
-  let vendor_ninja = bsc_dir // "ninja.exe" in  
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
-        ~cwd ~bsc_dir |> ignore;
-      ninja_command_exit  vendor_ninja [||] 
+        ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
+      ninja_command_exit  [||] 
 
     | argv -> 
       begin
@@ -16954,7 +17024,7 @@ let () =
             Arg.parse bsb_main_flags handle_anonymous_arg usage;
             (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
             match !generate_theme_with_path with
-            | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
+            | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme path
             | None -> 
               (* [-make-world] should never be combined with [-package-specs] *)
               let make_world = !make_world in 
@@ -16971,9 +17041,9 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~toplevel_package_specs:None 
-                     ~forced:force_regenerate ~cwd ~bsc_dir  in
+                     ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
-                   Bsb_world.make_world_deps cwd config_opt [||]
+                   Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
                  end;
                  if !watch_mode then begin
                    program_exit ()
@@ -16983,7 +17053,7 @@ let () =
                       [bsb -regen ]
                    *)
                  end else if make_world then begin
-                   ninja_command_exit  vendor_ninja [||] 
+                   ninja_command_exit  [||] 
                  end)
           end
         | `Split (bsb_args,ninja_args)
@@ -16993,13 +17063,13 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
-                ~cwd ~bsc_dir 
+                ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps cwd config_opt ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
             if !watch_mode then program_exit ()
-            else ninja_command_exit  vendor_ninja ninja_args 
+            else ninja_command_exit  ninja_args 
           end
       end
   end

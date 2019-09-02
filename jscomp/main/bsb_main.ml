@@ -24,8 +24,6 @@
 
 
 
-let cwd = Sys.getcwd ()
-let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd 
 let () =  Bsb_log.setup () 
 let (//) = Ext_path.combine
 let force_regenerate = ref false
@@ -57,10 +55,10 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     "-clean-world", Arg.Unit (fun _ -> 
-        Bsb_clean.clean_bs_deps bsc_dir cwd),
+        Bsb_clean.clean_bs_deps  Bsb_global_paths.cwd),
     " Clean all bs dependencies";
     "-clean", Arg.Unit (fun _ -> 
-        Bsb_clean.clean_self bsc_dir cwd),
+        Bsb_clean.clean_self  Bsb_global_paths.cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
@@ -88,10 +86,10 @@ let exec_command_then_exit  command =
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit  vendor_ninja ninja_args  =
+let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
-    let path_ninja = Filename.quote vendor_ninja in 
+    let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
@@ -108,7 +106,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
     Bsb_log.info_args args ;      
-    Unix.execvp vendor_ninja args      
+    Unix.execvp Bsb_global_paths.vendor_ninja args      
 
 
 
@@ -135,16 +133,14 @@ let program_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-
-  let vendor_ninja = bsc_dir // "ninja.exe" in  
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
-        ~cwd ~bsc_dir |> ignore;
-      ninja_command_exit  vendor_ninja [||] 
+        ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
+      ninja_command_exit  [||] 
 
     | argv -> 
       begin
@@ -155,7 +151,7 @@ let () =
             Arg.parse bsb_main_flags handle_anonymous_arg usage;
             (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
             match !generate_theme_with_path with
-            | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
+            | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme path
             | None -> 
               (* [-make-world] should never be combined with [-package-specs] *)
               let make_world = !make_world in 
@@ -172,9 +168,9 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~toplevel_package_specs:None 
-                     ~forced:force_regenerate ~cwd ~bsc_dir  in
+                     ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
-                   Bsb_world.make_world_deps cwd config_opt [||]
+                   Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
                  end;
                  if !watch_mode then begin
                    program_exit ()
@@ -184,7 +180,7 @@ let () =
                       [bsb -regen ]
                    *)
                  end else if make_world then begin
-                   ninja_command_exit  vendor_ninja [||] 
+                   ninja_command_exit  [||] 
                  end)
           end
         | `Split (bsb_args,ninja_args)
@@ -194,13 +190,13 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
-                ~cwd ~bsc_dir 
+                ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps cwd config_opt ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
             if !watch_mode then program_exit ()
-            else ninja_command_exit  vendor_ninja ninja_args 
+            else ninja_command_exit  ninja_args 
           end
       end
   end

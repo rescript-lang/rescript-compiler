@@ -116,26 +116,7 @@ let resolve_bsb_magic_file ~cwd ~desc p : result  =
 
 (** converting a file from Linux path format to Windows *)
 
-(**
-   If [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done.
-   
-   If [Sys.executable_name] is not an absolute path, for example
-   (rlwrap ./ocaml)
-   it is a relative path, 
-   it needs be adapted based on cwd
-*)
 
-let get_bsc_dir ~cwd = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
-
-
-let get_bsc_bsdep cwd = 
-  let dir = get_bsc_dir ~cwd in    
-  Filename.concat dir  "bsc.exe", 
-  Filename.concat dir  "bsb_helper.exe"
 
 (** 
    {[
@@ -173,7 +154,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -239,7 +220,7 @@ let rec walk_all_deps_aux
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
-        cb {top ; cwd = dir};
+        cb {top ; proj_dir = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()

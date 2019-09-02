@@ -375,8 +375,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
     With a given [cwd] it works anywhere*)
 let interpret_json 
     ~toplevel_package_specs
-    ~bsc_dir 
-    ~cwd  
+    ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
 
@@ -397,15 +396,15 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match  Ext_json_parse.parse_json_from_file (cwd // Literals.bsconfig_json) with
+  match  Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json) with
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map cwd in 
-    let gentype_config  = extract_gentype_config map cwd in  
+    let refmt = extract_refmt map per_proj_dir in 
+    let gentype_config  = extract_gentype_config map per_proj_dir in  
     let bs_suffix = extract_bs_suffix_exn map in   
     (* The default situation is empty *)
-    let built_in_package = check_stdlib map cwd in
+    let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
       match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
@@ -417,14 +416,14 @@ let interpret_json
         if p = "" then 
           Bsb_exception.invalid_spec "invalid pp, empty string found"
         else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
+          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in 
     let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
-        extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
+        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
@@ -433,7 +432,7 @@ let interpret_json
         let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
-            ~root: cwd
+            ~root: per_proj_dir
             ~cut_generators
             ~bs_suffix
             ~namespace
@@ -446,7 +445,7 @@ let interpret_json
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
+          ppx_files = extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
@@ -460,7 +459,7 @@ let interpret_json
              ]}
           *)          
           refmt;
-          js_post_build_cmd = (extract_js_post_build map cwd);
+          js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match toplevel_package_specs with 
              | None ->  package_specs

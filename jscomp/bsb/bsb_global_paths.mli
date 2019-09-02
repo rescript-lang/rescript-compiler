@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,18 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
 
+val cwd : string 
 
+val bsc_dir : string 
 
+val vendor_bsc : string
 
-val interpret_json : 
-    toplevel_package_specs:Bsb_package_specs.t option -> 
-    per_proj_dir:string -> 
-    Bsb_config_types.t
+val vendor_ninja : string
 
+val vendor_bsdep : string
 
-
-
-
+val vendor_bsppx : string

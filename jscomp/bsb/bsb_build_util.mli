@@ -64,21 +64,9 @@ val mkp : string -> unit
    path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
    [bsdep.exe] [bsc.exe] etc.
 *)
-val get_bsc_bsdep : string -> string * string
 
 
-(**
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
 
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
-*)
-val get_bsc_dir : cwd:string -> string                               
 
 
 val get_list_string_acc : 
@@ -103,7 +91,7 @@ val resolve_bsb_magic_file :
   result
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
