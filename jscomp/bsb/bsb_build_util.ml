@@ -132,10 +132,6 @@ let get_bsc_dir ~cwd =
        (Ext_path.combine cwd  Sys.executable_name))
 
 
-let get_bsc_bsdep cwd = 
-  let dir = get_bsc_dir ~cwd in    
-  Filename.concat dir  "bsc.exe", 
-  Filename.concat dir  "bsb_helper.exe"
 
 (** 
    {[

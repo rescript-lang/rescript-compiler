@@ -64,7 +64,7 @@ val mkp : string -> unit
    path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
    [bsdep.exe] [bsc.exe] etc.
 *)
-val get_bsc_bsdep : string -> string * string
+
 
 
 (**
