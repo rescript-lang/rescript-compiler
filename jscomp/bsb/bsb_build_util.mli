@@ -91,7 +91,7 @@ val resolve_bsb_magic_file :
   result
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 

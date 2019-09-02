@@ -87,18 +87,18 @@ let read (fname : string) (cont : t -> check_result) =
       cont res
   | exception _ -> Bsb_file_not_exist
 
-let record ~cwd ~file  (file_or_dirs : string list) : unit =
+let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
   let dir_or_files = Array.of_list file_or_dirs in 
   let st_mtimes = 
     Ext_array.map dir_or_files
       (fun  x ->      
-           (Unix.stat (Filename.concat cwd  x )).st_mtime
+           (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
   write file
     { st_mtimes ;
       dir_or_files;
-      source_directory = cwd ;
+      source_directory = per_proj_dir ;
     }
 
 (** check time stamp for all files
@@ -107,15 +107,15 @@ let record ~cwd ~file  (file_or_dirs : string list) : unit =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd ~forced ~file : check_result =
+let check ~(per_proj_dir:string) ~forced ~file : check_result =
   read file  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
-      if cwd <> source_directory then Bsb_source_directory_changed else
+      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
-          check_aux cwd dir_or_files st_mtimes  0 (Array.length dir_or_files)
+          check_aux per_proj_dir dir_or_files st_mtimes  0 (Array.length dir_or_files)
         with e ->
           begin
             Bsb_log.info

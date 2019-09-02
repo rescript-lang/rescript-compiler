@@ -154,7 +154,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -220,7 +220,7 @@ let rec walk_all_deps_aux
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
-        cb {top ; cwd = dir};
+        cb {top ; proj_dir = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()

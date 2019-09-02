@@ -56,7 +56,7 @@ let clean_bs_garbage proj_dir =
 let clean_bs_deps  proj_dir =
   Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.cwd
+      clean_bs_garbage  pkg_cxt.proj_dir
     )
 
 let clean_self  proj_dir = 

@@ -97,7 +97,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
   merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
-let merlin_file_gen ~cwd
+let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
     built_in_ppx
     ({file_groups = res_files ; 
       generate_merlin;
@@ -185,7 +185,7 @@ let merlin_file_gen ~cwd
           end
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin (cwd // merlin) buffer 
+    revise_merlin (per_proj_dir // merlin) buffer 
   end
 
 

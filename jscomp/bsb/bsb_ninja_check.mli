@@ -59,7 +59,7 @@ val pp_check_result :
     [build.ninja] should be regenerated
 *)
 val record : 
-  cwd:string -> 
+  per_proj_dir:string -> 
   file:string -> 
   string list -> 
   unit
@@ -67,7 +67,7 @@ val record :
 
 (** check if [build.ninja] should be regenerated *)
 val check :
-  cwd:string ->  
+  per_proj_dir:string ->  
   forced:bool -> 
   file:string -> 
   check_result

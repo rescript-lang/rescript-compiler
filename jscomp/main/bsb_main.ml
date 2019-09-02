@@ -139,7 +139,7 @@ let () =
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
-        ~cwd:Bsb_global_paths.cwd  |> ignore;
+        ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
 
     | argv -> 
@@ -168,7 +168,7 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~toplevel_package_specs:None 
-                     ~forced:force_regenerate ~cwd:Bsb_global_paths.cwd   in
+                     ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
                    Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
                  end;
@@ -190,7 +190,7 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
-                ~cwd:Bsb_global_paths.cwd 
+                ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then

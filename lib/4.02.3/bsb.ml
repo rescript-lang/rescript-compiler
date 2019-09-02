@@ -9600,7 +9600,7 @@ val resolve_bsb_magic_file :
   result
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -9764,7 +9764,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 type package_context = {
-  cwd : string ; 
+  proj_dir : string ; 
   top : bool ; 
 }
 
@@ -9830,7 +9830,7 @@ let rec walk_all_deps_aux
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
-        cb {top ; cwd = dir};
+        cb {top ; proj_dir = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()
@@ -11025,7 +11025,7 @@ let clean_bs_garbage proj_dir =
 let clean_bs_deps  proj_dir =
   Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.cwd
+      clean_bs_garbage  pkg_cxt.proj_dir
     )
 
 let clean_self  proj_dir = 
@@ -11419,7 +11419,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
     With a given [cwd] it works anywhere*)
 let interpret_json 
     ~toplevel_package_specs
-    ~per_proj_dir:(cwd:string)
+    ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
 
@@ -11440,15 +11440,15 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match  Ext_json_parse.parse_json_from_file (cwd // Literals.bsconfig_json) with
+  match  Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json) with
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map cwd in 
-    let gentype_config  = extract_gentype_config map cwd in  
+    let refmt = extract_refmt map per_proj_dir in 
+    let gentype_config  = extract_gentype_config map per_proj_dir in  
     let bs_suffix = extract_bs_suffix_exn map in   
     (* The default situation is empty *)
-    let built_in_package = check_stdlib map cwd in
+    let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
       match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
@@ -11460,14 +11460,14 @@ let interpret_json
         if p = "" then 
           Bsb_exception.invalid_spec "invalid pp, empty string found"
         else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p).path
+          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map cwd Bsb_build_schemas.bs_dependencies in 
+    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in 
     let toplevel = toplevel_package_specs = None in 
     let bs_dev_dependencies = 
       if toplevel then 
-        extract_dependencies map cwd Bsb_build_schemas.bs_dev_dependencies
+        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       else [] in 
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
@@ -11476,7 +11476,7 @@ let interpret_json
         let groups, number_of_dev_groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
-            ~root: cwd
+            ~root: per_proj_dir
             ~cut_generators
             ~bs_suffix
             ~namespace
@@ -11489,7 +11489,7 @@ let interpret_json
           warning = extract_warning map;
           external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
           bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = extract_ppx map ~cwd Bsb_build_schemas.ppx_flags;
+          ppx_files = extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
           pp_file = pp_flags ;          
           bs_dependencies ;
           bs_dev_dependencies ;
@@ -11503,7 +11503,7 @@ let interpret_json
              ]}
           *)          
           refmt;
-          js_post_build_cmd = (extract_js_post_build map cwd);
+          js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match toplevel_package_specs with 
              | None ->  package_specs
@@ -11649,7 +11649,7 @@ module Bsb_merlin_gen : sig
 
 
 val merlin_file_gen : 
-    cwd:string -> string  -> Bsb_config_types.t ->  unit 
+    per_proj_dir:string -> string  -> Bsb_config_types.t ->  unit 
 end = struct
 #1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11751,7 +11751,7 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
   merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
-let merlin_file_gen ~cwd
+let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
     built_in_ppx
     ({file_groups = res_files ; 
       generate_merlin;
@@ -11839,7 +11839,7 @@ let merlin_file_gen ~cwd
           end
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin (cwd // merlin) buffer 
+    revise_merlin (per_proj_dir // merlin) buffer 
   end
 
 
@@ -11908,7 +11908,7 @@ val pp_check_result :
     [build.ninja] should be regenerated
 *)
 val record : 
-  cwd:string -> 
+  per_proj_dir:string -> 
   file:string -> 
   string list -> 
   unit
@@ -11916,7 +11916,7 @@ val record :
 
 (** check if [build.ninja] should be regenerated *)
 val check :
-  cwd:string ->  
+  per_proj_dir:string ->  
   forced:bool -> 
   file:string -> 
   check_result
@@ -12012,18 +12012,18 @@ let read (fname : string) (cont : t -> check_result) =
       cont res
   | exception _ -> Bsb_file_not_exist
 
-let record ~cwd ~file  (file_or_dirs : string list) : unit =
+let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
   let dir_or_files = Array.of_list file_or_dirs in 
   let st_mtimes = 
     Ext_array.map dir_or_files
       (fun  x ->      
-           (Unix.stat (Filename.concat cwd  x )).st_mtime
+           (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
   write file
     { st_mtimes ;
       dir_or_files;
-      source_directory = cwd ;
+      source_directory = per_proj_dir ;
     }
 
 (** check time stamp for all files
@@ -12032,15 +12032,15 @@ let record ~cwd ~file  (file_or_dirs : string list) : unit =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd ~forced ~file : check_result =
+let check ~(per_proj_dir:string) ~forced ~file : check_result =
   read file  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
-      if cwd <> source_directory then Bsb_source_directory_changed else
+      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
-          check_aux cwd dir_or_files st_mtimes  0 (Array.length dir_or_files)
+          check_aux per_proj_dir dir_or_files st_mtimes  0 (Array.length dir_or_files)
         with e ->
           begin
             Bsb_log.info
@@ -13278,7 +13278,7 @@ module Bsb_ninja_gen : sig
   generate ninja file based on [cwd] 
 *)
 val output_ninja_and_namespace_map :
-  cwd:string ->  
+  per_proj_dir:string ->  
   toplevel:bool -> 
   Bsb_config_types.t -> unit 
 
@@ -13380,7 +13380,7 @@ let output_static_resources
 
 
 let output_ninja_and_namespace_map
-    ~cwd 
+    ~per_proj_dir 
     ~toplevel           
     ({
       bs_suffix;
@@ -13407,7 +13407,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   
-  let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
+  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -13440,7 +13440,7 @@ let output_ninja_and_namespace_map
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
+        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
@@ -13530,7 +13530,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        cwd // Bsb_config.lib_bs  in
+        per_proj_dir // Bsb_config.lib_bs  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
@@ -13885,7 +13885,7 @@ module Bsb_ninja_regen : sig
 val regenerate_ninja :
   toplevel_package_specs:Bsb_package_specs.t option ->
   forced: bool -> 
-  cwd:string -> 
+  per_proj_dir:string -> 
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
@@ -13923,14 +13923,14 @@ let (//) = Ext_path.combine
 *)
 let regenerate_ninja 
     ~(toplevel_package_specs : Bsb_package_specs.t option)
-    ~forced ~cwd 
+    ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  cwd // Bsb_config.lib_bs  in 
+  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
-      ~cwd  
+      ~per_proj_dir:per_proj_dir  
       ~forced ~file:output_deps in
   Bsb_log.info
     "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
@@ -13944,32 +13944,32 @@ let regenerate_ninja
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self  cwd; 
+      Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
-        ~per_proj_dir:cwd in 
+        ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> 
-        let dir = cwd // x in (*Unix.EEXIST error*)
+        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     if toplevel then       
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-    Bsb_merlin_gen.merlin_file_gen ~cwd
+    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
       (Bsb_global_paths.vendor_bsppx) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~cwd  ~toplevel config ;             
+      ~per_proj_dir  ~toplevel config ;             
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~cwd ~file:output_deps 
+    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
@@ -16824,17 +16824,17 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
-  Bsb_build_util.walk_all_deps  cwd (fun {top; cwd} ->
+  Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
           let config_opt = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              ~cwd  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = cwd // Bsb_config.lib_bs;
+             cwd = proj_dir // Bsb_config.lib_bs;
              args 
             } in     
           let eid =
@@ -16847,7 +16847,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          install_targets cwd config_opt;
+          install_targets proj_dir config_opt;
         end
     )
 
@@ -17012,7 +17012,7 @@ let () =
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
-        ~cwd:Bsb_global_paths.cwd  |> ignore;
+        ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
 
     | argv -> 
@@ -17041,7 +17041,7 @@ let () =
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~toplevel_package_specs:None 
-                     ~forced:force_regenerate ~cwd:Bsb_global_paths.cwd   in
+                     ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
                    Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
                  end;
@@ -17063,7 +17063,7 @@ let () =
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
-                ~cwd:Bsb_global_paths.cwd 
+                ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
