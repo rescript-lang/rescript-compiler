@@ -31,8 +31,6 @@ let (//) = Ext_path.combine
 
 
 
-let bsc_exe = "bsc.exe"
-let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
@@ -158,9 +156,9 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (Bsb_global_paths.bsc_dir // bsc_exe));
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (Bsb_global_paths.bsc_dir // bsb_helper_exe)) ;
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;

@@ -9870,12 +9870,17 @@ module Bsb_global_paths : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val cwd : string 
+val cwd : string 
 
- val bsc_dir : string 
+val bsc_dir : string 
 
- val vendor_ninja : string
-  
+val vendor_bsc : string
+
+val vendor_ninja : string
+
+val vendor_bsdep : string
+
+val vendor_bsppx : string
 end = struct
 #1 "bsb_global_paths.ml"
 (* Copyright (C) 2019 - Authors of BuckleScript
@@ -9930,10 +9935,20 @@ let bsc_dir  =
     (Ext_path.normalize_absolute_path 
        (Ext_path.combine cwd  Sys.executable_name))
 
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
+
+
 let vendor_ninja = 
     Filename.concat bsc_dir "ninja.exe"      
 
-    
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
+
+
+let vendor_bsppx = 
+  Filename.concat bsc_dir "bsppx.exe"
+  
 ;; assert (Sys.file_exists bsc_dir)       
 
 
@@ -13359,7 +13374,7 @@ module Bsb_ninja_gen : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** 
-  generate ninja file based on [cwd] and [bsc_dir]
+  generate ninja file based on [cwd] 
 *)
 val output_ninja_and_namespace_map :
   cwd:string ->  
@@ -13401,8 +13416,6 @@ let (//) = Ext_path.combine
 
 
 
-let bsc_exe = "bsc.exe"
-let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 
@@ -13528,9 +13541,9 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
         Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote (Bsb_global_paths.bsc_dir // bsc_exe));
+        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote (Bsb_global_paths.bsc_dir // bsb_helper_exe)) ;
+        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
@@ -14001,8 +14014,6 @@ end = struct
 
 let bsdeps = ".bsdeps"
 
-let bsppx_exe = "bsppx.exe"
-
 let (//) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
@@ -14051,7 +14062,7 @@ let regenerate_ninja
         config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
-      (Bsb_global_paths.bsc_dir // bsppx_exe) config;       
+      (Bsb_global_paths.vendor_bsppx) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~cwd  ~toplevel config ;             
     

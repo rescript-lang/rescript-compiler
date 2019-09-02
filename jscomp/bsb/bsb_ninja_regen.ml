@@ -24,8 +24,6 @@
 
 let bsdeps = ".bsdeps"
 
-let bsppx_exe = "bsppx.exe"
-
 let (//) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
@@ -74,7 +72,7 @@ let regenerate_ninja
         config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~cwd
-      (Bsb_global_paths.bsc_dir // bsppx_exe) config;       
+      (Bsb_global_paths.vendor_bsppx) config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~cwd  ~toplevel config ;             
     

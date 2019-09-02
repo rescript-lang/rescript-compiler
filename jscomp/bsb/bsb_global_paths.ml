@@ -50,10 +50,20 @@ let bsc_dir  =
     (Ext_path.normalize_absolute_path 
        (Ext_path.combine cwd  Sys.executable_name))
 
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
+
+
 let vendor_ninja = 
     Filename.concat bsc_dir "ninja.exe"      
 
-    
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
+
+
+let vendor_bsppx = 
+  Filename.concat bsc_dir "bsppx.exe"
+  
 ;; assert (Sys.file_exists bsc_dir)       
 
 

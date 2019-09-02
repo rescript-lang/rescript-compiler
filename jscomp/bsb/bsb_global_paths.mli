@@ -23,9 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val cwd : string 
+val cwd : string 
 
- val bsc_dir : string 
+val bsc_dir : string 
 
- val vendor_ninja : string
-  
+val vendor_bsc : string
+
+val vendor_ninja : string
+
+val vendor_bsdep : string
+
+val vendor_bsppx : string
