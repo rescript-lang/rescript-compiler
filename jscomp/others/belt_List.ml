@@ -73,12 +73,20 @@ external mutableCell :
 *)
 external unsafeMutateTail :
   'a t -> 'a t -> unit = "#setfield1"
+let unsafeMutateTail0 = fun%raw l x ->  {|
+  l.Arg1 = x;
+|}
+let unsafeMutateTail : 'a t -> 'a t -> unit = unsafeMutateTail0
 (*
    - the cell is not empty
    - it is mutated
 *)
 external unsafeTail :
   'a t -> 'a t = "%field1"
+let unsafeTail0 = fun%raw l ->  {|
+  return l.Arg1
+|}
+let unsafeTail : 'a t -> 'a t = unsafeTail0
 (*
    - the cell is not empty
 *)

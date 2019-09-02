@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -16,12 +15,12 @@ var Stop = Caml_exceptions.create("Test_seq.Stop");
 function assoc3(x, _l) {
   while(true) {
     var l = _l;
-    if (l) {
-      var match = l[0];
+    if (l !== "[]") {
+      var match = l.Arg0;
       if (Caml_obj.caml_equal(match[0], x)) {
         return match[1];
       } else {
-        _l = l[1];
+        _l = l.Arg1;
         continue ;
       }
     } else {
@@ -33,13 +32,16 @@ function assoc3(x, _l) {
 function help_action(param) {
   throw [
         Stop,
-        /* Unknown */Block.__(0, ["-help"])
+        /* constructor */{
+          tag: "Unknown",
+          Arg0: "-help"
+        }
       ];
 }
 
 function v(speclist) {
   assoc3("-help", speclist);
-  return /* [] */0;
+  return "[]";
 }
 
 function f(g, speclist) {
@@ -50,18 +52,22 @@ function add_help(speclist) {
   var add1;
   try {
     assoc3("-help", speclist);
-    add1 = /* [] */0;
+    add1 = "[]";
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      add1 = /* :: */[
-        /* tuple */[
+      add1 = /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "-help",
-          /* Unit */Block.__(0, [help_action]),
+          /* constructor */{
+            tag: "Unit",
+            Arg0: help_action
+          },
           " Display this list of options"
         ],
-        /* [] */0
-      ];
+        Arg1: "[]"
+      };
     } else {
       throw exn;
     }
@@ -69,18 +75,22 @@ function add_help(speclist) {
   var add2;
   try {
     assoc3("--help", speclist);
-    add2 = /* [] */0;
+    add2 = "[]";
   }
   catch (exn$1){
     if (exn$1 === Caml_builtin_exceptions.not_found) {
-      add2 = /* :: */[
-        /* tuple */[
+      add2 = /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "--help",
-          /* Unit */Block.__(0, [help_action]),
+          /* constructor */{
+            tag: "Unit",
+            Arg0: help_action
+          },
           " Display this list of options"
         ],
-        /* [] */0
-      ];
+        Arg1: "[]"
+      };
     } else {
       throw exn$1;
     }

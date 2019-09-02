@@ -61,6 +61,8 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
     -> E.array_index_by_int ~comment e i
   | Fld_module name
     -> E.module_access e name i
+  | Fld_arg pos
+    -> E.dot e ("Arg" ^ string_of_int pos)
 let field_by_exp e i = 
   E.array_index e i 
 

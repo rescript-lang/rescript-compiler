@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Lexing = require("../../lib/js/lexing.js");
@@ -45,20 +44,20 @@ function translate(lexbuf) {
   return __ocaml_lex_translate_rec(lexbuf, 0);
 }
 
-var suites_000 = /* tuple */[
-  "translate",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
-                "-- . --"
-              ]);
-    })
-];
-
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "translate",
+    (function (param) {
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
+                Arg1: "-- . --"
+              };
+      })
+  ],
+  Arg1: "[]"
+};
 
 Mt.from_pair_suites("Simple_lexer_test", suites);
 

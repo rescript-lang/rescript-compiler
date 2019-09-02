@@ -4,17 +4,17 @@
 function isfree(id, _param) {
   while(true) {
     var param = _param;
-    switch (param.tag | 0) {
-      case /* Pident */0 :
-          return id === param[0];
-      case /* Pdot */1 :
-          _param = param[0];
+    switch (/* XXX */param.tag) {
+      case "Pident" :
+          return id === param.Arg0;
+      case "Pdot" :
+          _param = param.Arg0;
           continue ;
-      case /* Papply */2 :
-          if (isfree(id, param[0])) {
+      case "Papply" :
+          if (isfree(id, param.Arg0)) {
             return true;
           } else {
-            _param = param[1];
+            _param = param.Arg1;
             continue ;
           }
       

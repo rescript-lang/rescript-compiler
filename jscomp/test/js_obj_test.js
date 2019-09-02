@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -20,93 +19,99 @@ var class_tables = [
   0
 ];
 
-var suites_000 = /* tuple */[
-  "caml_obj",
-  (function (param) {
-      if (!class_tables[0]) {
-        var $$class = CamlinternalOO.create_table(["say"]);
-        var env = CamlinternalOO.new_variable($$class, "");
-        var say = CamlinternalOO.get_method_label($$class, "say");
-        CamlinternalOO.set_method($$class, say, (function (self$1, x) {
-                return 1 + x | 0;
-              }));
-        var env_init = function (env$1) {
-          var self = CamlinternalOO.create_object_opt(0, $$class);
-          self[env] = env$1;
-          return self;
-        };
-        CamlinternalOO.init_class($$class);
-        class_tables[0] = env_init;
-      }
-      return /* Eq */Block.__(0, [
-                33,
-                f(Curry._1(class_tables[0], 0))
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "js_obj",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "caml_obj",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  34,
-                  ({
+        if (!class_tables[0]) {
+          var $$class = CamlinternalOO.create_table(["say"]);
+          var env = CamlinternalOO.new_variable($$class, "");
+          var say = CamlinternalOO.get_method_label($$class, "say");
+          CamlinternalOO.set_method($$class, say, (function (self$1, x) {
+                  return 1 + x | 0;
+                }));
+          var env_init = function (env$1) {
+            var self = CamlinternalOO.create_object_opt(0, $$class);
+            self[env] = env$1;
+            return self;
+          };
+          CamlinternalOO.init_class($$class);
+          class_tables[0] = env_init;
+        }
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: 33,
+                Arg1: f(Curry._1(class_tables[0], 0))
+              };
+      })
+  ],
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "js_obj",
+      (function (param) {
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: 34,
+                  Arg1: ({
                         say: (function (x) {
                             return x + 2 | 0;
                           })
                       }).say(32)
-                ]);
-      })
-  ],
-  /* :: */[
-    /* tuple */[
-      "js_obj2",
-      (function (param) {
-          return /* Eq */Block.__(0, [
-                    34,
-                    ({
+                };
+        })
+    ],
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "js_obj2",
+        (function (param) {
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: 34,
+                    Arg1: ({
                           say: (function (x) {
                               return x + 2 | 0;
                             })
                         }).say(32)
-                  ]);
-        })
-    ],
-    /* :: */[
-      /* tuple */[
-        "empty",
-        (function (param) {
-            return /* Eq */Block.__(0, [
-                      0,
-                      Object.keys({ }).length
-                    ]);
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
-          "assign",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "empty",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        {
-                          a: 1
-                        },
-                        Object.assign({ }, {
-                              a: 1
-                            })
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: 0,
+                      Arg1: Object.keys({ }).length
+                    };
             })
         ],
-        /* [] */0
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "assign",
+            (function (param) {
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: {
+                          a: 1
+                        },
+                        Arg1: Object.assign({ }, {
+                              a: 1
+                            })
+                      };
+              })
+          ],
+          Arg1: "[]"
+        }
+      }
+    }
+  }
+};
 
 Mt.from_pair_suites("Js_obj_test", suites);
 

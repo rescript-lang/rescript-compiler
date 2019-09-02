@@ -1,12 +1,11 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -14,57 +13,76 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-var s = Curry._1(Printf.sprintf(/* Format */[
-          /* Format_arg */Block.__(13, [
-              undefined,
-              /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-              /* Char_literal */Block.__(12, [
-                  /* "." */46,
-                  /* End_of_format */0
-                ])
-            ]),
-          "%{%s%}."
-        ]), /* Format */[
-      /* String_literal */Block.__(11, [
-          "32",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
-            ])
-        ]),
-      "32%s"
-    ]);
+var s = Curry._1(Printf.sprintf(/* constructor */{
+          tag: "Format",
+          Arg0: /* constructor */{
+            tag: "Format_arg",
+            Arg0: undefined,
+            Arg1: /* constructor */{
+              tag: "String_ty",
+              Arg0: "End_of_fmtty"
+            },
+            Arg2: /* constructor */{
+              tag: "Char_literal",
+              Arg0: /* "." */46,
+              Arg1: "End_of_format"
+            }
+          },
+          Arg1: "%{%s%}."
+        }), /* constructor */{
+      tag: "Format",
+      Arg0: /* constructor */{
+        tag: "String_literal",
+        Arg0: "32",
+        Arg1: /* constructor */{
+          tag: "String",
+          Arg0: "No_padding",
+          Arg1: "End_of_format"
+        }
+      },
+      Arg1: "32%s"
+    });
 
 eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", /* tuple */[
       s,
       "%s."
     ]);
 
-var s$1 = Curry._2(Printf.sprintf(/* Format */[
-          /* Int */Block.__(4, [
-              /* Int_i */3,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* " " */32,
-                  /* Format_arg */Block.__(13, [
-                      undefined,
-                      /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-                      /* End_of_format */0
-                    ])
-                ])
-            ]),
-          "%i %{%s%}"
-        ]), 1, /* Format */[
-      /* String_literal */Block.__(11, [
-          "spells one ",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
-            ])
-        ]),
-      "spells one %s"
-    ]);
+var s$1 = Curry._2(Printf.sprintf(/* constructor */{
+          tag: "Format",
+          Arg0: /* constructor */{
+            tag: "Int",
+            Arg0: "Int_i",
+            Arg1: "No_padding",
+            Arg2: "No_precision",
+            Arg3: /* constructor */{
+              tag: "Char_literal",
+              Arg0: /* " " */32,
+              Arg1: /* constructor */{
+                tag: "Format_arg",
+                Arg0: undefined,
+                Arg1: /* constructor */{
+                  tag: "String_ty",
+                  Arg0: "End_of_fmtty"
+                },
+                Arg2: "End_of_format"
+              }
+            }
+          },
+          Arg1: "%i %{%s%}"
+        }), 1, /* constructor */{
+      tag: "Format",
+      Arg0: /* constructor */{
+        tag: "String_literal",
+        Arg0: "spells one ",
+        Arg1: /* constructor */{
+          tag: "String",
+          Arg0: "No_padding",
+          Arg1: "End_of_format"
+        }
+      },
+      Arg1: "spells one %s"
+    });
 
 eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
       s$1,

@@ -1,10 +1,9 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Belt_Int = require("../../lib/js/belt_Int.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -22,18 +21,20 @@ function $$throw(loc, x) {
 
 function neq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Neq */Block.__(1, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Neq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 

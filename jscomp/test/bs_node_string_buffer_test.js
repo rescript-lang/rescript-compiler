@@ -4,7 +4,7 @@ var $$Node = require("../../lib/js/node.js");
 
 function f(str) {
   var match = $$Node.test(str);
-  if (match[0]) {
+  if (match[0] !== "String") {
     console.log(/* tuple */[
           "buffer",
           Buffer.isBuffer(match[1])

@@ -2,7 +2,6 @@
 
 var Sys = require("../../lib/js/sys.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
@@ -69,25 +68,31 @@ function chop_extension($staropt$star, name) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
-      return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
-                      /* String_literal */Block.__(11, [
-                          "Filename.chop_extension ( ",
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  " : ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          " )",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ])
-                            ])
-                        ]),
-                      "Filename.chop_extension ( %s : %s )"
-                    ]), loc, name);
+      return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* constructor */{
+                      tag: "Format",
+                      Arg0: /* constructor */{
+                        tag: "String_literal",
+                        Arg0: "Filename.chop_extension ( ",
+                        Arg1: /* constructor */{
+                          tag: "String",
+                          Arg0: "No_padding",
+                          Arg1: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: " : ",
+                            Arg1: /* constructor */{
+                              tag: "String",
+                              Arg0: "No_padding",
+                              Arg1: /* constructor */{
+                                tag: "String_literal",
+                                Arg0: " )",
+                                Arg1: "End_of_format"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      Arg1: "Filename.chop_extension ( %s : %s )"
+                    }), loc, name);
     } else {
       throw exn;
     }
@@ -119,9 +124,9 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     while(true) {
       var dir2 = _dir2;
       var dir1 = _dir1;
-      if (dir1 && dir2 && dir1[0] === dir2[0]) {
-        _dir2 = dir2[1];
-        _dir1 = dir1[1];
+      if (dir1 !== "[]" && dir2 !== "[]" && dir1.Arg0 === dir2.Arg0) {
+        _dir2 = dir2.Arg1;
+        _dir1 = dir1.Arg1;
         continue ;
       }
       return Pervasives.$at(List.map((function (param) {
@@ -130,13 +135,22 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     };
   };
   var ys = go(dir1, dir2);
-  if (ys && ys[0] === node_parent) {
-    return $$String.concat(node_sep, ys);
+  if (ys !== "[]") {
+    if (ys.Arg0 === node_parent) {
+      return $$String.concat(node_sep, ys);
+    } else {
+      return $$String.concat(node_sep, /* constructor */{
+                  tag: "::",
+                  Arg0: node_current,
+                  Arg1: ys
+                });
+    }
   } else {
-    return $$String.concat(node_sep, /* :: */[
-                node_current,
-                ys
-              ]);
+    return $$String.concat(node_sep, /* constructor */{
+                tag: "::",
+                Arg0: node_current,
+                Arg1: ys
+              });
   }
 }
 
@@ -149,16 +163,19 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "invalid path: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "invalid path: %s"
-                        ]), file2);
+          return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "invalid path: ",
+                            Arg1: /* constructor */{
+                              tag: "String",
+                              Arg0: "No_padding",
+                              Arg1: "End_of_format"
+                            }
+                          },
+                          Arg1: "invalid path: %s"
+                        }), file2);
         } else {
           var curr_char = file2.charCodeAt(i);
           if (curr_char === os_path_separator_char || curr_char === /* "." */46) {
@@ -199,19 +216,23 @@ function find_root_filename(_cwd, filename) {
         _cwd = cwd$prime;
         continue ;
       } else {
-        return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* String_literal */Block.__(11, [
-                                " not found from ",
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "%s not found from %s"
-                      ]), filename, cwd);
+        return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* constructor */{
+                        tag: "Format",
+                        Arg0: /* constructor */{
+                          tag: "String",
+                          Arg0: "No_padding",
+                          Arg1: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: " not found from ",
+                            Arg1: /* constructor */{
+                              tag: "String",
+                              Arg0: "No_padding",
+                              Arg1: "End_of_format"
+                            }
+                          }
+                        },
+                        Arg1: "%s not found from %s"
+                      }), filename, cwd);
       }
     }
   };
@@ -250,7 +271,7 @@ function combine(p1, p2) {
 
 function split_aux(p) {
   var _p = p;
-  var _acc = /* [] */0;
+  var _acc = "[]";
   while(true) {
     var acc = _acc;
     var p$1 = _p;
@@ -266,10 +287,11 @@ function split_aux(p) {
         _p = dir;
         continue ;
       } else {
-        _acc = /* :: */[
-          new_path,
-          acc
-        ];
+        _acc = /* constructor */{
+          tag: "::",
+          Arg0: new_path,
+          Arg1: acc
+        };
         _p = dir;
         continue ;
       }
@@ -289,11 +311,11 @@ function rel_normalized_absolute_path(from, to_) {
     while(true) {
       var yss = _yss;
       var xss = _xss;
-      if (xss) {
-        var xs = xss[1];
-        if (yss) {
-          if (xss[0] === yss[0]) {
-            _yss = yss[1];
+      if (xss !== "[]") {
+        var xs = xss.Arg1;
+        if (yss !== "[]") {
+          if (xss.Arg0 === yss.Arg0) {
+            _yss = yss.Arg1;
             _xss = xs;
             continue ;
           } else {
@@ -307,8 +329,8 @@ function rel_normalized_absolute_path(from, to_) {
                         return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                       }), Ext_string_test.parent_dir_lit, xs);
         }
-      } else if (yss) {
-        return List.fold_left(Filename.concat, yss[0], yss[1]);
+      } else if (yss !== "[]") {
+        return List.fold_left(Filename.concat, yss.Arg0, yss.Arg1);
       } else {
         return Ext_string_test.empty;
       }
@@ -318,19 +340,19 @@ function rel_normalized_absolute_path(from, to_) {
 
 function normalize_absolute_path(x) {
   var drop_if_exist = function (xs) {
-    if (xs) {
-      return xs[1];
+    if (xs !== "[]") {
+      return xs.Arg1;
     } else {
-      return /* [] */0;
+      return "[]";
     }
   };
   var normalize_list = function (_acc, _paths) {
     while(true) {
       var paths = _paths;
       var acc = _acc;
-      if (paths) {
-        var xs = paths[1];
-        var x = paths[0];
+      if (paths !== "[]") {
+        var xs = paths.Arg1;
+        var x = paths.Arg0;
         _paths = xs;
         if (x === Ext_string_test.current_dir_lit) {
           continue ;
@@ -338,10 +360,11 @@ function normalize_absolute_path(x) {
           _acc = drop_if_exist(acc);
           continue ;
         } else {
-          _acc = /* :: */[
-            x,
-            acc
-          ];
+          _acc = /* constructor */{
+            tag: "::",
+            Arg0: x,
+            Arg1: acc
+          };
           continue ;
         }
       } else {
@@ -351,16 +374,16 @@ function normalize_absolute_path(x) {
   };
   var match = split_aux(x);
   var root = match[0];
-  var rev_paths = normalize_list(/* [] */0, match[1]);
-  if (rev_paths) {
-    var _acc = rev_paths[0];
-    var _rev_paths = rev_paths[1];
+  var rev_paths = normalize_list("[]", match[1]);
+  if (rev_paths !== "[]") {
+    var _acc = rev_paths.Arg0;
+    var _rev_paths = rev_paths.Arg1;
     while(true) {
       var rev_paths$1 = _rev_paths;
       var acc = _acc;
-      if (rev_paths$1) {
-        _rev_paths = rev_paths$1[1];
-        _acc = Filename.concat(rev_paths$1[0], acc);
+      if (rev_paths$1 !== "[]") {
+        _rev_paths = rev_paths$1.Arg1;
+        _acc = Filename.concat(rev_paths$1.Arg0, acc);
         continue ;
       } else {
         return Filename.concat(root, acc);

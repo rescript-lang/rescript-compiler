@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 var d = new Date(2016, 2);
 
@@ -16,41 +15,41 @@ function d2(param) {
 
 var d3 = d2(2016)(1, /* () */0);
 
-var suites_000 = /* tuple */[
-  "getMonth",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                2,
-                d.getMonth()
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "getYear",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "getMonth",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  /* tuple */[
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: 2,
+                Arg1: d.getMonth()
+              };
+      })
+  ],
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "getYear",
+      (function (param) {
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: /* tuple */[
                     2016,
                     2,
                     1
                   ],
-                  /* tuple */[
+                  Arg1: /* tuple */[
                     d3.getFullYear(),
                     d3.getMonth(),
                     d3.getDate()
                   ]
-                ]);
-      })
-  ],
-  /* [] */0
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                };
+        })
+    ],
+    Arg1: "[]"
+  }
+};
 
 Mt.from_pair_suites("Oo_js_test_date", suites);
 

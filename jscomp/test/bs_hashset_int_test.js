@@ -8,7 +8,7 @@ var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

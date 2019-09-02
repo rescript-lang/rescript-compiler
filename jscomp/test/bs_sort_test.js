@@ -8,7 +8,7 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

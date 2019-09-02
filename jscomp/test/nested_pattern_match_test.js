@@ -2,18 +2,18 @@
 
 
 function f_list(x) {
-  if (x) {
-    var match = x[1];
-    if (match) {
-      var match$1 = match[1];
-      if (match$1) {
-        var match$2 = match$1[1];
-        if (match$2) {
-          var match$3 = match$2[1];
-          if (match$3) {
-            var match$4 = match$3[1];
-            if (match$4) {
-              return ((((x[0] + match[0] | 0) + match$1[0] | 0) + match$2[0] | 0) + match$3[0] | 0) + match$4[0] | 0;
+  if (x !== "[]") {
+    var match = x.Arg1;
+    if (match !== "[]") {
+      var match$1 = match.Arg1;
+      if (match$1 !== "[]") {
+        var match$2 = match$1.Arg1;
+        if (match$2 !== "[]") {
+          var match$3 = match$2.Arg1;
+          if (match$3 !== "[]") {
+            var match$4 = match$3.Arg1;
+            if (match$4 !== "[]") {
+              return ((((x.Arg0 + match.Arg0 | 0) + match$1.Arg0 | 0) + match$2.Arg0 | 0) + match$3.Arg0 | 0) + match$4.Arg0 | 0;
             } else {
               return 0;
             }
@@ -55,19 +55,19 @@ function f_opion(x) {
       return 0;
     } else {
       var match$1 = x[/* lo */1];
-      if (match$1 && match$1[0] === undefined) {
-        var match$2 = match$1[1];
-        if (match$2 && match$2[0] === undefined) {
-          var match$3 = match$2[1];
-          if (match$3) {
-            var match$4 = match$3[0];
+      if (match$1 !== "[]" && match$1.Arg0 === undefined) {
+        var match$2 = match$1.Arg1;
+        if (match$2 !== "[]" && match$2.Arg0 === undefined) {
+          var match$3 = match$2.Arg1;
+          if (match$3 !== "[]") {
+            var match$4 = match$3.Arg0;
             if (match$4 !== undefined && match$4 === 2) {
-              var match$5 = match$3[1];
-              if (match$5) {
-                var match$6 = match$5[0];
+              var match$5 = match$3.Arg1;
+              if (match$5 !== "[]") {
+                var match$6 = match$5.Arg0;
                 if (match$6 !== undefined && match$6 === 1) {
-                  var match$7 = match$5[1];
-                  if (match$7 && match$7[0] !== undefined) {
+                  var match$7 = match$5.Arg1;
+                  if (match$7 !== "[]" && match$7.Arg0 !== undefined) {
                     return 2;
                   } else {
                     return 0;
@@ -93,19 +93,19 @@ function f_opion(x) {
     }
   } else {
     var match$8 = x[/* lo */1];
-    if (match$8 && match$8[0] === undefined) {
-      var match$9 = match$8[1];
-      if (match$9 && match$9[0] === undefined) {
-        var match$10 = match$9[1];
-        if (match$10) {
-          var match$11 = match$10[0];
+    if (match$8 !== "[]" && match$8.Arg0 === undefined) {
+      var match$9 = match$8.Arg1;
+      if (match$9 !== "[]" && match$9.Arg0 === undefined) {
+        var match$10 = match$9.Arg1;
+        if (match$10 !== "[]") {
+          var match$11 = match$10.Arg0;
           if (match$11 !== undefined && match$11 === 2) {
-            var match$12 = match$10[1];
-            if (match$12) {
-              var match$13 = match$12[0];
+            var match$12 = match$10.Arg1;
+            if (match$12 !== "[]") {
+              var match$13 = match$12.Arg0;
               if (match$13 !== undefined && match$13 === 1) {
-                var match$14 = match$12[1];
-                if (match$14 && match$14[0] !== undefined) {
+                var match$14 = match$12.Arg1;
+                if (match$14 !== "[]" && match$14.Arg0 !== undefined) {
                   return 3;
                 } else {
                   return 0;

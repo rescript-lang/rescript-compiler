@@ -10,7 +10,7 @@ var bb = Caml_obj.caml_equal_undefined;
 
 var cc = Caml_obj.caml_equal_nullable;
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

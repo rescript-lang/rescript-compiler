@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function f(x) {
   return x;
@@ -11,13 +10,16 @@ function ff(x) {
 }
 
 function fff(x) {
-  var match = /* A */Block.__(0, [x]);
-  switch (match.tag | 0) {
-    case /* A */0 :
+  var match = /* constructor */{
+    tag: "A",
+    Arg0: x
+  };
+  switch (/* XXX */match.tag) {
+    case "A" :
         return x;
-    case /* B */1 :
+    case "B" :
         return 1;
-    case /* C */2 :
+    case "C" :
         return 2;
     
   }

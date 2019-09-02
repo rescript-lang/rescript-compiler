@@ -86,9 +86,13 @@ and translate (x : Lam_constant.t ) : J.expression =
     E.unicode i 
 
 
-  | Const_pointer (c,pointer_info) ->     
-    E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
-      (Int32.of_int c )
+  | Const_pointer (c,pointer_info) ->
+    ( match pointer_info with
+      | Pt_constructor s when s <> "()" ->
+        E.str s
+      | _ ->
+        E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
+          (Int32.of_int c ))
 
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 

@@ -1,433 +1,510 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_000 = /* tuple */[
-  "make",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                "null",
-                String(null).concat("")
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "fromCharCode",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "make",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  "a",
-                  String.fromCharCode(97)
-                ]);
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: "null",
+                Arg1: String(null).concat("")
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
-      "fromCharCodeMany",
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "fromCharCode",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    "az",
-                    String.fromCharCode(97, 122)
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: "a",
+                  Arg1: String.fromCharCode(97)
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "fromCodePoint",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "fromCharCodeMany",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      "a",
-                      String.fromCodePoint(97)
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: "az",
+                    Arg1: String.fromCharCode(97, 122)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
-          "fromCodePointMany",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "fromCodePoint",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        "az",
-                        String.fromCodePoint(97, 122)
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: "a",
+                      Arg1: String.fromCodePoint(97)
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
-            "length",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "fromCodePointMany",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          3,
-                          "foo".length
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: "az",
+                        Arg1: String.fromCodePoint(97, 122)
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "get",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
+              "length",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            "a",
-                            "foobar"[4]
-                          ]);
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: 3,
+                          Arg1: "foo".length
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
-                "charAt",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
+                "get",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              "a",
-                              "foobar".charAt(4)
-                            ]);
+                    return /* constructor */{
+                            tag: "Eq",
+                            Arg0: "a",
+                            Arg1: "foobar"[4]
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
-                  "charCodeAt",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
+                  "charAt",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                97,
-                                "foobar".charCodeAt(4)
-                              ]);
+                      return /* constructor */{
+                              tag: "Eq",
+                              Arg0: "a",
+                              Arg1: "foobar".charAt(4)
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
-                    "codePointAt",
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
+                    "charCodeAt",
                     (function (param) {
-                        return /* Eq */Block.__(0, [
-                                  97,
-                                  Caml_option.undefined_to_opt("foobar".codePointAt(4))
-                                ]);
+                        return /* constructor */{
+                                tag: "Eq",
+                                Arg0: 97,
+                                Arg1: "foobar".charCodeAt(4)
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
-                      "codePointAt - out of bounds",
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
+                      "codePointAt",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    undefined,
-                                    Caml_option.undefined_to_opt("foobar".codePointAt(98))
-                                  ]);
+                          return /* constructor */{
+                                  tag: "Eq",
+                                  Arg0: 97,
+                                  Arg1: Caml_option.undefined_to_opt("foobar".codePointAt(4))
+                                };
                         })
                     ],
-                    /* :: */[
-                      /* tuple */[
-                        "concat",
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
+                        "codePointAt - out of bounds",
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      "foobar",
-                                      "foo".concat("bar")
-                                    ]);
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: undefined,
+                                    Arg1: Caml_option.undefined_to_opt("foobar".codePointAt(98))
+                                  };
                           })
                       ],
-                      /* :: */[
-                        /* tuple */[
-                          "concatMany",
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: /* tuple */[
+                          "concat",
                           (function (param) {
-                              return /* Eq */Block.__(0, [
-                                        "foobarbaz",
-                                        "foo".concat("bar", "baz")
-                                      ]);
+                              return /* constructor */{
+                                      tag: "Eq",
+                                      Arg0: "foobar",
+                                      Arg1: "foo".concat("bar")
+                                    };
                             })
                         ],
-                        /* :: */[
-                          /* tuple */[
-                            "endsWith",
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: /* tuple */[
+                            "concatMany",
                             (function (param) {
-                                return /* Eq */Block.__(0, [
-                                          true,
-                                          "foobar".endsWith("bar")
-                                        ]);
+                                return /* constructor */{
+                                        tag: "Eq",
+                                        Arg0: "foobarbaz",
+                                        Arg1: "foo".concat("bar", "baz")
+                                      };
                               })
                           ],
-                          /* :: */[
-                            /* tuple */[
-                              "endsWithFrom",
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: /* tuple */[
+                              "endsWith",
                               (function (param) {
-                                  return /* Eq */Block.__(0, [
-                                            false,
-                                            "foobar".endsWith("bar", 1)
-                                          ]);
+                                  return /* constructor */{
+                                          tag: "Eq",
+                                          Arg0: true,
+                                          Arg1: "foobar".endsWith("bar")
+                                        };
                                 })
                             ],
-                            /* :: */[
-                              /* tuple */[
-                                "includes",
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: /* tuple */[
+                                "endsWithFrom",
                                 (function (param) {
-                                    return /* Eq */Block.__(0, [
-                                              true,
-                                              "foobarbaz".includes("bar")
-                                            ]);
+                                    return /* constructor */{
+                                            tag: "Eq",
+                                            Arg0: false,
+                                            Arg1: "foobar".endsWith("bar", 1)
+                                          };
                                   })
                               ],
-                              /* :: */[
-                                /* tuple */[
-                                  "includesFrom",
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: /* tuple */[
+                                  "includes",
                                   (function (param) {
-                                      return /* Eq */Block.__(0, [
-                                                false,
-                                                "foobarbaz".includes("bar", 4)
-                                              ]);
+                                      return /* constructor */{
+                                              tag: "Eq",
+                                              Arg0: true,
+                                              Arg1: "foobarbaz".includes("bar")
+                                            };
                                     })
                                 ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "indexOf",
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: /* tuple */[
+                                    "includesFrom",
                                     (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  3,
-                                                  "foobarbaz".indexOf("bar")
-                                                ]);
+                                        return /* constructor */{
+                                                tag: "Eq",
+                                                Arg0: false,
+                                                Arg1: "foobarbaz".includes("bar", 4)
+                                              };
                                       })
                                   ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "indexOfFrom",
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: /* tuple */[
+                                      "indexOf",
                                       (function (param) {
-                                          return /* Eq */Block.__(0, [
-                                                    -1,
-                                                    "foobarbaz".indexOf("bar", 4)
-                                                  ]);
+                                          return /* constructor */{
+                                                  tag: "Eq",
+                                                  Arg0: 3,
+                                                  Arg1: "foobarbaz".indexOf("bar")
+                                                };
                                         })
                                     ],
-                                    /* :: */[
-                                      /* tuple */[
-                                        "lastIndexOf",
+                                    Arg1: /* constructor */{
+                                      tag: "::",
+                                      Arg0: /* tuple */[
+                                        "indexOfFrom",
                                         (function (param) {
-                                            return /* Eq */Block.__(0, [
-                                                      3,
-                                                      "foobarbaz".lastIndexOf("bar")
-                                                    ]);
+                                            return /* constructor */{
+                                                    tag: "Eq",
+                                                    Arg0: -1,
+                                                    Arg1: "foobarbaz".indexOf("bar", 4)
+                                                  };
                                           })
                                       ],
-                                      /* :: */[
-                                        /* tuple */[
-                                          "lastIndexOfFrom",
+                                      Arg1: /* constructor */{
+                                        tag: "::",
+                                        Arg0: /* tuple */[
+                                          "lastIndexOf",
                                           (function (param) {
-                                              return /* Eq */Block.__(0, [
-                                                        3,
-                                                        "foobarbaz".lastIndexOf("bar", 4)
-                                                      ]);
+                                              return /* constructor */{
+                                                      tag: "Eq",
+                                                      Arg0: 3,
+                                                      Arg1: "foobarbaz".lastIndexOf("bar")
+                                                    };
                                             })
                                         ],
-                                        /* :: */[
-                                          /* tuple */[
-                                            "localeCompare",
+                                        Arg1: /* constructor */{
+                                          tag: "::",
+                                          Arg0: /* tuple */[
+                                            "lastIndexOfFrom",
                                             (function (param) {
-                                                return /* Eq */Block.__(0, [
-                                                          0,
-                                                          "foo".localeCompare("foo")
-                                                        ]);
+                                                return /* constructor */{
+                                                        tag: "Eq",
+                                                        Arg0: 3,
+                                                        Arg1: "foobarbaz".lastIndexOf("bar", 4)
+                                                      };
                                               })
                                           ],
-                                          /* :: */[
-                                            /* tuple */[
-                                              "match",
+                                          Arg1: /* constructor */{
+                                            tag: "::",
+                                            Arg0: /* tuple */[
+                                              "localeCompare",
                                               (function (param) {
-                                                  return /* Eq */Block.__(0, [
-                                                            /* array */[
+                                                  return /* constructor */{
+                                                          tag: "Eq",
+                                                          Arg0: 0,
+                                                          Arg1: "foo".localeCompare("foo")
+                                                        };
+                                                })
+                                            ],
+                                            Arg1: /* constructor */{
+                                              tag: "::",
+                                              Arg0: /* tuple */[
+                                                "match",
+                                                (function (param) {
+                                                    return /* constructor */{
+                                                            tag: "Eq",
+                                                            Arg0: /* array */[
                                                               "na",
                                                               "na"
                                                             ],
-                                                            Caml_option.null_to_opt("banana".match((/na+/g)))
-                                                          ]);
-                                                })
-                                            ],
-                                            /* :: */[
-                                              /* tuple */[
-                                                "match - no match",
-                                                (function (param) {
-                                                    return /* Eq */Block.__(0, [
-                                                              undefined,
-                                                              Caml_option.null_to_opt("banana".match((/nanana+/g)))
-                                                            ]);
+                                                            Arg1: Caml_option.null_to_opt("banana".match((/na+/g)))
+                                                          };
                                                   })
                                               ],
-                                              /* :: */[
-                                                /* tuple */[
-                                                  "normalize",
+                                              Arg1: /* constructor */{
+                                                tag: "::",
+                                                Arg0: /* tuple */[
+                                                  "match - no match",
                                                   (function (param) {
-                                                      return /* Eq */Block.__(0, [
-                                                                "foo",
-                                                                "foo".normalize()
-                                                              ]);
+                                                      return /* constructor */{
+                                                              tag: "Eq",
+                                                              Arg0: undefined,
+                                                              Arg1: Caml_option.null_to_opt("banana".match((/nanana+/g)))
+                                                            };
                                                     })
                                                 ],
-                                                /* :: */[
-                                                  /* tuple */[
-                                                    "normalizeByForm",
+                                                Arg1: /* constructor */{
+                                                  tag: "::",
+                                                  Arg0: /* tuple */[
+                                                    "normalize",
                                                     (function (param) {
-                                                        return /* Eq */Block.__(0, [
-                                                                  "foo",
-                                                                  "foo".normalize("NFKD")
-                                                                ]);
+                                                        return /* constructor */{
+                                                                tag: "Eq",
+                                                                Arg0: "foo",
+                                                                Arg1: "foo".normalize()
+                                                              };
                                                       })
                                                   ],
-                                                  /* :: */[
-                                                    /* tuple */[
-                                                      "repeat",
+                                                  Arg1: /* constructor */{
+                                                    tag: "::",
+                                                    Arg0: /* tuple */[
+                                                      "normalizeByForm",
                                                       (function (param) {
-                                                          return /* Eq */Block.__(0, [
-                                                                    "foofoofoo",
-                                                                    "foo".repeat(3)
-                                                                  ]);
+                                                          return /* constructor */{
+                                                                  tag: "Eq",
+                                                                  Arg0: "foo",
+                                                                  Arg1: "foo".normalize("NFKD")
+                                                                };
                                                         })
                                                     ],
-                                                    /* :: */[
-                                                      /* tuple */[
-                                                        "replace",
+                                                    Arg1: /* constructor */{
+                                                      tag: "::",
+                                                      Arg0: /* tuple */[
+                                                        "repeat",
                                                         (function (param) {
-                                                            return /* Eq */Block.__(0, [
-                                                                      "fooBORKbaz",
-                                                                      "foobarbaz".replace("bar", "BORK")
-                                                                    ]);
+                                                            return /* constructor */{
+                                                                    tag: "Eq",
+                                                                    Arg0: "foofoofoo",
+                                                                    Arg1: "foo".repeat(3)
+                                                                  };
                                                           })
                                                       ],
-                                                      /* :: */[
-                                                        /* tuple */[
-                                                          "replaceByRe",
+                                                      Arg1: /* constructor */{
+                                                        tag: "::",
+                                                        Arg0: /* tuple */[
+                                                          "replace",
                                                           (function (param) {
-                                                              return /* Eq */Block.__(0, [
-                                                                        "fooBORKBORK",
-                                                                        "foobarbaz".replace((/ba./g), "BORK")
-                                                                      ]);
+                                                              return /* constructor */{
+                                                                      tag: "Eq",
+                                                                      Arg0: "fooBORKbaz",
+                                                                      Arg1: "foobarbaz".replace("bar", "BORK")
+                                                                    };
                                                             })
                                                         ],
-                                                        /* :: */[
-                                                          /* tuple */[
-                                                            "unsafeReplaceBy0",
+                                                        Arg1: /* constructor */{
+                                                          tag: "::",
+                                                          Arg0: /* tuple */[
+                                                            "replaceByRe",
                                                             (function (param) {
-                                                                var replace = function (whole, offset, s) {
-                                                                  if (whole === "bar") {
-                                                                    return "BORK";
-                                                                  } else {
-                                                                    return "DORK";
-                                                                  }
-                                                                };
-                                                                return /* Eq */Block.__(0, [
-                                                                          "fooBORKDORK",
-                                                                          "foobarbaz".replace((/ba./g), replace)
-                                                                        ]);
+                                                                return /* constructor */{
+                                                                        tag: "Eq",
+                                                                        Arg0: "fooBORKBORK",
+                                                                        Arg1: "foobarbaz".replace((/ba./g), "BORK")
+                                                                      };
                                                               })
                                                           ],
-                                                          /* :: */[
-                                                            /* tuple */[
-                                                              "unsafeReplaceBy1",
+                                                          Arg1: /* constructor */{
+                                                            tag: "::",
+                                                            Arg0: /* tuple */[
+                                                              "unsafeReplaceBy0",
                                                               (function (param) {
-                                                                  var replace = function (whole, p1, offset, s) {
+                                                                  var replace = function (whole, offset, s) {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
                                                                     } else {
                                                                       return "DORK";
                                                                     }
                                                                   };
-                                                                  return /* Eq */Block.__(0, [
-                                                                            "fooBORKDORK",
-                                                                            "foobarbaz".replace((/ba./g), replace)
-                                                                          ]);
+                                                                  return /* constructor */{
+                                                                          tag: "Eq",
+                                                                          Arg0: "fooBORKDORK",
+                                                                          Arg1: "foobarbaz".replace((/ba./g), replace)
+                                                                        };
                                                                 })
                                                             ],
-                                                            /* :: */[
-                                                              /* tuple */[
-                                                                "unsafeReplaceBy2",
+                                                            Arg1: /* constructor */{
+                                                              tag: "::",
+                                                              Arg0: /* tuple */[
+                                                                "unsafeReplaceBy1",
                                                                 (function (param) {
-                                                                    var replace = function (whole, p1, p2, offset, s) {
+                                                                    var replace = function (whole, p1, offset, s) {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
                                                                       } else {
                                                                         return "DORK";
                                                                       }
                                                                     };
-                                                                    return /* Eq */Block.__(0, [
-                                                                              "fooBORKDORK",
-                                                                              "foobarbaz".replace((/ba./g), replace)
-                                                                            ]);
+                                                                    return /* constructor */{
+                                                                            tag: "Eq",
+                                                                            Arg0: "fooBORKDORK",
+                                                                            Arg1: "foobarbaz".replace((/ba./g), replace)
+                                                                          };
                                                                   })
                                                               ],
-                                                              /* :: */[
-                                                                /* tuple */[
-                                                                  "unsafeReplaceBy3",
+                                                              Arg1: /* constructor */{
+                                                                tag: "::",
+                                                                Arg0: /* tuple */[
+                                                                  "unsafeReplaceBy2",
                                                                   (function (param) {
-                                                                      var replace = function (whole, p1, p2, p3, offset, s) {
+                                                                      var replace = function (whole, p1, p2, offset, s) {
                                                                         if (whole === "bar") {
                                                                           return "BORK";
                                                                         } else {
                                                                           return "DORK";
                                                                         }
                                                                       };
-                                                                      return /* Eq */Block.__(0, [
-                                                                                "fooBORKDORK",
-                                                                                "foobarbaz".replace((/ba./g), replace)
-                                                                              ]);
+                                                                      return /* constructor */{
+                                                                              tag: "Eq",
+                                                                              Arg0: "fooBORKDORK",
+                                                                              Arg1: "foobarbaz".replace((/ba./g), replace)
+                                                                            };
                                                                     })
                                                                 ],
-                                                                /* :: */[
-                                                                  /* tuple */[
-                                                                    "search",
+                                                                Arg1: /* constructor */{
+                                                                  tag: "::",
+                                                                  Arg0: /* tuple */[
+                                                                    "unsafeReplaceBy3",
                                                                     (function (param) {
-                                                                        return /* Eq */Block.__(0, [
-                                                                                  3,
-                                                                                  "foobarbaz".search((/ba./g))
-                                                                                ]);
+                                                                        var replace = function (whole, p1, p2, p3, offset, s) {
+                                                                          if (whole === "bar") {
+                                                                            return "BORK";
+                                                                          } else {
+                                                                            return "DORK";
+                                                                          }
+                                                                        };
+                                                                        return /* constructor */{
+                                                                                tag: "Eq",
+                                                                                Arg0: "fooBORKDORK",
+                                                                                Arg1: "foobarbaz".replace((/ba./g), replace)
+                                                                              };
                                                                       })
                                                                   ],
-                                                                  /* :: */[
-                                                                    /* tuple */[
-                                                                      "slice",
+                                                                  Arg1: /* constructor */{
+                                                                    tag: "::",
+                                                                    Arg0: /* tuple */[
+                                                                      "search",
                                                                       (function (param) {
-                                                                          return /* Eq */Block.__(0, [
-                                                                                    "bar",
-                                                                                    "foobarbaz".slice(3, 6)
-                                                                                  ]);
+                                                                          return /* constructor */{
+                                                                                  tag: "Eq",
+                                                                                  Arg0: 3,
+                                                                                  Arg1: "foobarbaz".search((/ba./g))
+                                                                                };
                                                                         })
                                                                     ],
-                                                                    /* :: */[
-                                                                      /* tuple */[
-                                                                        "sliceToEnd",
+                                                                    Arg1: /* constructor */{
+                                                                      tag: "::",
+                                                                      Arg0: /* tuple */[
+                                                                        "slice",
                                                                         (function (param) {
-                                                                            return /* Eq */Block.__(0, [
-                                                                                      "barbaz",
-                                                                                      "foobarbaz".slice(3)
-                                                                                    ]);
+                                                                            return /* constructor */{
+                                                                                    tag: "Eq",
+                                                                                    Arg0: "bar",
+                                                                                    Arg1: "foobarbaz".slice(3, 6)
+                                                                                  };
                                                                           })
                                                                       ],
-                                                                      /* :: */[
-                                                                        /* tuple */[
-                                                                          "split",
+                                                                      Arg1: /* constructor */{
+                                                                        tag: "::",
+                                                                        Arg0: /* tuple */[
+                                                                          "sliceToEnd",
                                                                           (function (param) {
-                                                                              return /* Eq */Block.__(0, [
-                                                                                        /* array */[
+                                                                              return /* constructor */{
+                                                                                      tag: "Eq",
+                                                                                      Arg0: "barbaz",
+                                                                                      Arg1: "foobarbaz".slice(3)
+                                                                                    };
+                                                                            })
+                                                                        ],
+                                                                        Arg1: /* constructor */{
+                                                                          tag: "::",
+                                                                          Arg0: /* tuple */[
+                                                                            "split",
+                                                                            (function (param) {
+                                                                                return /* constructor */{
+                                                                                        tag: "Eq",
+                                                                                        Arg0: /* array */[
                                                                                           "foo",
                                                                                           "bar",
                                                                                           "baz"
                                                                                         ],
-                                                                                        "foo bar baz".split(" ")
-                                                                                      ]);
-                                                                            })
-                                                                        ],
-                                                                        /* :: */[
-                                                                          /* tuple */[
-                                                                            "splitAtMost",
-                                                                            (function (param) {
-                                                                                return /* Eq */Block.__(0, [
-                                                                                          /* array */[
+                                                                                        Arg1: "foo bar baz".split(" ")
+                                                                                      };
+                                                                              })
+                                                                          ],
+                                                                          Arg1: /* constructor */{
+                                                                            tag: "::",
+                                                                            Arg0: /* tuple */[
+                                                                              "splitAtMost",
+                                                                              (function (param) {
+                                                                                  return /* constructor */{
+                                                                                          tag: "Eq",
+                                                                                          Arg0: /* array */[
                                                                                             "foo",
                                                                                             "bar"
                                                                                           ],
-                                                                                          "foo bar baz".split(" ", 2)
-                                                                                        ]);
-                                                                              })
-                                                                          ],
-                                                                          /* :: */[
-                                                                            /* tuple */[
-                                                                              "splitByRe",
-                                                                              (function (param) {
-                                                                                  return /* Eq */Block.__(0, [
-                                                                                            /* array */[
+                                                                                          Arg1: "foo bar baz".split(" ", 2)
+                                                                                        };
+                                                                                })
+                                                                            ],
+                                                                            Arg1: /* constructor */{
+                                                                              tag: "::",
+                                                                              Arg0: /* tuple */[
+                                                                                "splitByRe",
+                                                                                (function (param) {
+                                                                                    return /* constructor */{
+                                                                                            tag: "Eq",
+                                                                                            Arg0: /* array */[
                                                                                               "a",
                                                                                               "#",
                                                                                               undefined,
@@ -436,220 +513,248 @@ var suites_001 = /* :: */[
                                                                                               ":",
                                                                                               "c"
                                                                                             ],
-                                                                                            "a#b#:c".split((/(#)(:)?/))
-                                                                                          ]);
-                                                                                })
-                                                                            ],
-                                                                            /* :: */[
-                                                                              /* tuple */[
-                                                                                "splitByReAtMost",
-                                                                                (function (param) {
-                                                                                    return /* Eq */Block.__(0, [
-                                                                                              /* array */[
+                                                                                            Arg1: "a#b#:c".split((/(#)(:)?/))
+                                                                                          };
+                                                                                  })
+                                                                              ],
+                                                                              Arg1: /* constructor */{
+                                                                                tag: "::",
+                                                                                Arg0: /* tuple */[
+                                                                                  "splitByReAtMost",
+                                                                                  (function (param) {
+                                                                                      return /* constructor */{
+                                                                                              tag: "Eq",
+                                                                                              Arg0: /* array */[
                                                                                                 "a",
                                                                                                 "#",
                                                                                                 undefined
                                                                                               ],
-                                                                                              "a#b#:c".split((/(#)(:)?/), 3)
-                                                                                            ]);
-                                                                                  })
-                                                                              ],
-                                                                              /* :: */[
-                                                                                /* tuple */[
-                                                                                  "startsWith",
-                                                                                  (function (param) {
-                                                                                      return /* Eq */Block.__(0, [
-                                                                                                true,
-                                                                                                "foobarbaz".startsWith("foo")
-                                                                                              ]);
+                                                                                              Arg1: "a#b#:c".split((/(#)(:)?/), 3)
+                                                                                            };
                                                                                     })
                                                                                 ],
-                                                                                /* :: */[
-                                                                                  /* tuple */[
-                                                                                    "startsWithFrom",
+                                                                                Arg1: /* constructor */{
+                                                                                  tag: "::",
+                                                                                  Arg0: /* tuple */[
+                                                                                    "startsWith",
                                                                                     (function (param) {
-                                                                                        return /* Eq */Block.__(0, [
-                                                                                                  false,
-                                                                                                  "foobarbaz".startsWith("foo", 1)
-                                                                                                ]);
+                                                                                        return /* constructor */{
+                                                                                                tag: "Eq",
+                                                                                                Arg0: true,
+                                                                                                Arg1: "foobarbaz".startsWith("foo")
+                                                                                              };
                                                                                       })
                                                                                   ],
-                                                                                  /* :: */[
-                                                                                    /* tuple */[
-                                                                                      "substr",
+                                                                                  Arg1: /* constructor */{
+                                                                                    tag: "::",
+                                                                                    Arg0: /* tuple */[
+                                                                                      "startsWithFrom",
                                                                                       (function (param) {
-                                                                                          return /* Eq */Block.__(0, [
-                                                                                                    "barbaz",
-                                                                                                    "foobarbaz".substr(3)
-                                                                                                  ]);
+                                                                                          return /* constructor */{
+                                                                                                  tag: "Eq",
+                                                                                                  Arg0: false,
+                                                                                                  Arg1: "foobarbaz".startsWith("foo", 1)
+                                                                                                };
                                                                                         })
                                                                                     ],
-                                                                                    /* :: */[
-                                                                                      /* tuple */[
-                                                                                        "substrAtMost",
+                                                                                    Arg1: /* constructor */{
+                                                                                      tag: "::",
+                                                                                      Arg0: /* tuple */[
+                                                                                        "substr",
                                                                                         (function (param) {
-                                                                                            return /* Eq */Block.__(0, [
-                                                                                                      "bar",
-                                                                                                      "foobarbaz".substr(3, 3)
-                                                                                                    ]);
+                                                                                            return /* constructor */{
+                                                                                                    tag: "Eq",
+                                                                                                    Arg0: "barbaz",
+                                                                                                    Arg1: "foobarbaz".substr(3)
+                                                                                                  };
                                                                                           })
                                                                                       ],
-                                                                                      /* :: */[
-                                                                                        /* tuple */[
-                                                                                          "substring",
+                                                                                      Arg1: /* constructor */{
+                                                                                        tag: "::",
+                                                                                        Arg0: /* tuple */[
+                                                                                          "substrAtMost",
                                                                                           (function (param) {
-                                                                                              return /* Eq */Block.__(0, [
-                                                                                                        "bar",
-                                                                                                        "foobarbaz".substring(3, 6)
-                                                                                                      ]);
+                                                                                              return /* constructor */{
+                                                                                                      tag: "Eq",
+                                                                                                      Arg0: "bar",
+                                                                                                      Arg1: "foobarbaz".substr(3, 3)
+                                                                                                    };
                                                                                             })
                                                                                         ],
-                                                                                        /* :: */[
-                                                                                          /* tuple */[
-                                                                                            "substringToEnd",
+                                                                                        Arg1: /* constructor */{
+                                                                                          tag: "::",
+                                                                                          Arg0: /* tuple */[
+                                                                                            "substring",
                                                                                             (function (param) {
-                                                                                                return /* Eq */Block.__(0, [
-                                                                                                          "barbaz",
-                                                                                                          "foobarbaz".substring(3)
-                                                                                                        ]);
+                                                                                                return /* constructor */{
+                                                                                                        tag: "Eq",
+                                                                                                        Arg0: "bar",
+                                                                                                        Arg1: "foobarbaz".substring(3, 6)
+                                                                                                      };
                                                                                               })
                                                                                           ],
-                                                                                          /* :: */[
-                                                                                            /* tuple */[
-                                                                                              "toLowerCase",
+                                                                                          Arg1: /* constructor */{
+                                                                                            tag: "::",
+                                                                                            Arg0: /* tuple */[
+                                                                                              "substringToEnd",
                                                                                               (function (param) {
-                                                                                                  return /* Eq */Block.__(0, [
-                                                                                                            "bork",
-                                                                                                            "BORK".toLowerCase()
-                                                                                                          ]);
+                                                                                                  return /* constructor */{
+                                                                                                          tag: "Eq",
+                                                                                                          Arg0: "barbaz",
+                                                                                                          Arg1: "foobarbaz".substring(3)
+                                                                                                        };
                                                                                                 })
                                                                                             ],
-                                                                                            /* :: */[
-                                                                                              /* tuple */[
-                                                                                                "toLocaleLowerCase",
+                                                                                            Arg1: /* constructor */{
+                                                                                              tag: "::",
+                                                                                              Arg0: /* tuple */[
+                                                                                                "toLowerCase",
                                                                                                 (function (param) {
-                                                                                                    return /* Eq */Block.__(0, [
-                                                                                                              "bork",
-                                                                                                              "BORK".toLocaleLowerCase()
-                                                                                                            ]);
+                                                                                                    return /* constructor */{
+                                                                                                            tag: "Eq",
+                                                                                                            Arg0: "bork",
+                                                                                                            Arg1: "BORK".toLowerCase()
+                                                                                                          };
                                                                                                   })
                                                                                               ],
-                                                                                              /* :: */[
-                                                                                                /* tuple */[
-                                                                                                  "toUpperCase",
+                                                                                              Arg1: /* constructor */{
+                                                                                                tag: "::",
+                                                                                                Arg0: /* tuple */[
+                                                                                                  "toLocaleLowerCase",
                                                                                                   (function (param) {
-                                                                                                      return /* Eq */Block.__(0, [
-                                                                                                                "FUBAR",
-                                                                                                                "fubar".toUpperCase()
-                                                                                                              ]);
+                                                                                                      return /* constructor */{
+                                                                                                              tag: "Eq",
+                                                                                                              Arg0: "bork",
+                                                                                                              Arg1: "BORK".toLocaleLowerCase()
+                                                                                                            };
                                                                                                     })
                                                                                                 ],
-                                                                                                /* :: */[
-                                                                                                  /* tuple */[
-                                                                                                    "toLocaleUpperCase",
+                                                                                                Arg1: /* constructor */{
+                                                                                                  tag: "::",
+                                                                                                  Arg0: /* tuple */[
+                                                                                                    "toUpperCase",
                                                                                                     (function (param) {
-                                                                                                        return /* Eq */Block.__(0, [
-                                                                                                                  "FUBAR",
-                                                                                                                  "fubar".toLocaleUpperCase()
-                                                                                                                ]);
+                                                                                                        return /* constructor */{
+                                                                                                                tag: "Eq",
+                                                                                                                Arg0: "FUBAR",
+                                                                                                                Arg1: "fubar".toUpperCase()
+                                                                                                              };
                                                                                                       })
                                                                                                   ],
-                                                                                                  /* :: */[
-                                                                                                    /* tuple */[
-                                                                                                      "trim",
+                                                                                                  Arg1: /* constructor */{
+                                                                                                    tag: "::",
+                                                                                                    Arg0: /* tuple */[
+                                                                                                      "toLocaleUpperCase",
                                                                                                       (function (param) {
-                                                                                                          return /* Eq */Block.__(0, [
-                                                                                                                    "foo",
-                                                                                                                    "  foo  ".trim()
-                                                                                                                  ]);
+                                                                                                          return /* constructor */{
+                                                                                                                  tag: "Eq",
+                                                                                                                  Arg0: "FUBAR",
+                                                                                                                  Arg1: "fubar".toLocaleUpperCase()
+                                                                                                                };
                                                                                                         })
                                                                                                     ],
-                                                                                                    /* :: */[
-                                                                                                      /* tuple */[
-                                                                                                        "anchor",
+                                                                                                    Arg1: /* constructor */{
+                                                                                                      tag: "::",
+                                                                                                      Arg0: /* tuple */[
+                                                                                                        "trim",
                                                                                                         (function (param) {
-                                                                                                            return /* Eq */Block.__(0, [
-                                                                                                                      "<a name=\"bar\">foo</a>",
-                                                                                                                      "foo".anchor("bar")
-                                                                                                                    ]);
+                                                                                                            return /* constructor */{
+                                                                                                                    tag: "Eq",
+                                                                                                                    Arg0: "foo",
+                                                                                                                    Arg1: "  foo  ".trim()
+                                                                                                                  };
                                                                                                           })
                                                                                                       ],
-                                                                                                      /* :: */[
-                                                                                                        /* tuple */[
-                                                                                                          "link",
+                                                                                                      Arg1: /* constructor */{
+                                                                                                        tag: "::",
+                                                                                                        Arg0: /* tuple */[
+                                                                                                          "anchor",
                                                                                                           (function (param) {
-                                                                                                              return /* Eq */Block.__(0, [
-                                                                                                                        "<a href=\"https://reason.ml\">foo</a>",
-                                                                                                                        "foo".link("https://reason.ml")
-                                                                                                                      ]);
+                                                                                                              return /* constructor */{
+                                                                                                                      tag: "Eq",
+                                                                                                                      Arg0: "<a name=\"bar\">foo</a>",
+                                                                                                                      Arg1: "foo".anchor("bar")
+                                                                                                                    };
                                                                                                             })
                                                                                                         ],
-                                                                                                        /* :: */[
-                                                                                                          /* tuple */[
-                                                                                                            "File \"js_string_test.ml\", line 211, characters 4-11",
+                                                                                                        Arg1: /* constructor */{
+                                                                                                          tag: "::",
+                                                                                                          Arg0: /* tuple */[
+                                                                                                            "link",
                                                                                                             (function (param) {
-                                                                                                                return /* Ok */Block.__(4, ["ab".includes("a")]);
+                                                                                                                return /* constructor */{
+                                                                                                                        tag: "Eq",
+                                                                                                                        Arg0: "<a href=\"https://reason.ml\">foo</a>",
+                                                                                                                        Arg1: "foo".link("https://reason.ml")
+                                                                                                                      };
                                                                                                               })
                                                                                                           ],
-                                                                                                          /* [] */0
-                                                                                                        ]
-                                                                                                      ]
-                                                                                                    ]
-                                                                                                  ]
-                                                                                                ]
-                                                                                              ]
-                                                                                            ]
-                                                                                          ]
-                                                                                        ]
-                                                                                      ]
-                                                                                    ]
-                                                                                  ]
-                                                                                ]
-                                                                              ]
-                                                                            ]
-                                                                          ]
-                                                                        ]
-                                                                      ]
-                                                                    ]
-                                                                  ]
-                                                                ]
-                                                              ]
-                                                            ]
-                                                          ]
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                                                                                                          Arg1: /* constructor */{
+                                                                                                            tag: "::",
+                                                                                                            Arg0: /* tuple */[
+                                                                                                              "File \"js_string_test.ml\", line 211, characters 4-11",
+                                                                                                              (function (param) {
+                                                                                                                  return /* constructor */{
+                                                                                                                          tag: "Ok",
+                                                                                                                          Arg0: "ab".includes("a")
+                                                                                                                        };
+                                                                                                                })
+                                                                                                            ],
+                                                                                                            Arg1: "[]"
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 Mt.from_pair_suites("Js_string_test", suites);
 

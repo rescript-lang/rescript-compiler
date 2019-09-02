@@ -497,7 +497,7 @@ and  pp_function is_method
     since it can be either [int] or [string]
 *)
 and pp_one_case_clause : 'a .
-  _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
+  _ -> P.t -> (string option -> P.t -> 'a -> unit) -> 'a J.case_clause -> _
   = fun cxt f  pp_cond
     ({switch_case; switch_body ; should_break; comment; } : _ J.case_clause) ->
     let cxt =
@@ -505,8 +505,7 @@ and pp_one_case_clause : 'a .
           P.group f 1 (fun _ ->
               P.string f L.case;
               P.space f ;
-              pp_comment_option f comment;
-              pp_cond  f switch_case; (* could be integer or string *)
+              pp_cond comment f switch_case; (* could be integer or string *)
               P.space f ;
               P.string f L.colon  );
           P.group f 1 (fun _ ->
@@ -529,7 +528,7 @@ and pp_one_case_clause : 'a .
     cxt
 
 and loop_case_clauses  :  'a . cxt ->
-  P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause list -> cxt
+  P.t -> (string option -> P.t -> 'a -> unit) -> 'a J.case_clause list -> cxt
   = fun  cxt  f pp_cond cases ->
     Ext_list.fold_left cases cxt (fun acc x -> pp_one_case_clause acc f pp_cond x)              
 
@@ -1277,7 +1276,11 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     let cxt = P.paren_group f 1 (fun _ ->  expression 0 cxt f e) in
     P.space f;
     P.brace_vgroup f 1 @@ fun _ ->
-    let cxt = loop_case_clauses cxt f (fun f i -> P.string f (string_of_int i) ) cc in
+    let cxt = loop_case_clauses cxt f (fun comment f i ->
+      let s = match comment with
+        | None -> string_of_int i
+        | Some s -> "\"" ^ s  ^ "\""in
+      P.string f s) cc in
     (match def with
      | None -> cxt
      | Some def ->
@@ -1294,7 +1297,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e in
     P.space f;
     P.brace_vgroup f 1 (fun _ ->
-        let cxt = loop_case_clauses cxt f (fun f i -> Js_dump_string.pp_string f i ) cc in
+        let cxt = loop_case_clauses cxt f (fun _ f i -> Js_dump_string.pp_string f i ) cc in
         match def with
         | None -> cxt
         | Some def ->

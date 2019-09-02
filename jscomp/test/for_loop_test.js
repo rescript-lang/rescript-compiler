@@ -2,7 +2,6 @@
 
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -155,12 +154,13 @@ function for_8(param) {
 }
 
 function for_9(param) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */[/* contents */"[]"];
   var collect = function (x) {
-    v[0] = /* :: */[
-      x,
-      v[0]
-    ];
+    v[0] = /* constructor */{
+      tag: "::",
+      Arg0: x,
+      Arg1: v[0]
+    };
     return /* () */0;
   };
   var vv = /* record */[/* contents */0];
@@ -204,77 +204,91 @@ function for_9(param) {
           ]];
 }
 
-var suites_000 = /* tuple */[
-  "for_loop_test_3",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                90,
-                for_3(Caml_array.caml_make_vect(10, 2))
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "for_loop_test_4",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "for_loop_test_3",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  180,
-                  for_4(Caml_array.caml_make_vect(10, 2))
-                ]);
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: 90,
+                Arg1: for_3(Caml_array.caml_make_vect(10, 2))
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
-      "for_loop_test_5",
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "for_loop_test_4",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    2420,
-                    for_5(Caml_array.caml_make_vect(10, 2), 11)
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: 180,
+                  Arg1: for_4(Caml_array.caml_make_vect(10, 2))
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "for_loop_test_6",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "for_loop_test_5",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      /* array */[
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: 2420,
+                    Arg1: for_5(Caml_array.caml_make_vect(10, 2), 11)
+                  };
+          })
+      ],
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "for_loop_test_6",
+          (function (param) {
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: /* array */[
                         30,
                         1,
                         2,
                         3
                       ],
-                      for_6(Caml_array.caml_make_vect(3, 0), 0)
-                    ]);
-          })
-      ],
-      /* :: */[
-        /* tuple */[
-          "for_loop_test_7",
-          (function (param) {
-              return /* Eq */Block.__(0, [
-                        84,
-                        for_7(/* () */0)
-                      ]);
+                      Arg1: for_6(Caml_array.caml_make_vect(3, 0), 0)
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
-            "for_loop_test_8",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "for_loop_test_7",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          294,
-                          for_8(/* () */0)
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: 84,
+                        Arg1: for_7(/* () */0)
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "for_loop_test_9",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
+              "for_loop_test_8",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            /* array */[/* tuple */[
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: 294,
+                          Arg1: for_8(/* () */0)
+                        };
+                })
+            ],
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
+                "for_loop_test_9",
+                (function (param) {
+                    return /* constructor */{
+                            tag: "Eq",
+                            Arg0: /* array */[/* tuple */[
                                 10,
                                 /* array */[
                                   1,
@@ -284,22 +298,18 @@ var suites_001 = /* :: */[
                                 ],
                                 5
                               ]],
-                            for_9(/* () */0)
-                          ]);
-                })
-            ],
-            /* [] */0
-          ]
-        ]
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                            Arg1: for_9(/* () */0)
+                          };
+                  })
+              ],
+              Arg1: "[]"
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 exports.for_3 = for_3;
 exports.for_4 = for_4;

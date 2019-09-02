@@ -1,31 +1,32 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var counter = /* record */[/* contents */0];
 
 function add_test(loc, test) {
   counter[0] = counter[0] + 1 | 0;
   var id = loc + (" id " + String(counter[0]));
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       id,
       test
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
-                return /* Eq */Block.__(0, [
-                          x,
-                          y
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: x,
+                        Arg1: y
+                      };
               }));
 }
 

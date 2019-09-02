@@ -11,7 +11,7 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -211,24 +211,26 @@ var m$3 = {
 b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(m$3.data) === undefined);
 
 function testIterToList(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */[/* contents */"[]"];
   Belt_Set.forEach(xs, (function (x) {
-          v[0] = /* :: */[
-            x,
-            v[0]
-          ];
+          v[0] = /* constructor */{
+            tag: "::",
+            Arg0: x,
+            Arg1: v[0]
+          };
           return /* () */0;
         }));
   return Belt_List.reverse(v[0]);
 }
 
 function testIterToList2(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = /* record */[/* contents */"[]"];
   Belt_SetDict.forEach(xs.data, (function (x) {
-          v[0] = /* :: */[
-            x,
-            v[0]
-          ];
+          v[0] = /* constructor */{
+            tag: "::",
+            Arg0: x,
+            Arg1: v[0]
+          };
           return /* () */0;
         }));
   return Belt_List.reverse(v[0]);
@@ -366,22 +368,27 @@ eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minim
 
 eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), 201);
 
-Belt_List.forEach(/* :: */[
-      a0,
-      /* :: */[
-        a1,
-        /* :: */[
-          a2,
-          /* :: */[
-            a3,
-            /* :: */[
-              a4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ]
-    ], (function (x) {
+Belt_List.forEach(/* constructor */{
+      tag: "::",
+      Arg0: a0,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: a1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: a2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: a3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: a4,
+              Arg1: "[]"
+            }
+          }
+        }
+      }
+    }, (function (x) {
         return Belt_SetDict.checkInvariantInternal(x.data);
       }));
 

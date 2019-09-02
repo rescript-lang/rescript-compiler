@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Gpr_3566_test = require("./gpr_3566_test.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

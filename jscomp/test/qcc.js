@@ -3,7 +3,6 @@
 var Sys = require("../../lib/js/sys.js");
 var Char = require("../../lib/js/char.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
@@ -201,7 +200,10 @@ function next(param) {
             var n = _n;
             var match$1 = peekch(/* () */0);
             if (match$1 > 57 || match$1 < 48) {
-              return /* ILit */Block.__(1, [n]);
+              return /* constructor */{
+                      tag: "ILit",
+                      Arg0: n
+                    };
             } else {
               _n = (Caml_int32.imul(10, n) + Curry._1(getch, /* () */0) | 0) - 48 | 0;
               continue ;
@@ -218,7 +220,10 @@ function next(param) {
                 "syntax error"
               ];
         }
-        return /* ILit */Block.__(1, [ch]);
+        return /* constructor */{
+                tag: "ILit",
+                Arg0: ch
+              };
       }
       
     } else {
@@ -234,10 +239,11 @@ function next(param) {
         } else {
           Curry._1(getch, /* () */0);
           gpos[0] = e + 8 & -8;
-          return /* SLit */Block.__(2, [
-                    (b + 232 | 0) + 4194304 | 0,
-                    Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
-                  ]);
+          return /* constructor */{
+                  tag: "SLit",
+                  Arg0: (b + 232 | 0) + 4194304 | 0,
+                  Arg1: Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
+                };
         }
       };
     }
@@ -253,60 +259,82 @@ function next(param) {
           _n$1 = n$1 + 1 | 0;
           continue ;
         } else {
-          return /* Sym */Block.__(3, [addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
+          return /* constructor */{
+                  tag: "Sym",
+                  Arg0: addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))
+                };
         }
       };
     } else {
       var ch$2 = c;
-      var _param = /* :: */[
-        "++",
-        /* :: */[
-          "--",
-          /* :: */[
-            "&&",
-            /* :: */[
-              "||",
-              /* :: */[
-                "==",
-                /* :: */[
-                  "<=",
-                  /* :: */[
-                    ">=",
-                    /* :: */[
-                      "!=",
-                      /* :: */[
-                        ">>",
-                        /* :: */[
-                          "<<",
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ];
+      var _param = /* constructor */{
+        tag: "::",
+        Arg0: "++",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: "--",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: "&&",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: "||",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: "==",
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: "<=",
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: ">=",
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: "!=",
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: ">>",
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: "<<",
+                          Arg1: "[]"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
       while(true) {
         var param$1 = _param;
-        if (param$1) {
-          var lop = param$1[0];
+        if (param$1 !== "[]") {
+          var lop = param$1.Arg0;
           if (Caml_string.get(lop, 0) === ch$2 && Caml_string.get(lop, 1) === peekch(/* () */0)) {
             Curry._1(getch, /* () */0);
-            return /* Op */Block.__(0, [lop]);
+            return /* constructor */{
+                    tag: "Op",
+                    Arg0: lop
+                  };
           } else {
-            _param = param$1[1];
+            _param = param$1.Arg1;
             continue ;
           }
         } else {
-          return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, ch$2))]);
+          return /* constructor */{
+                  tag: "Op",
+                  Arg0: Caml_bytes.bytes_to_string(Bytes.make(1, ch$2))
+                };
         }
       };
     }
   } else {
-    return /* Op */Block.__(0, ["EOF!"]);
+    return /* constructor */{
+            tag: "Op",
+            Arg0: "EOF!"
+          };
   }
 }
 
@@ -366,37 +394,45 @@ function patch(rel, loc, n) {
     var loc$prime = get32(loc);
     var x = rel ? n - (loc + 4 | 0) | 0 : n;
     if (dbg[0]) {
-      Curry._3(Printf.eprintf(/* Format */[
-                /* String_literal */Block.__(11, [
-                    "patching at ",
-                    /* Int */Block.__(4, [
-                        /* Int_d */0,
-                        /* No_padding */0,
-                        /* No_precision */0,
-                        /* String_literal */Block.__(11, [
-                            " to ",
-                            /* Int */Block.__(4, [
-                                /* Int_d */0,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* String_literal */Block.__(11, [
-                                    " (n=",
-                                    /* Int */Block.__(4, [
-                                        /* Int_d */0,
-                                        /* No_padding */0,
-                                        /* No_precision */0,
-                                        /* String_literal */Block.__(11, [
-                                            ")\n",
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ])
-                              ])
-                          ])
-                      ])
-                  ]),
-                "patching at %d to %d (n=%d)\n"
-              ]), loc, x, n);
+      Curry._3(Printf.eprintf(/* constructor */{
+                tag: "Format",
+                Arg0: /* constructor */{
+                  tag: "String_literal",
+                  Arg0: "patching at ",
+                  Arg1: /* constructor */{
+                    tag: "Int",
+                    Arg0: "Int_d",
+                    Arg1: "No_padding",
+                    Arg2: "No_precision",
+                    Arg3: /* constructor */{
+                      tag: "String_literal",
+                      Arg0: " to ",
+                      Arg1: /* constructor */{
+                        tag: "Int",
+                        Arg0: "Int_d",
+                        Arg1: "No_padding",
+                        Arg2: "No_precision",
+                        Arg3: /* constructor */{
+                          tag: "String_literal",
+                          Arg0: " (n=",
+                          Arg1: /* constructor */{
+                            tag: "Int",
+                            Arg0: "Int_d",
+                            Arg1: "No_padding",
+                            Arg2: "No_precision",
+                            Arg3: /* constructor */{
+                              tag: "String_literal",
+                              Arg0: ")\n",
+                              Arg1: "End_of_format"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                Arg1: "patching at %d to %d (n=%d)\n"
+              }), loc, x, n);
     }
     opos[0] = loc;
     le(32, x);
@@ -447,36 +483,45 @@ function pop(r) {
 }
 
 var lval = /* record */[/* contents : tuple */[
-    /* Mov */Block.__(0, [0]),
-    /* Int */0
+    /* constructor */{
+      tag: "Mov",
+      Arg0: 0
+    },
+    "Int"
   ]];
 
 function patchlval(param) {
   var match = lval[0][0];
-  if (match.tag) {
-    opos[0] = opos[0] - match[0] | 0;
+  if (/* XXX */match.tag === "Mov") {
+    obuf[opos[0] - match.Arg0 | 0] = /* "\141" */141;
     return /* () */0;
   } else {
-    obuf[opos[0] - match[0] | 0] = /* "\141" */141;
+    opos[0] = opos[0] - match.Arg0 | 0;
     return /* () */0;
   }
 }
 
 function read(param) {
-  if (param) {
+  if (param !== "Int") {
     out(4722614);
     le(8, 0);
     lval[0] = /* tuple */[
-      /* Del */Block.__(1, [4]),
-      /* Chr */1
+      /* constructor */{
+        tag: "Del",
+        Arg0: 4
+      },
+      "Chr"
     ];
     return /* () */0;
   } else {
     out(18571);
     le(8, 0);
     lval[0] = /* tuple */[
-      /* Del */Block.__(1, [3]),
-      /* Int */0
+      /* constructor */{
+        tag: "Del",
+        Arg0: 3
+      },
+      "Int"
     ];
     return /* () */0;
   }
@@ -487,283 +532,407 @@ var globs = Caml_array.caml_make_vect(100, /* record */[
       /* va */-1
     ]);
 
-var lvls = /* :: */[
-  /* tuple */[
+var lvls = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
     "*",
     0
   ],
-  /* :: */[
-    /* tuple */[
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       "/",
       0
     ],
-    /* :: */[
-      /* tuple */[
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "%",
         0
       ],
-      /* :: */[
-        /* tuple */[
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "+",
           1
         ],
-        /* :: */[
-          /* tuple */[
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "-",
             1
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "<<",
               2
             ],
-            /* :: */[
-              /* tuple */[
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 ">>",
                 2
               ],
-              /* :: */[
-                /* tuple */[
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
                   "<",
                   3
                 ],
-                /* :: */[
-                  /* tuple */[
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
                     "<=",
                     3
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
                       ">",
                       3
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
                         ">=",
                         3
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: /* tuple */[
                           "==",
                           4
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: /* tuple */[
                             "!=",
                             4
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: /* tuple */[
                               "&",
                               5
                             ],
-                            /* :: */[
-                              /* tuple */[
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: /* tuple */[
                                 "^",
                                 6
                               ],
-                              /* :: */[
-                                /* tuple */[
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: /* tuple */[
                                   "|",
                                   7
                                 ],
-                                /* :: */[
-                                  /* tuple */[
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: /* tuple */[
                                     "&&",
                                     8
                                   ],
-                                  /* :: */[
-                                    /* tuple */[
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: /* tuple */[
                                       "||",
                                       9
                                     ],
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                                    Arg1: "[]"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var inss = /* :: */[
-  /* tuple */[
+var inss = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
     "*",
-    /* Bin */Block.__(0, [/* :: */[
-          1208987585,
-          /* [] */0
-        ]])
+    /* constructor */{
+      tag: "Bin",
+      Arg0: /* constructor */{
+        tag: "::",
+        Arg0: 1208987585,
+        Arg1: "[]"
+      }
+    }
   ],
-  /* :: */[
-    /* tuple */[
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       "/",
-      /* Bin */Block.__(0, [/* :: */[
-            18577,
-            /* :: */[
-              18585,
-              /* :: */[
-                4782073,
-                /* [] */0
-              ]
-            ]
-          ]])
+      /* constructor */{
+        tag: "Bin",
+        Arg0: /* constructor */{
+          tag: "::",
+          Arg0: 18577,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 18585,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4782073,
+              Arg1: "[]"
+            }
+          }
+        }
+      }
     ],
-    /* :: */[
-      /* tuple */[
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "%",
-        /* Bin */Block.__(0, [/* :: */[
-              18577,
-              /* :: */[
-                18585,
-                /* :: */[
-                  4782073,
-                  /* :: */[
-                    18578,
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]])
+        /* constructor */{
+          tag: "Bin",
+          Arg0: /* constructor */{
+            tag: "::",
+            Arg0: 18577,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 18585,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 4782073,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 18578,
+                  Arg1: "[]"
+                }
+              }
+            }
+          }
+        }
       ],
-      /* :: */[
-        /* tuple */[
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "+",
-          /* Bin */Block.__(0, [/* :: */[
-                4719048,
-                /* [] */0
-              ]])
+          /* constructor */{
+            tag: "Bin",
+            Arg0: /* constructor */{
+              tag: "::",
+              Arg0: 4719048,
+              Arg1: "[]"
+            }
+          }
         ],
-        /* :: */[
-          /* tuple */[
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "-",
-            /* Bin */Block.__(0, [/* :: */[
-                  18577,
-                  /* :: */[
-                    4729288,
-                    /* [] */0
-                  ]
-                ]])
+            /* constructor */{
+              tag: "Bin",
+              Arg0: /* constructor */{
+                tag: "::",
+                Arg0: 18577,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 4729288,
+                  Arg1: "[]"
+                }
+              }
+            }
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "<<",
-              /* Bin */Block.__(0, [/* :: */[
-                    18577,
-                    /* :: */[
-                      4772832,
-                      /* [] */0
-                    ]
-                  ]])
+              /* constructor */{
+                tag: "Bin",
+                Arg0: /* constructor */{
+                  tag: "::",
+                  Arg0: 18577,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 4772832,
+                    Arg1: "[]"
+                  }
+                }
+              }
             ],
-            /* :: */[
-              /* tuple */[
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 ">>",
-                /* Bin */Block.__(0, [/* :: */[
-                      18577,
-                      /* :: */[
-                        4772856,
-                        /* [] */0
-                      ]
-                    ]])
+                /* constructor */{
+                  tag: "Bin",
+                  Arg0: /* constructor */{
+                    tag: "::",
+                    Arg0: 18577,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 4772856,
+                      Arg1: "[]"
+                    }
+                  }
+                }
               ],
-              /* :: */[
-                /* tuple */[
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
                   "<",
-                  /* Cmp */Block.__(1, [10])
+                  /* constructor */{
+                    tag: "Cmp",
+                    Arg0: 10
+                  }
                 ],
-                /* :: */[
-                  /* tuple */[
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
                     "<=",
-                    /* Cmp */Block.__(1, [12])
+                    /* constructor */{
+                      tag: "Cmp",
+                      Arg0: 12
+                    }
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
                       ">",
-                      /* Cmp */Block.__(1, [13])
+                      /* constructor */{
+                        tag: "Cmp",
+                        Arg0: 13
+                      }
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
                         ">=",
-                        /* Cmp */Block.__(1, [11])
+                        /* constructor */{
+                          tag: "Cmp",
+                          Arg0: 11
+                        }
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: /* tuple */[
                           "==",
-                          /* Cmp */Block.__(1, [2])
+                          /* constructor */{
+                            tag: "Cmp",
+                            Arg0: 2
+                          }
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: /* tuple */[
                             "!=",
-                            /* Cmp */Block.__(1, [3])
+                            /* constructor */{
+                              tag: "Cmp",
+                              Arg0: 3
+                            }
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: /* tuple */[
                               "&",
-                              /* Bin */Block.__(0, [/* :: */[
-                                    4727240,
-                                    /* [] */0
-                                  ]])
+                              /* constructor */{
+                                tag: "Bin",
+                                Arg0: /* constructor */{
+                                  tag: "::",
+                                  Arg0: 4727240,
+                                  Arg1: "[]"
+                                }
+                              }
                             ],
-                            /* :: */[
-                              /* tuple */[
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: /* tuple */[
                                 "^",
-                                /* Bin */Block.__(0, [/* :: */[
-                                      4731336,
-                                      /* [] */0
-                                    ]])
+                                /* constructor */{
+                                  tag: "Bin",
+                                  Arg0: /* constructor */{
+                                    tag: "::",
+                                    Arg0: 4731336,
+                                    Arg1: "[]"
+                                  }
+                                }
                               ],
-                              /* :: */[
-                                /* tuple */[
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: /* tuple */[
                                   "|",
-                                  /* Bin */Block.__(0, [/* :: */[
-                                        4721096,
-                                        /* [] */0
-                                      ]])
+                                  /* constructor */{
+                                    tag: "Bin",
+                                    Arg0: /* constructor */{
+                                      tag: "::",
+                                      Arg0: 4721096,
+                                      Arg1: "[]"
+                                    }
+                                  }
                                 ],
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                                Arg1: "[]"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var tokint = /* Sym */Block.__(3, [addsym("int")]);
+var tokint = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("int")
+};
 
-var tokchar = /* Sym */Block.__(3, [addsym("char")]);
+var tokchar = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("char")
+};
 
-var tokret = /* Sym */Block.__(3, [addsym("return")]);
+var tokret = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("return")
+};
 
-var tokif = /* Sym */Block.__(3, [addsym("if")]);
+var tokif = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("if")
+};
 
-var tokelse = /* Sym */Block.__(3, [addsym("else")]);
+var tokelse = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("else")
+};
 
-var tokwhile = /* Sym */Block.__(3, [addsym("while")]);
+var tokwhile = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("while")
+};
 
-var tokfor = /* Sym */Block.__(3, [addsym("for")]);
+var tokfor = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("for")
+};
 
-var tokbreak = /* Sym */Block.__(3, [addsym("break")]);
+var tokbreak = /* constructor */{
+  tag: "Sym",
+  Arg0: addsym("break")
+};
 
 function binary(stk, lvl) {
   if (lvl === -1) {
@@ -780,14 +949,14 @@ function binary(stk, lvl) {
       while(true) {
         var loc = _loc;
         var t = Curry._1(next$1, /* () */0);
-        if (t.tag || lvlof(t[0]) !== lvl) {
-          Curry._1(unnext, t);
-          return loc;
-        } else {
+        if (/* XXX */t.tag === "Op" && lvlof(t.Arg0) === lvl) {
           var loc$prime = test(lvl - 8 | 0, loc);
           binary(stk, lvl - 1 | 0);
           _loc = loc$prime;
           continue ;
+        } else {
+          Curry._1(unnext, t);
+          return loc;
         }
       };
     };
@@ -796,26 +965,26 @@ function binary(stk, lvl) {
       var _param = /* () */0;
       while(true) {
         var t = Curry._1(next$1, /* () */0);
-        if (t.tag) {
-          return Curry._1(unnext, t);
-        } else {
-          var o = t[0];
+        if (/* XXX */t.tag === "Op") {
+          var o = t.Arg0;
           if (lvlof(o) === lvl) {
             push(0);
             binary(stk, lvl - 1 | 0);
             pop(1);
             var match = List.assoc(o, inss);
-            if (match.tag) {
-              out(4733377);
-              cmp(match[0]);
+            if (/* XXX */match.tag === "Bin") {
+              List.iter(out, match.Arg0);
             } else {
-              List.iter(out, match[0]);
+              out(4733377);
+              cmp(match.Arg0);
             }
             _param = /* () */0;
             continue ;
           } else {
             return Curry._1(unnext, t);
           }
+        } else {
+          return Curry._1(unnext, t);
         }
       };
     } else {
@@ -827,9 +996,9 @@ function binary(stk, lvl) {
 
 function unary(stk) {
   var match = Curry._1(next$1, /* () */0);
-  switch (match.tag | 0) {
-    case /* Op */0 :
-        var o = match[0];
+  switch (/* XXX */match.tag) {
+    case "Op" :
+        var o = match.Arg0;
         switch (o) {
           case "&" :
               unary(stk);
@@ -843,16 +1012,19 @@ function unary(stk) {
               var t = Curry._1(next$1, /* () */0);
               var match$1;
               if (Caml_obj.caml_equal(t, tokint)) {
-                match$1 = Caml_obj.caml_equal(Curry._1(next$1, /* () */0), /* Op */Block.__(0, ["*"])) ? /* tuple */[
-                    /* Int */0,
+                match$1 = Caml_obj.caml_equal(Curry._1(next$1, /* () */0), /* constructor */{
+                      tag: "Op",
+                      Arg0: "*"
+                    }) ? /* tuple */[
+                    "Int",
                     1
                   ] : /* tuple */[
-                    /* Int */0,
+                    "Int",
                     5
                   ];
               } else if (Caml_obj.caml_equal(t, tokchar)) {
                 match$1 = /* tuple */[
-                  /* Chr */1,
+                  "Chr",
                   2
                 ];
               } else {
@@ -867,43 +1039,50 @@ function unary(stk) {
               unary(stk);
               return read(match$1[0]);
           default:
-            var unops = /* :: */[
-              /* tuple */[
+            var unops = /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 "+",
                 0
               ],
-              /* :: */[
-                /* tuple */[
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
                   "-",
                   4782040
                 ],
-                /* :: */[
-                  /* tuple */[
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
                     "~",
                     4782032
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
                       "!",
                       4752832
                     ],
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ];
+                    Arg1: "[]"
+                  }
+                }
+              }
+            };
             unary(stk);
             if (!List.mem_assoc(o, unops)) {
-              var s = Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "unknown operator ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
-                              ])
-                          ]),
-                        "unknown operator %s"
-                      ]), o);
+              var s = Curry._1(Printf.sprintf(/* constructor */{
+                        tag: "Format",
+                        Arg0: /* constructor */{
+                          tag: "String_literal",
+                          Arg0: "unknown operator ",
+                          Arg1: /* constructor */{
+                            tag: "String",
+                            Arg0: "No_padding",
+                            Arg1: "End_of_format"
+                          }
+                        },
+                        Arg1: "unknown operator %s"
+                      }), o);
               throw [
                     Caml_builtin_exceptions.failure,
                     s
@@ -916,13 +1095,13 @@ function unary(stk) {
               return 0;
             }
         }
-    case /* ILit */1 :
-        return load(0, match[0]);
-    case /* SLit */2 :
+    case "ILit" :
+        return load(0, match.Arg0);
+    case "SLit" :
         out(18616);
-        return le(64, match[0]);
-    case /* Sym */3 :
-        var i = match[0];
+        return le(64, match.Arg0);
+    case "Sym" :
+        var i = match.Arg0;
         if (List.mem_assoc(i, stk)) {
           var l = List.assoc(i, stk);
           if (l <= -256) {
@@ -938,8 +1117,11 @@ function unary(stk) {
           out(4754245);
           out(l & 255);
           lval[0] = /* tuple */[
-            /* Mov */Block.__(0, [3]),
-            /* Int */0
+            /* constructor */{
+              tag: "Mov",
+              Arg0: 3
+            },
+            "Int"
           ];
         } else {
           out(18616);
@@ -950,7 +1132,7 @@ function unary(stk) {
                 /* loc */loc,
                 /* va */g[/* va */1]
               ]);
-          read(/* Int */0);
+          read("Int");
         }
         return postfix(stk);
     
@@ -959,55 +1141,66 @@ function unary(stk) {
 
 function postfix(stk) {
   var t = Curry._1(next$1, /* () */0);
-  if (t.tag) {
-    return Curry._1(unnext, t);
-  } else {
-    var op = t[0];
+  if (/* XXX */t.tag === "Op") {
+    var op = t.Arg0;
     switch (op) {
       case "(" :
           var emitargs = function (_l, _rl) {
             while(true) {
               var rl = _rl;
               var l = _l;
-              if (nextis(/* Op */Block.__(0, [")"]))) {
+              if (nextis(/* constructor */{
+                      tag: "Op",
+                      Arg0: ")"
+                    })) {
                 Curry._1(next$1, /* () */0);
                 return List.iter(pop, l);
               } else {
                 expr(stk);
                 push(0);
-                if (nextis(/* Op */Block.__(0, [","]))) {
+                if (nextis(/* constructor */{
+                        tag: "Op",
+                        Arg0: ","
+                      })) {
                   Curry._1(next$1, /* () */0);
                 }
                 _rl = List.tl(rl);
-                _l = /* :: */[
-                  List.hd(rl),
-                  l
-                ];
+                _l = /* constructor */{
+                  tag: "::",
+                  Arg0: List.hd(rl),
+                  Arg1: l
+                };
                 continue ;
               }
             };
           };
           patchlval(/* () */0);
           push(0);
-          emitargs(/* [] */0, /* :: */[
-                7,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    2,
-                    /* :: */[
-                      1,
-                      /* :: */[
-                        8,
-                        /* :: */[
-                          9,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]);
+          emitargs("[]", /* constructor */{
+                tag: "::",
+                Arg0: 7,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 6,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 2,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 1,
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: 8,
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: 9,
+                          Arg1: "[]"
+                        }
+                      }
+                    }
+                  }
+                }
+              });
           pop(0);
           if (align[0] % 2 !== 0) {
             out(1216605192);
@@ -1030,43 +1223,49 @@ function postfix(stk) {
     return out(List.assoc(/* tuple */[
                     op,
                     lval[0][1]
-                  ], /* :: */[
-                    /* tuple */[
+                  ], /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
                       /* tuple */[
                         "++",
-                        /* Int */0
+                        "Int"
                       ],
                       4783873
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
                         /* tuple */[
                           "--",
-                          /* Int */0
+                          "Int"
                         ],
                         4783881
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: /* tuple */[
                           /* tuple */[
                             "++",
-                            /* Chr */1
+                            "Chr"
                           ],
                           65025
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: /* tuple */[
                             /* tuple */[
                               "--",
-                              /* Chr */1
+                              "Chr"
                             ],
                             65033
                           ],
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]));
+                          Arg1: "[]"
+                        }
+                      }
+                    }
+                  }));
+  } else {
+    return Curry._1(unnext, t);
   }
 }
 
@@ -1075,21 +1274,21 @@ function expr(stk) {
   var _param = /* () */0;
   while(true) {
     var t = Curry._1(next$1, /* () */0);
-    if (t.tag || t[0] !== "=") {
-      return Curry._1(unnext, t);
-    } else {
+    if (/* XXX */t.tag === "Op" && t.Arg0 === "=") {
       patchlval(/* () */0);
       var ty = lval[0][1];
       push(0);
       expr(stk);
       pop(1);
-      if (ty === /* Int */0) {
+      if (ty === "Int") {
         out(4753665);
       } else {
         out(34817);
       }
       _param = /* () */0;
       continue ;
+    } else {
+      return Curry._1(unnext, t);
     }
   };
 }
@@ -1100,24 +1299,30 @@ function decl(g, _n, _stk) {
     var n = _n;
     var t = Curry._1(next$1, /* () */0);
     if (Caml_obj.caml_equal(t, tokint)) {
-      var top = stk ? stk[0][1] : 0;
+      var top = stk !== "[]" ? stk.Arg0[1] : 0;
       var vars = (function(top){
       return function vars(_n, _stk) {
         while(true) {
           var stk = _stk;
           var n = _n;
-          while(nextis(/* Op */Block.__(0, ["*"]))) {
+          while(nextis(/* constructor */{
+                  tag: "Op",
+                  Arg0: "*"
+                })) {
             Curry._1(next$1, /* () */0);
           };
-          if (nextis(/* Op */Block.__(0, [";"]))) {
+          if (nextis(/* constructor */{
+                  tag: "Op",
+                  Arg0: ";"
+                })) {
             return /* tuple */[
                     n,
                     stk
                   ];
           } else {
             var match = Curry._1(next$1, /* () */0);
-            if (match.tag === /* Sym */3) {
-              var s = match[0];
+            if (/* XXX */match.tag === "Sym") {
+              var s = match.Arg0;
               var n$prime = n + 1 | 0;
               var stk$prime;
               if (g) {
@@ -1136,15 +1341,19 @@ function decl(g, _n, _stk) {
                 gpos[0] = gpos[0] + 8 | 0;
                 stk$prime = stk;
               } else {
-                stk$prime = /* :: */[
-                  /* tuple */[
+                stk$prime = /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
                     s,
                     top - (n$prime << 3) | 0
                   ],
-                  stk
-                ];
+                  Arg1: stk
+                };
               }
-              if (nextis(/* Op */Block.__(0, [","]))) {
+              if (nextis(/* constructor */{
+                      tag: "Op",
+                      Arg0: ","
+                    })) {
                 Curry._1(next$1, /* () */0);
                 _stk = stk$prime;
                 _n = n$prime;
@@ -1168,21 +1377,25 @@ function decl(g, _n, _stk) {
       var match = vars(0, stk);
       Curry._1(next$1, /* () */0);
       if (dbg[0]) {
-        Curry._1(Printf.eprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "end of decl (",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " vars)\n",
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ]),
-                  "end of decl (%d vars)\n"
-                ]), n);
+        Curry._1(Printf.eprintf(/* constructor */{
+                  tag: "Format",
+                  Arg0: /* constructor */{
+                    tag: "String_literal",
+                    Arg0: "end of decl (",
+                    Arg1: /* constructor */{
+                      tag: "Int",
+                      Arg0: "Int_d",
+                      Arg1: "No_padding",
+                      Arg2: "No_precision",
+                      Arg3: /* constructor */{
+                        tag: "String_literal",
+                        Arg0: " vars)\n",
+                        Arg1: "End_of_format"
+                      }
+                    }
+                  },
+                  Arg1: "end of decl (%d vars)\n"
+                }), n);
       }
       _stk = match[1];
       _n = n + match[0] | 0;
@@ -1256,12 +1469,18 @@ function stmt(brk, stk) {
       ];
     } else {
       Curry._1(next$1, /* () */0);
-      if (!nextis(/* Op */Block.__(0, [";"]))) {
+      if (!nextis(/* constructor */{
+              tag: "Op",
+              Arg0: ";"
+            })) {
         expr(stk);
       }
       Curry._1(next$1, /* () */0);
       var top = opos[0];
-      if (nextis(/* Op */Block.__(0, [";"]))) {
+      if (nextis(/* constructor */{
+              tag: "Op",
+              Arg0: ";"
+            })) {
         bl[0] = 0;
       } else {
         expr(stk);
@@ -1290,7 +1509,10 @@ function stmt(brk, stk) {
     le(32, (match[1] - opos[0] | 0) - 4 | 0);
     return patch(true, bl[0], opos[0]);
   } else if (Caml_obj.caml_equal(t, tokret)) {
-    if (!nextis(/* Op */Block.__(0, [";"]))) {
+    if (!nextis(/* constructor */{
+            tag: "Op",
+            Arg0: ";"
+          })) {
       expr(stk);
     }
     Curry._1(next$1, /* () */0);
@@ -1322,8 +1544,8 @@ function stmt(brk, stk) {
     le(32, brkl[0]);
     brkl[0] = loc$4;
     return /* () */0;
-  } else if (!t.tag) {
-    switch (t[0]) {
+  } else if (/* XXX */t.tag === "Op") {
+    switch (t.Arg0) {
       case ";" :
           return /* () */0;
       case "{" :
@@ -1342,7 +1564,10 @@ function block(brk, stk) {
   var match = decl(false, 0, stk);
   var stk$prime = match[1];
   var n = match[0];
-  while(!nextis(/* Op */Block.__(0, ["}"]))) {
+  while(!nextis(/* constructor */{
+          tag: "Op",
+          Arg0: "}"
+        })) {
     stmt(brk, stk$prime);
   };
   Curry._1(next$1, /* () */0);
@@ -1358,16 +1583,19 @@ function block(brk, stk) {
 
 function top(_param) {
   while(true) {
-    if (nextis(/* Op */Block.__(0, ["EOF!"]))) {
+    if (nextis(/* constructor */{
+            tag: "Op",
+            Arg0: "EOF!"
+          })) {
       return 0;
     } else if (nextis(tokint)) {
-      decl(true, 0, /* [] */0);
+      decl(true, 0, "[]");
       _param = /* () */0;
       continue ;
     } else {
       var match = Curry._1(next$1, /* () */0);
-      if (match.tag === /* Sym */3) {
-        var f = match[0];
+      if (/* XXX */match.tag === "Sym") {
+        var f = match.Arg0;
         var g = Caml_array.caml_array_get(globs, f);
         if (g[/* va */1] >= 0) {
           throw [
@@ -1385,9 +1613,9 @@ function top(_param) {
             var n = _n;
             var regs = _regs;
             var match = Curry._1(next$1, /* () */0);
-            switch (match.tag | 0) {
-              case /* Op */0 :
-                  if (match[0] === ")") {
+            switch (/* XXX */match.tag) {
+              case "Op" :
+                  if (match.Arg0 === ")") {
                     return stk;
                   } else {
                     throw [
@@ -1395,26 +1623,29 @@ function top(_param) {
                           "[var] or ) expected"
                         ];
                   }
-              case /* ILit */1 :
-              case /* SLit */2 :
+              case "ILit" :
+              case "SLit" :
                   throw [
                         Caml_builtin_exceptions.failure,
                         "[var] or ) expected"
                       ];
-              case /* Sym */3 :
+              case "Sym" :
                   var r = List.hd(regs);
                   push(r);
-                  if (nextis(/* Op */Block.__(0, [","]))) {
+                  if (nextis(/* constructor */{
+                          tag: "Op",
+                          Arg0: ","
+                        })) {
                     Curry._1(next$1, /* () */0);
                   }
-                  var stk$prime_000 = /* tuple */[
-                    match[0],
-                    ((-n | 0) << 3)
-                  ];
-                  var stk$prime = /* :: */[
-                    stk$prime_000,
-                    stk
-                  ];
+                  var stk$prime = /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
+                      match.Arg0,
+                      ((-n | 0) << 3)
+                    ],
+                    Arg1: stk
+                  };
                   _stk = stk$prime;
                   _n = n + 1 | 0;
                   _regs = List.tl(regs);
@@ -1427,26 +1658,35 @@ function top(_param) {
         align[0] = 0;
         out(85);
         out(4753893);
-        var stk = emitargs(/* :: */[
-              7,
-              /* :: */[
-                6,
-                /* :: */[
-                  2,
-                  /* :: */[
-                    1,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* [] */0
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ], 1, /* [] */0);
-        while(Caml_obj.caml_notequal(Curry._1(next$1, /* () */0), /* Op */Block.__(0, ["{"]))) {
+        var stk = emitargs(/* constructor */{
+              tag: "::",
+              Arg0: 7,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 6,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 2,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 1,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 8,
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: 9,
+                        Arg1: "[]"
+                      }
+                    }
+                  }
+                }
+              }
+            }, 1, "[]");
+        while(Caml_obj.caml_notequal(Curry._1(next$1, /* () */0), /* constructor */{
+                tag: "Op",
+                Arg0: "{"
+              })) {
           
         };
         retl[0] = 0;
@@ -1457,19 +1697,23 @@ function top(_param) {
         patch(true, retl[0], opos[0]);
         out(51651);
         if (dbg[0]) {
-          Curry._1(Printf.eprintf(/* Format */[
-                    /* String_literal */Block.__(11, [
-                        "done with function ",
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* Char_literal */Block.__(12, [
-                                /* "\n" */10,
-                                /* End_of_format */0
-                              ])
-                          ])
-                      ]),
-                    "done with function %s\n"
-                  ]), symstr(f));
+          Curry._1(Printf.eprintf(/* constructor */{
+                    tag: "Format",
+                    Arg0: /* constructor */{
+                      tag: "String_literal",
+                      Arg0: "done with function ",
+                      Arg1: /* constructor */{
+                        tag: "String",
+                        Arg0: "No_padding",
+                        Arg1: /* constructor */{
+                          tag: "Char_literal",
+                          Arg0: /* "\n" */10,
+                          Arg1: "End_of_format"
+                        }
+                      }
+                    },
+                    Arg1: "done with function %s\n"
+                  }), symstr(f));
         }
         _param = /* () */0;
         continue ;
@@ -1483,52 +1727,67 @@ function top(_param) {
   };
 }
 
-var elfhdr = Bytes.of_string($$String.concat("", /* :: */[
-          "\x7fELF\x02\x01\x01\0",
-          /* :: */[
-            "\0\0\0\0\0\0\0\0",
-            /* :: */[
-              "\x02\0",
-              /* :: */[
-                ">\0",
-                /* :: */[
-                  "\x01\0\0\0",
-                  /* :: */[
-                    "\0\0\0\0\0\0\0\0",
-                    /* :: */[
-                      "@\0\0\0\0\0\0\0",
-                      /* :: */[
-                        "\0\0\0\0\0\0\0\0",
-                        /* :: */[
-                          "\0\0\0\0",
-                          /* :: */[
-                            "@\0",
-                            /* :: */[
-                              "8\0",
-                              /* :: */[
-                                "\x03\0",
-                                /* :: */[
-                                  "@\0",
-                                  /* :: */[
-                                    "\0\0",
-                                    /* :: */[
-                                      "\0\0",
-                                      /* [] */0
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]));
+var elfhdr = Bytes.of_string($$String.concat("", /* constructor */{
+          tag: "::",
+          Arg0: "\x7fELF\x02\x01\x01\0",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: "\0\0\0\0\0\0\0\0",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: "\x02\0",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: ">\0",
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: "\x01\0\0\0",
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: "\0\0\0\0\0\0\0\0",
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: "@\0\0\0\0\0\0\0",
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: "\0\0\0\0\0\0\0\0",
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: "\0\0\0\0",
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: "@\0",
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: "8\0",
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: "\x03\0",
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: "@\0",
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: "\0\0",
+                                    Arg1: /* constructor */{
+                                      tag: "::",
+                                      Arg0: "\0\0",
+                                      Arg1: "[]"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }));
 
 function elfphdr(ty, off, sz, align) {
   le(32, ty);
@@ -1636,64 +1895,83 @@ function elfgen(outf) {
   var dyn = opos[0];
   List.iter((function (param) {
           return le(64, param);
-        }), /* :: */[
-        1,
-        /* :: */[
-          29,
-          /* :: */[
-            4,
-            /* :: */[
-              va(hash),
-              /* :: */[
-                5,
-                /* :: */[
-                  va(strtab),
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      va(symtab),
-                      /* :: */[
-                        7,
-                        /* :: */[
-                          va(rel),
-                          /* :: */[
-                            8,
-                            /* :: */[
-                              hash - rel | 0,
-                              /* :: */[
-                                9,
-                                /* :: */[
-                                  24,
-                                  /* :: */[
-                                    10,
-                                    /* :: */[
-                                      symtab - strtab | 0,
-                                      /* :: */[
-                                        11,
-                                        /* :: */[
-                                          24,
-                                          /* :: */[
-                                            0,
-                                            /* [] */0
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]);
+        }), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 29,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 4,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: va(hash),
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 5,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: va(strtab),
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 6,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: va(symtab),
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: 7,
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: va(rel),
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: 8,
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: hash - rel | 0,
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: 9,
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: 24,
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: 10,
+                                    Arg1: /* constructor */{
+                                      tag: "::",
+                                      Arg0: symtab - strtab | 0,
+                                      Arg1: /* constructor */{
+                                        tag: "::",
+                                        Arg0: 11,
+                                        Arg1: /* constructor */{
+                                          tag: "::",
+                                          Arg0: 24,
+                                          Arg1: /* constructor */{
+                                            tag: "::",
+                                            Arg0: 0,
+                                            Arg1: "[]"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
   var tend = opos[0];
   Bytes.blit(obuf, 0, obuf, off, tend);
   Bytes.blit(glo, 0, obuf, 232, gpos[0]);
@@ -1718,74 +1996,92 @@ function elfgen(outf) {
 
 function main(param) {
   var ppsym = function (param) {
-    switch (param.tag | 0) {
-      case /* Op */0 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Operator '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "'\n",
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Operator '%s'\n"
-                        ]), param[0]);
-      case /* ILit */1 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Int literal ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Int literal %d\n"
-                        ]), param[0]);
-      case /* SLit */2 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Str literal ",
-                              /* Caml_string */Block.__(3, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Str literal %S\n"
-                        ]), param[1]);
-      case /* Sym */3 :
-          var i = param[0];
-          return Curry._2(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Symbol '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "' (",
-                                      /* Int */Block.__(4, [
-                                          /* Int_d */0,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* String_literal */Block.__(11, [
-                                              ")\n",
-                                              /* End_of_format */0
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "Symbol '%s' (%d)\n"
-                        ]), symstr(i), i);
+    switch (/* XXX */param.tag) {
+      case "Op" :
+          return Curry._1(Printf.printf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "Operator '",
+                            Arg1: /* constructor */{
+                              tag: "String",
+                              Arg0: "No_padding",
+                              Arg1: /* constructor */{
+                                tag: "String_literal",
+                                Arg0: "'\n",
+                                Arg1: "End_of_format"
+                              }
+                            }
+                          },
+                          Arg1: "Operator '%s'\n"
+                        }), param.Arg0);
+      case "ILit" :
+          return Curry._1(Printf.printf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "Int literal ",
+                            Arg1: /* constructor */{
+                              tag: "Int",
+                              Arg0: "Int_d",
+                              Arg1: "No_padding",
+                              Arg2: "No_precision",
+                              Arg3: /* constructor */{
+                                tag: "Char_literal",
+                                Arg0: /* "\n" */10,
+                                Arg1: "End_of_format"
+                              }
+                            }
+                          },
+                          Arg1: "Int literal %d\n"
+                        }), param.Arg0);
+      case "SLit" :
+          return Curry._1(Printf.printf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "Str literal ",
+                            Arg1: /* constructor */{
+                              tag: "Caml_string",
+                              Arg0: "No_padding",
+                              Arg1: /* constructor */{
+                                tag: "Char_literal",
+                                Arg0: /* "\n" */10,
+                                Arg1: "End_of_format"
+                              }
+                            }
+                          },
+                          Arg1: "Str literal %S\n"
+                        }), param.Arg1);
+      case "Sym" :
+          var i = param.Arg0;
+          return Curry._2(Printf.printf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "Symbol '",
+                            Arg1: /* constructor */{
+                              tag: "String",
+                              Arg0: "No_padding",
+                              Arg1: /* constructor */{
+                                tag: "String_literal",
+                                Arg0: "' (",
+                                Arg1: /* constructor */{
+                                  tag: "Int",
+                                  Arg0: "Int_d",
+                                  Arg1: "No_padding",
+                                  Arg2: "No_precision",
+                                  Arg3: /* constructor */{
+                                    tag: "String_literal",
+                                    Arg0: ")\n",
+                                    Arg1: "End_of_format"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          Arg1: "Symbol '%s' (%d)\n"
+                        }), symstr(i), i);
       
     }
   };
@@ -1800,7 +2096,7 @@ function main(param) {
         var c = function (param) {
           return block(partial_arg, param);
         };
-        var stk = /* [] */0;
+        var stk = "[]";
         opos[0] = 0;
         Curry._1(c, stk);
         return Pervasives.print_bytes(Bytes.sub(obuf, 0, opos[0]));
@@ -1808,18 +2104,22 @@ function main(param) {
         var _param = /* () */0;
         while(true) {
           var tok = Curry._1(next$1, /* () */0);
-          if (tok.tag) {
-            ppsym(tok);
-            _param = /* () */0;
-            continue ;
-          } else if (tok[0] === "EOF!") {
-            return Printf.printf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "End of input stream\n",
-                            /* End_of_format */0
-                          ]),
-                        "End of input stream\n"
-                      ]);
+          if (/* XXX */tok.tag === "Op") {
+            if (tok.Arg0 === "EOF!") {
+              return Printf.printf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "End of input stream\n",
+                            Arg1: "End_of_format"
+                          },
+                          Arg1: "End of input stream\n"
+                        });
+            } else {
+              ppsym(tok);
+              _param = /* () */0;
+              continue ;
+            }
           } else {
             ppsym(tok);
             _param = /* () */0;

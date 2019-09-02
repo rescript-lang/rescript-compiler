@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Caml_weak = require("../../lib/js/caml_weak.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

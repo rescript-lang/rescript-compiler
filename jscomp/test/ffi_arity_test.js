@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
@@ -68,101 +67,111 @@ var abc_u = abc;
 
 g();
 
-Mt.from_pair_suites("Ffi_arity_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Ffi_arity_test", /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      v,
-                      /* array */[
-                        0,
-                        1,
-                        4
-                      ]
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: v,
+                    Arg1: /* array */[
+                      0,
+                      1,
+                      4
+                    ]
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        vv,
-                        /* array */[
-                          1,
-                          3,
-                          5
-                        ]
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: vv,
+                      Arg1: /* array */[
+                        1,
+                        3,
+                        5
+                      ]
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          hh,
-                          /* array */[
-                            1,
-                            2,
-                            3
-                          ]
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: hh,
+                        Arg1: /* array */[
+                          1,
+                          2,
+                          3
+                        ]
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "File \"ffi_arity_test.ml\", line 48, characters 4-11",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            /* array */[
-                                  1,
-                                  2,
-                                  3
-                                ].map((function (x) {
-                                      return (function (y) {
-                                          return x + y | 0;
-                                        });
-                                    })).map((function (y) {
-                                    return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
-                                  })),
-                            /* array */[
-                              2,
-                              6,
-                              12
-                            ]
-                          ]);
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: /* array */[
+                                1,
+                                2,
+                                3
+                              ].map((function (x) {
+                                    return (function (y) {
+                                        return x + y | 0;
+                                      });
+                                  })).map((function (y) {
+                                  return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
+                                })),
+                          Arg1: /* array */[
+                            2,
+                            6,
+                            12
+                          ]
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 "File \"ffi_arity_test.ml\", line 53, characters 4-11",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              /* array */[
-                                  1,
-                                  2,
-                                  3
-                                ].map((function (x, param) {
-                                      var y = Caml_int32.imul(x, x);
-                                      return (function (i) {
-                                                  return y + i | 0;
-                                                })(param);
-                                    })),
-                              /* array */[
+                    return /* constructor */{
+                            tag: "Eq",
+                            Arg0: /* array */[
                                 1,
-                                5,
-                                11
-                              ]
-                            ]);
+                                2,
+                                3
+                              ].map((function (x, param) {
+                                    var y = Caml_int32.imul(x, x);
+                                    return (function (i) {
+                                                return y + i | 0;
+                                              })(param);
+                                  })),
+                            Arg1: /* array */[
+                              1,
+                              5,
+                              11
+                            ]
+                          };
                   })
               ],
-              /* [] */0
-            ]
-          ]
-        ]
-      ]
-    ]);
+              Arg1: "[]"
+            }
+          }
+        }
+      }
+    });
 
 function bar(fn) {
   return Curry._1(fn, /* () */0);

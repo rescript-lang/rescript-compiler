@@ -1,81 +1,92 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
-var suites_000 = /* tuple */[
-  "setTimeout/clearTimeout sanity check",
-  (function (param) {
-      var handle = setTimeout((function (param) {
-              return /* () */0;
-            }), 0);
-      clearTimeout(handle);
-      return /* Ok */Block.__(4, [true]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "setInerval/clearInterval sanity check",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "setTimeout/clearTimeout sanity check",
     (function (param) {
-        var handle = setInterval((function (param) {
+        var handle = setTimeout((function (param) {
                 return /* () */0;
               }), 0);
-        clearInterval(handle);
-        return /* Ok */Block.__(4, [true]);
+        clearTimeout(handle);
+        return /* constructor */{
+                tag: "Ok",
+                Arg0: true
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
-      "encodeURI",
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "setInerval/clearInterval sanity check",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    encodeURI("[-=-]"),
-                    "%5B-=-%5D"
-                  ]);
+          var handle = setInterval((function (param) {
+                  return /* () */0;
+                }), 0);
+          clearInterval(handle);
+          return /* constructor */{
+                  tag: "Ok",
+                  Arg0: true
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "decodeURI",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "encodeURI",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      decodeURI("%5B-=-%5D"),
-                      "[-=-]"
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: encodeURI("[-=-]"),
+                    Arg1: "%5B-=-%5D"
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
-          "encodeURIComponent",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "decodeURI",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        encodeURIComponent("[-=-]"),
-                        "%5B-%3D-%5D"
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: decodeURI("%5B-=-%5D"),
+                      Arg1: "[-=-]"
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
-            "decodeURIComponent",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "encodeURIComponent",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          decodeURIComponent("%5B-%3D-%5D"),
-                          "[-=-]"
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: encodeURIComponent("[-=-]"),
+                        Arg1: "%5B-%3D-%5D"
+                      };
               })
           ],
-          /* [] */0
-        ]
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
+              "decodeURIComponent",
+              (function (param) {
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: decodeURIComponent("%5B-%3D-%5D"),
+                          Arg1: "[-=-]"
+                        };
+                })
+            ],
+            Arg1: "[]"
+          }
+        }
+      }
+    }
+  }
+};
 
 Mt.from_pair_suites("Js_global_test", suites);
 

@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
@@ -13,7 +12,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var test_id = /* record */[/* contents */0];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 function eq(loc) {
   return (function (param, param$1) {
@@ -123,23 +122,27 @@ function from_pairs(ps) {
                     var b = param[1];
                     var a = param[0];
                     return /* tuple */[
-                            Curry._1(Printf.sprintf(/* Format */[
-                                      /* String_literal */Block.__(11, [
-                                          "pair ",
-                                          /* Int */Block.__(4, [
-                                              /* Int_d */0,
-                                              /* No_padding */0,
-                                              /* No_precision */0,
-                                              /* End_of_format */0
-                                            ])
-                                        ]),
-                                      "pair %d"
-                                    ]), i),
+                            Curry._1(Printf.sprintf(/* constructor */{
+                                      tag: "Format",
+                                      Arg0: /* constructor */{
+                                        tag: "String_literal",
+                                        Arg0: "pair ",
+                                        Arg1: /* constructor */{
+                                          tag: "Int",
+                                          Arg0: "Int_d",
+                                          Arg1: "No_padding",
+                                          Arg2: "No_precision",
+                                          Arg3: "End_of_format"
+                                        }
+                                      },
+                                      Arg1: "pair %d"
+                                    }), i),
                             (function (param) {
-                                return /* Approx */Block.__(5, [
-                                          a,
-                                          b
-                                        ]);
+                                return /* constructor */{
+                                        tag: "Approx",
+                                        Arg0: a,
+                                        Arg1: b
+                                      };
                               })
                           ];
                   }), ps));
@@ -149,7 +152,7 @@ var float_compare = Caml_primitive.caml_float_compare;
 
 var param = Pervasives.classify_float(3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", param, /* FP_normal */0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", param, "FP_normal");
 
 var param$1 = Caml_float.caml_modf_float(-3.125);
 
@@ -237,51 +240,59 @@ var b = match$4[1];
 
 var a = match$4[0];
 
-Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */[
-          /* tuple */[
+Mt.from_pair_suites("Float_test", Pervasives.$at(/* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "mod_float",
             (function (param) {
-                return /* Approx */Block.__(5, [
-                          3.2 % 0.5,
-                          0.200000000000000178
-                        ]);
+                return /* constructor */{
+                        tag: "Approx",
+                        Arg0: 3.2 % 0.5,
+                        Arg1: 0.200000000000000178
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "modf_float1",
               (function (param) {
-                  return /* Approx */Block.__(5, [
-                            a,
-                            0.299999999999997158
-                          ]);
+                  return /* constructor */{
+                          tag: "Approx",
+                          Arg0: a,
+                          Arg1: 0.299999999999997158
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 "modf_float2",
                 (function (param) {
-                    return /* Approx */Block.__(5, [
-                              b,
-                              32
-                            ]);
+                    return /* constructor */{
+                            tag: "Approx",
+                            Arg0: b,
+                            Arg1: 32
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
                   "int_of_float",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                3,
-                                3
-                              ]);
+                      return /* constructor */{
+                              tag: "Eq",
+                              Arg0: 3,
+                              Arg1: 3
+                            };
                     })
                 ],
-                /* [] */0
-              ]
-            ]
-          ]
-        ], Pervasives.$at(from_pairs(results), suites[0])));
+                Arg1: "[]"
+              }
+            }
+          }
+        }, Pervasives.$at(from_pairs(results), suites[0])));
 
 exports.test_id = test_id;
 exports.suites = suites;

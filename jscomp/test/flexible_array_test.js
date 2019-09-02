@@ -1,7 +1,6 @@
 'use strict';
 
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -12,16 +11,16 @@ function sub(_tr, _k) {
   while(true) {
     var k = _k;
     var tr = _tr;
-    if (tr) {
+    if (tr !== "Lf") {
       if (k === 1) {
-        return tr[0];
+        return tr.Arg0;
       } else {
         _k = k / 2 | 0;
         if (k % 2 === 0) {
-          _tr = tr[1];
+          _tr = tr.Arg1;
           continue ;
         } else {
-          _tr = tr[2];
+          _tr = tr.Arg2;
           continue ;
         }
       }
@@ -32,62 +31,68 @@ function sub(_tr, _k) {
 }
 
 function update(tr, k, w) {
-  if (tr) {
-    var r = tr[2];
-    var l = tr[1];
+  if (tr !== "Lf") {
+    var r = tr.Arg2;
+    var l = tr.Arg1;
     if (k === 1) {
-      return /* Br */[
-              w,
-              l,
-              r
-            ];
+      return /* constructor */{
+              tag: "Br",
+              Arg0: w,
+              Arg1: l,
+              Arg2: r
+            };
     } else {
-      var v = tr[0];
+      var v = tr.Arg0;
       if (k % 2 === 0) {
-        return /* Br */[
-                v,
-                update(l, k / 2 | 0, w),
-                r
-              ];
+        return /* constructor */{
+                tag: "Br",
+                Arg0: v,
+                Arg1: update(l, k / 2 | 0, w),
+                Arg2: r
+              };
       } else {
-        return /* Br */[
-                v,
-                l,
-                update(r, k / 2 | 0, w)
-              ];
+        return /* constructor */{
+                tag: "Br",
+                Arg0: v,
+                Arg1: l,
+                Arg2: update(r, k / 2 | 0, w)
+              };
       }
     }
   } else if (k === 1) {
-    return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
-          ];
+    return /* constructor */{
+            tag: "Br",
+            Arg0: w,
+            Arg1: "Lf",
+            Arg2: "Lf"
+          };
   } else {
     throw Caml_builtin_exceptions.not_found;
   }
 }
 
 function $$delete(tr, n) {
-  if (tr) {
+  if (tr !== "Lf") {
     if (n === 1) {
-      return /* Lf */0;
+      return "Lf";
     } else {
-      var r = tr[2];
-      var l = tr[1];
-      var v = tr[0];
+      var r = tr.Arg2;
+      var l = tr.Arg1;
+      var v = tr.Arg0;
       if (n % 2 === 0) {
-        return /* Br */[
-                v,
-                $$delete(l, n / 2 | 0),
-                r
-              ];
+        return /* constructor */{
+                tag: "Br",
+                Arg0: v,
+                Arg1: $$delete(l, n / 2 | 0),
+                Arg2: r
+              };
       } else {
-        return /* Br */[
-                v,
-                l,
-                $$delete(r, n / 2 | 0)
-              ];
+        return /* constructor */{
+                tag: "Br",
+                Arg0: v,
+                Arg1: l,
+                Arg2: $$delete(r, n / 2 | 0)
+              };
       }
     }
   } else {
@@ -96,31 +101,34 @@ function $$delete(tr, n) {
 }
 
 function loext(tr, w) {
-  if (tr) {
-    return /* Br */[
-            w,
-            loext(tr[2], tr[0]),
-            tr[1]
-          ];
+  if (tr !== "Lf") {
+    return /* constructor */{
+            tag: "Br",
+            Arg0: w,
+            Arg1: loext(tr.Arg2, tr.Arg0),
+            Arg2: tr.Arg1
+          };
   } else {
-    return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
-          ];
+    return /* constructor */{
+            tag: "Br",
+            Arg0: w,
+            Arg1: "Lf",
+            Arg2: "Lf"
+          };
   }
 }
 
 function lorem(tr) {
-  if (tr) {
-    var l = tr[1];
-    if (l) {
-      return /* Br */[
-              l[0],
-              tr[2],
-              lorem(l)
-            ];
-    } else if (tr[2]) {
+  if (tr !== "Lf") {
+    var l = tr.Arg1;
+    if (l !== "Lf") {
+      return /* constructor */{
+              tag: "Br",
+              Arg0: l.Arg0,
+              Arg1: tr.Arg2,
+              Arg2: lorem(l)
+            };
+    } else if (tr.Arg2 !== "Lf") {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -130,7 +138,7 @@ function lorem(tr) {
             ]
           ];
     } else {
-      return /* Lf */0;
+      return "Lf";
     }
   } else {
     throw Caml_builtin_exceptions.not_found;
@@ -138,7 +146,7 @@ function lorem(tr) {
 }
 
 var empty = /* tuple */[
-  /* Lf */0,
+  "Lf",
   0
 ];
 
@@ -223,13 +231,15 @@ function pp(fmt, s) {
     v = v + (", " + String(get(s, i)));
   }
   v = v + "]";
-  return Curry._1(Format.fprintf(fmt, /* Format */[
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%s"
-                ]), v);
+  return Curry._1(Format.fprintf(fmt, /* constructor */{
+                  tag: "Format",
+                  Arg0: /* constructor */{
+                    tag: "String",
+                    Arg0: "No_padding",
+                    Arg1: "End_of_format"
+                  },
+                  Arg1: "%s"
+                }), v);
 }
 
 function filter_from(i, p, s) {

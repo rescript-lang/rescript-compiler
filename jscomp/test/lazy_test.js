@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
-var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -118,88 +117,102 @@ var f008 = Caml_obj.caml_lazy_make((function (param) {
         throw Caml_builtin_exceptions.not_found;
       }));
 
-Mt.from_pair_suites("Lazy_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Lazy_test", /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "simple",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      lazy_test(/* () */0),
-                      /* tuple */[
-                        3,
-                        32
-                      ]
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: lazy_test(/* () */0),
+                    Arg1: /* tuple */[
+                      3,
+                      32
+                    ]
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "lazy_match",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        h,
-                        2
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: h,
+                      Arg1: 2
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "lazy_force",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          u_v[0],
-                          2
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: u_v[0],
+                        Arg1: 2
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "lazy_from_fun",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            CamlinternalLazy.force(l_from_fun),
-                            3
-                          ]);
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: CamlinternalLazy.force(l_from_fun),
+                          Arg1: 3
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
                 "lazy_from_val",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              CamlinternalLazy.force(Lazy.from_val(3)),
-                              3
-                            ]);
+                    return /* constructor */{
+                            tag: "Eq",
+                            Arg0: CamlinternalLazy.force(Lazy.from_val(3)),
+                            Arg1: 3
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
                   "lazy_from_val2",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(3))),
-                                3
-                              ]);
+                      return /* constructor */{
+                              tag: "Eq",
+                              Arg0: CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(3))),
+                              Arg1: 3
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
                     "lazy_from_val3",
                     (function (param) {
                         debugger;
-                        return /* Eq */Block.__(0, [
-                                  CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(forward_test))),
-                                  4
-                                ]);
+                        return /* constructor */{
+                                tag: "Eq",
+                                Arg0: CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(forward_test))),
+                                Arg1: 4
+                              };
                       })
                   ],
-                  /* [] */0
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+                  Arg1: "[]"
+                }
+              }
+            }
+          }
+        }
+      }
+    });
 
 exports.v = v;
 exports.lazy_test = lazy_test;

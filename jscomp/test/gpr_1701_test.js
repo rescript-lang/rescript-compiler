@@ -26,7 +26,7 @@ function test(n) {
 test(100);
 
 function read_lines(inc) {
-  var _acc = /* [] */0;
+  var _acc = "[]";
   while(true) {
     var acc = _acc;
     var match;
@@ -41,10 +41,11 @@ function read_lines(inc) {
       }
     }
     if (match !== undefined) {
-      _acc = /* :: */[
-        match,
-        acc
-      ];
+      _acc = /* constructor */{
+        tag: "::",
+        Arg0: match,
+        Arg1: acc
+      };
       continue ;
     } else {
       return List.rev(acc);
@@ -53,7 +54,7 @@ function read_lines(inc) {
 }
 
 function read_lines2(inc) {
-  var _acc = /* [] */0;
+  var _acc = "[]";
   while(true) {
     var acc = _acc;
     var l;
@@ -67,10 +68,11 @@ function read_lines2(inc) {
         throw exn;
       }
     }
-    _acc = /* :: */[
-      l,
-      acc
-    ];
+    _acc = /* constructor */{
+      tag: "::",
+      Arg0: l,
+      Arg1: acc
+    };
     continue ;
   };
 }
@@ -79,10 +81,11 @@ function read_lines3(inc) {
   var loop = function (acc) {
     try {
       var l = Pervasives.input_line(inc);
-      return loop(/* :: */[
-                  l,
-                  acc
-                ]);
+      return loop(/* constructor */{
+                  tag: "::",
+                  Arg0: l,
+                  Arg1: acc
+                });
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {
@@ -92,7 +95,7 @@ function read_lines3(inc) {
       }
     }
   };
-  return loop(/* [] */0);
+  return loop("[]");
 }
 
 function fff(f, x) {

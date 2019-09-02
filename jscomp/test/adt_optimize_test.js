@@ -12,7 +12,7 @@ function f_0(x) {
 
 function f2(param) {
   if (param >= 3) {
-    return /* T003 */3;
+    return "T003";
   } else {
     return param;
   }
@@ -27,22 +27,22 @@ function f4(param) {
 }
 
 function f5(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     switch (param) {
-      case /* A */0 :
+      case "A" :
           return 1;
-      case /* B */1 :
+      case "B" :
           return 3;
-      case /* F */2 :
+      case "F" :
           return 4;
       
     }
   } else {
-    switch (param.tag | 0) {
-      case /* C */0 :
-      case /* D */1 :
+    switch (/* XXX */param.tag) {
+      case "C" :
+      case "D" :
           return 1;
-      case /* E */2 :
+      case "E" :
           return 2;
       
     }
@@ -50,11 +50,14 @@ function f5(param) {
 }
 
 function f6(param) {
-  if (typeof param === "number") {
-    if (param >= 2) {
-      return 2;
-    } else {
-      return 0;
+  if (typeof param === "string") {
+    switch (param) {
+      case "A" :
+      case "B" :
+          return 0;
+      case "F" :
+          return 2;
+      
     }
   } else {
     return 1;
@@ -62,23 +65,23 @@ function f6(param) {
 }
 
 function f7(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     switch (param) {
-      case /* A */0 :
+      case "A" :
           return 1;
-      case /* B */1 :
+      case "B" :
           return 2;
-      case /* F */2 :
+      case "F" :
           return -1;
       
     }
   } else {
-    switch (param.tag | 0) {
-      case /* C */0 :
+    switch (/* XXX */param.tag) {
+      case "C" :
           return 3;
-      case /* D */1 :
+      case "D" :
           return 4;
-      case /* E */2 :
+      case "E" :
           return -1;
       
     }
@@ -86,18 +89,18 @@ function f7(param) {
 }
 
 function f8(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     switch (param) {
-      case /* T60 */0 :
-      case /* T61 */1 :
+      case "T60" :
+      case "T61" :
           return 1;
       default:
         return 3;
     }
   } else {
-    switch (param.tag | 0) {
-      case /* T64 */0 :
-      case /* T65 */1 :
+    switch (/* XXX */param.tag) {
+      case "T64" :
+      case "T65" :
           return 2;
       default:
         return 3;
@@ -106,19 +109,19 @@ function f8(param) {
 }
 
 function f9(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     switch (param) {
-      case /* T60 */0 :
-      case /* T61 */1 :
-      case /* T62 */2 :
+      case "T60" :
+      case "T61" :
+      case "T62" :
           return 1;
       default:
         return 3;
     }
   } else {
-    switch (param.tag | 0) {
-      case /* T64 */0 :
-      case /* T65 */1 :
+    switch (/* XXX */param.tag) {
+      case "T64" :
+      case "T65" :
           return 2;
       default:
         return 3;
@@ -127,25 +130,25 @@ function f9(param) {
 }
 
 function f10(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     switch (param) {
-      case /* T60 */0 :
+      case "T60" :
           return 0;
-      case /* T61 */1 :
+      case "T61" :
           return 2;
-      case /* T62 */2 :
+      case "T62" :
           return 4;
-      case /* T63 */3 :
+      case "T63" :
           return 1;
       
     }
   } else {
-    switch (param.tag | 0) {
-      case /* T64 */0 :
-      case /* T65 */1 :
+    switch (/* XXX */param.tag) {
+      case "T64" :
+      case "T65" :
           return 2;
-      case /* T66 */2 :
-      case /* T68 */3 :
+      case "T66" :
+      case "T68" :
           return 3;
       
     }
@@ -153,9 +156,11 @@ function f10(param) {
 }
 
 function f11(x) {
-  if (typeof x === "number") {
+  if (typeof x === "string") {
     return 2;
-  } else if (x.tag) {
+  } else if (/* XXX */x.tag === "D") {
+    return 1;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -164,8 +169,6 @@ function f11(x) {
             9
           ]
         ];
-  } else {
-    return 1;
   }
 }
 

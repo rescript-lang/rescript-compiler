@@ -10,7 +10,7 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -22,51 +22,57 @@ var Int32 = Caml_module.init_mod([
       "recursive_module.ml",
       14,
       6
-    ], [[
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [
         [
-          0,
+          "Function",
           "buffer"
         ],
         [
-          0,
+          "Function",
           "get"
         ],
         [
-          0,
+          "Function",
           "set"
         ],
         [
-          0,
+          "Function",
           "create"
         ],
         [
-          0,
+          "Function",
           "of_buffer"
         ]
-      ]]);
+      ]
+    });
 
-Caml_module.update_mod([[
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [
         [
-          0,
+          "Function",
           "buffer"
         ],
         [
-          0,
+          "Function",
           "get"
         ],
         [
-          0,
+          "Function",
           "set"
         ],
         [
-          0,
+          "Function",
           "create"
         ],
         [
-          0,
+          "Function",
           "of_buffer"
         ]
-      ]], Int32, Int32);
+      ]
+    }, Int32, Int32);
 
 var Xx = {
   f: (function (prim, prim$1) {
@@ -80,42 +86,57 @@ var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
       27,
       6
-    ], [[[
-          0,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "u"
-        ]]]);
+        ]]
+    });
 
-Caml_module.update_mod([[[
-          0,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "u"
-        ]]], Int3, Int3);
+        ]]
+    }, Int3, Int3);
 
 var Inta = Caml_module.init_mod([
       "recursive_module.ml",
       31,
       6
-    ], [[[
-          1,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]]);
+        ]]
+    });
 
 var Intb = Caml_module.init_mod([
       "recursive_module.ml",
       36,
       6
-    ], [[[
-          1,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]]);
+        ]]
+    });
 
 var a = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Intb.a);
       }));
 
-Caml_module.update_mod([[[
-          1,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]], Inta, {
+        ]]
+    }, Inta, {
       a: a
     });
 
@@ -123,10 +144,13 @@ var a$1 = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Inta.a) + 1 | 0;
       }));
 
-Caml_module.update_mod([[[
-          1,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]], Intb, {
+        ]]
+    }, Intb, {
       a: a$1
     });
 
@@ -149,35 +173,47 @@ var Inta$1 = Caml_module.init_mod([
       "recursive_module.ml",
       48,
       8
-    ], [[[
-          1,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]]);
+        ]]
+    });
 
 var Intb$1 = Caml_module.init_mod([
       "recursive_module.ml",
       53,
       8
-    ], [[[
-          1,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]]);
+        ]]
+    });
 
 var a$2 = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
       }));
 
-Caml_module.update_mod([[[
-          1,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]], Inta$1, {
+        ]]
+    }, Inta$1, {
       a: a$2
     });
 
-Caml_module.update_mod([[[
-          1,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Lazy",
           "a"
-        ]]], Intb$1, {
+        ]]
+    }, Intb$1, {
       a: 2
     });
 

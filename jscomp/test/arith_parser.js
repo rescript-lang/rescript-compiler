@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Parsing = require("../../lib/js/parsing.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -56,47 +55,60 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Numeral */Block.__(0, [_1]);
+      return /* constructor */{
+              tag: "Numeral",
+              Arg0: _1
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Variable */Block.__(6, [_1]);
+      return /* constructor */{
+              tag: "Variable",
+              Arg0: _1
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Plus */Block.__(1, [
-                _1,
-                _3
-              ]);
+      return /* constructor */{
+              tag: "Plus",
+              Arg0: _1,
+              Arg1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Minus */Block.__(2, [
-                _1,
-                _3
-              ]);
+      return /* constructor */{
+              tag: "Minus",
+              Arg0: _1,
+              Arg1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Times */Block.__(3, [
-                _1,
-                _3
-              ]);
+      return /* constructor */{
+              tag: "Times",
+              Arg0: _1,
+              Arg1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Divide */Block.__(4, [
-                _1,
-                _3
-              ]);
+      return /* constructor */{
+              tag: "Divide",
+              Arg0: _1,
+              Arg1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Negate */Block.__(5, [_2]);
+      return /* constructor */{
+              tag: "Negate",
+              Arg0: _2
+            };
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);

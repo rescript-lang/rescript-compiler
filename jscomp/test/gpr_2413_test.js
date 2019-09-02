@@ -3,22 +3,22 @@
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function f(param) {
-  switch (param.tag | 0) {
-    case /* A */0 :
-        var match = param[0];
-        if (match.tag) {
-          var a = match[0];
-          return a - a | 0;
+  switch (/* XXX */param.tag) {
+    case "A" :
+        var match = param.Arg0;
+        if (/* XXX */match.tag === "P") {
+          var a = match.Arg0;
+          return a + a | 0;
         } else {
-          var a$1 = match[0];
-          return a$1 + a$1 | 0;
+          var a$1 = match.Arg0;
+          return a$1 - a$1 | 0;
         }
-    case /* B */1 :
-    case /* C */2 :
+    case "B" :
+    case "C" :
         break;
     
   }
-  var a$2 = param[0][0];
+  var a$2 = param.Arg0.Arg0;
   return Caml_int32.imul(a$2, a$2);
 }
 

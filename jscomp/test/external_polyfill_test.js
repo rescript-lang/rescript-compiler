@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

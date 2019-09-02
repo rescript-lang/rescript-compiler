@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var $$String = require("../../lib/js/string.js");
 
 function u(v) {
@@ -18,33 +17,33 @@ function v(x) {
   return x.length;
 }
 
-var suites_000 = /* tuple */[
-  "const",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                1,
-                1
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "other",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "const",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  3,
-                  3
-                ]);
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: 1,
+                Arg1: 1
+              };
       })
   ],
-  /* [] */0
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "other",
+      (function (param) {
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: 3,
+                  Arg1: 3
+                };
+        })
+    ],
+    Arg1: "[]"
+  }
+};
 
 Mt.from_pair_suites("Module_parameter_test", suites);
 

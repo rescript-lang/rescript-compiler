@@ -1,7 +1,7 @@
 'use strict';
 
 
-console.log("list");
+console.log("A_list" !== "A_list" ? "Hashtbl.t" : "list");
 
 console.log("list");
 

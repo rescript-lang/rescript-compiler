@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -29,23 +28,29 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
           ___ocaml_lex_state = 0;
           continue ;
       case 1 :
-          return /* NUMERAL */Block.__(0, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
+          return /* constructor */{
+                  tag: "NUMERAL",
+                  Arg0: Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))
+                };
       case 2 :
-          return /* IDENT */Block.__(1, [Lexing.lexeme(lexbuf)]);
+          return /* constructor */{
+                  tag: "IDENT",
+                  Arg0: Lexing.lexeme(lexbuf)
+                };
       case 3 :
-          return /* PLUS */0;
+          return "PLUS";
       case 4 :
-          return /* MINUS */1;
+          return "MINUS";
       case 5 :
-          return /* TIMES */2;
+          return "TIMES";
       case 6 :
-          return /* DIVIDE */3;
+          return "DIVIDE";
       case 7 :
-          return /* LPAREN */5;
+          return "LPAREN";
       case 8 :
-          return /* RPAREN */6;
+          return "RPAREN";
       case 9 :
-          return /* EOF */7;
+          return "EOF";
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -59,21 +64,21 @@ function lexeme(lexbuf) {
 }
 
 function str(e) {
-  switch (e.tag | 0) {
-    case /* Numeral */0 :
-        return Pervasives.string_of_float(e[0]);
-    case /* Plus */1 :
-        return str(e[0]) + ("+" + str(e[1]));
-    case /* Minus */2 :
-        return str(e[0]) + ("-" + str(e[1]));
-    case /* Times */3 :
-        return str(e[0]) + ("*" + str(e[1]));
-    case /* Divide */4 :
-        return str(e[0]) + ("/" + str(e[1]));
-    case /* Negate */5 :
-        return "-" + str(e[0]);
-    case /* Variable */6 :
-        return e[0];
+  switch (/* XXX */e.tag) {
+    case "Numeral" :
+        return Pervasives.string_of_float(e.Arg0);
+    case "Plus" :
+        return str(e.Arg0) + ("+" + str(e.Arg1));
+    case "Minus" :
+        return str(e.Arg0) + ("-" + str(e.Arg1));
+    case "Times" :
+        return str(e.Arg0) + ("*" + str(e.Arg1));
+    case "Divide" :
+        return str(e.Arg0) + ("/" + str(e.Arg1));
+    case "Negate" :
+        return "-" + str(e.Arg0);
+    case "Variable" :
+        return e.Arg0;
     
   }
 }

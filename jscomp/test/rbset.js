@@ -3,14 +3,15 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function blackify(s) {
-  if (s && s[0]) {
+  if (s !== "Empty" && s.Arg0 !== "Black") {
     return /* tuple */[
-            /* Node */[
-              /* Black */0,
-              s[1],
-              s[2],
-              s[3]
-            ],
+            /* constructor */{
+              tag: "Node",
+              Arg0: "Black",
+              Arg1: s.Arg1,
+              Arg2: s.Arg2,
+              Arg3: s.Arg3
+            },
             false
           ];
   } else {
@@ -22,25 +23,21 @@ function blackify(s) {
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
-    return true;
-  }
+  return param === "Empty";
 }
 
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var y = param[2];
+    if (param !== "Empty") {
+      var y = param.Arg2;
       if (x === y) {
         return true;
       } else if (x < y) {
-        _param = param[1];
+        _param = param.Arg1;
         continue ;
       } else {
-        _param = param[3];
+        _param = param.Arg3;
         continue ;
       }
     } else {
@@ -58,25 +55,25 @@ function balance_left(l, x, r) {
   var c;
   var z;
   var d;
-  if (l && l[0]) {
-    var a$1 = l[1];
-    if (a$1 && a$1[0]) {
-      a = a$1[1];
-      x$1 = a$1[2];
-      b = a$1[3];
-      y = l[2];
-      c = l[3];
+  if (l !== "Empty" && l.Arg0 !== "Black") {
+    var a$1 = l.Arg1;
+    if (a$1 !== "Empty" && a$1.Arg0 !== "Black") {
+      a = a$1.Arg1;
+      x$1 = a$1.Arg2;
+      b = a$1.Arg3;
+      y = l.Arg2;
+      c = l.Arg3;
       z = x;
       d = r;
       exit = 2;
     }
-    var match = l[3];
-    if (match && match[0]) {
+    var match = l.Arg3;
+    if (match !== "Empty" && match.Arg0 !== "Black") {
       a = a$1;
-      x$1 = l[2];
-      b = match[1];
-      y = match[2];
-      c = match[3];
+      x$1 = l.Arg2;
+      b = match.Arg1;
+      y = match.Arg2;
+      c = match.Arg3;
       z = x;
       d = r;
       exit = 2;
@@ -88,29 +85,33 @@ function balance_left(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return /* Node */[
-                /* Black */0,
-                l,
-                x,
-                r
-              ];
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Black",
+                Arg1: l,
+                Arg2: x,
+                Arg3: r
+              };
     case 2 :
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  a,
-                  x$1,
-                  b
-                ],
-                y,
-                /* Node */[
-                  /* Black */0,
-                  c,
-                  z,
-                  d
-                ]
-              ];
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Red",
+                Arg1: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: a,
+                  Arg2: x$1,
+                  Arg3: b
+                },
+                Arg2: y,
+                Arg3: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: c,
+                  Arg2: z,
+                  Arg3: d
+                }
+              };
     
   }
 }
@@ -124,27 +125,27 @@ function balance_right(l, x, r) {
   var c;
   var z;
   var d;
-  if (r && r[0]) {
-    var b$1 = r[1];
-    if (b$1 && b$1[0]) {
+  if (r !== "Empty" && r.Arg0 !== "Black") {
+    var b$1 = r.Arg1;
+    if (b$1 !== "Empty" && b$1.Arg0 !== "Black") {
       a = l;
       x$1 = x;
-      b = b$1[1];
-      y = b$1[2];
-      c = b$1[3];
-      z = r[2];
-      d = r[3];
+      b = b$1.Arg1;
+      y = b$1.Arg2;
+      c = b$1.Arg3;
+      z = r.Arg2;
+      d = r.Arg3;
       exit = 2;
     }
-    var match = r[3];
-    if (match && match[0]) {
+    var match = r.Arg3;
+    if (match !== "Empty" && match.Arg0 !== "Black") {
       a = l;
       x$1 = x;
       b = b$1;
-      y = r[2];
-      c = match[1];
-      z = match[2];
-      d = match[3];
+      y = r.Arg2;
+      c = match.Arg1;
+      z = match.Arg2;
+      d = match.Arg3;
       exit = 2;
     } else {
       exit = 1;
@@ -154,88 +155,97 @@ function balance_right(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return /* Node */[
-                /* Black */0,
-                l,
-                x,
-                r
-              ];
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Black",
+                Arg1: l,
+                Arg2: x,
+                Arg3: r
+              };
     case 2 :
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  a,
-                  x$1,
-                  b
-                ],
-                y,
-                /* Node */[
-                  /* Black */0,
-                  c,
-                  z,
-                  d
-                ]
-              ];
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Red",
+                Arg1: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: a,
+                  Arg2: x$1,
+                  Arg3: b
+                },
+                Arg2: y,
+                Arg3: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: c,
+                  Arg2: z,
+                  Arg3: d
+                }
+              };
     
   }
 }
 
 function singleton(x) {
-  return /* Node */[
-          /* Black */0,
-          /* Empty */0,
-          x,
-          /* Empty */0
-        ];
+  return /* constructor */{
+          tag: "Node",
+          Arg0: "Black",
+          Arg1: "Empty",
+          Arg2: x,
+          Arg3: "Empty"
+        };
 }
 
 function unbalanced_left(param) {
-  if (param) {
-    if (param[0]) {
-      var match = param[1];
-      if (match && !match[0]) {
+  if (param !== "Empty") {
+    if (param.Arg0 !== "Black") {
+      var match = param.Arg1;
+      if (match !== "Empty" && match.Arg0 === "Black") {
         return /* tuple */[
-                balance_left(/* Node */[
-                      /* Red */1,
-                      match[1],
-                      match[2],
-                      match[3]
-                    ], param[2], param[3]),
+                balance_left(/* constructor */{
+                      tag: "Node",
+                      Arg0: "Red",
+                      Arg1: match.Arg1,
+                      Arg2: match.Arg2,
+                      Arg3: match.Arg3
+                    }, param.Arg2, param.Arg3),
                 false
               ];
       }
       
     } else {
-      var match$1 = param[1];
-      if (match$1) {
-        if (match$1[0]) {
-          var match$2 = match$1[3];
-          if (match$2 && !match$2[0]) {
+      var match$1 = param.Arg1;
+      if (match$1 !== "Empty") {
+        if (match$1.Arg0 !== "Black") {
+          var match$2 = match$1.Arg3;
+          if (match$2 !== "Empty" && match$2.Arg0 === "Black") {
             return /* tuple */[
-                    /* Node */[
-                      /* Black */0,
-                      match$1[1],
-                      match$1[2],
-                      balance_left(/* Node */[
-                            /* Red */1,
-                            match$2[1],
-                            match$2[2],
-                            match$2[3]
-                          ], param[2], param[3])
-                    ],
+                    /* constructor */{
+                      tag: "Node",
+                      Arg0: "Black",
+                      Arg1: match$1.Arg1,
+                      Arg2: match$1.Arg2,
+                      Arg3: balance_left(/* constructor */{
+                            tag: "Node",
+                            Arg0: "Red",
+                            Arg1: match$2.Arg1,
+                            Arg2: match$2.Arg2,
+                            Arg3: match$2.Arg3
+                          }, param.Arg2, param.Arg3)
+                    },
                     false
                   ];
           }
           
         } else {
           return /* tuple */[
-                  balance_left(/* Node */[
-                        /* Red */1,
-                        match$1[1],
-                        match$1[2],
-                        match$1[3]
-                      ], param[2], param[3]),
+                  balance_left(/* constructor */{
+                        tag: "Node",
+                        Arg0: "Red",
+                        Arg1: match$1.Arg1,
+                        Arg2: match$1.Arg2,
+                        Arg3: match$1.Arg3
+                      }, param.Arg2, param.Arg3),
                   true
                 ];
         }
@@ -254,53 +264,57 @@ function unbalanced_left(param) {
 }
 
 function unbalanced_right(param) {
-  if (param) {
-    if (param[0]) {
-      var match = param[3];
-      if (match && !match[0]) {
+  if (param !== "Empty") {
+    if (param.Arg0 !== "Black") {
+      var match = param.Arg3;
+      if (match !== "Empty" && match.Arg0 === "Black") {
         return /* tuple */[
-                balance_right(param[1], param[2], /* Node */[
-                      /* Red */1,
-                      match[1],
-                      match[2],
-                      match[3]
-                    ]),
+                balance_right(param.Arg1, param.Arg2, /* constructor */{
+                      tag: "Node",
+                      Arg0: "Red",
+                      Arg1: match.Arg1,
+                      Arg2: match.Arg2,
+                      Arg3: match.Arg3
+                    }),
                 false
               ];
       }
       
     } else {
-      var match$1 = param[3];
-      if (match$1) {
-        var x = param[2];
-        var a = param[1];
-        if (match$1[0]) {
-          var match$2 = match$1[1];
-          if (match$2 && !match$2[0]) {
+      var match$1 = param.Arg3;
+      if (match$1 !== "Empty") {
+        var x = param.Arg2;
+        var a = param.Arg1;
+        if (match$1.Arg0 !== "Black") {
+          var match$2 = match$1.Arg1;
+          if (match$2 !== "Empty" && match$2.Arg0 === "Black") {
             return /* tuple */[
-                    /* Node */[
-                      /* Black */0,
-                      balance_right(a, x, /* Node */[
-                            /* Red */1,
-                            match$2[1],
-                            match$2[2],
-                            match$2[3]
-                          ]),
-                      match$1[2],
-                      match$1[3]
-                    ],
+                    /* constructor */{
+                      tag: "Node",
+                      Arg0: "Black",
+                      Arg1: balance_right(a, x, /* constructor */{
+                            tag: "Node",
+                            Arg0: "Red",
+                            Arg1: match$2.Arg1,
+                            Arg2: match$2.Arg2,
+                            Arg3: match$2.Arg3
+                          }),
+                      Arg2: match$1.Arg2,
+                      Arg3: match$1.Arg3
+                    },
                     false
                   ];
           }
           
         } else {
           return /* tuple */[
-                  balance_right(a, x, /* Node */[
-                        /* Red */1,
-                        match$1[1],
-                        match$1[2],
-                        match$1[3]
-                      ]),
+                  balance_right(a, x, /* constructor */{
+                        tag: "Node",
+                        Arg0: "Red",
+                        Arg1: match$1.Arg1,
+                        Arg2: match$1.Arg2,
+                        Arg3: match$1.Arg3
+                      }),
                   true
                 ];
         }
@@ -319,151 +333,188 @@ function unbalanced_right(param) {
 }
 
 function lbalance(x1, x2, x3) {
-  if (x1 && x1[0]) {
-    var r = x1[3];
-    var l = x1[1];
-    if (l && l[0]) {
-      return /* Node */[
-              /* Red */1,
-              /* Node */[
-                /* Black */0,
-                l[1],
-                l[2],
-                l[3]
-              ],
-              x1[2],
-              /* Node */[
-                /* Black */0,
-                r,
-                x2,
-                x3
-              ]
-            ];
-    }
-    if (r && r[0]) {
-      var y = r[2];
-      return /* Node */[
-              /* Red */1,
-              /* Node */[
-                /* Black */0,
-                l,
-                y,
-                r[1]
-              ],
-              y,
-              /* Node */[
-                /* Black */0,
-                r[3],
-                x2,
-                x3
-              ]
-            ];
+  if (x1 !== "Empty") {
+    if (x1.Arg0 !== "Black") {
+      var r = x1.Arg3;
+      var l = x1.Arg1;
+      if (l !== "Empty" && l.Arg0 !== "Black") {
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Red",
+                Arg1: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: l.Arg1,
+                  Arg2: l.Arg2,
+                  Arg3: l.Arg3
+                },
+                Arg2: x1.Arg2,
+                Arg3: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: r,
+                  Arg2: x2,
+                  Arg3: x3
+                }
+              };
+      }
+      if (r !== "Empty") {
+        if (r.Arg0 !== "Black") {
+          var y = r.Arg2;
+          return /* constructor */{
+                  tag: "Node",
+                  Arg0: "Red",
+                  Arg1: /* constructor */{
+                    tag: "Node",
+                    Arg0: "Black",
+                    Arg1: l,
+                    Arg2: y,
+                    Arg3: r.Arg1
+                  },
+                  Arg2: y,
+                  Arg3: /* constructor */{
+                    tag: "Node",
+                    Arg0: "Black",
+                    Arg1: r.Arg3,
+                    Arg2: x2,
+                    Arg3: x3
+                  }
+                };
+        } else {
+          return /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: x1,
+                  Arg2: x2,
+                  Arg3: x3
+                };
+        }
+      } else {
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Black",
+                Arg1: x1,
+                Arg2: x2,
+                Arg3: x3
+              };
+      }
     } else {
-      return /* Node */[
-              /* Black */0,
-              x1,
-              x2,
-              x3
-            ];
+      return /* constructor */{
+              tag: "Node",
+              Arg0: "Black",
+              Arg1: x1,
+              Arg2: x2,
+              Arg3: x3
+            };
     }
   } else {
-    return /* Node */[
-            /* Black */0,
-            x1,
-            x2,
-            x3
-          ];
+    return /* constructor */{
+            tag: "Node",
+            Arg0: "Black",
+            Arg1: x1,
+            Arg2: x2,
+            Arg3: x3
+          };
   }
 }
 
 function rbalance(x1, x2, x3) {
-  if (x3 && x3[0]) {
-    var b = x3[1];
+  if (x3 !== "Empty" && x3.Arg0 !== "Black") {
+    var b = x3.Arg1;
     var exit = 0;
-    if (b && b[0]) {
-      return /* Node */[
-              /* Red */1,
-              /* Node */[
-                /* Black */0,
-                x1,
-                x2,
-                b[1]
-              ],
-              b[2],
-              /* Node */[
-                /* Black */0,
-                b[3],
-                x3[2],
-                x3[3]
-              ]
-            ];
+    if (b !== "Empty" && b.Arg0 !== "Black") {
+      return /* constructor */{
+              tag: "Node",
+              Arg0: "Red",
+              Arg1: /* constructor */{
+                tag: "Node",
+                Arg0: "Black",
+                Arg1: x1,
+                Arg2: x2,
+                Arg3: b.Arg1
+              },
+              Arg2: b.Arg2,
+              Arg3: /* constructor */{
+                tag: "Node",
+                Arg0: "Black",
+                Arg1: b.Arg3,
+                Arg2: x3.Arg2,
+                Arg3: x3.Arg3
+              }
+            };
     } else {
       exit = 2;
     }
     if (exit === 2) {
-      var match = x3[3];
-      if (match && match[0]) {
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  x1,
-                  x2,
-                  b
-                ],
-                x3[2],
-                /* Node */[
-                  /* Black */0,
-                  match[1],
-                  match[2],
-                  match[3]
-                ]
-              ];
+      var match = x3.Arg3;
+      if (match !== "Empty" && match.Arg0 !== "Black") {
+        return /* constructor */{
+                tag: "Node",
+                Arg0: "Red",
+                Arg1: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: x1,
+                  Arg2: x2,
+                  Arg3: b
+                },
+                Arg2: x3.Arg2,
+                Arg3: /* constructor */{
+                  tag: "Node",
+                  Arg0: "Black",
+                  Arg1: match.Arg1,
+                  Arg2: match.Arg2,
+                  Arg3: match.Arg3
+                }
+              };
       }
       
     }
     
   }
-  return /* Node */[
-          /* Black */0,
-          x1,
-          x2,
-          x3
-        ];
+  return /* constructor */{
+          tag: "Node",
+          Arg0: "Black",
+          Arg1: x1,
+          Arg2: x2,
+          Arg3: x3
+        };
 }
 
 function ins(x, s) {
-  if (s) {
-    if (s[0]) {
-      var y = s[2];
+  if (s !== "Empty") {
+    if (s.Arg0 !== "Black") {
+      var y = s.Arg2;
       if (x === y) {
         return s;
       } else {
-        var b = s[3];
-        var a = s[1];
+        var b = s.Arg3;
+        var a = s.Arg1;
         if (x < y) {
-          return /* Node */[
-                  /* Red */1,
-                  ins(x, a),
-                  y,
-                  b
-                ];
+          return /* constructor */{
+                  tag: "Node",
+                  Arg0: "Red",
+                  Arg1: ins(x, a),
+                  Arg2: y,
+                  Arg3: b
+                };
         } else {
-          return /* Node */[
-                  /* Red */1,
-                  a,
-                  y,
-                  ins(x, b)
-                ];
+          return /* constructor */{
+                  tag: "Node",
+                  Arg0: "Red",
+                  Arg1: a,
+                  Arg2: y,
+                  Arg3: ins(x, b)
+                };
         }
       }
     } else {
-      var y$1 = s[2];
+      var y$1 = s.Arg2;
       if (x === y$1) {
         return s;
       } else {
-        var b$1 = s[3];
-        var a$1 = s[1];
+        var b$1 = s.Arg3;
+        var a$1 = s.Arg1;
         if (x < y$1) {
           return lbalance(ins(x, a$1), y$1, b$1);
         } else {
@@ -472,53 +523,56 @@ function ins(x, s) {
       }
     }
   } else {
-    return /* Node */[
-            /* Red */1,
-            /* Empty */0,
-            x,
-            /* Empty */0
-          ];
+    return /* constructor */{
+            tag: "Node",
+            Arg0: "Red",
+            Arg1: "Empty",
+            Arg2: x,
+            Arg3: "Empty"
+          };
   }
 }
 
 function add(x, s) {
   var s$1 = ins(x, s);
-  if (s$1 && s$1[0]) {
-    return /* Node */[
-            /* Black */0,
-            s$1[1],
-            s$1[2],
-            s$1[3]
-          ];
+  if (s$1 !== "Empty" && s$1.Arg0 !== "Black") {
+    return /* constructor */{
+            tag: "Node",
+            Arg0: "Black",
+            Arg1: s$1.Arg1,
+            Arg2: s$1.Arg2,
+            Arg3: s$1.Arg3
+          };
   } else {
     return s$1;
   }
 }
 
 function remove_min(param) {
-  if (param) {
-    var c = param[0];
-    if (c) {
-      if (!param[1]) {
+  if (param !== "Empty") {
+    var c = param.Arg0;
+    if (c !== "Black") {
+      if (param.Arg1 === "Empty") {
         return /* tuple */[
-                param[3],
-                param[2],
+                param.Arg3,
+                param.Arg2,
                 false
               ];
       }
       
-    } else if (!param[1]) {
-      var match = param[3];
-      var x = param[2];
-      if (match) {
-        if (match[0]) {
+    } else if (param.Arg1 === "Empty") {
+      var match = param.Arg3;
+      var x = param.Arg2;
+      if (match !== "Empty") {
+        if (match.Arg0 !== "Black") {
           return /* tuple */[
-                  /* Node */[
-                    /* Black */0,
-                    match[1],
-                    match[2],
-                    match[3]
-                  ],
+                  /* constructor */{
+                    tag: "Node",
+                    Arg0: "Black",
+                    Arg1: match.Arg1,
+                    Arg2: match.Arg2,
+                    Arg3: match.Arg3
+                  },
                   x,
                   false
                 ];
@@ -534,23 +588,21 @@ function remove_min(param) {
         }
       } else {
         return /* tuple */[
-                /* Empty */0,
+                "Empty",
                 x,
                 true
               ];
       }
     }
-    var match$1 = remove_min(param[1]);
+    var match$1 = remove_min(param.Arg1);
     var y = match$1[1];
-    var s_001 = match$1[0];
-    var s_002 = param[2];
-    var s_003 = param[3];
-    var s = /* Node */[
-      c,
-      s_001,
-      s_002,
-      s_003
-    ];
+    var s = /* constructor */{
+      tag: "Node",
+      Arg0: c,
+      Arg1: match$1[0],
+      Arg2: param.Arg2,
+      Arg3: param.Arg3
+    };
     if (match$1[2]) {
       var match$2 = unbalanced_right(s);
       return /* tuple */[
@@ -578,22 +630,21 @@ function remove_min(param) {
 }
 
 function remove_aux(x, n) {
-  if (n) {
-    var r = n[3];
-    var y = n[2];
-    var l = n[1];
-    var c = n[0];
+  if (n !== "Empty") {
+    var r = n.Arg3;
+    var y = n.Arg2;
+    var l = n.Arg1;
+    var c = n.Arg0;
     if (x === y) {
-      if (r) {
+      if (r !== "Empty") {
         var match = remove_min(r);
-        var n_002 = match[1];
-        var n_003 = match[0];
-        var n$1 = /* Node */[
-          c,
-          l,
-          n_002,
-          n_003
-        ];
+        var n$1 = /* constructor */{
+          tag: "Node",
+          Arg0: c,
+          Arg1: l,
+          Arg2: match[1],
+          Arg3: match[0]
+        };
         if (match[2]) {
           return unbalanced_left(n$1);
         } else {
@@ -602,7 +653,7 @@ function remove_aux(x, n) {
                   false
                 ];
         }
-      } else if (c === /* Red */1) {
+      } else if (c === "Red") {
         return /* tuple */[
                 l,
                 false
@@ -612,13 +663,13 @@ function remove_aux(x, n) {
       }
     } else if (x < y) {
       var match$1 = remove_aux(x, l);
-      var n_001 = match$1[0];
-      var n$2 = /* Node */[
-        c,
-        n_001,
-        y,
-        r
-      ];
+      var n$2 = /* constructor */{
+        tag: "Node",
+        Arg0: c,
+        Arg1: match$1[0],
+        Arg2: y,
+        Arg3: r
+      };
       if (match$1[1]) {
         return unbalanced_right(n$2);
       } else {
@@ -629,13 +680,13 @@ function remove_aux(x, n) {
       }
     } else {
       var match$2 = remove_aux(x, r);
-      var n_003$1 = match$2[0];
-      var n$3 = /* Node */[
-        c,
-        l,
-        y,
-        n_003$1
-      ];
+      var n$3 = /* constructor */{
+        tag: "Node",
+        Arg0: c,
+        Arg1: l,
+        Arg2: y,
+        Arg3: match$2[0]
+      };
       if (match$2[1]) {
         return unbalanced_left(n$3);
       } else {
@@ -647,7 +698,7 @@ function remove_aux(x, n) {
     }
   } else {
     return /* tuple */[
-            /* Empty */0,
+            "Empty",
             false
           ];
   }
@@ -658,14 +709,14 @@ function remove(x, s) {
 }
 
 function cardinal(param) {
-  if (param) {
-    return (1 + cardinal(param[1]) | 0) + cardinal(param[3]) | 0;
+  if (param !== "Empty") {
+    return (1 + cardinal(param.Arg1) | 0) + cardinal(param.Arg3) | 0;
   } else {
     return 0;
   }
 }
 
-var empty = /* Empty */0;
+var empty = "Empty";
 
 exports.blackify = blackify;
 exports.empty = empty;

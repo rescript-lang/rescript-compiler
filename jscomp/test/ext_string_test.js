@@ -14,7 +14,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 function split_by($staropt$star, is_delim, str) {
   var keep_empty = $staropt$star !== undefined ? $staropt$star : false;
   var len = str.length;
-  var _acc = /* [] */0;
+  var _acc = "[]";
   var _last_pos = len;
   var _pos = len - 1 | 0;
   while(true) {
@@ -25,10 +25,11 @@ function split_by($staropt$star, is_delim, str) {
       if (last_pos === 0 && !keep_empty) {
         return acc;
       } else {
-        return /* :: */[
-                $$String.sub(str, 0, last_pos),
-                acc
-              ];
+        return /* constructor */{
+                tag: "::",
+                Arg0: $$String.sub(str, 0, last_pos),
+                Arg1: acc
+              };
       }
     } else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
       var new_len = (last_pos - pos | 0) - 1 | 0;
@@ -36,10 +37,11 @@ function split_by($staropt$star, is_delim, str) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
         _pos = pos - 1 | 0;
         _last_pos = pos;
-        _acc = /* :: */[
-          v,
-          acc
-        ];
+        _acc = /* constructor */{
+          tag: "::",
+          Arg0: v,
+          Arg1: acc
+        };
         continue ;
       } else {
         _pos = pos - 1 | 0;
@@ -82,7 +84,7 @@ function trim(s) {
 
 function split(keep_empty, str, on) {
   if (str === "") {
-    return /* [] */0;
+    return "[]";
   } else {
     return split_by(keep_empty, (function (x) {
                   return x === on;
@@ -160,12 +162,12 @@ function check_any_suffix_case_then_chop(s, suffixes) {
   var _suffixes = suffixes;
   while(true) {
     var suffixes$1 = _suffixes;
-    if (suffixes$1) {
-      var id = ends_with_index(s, suffixes$1[0]);
+    if (suffixes$1 !== "[]") {
+      var id = ends_with_index(s, suffixes$1.Arg0);
       if (id >= 0) {
         return $$String.sub(s, 0, id);
       } else {
-        _suffixes = suffixes$1[1];
+        _suffixes = suffixes$1.Arg1;
         continue ;
       }
     } else {
@@ -400,8 +402,8 @@ function equal(x, y) {
 }
 
 function unsafe_concat_with_length(len, sep, l) {
-  if (l) {
-    var hd = l[0];
+  if (l !== "[]") {
+    var hd = l.Arg0;
     var r = Caml_bytes.caml_create_bytes(len);
     var hd_len = hd.length;
     var sep_len = sep.length;
@@ -414,7 +416,7 @@ function unsafe_concat_with_length(len, sep, l) {
             Caml_bytes.caml_blit_string(s, 0, r, pos[0], s_len);
             pos[0] = pos[0] + s_len | 0;
             return /* () */0;
-          }), l[1]);
+          }), l.Arg1);
     return Caml_bytes.bytes_to_string(r);
   } else {
     return "";
@@ -517,27 +519,31 @@ function is_valid_npm_package_name(s) {
 }
 
 function is_valid_source_name(name) {
-  var match = check_any_suffix_case_then_chop(name, /* :: */[
-        ".ml",
-        /* :: */[
-          ".re",
-          /* :: */[
-            ".mli",
-            /* :: */[
-              ".rei",
-              /* [] */0
-            ]
-          ]
-        ]
-      ]);
+  var match = check_any_suffix_case_then_chop(name, /* constructor */{
+        tag: "::",
+        Arg0: ".ml",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: ".re",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: ".mli",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: ".rei",
+              Arg1: "[]"
+            }
+          }
+        }
+      });
   if (match !== undefined) {
     if (is_valid_module_file(match)) {
-      return /* Good */0;
+      return "Good";
     } else {
-      return /* Invalid_module_name */1;
+      return "Invalid_module_name";
     }
   } else {
-    return /* Suffix_mismatch */2;
+    return "Suffix_mismatch";
   }
 }
 

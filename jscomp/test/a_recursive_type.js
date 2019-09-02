@@ -3,12 +3,18 @@
 var Curry = require("../../lib/js/curry.js");
 
 function g(x) {
-  return Curry._1(x[0], x);
+  return Curry._1(x.Arg0, x);
 }
 
-var loop = g(/* A */[g]);
+var loop = g(/* constructor */{
+      tag: "A",
+      Arg0: g
+    });
 
-var x = /* A */[g];
+var x = /* constructor */{
+  tag: "A",
+  Arg0: g
+};
 
 var non_terminate = g(x);
 

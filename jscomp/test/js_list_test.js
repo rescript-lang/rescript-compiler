@@ -1,174 +1,216 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_list = require("../../lib/js/js_list.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
-eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: */[
-          /* :: */[
-            1,
-            /* :: */[
-              2,
-              /* [] */0
-            ]
-          ],
-          /* :: */[
-            /* :: */[
-              3,
-              /* [] */0
-            ],
-            /* :: */[
-              /* [] */0,
-              /* :: */[
-                /* :: */[
-                  1,
-                  /* :: */[
-                    2,
-                    /* :: */[
-                      3,
-                      /* [] */0
-                    ]
-                  ]
-                ],
-                /* [] */0
-              ]
-            ]
-          ]
-        ]), /* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* :: */[
-            1,
-            /* :: */[
-              2,
-              /* :: */[
-                3,
-                /* [] */0
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* constructor */{
+          tag: "::",
+          Arg0: /* constructor */{
+            tag: "::",
+            Arg0: 1,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 2,
+              Arg1: "[]"
+            }
+          },
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: "[]"
+            },
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: "[]",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* constructor */{
+                  tag: "::",
+                  Arg0: 1,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 2,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 3,
+                      Arg1: "[]"
+                    }
+                  }
+                },
+                Arg1: "[]"
+              }
+            }
+          }
+        }), /* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 2,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 3,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 1,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 2,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 3,
+                Arg1: "[]"
+              }
+            }
+          }
+        }
+      }
+    });
 
 eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
               return x;
             }
             
-          }), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* :: */[
-                  5,
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      7,
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]), /* :: */[
-      2,
-      /* :: */[
-        4,
-        /* :: */[
-          6,
-          /* [] */0
-        ]
-      ]
-    ]);
+          }), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 4,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 5,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 6,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 7,
+                      Arg1: "[]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }), /* constructor */{
+      tag: "::",
+      Arg0: 2,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 4,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: "[]"
+        }
+      }
+    });
 
 eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
               return x;
             }
             
-          }), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* :: */[
-                  5,
-                  /* :: */[
-                    6,
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]), /* :: */[
-      2,
-      /* :: */[
-        4,
-        /* :: */[
-          6,
-          /* [] */0
-        ]
-      ]
-    ]);
+          }), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 4,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 5,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 6,
+                    Arg1: "[]"
+                  }
+                }
+              }
+            }
+          }
+        }), /* constructor */{
+      tag: "::",
+      Arg0: 2,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 4,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: "[]"
+        }
+      }
+    });
 
 eq("File \"js_list_test.ml\", line 20, characters 7-14", Js_list.countBy((function (x) {
             return x % 2 === 0;
-          }), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* :: */[
-                  5,
-                  /* :: */[
-                    6,
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]), 3);
+          }), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 4,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 5,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 6,
+                    Arg1: "[]"
+                  }
+                }
+              }
+            }
+          }
+        }), 3);
 
 function f(i) {
   return i;
@@ -181,11 +223,12 @@ eq("File \"js_list_test.ml\", line 23, characters 7-14", Js_list.countBy((functi
           }), v), 50000);
 
 var vv = Js_list.foldRight((function (x, y) {
-        return /* :: */[
-                x,
-                y
-              ];
-      }), v, /* [] */0);
+        return /* constructor */{
+                tag: "::",
+                Arg0: x,
+                Arg1: y
+              };
+      }), v, "[]");
 
 eq("File \"js_list_test.ml\", line 27, characters 7-14", true, Js_list.equal((function (x, y) {
             return x === y;

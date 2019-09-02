@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
@@ -18,24 +17,26 @@ var shared$1 = ["m"];
 
 var shared$2 = ["x"];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -107,12 +108,12 @@ var q = Curry._3(colored_point[0], 0, 4, "blue");
 function lookup_obj(obj, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var obj$prime = param[0];
+    if (param !== "[]") {
+      var obj$prime = param.Arg0;
       if (Caml_obj.caml_equal(obj, obj$prime)) {
         return obj$prime;
       } else {
-        _param = param[1];
+        _param = param.Arg1;
         continue ;
       }
     } else {

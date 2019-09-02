@@ -9,25 +9,27 @@ var f = {
   }
 };
 
-var f2_000 = /* :: */[
-  {
+var f2_000 = /* constructor */{
+  tag: "::",
+  Arg0: {
     x: {
       y: {
         z: 3
       }
     }
   },
-  /* :: */[
-    {
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: {
       x: {
         y: {
           z: 31
         }
       }
     },
-    /* [] */0
-  ]
-];
+    Arg1: "[]"
+  }
+};
 
 var f2_001 = /* array */[
   {

@@ -6,15 +6,21 @@ var Point = Caml_module.init_mod([
       "gpr_1539_test.ml",
       10,
       6
-    ], [[[
-          0,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "add"
-        ]]]);
+        ]]
+    });
 
-Caml_module.update_mod([[[
-          0,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "add"
-        ]]], Point, {
+        ]]
+    }, Point, {
       add: (function (prim, prim$1) {
           return prim.add(prim$1);
         })

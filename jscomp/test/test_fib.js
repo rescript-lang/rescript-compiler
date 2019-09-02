@@ -35,28 +35,30 @@ for(var i$1 = 10; i$1 >= 0; --i$1){
 var sumdown = v$1;
 
 function cons(x, y) {
-  return /* Cons */[
-          x,
-          y
-        ];
+  return /* constructor */{
+          tag: "Cons",
+          Arg0: x,
+          Arg1: y
+        };
 }
 
 function length(x) {
-  if (x) {
-    return 1 + length(x[1]) | 0;
+  if (x !== "Nil") {
+    return 1 + length(x.Arg1) | 0;
   } else {
     return 0;
   }
 }
 
 function map(f, x) {
-  if (x) {
-    return /* Cons */[
-            Curry._1(f, x[0]),
-            map(f, x[1])
-          ];
+  if (x !== "Nil") {
+    return /* constructor */{
+            tag: "Cons",
+            Arg0: Curry._1(f, x.Arg0),
+            Arg1: map(f, x.Arg1)
+          };
   } else {
-    return /* Nil */0;
+    return "Nil";
   }
 }
 

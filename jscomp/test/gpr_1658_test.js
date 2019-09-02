@@ -1,27 +1,28 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_types = require("../../lib/js/js_types.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -29,13 +30,13 @@ eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);
 
 var match = Js_types.classify(null);
 
-if (typeof match === "number" && match === 2) {
+if (typeof match === "string" && match === "JSNull") {
   eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", true, true);
 } else {
   eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", true, false);
 }
 
-eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, /* Null */1));
+eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, "Null"));
 
 Mt.from_pair_suites("File \"gpr_1658_test.ml\", line 19, characters 22-29", suites[0]);
 

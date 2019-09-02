@@ -19,7 +19,7 @@ function test(set) {
 
 test(Curry._1(Offset.M.Set.singleton, "42"));
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

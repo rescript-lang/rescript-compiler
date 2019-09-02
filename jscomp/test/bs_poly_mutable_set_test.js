@@ -10,7 +10,7 @@ var Array_data_util = require("./array_data_util.js");
 var Belt_MutableSet = require("../../lib/js/belt_MutableSet.js");
 var Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -295,22 +295,27 @@ b("File \"bs_poly_mutable_set_test.ml\", line 162, characters 4-11", Belt_Mutabl
 
 b("File \"bs_poly_mutable_set_test.ml\", line 163, characters 4-11", Belt_MutableSet.eq(a2, a4));
 
-Belt_List.forEach(/* :: */[
-      a0,
-      /* :: */[
-        a1,
-        /* :: */[
-          a2,
-          /* :: */[
-            a3,
-            /* :: */[
-              a4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ]
-    ], (function (x) {
+Belt_List.forEach(/* constructor */{
+      tag: "::",
+      Arg0: a0,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: a1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: a2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: a3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: a4,
+              Arg1: "[]"
+            }
+          }
+        }
+      }
+    }, (function (x) {
         return Belt_internalAVLset.checkInvariantInternal(x.data);
       }));
 

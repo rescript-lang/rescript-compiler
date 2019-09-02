@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -12,16 +12,19 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var x = List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var x = List.length(/* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 2,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 3,
+          Arg1: "[]"
+        }
+      }
+    });
 
 var jsMapperConstantArray = /* array */[
   /* tuple */[

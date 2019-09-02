@@ -5,13 +5,15 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var a0 = Caml_builtin_exceptions.not_found;
 
-var b = List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]);
+var b = List.length(/* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 2,
+        Arg1: "[]"
+      }
+    });
 
 var List$1 = {
   hd: List.hd,

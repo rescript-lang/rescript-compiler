@@ -1,27 +1,28 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
+var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function foo(param) {
-  if (typeof param === "number") {
-    if (param === /* A1 */0) {
+  if (typeof param === "string") {
+    if (param === "A1") {
       return 1;
     } else {
       return 2;
     }
   } else {
-    switch (param.tag | 0) {
-      case /* B */0 :
-          return param[0];
-      case /* C */1 :
-          return param[0] + param[1] | 0;
-      case /* D */2 :
-          var match = param[0];
+    switch (/* XXX */param.tag) {
+      case "B" :
+          return param.Arg0;
+      case "C" :
+          return param.Arg0 + param.Arg1 | 0;
+      case "D" :
+          var match = param.Arg0;
           return match[0] + match[1] | 0;
       
     }
@@ -29,7 +30,7 @@ function foo(param) {
 }
 
 function fooA1(param) {
-  if (typeof param === "number" && param === 0) {
+  if (typeof param === "string" && param === "A1") {
     return 1;
   } else {
     return 42;
@@ -37,10 +38,10 @@ function fooA1(param) {
 }
 
 function fooC(param) {
-  if (typeof param === "number" || param.tag !== /* C */1) {
+  if (typeof param === "string" || /* XXX */param.tag !== "C") {
     return 42;
   } else {
-    return param[0] + param[1] | 0;
+    return param.Arg0 + param.Arg1 | 0;
   }
 }
 
@@ -89,11 +90,11 @@ function rollback_path(subst, p) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      switch (p.tag | 0) {
-        case /* Pdot */1 :
+      switch (/* XXX */p.tag) {
+        case "Pdot" :
             return "Pdot";
-        case /* Pident */0 :
-        case /* Papply */2 :
+        case "Pident" :
+        case "Papply" :
             return "Pident | Papply";
         
       }
@@ -112,6 +113,31 @@ var EB = Caml_exceptions.create("Variant.EB");
 var EC = Caml_exceptions.create("Variant.EC");
 
 var ED = Caml_exceptions.create("Variant.ED");
+
+console.log("EB(2)", [
+      EB,
+      2
+    ]);
+
+console.log("EB(2)[0]", Caml_array.caml_array_get([
+          EB,
+          2
+        ], 0));
+
+console.log("EB(2)[0].tag", Caml_array.caml_array_get([
+          EB,
+          2
+        ], 0).tag);
+
+console.log("EB(2)[0][0]", Caml_array.caml_array_get(Caml_array.caml_array_get([
+              EB,
+              2
+            ], 0), 0));
+
+var eb = [
+  EB,
+  7
+];
 
 function fooExn(f) {
   try {
@@ -136,21 +162,130 @@ function fooExn(f) {
   }
 }
 
-var a1 = /* A1 */0;
+var l = /* constructor */{
+  tag: "::",
+  Arg0: 1,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: 2,
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: 3,
+      Arg1: "[]"
+    }
+  }
+};
 
-var a2 = /* A2 */1;
+var len = List.length(l);
 
-var b = /* B */Block.__(0, [34]);
+function switchList(param) {
+  if (param !== "[]") {
+    var match = param.Arg1;
+    if (match !== "[]") {
+      if (match.Arg1 !== "[]") {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "variant.ml",
+                88,
+                9
+              ]
+            ];
+      } else {
+        return 2;
+      }
+    } else {
+      return 1;
+    }
+  } else {
+    return 0;
+  }
+}
 
-var c = /* C */Block.__(1, [
+function switchMYList(param) {
+  if (typeof param === "string") {
+    if (param === "E") {
+      return 0;
+    }
+    
+  } else {
+    var match = param.Arg1;
+    if (typeof match === "string") {
+      if (match === "E") {
+        return 1;
+      }
+      
+    } else {
+      var tmp = match.Arg1;
+      if (typeof tmp === "string" && tmp === "E") {
+        return 2;
+      }
+      
+    }
+  }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "variant.ml",
+          97,
+          9
+        ]
+      ];
+}
+
+function matchingNoBinarySearch(param) {
+  switch (param) {
+    case "A5" :
+    case "A6" :
+    case "A7" :
+        return 2;
+    default:
+      return 1;
+  }
+}
+
+function caml_bool_compare(x, y) {
+  if (x) {
+    if (y) {
+      return 0;
+    } else {
+      return 1;
+    }
+  } else if (y) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+
+var a1 = "A1";
+
+var a2 = "A2";
+
+var b = /* constructor */{
+  tag: "B",
+  Arg0: 34
+};
+
+var c = /* constructor */{
+  tag: "C",
+  Arg0: 4,
+  Arg1: 2
+};
+
+var d = /* constructor */{
+  tag: "D",
+  Arg0: /* tuple */[
     4,
     2
-  ]);
+  ]
+};
 
-var d = /* D */Block.__(2, [/* tuple */[
-      4,
-      2
-    ]]);
+var tt = true;
+
+var ff = false;
+
+var unit = /* () */0;
 
 exports.a1 = a1;
 exports.a2 = a2;
@@ -170,5 +305,15 @@ exports.EA2 = EA2;
 exports.EB = EB;
 exports.EC = EC;
 exports.ED = ED;
+exports.eb = eb;
 exports.fooExn = fooExn;
-/* No side effect */
+exports.l = l;
+exports.len = len;
+exports.switchList = switchList;
+exports.switchMYList = switchMYList;
+exports.matchingNoBinarySearch = matchingNoBinarySearch;
+exports.caml_bool_compare = caml_bool_compare;
+exports.tt = tt;
+exports.ff = ff;
+exports.unit = unit;
+/*  Not a pure module */

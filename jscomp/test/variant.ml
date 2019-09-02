@@ -63,9 +63,64 @@ let rollback_path subst p =
  exception EC of int * int
  exception ED of pair
 
+let () = Js.log2 "EB(2)" (EB 2)
+let () = Js.log2 "EB(2)[0]" (Obj.magic (EB 2)).(0)
+let () = Js.log2 "EB(2)[0].tag" (Obj.magic (EB 2)).(0)##tag
+let () = Js.log2 "EB(2)[0][0]" (Obj.magic (EB 2)).(0).(0)
+let eb = EB 7
+
 let fooExn f = try f () with
 | EA1 -> 1
 | EA2 -> 2
 | EB n -> n
 | EC (n,m) -> n+m
 | ED (n,m) -> n+m
+
+
+let l = [1;2;3]
+
+let len = List.length l
+
+let switchList = function
+  | [] -> 0
+  | [_] -> 1
+  | [_;_] -> 2
+  | _ -> assert false
+
+type 'a myList =
+  | E | Cons of 'a * 'a myList | Z
+
+let switchMYList = function
+  | E -> 0
+  | Cons(_, E) -> 1
+  | Cons (_, Cons(_, E)) -> 2
+  | _ -> assert false
+
+type t =
+  | A1
+  | A2
+  | A3
+  | A4
+  | A5
+  | A6
+  | A7
+
+let matchingNoBinarySearch = function
+  | A1
+  | A2
+  | A3
+  | A4 -> 1
+  | A5
+  | A6
+  | A7 -> 2
+
+let caml_bool_compare (x : bool) (y : bool): int = 
+match x,y with 
+| true, true | false , false -> 0 
+| true, false -> 1 
+| false, true -> -1
+
+let tt = true
+let ff = false
+
+let unit = ()

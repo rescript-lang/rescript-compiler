@@ -3,7 +3,6 @@
 var List = require("../../lib/js/list.js");
 var Path = require("path");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Assert = require("assert");
 var Process = require("process");
@@ -15,10 +14,10 @@ function assert_fail(msg) {
 
 function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
-    var match$1 = match[1];
-    if (match$1) {
-      var exec = Path.basename(match$1[0]);
+  if (match !== "[]") {
+    var match$1 = match.Arg1;
+    if (match$1 !== "[]") {
+      var exec = Path.basename(match$1.Arg0);
       if (exec === "mocha") {
         return true;
       } else {
@@ -34,7 +33,7 @@ function is_mocha(param) {
 
 function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
-  if (match && is_mocha(/* () */0)) {
+  if (match !== "[]" && is_mocha(/* () */0)) {
     describe(name, (function () {
             return List.iter((function (param) {
                           var partial_arg = param[1];
@@ -56,54 +55,54 @@ function close_enough($staropt$star, a, b) {
 }
 
 function handleCode(spec) {
-  switch (spec.tag | 0) {
-    case /* Eq */0 :
-        Assert.deepEqual(spec[0], spec[1]);
+  switch (/* XXX */spec.tag) {
+    case "Eq" :
+        Assert.deepEqual(spec.Arg0, spec.Arg1);
         return /* () */0;
-    case /* Neq */1 :
-        Assert.notDeepEqual(spec[0], spec[1]);
+    case "Neq" :
+        Assert.notDeepEqual(spec.Arg0, spec.Arg1);
         return /* () */0;
-    case /* StrictEq */2 :
-        Assert.strictEqual(spec[0], spec[1]);
+    case "StrictEq" :
+        Assert.strictEqual(spec.Arg0, spec.Arg1);
         return /* () */0;
-    case /* StrictNeq */3 :
-        Assert.notStrictEqual(spec[0], spec[1]);
+    case "StrictNeq" :
+        Assert.notStrictEqual(spec.Arg0, spec.Arg1);
         return /* () */0;
-    case /* Ok */4 :
-        Assert.ok(spec[0]);
+    case "Ok" :
+        Assert.ok(spec.Arg0);
         return /* () */0;
-    case /* Approx */5 :
-        var b = spec[1];
-        var a = spec[0];
+    case "Approx" :
+        var b = spec.Arg1;
+        var a = spec.Arg0;
         if (close_enough(undefined, a, b)) {
           return 0;
         } else {
           Assert.deepEqual(a, b);
           return /* () */0;
         }
-    case /* ApproxThreshold */6 :
-        var b$1 = spec[2];
-        var a$1 = spec[1];
-        if (close_enough(spec[0], a$1, b$1)) {
+    case "ApproxThreshold" :
+        var b$1 = spec.Arg2;
+        var a$1 = spec.Arg1;
+        if (close_enough(spec.Arg0, a$1, b$1)) {
           return 0;
         } else {
           Assert.deepEqual(a$1, b$1);
           return /* () */0;
         }
-    case /* ThrowAny */7 :
-        Assert.throws(spec[0]);
+    case "ThrowAny" :
+        Assert.throws(spec.Arg0);
         return /* () */0;
-    case /* Fail */8 :
+    case "Fail" :
         return assert_fail("failed");
-    case /* FailWith */9 :
-        return assert_fail(spec[0]);
+    case "FailWith" :
+        return assert_fail(spec.Arg0);
     
   }
 }
 
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
+  if (match !== "[]") {
     if (is_mocha(/* () */0)) {
       describe(name, (function () {
               return List.iter((function (param) {
@@ -125,72 +124,72 @@ function from_pair_suites(name, suites) {
       return List.iter((function (param) {
                     var name = param[0];
                     var match = Curry._1(param[1], /* () */0);
-                    switch (match.tag | 0) {
-                      case /* Eq */0 :
+                    switch (/* XXX */match.tag) {
+                      case "Eq" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "eq?",
-                                match[1]
+                                match.Arg1
                               ]);
                           return /* () */0;
-                      case /* Neq */1 :
+                      case "Neq" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "neq?",
-                                match[1]
+                                match.Arg1
                               ]);
                           return /* () */0;
-                      case /* StrictEq */2 :
+                      case "StrictEq" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "strict_eq?",
-                                match[1]
+                                match.Arg1
                               ]);
                           return /* () */0;
-                      case /* StrictNeq */3 :
+                      case "StrictNeq" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "strict_neq?",
-                                match[1]
+                                match.Arg1
                               ]);
                           return /* () */0;
-                      case /* Ok */4 :
+                      case "Ok" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "ok?"
                               ]);
                           return /* () */0;
-                      case /* Approx */5 :
+                      case "Approx" :
                           console.log(/* tuple */[
                                 name,
-                                match[0],
+                                match.Arg0,
                                 "~",
-                                match[1]
+                                match.Arg1
                               ]);
                           return /* () */0;
-                      case /* ApproxThreshold */6 :
+                      case "ApproxThreshold" :
                           console.log(/* tuple */[
                                 name,
-                                match[1],
+                                match.Arg1,
                                 "~",
-                                match[2],
+                                match.Arg2,
                                 " (",
-                                match[0],
+                                match.Arg0,
                                 ")"
                               ]);
                           return /* () */0;
-                      case /* ThrowAny */7 :
+                      case "ThrowAny" :
                           return /* () */0;
-                      case /* Fail */8 :
+                      case "Fail" :
                           console.log("failed");
                           return /* () */0;
-                      case /* FailWith */9 :
-                          console.log("failed: " + match[0]);
+                      case "FailWith" :
+                          console.log("failed: " + match.Arg0);
                           return /* () */0;
                       
                     }
@@ -205,7 +204,7 @@ var val_unit = Promise.resolve(/* () */0);
 
 function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
+  if (match !== "[]") {
     if (is_mocha(/* () */0)) {
       describe(name, (function () {
               return List.iter((function (param) {
@@ -231,46 +230,56 @@ function from_promise_suites(name, suites) {
 
 function eq_suites(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
 function bool_suites(test_id, suites, loc, x) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Ok */Block.__(4, [x]);
+          return /* constructor */{
+                  tag: "Ok",
+                  Arg0: x
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
 function throw_suites(test_id, suites, loc, x) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* ThrowAny */Block.__(7, [x]);
+          return /* constructor */{
+                  tag: "ThrowAny",
+                  Arg0: x
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 

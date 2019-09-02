@@ -7,7 +7,7 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 

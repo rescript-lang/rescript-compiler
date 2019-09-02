@@ -1,37 +1,39 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
 function add(suite) {
-  suites[0] = /* :: */[
-    suite,
-    suites[0]
-  ];
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: suite,
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -39,24 +41,33 @@ var Int3 = Caml_module.init_mod([
       "recursive_module_test.ml",
       13,
       6
-    ], [[[
-          0,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "u"
-        ]]]);
+        ]]
+    });
 
-Caml_module.update_mod([[[
-          0,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "u"
-        ]]], Int3, Int3);
+        ]]
+    }, Int3, Int3);
 
 var M = Caml_module.init_mod([
       "recursive_module_test.ml",
       20,
       20
-    ], [[[
-          0,
+    ], /* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "fact"
-        ]]]);
+        ]]
+    });
 
 function fact(n) {
   if (n <= 1) {
@@ -66,10 +77,13 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod([[[
-          0,
+Caml_module.update_mod(/* constructor */{
+      tag: "Module",
+      Arg0: [[
+          "Function",
           "fact"
-        ]]], M, {
+        ]]
+    }, M, {
       fact: fact
     });
 
@@ -85,10 +99,13 @@ eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(
 add(/* tuple */[
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
-          return /* ThrowAny */Block.__(7, [(function (param) {
-                        Curry._1(Int3.u, 3);
-                        return /* () */0;
-                      })]);
+          return /* constructor */{
+                  tag: "ThrowAny",
+                  Arg0: (function (param) {
+                      Curry._1(Int3.u, 3);
+                      return /* () */0;
+                    })
+                };
         })
     ]);
 

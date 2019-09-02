@@ -11,72 +11,72 @@ function from_pair_suites(name, suites) {
   return List.iter((function (param) {
                 var name = param[0];
                 var match = Curry._1(param[1], /* () */0);
-                switch (match.tag | 0) {
-                  case /* Eq */0 :
+                switch (/* XXX */match.tag) {
+                  case "Eq" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "eq?",
-                            match[1]
+                            match.Arg1
                           ]);
                       return /* () */0;
-                  case /* Neq */1 :
+                  case "Neq" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "neq?",
-                            match[1]
+                            match.Arg1
                           ]);
                       return /* () */0;
-                  case /* StrictEq */2 :
+                  case "StrictEq" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "strict_eq?",
-                            match[1]
+                            match.Arg1
                           ]);
                       return /* () */0;
-                  case /* StrictNeq */3 :
+                  case "StrictNeq" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "strict_neq?",
-                            match[1]
+                            match.Arg1
                           ]);
                       return /* () */0;
-                  case /* Ok */4 :
+                  case "Ok" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "ok?"
                           ]);
                       return /* () */0;
-                  case /* Approx */5 :
+                  case "Approx" :
                       console.log(/* tuple */[
                             name,
-                            match[0],
+                            match.Arg0,
                             "~",
-                            match[1]
+                            match.Arg1
                           ]);
                       return /* () */0;
-                  case /* ApproxThreshold */6 :
+                  case "ApproxThreshold" :
                       console.log(/* tuple */[
                             name,
-                            match[1],
+                            match.Arg1,
                             "~",
-                            match[2],
+                            match.Arg2,
                             " (",
-                            match[0],
+                            match.Arg0,
                             ")"
                           ]);
                       return /* () */0;
-                  case /* ThrowAny */7 :
+                  case "ThrowAny" :
                       return /* () */0;
-                  case /* Fail */8 :
+                  case "Fail" :
                       console.log("failed");
                       return /* () */0;
-                  case /* FailWith */9 :
-                      console.log("failed: " + match[0]);
+                  case "FailWith" :
+                      console.log("failed: " + match.Arg0);
                       return /* () */0;
                   
                 }

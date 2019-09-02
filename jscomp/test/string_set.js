@@ -8,10 +8,10 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
+  if (tree !== "Empty") {
+    var r = tree.Arg2;
+    var v = tree.Arg1;
+    var l = tree.Arg0;
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
       return /* tuple */[
@@ -36,18 +36,18 @@ function split(x, tree) {
     }
   } else {
     return /* tuple */[
-            /* Empty */0,
+            "Empty",
             false,
-            /* Empty */0
+            "Empty"
           ];
   }
 }
 
 function add(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
+  if (tree !== "Empty") {
+    var r = tree.Arg2;
+    var v = tree.Arg1;
+    var l = tree.Arg0;
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
       return tree;
@@ -57,34 +57,35 @@ function add(x, tree) {
       return Set_gen.internal_bal(l, v, add(x, r));
     }
   } else {
-    return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
-          ];
+    return /* constructor */{
+            tag: "Node",
+            Arg0: "Empty",
+            Arg1: x,
+            Arg2: "Empty",
+            Arg3: 1
+          };
   }
 }
 
 function union(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var h2 = s2[3];
-      var v2 = s2[1];
-      var h1 = s1[3];
-      var v1 = s1[1];
+  if (s1 !== "Empty") {
+    if (s2 !== "Empty") {
+      var h2 = s2.Arg3;
+      var v2 = s2.Arg1;
+      var h1 = s1.Arg3;
+      var v1 = s1.Arg1;
       if (h1 >= h2) {
         if (h2 === 1) {
           return add(v2, s1);
         } else {
           var match = split(v1, s2);
-          return Set_gen.internal_join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
+          return Set_gen.internal_join(union(s1.Arg0, match[0]), v1, union(s1.Arg2, match[2]));
         }
       } else if (h1 === 1) {
         return add(v1, s2);
       } else {
         var match$1 = split(v2, s1);
-        return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
+        return Set_gen.internal_join(union(match$1[0], s2.Arg0), v2, union(match$1[2], s2.Arg2));
       }
     } else {
       return s1;
@@ -95,10 +96,10 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (s1 && s2) {
-    var r1 = s1[2];
-    var v1 = s1[1];
-    var l1 = s1[0];
+  if (s1 !== "Empty" && s2 !== "Empty") {
+    var r1 = s1.Arg2;
+    var v1 = s1.Arg1;
+    var l1 = s1.Arg0;
     var match = split(v1, s2);
     var l2 = match[0];
     if (match[1]) {
@@ -107,16 +108,16 @@ function inter(s1, s2) {
       return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
     }
   } else {
-    return /* Empty */0;
+    return "Empty";
   }
 }
 
 function diff(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var r1 = s1[2];
-      var v1 = s1[1];
-      var l1 = s1[0];
+  if (s1 !== "Empty") {
+    if (s2 !== "Empty") {
+      var r1 = s1.Arg2;
+      var v1 = s1.Arg1;
+      var l1 = s1.Arg0;
       var match = split(v1, s2);
       var l2 = match[0];
       if (match[1]) {
@@ -128,19 +129,19 @@ function diff(s1, s2) {
       return s1;
     }
   } else {
-    return /* Empty */0;
+    return "Empty";
   }
 }
 
 function mem(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var c = Caml_primitive.caml_string_compare(x, tree[1]);
+    if (tree !== "Empty") {
+      var c = Caml_primitive.caml_string_compare(x, tree.Arg1);
       if (c === 0) {
         return true;
       } else {
-        _tree = c < 0 ? tree[0] : tree[2];
+        _tree = c < 0 ? tree.Arg0 : tree.Arg2;
         continue ;
       }
     } else {
@@ -150,10 +151,10 @@ function mem(x, _tree) {
 }
 
 function remove(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
+  if (tree !== "Empty") {
+    var r = tree.Arg2;
+    var v = tree.Arg1;
+    var l = tree.Arg0;
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
       return Set_gen.internal_merge(l, r);
@@ -163,7 +164,7 @@ function remove(x, tree) {
       return Set_gen.internal_bal(l, v, remove(x, r));
     }
   } else {
-    return /* Empty */0;
+    return "Empty";
   }
 }
 
@@ -179,14 +180,14 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (s1) {
-      if (s2) {
-        var r2 = s2[2];
-        var l2 = s2[0];
-        var r1 = s1[2];
-        var v1 = s1[1];
-        var l1 = s1[0];
-        var c = Caml_primitive.caml_string_compare(v1, s2[1]);
+    if (s1 !== "Empty") {
+      if (s2 !== "Empty") {
+        var r2 = s2.Arg2;
+        var l2 = s2.Arg0;
+        var r1 = s1.Arg2;
+        var v1 = s1.Arg1;
+        var l1 = s1.Arg0;
+        var c = Caml_primitive.caml_string_compare(v1, s2.Arg1);
         if (c === 0) {
           if (subset(l1, l2)) {
             _s2 = r2;
@@ -196,23 +197,25 @@ function subset(_s1, _s2) {
             return false;
           }
         } else if (c < 0) {
-          if (subset(/* Node */[
-                  l1,
-                  v1,
-                  /* Empty */0,
-                  0
-                ], l2)) {
+          if (subset(/* constructor */{
+                  tag: "Node",
+                  Arg0: l1,
+                  Arg1: v1,
+                  Arg2: "Empty",
+                  Arg3: 0
+                }, l2)) {
             _s1 = r1;
             continue ;
           } else {
             return false;
           }
-        } else if (subset(/* Node */[
-                /* Empty */0,
-                v1,
-                r1,
-                0
-              ], r2)) {
+        } else if (subset(/* constructor */{
+                tag: "Node",
+                Arg0: "Empty",
+                Arg1: v1,
+                Arg2: r1,
+                Arg3: 0
+              }, r2)) {
           _s1 = l1;
           continue ;
         } else {
@@ -230,13 +233,13 @@ function subset(_s1, _s2) {
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var v = tree[1];
+    if (tree !== "Empty") {
+      var v = tree.Arg1;
       var c = Caml_primitive.caml_string_compare(x, v);
       if (c === 0) {
         return v;
       } else {
-        _tree = c < 0 ? tree[0] : tree[2];
+        _tree = c < 0 ? tree.Arg0 : tree.Arg2;
         continue ;
       }
     } else {
@@ -246,23 +249,23 @@ function find(x, _tree) {
 }
 
 function of_list(l) {
-  if (l) {
-    var match = l[1];
-    var x0 = l[0];
-    if (match) {
-      var match$1 = match[1];
-      var x1 = match[0];
-      if (match$1) {
-        var match$2 = match$1[1];
-        var x2 = match$1[0];
-        if (match$2) {
-          var match$3 = match$2[1];
-          var x3 = match$2[0];
-          if (match$3) {
-            if (match$3[1]) {
+  if (l !== "[]") {
+    var match = l.Arg1;
+    var x0 = l.Arg0;
+    if (match !== "[]") {
+      var match$1 = match.Arg1;
+      var x1 = match.Arg0;
+      if (match$1 !== "[]") {
+        var match$2 = match$1.Arg1;
+        var x2 = match$1.Arg0;
+        if (match$2 !== "[]") {
+          var match$3 = match$2.Arg1;
+          var x3 = match$2.Arg0;
+          if (match$3 !== "[]") {
+            if (match$3.Arg1 !== "[]") {
               return Set_gen.of_sorted_list(List.sort_uniq($$String.compare, l));
             } else {
-              return add(match$3[0], add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
+              return add(match$3.Arg0, add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
             }
           } else {
             return add(x3, add(x2, add(x1, Set_gen.singleton(x0))));
@@ -277,14 +280,14 @@ function of_list(l) {
       return Set_gen.singleton(x0);
     }
   } else {
-    return /* Empty */0;
+    return "Empty";
   }
 }
 
 function of_array(l) {
   return $$Array.fold_left((function (acc, x) {
                 return add(x, acc);
-              }), /* Empty */0, l);
+              }), "Empty", l);
 }
 
 function invariant(t) {
@@ -294,7 +297,7 @@ function invariant(t) {
 
 var compare_elt = $$String.compare;
 
-var empty = /* Empty */0;
+var empty = "Empty";
 
 var is_empty = Set_gen.is_empty;
 

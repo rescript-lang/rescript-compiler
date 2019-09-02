@@ -20,8 +20,8 @@ var Comparable = {
 };
 
 function height(param) {
-  if (param) {
-    return param[4];
+  if (param !== "Empty") {
+    return param.Arg4;
   } else {
     return 0;
   }
@@ -30,28 +30,29 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        ];
+  return /* constructor */{
+          tag: "Node",
+          Arg0: l,
+          Arg1: x,
+          Arg2: d,
+          Arg3: r,
+          Arg4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        };
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l[4] : 0;
-  var hr = r ? r[4] : 0;
+  var hl = l !== "Empty" ? l.Arg4 : 0;
+  var hr = r !== "Empty" ? r.Arg4 : 0;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l[3];
-      var ld = l[2];
-      var lv = l[1];
-      var ll = l[0];
+    if (l !== "Empty") {
+      var lr = l.Arg3;
+      var ld = l.Arg2;
+      var lv = l.Arg1;
+      var ll = l.Arg0;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
-      } else if (lr) {
-        return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
+      } else if (lr !== "Empty") {
+        return create(create(ll, lv, ld, lr.Arg0), lr.Arg1, lr.Arg2, create(lr.Arg3, x, d, r));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -65,15 +66,15 @@ function bal(l, x, d, r) {
           ];
     }
   } else if (hr > (hl + 2 | 0)) {
-    if (r) {
-      var rr = r[3];
-      var rd = r[2];
-      var rv = r[1];
-      var rl = r[0];
+    if (r !== "Empty") {
+      var rr = r.Arg3;
+      var rd = r.Arg2;
+      var rv = r.Arg1;
+      var rl = r.Arg0;
       if (height(rr) >= height(rl)) {
         return create(create(l, x, d, rl), rv, rd, rr);
-      } else if (rl) {
-        return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
+      } else if (rl !== "Empty") {
+        return create(create(l, x, d, rl.Arg0), rl.Arg1, rl.Arg2, create(rl.Arg3, rv, rd, rr));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -87,44 +88,47 @@ function bal(l, x, d, r) {
           ];
     }
   } else {
-    return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          ];
+    return /* constructor */{
+            tag: "Node",
+            Arg0: l,
+            Arg1: x,
+            Arg2: d,
+            Arg3: r,
+            Arg4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          };
   }
 }
 
 function add(x, data, compare, param) {
-  if (param) {
-    var r = param[3];
-    var d = param[2];
-    var v = param[1];
-    var l = param[0];
+  if (param !== "Empty") {
+    var r = param.Arg3;
+    var d = param.Arg2;
+    var v = param.Arg1;
+    var l = param.Arg0;
     var c = compare(x, v);
     if (c === 0) {
-      return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
-            ];
+      return /* constructor */{
+              tag: "Node",
+              Arg0: l,
+              Arg1: x,
+              Arg2: data,
+              Arg3: r,
+              Arg4: param.Arg4
+            };
     } else if (c < 0) {
       return bal(add(x, data, compare, l), v, d, r);
     } else {
       return bal(l, v, d, add(x, data, compare, r));
     }
   } else {
-    return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
-          ];
+    return /* constructor */{
+            tag: "Node",
+            Arg0: "Empty",
+            Arg1: x,
+            Arg2: data,
+            Arg3: "Empty",
+            Arg4: 1
+          };
   }
 }
 
@@ -139,7 +143,7 @@ function add$1(x, data, v) {
 function empty(v) {
   return /* record */[
           /* compare */v,
-          /* data : Empty */0
+          /* data */"Empty"
         ];
 }
 
@@ -157,12 +161,12 @@ var V1 = {
 
 var v0 = /* record */[
   /* compare */V0,
-  /* data : Empty */0
+  /* data */"Empty"
 ];
 
 var v1 = /* record */[
   /* compare */V1,
-  /* data : Empty */0
+  /* data */"Empty"
 ];
 
 var v3 = add$1(3, "a", v0);

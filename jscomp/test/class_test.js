@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -82,51 +81,59 @@ var tmp$1 = Curry._1(point2[0], 0);
 
 var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 
-Mt.from_pair_suites("Class_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Class_test", /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "File \"class_test.ml\", line 33, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      zero,
-                      0
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: zero,
+                    Arg1: 0
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
           "File \"class_test.ml\", line 34, characters 4-11",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        three,
-                        3
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: three,
+                      Arg1: 3
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
             "File \"class_test.ml\", line 35, characters 4-11",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          one,
-                          1
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: one,
+                        Arg1: 1
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
               "File \"class_test.ml\", line 36, characters 4-11",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            two,
-                            2
-                          ]);
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: two,
+                          Arg1: 2
+                        };
                 })
             ],
-            /* [] */0
-          ]
-        ]
-      ]
-    ]);
+            Arg1: "[]"
+          }
+        }
+      }
+    });
 
 exports.point = point;
 exports.p = p;

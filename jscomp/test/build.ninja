@@ -47,7 +47,7 @@ build test/array_safe_get.cmi test/array_safe_get.cmj : cc test/array_safe_get.m
 build test/array_subtle_test.cmi test/array_subtle_test.cmj : cc test/array_subtle_test.ml | test/mt.cmj $stdlib
 build test/array_test.cmj : cc_cmi test/array_test.ml | test/array_test.cmi test/mt.cmj $stdlib
 build test/array_test.cmi : cc test/array_test.mli | $stdlib
-build test/ast_abstract_test.cmi test/ast_abstract_test.cmj : cc test/ast_abstract_test.ml | test/mt.cmj $stdlib
+build test/ast_abstract_test.cmi test/ast_abstract_test.cmj : cc test/ast_abstract_test.ml | $stdlib
 build test/ast_js_mapper_poly_test.cmi test/ast_js_mapper_poly_test.cmj : cc test/ast_js_mapper_poly_test.ml | test/mt.cmj $stdlib
 build test/ast_js_mapper_test.cmj : cc_cmi test/ast_js_mapper_test.ml | test/ast_js_mapper_test.cmi $stdlib
 build test/ast_js_mapper_test.cmi : cc test/ast_js_mapper_test.mli | $stdlib
@@ -379,7 +379,6 @@ build test/key_word_property_plus_test.cmi test/key_word_property_plus_test.cmj 
 build test/large_record_duplication_test.cmi test/large_record_duplication_test.cmj : cc test/large_record_duplication_test.ml | test/mt.cmj $stdlib
 build test/largest_int_flow.cmi test/largest_int_flow.cmj : cc test/largest_int_flow.ml | $stdlib
 build test/lazy_test.cmi test/lazy_test.cmj : cc test/lazy_test.ml | test/mt.cmj $stdlib
-build test/lexer_test.cmi test/lexer_test.cmj : cc test/lexer_test.ml | test/arith_lexer.cmj test/arith_parser.cmj test/arith_syntax.cmj test/mt.cmj test/number_lexer.cmj $stdlib
 build test/lib_js_test.cmi test/lib_js_test.cmj : cc test/lib_js_test.ml | test/mt.cmj $stdlib
 build test/libarg_test.cmi test/libarg_test.cmj : cc test/libarg_test.ml | test/mt.cmj $stdlib
 build test/libqueue_test.cmi test/libqueue_test.cmj : cc test/libqueue_test.ml | $stdlib
@@ -429,12 +428,9 @@ build test/obj_literal_ppx_test.cmi test/obj_literal_ppx_test.cmj : cc test/obj_
 build test/obj_magic_test.cmi test/obj_magic_test.cmj : cc test/obj_magic_test.ml | test/mt.cmj $stdlib
 build test/obj_test.cmi test/obj_test.cmj : cc test/obj_test.ml | test/mt.cmj $stdlib
 build test/obj_type_test.cmi test/obj_type_test.cmj : cc test/obj_type_test.ml | $stdlib
-build test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/ocaml_parsetree_test.cmi $stdlib
 build test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
-build test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
 build test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 build test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/ocaml_typedtree_test.cmi $stdlib
 build test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 build test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 build test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
@@ -443,7 +439,6 @@ build test/option_repr_test.cmi test/option_repr_test.cmj : cc test/option_repr_
 build test/optional_ffi_test.cmi test/optional_ffi_test.cmj : cc test/optional_ffi_test.ml | test/mt.cmj $stdlib
 build test/optional_regression_test.cmi test/optional_regression_test.cmj : cc test/optional_regression_test.ml | test/mt.cmj $stdlib
 build test/parser_api.cmi test/parser_api.cmj : cc test/parser_api.ml | $stdlib
-build test/parser_api_test.cmi test/parser_api_test.cmj : cc test/parser_api_test.ml | test/mt.cmj test/parser_api.cmj $stdlib
 build test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_readline.ml | $stdlib
 build test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $stdlib
 build test/poly_type.cmi test/poly_type.cmj : cc test/poly_type.ml | $stdlib
@@ -477,6 +472,7 @@ build test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_m
 build test/rec_fun_test.cmi test/rec_fun_test.cmj : cc test/rec_fun_test.ml | test/mt.cmj $stdlib
 build test/rec_module_test.cmi test/rec_module_test.cmj : cc test/rec_module_test.ml | test/mt.cmj $stdlib
 build test/rec_value_test.cmi test/rec_value_test.cmj : cc test/rec_value_test.ml | test/mt.cmj $stdlib
+build test/record_bench.cmi test/record_bench.cmj : cc test/record_bench.ml | $stdlib
 build test/record_debug_test.cmi test/record_debug_test.cmj : cc test/record_debug_test.ml | $stdlib
 build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $stdlib
 build test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $stdlib

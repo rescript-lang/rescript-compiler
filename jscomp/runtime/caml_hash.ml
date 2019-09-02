@@ -133,6 +133,8 @@ let caml_hash (count : int) _limit (seed : nativeint)
         match Js.undefinedToOption size with
         | None -> ()
         | Some size -> 
+          (* TODO: this could be extended so it works for arbitrary objects,
+             rather than the specific ones obtained from variants. *)
           let obj_tag = Caml_obj_extern.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 

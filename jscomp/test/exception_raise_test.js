@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -33,12 +32,12 @@ function appf(g, x) {
       return 3;
     } else if (exn[0] === B) {
       var match = exn[1];
-      if (match) {
-        var match$1 = match[1];
-        if (match$1) {
-          var match$2 = match$1[1];
-          if (match$2) {
-            return match$2[0];
+      if (match !== "[]") {
+        var match$1 = match.Arg1;
+        if (match$1 !== "[]") {
+          var match$2 = match$1.Arg1;
+          if (match$2 !== "[]") {
+            return match$2.Arg0;
           }
           
         }
@@ -127,35 +126,39 @@ catch (raw_e$1){
   a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);
 }
 
-var suites = /* record */[/* contents : :: */[
-    /* tuple */[
+var suites = /* record */[/* contents : constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    /* tuple */[
-                      f,
-                      ff,
-                      fff,
-                      a0
-                    ],
-                    /* tuple */[
-                      2,
-                      2,
-                      2,
-                      2
-                    ]
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: /* tuple */[
+                    f,
+                    ff,
+                    fff,
+                    a0
+                  ],
+                  Arg1: /* tuple */[
+                    2,
+                    2,
+                    2,
+                    2
+                  ]
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
             if (a1[0] === Js_exn.$$Error) {
-              return /* Eq */Block.__(0, [
-                        a1[1],
-                        2
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: a1[1],
+                      Arg1: 2
+                    };
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
@@ -168,9 +171,9 @@ var suites = /* record */[/* contents : :: */[
             }
           })
       ],
-      /* [] */0
-    ]
-  ]];
+      Arg1: "[]"
+    }
+  }];
 
 var test_id = /* record */[/* contents */0];
 
@@ -215,10 +218,11 @@ function input_lines(ic, _acc) {
     catch (exn){
       return List.rev(acc);
     }
-    _acc = /* :: */[
-      line,
-      acc
-    ];
+    _acc = /* constructor */{
+      tag: "::",
+      Arg0: line,
+      Arg1: acc
+    };
     continue ;
   };
 }

@@ -59,15 +59,17 @@ function f(param) {
 
 List$1.xx();
 
-List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]);
+List.length(/* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 2,
+        Arg1: "[]"
+      }
+    });
 
-List.length(/* [] */0);
+List.length("[]");
 
 function ff(prim) {
   return Local.ff();

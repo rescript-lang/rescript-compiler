@@ -1,150 +1,167 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_null = require("../../lib/js/js_null.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_000 = /* tuple */[
-  "toOption - empty",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                undefined,
-                undefined
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "toOption - 'a",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "toOption - empty",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  /* () */0,
-                  Caml_option.null_to_opt(/* () */0)
-                ]);
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: undefined,
+                Arg1: undefined
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
-      "return",
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "toOption - 'a",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    "something",
-                    Caml_option.null_to_opt("something")
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: /* () */0,
+                  Arg1: Caml_option.null_to_opt(/* () */0)
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "test - empty",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "return",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      true,
-                      true
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: "something",
+                    Arg1: Caml_option.null_to_opt("something")
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
-          "test - 'a",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "test - empty",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        false,
-                        false
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: true,
+                      Arg1: true
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
-            "bind - empty",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "test - 'a",
             (function (param) {
-                return /* StrictEq */Block.__(2, [
-                          null,
-                          Js_null.bind(null, (function (v) {
-                                  return v;
-                                }))
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: false,
+                        Arg1: false
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "bind - 'a",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
+              "bind - empty",
               (function (param) {
-                  return /* StrictEq */Block.__(2, [
-                            4,
-                            Js_null.bind(2, (function (n) {
-                                    return (n << 1);
-                                  }))
-                          ]);
+                  return /* constructor */{
+                          tag: "StrictEq",
+                          Arg0: null,
+                          Arg1: Js_null.bind(null, (function (v) {
+                                  return v;
+                                }))
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
-                "iter - empty",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
+                "bind - 'a",
                 (function (param) {
-                    var hit = /* record */[/* contents */false];
-                    Js_null.iter(null, (function (param) {
-                            hit[0] = true;
-                            return /* () */0;
-                          }));
-                    return /* Eq */Block.__(0, [
-                              false,
-                              hit[0]
-                            ]);
+                    return /* constructor */{
+                            tag: "StrictEq",
+                            Arg0: 4,
+                            Arg1: Js_null.bind(2, (function (n) {
+                                    return (n << 1);
+                                  }))
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
-                  "iter - 'a",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
+                  "iter - empty",
                   (function (param) {
-                      var hit = /* record */[/* contents */0];
-                      Js_null.iter(2, (function (v) {
-                              hit[0] = v;
+                      var hit = /* record */[/* contents */false];
+                      Js_null.iter(null, (function (param) {
+                              hit[0] = true;
                               return /* () */0;
                             }));
-                      return /* Eq */Block.__(0, [
-                                2,
-                                hit[0]
-                              ]);
+                      return /* constructor */{
+                              tag: "Eq",
+                              Arg0: false,
+                              Arg1: hit[0]
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
-                    "fromOption - None",
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
+                    "iter - 'a",
                     (function (param) {
-                        return /* Eq */Block.__(0, [
-                                  null,
-                                  Js_null.fromOption(undefined)
-                                ]);
+                        var hit = /* record */[/* contents */0];
+                        Js_null.iter(2, (function (v) {
+                                hit[0] = v;
+                                return /* () */0;
+                              }));
+                        return /* constructor */{
+                                tag: "Eq",
+                                Arg0: 2,
+                                Arg1: hit[0]
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
-                      "fromOption - Some",
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
+                      "fromOption - None",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    2,
-                                    Js_null.fromOption(2)
-                                  ]);
+                          return /* constructor */{
+                                  tag: "Eq",
+                                  Arg0: null,
+                                  Arg1: Js_null.fromOption(undefined)
+                                };
                         })
                     ],
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
+                        "fromOption - Some",
+                        (function (param) {
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: 2,
+                                    Arg1: Js_null.fromOption(2)
+                                  };
+                          })
+                      ],
+                      Arg1: "[]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 Mt.from_pair_suites("Js_null_test", suites);
 

@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Int64 = require("../../lib/js/int64.js");
 var Printf = require("../../lib/js/printf.js");
@@ -12,16 +11,17 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 function commutative_mul(result, a, b) {
-  return /* Eq */Block.__(0, [
-            /* tuple */[
-              result,
-              result
-            ],
-            /* tuple */[
-              Caml_int64.mul(a, b),
-              Caml_int64.mul(b, a)
-            ]
-          ]);
+  return /* constructor */{
+          tag: "Eq",
+          Arg0: /* tuple */[
+            result,
+            result
+          ],
+          Arg1: /* tuple */[
+            Caml_int64.mul(a, b),
+            Caml_int64.mul(b, a)
+          ]
+        };
 }
 
 var pairs = /* array */[
@@ -313,21 +313,25 @@ function from_pairs(prefix, pairs) {
                     var a = param[1];
                     var result = param[0];
                     return /* tuple */[
-                            Curry._2(Printf.sprintf(/* Format */[
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* Char_literal */Block.__(12, [
-                                              /* "_" */95,
-                                              /* Int */Block.__(4, [
-                                                  /* Int_d */0,
-                                                  /* No_padding */0,
-                                                  /* No_precision */0,
-                                                  /* End_of_format */0
-                                                ])
-                                            ])
-                                        ]),
-                                      "%s_%d"
-                                    ]), prefix, i),
+                            Curry._2(Printf.sprintf(/* constructor */{
+                                      tag: "Format",
+                                      Arg0: /* constructor */{
+                                        tag: "String",
+                                        Arg0: "No_padding",
+                                        Arg1: /* constructor */{
+                                          tag: "Char_literal",
+                                          Arg0: /* "_" */95,
+                                          Arg1: /* constructor */{
+                                            tag: "Int",
+                                            Arg0: "Int_d",
+                                            Arg1: "No_padding",
+                                            Arg2: "No_precision",
+                                            Arg3: "End_of_format"
+                                          }
+                                        }
+                                      },
+                                      Arg1: "%s_%d"
+                                    }), prefix, i),
                             (function (param) {
                                 return commutative_mul(result, a, b);
                               })
@@ -1591,27 +1595,31 @@ function from(xs) {
                 var b = param[1];
                 var a = param[0];
                 return /* tuple */[
-                        Curry._1(Printf.sprintf(/* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "small_divs ",
-                                      /* Scan_get_counter */Block.__(21, [
-                                          /* Token_counter */2,
-                                          /* End_of_format */0
-                                        ])
-                                    ]),
-                                  "small_divs %L"
-                                ]), i),
+                        Curry._1(Printf.sprintf(/* constructor */{
+                                  tag: "Format",
+                                  Arg0: /* constructor */{
+                                    tag: "String_literal",
+                                    Arg0: "small_divs ",
+                                    Arg1: /* constructor */{
+                                      tag: "Scan_get_counter",
+                                      Arg0: "Token_counter",
+                                      Arg1: "End_of_format"
+                                    }
+                                  },
+                                  Arg1: "small_divs %L"
+                                }), i),
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      /* tuple */[
-                                        c,
-                                        d
-                                      ],
-                                      /* tuple */[
-                                        Caml_int64.div(a, b),
-                                        Caml_int64.mod_(a, b)
-                                      ]
-                                    ]);
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: /* tuple */[
+                                      c,
+                                      d
+                                    ],
+                                    Arg1: /* tuple */[
+                                      Caml_int64.div(a, b),
+                                      Caml_int64.mod_(a, b)
+                                    ]
+                                  };
                           })
                       ];
               }), $$Array.to_list(xs));
@@ -1667,21 +1675,25 @@ function from_compare(xs) {
                 var b = param[1];
                 var a = param[0];
                 return /* tuple */[
-                        Curry._1(Printf.sprintf(/* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "int64_compare ",
-                                      /* Scan_get_counter */Block.__(21, [
-                                          /* Token_counter */2,
-                                          /* End_of_format */0
-                                        ])
-                                    ]),
-                                  "int64_compare %L"
-                                ]), i),
+                        Curry._1(Printf.sprintf(/* constructor */{
+                                  tag: "Format",
+                                  Arg0: /* constructor */{
+                                    tag: "String_literal",
+                                    Arg0: "int64_compare ",
+                                    Arg1: /* constructor */{
+                                      tag: "Scan_get_counter",
+                                      Arg0: "Token_counter",
+                                      Arg1: "End_of_format"
+                                    }
+                                  },
+                                  Arg1: "int64_compare %L"
+                                }), i),
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      c,
-                                      Caml_int64.compare(a, b)
-                                    ]);
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: c,
+                                    Arg1: Caml_int64.compare(a, b)
+                                  };
                           })
                       ];
               }), $$Array.to_list(xs));
@@ -1692,21 +1704,25 @@ function from_to_string(xs) {
                 var str_a = param[1];
                 var a = param[0];
                 return /* tuple */[
-                        Curry._1(Printf.sprintf(/* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "to_string ",
-                                      /* Scan_get_counter */Block.__(21, [
-                                          /* Token_counter */2,
-                                          /* End_of_format */0
-                                        ])
-                                    ]),
-                                  "to_string %L"
-                                ]), i),
+                        Curry._1(Printf.sprintf(/* constructor */{
+                                  tag: "Format",
+                                  Arg0: /* constructor */{
+                                    tag: "String_literal",
+                                    Arg0: "to_string ",
+                                    Arg1: /* constructor */{
+                                      tag: "Scan_get_counter",
+                                      Arg0: "Token_counter",
+                                      Arg1: "End_of_format"
+                                    }
+                                  },
+                                  Arg1: "to_string %L"
+                                }), i),
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      str_a,
-                                      Caml_format.caml_int64_format("%d", a)
-                                    ]);
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: str_a,
+                                    Arg1: Caml_format.caml_int64_format("%d", a)
+                                  };
                           })
                       ];
               }), $$Array.to_list(xs));
@@ -1716,107 +1732,123 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                         var f = param[1];
                         var i64 = param[0];
                         return /* tuple */[
-                                Curry._1(Printf.sprintf(/* Format */[
-                                          /* String_literal */Block.__(11, [
-                                              "to_float_",
-                                              /* Int */Block.__(4, [
-                                                  /* Int_d */0,
-                                                  /* No_padding */0,
-                                                  /* No_precision */0,
-                                                  /* End_of_format */0
-                                                ])
-                                            ]),
-                                          "to_float_%d"
-                                        ]), i),
+                                Curry._1(Printf.sprintf(/* constructor */{
+                                          tag: "Format",
+                                          Arg0: /* constructor */{
+                                            tag: "String_literal",
+                                            Arg0: "to_float_",
+                                            Arg1: /* constructor */{
+                                              tag: "Int",
+                                              Arg0: "Int_d",
+                                              Arg1: "No_padding",
+                                              Arg2: "No_precision",
+                                              Arg3: "End_of_format"
+                                            }
+                                          },
+                                          Arg1: "to_float_%d"
+                                        }), i),
                                 (function (param) {
-                                    return /* Eq */Block.__(0, [
-                                              Caml_int64.to_float(i64),
-                                              f
-                                            ]);
+                                    return /* constructor */{
+                                            tag: "Eq",
+                                            Arg0: Caml_int64.to_float(i64),
+                                            Arg1: f
+                                          };
                                   })
                               ];
                       }), $$Array.to_list(to_floats)), Pervasives.$at(List.mapi((function (i, param) {
                             var i64 = param[1];
                             var f = param[0];
                             return /* tuple */[
-                                    Curry._1(Printf.sprintf(/* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "of_float_",
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_d */0,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ]),
-                                              "of_float_%d"
-                                            ]), i),
+                                    Curry._1(Printf.sprintf(/* constructor */{
+                                              tag: "Format",
+                                              Arg0: /* constructor */{
+                                                tag: "String_literal",
+                                                Arg0: "of_float_",
+                                                Arg1: /* constructor */{
+                                                  tag: "Int",
+                                                  Arg0: "Int_d",
+                                                  Arg1: "No_padding",
+                                                  Arg2: "No_precision",
+                                                  Arg3: "End_of_format"
+                                                }
+                                              },
+                                              Arg1: "of_float_%d"
+                                            }), i),
                                     (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  Caml_int64.of_float(f),
-                                                  i64
-                                                ]);
+                                        return /* constructor */{
+                                                tag: "Eq",
+                                                Arg0: Caml_int64.of_float(f),
+                                                Arg1: i64
+                                              };
                                       })
                                   ];
-                          }), $$Array.to_list(of_float_pairs)), Pervasives.$at(/* :: */[
-                          /* tuple */[
+                          }), $$Array.to_list(of_float_pairs)), Pervasives.$at(/* constructor */{
+                          tag: "::",
+                          Arg0: /* tuple */[
                             "compare_check_complete",
                             (function (param) {
-                                return /* Eq */Block.__(0, [
-                                          $$Array.map((function (param) {
-                                                  return true;
-                                                }), check_complete_compare),
-                                          check_complete_compare
-                                        ]);
+                                return /* constructor */{
+                                        tag: "Eq",
+                                        Arg0: $$Array.map((function (param) {
+                                                return true;
+                                              }), check_complete_compare),
+                                        Arg1: check_complete_compare
+                                      };
                               })
                           ],
-                          /* [] */0
-                        ], Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), /* :: */[
-                                  /* tuple */[
+                          Arg1: "[]"
+                        }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), /* constructor */{
+                                  tag: "::",
+                                  Arg0: /* tuple */[
                                     "div_rem_0",
                                     (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  /* int64 */[
-                                                    /* hi */0,
-                                                    /* lo */0
-                                                  ],
-                                                  /* int64 */[
-                                                    /* hi */0,
-                                                    /* lo */0
-                                                  ]
-                                                ]);
+                                        return /* constructor */{
+                                                tag: "Eq",
+                                                Arg0: /* int64 */[
+                                                  /* hi */0,
+                                                  /* lo */0
+                                                ],
+                                                Arg1: /* int64 */[
+                                                  /* hi */0,
+                                                  /* lo */0
+                                                ]
+                                              };
                                       })
                                   ],
-                                  /* :: */[
-                                    /* tuple */[
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: /* tuple */[
                                       "div_rem_1",
                                       (function (param) {
-                                          return /* Eq */Block.__(0, [
-                                                    /* int64 */[
-                                                      /* hi */-1,
-                                                      /* lo */4294967295
-                                                    ],
-                                                    /* int64 */[
-                                                      /* hi */-1,
-                                                      /* lo */4294967295
-                                                    ]
-                                                  ]);
+                                          return /* constructor */{
+                                                  tag: "Eq",
+                                                  Arg0: /* int64 */[
+                                                    /* hi */-1,
+                                                    /* lo */4294967295
+                                                  ],
+                                                  Arg1: /* int64 */[
+                                                    /* hi */-1,
+                                                    /* lo */4294967295
+                                                  ]
+                                                };
                                         })
                                     ],
-                                    /* :: */[
-                                      /* tuple */[
+                                    Arg1: /* constructor */{
+                                      tag: "::",
+                                      Arg0: /* tuple */[
                                         "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
                                         (function (param) {
-                                            return /* Eq */Block.__(0, [
-                                                      Caml_int64.to_float(Int64.max_int),
-                                                      9.22337203685477581e+18
-                                                    ]);
+                                            return /* constructor */{
+                                                    tag: "Eq",
+                                                    Arg0: Caml_int64.to_float(Int64.max_int),
+                                                    Arg1: 9.22337203685477581e+18
+                                                  };
                                           })
                                       ],
-                                      /* [] */0
-                                    ]
-                                  ]
-                                ]))))))));
+                                      Arg1: "[]"
+                                    }
+                                  }
+                                }))))))));
 
 exports.commutative_mul = commutative_mul;
 exports.pairs = pairs;

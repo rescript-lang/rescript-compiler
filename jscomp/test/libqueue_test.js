@@ -8,11 +8,12 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function to_list(q) {
   return List.rev(Queue.fold((function (l, x) {
-                    return /* :: */[
-                            x,
-                            l
-                          ];
-                  }), /* [] */0, q));
+                    return /* constructor */{
+                            tag: "::",
+                            Arg0: x,
+                            Arg1: l
+                          };
+                  }), "[]", q));
 }
 
 var Q = {
@@ -53,7 +54,7 @@ var q = /* record */[
   /* tail */undefined
 ];
 
-if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
+if (!(to_list(q) === "[]" && q[/* length */0] === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -66,10 +67,11 @@ if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
 
 Queue.add(1, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* [] */0
-        ]) && q[/* length */0] === 1)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: "[]"
+        }) && q[/* length */0] === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -82,13 +84,15 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(2, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]) && q[/* length */0] === 2)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: "[]"
+          }
+        }) && q[/* length */0] === 2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -101,16 +105,19 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(3, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
-          ]
-        ]) && q[/* length */0] === 3)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: "[]"
+            }
+          }
+        }) && q[/* length */0] === 3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -123,19 +130,23 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(4, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
-              ]
-            ]
-          ]
-        ]) && q[/* length */0] === 4)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 1,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 2,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 3,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 4,
+                Arg1: "[]"
+              }
+            }
+          }
+        }) && q[/* length */0] === 4)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -157,16 +168,19 @@ if (Queue.take(q) !== 1) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]) && q[/* length */0] === 3)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: "[]"
+            }
+          }
+        }) && q[/* length */0] === 3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -188,13 +202,15 @@ if (Queue.take(q) !== 2) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          3,
-          /* :: */[
-            4,
-            /* [] */0
-          ]
-        ]) && q[/* length */0] === 2)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 3,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 4,
+            Arg1: "[]"
+          }
+        }) && q[/* length */0] === 2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -216,10 +232,11 @@ if (Queue.take(q) !== 3) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          4,
-          /* [] */0
-        ]) && q[/* length */0] === 1)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* constructor */{
+          tag: "::",
+          Arg0: 4,
+          Arg1: "[]"
+        }) && q[/* length */0] === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -241,7 +258,7 @@ if (Queue.take(q) !== 4) {
       ];
 }
 
-if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
+if (!(to_list(q) === "[]" && q[/* length */0] === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -530,37 +547,47 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Queue.copy(q1);
 
-if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* :: */[
-                5,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    7,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* :: */[
-                          10,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 5,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 6,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 7,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 8,
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: 9,
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: 10,
+                          Arg1: "[]"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -571,37 +598,47 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* :: */[
-                5,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    7,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* :: */[
-                          10,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 5,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 6,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 7,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 8,
+                      Arg1: /* constructor */{
+                        tag: "::",
+                        Arg0: 9,
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: 10,
+                          Arg1: "[]"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -796,7 +833,7 @@ if (q1$1[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$1) !== /* [] */0) {
+if (to_list(q1$1) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -818,7 +855,7 @@ if (q2$1[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q2$1) !== /* [] */0) {
+if (to_list(q2$1) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -842,7 +879,7 @@ if (q1$1[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$1) !== /* [] */0) {
+if (to_list(q1$1) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -864,7 +901,7 @@ if (q2$1[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q2$1) !== /* [] */0) {
+if (to_list(q2$1) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -900,19 +937,23 @@ if (q1$2[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1$2), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -934,7 +975,7 @@ if (q2$2[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q2$2) !== /* [] */0) {
+if (to_list(q2$2) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -958,7 +999,7 @@ if (q1$2[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$2) !== /* [] */0) {
+if (to_list(q1$2) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -980,19 +1021,23 @@ if (q2$2[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$2), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1028,7 +1073,7 @@ if (q1$3[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$3) !== /* [] */0) {
+if (to_list(q1$3) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1050,19 +1095,23 @@ if (q2$3[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$3), /* constructor */{
+        tag: "::",
+        Arg0: 5,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 7,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 8,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1086,7 +1135,7 @@ if (q1$3[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$3) !== /* [] */0) {
+if (to_list(q1$3) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1108,19 +1157,23 @@ if (q2$3[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$3), /* constructor */{
+        tag: "::",
+        Arg0: 5,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 7,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 8,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1160,19 +1213,23 @@ if (q1$4[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1$4), /* constructor */{
+        tag: "::",
+        Arg0: 1,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 2,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 3,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 4,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1194,19 +1251,23 @@ if (q2$4[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$4), /* constructor */{
+        tag: "::",
+        Arg0: 5,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 7,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 8,
+              Arg1: "[]"
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1230,7 +1291,7 @@ if (q1$4[/* length */0] !== 0) {
       ];
 }
 
-if (to_list(q1$4) !== /* [] */0) {
+if (to_list(q1$4) !== "[]") {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1252,31 +1313,39 @@ if (q2$4[/* length */0] !== 8) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* :: */[
-                1,
-                /* :: */[
-                  2,
-                  /* :: */[
-                    3,
-                    /* :: */[
-                      4,
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$4), /* constructor */{
+        tag: "::",
+        Arg0: 5,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 6,
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: 7,
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: 8,
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: 1,
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: 2,
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: 3,
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: 4,
+                      Arg1: "[]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

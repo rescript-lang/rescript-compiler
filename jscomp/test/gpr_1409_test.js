@@ -2,29 +2,30 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var String_set = require("./string_set.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -133,29 +134,35 @@ function keys(xs, ys) {
   return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
 }
 
-eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
-          "hi",
-          /* [] */0
-        ], Object.keys(test3(undefined, undefined))), true);
+eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* constructor */{
+          tag: "::",
+          Arg0: "hi",
+          Arg1: "[]"
+        }, Object.keys(test3(undefined, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
-          "hi",
-          /* :: */[
-            "open",
-            /* [] */0
-          ]
-        ], Object.keys(test3(2, undefined))), true);
+eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* constructor */{
+          tag: "::",
+          Arg0: "hi",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: "open",
+            Arg1: "[]"
+          }
+        }, Object.keys(test3(2, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
-          "hi",
-          /* :: */[
-            "open",
-            /* :: */[
-              "xx",
-              /* [] */0
-            ]
-          ]
-        ], Object.keys(test3(2, 2))), true);
+eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* constructor */{
+          tag: "::",
+          Arg0: "hi",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: "open",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: "xx",
+              Arg1: "[]"
+            }
+          }
+        }, Object.keys(test3(2, 2))), true);
 
 Mt.from_pair_suites("Gpr_1409_test", suites[0]);
 

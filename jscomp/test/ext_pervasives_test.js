@@ -4,7 +4,6 @@ var Arg = require("../../lib/js/arg.js");
 var Obj = require("../../lib/js/obj.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
@@ -106,10 +105,11 @@ function dump(r) {
         if (n !== 0) {
           var n$1 = n - 1 | 0;
           _n = n$1;
-          _acc = /* :: */[
-            r[n$1],
-            acc
-          ];
+          _acc = /* constructor */{
+            tag: "::",
+            Arg0: r[n$1],
+            Arg1: acc
+          };
           continue ;
         } else {
           return acc;
@@ -123,7 +123,7 @@ function dump(r) {
           return Caml_obj.caml_equal(r, 0);
         } else {
           var s = r.length;
-          var t = r.tag | 0;
+          var t = /* XXX */r.tag;
           if (t === 0 && s === 2) {
             _r = r[1];
             continue ;
@@ -135,18 +135,19 @@ function dump(r) {
     };
     var get_list = function (r) {
       if (typeof r === "number") {
-        return /* [] */0;
+        return "[]";
       } else {
         var h = r[0];
         var t = get_list(r[1]);
-        return /* :: */[
-                h,
-                t
-              ];
+        return /* constructor */{
+                tag: "::",
+                Arg0: h,
+                Arg1: t
+              };
       }
     };
     var s = r.length;
-    var t = r.tag | 0;
+    var t = /* XXX */r.tag;
     if (is_list(r)) {
       var fields = get_list(r);
       return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
@@ -156,15 +157,15 @@ function dump(r) {
       } else if (t === Obj.closure_tag) {
         return "<closure>";
       } else if (t === Obj.object_tag) {
-        var fields$1 = get_fields(/* [] */0, s);
+        var fields$1 = get_fields("[]", s);
         var match;
-        if (fields$1) {
-          var match$1 = fields$1[1];
-          if (match$1) {
+        if (fields$1 !== "[]") {
+          var match$1 = fields$1.Arg1;
+          if (match$1 !== "[]") {
             match = /* tuple */[
-              fields$1[0],
-              match$1[0],
-              match$1[1]
+              fields$1.Arg0,
+              match$1.Arg0,
+              match$1.Arg1
             ];
           } else {
             throw [
@@ -192,7 +193,7 @@ function dump(r) {
       } else if (t === Obj.forward_tag) {
         return "<forward>";
       } else if (t < Obj.no_scan_tag) {
-        var fields$2 = get_fields(/* [] */0, s);
+        var fields$2 = get_fields("[]", s);
         return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
       } else if (t === Obj.string_tag) {
         return "\"" + ($$String.escaped(r) + "\"");
@@ -207,30 +208,35 @@ function dump(r) {
       } else if (t === Obj.double_array_tag) {
         return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
       } else {
-        var name = Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "unknown: tag ",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " size ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ])
-                    ]),
-                  "unknown: tag %d size %d"
-                ]), t, s);
+        var name = Curry._2(Printf.sprintf(/* constructor */{
+                  tag: "Format",
+                  Arg0: /* constructor */{
+                    tag: "String_literal",
+                    Arg0: "unknown: tag ",
+                    Arg1: /* constructor */{
+                      tag: "Int",
+                      Arg0: "Int_d",
+                      Arg1: "No_padding",
+                      Arg2: "No_precision",
+                      Arg3: /* constructor */{
+                        tag: "String_literal",
+                        Arg0: " size ",
+                        Arg1: /* constructor */{
+                          tag: "Int",
+                          Arg0: "Int_d",
+                          Arg1: "No_padding",
+                          Arg2: "No_precision",
+                          Arg3: "End_of_format"
+                        }
+                      }
+                    }
+                  },
+                  Arg1: "unknown: tag %d size %d"
+                }), t, s);
         return "<" + (name + ">");
       }
     } else {
-      var fields$3 = get_fields(/* [] */0, s);
+      var fields$3 = get_fields("[]", s);
       return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
     }
   }
@@ -239,22 +245,30 @@ function dump(r) {
 var dump$1 = dump;
 
 function pp_any(fmt, v) {
-  return Curry._1(Format.fprintf(fmt, /* Format */[
-                  /* Formatting_gen */Block.__(18, [
-                      /* Open_box */Block.__(1, [/* Format */[
-                            /* End_of_format */0,
-                            ""
-                          ]]),
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* Formatting_lit */Block.__(17, [
-                              /* Close_box */0,
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ]),
-                  "@[%s@]"
-                ]), dump$1(v));
+  return Curry._1(Format.fprintf(fmt, /* constructor */{
+                  tag: "Format",
+                  Arg0: /* constructor */{
+                    tag: "Formatting_gen",
+                    Arg0: /* constructor */{
+                      tag: "Open_box",
+                      Arg0: /* constructor */{
+                        tag: "Format",
+                        Arg0: "End_of_format",
+                        Arg1: ""
+                      }
+                    },
+                    Arg1: /* constructor */{
+                      tag: "String",
+                      Arg0: "No_padding",
+                      Arg1: /* constructor */{
+                        tag: "Formatting_lit",
+                        Arg0: "Close_box",
+                        Arg1: "End_of_format"
+                      }
+                    }
+                  },
+                  Arg1: "@[%s@]"
+                }), dump$1(v));
 }
 
 function hash_variant(s) {

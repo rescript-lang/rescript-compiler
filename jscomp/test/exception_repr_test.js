@@ -1,31 +1,32 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Printexc = require("../../lib/js/printexc.js");
 var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -39,21 +40,25 @@ Printexc.register_printer((function (param) {
         if (param === Hi) {
           return "hey";
         } else if (param[0] === A) {
-          return Curry._1(Format.asprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "A(",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* ")" */41,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "A(%d)"
-                        ]), param[1]);
+          return Curry._1(Format.asprintf(/* constructor */{
+                          tag: "Format",
+                          Arg0: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: "A(",
+                            Arg1: /* constructor */{
+                              tag: "Int",
+                              Arg0: "Int_d",
+                              Arg1: "No_padding",
+                              Arg2: "No_precision",
+                              Arg3: /* constructor */{
+                                tag: "Char_literal",
+                                Arg0: /* ")" */41,
+                                Arg1: "End_of_format"
+                              }
+                            }
+                          },
+                          Arg1: "A(%d)"
+                        }), param[1]);
         } else {
           return ;
         }

@@ -21,13 +21,14 @@ function sum(n) {
 }
 
 function map(f, param) {
-  if (param) {
-    return /* Cons */[
-            Curry._1(f, param[0]),
-            map(f, param[1])
-          ];
+  if (param !== "Nil") {
+    return /* constructor */{
+            tag: "Cons",
+            Arg0: Curry._1(f, param.Arg0),
+            Arg1: map(f, param.Arg1)
+          };
   } else {
-    return /* Nil */0;
+    return "Nil";
   }
 }
 

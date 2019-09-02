@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -61,24 +60,26 @@ var shared$9 = [
   "len"
 ];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -223,7 +224,7 @@ var p$1 = Curry._2(printable_point[0], 0, 7);
 
 eq("File \"class3_test.ml\", line 49, characters 11-18", Caml_oo_curry.js1(-930392019, 4, p$1), 7);
 
-var ints = /* record */[/* contents : [] */0];
+var ints = /* record */[/* contents */"[]"];
 
 var $$class = CamlinternalOO.create_table(shared$9);
 
@@ -242,10 +243,11 @@ CamlinternalOO.set_methods($$class, /* array */[
         }),
       register,
       (function (self$5) {
-          ints[0] = /* :: */[
-            self$5,
-            ints[0]
-          ];
+          ints[0] = /* constructor */{
+            tag: "::",
+            Arg0: self$5,
+            Arg1: ints[0]
+          };
           return /* () */0;
         }),
       len,

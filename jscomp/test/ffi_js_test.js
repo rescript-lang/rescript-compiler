@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 var keys = ( function (x){return Object.keys(x)});
 
@@ -14,7 +13,7 @@ var keys = ( function (x){return Object.keys(x)});
 
 ;
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
@@ -22,18 +21,20 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -52,27 +53,31 @@ eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       $$higher_order(1)(2, 3)
     ]);
 
-var same_type_000 = /* :: */[
-  int_config,
-  /* :: */[
-    {
+var same_type_000 = /* constructor */{
+  tag: "::",
+  Arg0: int_config,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: {
       hi: 3,
       low: 32
     },
-    /* [] */0
-  ]
-];
+    Arg1: "[]"
+  }
+};
 
-var same_type_001 = /* :: */[
-  string_config,
-  /* :: */[
-    {
+var same_type_001 = /* constructor */{
+  tag: "::",
+  Arg0: string_config,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: {
       hi: 3,
       low: "32"
     },
-    /* [] */0
-  ]
-];
+    Arg1: "[]"
+  }
+};
 
 var same_type = /* tuple */[
   same_type_000,
@@ -108,7 +113,7 @@ eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
 
 var u = /* record */[/* contents */3];
 
-var side_effect_config = (u[0] = u[0] + 1 | 0, {
+var side_effect_config = (u[0] = u[0] + 1 | 0, "Int", {
     hi: 3,
     low: 32
   });

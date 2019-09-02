@@ -1,20 +1,22 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function f(param) {
-  return /* Format */[
-          /* Int */Block.__(4, [
-              /* Int_d */0,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* String */Block.__(2, [
-                  /* No_padding */0,
-                  /* End_of_format */0
-                ])
-            ]),
-          "%d%s"
-        ];
+  return /* constructor */{
+          tag: "Format",
+          Arg0: /* constructor */{
+            tag: "Int",
+            Arg0: "Int_d",
+            Arg1: "No_padding",
+            Arg2: "No_precision",
+            Arg3: /* constructor */{
+              tag: "String",
+              Arg0: "No_padding",
+              Arg1: "End_of_format"
+            }
+          },
+          Arg1: "%d%s"
+        };
 }
 
 exports.f = f;

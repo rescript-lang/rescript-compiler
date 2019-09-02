@@ -2,27 +2,28 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -33,18 +34,21 @@ function f(x) {
   return L;
 }
 
-var h = f(/* [] */0);
+var h = f("[]");
 
-var a = Curry._1(h.length, /* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var a = Curry._1(h.length, /* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: 2,
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: 3,
+          Arg1: "[]"
+        }
+      }
+    });
 
 eq("File \"module_alias_test.ml\", line 30, characters 6-13", a, 3);
 

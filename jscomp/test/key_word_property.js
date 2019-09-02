@@ -15,13 +15,14 @@ function mk($$window, $$default) {
 }
 
 function mk2($$window, $$default) {
-  return /* :: */[
-          /* record */[
+  return /* constructor */{
+          tag: "::",
+          Arg0: /* record */[
             /* window */$$window,
             /* default */$$default
           ],
-          /* [] */0
-        ];
+          Arg1: "[]"
+        };
 }
 
 function des(v) {

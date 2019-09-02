@@ -213,6 +213,7 @@ val string_equal : ?comment:string -> t -> t -> t
 val eq_null_undefined_boolean: ?comment:string -> t -> t -> t 
 val neq_null_undefined_boolean: ?comment:string -> t -> t -> t 
 val is_type_number : ?comment:string -> t -> t 
+val is_type_string : ?comment:string -> t -> t 
 val typeof : ?comment:string -> t -> t 
 
 val to_int32 : ?comment:string -> t -> t 

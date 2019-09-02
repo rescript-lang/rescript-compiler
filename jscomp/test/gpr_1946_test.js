@@ -19,9 +19,9 @@ var zz = ({
     "5": 3
   })["5"];
 
-console.log(({
+console.log(/* XXX */({
           "5": 3
-        }).tag | 0);
+        }).tag);
 
 exports.x = x;
 exports.zz = zz;

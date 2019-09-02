@@ -70,28 +70,28 @@ function caml_lex_array(s) {
  * @enum{number}
  */
 var Automata = {
-    START: 0,
-    LOOP: 6,
-    TOKEN_READ: 1,
-    TEST_SHIFT: 7,
-    ERROR_DETECTED: 5,
-    SHIFT: 8,
-    SHIFT_RECOVER: 9,
-    STACK_GROWN_1: 2,
-    REDUCE: 10,
-    STACK_GROWN_2: 3,
-    SEMANTIC_ACTION_COMPUTED: 4
+    START: "Start",
+    LOOP: "Loop",
+    TOKEN_READ: "Token_read",
+    TEST_SHIFT: "Test_shift",
+    ERROR_DETECTED: "Error_detected",
+    SHIFT: "Shift",
+    SHIFT_RECOVER: "Shift_recover",
+    STACK_GROWN_1: "Stacks_grown_1",
+    REDUCE: "Reduce",
+    STACK_GROWN_2: "Stacks_grown_2",
+    SEMANTIC_ACTION_COMPUTED: "Semantic_action_computed"
 };
 /**
  * @enum{number}
  */
 var Result = {
-    READ_TOKEN: 0,
-    RAISE_PARSE_ERROR: 1,
-    GROW_STACKS_1: 2,
-    GROW_STACKS_2: 3,
-    COMPUTE_SEMANTIC_ACTION: 4,
-    CALL_ERROR_FUNCTION: 5
+    READ_TOKEN: "Read_token",
+    RAISE_PARSE_ERROR: "Raise_parse_error",
+    GROW_STACKS_1: "Grow_stacks_1",
+    GROW_STACKS_2: "Grow_stacks_2",
+    COMPUTE_SEMANTIC_ACTION: "Compute_semantic_action",
+    CALL_ERROR_FUNCTION: "Call_error_function"
 };
 var PARSER_TRACE = false;
 |}]
@@ -157,6 +157,7 @@ type parser_env
 
 
 let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Caml_obj_extern.t -> Caml_obj_extern.t -> Caml_obj_extern.t = fun%raw tables (* parser_table *) env (* parser_env *) cmd (* parser_input*) arg (* Caml_obj_extern.t*) -> {|
+    console.log("cmd", cmd, "arg", arg);
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -243,7 +244,8 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)C
             /* symb_start and symb_end */
             case Automata.TOKEN_READ:
                 if (typeof arg !== 'number') {
-                    env[env_curr_char] = tables[tbl_transl_block][arg.tag | 0 /* + 1 */];
+                    console.log("tbl_transl_block", tables[tbl_transl_block]);
+                    env[env_curr_char] = tables[tbl_transl_block][arg.tag /* + 1 */];
                     env[env_lval] = arg[0];
                 }
                 else {

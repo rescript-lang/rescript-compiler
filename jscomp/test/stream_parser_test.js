@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Queue = require("../../lib/js/queue.js");
 var Genlex = require("../../lib/js/genlex.js");
@@ -22,7 +21,10 @@ function parse(token) {
         return Curry._1(token, /* () */0);
       }
       catch (exn){
-        return /* Kwd */Block.__(0, ["=="]);
+        return /* constructor */{
+                tag: "Kwd",
+                Arg0: "=="
+              };
       }
     } else {
       return Queue.pop(look_ahead);
@@ -30,18 +32,20 @@ function parse(token) {
   };
   var parse_atom = function (param) {
     var e = token$1(/* () */0);
-    switch (e.tag | 0) {
-      case /* Kwd */0 :
-          if (e[0] === "(") {
+    switch (/* XXX */e.tag) {
+      case "Kwd" :
+          if (e.Arg0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(/* () */0)));
             var match = token$1(/* () */0);
-            if (match.tag) {
-              throw [
-                    Parse_error,
-                    "Unbalanced parens"
-                  ];
-            } else if (match[0] === ")") {
-              return v;
+            if (/* XXX */match.tag === "Kwd") {
+              if (match.Arg0 === ")") {
+                return v;
+              } else {
+                throw [
+                      Parse_error,
+                      "Unbalanced parens"
+                    ];
+              }
             } else {
               throw [
                     Parse_error,
@@ -55,8 +59,8 @@ function parse(token) {
                   "unexpected token"
                 ];
           }
-      case /* Int */2 :
-          return e[0];
+      case "Int" :
+          return e.Arg0;
       default:
         Queue.push(e, look_ahead);
         throw [
@@ -67,11 +71,8 @@ function parse(token) {
   };
   var parse_term_aux = function (e1) {
     var e = token$1(/* () */0);
-    if (e.tag) {
-      Queue.push(e, look_ahead);
-      return e1;
-    } else {
-      switch (e[0]) {
+    if (/* XXX */e.tag === "Kwd") {
+      switch (e.Arg0) {
         case "*" :
             return Caml_int32.imul(e1, parse_term_aux(parse_atom(/* () */0)));
         case "/" :
@@ -80,15 +81,15 @@ function parse(token) {
           Queue.push(e, look_ahead);
           return e1;
       }
+    } else {
+      Queue.push(e, look_ahead);
+      return e1;
     }
   };
   var parse_expr_aux = function (e1) {
     var e = token$1(/* () */0);
-    if (e.tag) {
-      Queue.push(e, look_ahead);
-      return e1;
-    } else {
-      switch (e[0]) {
+    if (/* XXX */e.tag === "Kwd") {
+      switch (e.Arg0) {
         case "+" :
             return e1 + parse_expr_aux(parse_term_aux(parse_atom(/* () */0))) | 0;
         case "-" :
@@ -97,39 +98,49 @@ function parse(token) {
           Queue.push(e, look_ahead);
           return e1;
       }
+    } else {
+      Queue.push(e, look_ahead);
+      return e1;
     }
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom(/* () */0)));
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {
-                  return /* :: */[
-                          x,
-                          acc
-                        ];
-                }), /* [] */0, look_ahead)
+                  return /* constructor */{
+                          tag: "::",
+                          Arg0: x,
+                          Arg1: acc
+                        };
+                }), "[]", look_ahead)
         ];
 }
 
-var lexer = Genlex.make_lexer(/* :: */[
-      "(",
-      /* :: */[
-        "*",
-        /* :: */[
-          "/",
-          /* :: */[
-            "+",
-            /* :: */[
-              "-",
-              /* :: */[
-                ")",
-                /* [] */0
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+var lexer = Genlex.make_lexer(/* constructor */{
+      tag: "::",
+      Arg0: "(",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: "*",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: "/",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: "+",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: "-",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: ")",
+                Arg1: "[]"
+              }
+            }
+          }
+        }
+      }
+    });
 
 function token(chars) {
   var strm = lexer(chars);
@@ -149,7 +160,10 @@ function l_parse(token) {
         return Curry._1(token, /* () */0);
       }
       catch (exn){
-        return /* Kwd */Block.__(0, ["=="]);
+        return /* constructor */{
+                tag: "Kwd",
+                Arg0: "=="
+              };
       }
     } else {
       return Queue.pop(look_ahead);
@@ -157,18 +171,20 @@ function l_parse(token) {
   };
   var parse_f = function (param) {
     var t = token$1(/* () */0);
-    switch (t.tag | 0) {
-      case /* Kwd */0 :
-          if (t[0] === "(") {
+    switch (/* XXX */t.tag) {
+      case "Kwd" :
+          if (t.Arg0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
             var t$1 = token$1(/* () */0);
-            if (t$1.tag) {
-              throw [
-                    Parse_error,
-                    "Unbalanced )"
-                  ];
-            } else if (t$1[0] === ")") {
-              return v;
+            if (/* XXX */t$1.tag === "Kwd") {
+              if (t$1.Arg0 === ")") {
+                return v;
+              } else {
+                throw [
+                      Parse_error,
+                      "Unbalanced )"
+                    ];
+              }
             } else {
               throw [
                     Parse_error,
@@ -181,8 +197,8 @@ function l_parse(token) {
                   "Unexpected token"
                 ];
           }
-      case /* Int */2 :
-          return t[0];
+      case "Int" :
+          return t.Arg0;
       default:
         throw [
               Parse_error,
@@ -194,11 +210,8 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(/* () */0);
-      if (t.tag) {
-        Queue.push(t, look_ahead);
-        return a;
-      } else {
-        switch (t[0]) {
+      if (/* XXX */t.tag === "Kwd") {
+        switch (t.Arg0) {
           case "*" :
               _a = Caml_int32.imul(a, parse_f(/* () */0));
               continue ;
@@ -209,6 +222,9 @@ function l_parse(token) {
             Queue.push(t, look_ahead);
             return a;
         }
+      } else {
+        Queue.push(t, look_ahead);
+        return a;
       }
     };
   };
@@ -216,11 +232,8 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(/* () */0);
-      if (t.tag) {
-        Queue.push(t, look_ahead);
-        return a;
-      } else {
-        switch (t[0]) {
+      if (/* XXX */t.tag === "Kwd") {
+        switch (t.Arg0) {
           case "+" :
               _a = a + parse_f_aux(parse_f(/* () */0)) | 0;
               continue ;
@@ -231,6 +244,9 @@ function l_parse(token) {
             Queue.push(t, look_ahead);
             return a;
         }
+      } else {
+        Queue.push(t, look_ahead);
+        return a;
       }
     };
   };
@@ -238,32 +254,35 @@ function l_parse(token) {
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {
-                  return /* :: */[
-                          x,
-                          acc
-                        ];
-                }), /* [] */0, look_ahead)
+                  return /* constructor */{
+                          tag: "::",
+                          Arg0: x,
+                          Arg1: acc
+                        };
+                }), "[]", look_ahead)
         ];
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = /* record */[/* contents */"[]"];
 
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
+  suites[0] = /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
       loc + (" id " + String(test_id[0])),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: x,
+                  Arg1: y
+                };
         })
     ],
-    suites[0]
-  ];
+    Arg1: suites[0]
+  };
   return /* () */0;
 }
 
@@ -274,26 +293,38 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
       match[1]
     ], /* tuple */[
       10,
-      /* :: */[
-        /* Ident */Block.__(1, ["a"]),
-        /* [] */0
-      ]
+      /* constructor */{
+        tag: "::",
+        Arg0: /* constructor */{
+          tag: "Ident",
+          Arg0: "a"
+        },
+        Arg1: "[]"
+      }
     ]);
 
 eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
       2,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
-      ]
+      /* constructor */{
+        tag: "::",
+        Arg0: /* constructor */{
+          tag: "Kwd",
+          Arg0: "=="
+        },
+        Arg1: "[]"
+      }
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
 eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
       0,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
-      ]
+      /* constructor */{
+        tag: "::",
+        Arg0: /* constructor */{
+          tag: "Kwd",
+          Arg0: "=="
+        },
+        Arg1: "[]"
+      }
     ], l_parse(token(Stream.of_string("3 - 2  - 1"))));
 
 Mt.from_pair_suites("Stream_parser_test", suites[0]);

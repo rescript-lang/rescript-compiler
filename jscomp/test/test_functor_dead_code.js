@@ -1,7 +1,7 @@
 'use strict';
 
 
-var v = true;
+var v = "Empty" === "Empty";
 
 exports.v = v;
 /* No side effect */

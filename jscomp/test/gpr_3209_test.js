@@ -2,19 +2,19 @@
 
 
 function f9(param) {
-  if (typeof param === "number") {
-    if (param === /* T63 */3) {
+  if (typeof param === "string") {
+    if (param === "T63") {
       return 3;
     } else {
       return 1;
     }
   } else {
-    switch (param.tag | 0) {
-      case /* T64 */0 :
-      case /* T65 */1 :
+    switch (/* XXX */param.tag) {
+      case "T64" :
+      case "T65" :
           return 2;
-      case /* T66 */2 :
-      case /* T68 */3 :
+      case "T66" :
+      case "T68" :
           return 3;
       
     }

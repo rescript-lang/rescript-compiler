@@ -10,10 +10,11 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var x = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
-      1,
-      x
-    ]);
+Caml_obj.caml_update_dummy(x, /* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: x
+    });
 
 var a = [];
 
@@ -21,27 +22,31 @@ var b = [];
 
 var c = [];
 
-Caml_obj.caml_update_dummy(a, /* :: */[
-      2,
-      b
-    ]);
+Caml_obj.caml_update_dummy(a, /* constructor */{
+      tag: "::",
+      Arg0: 2,
+      Arg1: b
+    });
 
-Caml_obj.caml_update_dummy(b, /* :: */[
-      3,
-      c
-    ]);
+Caml_obj.caml_update_dummy(b, /* constructor */{
+      tag: "::",
+      Arg0: 3,
+      Arg1: c
+    });
 
-Caml_obj.caml_update_dummy(c, /* :: */[
-      3,
-      a
-    ]);
+Caml_obj.caml_update_dummy(c, /* constructor */{
+      tag: "::",
+      Arg0: 3,
+      Arg1: a
+    });
 
 var xx = [];
 
-Caml_obj.caml_update_dummy(xx, /* :: */[
-      1,
-      xx
-    ]);
+Caml_obj.caml_update_dummy(xx, /* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: xx
+    });
 
 function naive(n) {
   if (n === 0 || n === 1) {
@@ -86,27 +91,31 @@ function fib(n) {
 
 var ys = [];
 
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
+Caml_obj.caml_update_dummy(ys, /* constructor */{
+      tag: "::",
+      Arg0: 1,
+      Arg1: ys
+    });
 
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
-  ]
-];
+var xs_000 = /* constructor */{
+  tag: "::",
+  Arg0: 2,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: List.hd(ys),
+    Arg1: "[]"
+  }
+};
 
 function zs(param) {
   return List.hd(xs[0]);
 }
 
-var xs_000$1 = /* :: */[
-  2,
-  /* [] */0
-];
+var xs_000$1 = /* constructor */{
+  tag: "::",
+  Arg0: 2,
+  Arg1: "[]"
+};
 
 var xs = /* tuple */[
   xs_000$1,
@@ -175,83 +184,102 @@ function sum(_acc, _n) {
   };
 }
 
-var fake_v = /* :: */[
-  1,
-  /* :: */[
-    2,
-    /* [] */0
-  ]
-];
+var fake_v = /* constructor */{
+  tag: "::",
+  Arg0: 1,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: 2,
+    Arg1: "[]"
+  }
+};
 
-var fake_y = /* :: */[
-  2,
-  /* :: */[
-    3,
-    /* [] */0
-  ]
-];
+var fake_y = /* constructor */{
+  tag: "::",
+  Arg0: 2,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: 3,
+    Arg1: "[]"
+  }
+};
 
-var fake_z = /* :: */[
-  1,
-  fake_y
-];
+var fake_z = /* constructor */{
+  tag: "::",
+  Arg0: 1,
+  Arg1: fake_y
+};
 
-var fake_y2 = /* :: */[
-  2,
-  /* :: */[
-    3,
-    /* [] */0
-  ]
-];
+var fake_y2 = /* constructor */{
+  tag: "::",
+  Arg0: 2,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: 3,
+    Arg1: "[]"
+  }
+};
 
-var fake_z2_001 = /* :: */[
-  sum(0, 10),
-  fake_y2
-];
-
-var fake_z2 = /* :: */[
-  1,
-  fake_z2_001
-];
+var fake_z2 = /* constructor */{
+  tag: "::",
+  Arg0: 1,
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: sum(0, 10),
+    Arg1: fake_y2
+  }
+};
 
 var rec_variant_b = [];
 
 var rec_variant_a = [];
 
-Caml_obj.caml_update_dummy(rec_variant_b, /* B */Block.__(0, [
-        "gho",
-        (function (param) {
-            return rec_variant_a;
-          })
-      ]));
+Caml_obj.caml_update_dummy(rec_variant_b, /* constructor */{
+      tag: "B",
+      Arg0: "gho",
+      Arg1: (function (param) {
+          return rec_variant_a;
+        })
+    });
 
-Caml_obj.caml_update_dummy(rec_variant_a, /* A */Block.__(1, [
-        3,
-        (function (param) {
-            return rec_variant_b;
-          })
-      ]));
+Caml_obj.caml_update_dummy(rec_variant_a, /* constructor */{
+      tag: "A",
+      Arg0: 3,
+      Arg1: (function (param) {
+          return rec_variant_b;
+        })
+    });
 
-var suites_000 = /* tuple */[
-  "hd",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                1,
-                List.hd(List.tl(x))
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "mutual",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "hd",
     (function (param) {
-        var tmp;
-        if (a) {
-          var match = a[1];
-          if (match) {
-            tmp = match[0];
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: 1,
+                Arg1: List.hd(List.tl(x))
+              };
+      })
+  ],
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "mutual",
+      (function (param) {
+          var tmp;
+          var exit = 0;
+          if (a !== "[]" && b !== "[]" && c !== "[]" && a !== "[]") {
+            var match = a.Arg1;
+            if (match !== "[]") {
+              tmp = match.Arg0;
+            } else {
+              exit = 1;
+            }
           } else {
+            exit = 1;
+          }
+          if (exit === 1) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -261,189 +289,207 @@ var suites_001 = /* :: */[
                   ]
                 ];
           }
-        } else {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "rec_value_test.ml",
-                  108,
-                  2
-                ]
-              ];
-        }
-        return /* Eq */Block.__(0, [
-                  3,
-                  tmp
-                ]);
-      })
-  ],
-  /* :: */[
-    /* tuple */[
-      "rec_sum",
-      (function (param) {
-          return /* Eq */Block.__(0, [
-                    55,
-                    sum(0, 10)
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: 3,
+                  Arg1: tmp
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "File \"rec_value_test.ml\", line 111, characters 2-9",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "rec_sum",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      /* :: */[
-                        1,
-                        /* :: */[
-                          2,
-                          /* [] */0
-                        ]
-                      ],
-                      fake_v
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: 55,
+                    Arg1: sum(0, 10)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
-          "File \"rec_value_test.ml\", line 114, characters 2-9",
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "File \"rec_value_test.ml\", line 111, characters 2-9",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        /* :: */[
-                          2,
-                          /* :: */[
-                            3,
-                            /* [] */0
-                          ]
-                        ],
-                        fake_y
-                      ]);
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: /* constructor */{
+                        tag: "::",
+                        Arg0: 1,
+                        Arg1: /* constructor */{
+                          tag: "::",
+                          Arg0: 2,
+                          Arg1: "[]"
+                        }
+                      },
+                      Arg1: fake_v
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
-            "File \"rec_value_test.ml\", line 117, characters 2-9",
+        Arg1: /* constructor */{
+          tag: "::",
+          Arg0: /* tuple */[
+            "File \"rec_value_test.ml\", line 114, characters 2-9",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          /* :: */[
-                            1,
-                            /* :: */[
-                              2,
-                              /* :: */[
-                                3,
-                                /* [] */0
-                              ]
-                            ]
-                          ],
-                          fake_z
-                        ]);
+                return /* constructor */{
+                        tag: "Eq",
+                        Arg0: /* constructor */{
+                          tag: "::",
+                          Arg0: 2,
+                          Arg1: /* constructor */{
+                            tag: "::",
+                            Arg0: 3,
+                            Arg1: "[]"
+                          }
+                        },
+                        Arg1: fake_y
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "File \"rec_value_test.ml\", line 120, characters 2-9",
+          Arg1: /* constructor */{
+            tag: "::",
+            Arg0: /* tuple */[
+              "File \"rec_value_test.ml\", line 117, characters 2-9",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            /* :: */[
-                              1,
-                              /* :: */[
-                                55,
-                                /* :: */[
-                                  2,
-                                  /* :: */[
-                                    3,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                            ],
-                            fake_z2
-                          ]);
+                  return /* constructor */{
+                          tag: "Eq",
+                          Arg0: /* constructor */{
+                            tag: "::",
+                            Arg0: 1,
+                            Arg1: /* constructor */{
+                              tag: "::",
+                              Arg0: 2,
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: 3,
+                                Arg1: "[]"
+                              }
+                            }
+                          },
+                          Arg1: fake_z
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
-                "File \"rec_value_test.ml\", line 123, characters 2-9",
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: /* tuple */[
+                "File \"rec_value_test.ml\", line 120, characters 2-9",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              /* :: */[
-                                2,
-                                /* :: */[
-                                  3,
-                                  /* [] */0
-                                ]
-                              ],
-                              fake_y2
-                            ]);
+                    return /* constructor */{
+                            tag: "Eq",
+                            Arg0: /* constructor */{
+                              tag: "::",
+                              Arg0: 1,
+                              Arg1: /* constructor */{
+                                tag: "::",
+                                Arg0: 55,
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: 2,
+                                  Arg1: /* constructor */{
+                                    tag: "::",
+                                    Arg0: 3,
+                                    Arg1: "[]"
+                                  }
+                                }
+                              }
+                            },
+                            Arg1: fake_z2
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
-                  "File \"rec_value_test.ml\", line 126, characters 2-9",
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: /* tuple */[
+                  "File \"rec_value_test.ml\", line 123, characters 2-9",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                3,
-                                3
-                              ]);
+                      return /* constructor */{
+                              tag: "Eq",
+                              Arg0: /* constructor */{
+                                tag: "::",
+                                Arg0: 2,
+                                Arg1: /* constructor */{
+                                  tag: "::",
+                                  Arg0: 3,
+                                  Arg1: "[]"
+                                }
+                              },
+                              Arg1: fake_y2
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
-                    "File \"rec_value_test.ml\", line 129, characters 2-9",
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: /* tuple */[
+                    "File \"rec_value_test.ml\", line 126, characters 2-9",
                     (function (param) {
-                        if (rec_variant_b.tag) {
-                          throw [
-                                Caml_builtin_exceptions.assert_failure,
-                                /* tuple */[
-                                  "rec_value_test.ml",
-                                  132,
-                                  11
-                                ]
-                              ];
-                        } else {
-                          return /* Eq */Block.__(0, [
-                                    Curry._1(rec_variant_b[1], /* () */0),
-                                    rec_variant_a
-                                  ]);
-                        }
+                        return /* constructor */{
+                                tag: "Eq",
+                                Arg0: 3,
+                                Arg1: 3
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
-                      "File \"rec_value_test.ml\", line 134, characters 2-9",
+                  Arg1: /* constructor */{
+                    tag: "::",
+                    Arg0: /* tuple */[
+                      "File \"rec_value_test.ml\", line 129, characters 2-9",
                       (function (param) {
-                          if (rec_variant_a.tag) {
-                            return /* Eq */Block.__(0, [
-                                      Curry._1(rec_variant_a[1], /* () */0),
-                                      rec_variant_b
-                                    ]);
+                          if (/* XXX */rec_variant_b.tag === "B") {
+                            return /* constructor */{
+                                    tag: "Eq",
+                                    Arg0: Curry._1(rec_variant_b.Arg1, /* () */0),
+                                    Arg1: rec_variant_a
+                                  };
                           } else {
                             throw [
                                   Caml_builtin_exceptions.assert_failure,
                                   /* tuple */[
                                     "rec_value_test.ml",
-                                    137,
+                                    132,
                                     11
                                   ]
                                 ];
                           }
                         })
                     ],
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                    Arg1: /* constructor */{
+                      tag: "::",
+                      Arg0: /* tuple */[
+                        "File \"rec_value_test.ml\", line 134, characters 2-9",
+                        (function (param) {
+                            if (/* XXX */rec_variant_a.tag === "B") {
+                              throw [
+                                    Caml_builtin_exceptions.assert_failure,
+                                    /* tuple */[
+                                      "rec_value_test.ml",
+                                      137,
+                                      11
+                                    ]
+                                  ];
+                            } else {
+                              return /* constructor */{
+                                      tag: "Eq",
+                                      Arg0: Curry._1(rec_variant_a.Arg1, /* () */0),
+                                      Arg1: rec_variant_b
+                                    };
+                            }
+                          })
+                      ],
+                      Arg1: "[]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 function fake_minus(n) {
   console.log(n);

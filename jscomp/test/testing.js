@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Printf = require("../../lib/js/printf.js");
@@ -35,40 +34,48 @@ function print_test_number(param) {
 
 function print_failure_test_fail(param) {
   all_tests_ok[0] = false;
-  return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
-                      /* String_literal */Block.__(11, [
-                          "\n********* Failure Test number ",
-                          /* Int */Block.__(4, [
-                              /* Int_i */3,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* String_literal */Block.__(11, [
-                                  " incorrectly failed ***********\n",
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "\n********* Failure Test number %i incorrectly failed ***********\n"
-                    ]), test_num[0]));
+  return Pervasives.print_string(Curry._1(Printf.sprintf(/* constructor */{
+                      tag: "Format",
+                      Arg0: /* constructor */{
+                        tag: "String_literal",
+                        Arg0: "\n********* Failure Test number ",
+                        Arg1: /* constructor */{
+                          tag: "Int",
+                          Arg0: "Int_i",
+                          Arg1: "No_padding",
+                          Arg2: "No_precision",
+                          Arg3: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: " incorrectly failed ***********\n",
+                            Arg1: "End_of_format"
+                          }
+                        }
+                      },
+                      Arg1: "\n********* Failure Test number %i incorrectly failed ***********\n"
+                    }), test_num[0]));
 }
 
 function print_failure_test_succeed(param) {
   all_tests_ok[0] = false;
-  return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
-                      /* String_literal */Block.__(11, [
-                          "\n********* Failure Test number ",
-                          /* Int */Block.__(4, [
-                              /* Int_i */3,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* String_literal */Block.__(11, [
-                                  " failed to fail ***********\n",
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "\n********* Failure Test number %i failed to fail ***********\n"
-                    ]), test_num[0]));
+  return Pervasives.print_string(Curry._1(Printf.sprintf(/* constructor */{
+                      tag: "Format",
+                      Arg0: /* constructor */{
+                        tag: "String_literal",
+                        Arg0: "\n********* Failure Test number ",
+                        Arg1: /* constructor */{
+                          tag: "Int",
+                          Arg0: "Int_i",
+                          Arg1: "No_padding",
+                          Arg2: "No_precision",
+                          Arg3: /* constructor */{
+                            tag: "String_literal",
+                            Arg0: " failed to fail ***********\n",
+                            Arg1: "End_of_format"
+                          }
+                        }
+                      },
+                      Arg1: "\n********* Failure Test number %i failed to fail ***********\n"
+                    }), test_num[0]));
 }
 
 function test(b) {
@@ -78,21 +85,25 @@ function test(b) {
     return 0;
   } else {
     all_tests_ok[0] = false;
-    return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "\n********* Test number ",
-                            /* Int */Block.__(4, [
-                                /* Int_i */3,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* String_literal */Block.__(11, [
-                                    " failed ***********\n",
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "\n********* Test number %i failed ***********\n"
-                      ]), test_num[0]));
+    return Pervasives.print_string(Curry._1(Printf.sprintf(/* constructor */{
+                        tag: "Format",
+                        Arg0: /* constructor */{
+                          tag: "String_literal",
+                          Arg0: "\n********* Test number ",
+                          Arg1: /* constructor */{
+                            tag: "Int",
+                            Arg0: "Int_i",
+                            Arg1: "No_padding",
+                            Arg2: "No_precision",
+                            Arg3: /* constructor */{
+                              tag: "String_literal",
+                              Arg0: " failed ***********\n",
+                              Arg1: "End_of_format"
+                            }
+                          }
+                        },
+                        Arg1: "\n********* Test number %i failed ***********\n"
+                      }), test_num[0]));
   }
 }
 

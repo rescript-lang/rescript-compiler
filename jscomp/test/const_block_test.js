@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 var a = /* array */[
@@ -36,31 +35,35 @@ function h(param) {
 
 function g(param) {
   f(/* () */0);
-  return /* Eq */Block.__(0, [
-            /* tuple */[
-              Caml_array.caml_array_get(a, 0),
-              Caml_array.caml_array_get(b, 0)
-            ],
-            /* tuple */[
-              3.0,
-              3
-            ]
-          ]);
+  return /* constructor */{
+          tag: "Eq",
+          Arg0: /* tuple */[
+            Caml_array.caml_array_get(a, 0),
+            Caml_array.caml_array_get(b, 0)
+          ],
+          Arg1: /* tuple */[
+            3.0,
+            3
+          ]
+        };
 }
 
-var suites_000 = /* tuple */[
-  "const_block_test",
-  g
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "avoid_mutable_inline_test",
-    (function (param) {
-        Caml_array.caml_array_set(c, 0, 3);
-        Caml_array.caml_array_set(c, 1, 4);
-        return /* Eq */Block.__(0, [
-                  /* array */[
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "const_block_test",
+    g
+  ],
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "avoid_mutable_inline_test",
+      (function (param) {
+          Caml_array.caml_array_set(c, 0, 3);
+          Caml_array.caml_array_set(c, 1, 4);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: /* array */[
                     3,
                     4,
                     2,
@@ -68,17 +71,13 @@ var suites_001 = /* :: */[
                     4,
                     5
                   ],
-                  c
-                ]);
-      })
-  ],
-  /* [] */0
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+                  Arg1: c
+                };
+        })
+    ],
+    Arg1: "[]"
+  }
+};
 
 Mt.from_pair_suites("Const_block_test", suites);
 

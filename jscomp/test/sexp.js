@@ -60,77 +60,89 @@ function of_rev_list(l) {
 function of_pair(param) {
   return /* `List */[
           848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* [] */0
-            ]
-          ]
+          /* constructor */{
+            tag: "::",
+            Arg0: param[0],
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: param[1],
+              Arg1: "[]"
+            }
+          }
         ];
 }
 
 function of_triple(param) {
   return /* `List */[
           848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* :: */[
-                param[2],
-                /* [] */0
-              ]
-            ]
-          ]
+          /* constructor */{
+            tag: "::",
+            Arg0: param[0],
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: param[1],
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: param[2],
+                Arg1: "[]"
+              }
+            }
+          }
         ];
 }
 
 function of_quad(param) {
   return /* `List */[
           848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* :: */[
-                param[2],
-                /* :: */[
-                  param[3],
-                  /* [] */0
-                ]
-              ]
-            ]
-          ]
+          /* constructor */{
+            tag: "::",
+            Arg0: param[0],
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: param[1],
+              Arg1: /* constructor */{
+                tag: "::",
+                Arg0: param[2],
+                Arg1: /* constructor */{
+                  tag: "::",
+                  Arg0: param[3],
+                  Arg1: "[]"
+                }
+              }
+            }
+          }
         ];
 }
 
 function of_variant(name, args) {
   return /* `List */[
           848054398,
-          /* :: */[
-            /* `Atom */[
+          /* constructor */{
+            tag: "::",
+            Arg0: /* `Atom */[
               726615281,
               name
             ],
-            args
-          ]
+            Arg1: args
+          }
         ];
 }
 
 function of_field(name, t) {
   return /* `List */[
           848054398,
-          /* :: */[
-            /* `Atom */[
+          /* constructor */{
+            tag: "::",
+            Arg0: /* `Atom */[
               726615281,
               name
             ],
-            /* :: */[
-              t,
-              /* [] */0
-            ]
-          ]
+            Arg1: /* constructor */{
+              tag: "::",
+              Arg0: t,
+              Arg1: "[]"
+            }
+          }
         ];
 }
 
@@ -162,19 +174,20 @@ function $great$great$eq(e, f) {
 }
 
 function map_opt(f, l) {
-  var _acc = /* [] */0;
+  var _acc = "[]";
   var _l = l;
   while(true) {
     var l$1 = _l;
     var acc = _acc;
-    if (l$1) {
-      var match = Curry._1(f, l$1[0]);
+    if (l$1 !== "[]") {
+      var match = Curry._1(f, l$1.Arg0);
       if (match !== undefined) {
-        _l = l$1[1];
-        _acc = /* :: */[
-          Caml_option.valFromOption(match),
-          acc
-        ];
+        _l = l$1.Arg1;
+        _acc = /* constructor */{
+          tag: "::",
+          Arg0: Caml_option.valFromOption(match),
+          Arg1: acc
+        };
         continue ;
       } else {
         return ;
@@ -191,12 +204,12 @@ function list_any(f, e) {
     var _l = e[1];
     while(true) {
       var l = _l;
-      if (l) {
-        var res = Curry._1(f$1, l[0]);
+      if (l !== "[]") {
+        var res = Curry._1(f$1, l.Arg0);
         if (res !== undefined) {
           return res;
         } else {
-          _l = l[1];
+          _l = l.Arg1;
           continue ;
         }
       } else {
@@ -210,20 +223,21 @@ function list_any(f, e) {
 function list_all(f, e) {
   if (e[0] >= 848054398) {
     var f$1 = f;
-    var _acc = /* [] */0;
+    var _acc = "[]";
     var _l = e[1];
     while(true) {
       var l = _l;
       var acc = _acc;
-      if (l) {
-        var tl = l[1];
-        var match = Curry._1(f$1, l[0]);
+      if (l !== "[]") {
+        var tl = l.Arg1;
+        var match = Curry._1(f$1, l.Arg0);
         _l = tl;
         if (match !== undefined) {
-          _acc = /* :: */[
-            Caml_option.valFromOption(match),
-            acc
-          ];
+          _acc = /* constructor */{
+            tag: "::",
+            Arg0: Caml_option.valFromOption(match),
+            Arg1: acc
+          };
           continue ;
         } else {
           continue ;
@@ -233,7 +247,7 @@ function list_all(f, e) {
       }
     };
   } else {
-    return /* [] */0;
+    return "[]";
   }
 }
 
@@ -273,12 +287,12 @@ function to_pair(e) {
     return ;
   } else {
     var match = e[1];
-    if (match) {
-      var match$1 = match[1];
-      if (match$1 && !match$1[1]) {
+    if (match !== "[]") {
+      var match$1 = match.Arg1;
+      if (match$1 !== "[]" && match$1.Arg1 === "[]") {
         return /* tuple */[
-                match[0],
-                match$1[0]
+                match.Arg0,
+                match$1.Arg0
               ];
       } else {
         return ;
@@ -308,15 +322,15 @@ function to_triple(e) {
     return ;
   } else {
     var match = e[1];
-    if (match) {
-      var match$1 = match[1];
-      if (match$1) {
-        var match$2 = match$1[1];
-        if (match$2 && !match$2[1]) {
+    if (match !== "[]") {
+      var match$1 = match.Arg1;
+      if (match$1 !== "[]") {
+        var match$2 = match$1.Arg1;
+        if (match$2 !== "[]" && match$2.Arg1 === "[]") {
           return /* tuple */[
-                  match[0],
-                  match$1[0],
-                  match$2[0]
+                  match.Arg0,
+                  match$1.Arg0,
+                  match$2.Arg0
                 ];
         } else {
           return ;
@@ -368,43 +382,43 @@ function get_field(name, e) {
     var _l = e[1];
     while(true) {
       var l = _l;
-      if (l) {
-        var match = l[0];
+      if (l !== "[]") {
+        var match = l.Arg0;
         if (typeof match === "number") {
-          _l = l[1];
+          _l = l.Arg1;
           continue ;
         } else if (match[0] !== 848054398) {
-          _l = l[1];
+          _l = l.Arg1;
           continue ;
         } else {
           var match$1 = match[1];
-          if (match$1) {
-            var match$2 = match$1[0];
+          if (match$1 !== "[]") {
+            var match$2 = match$1.Arg0;
             if (typeof match$2 === "number") {
-              _l = l[1];
+              _l = l.Arg1;
               continue ;
             } else if (match$2[0] !== 726615281) {
-              _l = l[1];
+              _l = l.Arg1;
               continue ;
             } else {
-              var match$3 = match$1[1];
-              if (match$3) {
-                if (match$3[1]) {
-                  _l = l[1];
+              var match$3 = match$1.Arg1;
+              if (match$3 !== "[]") {
+                if (match$3.Arg1 !== "[]") {
+                  _l = l.Arg1;
                   continue ;
                 } else if (Caml_obj.caml_equal(name$1, match$2[1])) {
-                  return match$3[0];
+                  return match$3.Arg0;
                 } else {
-                  _l = l[1];
+                  _l = l.Arg1;
                   continue ;
                 }
               } else {
-                _l = l[1];
+                _l = l.Arg1;
                 continue ;
               }
             }
           } else {
-            _l = l[1];
+            _l = l.Arg1;
             continue ;
           }
         }
@@ -423,32 +437,32 @@ function field(name, f, e) {
 function _get_field_list(name, _l) {
   while(true) {
     var l = _l;
-    if (l) {
-      var match = l[0];
+    if (l !== "[]") {
+      var match = l.Arg0;
       if (typeof match === "number") {
-        _l = l[1];
+        _l = l.Arg1;
         continue ;
       } else if (match[0] !== 848054398) {
-        _l = l[1];
+        _l = l.Arg1;
         continue ;
       } else {
         var match$1 = match[1];
-        if (match$1) {
-          var match$2 = match$1[0];
+        if (match$1 !== "[]") {
+          var match$2 = match$1.Arg0;
           if (typeof match$2 === "number") {
-            _l = l[1];
+            _l = l.Arg1;
             continue ;
           } else if (match$2[0] !== 726615281) {
-            _l = l[1];
+            _l = l.Arg1;
             continue ;
           } else if (Caml_obj.caml_equal(name, match$2[1])) {
-            return match$1[1];
+            return match$1.Arg1;
           } else {
-            _l = l[1];
+            _l = l.Arg1;
             continue ;
           }
         } else {
-          _l = l[1];
+          _l = l.Arg1;
           continue ;
         }
       }
@@ -468,12 +482,12 @@ function field_list(name, f, e) {
 function _get_variant(s, args, _l) {
   while(true) {
     var l = _l;
-    if (l) {
-      var match = l[0];
+    if (l !== "[]") {
+      var match = l.Arg0;
       if (Caml_obj.caml_equal(s, match[0])) {
         return Curry._1(match[1], args);
       } else {
-        _l = l[1];
+        _l = l.Arg1;
         continue ;
       }
     } else {
@@ -485,18 +499,18 @@ function _get_variant(s, args, _l) {
 function get_variant(l, e) {
   if (e[0] >= 848054398) {
     var match = e[1];
-    if (match) {
-      var match$1 = match[0];
+    if (match !== "[]") {
+      var match$1 = match.Arg0;
       if (typeof match$1 === "number" || match$1[0] !== 726615281) {
         return ;
       } else {
-        return _get_variant(match$1[1], match[1], l);
+        return _get_variant(match$1[1], match.Arg1, l);
       }
     } else {
       return ;
     }
   } else {
-    return _get_variant(e[1], /* [] */0, l);
+    return _get_variant(e[1], "[]", l);
   }
 }
 
@@ -513,7 +527,7 @@ function get_exn(e) {
 
 var of_unit = /* `List */[
   848054398,
-  /* [] */0
+  "[]"
 ];
 
 var Traverse = {

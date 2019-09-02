@@ -10,58 +10,63 @@ function is_block(x) {
   return typeof x !== "number";
 }
 
-var suites_000 = /* tuple */[
-  "is_block_test1",
-  (function (param) {
-      return /* Eq */Block.__(0, [
-                false,
-                false
-              ]);
-    })
-];
-
-var suites_001 = /* :: */[
-  /* tuple */[
-    "is_block_test2",
+var suites = /* constructor */{
+  tag: "::",
+  Arg0: /* tuple */[
+    "is_block_test1",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  true,
-                  typeof /* :: */[
-                    3,
-                    /* [] */0
-                  ] !== "number"
-                ]);
+        return /* constructor */{
+                tag: "Eq",
+                Arg0: false,
+                Arg1: false
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
-      "is_block_test3",
+  Arg1: /* constructor */{
+    tag: "::",
+    Arg0: /* tuple */[
+      "is_block_test2",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    true,
-                    true
-                  ]);
+          return /* constructor */{
+                  tag: "Eq",
+                  Arg0: true,
+                  Arg1: typeof /* constructor */({
+                      tag: "::",
+                      Arg0: 3,
+                      Arg1: "[]"
+                    }) !== "number"
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
-        "is_block_test4",
+    Arg1: /* constructor */{
+      tag: "::",
+      Arg0: /* tuple */[
+        "is_block_test3",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      false,
-                      false
-                    ]);
+            return /* constructor */{
+                    tag: "Eq",
+                    Arg0: true,
+                    Arg1: true
+                  };
           })
       ],
-      /* [] */0
-    ]
-  ]
-];
-
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+      Arg1: /* constructor */{
+        tag: "::",
+        Arg0: /* tuple */[
+          "is_block_test4",
+          (function (param) {
+              return /* constructor */{
+                      tag: "Eq",
+                      Arg0: false,
+                      Arg1: false
+                    };
+            })
+        ],
+        Arg1: "[]"
+      }
+    }
+  }
+};
 
 Mt.from_pair_suites("Obj_magic_test", suites);
 

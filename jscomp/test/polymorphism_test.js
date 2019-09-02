@@ -2,14 +2,15 @@
 
 
 function map(f, param) {
-  if (param) {
-    var r = f(param[0]);
-    return /* :: */[
-            r,
-            map(f, param[1])
-          ];
+  if (param !== "[]") {
+    var r = f(param.Arg0);
+    return /* constructor */{
+            tag: "::",
+            Arg0: r,
+            Arg1: map(f, param.Arg1)
+          };
   } else {
-    return /* [] */0;
+    return "[]";
   }
 }
 
