@@ -37,13 +37,10 @@ type path = string
 
 
 
-type module_info = {
-  pure : bool 
-}
 
 type _ t = 
   | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> module_info t 
+  | Has_env : Env.t  -> bool t 
 
 
 type ident_info = {

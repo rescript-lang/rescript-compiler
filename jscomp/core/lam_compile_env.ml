@@ -152,15 +152,13 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
 
 
 
-type module_info = {
-  pure : bool 
-}
+
 (* TODO: it does not make sense to cache
    [Runtime] 
    and [externals]*)
 type _ t = 
   | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> module_info t 
+  | Has_env : Env.t  -> bool t (* Indicate it is pure or not *)
 
 
 (* -FIXME: 
@@ -178,7 +176,7 @@ let query_and_add_if_not_exist
         oid +> Runtime {cmj_path;cmj_table} ; 
          (match env with 
           | Has_env _ -> 
-            found { pure = true}
+            found true
           | No_env -> 
             found cmj_info)        
       | Ml 
@@ -192,7 +190,7 @@ let query_and_add_if_not_exist
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some _ -> 
               oid +> Visit {cmj_table;cmj_path } ;
-              found  { pure = Js_cmj_format.is_pure cmj_table} 
+              found  (Js_cmj_format.is_pure cmj_table)
             end
           | No_env -> 
             found cmj_info)
@@ -206,7 +204,7 @@ let query_and_add_if_not_exist
         begin match env with 
           | Has_env _ 
             -> 
-            found { pure = false}
+            found false
           | No_env -> 
             found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
             (* FIXME: #154, it come from External, should be okay *)
@@ -216,21 +214,21 @@ let query_and_add_if_not_exist
   | Some (Visit { cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
-        found   { pure = Js_cmj_format.is_pure cmj_table} 
+        found   (Js_cmj_format.is_pure cmj_table)
       | No_env  -> found (cmj_path,cmj_table)
     end
 
   | Some (Runtime {cmj_path; cmj_table}) -> 
     begin match env with 
       | Has_env _ -> 
-        found {pure = true}
+        found true
       | No_env -> 
         found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
-        found {pure  = false}
+        found false
       | No_env -> 
         found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end
