@@ -50,7 +50,7 @@ val kind_of_lambda_block : Lam.t list -> Lam_id_kind.t
     }}
 *)
 val field_flatten_get : 
-  (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
+  (unit -> Lam.t) -> Ident.t -> int -> Lambda.field_dbg_info -> Lam_stats.ident_tbl -> Lam.t
 
 
 

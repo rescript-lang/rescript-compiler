@@ -81,21 +81,15 @@ let simplify_alias
         for the inner expression
     *)
 
-    | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
+    | Lprim {primitive = (Pfield (i,info) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
-      begin match  simpl  arg with 
-        | Lglobal_module g 
-          ->    
-          Lam.prim 
-            ~primitive:(Pfield(i,Lam_compat.Fld_na))
-            ~args:[Lam.global_module g ]
-            loc
+      begin match  simpl  arg with     
         | Lvar v as l-> 
           Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
-            v  i meta.ident_tbl 
-        | _ ->  
-          Lam.prim ~primitive ~args:[simpl arg] loc 
+            v  i info meta.ident_tbl 
+        | l ->  
+          Lam.prim ~primitive ~args:[l] loc 
       end
     | Lprim {primitive = Pval_from_option | Pval_from_option_not_nest; args = [Lvar v]} as x -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl v with 

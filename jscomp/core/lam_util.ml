@@ -192,10 +192,10 @@ let kind_of_lambda_block (xs : Lam.t list) : Lam_id_kind.t =
     element_of_lambda x ))
 
 let field_flatten_get
-   lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
+   lam v i info (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
-    Lam.prim ~primitive:(Pfield (i, Lam_compat.Fld_na)) 
+    Lam.prim ~primitive:(Pfield (i, info)) 
       ~args:[ Lam.global_module g ] Location.none
   | Some (ImmutableBlock (arr)) -> 
     begin match arr.(i) with 
