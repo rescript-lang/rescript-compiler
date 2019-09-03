@@ -136,8 +136,7 @@ let rec
   | { name} ->
       Js_output.output_of_expression lamba_cxt.continuation  
       ~no_effects:no_effects_const
-      (if id.name = "Sys" && name = "os_type" then E.str Sys.os_type
-         else E.ml_var_dot id name )
+      (E.ml_var_dot id name )
 
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if
@@ -1345,8 +1344,10 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
     | {primitive = Pfield (n, fld_info); args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
       begin match fld_info with 
-      | Fld_module _ -> 
-        compile_external_field lambda_cxt id n lambda_cxt.meta.env                  
+      | Fld_module field -> 
+         if id.name = "Sys" && field = "os_type" then 
+          Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (E.str Sys.os_type)
+         else compile_external_field lambda_cxt id n lambda_cxt.meta.env                  
       | _ -> assert false  
       end
     | {primitive = Praise ; args =  [ e ]; _} ->      
