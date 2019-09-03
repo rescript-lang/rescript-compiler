@@ -41,7 +41,7 @@ type ml_module_info = {
 
 type env_value = 
   | Visit of ml_module_info
-  | Runtime  of path * Js_cmj_format.t
+  | Runtime  of ml_module_info
   (** 
      [Runtime (pure, path, cmj_format)]
      A built in module probably from our runtime primitives, 
@@ -175,7 +175,7 @@ let query_and_add_if_not_exist
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
-        oid +> Runtime (cmj_path,cmj_table) ; 
+        oid +> Runtime {cmj_path;cmj_table} ; 
          (match env with 
           | Has_env _ -> 
             found { pure = true}
@@ -220,7 +220,7 @@ let query_and_add_if_not_exist
       | No_env  -> found (cmj_path,cmj_table)
     end
 
-  | Some (Runtime (cmj_path,cmj_table)) -> 
+  | Some (Runtime {cmj_path; cmj_table}) -> 
     begin match env with 
       | Has_env _ -> 
         found {pure = true}
@@ -246,7 +246,9 @@ let get_package_path_from_cmj
      (cmj_path, 
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
-  | Some (External | Runtime _ ) -> 
+  | Some (
+   External | 
+   Runtime _ ) -> 
     assert false  
       (* called by {!Js_name_of_module_id.string_of_module_id}
         can not be External
