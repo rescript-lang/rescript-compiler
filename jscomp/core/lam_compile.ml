@@ -1342,9 +1342,13 @@ and compile_apply
              ) fn_code args)
 and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
     match prim_info with 
-    | {primitive = Pfield (n,_); args = [ Lglobal_module id ]; _}
+    | {primitive = Pfield (n, fld_info); args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
-      compile_external_field lambda_cxt id n lambda_cxt.meta.env
+      begin match fld_info with 
+      | Fld_module _ -> 
+        compile_external_field lambda_cxt id n lambda_cxt.meta.env                  
+      | _ -> assert false  
+      end
     | {primitive = Praise ; args =  [ e ]; _} ->      
       (match compile_lambda {lambda_cxt with  continuation = NeedValue Not_tail} e with
        | {block ; value =  Some v} ->
