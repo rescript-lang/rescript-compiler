@@ -126,9 +126,8 @@ let rec
     (lamba_cxt : Lam_compile_context.t)
     (id : Ident.t)
     pos
-    (env : Env.t)
   : Js_output.t =  
-  match Lam_compile_env.cached_find_ml_id_pos id pos env  with      
+  match Lam_compile_env.cached_find_ml_id_pos id pos  with      
   | { closed_lambda = Some lam}
       when Lam_util.not_function lam
       ->
@@ -169,10 +168,10 @@ and compile_external_field_apply
     (args_lambda : Lam.t list)
     (id : Ident.t)
     pos
-    (env : Env.t) (lambda_cxt : Lam_compile_context.t): Js_output.t =
+    (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
-    Lam_compile_env.cached_find_ml_id_pos id pos env in 
+    Lam_compile_env.cached_find_ml_id_pos id pos  in 
   let args_code, args =
       let dummy = [], [] in 
       if args_lambda = [] then dummy
@@ -1269,16 +1268,18 @@ and compile_apply
       compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
     | { fn =
-          Lprim{primitive = Pfield (n,_);
+          Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
         args ;
         status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
-      compile_external_field_apply  args id n  lambda_cxt.meta.env  lambda_cxt
-
-
+      begin match fld_info with 
+        | Fld_module fld_name -> 
+          compile_external_field_apply  args id fld_name  lambda_cxt
+        | _ -> assert false
+      end     
     | { fn; args = args_lambda;   status} ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
@@ -1341,13 +1342,13 @@ and compile_apply
              ) fn_code args)
 and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
     match prim_info with 
-    | {primitive = Pfield (n, fld_info); args = [ Lglobal_module id ]; _}
+    | {primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
       begin match fld_info with 
       | Fld_module field -> 
          if id.name = "Sys" && field = "os_type" then 
           Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (E.str Sys.os_type)
-         else compile_external_field lambda_cxt id n lambda_cxt.meta.env                  
+         else compile_external_field lambda_cxt id field 
       | _ -> assert false  
       end
     | {primitive = Praise ; args =  [ e ]; _} ->      

@@ -38,7 +38,6 @@ type path = string
 
 
 type module_info = {
-  signature :  Ocaml_types.t ;
   pure : bool 
 }
 
@@ -49,7 +48,6 @@ type _ t =
 
 type ident_info = {
   name : string;
-  signature : Ocaml_types.t;
   arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }  
@@ -98,8 +96,7 @@ val add_js_module :
 *)
 val cached_find_ml_id_pos : 
   Ident.t ->
-  int -> 
-  Env.t -> 
+  string -> 
   ident_info
 
 val query_and_add_if_not_exist : 

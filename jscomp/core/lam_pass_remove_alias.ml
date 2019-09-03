@@ -150,12 +150,12 @@ let simplify_alias
       return [0, $$let[5],... $$let[16]]}
     *)      
     | Lapply{fn = 
-               Lprim {primitive = Pfield (index, _) ;
+               Lprim {primitive = Pfield (index, Fld_module fld_name) ;
                       args = [ Lglobal_module ident ];
                       _} as l1;
              args; loc ; status} ->
       begin
-        match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
+        match  Lam_compile_env.cached_find_ml_id_pos ident fld_name with                   
         | {closed_lambda=Some Lfunction{params; body; _} } 
           (** be more cautious when do cross module inlining *)
           when
