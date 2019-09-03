@@ -41,7 +41,7 @@ type ml_module_info = {
 
 type env_value = 
   | Visit of ml_module_info
-  | Runtime  of bool * path * Js_cmj_format.t
+  | Runtime  of path * Js_cmj_format.t
   (** 
      [Runtime (pure, path, cmj_format)]
      A built in module probably from our runtime primitives, 
@@ -175,7 +175,7 @@ let query_and_add_if_not_exist
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
-        oid +> Runtime (true,cmj_path,cmj_table) ; 
+        oid +> Runtime (cmj_path,cmj_table) ; 
          (match env with 
           | Has_env _ -> 
             found { pure = true}
@@ -220,10 +220,10 @@ let query_and_add_if_not_exist
       | No_env  -> found (cmj_path,cmj_table)
     end
 
-  | Some (Runtime (pure, cmj_path,cmj_table)) -> 
+  | Some (Runtime (cmj_path,cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
-        found {pure }
+        found {pure = true}
       | No_env -> 
         found (cmj_path, cmj_table) 
     end
