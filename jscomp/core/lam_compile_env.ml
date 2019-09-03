@@ -35,7 +35,6 @@ module S = Js_stmt_make
 type path = string 
 
 type ml_module_info = { 
-  signature : Ocaml_types.t;
   cmj_table : Js_cmj_format.t ;
   cmj_path : path;
 }
@@ -59,7 +58,6 @@ type env_value =
 type ident_info = {
   (* id : Ident.t; *)
   name : string;
-  signature : Ocaml_types.t;
   arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
@@ -119,40 +117,29 @@ let add_js_module
 
 let (+>) = Lam_module_ident.Hash.add cached_tbl
 
-let cached_find_ml_id_pos (module_id : Ident.t) (pos : int) env : ident_info =
+let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
   let oid  = Lam_module_ident.of_ml module_id in
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     let cmj_path, cmj_table = 
       Js_cmj_load.find_cmj (module_id.name ^ Literals.suffix_cmj) in
-    begin match
-        Ocaml_types.find_serializable_signatures_by_path module_id env with 
-    | None -> 
-      assert false (*TODO: more informative error message *)
-    | Some signature -> 
-      oid  +> Visit {signature;  cmj_table ; cmj_path  }  ;
-      let name =  Ocaml_types.get_name signature pos  in
-      let arity, closed_lambda =        
-        Js_cmj_format.query_by_name cmj_table name         
-      in
-      {
-       (* id;  *)
-       name ;
-       signature ;
-       arity ;
-       closed_lambda
-      }
-    end
-  | Some (Visit {signature ; cmj_table } )
+    oid  +> Visit {  cmj_table ; cmj_path  }  ;
+    let arity, closed_lambda =        
+      Js_cmj_format.query_by_name cmj_table name         
+    in
+    {
+      name ;
+      arity ;
+      closed_lambda
+    }
+    
+  | Some (Visit { cmj_table } )
     -> 
-    let name = Ocaml_types.get_name signature pos  in
     let arity , closed_lambda =  
       Js_cmj_format.query_by_name cmj_table name 
     in
     { 
-      (* id; *)
       name; 
-      signature;
       arity;
       closed_lambda
       (* TODO shall we cache the arity ?*) 
@@ -163,7 +150,6 @@ let cached_find_ml_id_pos (module_id : Ident.t) (pos : int) env : ident_info =
 
 
 type module_info = {
-  signature :  Ocaml_types.t ;
   pure : bool 
 }
 (* TODO: it does not make sense to cache
@@ -189,7 +175,7 @@ let query_and_add_if_not_exist
         oid +> Runtime (true,cmj_path,cmj_table) ; 
          (match env with 
           | Has_env _ -> 
-            found {signature = Ocaml_types.empty; pure = true}
+            found { pure = true}
           | No_env -> 
             found cmj_info)        
       | Ml 
@@ -202,8 +188,8 @@ let query_and_add_if_not_exist
                 Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              oid +> Visit {signature; cmj_table;cmj_path } ;
-              found  { signature ; pure = Js_cmj_format.is_pure cmj_table} 
+              oid +> Visit {cmj_table;cmj_path } ;
+              found  { pure = Js_cmj_format.is_pure cmj_table} 
             end
           | No_env -> 
             found cmj_info)
@@ -217,31 +203,31 @@ let query_and_add_if_not_exist
         begin match env with 
           | Has_env _ 
             -> 
-            found {signature = Ocaml_types.empty; pure = false}
+            found { pure = false}
           | No_env -> 
             found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
             (* FIXME: #154, it come from External, should be okay *)
         end
 
     end
-  | Some (Visit {signature  ; cmj_table; cmj_path}) -> 
+  | Some (Visit { cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
-        found   { signature; pure = Js_cmj_format.is_pure cmj_table} 
+        found   { pure = Js_cmj_format.is_pure cmj_table} 
       | No_env  -> found (cmj_path,cmj_table)
     end
 
   | Some (Runtime (pure, cmj_path,cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
-        found {signature = Ocaml_types.empty; pure }
+        found {pure }
       | No_env -> 
         found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
-        found {signature = Ocaml_types.empty; pure  = false}
+        found {pure  = false}
       | No_env -> 
         found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end

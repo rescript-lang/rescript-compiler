@@ -44,18 +44,18 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   | Lvar v -> arity_of_var meta v 
   | Lconst _ -> Lam_arity.non_function_arity_info
   | Llet(_,_,_, l ) -> get_arity meta l 
-  | Lprim {primitive = Pfield (n,_); 
-           args =  [ Lglobal_module id  ]; _} ->
-    begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
+  | Lprim {primitive = Pfield (_, Fld_module fld_name); 
+           args =  [ Lglobal_module id  ]; _} -> 
+    begin match (Lam_compile_env.cached_find_ml_id_pos id fld_name).arity with 
       | Single x -> x 
       | Submodule _ -> Lam_arity.na
     end
   | Lprim {primitive = Pfield (m,_); 
-           args =  [ Lprim{primitive = Pfield(n,_); 
+           args =  [ Lprim{primitive = Pfield(n,Fld_module fld_name); 
                            args = [ Lglobal_module id]}  ]
           ; _} ->
-    begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
-      | Submodule subs -> subs.(m)
+    begin match (Lam_compile_env.cached_find_ml_id_pos id fld_name ).arity with 
+      | Submodule subs -> subs.(m) (* TODO: shall we store it as array?*)
       | Single _ -> Lam_arity.na
     end
   (* TODO: all information except Pccall is complete, we could 
