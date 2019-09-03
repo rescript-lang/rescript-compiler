@@ -125,7 +125,7 @@ let rec
   compile_external_field (* Like [List.empty]*)
     (lamba_cxt : Lam_compile_context.t)
     (id : Ident.t)
-    (pos : int)
+    pos
     (env : Env.t)
   : Js_output.t =  
   match Lam_compile_env.cached_find_ml_id_pos id pos env  with      
@@ -168,7 +168,7 @@ let rec
 and compile_external_field_apply    
     (args_lambda : Lam.t list)
     (id : Ident.t)
-    (pos : int)
+    pos
     (env : Env.t) (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
