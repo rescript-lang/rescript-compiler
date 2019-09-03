@@ -30,4 +30,4 @@
 
 
 (** return path and meta data *)
-val find_cmj : string -> string * Js_cmj_format.t
+val find_cmj_exn : string -> string * Js_cmj_format.t

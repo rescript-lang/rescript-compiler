@@ -125,7 +125,7 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     let cmj_path, cmj_table = 
-      Js_cmj_load.find_cmj (module_id.name ^ Literals.suffix_cmj) in
+      Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
     oid  +> Visit {  cmj_table ; cmj_path  }  ;
     let arity, closed_lambda =        
       Js_cmj_format.query_by_name cmj_table name         
@@ -174,7 +174,7 @@ let query_and_add_if_not_exist
     begin match oid.kind with
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Js_cmj_load.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime (true,cmj_path,cmj_table) ; 
          (match env with 
           | Has_env _ -> 
@@ -184,7 +184,7 @@ let query_and_add_if_not_exist
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Js_cmj_load.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         ( match env with 
           | Has_env env -> 
             begin match 
@@ -257,7 +257,7 @@ let get_package_path_from_cmj
     | External _ -> assert false
     | Ml -> 
       let (cmj_path, cmj_table) = 
-        Js_cmj_load.find_cmj (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
+        Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
       id +> Visit {cmj_table;cmj_path };  
       (cmj_path, 
        Js_cmj_format.get_npm_package_path cmj_table, 
