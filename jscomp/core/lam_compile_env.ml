@@ -69,7 +69,10 @@ type ident_info = {
 
 
 
-let cached_tbl  = Lam_module_ident.Hash.create 31
+let cached_tbl  : env_value Lam_module_ident.Hash.t
+   = Lam_module_ident.Hash.create 31
+let (+>) = Lam_module_ident.Hash.add cached_tbl
+
 
 (* For each compilation we need reset to make it re-entrant *)
 let reset () = 
@@ -115,7 +118,7 @@ let add_js_module
 
 
 
-let (+>) = Lam_module_ident.Hash.add cached_tbl
+
 
 let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
   let oid  = Lam_module_ident.of_ml module_id in
@@ -187,7 +190,7 @@ let query_and_add_if_not_exist
             begin match 
                 Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
-            | Some signature -> 
+            | Some _ -> 
               oid +> Visit {cmj_table;cmj_path } ;
               found  { pure = Js_cmj_format.is_pure cmj_table} 
             end
@@ -237,24 +240,43 @@ let query_and_add_if_not_exist
 
 let get_package_path_from_cmj 
     ( id : Lam_module_ident.t) 
-  : _ option = 
-  query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ ->
-        None
-        (*
-          So after querying, it should return 
-           [Js_packages_info.Package_not_found]
-        *)
-      ) 
-    ~found:(fun (cmj_path,x) -> 
-        Some (cmj_path, 
-              Js_cmj_format.get_npm_package_path x, 
-              Js_cmj_format.get_cmj_case x )
-      )
-
+   = 
+  match Lam_module_ident.Hash.find_opt cached_tbl id with 
+  | Some (Visit {cmj_table ; cmj_path}) -> 
+     (cmj_path, 
+          Js_cmj_format.get_npm_package_path cmj_table, 
+          Js_cmj_format.get_cmj_case cmj_table )
+  | Some (External | Runtime _ ) -> 
+    assert false  
+      (* called by {!Js_name_of_module_id.string_of_module_id}
+        can not be External
+      *)
+  | None -> 
+    begin match id.kind with 
+    | Runtime 
+    | External _ -> assert false
+    | Ml -> 
+      let (cmj_path, cmj_table) = 
+        Js_cmj_load.find_cmj (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
+      id +> Visit {cmj_table;cmj_path };  
+      (cmj_path, 
+       Js_cmj_format.get_npm_package_path cmj_table, 
+       Js_cmj_format.get_cmj_case cmj_table )              
+    end 
 
 let add = Lam_module_ident.Hash_set.add
 
+
+
+(* let is_pure_module (id : Lam_module_ident.t) = 
+  match id.kind with 
+  | Runtime -> true 
+  | External _ -> false
+  | Ml -> 
+    match Lam_module_ident.Hash.find_opt cached_tbl id with
+    | Some (Visit {cmj_table = {pure}}) -> pure 
+    | Some _ -> assert false 
+    | None ->  *)
 
 
 

@@ -113,9 +113,7 @@ let string_of_module_id
           module_system  
       in
       match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
-      | None -> 
-        Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
-      | Some (cmj_path, dep_package_info, little) -> 
+      | (cmj_path, dep_package_info, little) -> 
         let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name little in 
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
