@@ -40,7 +40,7 @@ type path = string
 
 type _ t = 
   | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> bool t 
+  | Has_env :  bool t 
 
 
 type ident_info = {

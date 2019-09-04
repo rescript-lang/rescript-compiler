@@ -158,7 +158,7 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
    and [externals]*)
 type _ t = 
   | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> bool t (* Indicate it is pure or not *)
+  | Has_env :  bool t (* Indicate it is pure or not *)
 
 
 (* -FIXME: 
@@ -175,7 +175,7 @@ let query_and_add_if_not_exist
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime {cmj_path;cmj_table} ; 
          (match env with 
-          | Has_env _ -> 
+          | Has_env  -> 
             found true
           | No_env -> 
             found cmj_info)        
@@ -183,18 +183,13 @@ let query_and_add_if_not_exist
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+        oid +> Visit {cmj_table;cmj_path } ;  
         ( match env with 
-          | Has_env env -> 
-            begin match 
-                Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
-            | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
-            | Some _ -> 
-              oid +> Visit {cmj_table;cmj_path } ;
-              found  (Js_cmj_format.is_pure cmj_table)
-            end
+          | Has_env  -> 
+            found  (Js_cmj_format.is_pure cmj_table)
           | No_env -> 
             found cmj_info)
-        
+
 
       | External _  -> 
         oid +> External;
@@ -202,7 +197,7 @@ let query_and_add_if_not_exist
             we should assert false (but this in general should not happen)
         *)
         begin match env with 
-          | Has_env _ 
+          | Has_env  
             -> 
             found false
           | No_env -> 
@@ -213,21 +208,21 @@ let query_and_add_if_not_exist
     end
   | Some (Visit { cmj_table; cmj_path}) -> 
     begin match env with 
-      | Has_env _ -> 
+      | Has_env  -> 
         found   (Js_cmj_format.is_pure cmj_table)
       | No_env  -> found (cmj_path,cmj_table)
     end
 
   | Some (Runtime {cmj_path; cmj_table}) -> 
     begin match env with 
-      | Has_env _ -> 
+      | Has_env  -> 
         found true
       | No_env -> 
         found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
-      | Has_env _ -> 
+      | Has_env  -> 
         found false
       | No_env -> 
         found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)

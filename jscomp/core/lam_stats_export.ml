@@ -111,7 +111,7 @@ let get_dependent_module_effect
         (fun id -> 
            id.kind = Runtime ||
            Lam_compile_env.query_and_add_if_not_exist id 
-             (Has_env meta.env )
+             Has_env 
              ~not_found:(fun _ -> false ) 
              ~found:(fun pure -> pure)
         ) in 
