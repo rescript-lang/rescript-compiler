@@ -113,7 +113,7 @@ let get_dependent_module_effect
            Lam_compile_env.query_and_add_if_not_exist id 
              (Has_env meta.env )
              ~not_found:(fun _ -> false ) 
-             ~found:(fun {pure} -> pure)
+             ~found:(fun pure -> pure)
         ) in 
     Ext_option.map  non_pure_module (fun x -> Lam_module_ident.name x)
   else 

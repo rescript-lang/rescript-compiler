@@ -37,13 +37,10 @@ type path = string
 
 
 
-type module_info = {
-  pure : bool 
-}
 
 type _ t = 
   | No_env :  (path * Js_cmj_format.t) t 
-  | Has_env : Env.t  -> module_info t 
+  | Has_env : Env.t  -> bool t 
 
 
 type ident_info = {
@@ -109,7 +106,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.t -> 
-  (string * Js_packages_info.t * Js_cmj_format.cmj_case) option
+  (string * Js_packages_info.t * Js_cmj_format.cmj_case) 
 
 
 
