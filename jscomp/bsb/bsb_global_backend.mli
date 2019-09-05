@@ -22,8 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val cmdline_backend : Bsb_config_types.compilation_kind_t option ref
+val backend_ref : Bsb_config_types.compilation_kind_t option ref
 
 val backend : Bsb_config_types.compilation_kind_t Lazy.t
 
 val lib_artifacts_dir : string Lazy.t
+
+val lib_ocaml_dir : string Lazy.t
+
+val backend_string: string Lazy.t

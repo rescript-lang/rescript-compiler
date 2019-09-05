@@ -30,7 +30,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // Bsb_config.lib_ocaml
+    package_install_path = x // (Lazy.force Bsb_global_backend.lib_ocaml_dir)
   }
 
 type json_map = Ext_json_types.t Map_string.t
@@ -49,8 +49,8 @@ let extract_main_entries (map :json_map) =
           let kind = ref "js" in
           let main = ref None in
           let _ = map
-                  |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
-                  |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
+                  |? (Bsb_build_schemas.backend, `Str (fun x -> kind := x))
+                  |? (Bsb_build_schemas.main_module, `Str (fun x -> main := Some x))
           in
           let path = begin match !main with
             (* This is technically optional when compiling to js *)
@@ -74,11 +74,18 @@ let extract_main_entries (map :json_map) =
   begin match Map_string.find_opt map Bsb_build_schemas.entries with
     | Some (Arr {content = s}) -> entries := extract_entries s
     | _ -> ()
-  end; !entries
+  end; 
+  if !Bsb_global_backend.backend_ref = None then 
+    begin match !entries with
+      | []
+      | (Bsb_config_types.JsTarget _) :: _       -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Js
+      | (Bsb_config_types.NativeTarget _) :: _   -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Native
+      | (Bsb_config_types.BytecodeTarget _) :: _ -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Bytecode
+    end;
+  !entries
 #else 
 let extract_main_entries (_ :json_map) = []  
 #end
-
 
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
@@ -173,7 +180,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
         check_version_exit map stdlib_path;
         Some {
             Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
+            package_install_path = stdlib_path // (Lazy.force Bsb_global_backend.lib_ocaml_dir);
           }
 
       | _ -> assert false 
@@ -403,6 +410,9 @@ let interpret_json
     let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
     let bs_suffix = extract_bs_suffix_exn map in   
+    (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
+        array from the bsconfig and set the backend_ref to the first entry, if any. *)
+    let entries = extract_main_entries map in
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
@@ -470,7 +480,7 @@ let interpret_json
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
-          entries = extract_main_entries map;
+          entries;
           generators = extract_generators map ; 
           cut_generators ;
           number_of_dev_groups;   

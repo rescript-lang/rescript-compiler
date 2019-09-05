@@ -54,3 +54,16 @@ let gentypeconfig = "gentypeconfig"
 
 let g_dev_incls = "g_dev_incls"
 
+#if BS_NATIVE then
+let ocamlc = "ocamlc"
+let ocamlopt = "ocamlopt"
+let g_stdlib_incl_ocaml = "g_stdlib_incl_ocaml"
+let ns = "ns"
+let main_module = "main_module"
+let ocaml_flags = "ocaml_flags"
+let ocaml_dependencies = "ocaml_dependencies"
+let bsb_helper_verbose = "bsb_helper_verbose"
+let dev_includes = "dev_includes"
+let maybe_refmt_ppx = "maybe_refmt_ppx"
+let external_deps_for_linking = "external_deps_for_linking"
+#end

@@ -23,21 +23,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-(** Regenerate ninja file by need based on [.bsdeps]
-    return None if we dont need regenerate
-    otherwise return Some info
-*)
-val regenerate_ninja :
 #if BS_NATIVE then
-  dependency_info: Bsb_dependency_info.t option ->
-  is_top_level:bool ->
+
+type compile_target_t = Native | Bytecode
+
+val handle_file_groups :
+  out_channel ->
+  package_specs:Bsb_package_specs.t ->
+  bs_suffix:bool ->
+  js_post_build_cmd:string option ->
+  files_to_install:Hash_set_string.t ->
+  rules:Bsb_ninja_rule.builtin ->
+  toplevel:bool ->
+  compile_target:compile_target_t ->
+  backend:Bsb_config_types.compilation_kind_t ->
+  dependency_info:Bsb_dependency_info.t ->
   root_project_dir:string ->
-  main_config : Bsb_config_types.t ->
-  ocaml_dir:string ->
+  config:Bsb_config_types.t ->
+  Bsb_file_groups.file_groups ->
+  string option ->
+  unit
+
 #end
-  toplevel_package_specs:Bsb_package_specs.t option ->
-  forced: bool -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t option 

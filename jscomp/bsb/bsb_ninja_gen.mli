@@ -28,4 +28,9 @@
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  
   toplevel:bool -> 
+#if BS_NATIVE then
+  dependency_info:Bsb_dependency_info.t ->
+  ocaml_dir:string ->
+  root_project_dir:string ->
+#end
   Bsb_config_types.t -> unit 

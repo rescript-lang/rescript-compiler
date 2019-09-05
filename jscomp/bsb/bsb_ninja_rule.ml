@@ -95,6 +95,23 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
 
+#if BS_NATIVE then
+  build_package_gen_mlast_simple: t;
+  build_package_build_cmi_bytecode: t;
+  build_package_build_cmi_native: t;
+  
+  build_cmo_cmi_bytecode: t;
+  build_cmi_bytecode: t;
+  build_cmx_cmi_native: t;
+  build_cmi_native: t;
+
+  linking_bytecode: t;
+  linking_native: t;
+
+  build_cma_library: t;
+  build_cmxa_library: t;
+#end
+
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
@@ -149,7 +166,7 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx ~gen_simple : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
     (match refmt with 
@@ -170,16 +187,19 @@ let make_custom_rules
     );
     if has_ppx then 
       Buffer.add_string buf " $ppx_flags"; 
+    if gen_simple then
+      Buffer.add_string buf " -bs-simple-binary-ast";
     Buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
     Buffer.contents buf
   in  
+  let gen_simple = Lazy.force Bsb_global_backend.backend <> Bsb_config_types.Js in
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false ~gen_simple)
       "build_ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true ~gen_simple)
       "build_ast_from_re" in 
  
   let copy_resources =    
@@ -190,11 +210,16 @@ let make_custom_rules
         else "cp $in $out"
       )
       "copy_resource" in
+  let native_arg = match Lazy.force Bsb_global_backend.backend with 
+    | Js -> ""
+    | Native -> " -MD-native"
+    | Bytecode -> " -MD-bytecode" 
+  in
   let build_bin_deps =
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
+      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group "^native_arg^" $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
@@ -229,7 +254,121 @@ let make_custom_rules
       ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
       ~restat:()
       "build_package"
+  in
+#if BS_NATIVE then
+  let build_package_gen_mlast_simple =
+    define
+      ~command:"$bsc -w -49 -no-alias-deps -bs-simple-binary-ast -bs-cmi-only -c $in"
+      ~restat:()
+      "build_package_gen_mlast_simple"
+  in
+  let mk_build ~compiler ~is_ns_file ~cmi : string =
+    Buffer.clear buf ;
+    begin match compiler with
+      | `bytecode -> Buffer.add_string buf "$ocamlc"
+      | `native -> Buffer.add_string buf "$ocamlopt"
+    end;
+    Buffer.add_string buf " $g_lib_incls $dev_includes $ocaml_flags -I $g_stdlib_incl_ocaml -o $out $warnings -no-alias-deps -c -intf-suffix .mliast_simple";
+    if cmi then
+      Buffer.add_string buf " -intf $in"
+    else
+      Buffer.add_string buf " -impl $in";
+
+    if not is_ns_file then
+      Buffer.add_string buf " $ns";
+
+    Buffer.contents buf
+  in  
+  let build_package_build_cmi_bytecode = 
+    define
+       ~command:(mk_build ~compiler:`bytecode ~is_ns_file:true ~cmi:false)
+      ~restat:()
+     "build_package_build_cmi_bytecode"
+  in
+
+  let build_package_build_cmi_native = 
+    define
+      ~command:(mk_build ~compiler:`native ~is_ns_file:true ~cmi:false)
+      ~restat:()
+     "build_package_build_cmi_native"
+  in
+
+  let build_cmo_cmi_bytecode =
+    define
+      ~command:(mk_build ~compiler:`bytecode ~is_ns_file:false ~cmi:false)
+      ~dyndep:"$in_e.d"
+      ~restat:()
+     "build_cmo_cmi_bytecode"
+  in
+
+  let build_cmi_bytecode =
+    define
+      ~command:(mk_build ~compiler:`bytecode ~is_ns_file:false ~cmi:true)
+      ~dyndep:"$in_e.d"
+      ~restat:()
+     "build_cmi_bytecode"
+  in
+
+  let build_cmx_cmi_native =
+    define
+      ~command:(mk_build ~compiler:`native ~is_ns_file:false ~cmi:false)
+      ~dyndep:"$in_e.d"
+      ~restat:()
+     "build_cmx_cmi_native" 
+  in
+
+  let build_cmi_native =
+    define
+      ~command:(mk_build ~compiler:`native ~is_ns_file:false ~cmi:true)
+      ~dyndep:"$in_e.d"
+      ~restat:()
+     "build_cmi_native"
   in 
+
+  let mk_helper ~action =
+    Buffer.clear buf ; 
+    Buffer.add_string buf "$bsdep $bsb_helper_verbose $ocaml_dependencies $warnings $g_ns";
+    begin match action with
+      | `link_bytecode ->
+        Buffer.add_string buf " -bs-main $main_module $external_deps_for_linking $in -link-bytecode $out"
+      | `link_native ->
+        Buffer.add_string buf " -bs-main $main_module $external_deps_for_linking $in -link-native $out"
+      | `pack_bytecode ->
+        Buffer.add_string buf " $in -pack-bytecode-library"
+      | `pack_native ->
+        Buffer.add_string buf " $in -pack-native-library"
+    end;
+    Buffer.contents buf
+  in
+
+  let linking_bytecode =
+    define
+      ~command:(mk_helper ~action:`link_bytecode)
+      ~restat:()
+      "linking_bytecode"
+  in
+
+  let linking_native =
+    define
+      ~command:(mk_helper ~action:`link_native)
+      ~restat:()
+      "linking_native"
+  in
+
+  let build_cma_library =
+   define
+     ~command:(mk_helper ~action:`pack_bytecode)
+     ~restat:()
+     "build_cma_library"
+  in
+
+  let build_cmxa_library =
+   define
+     ~command:(mk_helper ~action:`pack_native)
+     ~restat:()
+     "build_cmxa_library"
+  in
+#end
   {
     build_ast ;
     build_ast_from_re  ;
@@ -239,6 +378,22 @@ let make_custom_rules
     copy_resources;
     (** Rules below all need restat *)
     build_bin_deps ;
+#if BS_NATIVE then
+    build_package_gen_mlast_simple;
+    build_package_build_cmi_bytecode;
+    build_package_build_cmi_native;
+
+    build_cmo_cmi_bytecode;
+    build_cmi_bytecode;
+    build_cmx_cmi_native;
+    build_cmi_native;
+
+    linking_bytecode;
+    linking_native;
+
+    build_cma_library;
+    build_cmxa_library;
+#end
 
     ml_cmj_js ;
     ml_cmj_js_dev ;

@@ -32,4 +32,5 @@ val make_world_deps:
   string ->
   Bsb_config_types.t option ->
   string array ->
-  unit  
+   root_project_dir:string ->
+   Bsb_dependency_info.t

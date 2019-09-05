@@ -60,9 +60,9 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
 
 
 
-let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
-
+let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) ~root_project_dir : Bsb_dependency_info.t =
   let vendor_ninja = Bsb_global_paths.vendor_ninja in
+  let dependency_info = Bsb_dependency_info.{ all_external_deps = []; } in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
@@ -73,9 +73,24 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
         begin 
           let config_opt = 
             Bsb_ninja_regen.regenerate_ninja 
+#if BS_NATIVE then
+              ~dependency_info:(Some dependency_info)
+              ~is_top_level:false
+              ~root_project_dir
+              ~main_config:(Bsb_config_parse.interpret_json 
+                ~toplevel_package_specs:(Some deps)
+                ~per_proj_dir:proj_dir)
+              ~ocaml_dir:Bsb_global_paths.ocaml_dir
+#end
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
               ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+          (* Append at the head for a correct topological sort. 
+              walk_all_deps does a simple DFS, so all we need to do is to append at the head of 
+              a list to build a topologically sorted list of external deps.
+            *)
+          if Lazy.force Bsb_global_backend.backend <> Bsb_config_types.Js then
+              dependency_info.all_external_deps <- (proj_dir // Lazy.force Bsb_global_backend.lib_ocaml_dir) :: dependency_info.all_external_deps;
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;
@@ -93,10 +108,12 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
           *)
           Ext_option.iter config_opt (install_targets proj_dir);
         end
-    )
+    );
+    dependency_info.all_external_deps <- List.rev dependency_info.all_external_deps;
+    dependency_info
 
 
-let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
+let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) ~root_project_dir =
   Bsb_log.info "Making the dependency world!@.";
   let deps =
     match config with
@@ -107,4 +124,4 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some config -> config.package_specs in
-  build_bs_deps cwd deps ninja_args
+  build_bs_deps cwd deps ninja_args ~root_project_dir

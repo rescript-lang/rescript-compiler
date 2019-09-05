@@ -46,6 +46,23 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
 
+#if BS_NATIVE then
+  build_package_gen_mlast_simple: t;
+  build_package_build_cmi_bytecode: t;
+  build_package_build_cmi_native: t;
+  
+  build_cmo_cmi_bytecode: t;
+  build_cmi_bytecode: t;
+  build_cmx_cmi_native: t;
+  build_cmi_native: t;
+
+  linking_bytecode: t;
+  linking_native: t;
+
+  build_cma_library: t;
+  build_cmxa_library: t;
+#end
+
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;

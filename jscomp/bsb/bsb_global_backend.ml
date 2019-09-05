@@ -23,28 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 #if BS_NATIVE then
-let cmdline_backend = ref None
+let backend_ref = ref None
 
-(* If cmdline_backend is set we use it, otherwise we use the first entry's backend. *)
+(* If backend_ref is set we use it, otherwise we use the first entry's backend. *)
 let backend = lazy
-  begin match !cmdline_backend with
-  | Some cmdline_backend -> cmdline_backend
-  | None -> 
-    let entries = Bsb_config_parse.entries_from_bsconfig Bsb_global_paths.cwd in 
-    let new_cmdline_backend = begin match entries with
-      | []                                       -> Bsb_config_types.Js
-      | (Bsb_config_types.JsTarget _) :: _       -> Bsb_config_types.Js
-      | (Bsb_config_types.NativeTarget _) :: _   -> Bsb_config_types.Native
-      | (Bsb_config_types.BytecodeTarget _) :: _ -> Bsb_config_types.Bytecode
-    end in
-    cmdline_backend := Some (new_cmdline_backend);
-    new_cmdline_backend
+  begin match !backend_ref with
+  | Some backend_ref -> backend_ref
+  | None -> Bsb_config_types.Js
   end
 #else
 let backend = lazy Bsb_config_types.Js
 
 (* No cost of using this variable below when compiled in JS mode. *)
-let cmdline_backend = ref (Some Bsb_config_types.Js)
+let backend_ref = ref (Some Bsb_config_types.Js)
 #end
 
 let (//) = Ext_path.combine
@@ -52,6 +43,20 @@ let (//) = Ext_path.combine
 let lib_artifacts_dir = lazy
   begin match Lazy.force backend with
   | Bsb_config_types.Js       -> Bsb_config.lib_bs
-  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "native"
-  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bytecode"
+  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "bs-native"
+  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bs-bytecode"
+  end
+
+let lib_ocaml_dir = lazy
+  begin match Lazy.force backend with
+  | Bsb_config_types.Js       -> Bsb_config.lib_ocaml
+  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "ocaml-native"
+  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "ocaml-bytecode"
+  end
+
+let backend_string = lazy
+  begin match Lazy.force backend with
+  | Bsb_config_types.Js       -> Literals.js
+  | Bsb_config_types.Native   -> Literals.native
+  | Bsb_config_types.Bytecode -> Literals.bytecode
   end

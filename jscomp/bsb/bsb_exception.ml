@@ -32,6 +32,9 @@ type error =
   | Conflict_module of string * string * string
   | No_implementation of string
   | Not_consistent of string 
+  | Missing_object_file of string
+  | Missing_entry of string
+  | No_files_to_pack of string
 
 exception Error of error
 
@@ -84,6 +87,18 @@ let print (fmt : Format.formatter) (x : error) =
     Format.fprintf fmt
     "File %S, line 1\n\
     @{<error>Error: Invalid json format@}" s
+  | Missing_object_file name ->
+    Format.fprintf fmt
+    "@{<error>Error:@} build.ninja is missing the file '%s' that was used in the project. Try force-regenerating but this shouldn't happen.\n"
+    name
+  | Missing_entry name ->
+    Format.fprintf fmt
+    "@{<error>Error:@} Could not find an item in the entries field to compile to '%s'\n"
+    name
+  | No_files_to_pack suffix ->
+    Format.fprintf fmt
+    "@{<error>Error:@} No %s to pack into a lib.\n"
+    suffix
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
@@ -94,6 +109,9 @@ let not_consistent modname =
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
+let missing_object_file name = error (Missing_object_file name)
+let missing_entry name = error (Missing_entry name)
+let no_files_to_pack suffix = error (No_files_to_pack suffix)
 
 let config_error config fmt =
   let loc = Ext_json.loc_of config in

@@ -22,12 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if BS_NATIVE then 
- let (//) = Ext_path.combine
- let exec = ref false
- let node_lit = "node"
-#end
-
 let () =  Bsb_log.setup () 
 
 let force_regenerate = ref false
@@ -85,7 +79,17 @@ let bsb_main_flags : (string * Arg.spec * string) list=
   we make it at this time to make `bsb -help` easier
 *)
     "-ws", Arg.Bool ignore, 
-    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." 
+    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion.";
+#if BS_NATIVE then
+     "-backend", Arg.String (fun s -> 
+         match s with
+         | "js"       -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Js
+         | "native"   -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Native
+         | "bytecode" -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Bytecode
+         | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
+       ),
+     " Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
+#end
   ]
 
 
@@ -169,15 +173,42 @@ let install_target config_opt =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
+  let cwd = Bsb_global_paths.cwd in
+#if BS_NATIVE then
+  let ocaml_dir = Bsb_global_paths.ocaml_dir in
+#end
   try begin 
     match Sys.argv with 
+#if BS_NATIVE then
+    (* Both of those are equivalent and the watcher will always pass in the `-backend` flag. *)
+    | [| _; "-backend"; _ |] 
+#end
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+#if BS_NATIVE then
+      if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with
+        | "js"       -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Js
+        | "native"   -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Native
+        | "bytecode" -> Bsb_global_backend.backend_ref := Some Bsb_config_types.Bytecode
+        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
+      end;
+      let main_config = 
+        Bsb_config_parse.interpret_json ~toplevel_package_specs:None ~per_proj_dir:cwd in
+      Bsb_ninja_regen.regenerate_ninja
+        ~dependency_info:None
+        ~is_top_level:true
+        ~root_project_dir:cwd
+        ~main_config
+        ~ocaml_dir
+        ~toplevel_package_specs:None 
+        ~forced:false
+        ~per_proj_dir:cwd  |> ignore;
+#else
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
+#end
       ninja_command_exit  [||] 
-
     | argv -> 
       begin
         match Ext_array.find_and_split argv Ext_string.equal separator with
@@ -202,13 +233,34 @@ let () =
                 (if !watch_mode then 
                     program_exit ()) (* bsb -verbose hit here *)
               else
+#if BS_NATIVE then
+                (let main_config = 
+                  Bsb_config_parse.interpret_json 
+                    ~toplevel_package_specs:None 
+                    ~per_proj_dir:cwd in
+                let config_opt = Some main_config in
+                let dependency_info = if make_world then begin
+                  Some (Bsb_world.make_world_deps cwd config_opt [||] ~root_project_dir:cwd)
+                end else None in
+                (* don't regenerate files when we only run [bsb -clean-world] *)
+                Bsb_ninja_regen.regenerate_ninja 
+                  ~dependency_info 
+                  ~is_top_level:true
+                  ~root_project_dir:cwd
+                  ~toplevel_package_specs:None 
+                  ~forced:force_regenerate
+                  ~main_config
+                  ~ocaml_dir
+                  ~per_proj_dir:cwd |> ignore;
+#else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
                      ~toplevel_package_specs:None 
                      ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
-                   Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
+                   ignore @@ Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||] ~root_project_dir:cwd;
                  end;
+#end
                  if !watch_mode then begin
                    program_exit ()
                    (* ninja is not triggered in this case
@@ -226,6 +278,27 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
+#if BS_NATIVE then
+
+            let main_config = 
+              Bsb_config_parse.interpret_json 
+                ~toplevel_package_specs:None 
+                ~per_proj_dir:cwd in
+            let config_opt = Some main_config in
+            (* [-make-world] should never be combined with [-package-specs] *)
+            let dependency_info = if !make_world then 
+              Some (Bsb_world.make_world_deps cwd config_opt ninja_args ~root_project_dir:cwd)
+            else None in
+              Bsb_ninja_regen.regenerate_ninja 
+              ~dependency_info
+              ~is_top_level:true
+              ~root_project_dir:cwd
+              ~toplevel_package_specs:None 
+              ~forced:!force_regenerate
+              ~main_config
+              ~ocaml_dir
+              ~per_proj_dir:cwd |> ignore;
+#else
             let config_opt = 
               Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
@@ -233,7 +306,8 @@ let () =
                 ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+              ignore @@ Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args ~root_project_dir:cwd;
+#end
             if !do_install then
               install_target config_opt;
             if !watch_mode then program_exit ()

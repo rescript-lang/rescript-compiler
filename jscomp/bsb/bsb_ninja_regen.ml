@@ -26,15 +26,42 @@ let bsdeps = ".bsdeps"
 
 let (//) = Ext_path.combine
 
+#if BS_NATIVE then 
+let collect_dependency_info ~per_proj_dir ~config:(config : Bsb_config_types.t) = 
+  let dependency_info : Bsb_dependency_info.t = {
+    all_external_deps = [];
+  } in
+
+  Bsb_build_util.walk_all_deps per_proj_dir
+    (fun {top; proj_dir} ->
+      if not top then begin
+      dependency_info.all_external_deps <- (proj_dir // (Lazy.force Bsb_global_backend.lib_ocaml_dir)) :: dependency_info.all_external_deps;
+    end
+  );
+  dependency_info.all_external_deps <- List.rev dependency_info.all_external_deps;
+  dependency_info
+#end
+
 (** Regenerate ninja file by need based on [.bsdeps]
     return None if we dont need regenerate
     otherwise return Some info
 *)
 let regenerate_ninja 
+#if BS_NATIVE then
+    ~dependency_info
+    ~is_top_level
+    ~root_project_dir
+    ~main_config:(config : Bsb_config_types.t)
+    ~ocaml_dir
+#end
     ~(toplevel_package_specs : Bsb_package_specs.t option)
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
+#if BS_NATIVE then
+  let toplevel = is_top_level in
+#else
   let toplevel = toplevel_package_specs = None in 
+#end
   let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
@@ -57,10 +84,12 @@ let regenerate_ninja
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
+#if BS_NATIVE = false then
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
         ~per_proj_dir in 
+#end
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
@@ -74,9 +103,35 @@ let regenerate_ninja
     ;
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
+#if BS_NATIVE then  
+    let dependency_info = match dependency_info with 
+      | None -> 
+        (* We check `is_top_level` to decide whether we need to walk the dependencies' graph or not.
+           If we are building a dep, we use the top level project's entry.
+           
+           If we're aiming at building JS, we do NOT walk the external dep graph.
+           
+           If we're aiming at building Native or Bytecode, we do walk the external 
+           dep graph and build a topologically sorted list of all of them. *)
+        begin match Lazy.force Bsb_global_backend.backend with
+        | Bsb_config_types.Js ->  Bsb_dependency_info.{ all_external_deps = []; }
+        | Bsb_config_types.Bytecode
+        | Bsb_config_types.Native ->
+          if not is_top_level then 
+            Bsb_dependency_info.{ all_external_deps = []; }
+          else begin
+            collect_dependency_info ~per_proj_dir ~config
+          end
+        end
+      | Some all_deps -> all_deps in
+#end
     Bsb_ninja_gen.output_ninja_and_namespace_map 
+#if BS_NATIVE then
+    ~dependency_info 
+    ~ocaml_dir 
+    ~root_project_dir 
+#end
       ~per_proj_dir  ~toplevel config ;             
-    
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
