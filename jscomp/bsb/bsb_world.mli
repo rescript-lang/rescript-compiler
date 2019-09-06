@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(*val install_targets:
+val install_targets:
   string ->
   Bsb_config_types.t option ->
-  unit*)
+  unit
 
 val make_world_deps:
   string ->
