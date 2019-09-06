@@ -8151,6 +8151,8 @@ val bs_suffix : bool ref
 val debug : bool ref
 
 val cmi_only  : bool ref
+val cmj_only : bool ref 
+(* stopped after generating cmj *)
 val force_cmi : bool ref 
 val force_cmj : bool ref
 
@@ -8259,6 +8261,8 @@ let bs_suffix = ref false
 let debug = ref false
 
 let cmi_only = ref false  
+let cmj_only = ref false
+
 let force_cmi = ref false
 let force_cmj = ref false
 
@@ -9613,7 +9617,7 @@ type 'a kind = 'a Ml_binary.kind
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter
+  List.iter (* check *)
     (fun modname  ->
        
        Depend.open_module bound_vars (Longident.Lident modname))

@@ -40,7 +40,7 @@ type 'a kind = 'a Ml_binary.kind
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter
+  List.iter (* check *)
     (fun modname  ->
 #if OCAML_VERSION =~ ">4.03.0" then
        ignore @@ 
