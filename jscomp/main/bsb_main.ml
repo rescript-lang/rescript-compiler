@@ -149,7 +149,7 @@ let install_target config_opt =
     String_map.iter group.sources (fun  module_name module_info -> if check_file module_name then begin String_hash_set.add config.files_to_install module_info.name_sans_extension end)) in 
     config
     | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd (Some config)
+  Bsb_world.install_targets Bsb_global_paths.cwd config
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
