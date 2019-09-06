@@ -79,7 +79,7 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t =
   let name =
-    String.concat "" @@ Ext_list.map 
+    String.concat "" @@ Ext_list.map
     (Ext_string.split name '-')  Ext_string.capitalize_ascii in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom
@@ -136,6 +136,8 @@ let name_mangle name =
       | '~' -> Buffer.add_string buffer "$tilde"
       | '#' -> Buffer.add_string buffer "$hash"
       | ':' -> Buffer.add_string buffer "$colon"
+      | '?' -> Buffer.add_string buffer "$question"
+      | '&' -> Buffer.add_string buffer "$amp"
       | 'a'..'z' | 'A'..'Z'| '_'
       | '$'
       | '0'..'9'-> Buffer.add_char buffer  c
@@ -165,6 +167,8 @@ let name_mangle name =
        | '~' -> Buffer.add_string buffer "$tilde"
        | '#' -> Buffer.add_string buffer "$hash"
        | ':' -> Buffer.add_string buffer "$colon"
+       | '?' -> Buffer.add_string buffer "$question"
+       | '&' -> Buffer.add_string buffer "$amp"
        | '$' -> Buffer.add_string buffer "$dollar"
        | 'a'..'z' | 'A'..'Z'| '_'
        | '0'..'9'-> Buffer.add_char buffer  c
@@ -181,7 +185,7 @@ let name_mangle name =
    a valid js identifier
 *)
 let convert (name : string) =
-  if  Js_reserved_map.is_reserved name  then 
+  if  Js_reserved_map.is_reserved name  then
     "$$" ^ name
   else name_mangle name
 
@@ -212,4 +216,3 @@ let compare (x : Ident.t ) ( y : Ident.t) =
 let equal ( x : Ident.t) ( y : Ident.t) =
   if x.stamp <> 0 then x.stamp = y.stamp
   else y.stamp = 0 && x.name = y.name
-
