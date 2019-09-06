@@ -153,11 +153,13 @@ let after_parsing_impl ppf  outputprefix ast =
         (typedtree, coercion)
         |> Translmod.transl_implementation modulename
         |> (fun lambda -> 
+            let js_program =  
             print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
-            |>
-            Lam_compile_main.lambda_as_module
-              finalenv  
-              outputprefix 
+            |> Lam_compile_main.compile outputprefix finalenv in 
+            if not !Js_config.cmj_only then 
+              Lam_compile_main.lambda_as_module
+                js_program
+                outputprefix 
           );
       end;
       process_with_gentype (outputprefix ^ ".cmt")        
@@ -198,6 +200,7 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
   keep in sync {!Bsb_namespace_map_gen.output}
 *)
 let implementation_map ppf sourcefile outputprefix = 
+  let () = Js_config.cmj_only := true in 
   let ichan = open_in_bin sourcefile in 
   seek_in ichan (Ext_digest.length +1);
   let list_of_modules = Ext_io.rev_lines_of_chann ichan in 

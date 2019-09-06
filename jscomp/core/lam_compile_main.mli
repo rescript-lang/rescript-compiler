@@ -44,7 +44,6 @@ val compile :
   J.deps_program
 
 val lambda_as_module :  
-  Env.t ->
+  J.deps_program ->
   string ->
-  Lambda.lambda -> 
   unit

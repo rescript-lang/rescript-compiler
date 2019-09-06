@@ -94,6 +94,8 @@ val bs_suffix : bool ref
 val debug : bool ref
 
 val cmi_only  : bool ref
+val cmj_only : bool ref 
+(* stopped after generating cmj *)
 val force_cmi : bool ref 
 val force_cmj : bool ref
 

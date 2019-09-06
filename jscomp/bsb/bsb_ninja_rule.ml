@@ -226,7 +226,7 @@ let make_custom_rules
       ~name:"ml_cmi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps -bs-cmi-only $in"
+      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
       ~restat:()
       "build_package"
   in 
