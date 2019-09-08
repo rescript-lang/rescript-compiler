@@ -3,7 +3,7 @@
 
 function f9(param) {
   if (typeof param === "number") {
-    if (param === 3) {
+    if (param === /* T63 */3) {
       return 3;
     } else {
       return 1;

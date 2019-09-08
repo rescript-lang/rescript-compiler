@@ -216,7 +216,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
       -> Lam.prim ~primitive ~args:(Ext_list.map args simplif) loc
-    | Lswitch(l, sw) ->
+    | Lswitch(l, sw, names) ->
       let new_l = simplif l
       and new_consts =  Ext_list.map_snd sw.sw_consts simplif
       and new_blocks =  Ext_list.map_snd sw.sw_blocks simplif
@@ -226,6 +226,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         new_l
         {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
                  sw_failaction = new_fail}
+        names
     | Lstringswitch (l,sw,d) ->
       Lam.stringswitch
         (simplif l) (Ext_list.map_snd  sw simplif)

@@ -61,7 +61,7 @@ let hit_variables (fv : Ident_set.t) (l : t) : bool  =
         -> false
       | Lprim {args; _} ->
         hit_list args
-      | Lswitch(arg, sw) ->
+      | Lswitch(arg, sw, _names) ->
         hit arg ||
         hit_list_snd sw.sw_consts ||
         hit_list_snd sw.sw_blocks ||
@@ -120,7 +120,7 @@ let hit_variable (fv : Ident.t) (l : t) : bool  =
         -> false
       | Lprim {args; _} ->
         hit_list args
-      | Lswitch(arg, sw) ->
+      | Lswitch(arg, sw, _names) ->
         hit arg ||
         hit_list_snd sw.sw_consts ||
         hit_list_snd sw.sw_blocks ||

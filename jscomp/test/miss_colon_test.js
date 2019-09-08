@@ -63,14 +63,14 @@ function $star$colon(_f, _g) {
         return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
       }
     }
-    if (exit$1 === 3) {
+    if (exit$1 === /* NotFound */3) {
       if (g.tag || g[0] !== 0) {
         exit = 2;
       } else {
         return /* Int */Block.__(0, [0]);
       }
     }
-    if (exit === 2 && !f.tag && f[0] === 1) {
+    if (exit === /* NotFound */2 && !f.tag && f[0] === 1) {
       return g;
     }
     switch (g.tag | 0) {

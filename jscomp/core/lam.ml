@@ -31,6 +31,8 @@ type apply_status =
 
 
 module Types = struct
+  type switch_names = {consts: string array; blocks: string array}
+
   type switch =
     { sw_numconsts: bool; (* TODO: refine its representation *)
       sw_consts: (int * t) list;
@@ -92,7 +94,7 @@ module Types = struct
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
-    | Lswitch of t * switch
+    | Lswitch of t * switch * switch_names
     | Lstringswitch of t * (string * t) list * t option
     | Lstaticraise of int * t list
     | Lstaticcatch of t * (int * ident list) * t
@@ -106,6 +108,8 @@ module Types = struct
 end
 
 module X = struct
+  type switch_names = Types.switch_names = {consts: string array; blocks: string array}
+
   type switch
     = Types.switch
     =
@@ -148,7 +152,7 @@ module X = struct
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
-      | Lswitch of t * switch
+      | Lswitch of t * switch * switch_names
       | Lstringswitch of t * (string * t) list * t option
       | Lstaticraise of int * t list
       | Lstaticcatch of t * (int * ident list) * t
@@ -192,12 +196,12 @@ let inner_map
     let args = Ext_list.map args f in
     Lprim { args; primitive; loc}
 
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}, names) ->
     let arg = f arg in
     let sw_consts = Ext_list.map_snd  sw_consts f in
     let sw_blocks = Ext_list.map_snd  sw_blocks f in
     let sw_failaction = Ext_option.map sw_failaction f in
-    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
+    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts}, names)
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in
     let cases = Ext_list.map_snd  cases f in
@@ -382,7 +386,7 @@ and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 
 
-let switch lam (lam_switch : switch) : t =
+let switch lam (lam_switch : switch) names : t =
   match lam with
   | Lconst ((Const_pointer (i,_) |  (Const_int i)))
     ->
@@ -390,7 +394,7 @@ let switch lam (lam_switch : switch) : t =
   | Lconst (Const_block (i,_,_)) ->
     Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction 
   | _ ->
-    Lswitch(lam,lam_switch)
+    Lswitch(lam,lam_switch,names)
 
 let stringswitch (lam : t) cases default : t =
   match lam with
@@ -727,13 +731,15 @@ let if_ (a : t) (b : t) (c : t) : t =
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
                        ({sw_blocks = []; sw_numblocks = true; sw_consts ;
-                         sw_numconsts; sw_failaction = None} as body)
+                         sw_numconsts; sw_failaction = None} as body),
+                       names
                      )
              when Ident.same xx yy 
                && complete_range sw_consts ~start:0 ~finish:range
              ->  
              Lswitch(switch_arg, 
-                     { body with sw_failaction = Some b; sw_numconsts = false })
+                     { body with sw_failaction = Some b; sw_numconsts = false },
+                     names)
            |  _ -> Lifthenelse(a,b,c)      
          end
        | _ ->  Lifthenelse (a,b,c))

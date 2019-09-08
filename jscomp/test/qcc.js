@@ -1116,7 +1116,7 @@ function decl(g, _n, _stk) {
                   ];
           } else {
             var match = Curry._1(next$1, /* () */0);
-            if (match.tag === 3) {
+            if (match.tag === /* Sym */3) {
               var s = match[0];
               var n$prime = n + 1 | 0;
               var stk$prime;
@@ -1366,7 +1366,7 @@ function top(_param) {
       continue ;
     } else {
       var match = Curry._1(next$1, /* () */0);
-      if (match.tag === 3) {
+      if (match.tag === /* Sym */3) {
         var f = match[0];
         var g = Caml_array.caml_array_get(globs, f);
         if (g[/* va */1] >= 0) {

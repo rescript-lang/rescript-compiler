@@ -15,7 +15,7 @@ var match = Parser_api.implementation(Parser_api.from_string("let v str = \n  st
 
 if (match) {
   var match$1 = match[0][/* pstr_desc */0];
-  if (match$1.tag === 1 && !match$1[0]) {
+  if (match$1.tag === /* Pstr_value */1 && !match$1[0]) {
     var match$2 = match$1[1];
     if (match$2) {
       var match$3 = match$2[0];
@@ -38,7 +38,7 @@ if (match) {
                 if (match$12[/* pos_fname */0] === "" && !(match$12[/* pos_lnum */1] !== 1 || match$12[/* pos_bol */2] !== 0 || match$12[/* pos_cnum */3] !== 5 || match$10[/* loc_ghost */2] || match$4[/* ppat_attributes */2])) {
                   var match$13 = match$3[/* pvb_expr */1];
                   var match$14 = match$13[/* pexp_desc */0];
-                  if (match$14.tag === 4 && match$14[0] === "" && match$14[1] === undefined) {
+                  if (match$14.tag === /* Pexp_fun */4 && match$14[0] === "" && match$14[1] === undefined) {
                     var match$15 = match$14[2];
                     var match$16 = match$15[/* ppat_desc */0];
                     if (typeof match$16 === "number" || match$16.tag) {
@@ -58,7 +58,7 @@ if (match) {
                               if (match$23[/* pos_fname */0] === "" && !(match$23[/* pos_lnum */1] !== 1 || match$23[/* pos_bol */2] !== 0 || match$23[/* pos_cnum */3] !== 9 || match$21[/* loc_ghost */2] || match$15[/* ppat_attributes */2])) {
                                 var match$24 = match$14[3];
                                 var match$25 = match$24[/* pexp_desc */0];
-                                if (match$25.tag === 5) {
+                                if (match$25.tag === /* Pexp_apply */5) {
                                   var match$26 = match$25[0];
                                   var match$27 = match$26[/* pexp_desc */0];
                                   if (match$27.tag) {
@@ -85,7 +85,7 @@ if (match) {
                                                       if (match$37[0] === "") {
                                                         var match$38 = match$37[1];
                                                         var match$39 = match$38[/* pexp_desc */0];
-                                                        if (match$39.tag === 5) {
+                                                        if (match$39.tag === /* Pexp_apply */5) {
                                                           var match$40 = match$39[0];
                                                           var match$41 = match$40[/* pexp_desc */0];
                                                           if (match$41.tag) {

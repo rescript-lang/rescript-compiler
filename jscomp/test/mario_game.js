@@ -929,7 +929,7 @@ function is_player(param) {
 }
 
 function is_enemy(param) {
-  if (param.tag === 1) {
+  if (param.tag === /* Enemy */1) {
     return true;
   } else {
     return false;
@@ -1234,10 +1234,10 @@ function col_bypass(c1, c2) {
   var ctypes;
   switch (c1.tag | 0) {
     case 0 :
-        ctypes = c2.tag === 1 ? c1[2][/* invuln */7] > 0 : false;
+        ctypes = c2.tag === /* Enemy */1 ? c1[2][/* invuln */7] > 0 : false;
         break;
     case 1 :
-        ctypes = c2.tag === 2 ? true : false;
+        ctypes = c2.tag === /* Item */2 ? true : false;
         break;
     case 2 :
         switch (c2.tag | 0) {
@@ -2009,7 +2009,7 @@ function broad_phase(collid, all_collids, state) {
 }
 
 function check_collisions(collid, all_collids, state) {
-  if (collid.tag === 3) {
+  if (collid.tag === /* Block */3) {
     return /* [] */0;
   } else {
     var broad = broad_phase(collid, all_collids, state);

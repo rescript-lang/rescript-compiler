@@ -269,7 +269,7 @@ let deep_flatten
                   sw_blocks;
                   sw_numblocks;
                   sw_numconsts;
-                 }) ->
+                 }, names) ->
       Lam.switch (aux  l)
               {sw_consts =
                  Ext_list.map_snd  sw_consts aux;
@@ -278,6 +278,7 @@ let deep_flatten
                sw_numblocks;
                sw_failaction = Ext_option.map sw_failaction aux
               }
+              names
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (aux  l)
                     (Ext_list.map_snd  sw aux)

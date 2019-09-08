@@ -51,13 +51,13 @@ var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 
 add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param) {
         var ty = Js_json.classify(v);
-        if (typeof ty === "number" || ty.tag !== 2) {
+        if (typeof ty === "number" || ty.tag !== /* JSONObject */2) {
           return /* Ok */Block.__(4, [false]);
         } else {
           var match = Js_dict.get(ty[0], "x");
           if (match !== undefined) {
             var ty2 = Js_json.classify(Caml_option.valFromOption(match));
-            if (typeof ty2 === "number" || ty2.tag !== 3) {
+            if (typeof ty2 === "number" || ty2.tag !== /* JSONArray */3) {
               return /* Ok */Block.__(4, [false]);
             } else {
               ty2[0].forEach((function (x) {
@@ -71,7 +71,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                                 21
                               ]
                             ];
-                      } else if (ty3.tag === 1) {
+                      } else if (ty3.tag === /* JSONNumber */1) {
                         return /* () */0;
                       } else {
                         throw [
@@ -138,13 +138,13 @@ var ty$2 = Js_json.classify(json$2);
 
 var exit = 0;
 
-if (typeof ty$2 === "number" || ty$2.tag !== 1) {
+if (typeof ty$2 === "number" || ty$2.tag !== /* JSONNumber */1) {
   exit = 1;
 } else {
   eq("File \"js_json_test.ml\", line 74, characters 31-38", ty$2[0], 1.23456789);
 }
 
-if (exit === 1) {
+if (exit === /* NotFound */1) {
   add_test("File \"js_json_test.ml\", line 75, characters 18-25", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
@@ -156,13 +156,13 @@ var ty$3 = Js_json.classify(json$3);
 
 var exit$1 = 0;
 
-if (typeof ty$3 === "number" || ty$3.tag !== 1) {
+if (typeof ty$3 === "number" || ty$3.tag !== /* JSONNumber */1) {
   exit$1 = 1;
 } else {
   eq("File \"js_json_test.ml\", line 84, characters 31-38", ty$3[0] | 0, -1347440721);
 }
 
-if (exit$1 === 1) {
+if (exit$1 === /* NotFound */1) {
   add_test("File \"js_json_test.ml\", line 85, characters 18-25", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
@@ -223,7 +223,7 @@ if (typeof ty$4 === "number") {
   add_test("File \"js_json_test.ml\", line 134, characters 16-23", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
-} else if (ty$4.tag === 2) {
+} else if (ty$4.tag === /* JSONObject */2) {
   var x = ty$4[0];
   var ta = Js_json.classify(option_get(Js_dict.get(x, "a")));
   if (typeof ta === "number") {
@@ -244,7 +244,7 @@ if (typeof ty$4 === "number") {
       add_test("File \"js_json_test.ml\", line 130, characters 22-29", (function (param) {
               return /* Ok */Block.__(4, [false]);
             }));
-    } else if (ty$5.tag === 1) {
+    } else if (ty$5.tag === /* JSONNumber */1) {
       var b = ty$5[0];
       add_test("File \"js_json_test.ml\", line 129, characters 19-26", (function (param) {
               return /* Approx */Block.__(5, [
@@ -270,7 +270,7 @@ function eq_at_i(loc, json, i, kind, expected) {
     return add_test(loc, (function (param) {
                   return /* Ok */Block.__(4, [false]);
                 }));
-  } else if (ty.tag === 3) {
+  } else if (ty.tag === /* JSONArray */3) {
     var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty[0], i));
     switch (kind) {
       case 0 :
@@ -290,7 +290,7 @@ function eq_at_i(loc, json, i, kind, expected) {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
                         }));
-          } else if (ty$1.tag === 1) {
+          } else if (ty$1.tag === /* JSONNumber */1) {
             return eq(loc, ty$1[0], expected);
           } else {
             return add_test(loc, (function (param) {
@@ -302,7 +302,7 @@ function eq_at_i(loc, json, i, kind, expected) {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
                         }));
-          } else if (ty$1.tag === 2) {
+          } else if (ty$1.tag === /* JSONObject */2) {
             return eq(loc, ty$1[0], expected);
           } else {
             return add_test(loc, (function (param) {
@@ -314,7 +314,7 @@ function eq_at_i(loc, json, i, kind, expected) {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
                         }));
-          } else if (ty$1.tag === 3) {
+          } else if (ty$1.tag === /* JSONArray */3) {
             return eq(loc, ty$1[0], expected);
           } else {
             return add_test(loc, (function (param) {
@@ -454,13 +454,13 @@ if (typeof ty$6 === "number") {
   add_test("File \"js_json_test.ml\", line 282, characters 16-23", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
-} else if (ty$6.tag === 3) {
+} else if (ty$6.tag === /* JSONArray */3) {
   var ty$7 = Js_json.classify(Caml_array.caml_array_get(ty$6[0], 1));
   if (typeof ty$7 === "number") {
     add_test("File \"js_json_test.ml\", line 280, characters 18-25", (function (param) {
             return /* Ok */Block.__(4, [false]);
           }));
-  } else if (ty$7.tag === 2) {
+  } else if (ty$7.tag === /* JSONObject */2) {
     var ty$8 = Js_json.classify(option_get(Js_dict.get(ty$7[0], "a")));
     if (typeof ty$8 === "number") {
       add_test("File \"js_json_test.ml\", line 278, characters 20-27", (function (param) {

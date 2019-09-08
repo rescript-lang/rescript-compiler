@@ -80,7 +80,7 @@ catch (raw_e){
             }), 2, myHandler(e)));
 }
 
-if (exit === 1) {
+if (exit === /* NotFound */1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

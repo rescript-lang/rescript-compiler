@@ -4453,7 +4453,7 @@ function extension(loc, attrs, a) {
 
 function force_poly(t) {
   var match = t[/* ptyp_desc */0];
-  if (typeof match !== "number" && match.tag === 8) {
+  if (typeof match !== "number" && match.tag === /* Ptyp_poly */8) {
     return t;
   }
   return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
@@ -6354,7 +6354,7 @@ function bigarray_function(str, name) {
 
 function bigarray_untuplify(exp) {
   var match = exp[/* pexp_desc */0];
-  if (match.tag === 8) {
+  if (match.tag === /* Pexp_tuple */8) {
     return match[0];
   } else {
     return /* :: */[
@@ -6440,7 +6440,7 @@ function varify_constructors(var_names, t) {
                   break;
               
             }
-            if (exit === 1) {
+            if (exit === /* NotFound */1) {
               desc = /* Ptyp_constr */Block.__(3, [
                   longident,
                   List.map(loop, match[1])
@@ -7115,7 +7115,7 @@ var yyact = /* array */[
       } else {
         exit = 1;
       }
-      if (exit === 1) {
+      if (exit === /* NotFound */1) {
         if (lbs[/* lbs_attributes */3] !== /* [] */0) {
           throw [
                 $$Error$1,
@@ -8688,7 +8688,7 @@ var yyact = /* array */[
       var exit = 0;
       switch (name) {
         case "-" :
-            if (match.tag === 1) {
+            if (match.tag === /* Pexp_constant */1) {
               var match$1 = match[0];
               switch (match$1.tag | 0) {
                 case 0 :
@@ -8712,9 +8712,9 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2 && match.tag === 1) {
+      if (exit === /* NotFound */2 && match.tag === /* Pexp_constant */1) {
         var match$2 = match[0];
-        if (match$2.tag === 3) {
+        if (match$2.tag === /* Const_float */3) {
           return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
         }
         
@@ -8739,7 +8739,7 @@ var yyact = /* array */[
       var exit = 0;
       switch (name) {
         case "+" :
-            if (desc.tag === 1) {
+            if (desc.tag === /* Pexp_constant */1) {
               switch (desc[0].tag | 0) {
                 case 1 :
                 case 2 :
@@ -8759,7 +8759,7 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2 && desc.tag === 1 && desc[0].tag === 3) {
+      if (exit === /* NotFound */2 && desc.tag === /* Pexp_constant */1 && desc[0].tag === /* Const_float */3) {
         return mkexp(desc);
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
@@ -12270,7 +12270,7 @@ catch (exn$2){
   }
 }
 
-if (exit === 1) {
+if (exit === /* NotFound */1) {
   tmp = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
 }
 
@@ -12402,7 +12402,7 @@ function semver(loc, lhs, str) {
       semantic_version_parse(str, 1, last_index)
     ];
   }
-  if (exit === 1) {
+  if (exit === /* NotFound */1) {
     match = /* tuple */[
       /* Exact */172069535,
       semantic_version_parse(str, 0, last_index)
@@ -12535,7 +12535,7 @@ function query(loc, str) {
           throw exn$1;
         }
       }
-      if (exit === 2) {
+      if (exit === /* NotFound */2) {
         try {
           return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
         }
@@ -12688,23 +12688,23 @@ function directive_parse(token_with_comments, lexbuf) {
         default:
           return Curry._1(no, op);
       }
-    } else if (op.tag === 2) {
+    } else if (op.tag === /* INFIXOP0 */2) {
       switch (op[0]) {
         case "=~" :
             if (calc) {
               var exit = 0;
-              if (typeof lhs === "number" || lhs.tag !== 3) {
+              if (typeof lhs === "number" || lhs.tag !== /* Dir_string */3) {
                 exit = 2;
               } else {
                 var curr_loc = curr(lexbuf);
                 var rhs = value_of_token(curr_loc, token(/* () */0));
                 var exit$1 = 0;
-                if (typeof rhs === "number" || rhs.tag !== 3) {
+                if (typeof rhs === "number" || rhs.tag !== /* Dir_string */3) {
                   exit$1 = 3;
                 } else {
                   return semver(curr_loc, lhs[0], rhs[0]);
                 }
-                if (exit$1 === 3) {
+                if (exit$1 === /* NotFound */3) {
                   throw [
                         $$Error$2,
                         /* Conditional_expr_expected_type */Block.__(7, [
@@ -12716,7 +12716,7 @@ function directive_parse(token_with_comments, lexbuf) {
                 }
                 
               }
-              if (exit === 2) {
+              if (exit === /* NotFound */2) {
                 throw [
                       $$Error$2,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -12757,7 +12757,7 @@ function directive_parse(token_with_comments, lexbuf) {
         default:
           exit$2 = 1;
       }
-    } else if (op.tag === 2) {
+    } else if (op.tag === /* INFIXOP0 */2) {
       switch (op[0]) {
         case "<=" :
             f = Caml_obj.caml_lessequal;
@@ -12771,7 +12771,7 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       exit$2 = 1;
     }
-    if (exit$2 === 1) {
+    if (exit$2 === /* NotFound */1) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -12864,7 +12864,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     /* Unexpected_token_in_conditional */4,
                     loc
                   ];
-            } else if (t.tag === 17) {
+            } else if (t.tag === /* UIDENT */17) {
               var s = t[0];
               if (calc) {
                 if (Caml_string.get(r, 0) === /* "u" */117) {
@@ -12971,7 +12971,7 @@ function directive_parse(token_with_comments, lexbuf) {
 }
 
 function is_elif(i) {
-  if (typeof i === "number" || !(i.tag === 11 && i[0] === "elif")) {
+  if (typeof i === "number" || !(i.tag === /* LIDENT */11 && i[0] === "elif")) {
     return false;
   } else {
     return true;
@@ -14506,7 +14506,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       default:
         return Curry._1(look_ahead, match);
     }
-  } else if (match.tag === 11 && match[0] === "elif") {
+  } else if (match.tag === /* LIDENT */11 && match[0] === "elif") {
     if (if_then_else$1 !== 0) {
       throw [
             $$Error$2,
@@ -14817,7 +14817,7 @@ function skip_phrase(lexbuf) {
       if (exn[0] === $$Error$2) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
-          if (tmp === 0) {
+          if (tmp === /* Unterminated_string */0) {
             continue ;
           } else {
             throw exn;
@@ -14871,7 +14871,7 @@ function wrap(parsing_fun, lexbuf) {
     } else {
       exit$1 = 3;
     }
-    if (exit$1 === 3) {
+    if (exit$1 === /* NotFound */3) {
       if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
@@ -14879,7 +14879,7 @@ function wrap(parsing_fun, lexbuf) {
         exit = 2;
       }
     }
-    if (exit === 2 && err !== Parsing.Parse_error && err !== Escape_error) {
+    if (exit === /* NotFound */2 && err !== Parsing.Parse_error && err !== Escape_error) {
       throw err;
     }
     var loc = curr(lexbuf);

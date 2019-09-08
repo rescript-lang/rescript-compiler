@@ -123,17 +123,17 @@ function compare(context, state, _a, _b) {
           break;
       
     }
-    if (exit$2 === 5) {
-      if (b.tag === 1) {
+    if (exit$2 === /* NotFound */5) {
+      if (b.tag === /* Neg */1) {
         _b = b[0];
         continue ;
-      } else if (a.tag === 2 && is_number(b)) {
+      } else if (a.tag === /* Sum */2 && is_number(b)) {
         return 1;
       } else {
         exit$1 = 4;
       }
     }
-    if (exit$1 === 4 && b.tag === 2 && is_number(a)) {
+    if (exit$1 === /* NotFound */4 && b.tag === /* Sum */2 && is_number(a)) {
       return -1;
     }
     switch (a.tag | 0) {

@@ -661,5 +661,6 @@ build test/unsafe_this.cmj : cc_cmi test/unsafe_this.ml | test/unsafe_this.cmi $
 build test/unsafe_this.cmi : cc test/unsafe_this.mli | $stdlib
 build test/update_record_test.cmi test/update_record_test.cmj : cc test/update_record_test.ml | test/mt.cmj $stdlib
 build test/utf8_decode_test.cmi test/utf8_decode_test.cmj : cc test/utf8_decode_test.ml | test/mt.cmj $stdlib
+build test/variant.cmi test/variant.cmj : cc test/variant.ml | $stdlib
 build test/watch_test.cmi test/watch_test.cmj : cc test/watch_test.ml | $stdlib
 build test/webpack_config.cmi test/webpack_config.cmj : cc test/webpack_config.ml | $stdlib

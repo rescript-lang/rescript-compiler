@@ -27,7 +27,7 @@ function escaped(s) {
     } else {
       exit = 1;
     }
-    if (exit === 1) {
+    if (exit === /* NotFound */1) {
       tmp = Caml_char.caml_is_printable(c) ? 1 : 4;
     }
     n = n + tmp | 0;
@@ -88,7 +88,7 @@ function escaped(s) {
       } else {
         exit$1 = 1;
       }
-      if (exit$1 === 1) {
+      if (exit$1 === /* NotFound */1) {
         if (Caml_char.caml_is_printable(c$1)) {
           s$prime[n] = c$1;
         } else {

@@ -48,11 +48,12 @@
     | Lprim { primitive ; args; loc} -> 
       Lam.prim ~primitive ~args:(Ext_list.map args subst_aux ) loc
     | Lam.Lglobal_module _ -> x  
-    | Lswitch(arg, sw) ->
+    | Lswitch(arg, sw, names) ->
       Lam.switch (subst_aux arg)
         {sw with sw_consts = Ext_list.map sw.sw_consts subst_case ;
                  sw_blocks = Ext_list.map sw.sw_blocks subst_case ;
                  sw_failaction = subst_opt  sw.sw_failaction; }
+        names
     | Lstringswitch (arg,cases,default) ->
       Lam.stringswitch
         (subst_aux arg) (Ext_list.map cases subst_strcase ) (subst_opt default)

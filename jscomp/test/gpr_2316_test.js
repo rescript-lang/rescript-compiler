@@ -62,7 +62,7 @@ catch (raw_exn$1){
   }
 }
 
-if (exit === 1) {
+if (exit === /* NotFound */1) {
   console.log("ok");
   x = undefined;
 }

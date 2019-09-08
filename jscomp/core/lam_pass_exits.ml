@@ -39,7 +39,7 @@ let rec
   | Lglobal_module _ -> true
   | Lprim {args; primitive = _ ; } ->
     no_list args
-  | Lswitch(arg, sw) ->
+  | Lswitch(arg, sw, _names) ->
     no_bounded_variables arg &&
     no_list_snd sw.sw_consts &&
     no_list_snd sw.sw_blocks &&
@@ -229,7 +229,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
     | Lprim {primitive; args; loc} -> 
       let args = Ext_list.map args simplif in
       Lam.prim ~primitive ~args loc
-    | Lswitch(l, sw) ->
+    | Lswitch(l, sw, names) ->
       let new_l = simplif l in 
       let new_consts =  Ext_list.map_snd  sw.sw_consts simplif in 
       let new_blocks =  Ext_list.map_snd  sw.sw_blocks simplif in 
@@ -241,6 +241,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
           sw_consts = new_consts ;
           sw_blocks = new_blocks; 
           sw_failaction = new_fail}
+        names
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
         (simplif l) (Ext_list.map_snd  sw simplif)

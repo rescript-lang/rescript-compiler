@@ -75,7 +75,7 @@ let count_helper  (lam : Lam.t) : collection =
       Ext_list.iter_snd bindings count;
       count body    
     | Lprim {args;  _} -> List.iter count args
-    | Lswitch(l, sw) ->
+    | Lswitch(l, sw, _names) ->
       count_default sw ;
       count l;
       Ext_list.iter_snd sw.sw_consts count;

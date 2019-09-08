@@ -217,7 +217,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         -> false 
     )
   | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 
-  | Lswitch (_,_) -> false 
+  | Lswitch _ -> false 
   | Lstringswitch (_,_,_) -> false
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 
@@ -302,7 +302,7 @@ let rec size (lam : Lam.t) =
              args; _} -> size_lams (size fn) args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction {body} -> size body 
-    | Lswitch(_, _) -> really_big ()
+    | Lswitch _ -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
         Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 
@@ -361,11 +361,11 @@ let destruct_pattern (body : Lam.t) params args =
     | x::xs, [] -> assert false                  
   in   
   match body with
-  | Lswitch (Lvar v , switch)
+  | Lswitch (Lvar v , switch, names)
     ->
     begin match aux v params args with
       | Some (Lam.Lconst _ as lam) ->
-        size (Lam.switch lam switch) < small_inline_size
+        size (Lam.switch lam switch names) < small_inline_size
       | Some _ | None -> false
     end        
   | Lifthenelse(Lvar v, then_, else_)

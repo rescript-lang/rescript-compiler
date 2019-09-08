@@ -110,7 +110,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
                 sw_blocks;
                 sw_numblocks = _;
                 sw_numconsts = _;
-               }) -> 
+               }, _names) -> 
     all_lambdas meta (
       let rest = 
         Ext_list.map_append sw_consts

@@ -104,7 +104,7 @@ let free_variables
                 sw_failaction;
                 sw_numconsts;
                 sw_numblocks
-               })) ->
+               }), _names) ->
       iter top arg; 
       let top = Lam_var_stats.new_position_after_lam arg top  in       
       List.iter (fun (_, case) -> iter top case) sw_consts;

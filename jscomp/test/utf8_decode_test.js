@@ -78,7 +78,7 @@ function utf8_decode(strm) {
                                         Stream.$$Error,
                                         "Continuation byte expected"
                                       ];
-                                } else if (match.tag === 1) {
+                                } else if (match.tag === /* Cont */1) {
                                   _c = (c << 6) | match[0] & 63;
                                   _n = n - 1 | 0;
                                   continue ;
@@ -157,7 +157,7 @@ function decode(bytes, offset) {
                       Caml_builtin_exceptions.invalid_argument,
                       "decode"
                     ];
-              } else if (match$1.tag === 1) {
+              } else if (match$1.tag === /* Cont */1) {
                 _offset = offset$2 + 1 | 0;
                 _c = (c << 6) | match$1[0] & 63;
                 _n = n - 1 | 0;

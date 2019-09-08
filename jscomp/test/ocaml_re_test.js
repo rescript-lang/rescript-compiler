@@ -672,18 +672,18 @@ function seq$1(ids, kind, x, y) {
   var exit = 0;
   if (typeof match === "number") {
     return y;
-  } else if (match.tag === 1 && !match[0]) {
+  } else if (match.tag === /* Alt */1 && !match[0]) {
     return x;
   } else {
     exit = 2;
   }
-  if (exit === 2) {
+  if (exit === /* NotFound */2) {
     if (typeof match$1 === "number") {
       if (kind === /* First */332064784) {
         return x;
       }
       
-    } else if (match$1.tag === 1 && !match$1[0]) {
+    } else if (match$1.tag === /* Alt */1 && !match$1[0]) {
       return y;
     }
     
@@ -1943,19 +1943,19 @@ function equal$2(_x1, _x2) {
               return Caml_obj.caml_equal(x1[0], x2[0]);
             }
         case 1 :
-            if (typeof x2 === "number" || x2.tag !== 1) {
+            if (typeof x2 === "number" || x2.tag !== /* Sequence */1) {
               return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 2 :
-            if (typeof x2 === "number" || x2.tag !== 2) {
+            if (typeof x2 === "number" || x2.tag !== /* Alternative */2) {
               return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 3 :
-            if (typeof x2 === "number" || !(x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2]))) {
+            if (typeof x2 === "number" || !(x2.tag === /* Repeat */3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2]))) {
               return false;
             } else {
               _x2 = x2[0];
@@ -1963,7 +1963,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 4 :
-            if (typeof x2 === "number" || !(x2.tag === 4 && x1[0] === x2[0])) {
+            if (typeof x2 === "number" || !(x2.tag === /* Sem */4 && x1[0] === x2[0])) {
               return false;
             } else {
               _x2 = x2[1];
@@ -1971,7 +1971,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 5 :
-            if (typeof x2 === "number" || !(x2.tag === 5 && x1[0] === x2[0])) {
+            if (typeof x2 === "number" || !(x2.tag === /* Sem_greedy */5 && x1[0] === x2[0])) {
               return false;
             } else {
               _x2 = x2[1];
@@ -1981,7 +1981,7 @@ function equal$2(_x1, _x2) {
         case 6 :
             return false;
         case 7 :
-            if (typeof x2 === "number" || x2.tag !== 7) {
+            if (typeof x2 === "number" || x2.tag !== /* No_group */7) {
               return false;
             } else {
               _x2 = x2[0];
@@ -1989,7 +1989,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 8 :
-            if (typeof x2 === "number" || x2.tag !== 8) {
+            if (typeof x2 === "number" || x2.tag !== /* Nest */8) {
               return false;
             } else {
               _x2 = x2[0];
@@ -1997,7 +1997,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 9 :
-            if (typeof x2 === "number" || x2.tag !== 9) {
+            if (typeof x2 === "number" || x2.tag !== /* Case */9) {
               return false;
             } else {
               _x2 = x2[0];
@@ -2005,7 +2005,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 10 :
-            if (typeof x2 === "number" || x2.tag !== 10) {
+            if (typeof x2 === "number" || x2.tag !== /* No_case */10) {
               return false;
             } else {
               _x2 = x2[0];
@@ -2013,19 +2013,19 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 11 :
-            if (typeof x2 === "number" || x2.tag !== 11) {
+            if (typeof x2 === "number" || x2.tag !== /* Intersection */11) {
               return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 12 :
-            if (typeof x2 === "number" || x2.tag !== 12) {
+            if (typeof x2 === "number" || x2.tag !== /* Complement */12) {
               return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 13 :
-            if (typeof x2 === "number" || !(x2.tag === 13 && equal$2(x1[0], x2[0]))) {
+            if (typeof x2 === "number" || !(x2.tag === /* Difference */13 && equal$2(x1[0], x2[0]))) {
               return false;
             } else {
               _x2 = x2[1];
@@ -2033,7 +2033,7 @@ function equal$2(_x1, _x2) {
               continue ;
             }
         case 14 :
-            if (typeof x2 === "number" || !(x2.tag === 14 && x1[0] === x2[0])) {
+            if (typeof x2 === "number" || !(x2.tag === /* Pmark */14 && x1[0] === x2[0])) {
               return false;
             } else {
               _x2 = x2[1];
@@ -2090,7 +2090,7 @@ function merge_sequences(_param) {
                 var exit = 0;
                 if (r$prime) {
                   var match$1 = r$prime[0];
-                  if (typeof match$1 === "number" || match$1.tag !== 1) {
+                  if (typeof match$1 === "number" || match$1.tag !== /* Sequence */1) {
                     exit = 2;
                   } else {
                     var match$2 = match$1[0];
@@ -2118,7 +2118,7 @@ function merge_sequences(_param) {
                 } else {
                   exit = 2;
                 }
-                if (exit === 2) {
+                if (exit === /* NotFound */2) {
                   return /* :: */[
                           /* Sequence */Block.__(1, [/* :: */[
                                 x$1,

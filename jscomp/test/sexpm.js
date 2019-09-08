@@ -79,7 +79,7 @@ function _must_escape(s) {
         }
         exit = 1;
       }
-      if (exit === 1 && c > 127) {
+      if (exit === /* NotFound */1 && c > 127) {
         throw Pervasives.Exit;
       }
       

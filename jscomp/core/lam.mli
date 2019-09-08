@@ -28,6 +28,7 @@
 
 type ident = Ident.t
 
+type switch_names = {consts: string array; blocks: string array}
 
 type switch  =
   { sw_numconsts: bool;
@@ -65,7 +66,7 @@ and  t =  private
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
-  | Lswitch of t * switch
+  | Lswitch of t * switch * switch_names
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
   | Lstaticcatch of t * (int * ident list) * t
@@ -115,7 +116,7 @@ val letrec : (ident * t) list -> t -> t
 val if_ : t -> t -> t -> t 
 
 (** constant folding*)
-val switch : t -> switch  -> t 
+val switch : t -> switch -> switch_names -> t 
 (** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 

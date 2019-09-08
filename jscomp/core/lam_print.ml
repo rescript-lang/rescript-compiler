@@ -453,7 +453,7 @@ let lambda use_env env ppf v  =
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
-    | Lswitch(larg, sw) ->
+    | Lswitch(larg, sw, _names) ->
       let switch ppf (sw : Lam.switch) =
         let spc = ref false in
         List.iter
