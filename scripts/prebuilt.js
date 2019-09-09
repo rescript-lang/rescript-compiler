@@ -55,13 +55,13 @@ function createOCamlTar() {
   if (os.platform() === hostPlatform) {
     cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });
     cp.execSync(
-      `git  -C ocaml archive --format=tar.gz HEAD -o ../ocaml.tar.gz`,
+      `git  -C ocaml archive --format=tar.gz HEAD -o ../vendor/ocaml.tar.gz`,
       { cwd: root, stdio: [0, 1, 2] }
     );
-    fs.copyFileSync(
-      path.join(root, "ocaml", "VERSION"),
-      path.join(root, "OCAML_VERSION")
-    );
+    // fs.copyFileSync(
+    //   path.join(root, "ocaml", "VERSION"),
+    //   path.join(root, "OCAML_VERSION")
+    // );
   }
 }
 createOCamlTar();
