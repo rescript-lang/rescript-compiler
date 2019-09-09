@@ -310,23 +310,23 @@ function provideCompiler() {
     return myVersion;
   } else {
     myVersion = require("./buildocaml.js").getVersionPrefix();
-    var ocamlcPath = path.join(
+    var ocamlopt = path.join(
       __dirname,
       "..",
       "native",
       myVersion,
       "bin",
-      "ocamlc.opt"
+      "ocamlopt.opt"
     );
-    if (!fs.existsSync(ocamlcPath)) {
+    if (!fs.existsSync(ocamlopt)) {
       require("./buildocaml.js").build(true);
     } else {
-      console.log(ocamlcPath, "is already there");
+      console.log(ocamlopt, "is already there");
     }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'
     var releaseNinja = require("./ninjaFactory.js").libNinja({
-      ocamlopt: "ocamlopt.opt",
+      ocamlopt: ocamlopt,
       ext: ".exe",
       INCL: myVersion,
       isWin: is_windows
