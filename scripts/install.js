@@ -28,19 +28,6 @@ var sys_extension = config.sys_extension;
 
 process.env.BS_RELEASE_BUILD = "true";
 
-/**
- * @type {string}
- */
-var ocamlVersion;
-
-/**
- *
- * @param {string} p
- */
-function addPath(p) {
-  process.env.PATH = p + path.delimiter + process.env.PATH;
-}
-
 var ninja_bin_output = path.join(root_dir, "lib", "ninja.exe");
 
 /**
@@ -189,7 +176,11 @@ function ensureExists(dir) {
     fs.mkdirSync(dir);
   }
 }
-function install() {
+
+/**
+ * @param {string} stdlib
+ */
+function install(stdlib) {
   installDirBy(runtime_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
     return y.name === "js" || y.ext.includes("cm");
@@ -198,60 +189,11 @@ function install() {
     var y = path.parse(file);
     return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
   });
-  var stdlib_dir = path.join(
-    jscomp_dir,
-    ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406"
-  );
+  var stdlib_dir = path.join(jscomp_dir, stdlib);
   installDirBy(stdlib_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
     return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
   });
-}
-
-/**
- * raise an exception if not matched
- */
-function matchedCompilerExn() {
-  var output = cp.execSync("ocamlc.opt -v", { encoding: "ascii" });
-
-  if (output.indexOf(ocamlVersion) >= 0) {
-    console.log(output);
-    console.log("Use the compiler above");
-  } else {
-    console.log(
-      "version",
-      output,
-      "needed version",
-      ocamlVersion,
-      "No matched compiler found, may re-try"
-    );
-    throw "";
-  }
-}
-function tryToProvideOCamlCompiler() {
-  try {
-    if (process.env.BS_ALWAYS_BUILD_YOUR_COMPILER) {
-      throw "FORCED TO REBUILD";
-    }
-    matchedCompilerExn();
-  } catch (e) {
-    console.log(
-      "Build a local version of OCaml compiler, it may take a couple of minutes"
-    );
-    try {
-      require("./buildocaml.js").build(true);
-    } catch (e) {
-      console.log(e.stdout.toString());
-      console.log(e.stderr.toString());
-      console.log(
-        "Building a local version of the OCaml compiler failed, check the output above for more information. A possible problem is that you don't have a compiler installed."
-      );
-      throw e;
-    }
-    console.log("configure again with local ocaml installed");
-    matchedCompilerExn();
-    console.log("config finished");
-  }
 }
 
 /**
@@ -295,7 +237,7 @@ function copyPrebuiltCompilers() {
 }
 
 /**
- * @returns {boolean}
+ * @returns {string|undefined}
  */
 function checkPrebuiltBscCompiler() {
   try {
@@ -303,28 +245,34 @@ function checkPrebuiltBscCompiler() {
       cp.execFileSync(path.join(lib_dir, "bsc" + sys_extension), ["-v"])
     );
 
-    ocamlVersion = version.substr(
+    var myOCamlVersion = version.substr(
       version.indexOf(":") + 1,
       version.lastIndexOf(" ") - version.indexOf(":") - 1
     );
-    console.log("checkoutput:", version, "ocaml version", ocamlVersion);
+    console.log("checkoutput:", version, "ocaml version", myOCamlVersion);
     console.log("Prebuilt compiler works good");
 
-    return true;
+    return myOCamlVersion;
   } catch (e) {
     console.log("No working prebuilt buckleScript compiler");
-    return false;
+    if (is_windows) {
+      throw new Error("no prebuilt bsc compiler on windows");
+    }
+    return;
   }
 }
-
-function buildLibs() {
+/**
+ *
+ * @param {string} stdlib
+ */
+function buildLibs(stdlib) {
   ensureExists(lib_dir);
   ensureExists(ocaml_dir);
   ensureExists(path.join(lib_dir, "js"));
   ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
   var releaseNinja = `
-stdlib = ${ocamlVersion.includes("4.06") ? "stdlib-406" : "stdlib-402"}
+stdlib = ${stdlib}
 subninja runtime/release.ninja
 subninja others/release.ninja
 subninja $stdlib/release.ninja
@@ -352,25 +300,35 @@ build all: phony runtime others $stdlib
   console.log("Build finished");
 }
 
+/**
+ * @returns {string}
+ */
 function provideCompiler() {
-  // FIXME: weird logic
-  // if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
-  //     console.log('Found pervasives.cmi, assume it was already built')
-  //     return true // already built before
-  // }
-  if (checkPrebuiltBscCompiler()) {
+  var myVersion = checkPrebuiltBscCompiler();
+  if (myVersion !== undefined) {
     copyPrebuiltCompilers();
+    return myVersion;
   } else {
-    ocamlVersion = require("./buildocaml.js").getVersionPrefix();
-    addPath(path.join(__dirname, "..", "native", ocamlVersion, "bin"));
-    // when not having bsc.exe
-    tryToProvideOCamlCompiler();
+    myVersion = require("./buildocaml.js").getVersionPrefix();
+    var ocamlcPath = path.join(
+      __dirname,
+      "..",
+      "native",
+      myVersion,
+      "bin",
+      "ocamlc.opt"
+    );
+    if (!fs.existsSync(ocamlcPath)) {
+      require("./buildocaml.js").build(true);
+    } else {
+      console.log(ocamlcPath, "is already there");
+    }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'
     var releaseNinja = require("./ninjaFactory.js").libNinja({
       ocamlopt: "ocamlopt.opt",
       ext: ".exe",
-      INCL: ocamlVersion,
+      INCL: myVersion,
       isWin: is_windows
     });
 
@@ -381,17 +339,15 @@ function provideCompiler() {
       stdio: [0, 1, 2]
     });
     fs.unlinkSync(filePath);
+    return myVersion;
   }
 }
 
 provideNinja();
 
-if (is_windows) {
-  copyPrebuiltCompilers();
-} else {
-  provideCompiler();
-}
+var ocamlVersion = provideCompiler();
 
-buildLibs();
+var stdlib = ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406";
 
-install();
+buildLibs(stdlib);
+install(stdlib);
