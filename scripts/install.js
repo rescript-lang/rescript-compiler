@@ -27,17 +27,19 @@ var is_windows = config.is_windows;
 var sys_extension = config.sys_extension;
 
 process.env.BS_RELEASE_BUILD = "true";
-var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
-var stdlib_dir = path.join(
-  jscomp_dir,
-  ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406"
-);
-// Add vendor bin path
-// So that second try will work
-process.env.PATH =
-  path.join(__dirname, "..", "native", ocamlVersion, "bin") +
-  path.delimiter +
-  process.env.PATH;
+
+/**
+ * @type {string}
+ */
+var ocamlVersion;
+
+/**
+ *
+ * @param {string} p
+ */
+function addPath(p) {
+  process.env.PATH = p + path.delimiter + process.env.PATH;
+}
 
 var ninja_bin_output = path.join(root_dir, "lib", "ninja.exe");
 
@@ -196,6 +198,10 @@ function install() {
     var y = path.parse(file);
     return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
   });
+  var stdlib_dir = path.join(
+    jscomp_dir,
+    ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406"
+  );
   installDirBy(stdlib_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
     return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
@@ -293,10 +299,15 @@ function copyPrebuiltCompilers() {
  */
 function checkPrebuiltBscCompiler() {
   try {
-    var version = cp.execFileSync(path.join(lib_dir, "bsc" + sys_extension), [
-      "-v"
-    ]);
-    console.log("checkoutput:", String(version));
+    var version = String(
+      cp.execFileSync(path.join(lib_dir, "bsc" + sys_extension), ["-v"])
+    );
+
+    ocamlVersion = version.substr(
+      version.indexOf(":") + 1,
+      version.lastIndexOf(" ") - version.indexOf(":") - 1
+    );
+    console.log("checkoutput:", version, "ocaml version", ocamlVersion);
     console.log("Prebuilt compiler works good");
 
     return true;
@@ -350,6 +361,8 @@ function provideCompiler() {
   if (checkPrebuiltBscCompiler()) {
     copyPrebuiltCompilers();
   } else {
+    ocamlVersion = require("./buildocaml.js").getVersionPrefix();
+    addPath(path.join(__dirname, "..", "native", ocamlVersion, "bin"));
     // when not having bsc.exe
     tryToProvideOCamlCompiler();
     // Note this ninja file only works under *nix due to the suffix
