@@ -521,11 +521,11 @@ and compile_cases ~is_tag cxt switch_exp table default names =
     if names.Lam.consts = [| "Constant" |] then None else
     match (if is_tag then names.Lam.blocks.(i) else names.consts.(i)) with
       | s -> Some s
-      | exception Invalid_argument _  -> Some "NotFound")
+      | exception Invalid_argument _  -> Some "Unknown")
     (fun i ->
       let comment = match (if is_tag then names.Lam.blocks.(i) else names.consts.(i)) with
         | s -> Some s 
-        | exception Invalid_argument _ -> Some "NotFound" in
+        | exception Invalid_argument _ -> Some "Unknown" in
       {(E.small_int i) with comment})
     E.int_equal
     cxt

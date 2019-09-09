@@ -55,18 +55,18 @@ function _must_escape(s) {
       } else if (c >= 11) {
         if (c >= 32) {
           switch (c - 32 | 0) {
-            case /* NotFound */1 :
-            case /* NotFound */3 :
-            case /* NotFound */4 :
-            case /* NotFound */5 :
-            case /* NotFound */6 :
-            case /* NotFound */7 :
+            case /* Unknown */1 :
+            case /* Unknown */3 :
+            case /* Unknown */4 :
+            case /* Unknown */5 :
+            case /* Unknown */6 :
+            case /* Unknown */7 :
                 exit = 1;
                 break;
-            case /* NotFound */0 :
-            case /* NotFound */2 :
-            case /* NotFound */8 :
-            case /* NotFound */9 :
+            case /* Unknown */0 :
+            case /* Unknown */2 :
+            case /* Unknown */8 :
+            case /* Unknown */9 :
                 throw Pervasives.Exit;
             
           }
@@ -79,7 +79,7 @@ function _must_escape(s) {
         }
         exit = 1;
       }
-      if (exit === /* NotFound */1 && c > 127) {
+      if (exit === /* Unknown */1 && c > 127) {
         throw Pervasives.Exit;
       }
       
@@ -487,7 +487,7 @@ function expr_starting_with(c, k, t) {
   } else if (c >= 11) {
     if (c >= 32) {
       switch (c - 32 | 0) {
-        case /* NotFound */0 :
+        case /* Unknown */0 :
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -496,18 +496,18 @@ function expr_starting_with(c, k, t) {
                     27
                   ]
                 ];
-        case /* NotFound */2 :
+        case /* Unknown */2 :
             return quoted(k, t);
-        case /* NotFound */1 :
-        case /* NotFound */3 :
-        case /* NotFound */4 :
-        case /* NotFound */5 :
-        case /* NotFound */6 :
-        case /* NotFound */7 :
+        case /* Unknown */1 :
+        case /* Unknown */3 :
+        case /* Unknown */4 :
+        case /* Unknown */5 :
+        case /* Unknown */6 :
+        case /* Unknown */7 :
             break;
-        case /* NotFound */8 :
+        case /* Unknown */8 :
             return expr_list(/* [] */0, k, t);
-        case /* NotFound */9 :
+        case /* Unknown */9 :
             return _error(t, /* Format */[
                         /* String_literal */Block.__(11, [
                             "unexpected ')'",
@@ -629,13 +629,13 @@ function atom(k, t) {
       } else if (c >= 11) {
         if (c >= 32) {
           switch (c - 32 | 0) {
-            case /* NotFound */0 :
+            case /* Unknown */0 :
                 exit = 2;
                 break;
-            case /* NotFound */1 :
+            case /* Unknown */1 :
                 exit = 1;
                 break;
-            case /* NotFound */2 :
+            case /* Unknown */2 :
                 return _error(t, /* Format */[
                             /* String_literal */Block.__(11, [
                                 "unexpected '\"' in the middle of an atom",
@@ -698,36 +698,36 @@ function escaped(k, t) {
     if (c >= 92) {
       if (c < 117) {
         switch (c - 92 | 0) {
-          case /* NotFound */0 :
+          case /* Unknown */0 :
               return Curry._1(k, /* "\\" */92);
-          case /* NotFound */6 :
+          case /* Unknown */6 :
               return Curry._1(k, /* "\b" */8);
-          case /* NotFound */18 :
+          case /* Unknown */18 :
               return Curry._1(k, /* "\n" */10);
-          case /* NotFound */22 :
+          case /* Unknown */22 :
               return Curry._1(k, /* "\r" */13);
-          case /* NotFound */1 :
-          case /* NotFound */2 :
-          case /* NotFound */3 :
-          case /* NotFound */4 :
-          case /* NotFound */5 :
-          case /* NotFound */7 :
-          case /* NotFound */8 :
-          case /* NotFound */9 :
-          case /* NotFound */10 :
-          case /* NotFound */11 :
-          case /* NotFound */12 :
-          case /* NotFound */13 :
-          case /* NotFound */14 :
-          case /* NotFound */15 :
-          case /* NotFound */16 :
-          case /* NotFound */17 :
-          case /* NotFound */19 :
-          case /* NotFound */20 :
-          case /* NotFound */21 :
-          case /* NotFound */23 :
+          case /* Unknown */1 :
+          case /* Unknown */2 :
+          case /* Unknown */3 :
+          case /* Unknown */4 :
+          case /* Unknown */5 :
+          case /* Unknown */7 :
+          case /* Unknown */8 :
+          case /* Unknown */9 :
+          case /* Unknown */10 :
+          case /* Unknown */11 :
+          case /* Unknown */12 :
+          case /* Unknown */13 :
+          case /* Unknown */14 :
+          case /* Unknown */15 :
+          case /* Unknown */16 :
+          case /* Unknown */17 :
+          case /* Unknown */19 :
+          case /* Unknown */20 :
+          case /* Unknown */21 :
+          case /* Unknown */23 :
               break;
-          case /* NotFound */24 :
+          case /* Unknown */24 :
               return Curry._1(k, /* "\t" */9);
           
         }
@@ -1083,7 +1083,7 @@ function MakeDecode(funarg) {
     } else if (c >= 11) {
       if (c >= 32) {
         switch (c - 32 | 0) {
-          case /* NotFound */0 :
+          case /* Unknown */0 :
               throw [
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
@@ -1092,18 +1092,18 @@ function MakeDecode(funarg) {
                       27
                     ]
                   ];
-          case /* NotFound */2 :
+          case /* Unknown */2 :
               return quoted(k, t);
-          case /* NotFound */1 :
-          case /* NotFound */3 :
-          case /* NotFound */4 :
-          case /* NotFound */5 :
-          case /* NotFound */6 :
-          case /* NotFound */7 :
+          case /* Unknown */1 :
+          case /* Unknown */3 :
+          case /* Unknown */4 :
+          case /* Unknown */5 :
+          case /* Unknown */6 :
+          case /* Unknown */7 :
               break;
-          case /* NotFound */8 :
+          case /* Unknown */8 :
               return expr_list(/* [] */0, k, t);
-          case /* NotFound */9 :
+          case /* Unknown */9 :
               return _error(t, /* Format */[
                           /* String_literal */Block.__(11, [
                               "unexpected ')'",
@@ -1222,13 +1222,13 @@ function MakeDecode(funarg) {
         } else if (c >= 11) {
           if (c >= 32) {
             switch (c - 32 | 0) {
-              case /* NotFound */0 :
+              case /* Unknown */0 :
                   exit = 2;
                   break;
-              case /* NotFound */1 :
+              case /* Unknown */1 :
                   exit = 1;
                   break;
-              case /* NotFound */2 :
+              case /* Unknown */2 :
                   return _error(t, /* Format */[
                               /* String_literal */Block.__(11, [
                                   "unexpected '\"' in the middle of an atom",
@@ -1289,36 +1289,36 @@ function MakeDecode(funarg) {
       if (c >= 92) {
         if (c < 117) {
           switch (c - 92 | 0) {
-            case /* NotFound */0 :
+            case /* Unknown */0 :
                 return Curry._1(k, /* "\\" */92);
-            case /* NotFound */6 :
+            case /* Unknown */6 :
                 return Curry._1(k, /* "\b" */8);
-            case /* NotFound */18 :
+            case /* Unknown */18 :
                 return Curry._1(k, /* "\n" */10);
-            case /* NotFound */22 :
+            case /* Unknown */22 :
                 return Curry._1(k, /* "\r" */13);
-            case /* NotFound */1 :
-            case /* NotFound */2 :
-            case /* NotFound */3 :
-            case /* NotFound */4 :
-            case /* NotFound */5 :
-            case /* NotFound */7 :
-            case /* NotFound */8 :
-            case /* NotFound */9 :
-            case /* NotFound */10 :
-            case /* NotFound */11 :
-            case /* NotFound */12 :
-            case /* NotFound */13 :
-            case /* NotFound */14 :
-            case /* NotFound */15 :
-            case /* NotFound */16 :
-            case /* NotFound */17 :
-            case /* NotFound */19 :
-            case /* NotFound */20 :
-            case /* NotFound */21 :
-            case /* NotFound */23 :
+            case /* Unknown */1 :
+            case /* Unknown */2 :
+            case /* Unknown */3 :
+            case /* Unknown */4 :
+            case /* Unknown */5 :
+            case /* Unknown */7 :
+            case /* Unknown */8 :
+            case /* Unknown */9 :
+            case /* Unknown */10 :
+            case /* Unknown */11 :
+            case /* Unknown */12 :
+            case /* Unknown */13 :
+            case /* Unknown */14 :
+            case /* Unknown */15 :
+            case /* Unknown */16 :
+            case /* Unknown */17 :
+            case /* Unknown */19 :
+            case /* Unknown */20 :
+            case /* Unknown */21 :
+            case /* Unknown */23 :
                 break;
-            case /* NotFound */24 :
+            case /* Unknown */24 :
                 return Curry._1(k, /* "\t" */9);
             
           }

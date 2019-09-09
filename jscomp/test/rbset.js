@@ -400,7 +400,7 @@ function rbalance(x1, x2, x3) {
     } else {
       exit = 2;
     }
-    if (exit === /* NotFound */2) {
+    if (exit === /* Unknown */2) {
       var match = x3[3];
       if (match && match[0]) {
         return /* Node */[

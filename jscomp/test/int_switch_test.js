@@ -18,11 +18,11 @@ function b(loc, x) {
 function f(x) {
   var match = Curry._1(x, /* () */0);
   switch (match) {
-    case /* NotFound */1 :
+    case /* Unknown */1 :
         return /* "a" */97;
-    case /* NotFound */2 :
+    case /* Unknown */2 :
         return /* "b" */98;
-    case /* NotFound */3 :
+    case /* Unknown */3 :
         return /* "c" */99;
     default:
       return /* "x" */120;
@@ -32,11 +32,11 @@ function f(x) {
 function f22(x) {
   var match = Curry._1(x, /* () */0);
   switch (match) {
-    case /* NotFound */1 :
+    case /* Unknown */1 :
         return /* "a" */97;
-    case /* NotFound */2 :
+    case /* Unknown */2 :
         return /* "b" */98;
-    case /* NotFound */3 :
+    case /* Unknown */3 :
         return /* "c" */99;
     default:
       return /* "x" */120;

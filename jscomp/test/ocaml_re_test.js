@@ -677,7 +677,7 @@ function seq$1(ids, kind, x, y) {
   } else {
     exit = 2;
   }
-  if (exit === /* NotFound */2) {
+  if (exit === /* Unknown */2) {
     if (typeof match$1 === "number") {
       if (kind === /* First */332064784) {
         return x;
@@ -2118,7 +2118,7 @@ function merge_sequences(_param) {
                 } else {
                   exit = 2;
                 }
-                if (exit === /* NotFound */2) {
+                if (exit === /* Unknown */2) {
                   return /* :: */[
                           /* Sequence */Block.__(1, [/* :: */[
                                 x$1,
@@ -3286,7 +3286,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 ];
         } else {
           switch (c$2 - 58 | 0) {
-            case /* NotFound */10 :
+            case /* Unknown */10 :
                 return /* `Set */[
                         4150146,
                         compl(/* :: */[
@@ -3294,7 +3294,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                               /* [] */0
                             ])
                       ];
-            case /* NotFound */25 :
+            case /* Unknown */25 :
                 return /* `Set */[
                         4150146,
                         compl(/* :: */[
@@ -3302,7 +3302,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                               /* [] */0
                             ])
                       ];
-            case /* NotFound */29 :
+            case /* Unknown */29 :
                 return /* `Set */[
                         4150146,
                         compl(/* :: */[
@@ -3319,54 +3319,54 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                               ]
                             ])
                       ];
-            case /* NotFound */0 :
-            case /* NotFound */1 :
-            case /* NotFound */2 :
-            case /* NotFound */3 :
-            case /* NotFound */4 :
-            case /* NotFound */5 :
-            case /* NotFound */6 :
-            case /* NotFound */33 :
-            case /* NotFound */34 :
-            case /* NotFound */35 :
-            case /* NotFound */36 :
-            case /* NotFound */37 :
-            case /* NotFound */38 :
+            case /* Unknown */0 :
+            case /* Unknown */1 :
+            case /* Unknown */2 :
+            case /* Unknown */3 :
+            case /* Unknown */4 :
+            case /* Unknown */5 :
+            case /* Unknown */6 :
+            case /* Unknown */33 :
+            case /* Unknown */34 :
+            case /* Unknown */35 :
+            case /* Unknown */36 :
+            case /* Unknown */37 :
+            case /* Unknown */38 :
                 return /* `Char */[
                         748194550,
                         c$2
                       ];
-            case /* NotFound */40 :
+            case /* Unknown */40 :
                 return /* `Char */[
                         748194550,
                         /* "\b" */8
                       ];
-            case /* NotFound */42 :
+            case /* Unknown */42 :
                 return /* `Set */[
                         4150146,
                         digit
                       ];
-            case /* NotFound */52 :
+            case /* Unknown */52 :
                 return /* `Char */[
                         748194550,
                         /* "\n" */10
                       ];
-            case /* NotFound */56 :
+            case /* Unknown */56 :
                 return /* `Char */[
                         748194550,
                         /* "\r" */13
                       ];
-            case /* NotFound */57 :
+            case /* Unknown */57 :
                 return /* `Set */[
                         4150146,
                         space
                       ];
-            case /* NotFound */58 :
+            case /* Unknown */58 :
                 return /* `Char */[
                         748194550,
                         /* "\t" */9
                       ];
-            case /* NotFound */61 :
+            case /* Unknown */61 :
                 return /* `Set */[
                         4150146,
                         alt$1(/* :: */[
@@ -3383,48 +3383,48 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                               ]
                             ])
                       ];
-            case /* NotFound */7 :
-            case /* NotFound */8 :
-            case /* NotFound */9 :
-            case /* NotFound */11 :
-            case /* NotFound */12 :
-            case /* NotFound */13 :
-            case /* NotFound */14 :
-            case /* NotFound */15 :
-            case /* NotFound */16 :
-            case /* NotFound */17 :
-            case /* NotFound */18 :
-            case /* NotFound */19 :
-            case /* NotFound */20 :
-            case /* NotFound */21 :
-            case /* NotFound */22 :
-            case /* NotFound */23 :
-            case /* NotFound */24 :
-            case /* NotFound */26 :
-            case /* NotFound */27 :
-            case /* NotFound */28 :
-            case /* NotFound */30 :
-            case /* NotFound */31 :
-            case /* NotFound */32 :
-            case /* NotFound */39 :
-            case /* NotFound */41 :
-            case /* NotFound */43 :
-            case /* NotFound */44 :
-            case /* NotFound */45 :
-            case /* NotFound */46 :
-            case /* NotFound */47 :
-            case /* NotFound */48 :
-            case /* NotFound */49 :
-            case /* NotFound */50 :
-            case /* NotFound */51 :
-            case /* NotFound */53 :
-            case /* NotFound */54 :
-            case /* NotFound */55 :
-            case /* NotFound */59 :
-            case /* NotFound */60 :
-            case /* NotFound */62 :
-            case /* NotFound */63 :
-            case /* NotFound */64 :
+            case /* Unknown */7 :
+            case /* Unknown */8 :
+            case /* Unknown */9 :
+            case /* Unknown */11 :
+            case /* Unknown */12 :
+            case /* Unknown */13 :
+            case /* Unknown */14 :
+            case /* Unknown */15 :
+            case /* Unknown */16 :
+            case /* Unknown */17 :
+            case /* Unknown */18 :
+            case /* Unknown */19 :
+            case /* Unknown */20 :
+            case /* Unknown */21 :
+            case /* Unknown */22 :
+            case /* Unknown */23 :
+            case /* Unknown */24 :
+            case /* Unknown */26 :
+            case /* Unknown */27 :
+            case /* Unknown */28 :
+            case /* Unknown */30 :
+            case /* Unknown */31 :
+            case /* Unknown */32 :
+            case /* Unknown */39 :
+            case /* Unknown */41 :
+            case /* Unknown */43 :
+            case /* Unknown */44 :
+            case /* Unknown */45 :
+            case /* Unknown */46 :
+            case /* Unknown */47 :
+            case /* Unknown */48 :
+            case /* Unknown */49 :
+            case /* Unknown */50 :
+            case /* Unknown */51 :
+            case /* Unknown */53 :
+            case /* Unknown */54 :
+            case /* Unknown */55 :
+            case /* Unknown */59 :
+            case /* Unknown */60 :
+            case /* Unknown */62 :
+            case /* Unknown */63 :
+            case /* Unknown */64 :
                 throw Parse_error;
             
           }
@@ -3539,34 +3539,34 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       var c = get(/* () */0);
       switch (c) {
-        case /* NotFound */48 :
-        case /* NotFound */49 :
-        case /* NotFound */50 :
-        case /* NotFound */51 :
-        case /* NotFound */52 :
-        case /* NotFound */53 :
-        case /* NotFound */54 :
-        case /* NotFound */55 :
-        case /* NotFound */56 :
-        case /* NotFound */57 :
+        case /* Unknown */48 :
+        case /* Unknown */49 :
+        case /* Unknown */50 :
+        case /* Unknown */51 :
+        case /* Unknown */52 :
+        case /* Unknown */53 :
+        case /* Unknown */54 :
+        case /* Unknown */55 :
+        case /* Unknown */56 :
+        case /* Unknown */57 :
             throw Not_supported;
-        case /* NotFound */65 :
+        case /* Unknown */65 :
             return /* Beg_of_str */5;
-        case /* NotFound */66 :
+        case /* Unknown */66 :
             return /* Not_bound */4;
-        case /* NotFound */68 :
+        case /* Unknown */68 :
             return compl(/* :: */[
                         digit,
                         /* [] */0
                       ]);
-        case /* NotFound */71 :
+        case /* Unknown */71 :
             return /* Start */8;
-        case /* NotFound */83 :
+        case /* Unknown */83 :
             return compl(/* :: */[
                         space,
                         /* [] */0
                       ]);
-        case /* NotFound */87 :
+        case /* Unknown */87 :
             return compl(/* :: */[
                         alnum,
                         /* :: */[
@@ -3580,23 +3580,23 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           /* [] */0
                         ]
                       ]);
-        case /* NotFound */90 :
+        case /* Unknown */90 :
             return /* Last_end_of_line */7;
-        case /* NotFound */58 :
-        case /* NotFound */59 :
-        case /* NotFound */60 :
-        case /* NotFound */61 :
-        case /* NotFound */62 :
-        case /* NotFound */63 :
-        case /* NotFound */64 :
-        case /* NotFound */91 :
-        case /* NotFound */92 :
-        case /* NotFound */93 :
-        case /* NotFound */94 :
-        case /* NotFound */95 :
-        case /* NotFound */96 :
+        case /* Unknown */58 :
+        case /* Unknown */59 :
+        case /* Unknown */60 :
+        case /* Unknown */61 :
+        case /* Unknown */62 :
+        case /* Unknown */63 :
+        case /* Unknown */64 :
+        case /* Unknown */91 :
+        case /* Unknown */92 :
+        case /* Unknown */93 :
+        case /* Unknown */94 :
+        case /* Unknown */95 :
+        case /* Unknown */96 :
             return /* Set */Block.__(0, [single(c)]);
-        case /* NotFound */98 :
+        case /* Unknown */98 :
             return alt$1(/* :: */[
                         /* Beg_of_word */2,
                         /* :: */[
@@ -3604,11 +3604,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           /* [] */0
                         ]
                       ]);
-        case /* NotFound */100 :
+        case /* Unknown */100 :
             return digit;
-        case /* NotFound */115 :
+        case /* Unknown */115 :
             return space;
-        case /* NotFound */119 :
+        case /* Unknown */119 :
             return alt$1(/* :: */[
                         alnum,
                         /* :: */[
@@ -3622,48 +3622,48 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           /* [] */0
                         ]
                       ]);
-        case /* NotFound */67 :
-        case /* NotFound */69 :
-        case /* NotFound */70 :
-        case /* NotFound */72 :
-        case /* NotFound */73 :
-        case /* NotFound */74 :
-        case /* NotFound */75 :
-        case /* NotFound */76 :
-        case /* NotFound */77 :
-        case /* NotFound */78 :
-        case /* NotFound */79 :
-        case /* NotFound */80 :
-        case /* NotFound */81 :
-        case /* NotFound */82 :
-        case /* NotFound */84 :
-        case /* NotFound */85 :
-        case /* NotFound */86 :
-        case /* NotFound */88 :
-        case /* NotFound */89 :
-        case /* NotFound */97 :
-        case /* NotFound */99 :
-        case /* NotFound */101 :
-        case /* NotFound */102 :
-        case /* NotFound */103 :
-        case /* NotFound */104 :
-        case /* NotFound */105 :
-        case /* NotFound */106 :
-        case /* NotFound */107 :
-        case /* NotFound */108 :
-        case /* NotFound */109 :
-        case /* NotFound */110 :
-        case /* NotFound */111 :
-        case /* NotFound */112 :
-        case /* NotFound */113 :
-        case /* NotFound */114 :
-        case /* NotFound */116 :
-        case /* NotFound */117 :
-        case /* NotFound */118 :
-        case /* NotFound */120 :
-        case /* NotFound */121 :
+        case /* Unknown */67 :
+        case /* Unknown */69 :
+        case /* Unknown */70 :
+        case /* Unknown */72 :
+        case /* Unknown */73 :
+        case /* Unknown */74 :
+        case /* Unknown */75 :
+        case /* Unknown */76 :
+        case /* Unknown */77 :
+        case /* Unknown */78 :
+        case /* Unknown */79 :
+        case /* Unknown */80 :
+        case /* Unknown */81 :
+        case /* Unknown */82 :
+        case /* Unknown */84 :
+        case /* Unknown */85 :
+        case /* Unknown */86 :
+        case /* Unknown */88 :
+        case /* Unknown */89 :
+        case /* Unknown */97 :
+        case /* Unknown */99 :
+        case /* Unknown */101 :
+        case /* Unknown */102 :
+        case /* Unknown */103 :
+        case /* Unknown */104 :
+        case /* Unknown */105 :
+        case /* Unknown */106 :
+        case /* Unknown */107 :
+        case /* Unknown */108 :
+        case /* Unknown */109 :
+        case /* Unknown */110 :
+        case /* Unknown */111 :
+        case /* Unknown */112 :
+        case /* Unknown */113 :
+        case /* Unknown */114 :
+        case /* Unknown */116 :
+        case /* Unknown */117 :
+        case /* Unknown */118 :
+        case /* Unknown */120 :
+        case /* Unknown */121 :
             throw Parse_error;
-        case /* NotFound */122 :
+        case /* Unknown */122 :
             return /* End_of_str */6;
         default:
           return /* Set */Block.__(0, [single(c)]);

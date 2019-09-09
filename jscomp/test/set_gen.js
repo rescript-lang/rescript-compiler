@@ -437,12 +437,12 @@ function partition(p, param) {
 function of_sorted_list(l) {
   var sub = function (n, l) {
     switch (n) {
-      case /* NotFound */0 :
+      case /* Unknown */0 :
           return /* tuple */[
                   /* Empty */0,
                   l
                 ];
-      case /* NotFound */1 :
+      case /* Unknown */1 :
           if (l) {
             return /* tuple */[
                     /* Node */[
@@ -455,7 +455,7 @@ function of_sorted_list(l) {
                   ];
           }
           break;
-      case /* NotFound */2 :
+      case /* Unknown */2 :
           if (l) {
             var match = l[1];
             if (match) {
@@ -477,7 +477,7 @@ function of_sorted_list(l) {
             
           }
           break;
-      case /* NotFound */3 :
+      case /* Unknown */3 :
           if (l) {
             var match$1 = l[1];
             if (match$1) {

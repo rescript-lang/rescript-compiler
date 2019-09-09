@@ -52,7 +52,7 @@ if (match !== undefined) {
           ]
         ];
   }
-  if (exit === /* NotFound */1) {
+  if (exit === /* Unknown */1) {
     var dir = output.trim();
     var files = Fs.readdirSync(dir);
     var exists = files.indexOf("pervasives.cmi");

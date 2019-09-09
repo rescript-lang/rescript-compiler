@@ -70,13 +70,13 @@ var v = /* record */[/* contents */(function (param) {
 
 function fib(n) {
   switch (n) {
-    case /* NotFound */0 :
+    case /* Unknown */0 :
         return four[0];
-    case /* NotFound */1 :
+    case /* Unknown */1 :
         return 1;
-    case /* NotFound */2 :
+    case /* Unknown */2 :
         return three[0];
-    case /* NotFound */3 :
+    case /* Unknown */3 :
         v[0] = CamlinternalLazy.force(h);
         return 1;
     default:

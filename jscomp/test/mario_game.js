@@ -2263,38 +2263,38 @@ function keydown(evt) {
   var match = evt.keyCode;
   if (match >= 41) {
     switch (match) {
-      case /* NotFound */65 :
+      case /* Unknown */65 :
           pressed_keys[/* left */0] = true;
           break;
-      case /* NotFound */66 :
+      case /* Unknown */66 :
           pressed_keys[/* bbox */4] = (pressed_keys[/* bbox */4] + 1 | 0) % 2;
           break;
-      case /* NotFound */68 :
+      case /* Unknown */68 :
           pressed_keys[/* right */1] = true;
           break;
-      case /* NotFound */83 :
+      case /* Unknown */83 :
           pressed_keys[/* down */3] = true;
           break;
-      case /* NotFound */67 :
-      case /* NotFound */69 :
-      case /* NotFound */70 :
-      case /* NotFound */71 :
-      case /* NotFound */72 :
-      case /* NotFound */73 :
-      case /* NotFound */74 :
-      case /* NotFound */75 :
-      case /* NotFound */76 :
-      case /* NotFound */77 :
-      case /* NotFound */78 :
-      case /* NotFound */79 :
-      case /* NotFound */80 :
-      case /* NotFound */81 :
-      case /* NotFound */82 :
-      case /* NotFound */84 :
-      case /* NotFound */85 :
-      case /* NotFound */86 :
+      case /* Unknown */67 :
+      case /* Unknown */69 :
+      case /* Unknown */70 :
+      case /* Unknown */71 :
+      case /* Unknown */72 :
+      case /* Unknown */73 :
+      case /* Unknown */74 :
+      case /* Unknown */75 :
+      case /* Unknown */76 :
+      case /* Unknown */77 :
+      case /* Unknown */78 :
+      case /* Unknown */79 :
+      case /* Unknown */80 :
+      case /* Unknown */81 :
+      case /* Unknown */82 :
+      case /* Unknown */84 :
+      case /* Unknown */85 :
+      case /* Unknown */86 :
           break;
-      case /* NotFound */87 :
+      case /* Unknown */87 :
           pressed_keys[/* up */2] = true;
           break;
       default:
@@ -2302,22 +2302,22 @@ function keydown(evt) {
     }
   } else if (match >= 32) {
     switch (match - 32 | 0) {
-      case /* NotFound */1 :
-      case /* NotFound */2 :
-      case /* NotFound */3 :
-      case /* NotFound */4 :
+      case /* Unknown */1 :
+      case /* Unknown */2 :
+      case /* Unknown */3 :
+      case /* Unknown */4 :
           break;
-      case /* NotFound */5 :
+      case /* Unknown */5 :
           pressed_keys[/* left */0] = true;
           break;
-      case /* NotFound */0 :
-      case /* NotFound */6 :
+      case /* Unknown */0 :
+      case /* Unknown */6 :
           pressed_keys[/* up */2] = true;
           break;
-      case /* NotFound */7 :
+      case /* Unknown */7 :
           pressed_keys[/* right */1] = true;
           break;
-      case /* NotFound */8 :
+      case /* Unknown */8 :
           pressed_keys[/* down */3] = true;
           break;
       
@@ -2349,22 +2349,22 @@ function keyup(evt) {
     
   } else if (match >= 32) {
     switch (match - 32 | 0) {
-      case /* NotFound */1 :
-      case /* NotFound */2 :
-      case /* NotFound */3 :
-      case /* NotFound */4 :
+      case /* Unknown */1 :
+      case /* Unknown */2 :
+      case /* Unknown */3 :
+      case /* Unknown */4 :
           break;
-      case /* NotFound */5 :
+      case /* Unknown */5 :
           pressed_keys[/* left */0] = false;
           break;
-      case /* NotFound */0 :
-      case /* NotFound */6 :
+      case /* Unknown */0 :
+      case /* Unknown */6 :
           pressed_keys[/* up */2] = false;
           break;
-      case /* NotFound */7 :
+      case /* Unknown */7 :
           pressed_keys[/* right */1] = false;
           break;
-      case /* NotFound */8 :
+      case /* Unknown */8 :
           pressed_keys[/* down */3] = false;
           break;
       
@@ -2415,11 +2415,11 @@ function convert_list(lst) {
 
 function choose_enemy_typ(typ) {
   switch (typ) {
-    case /* NotFound */0 :
+    case /* Unknown */0 :
         return /* RKoopa */2;
-    case /* NotFound */1 :
+    case /* Unknown */1 :
         return /* GKoopa */1;
-    case /* NotFound */2 :
+    case /* Unknown */2 :
         return /* Goomba */0;
     default:
       throw [
@@ -2431,15 +2431,15 @@ function choose_enemy_typ(typ) {
 
 function choose_sblock_typ(typ) {
   switch (typ) {
-    case /* NotFound */0 :
+    case /* Unknown */0 :
         return /* Brick */1;
-    case /* NotFound */1 :
+    case /* Unknown */1 :
         return /* UnBBlock */2;
-    case /* NotFound */2 :
+    case /* Unknown */2 :
         return /* Cloud */3;
-    case /* NotFound */3 :
+    case /* Unknown */3 :
         return /* QBlock */[/* Mushroom */0];
-    case /* NotFound */4 :
+    case /* Unknown */4 :
         return /* Ground */5;
     default:
       throw [
@@ -2551,7 +2551,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
     var life_block_chance = Random.$$int(5);
     var middle_block = life_block_chance === 0 ? 3 : stair_typ;
     switch (prob) {
-      case /* NotFound */0 :
+      case /* Unknown */0 :
           if (blockw - cbx > 2) {
             return /* :: */[
                     /* tuple */[
@@ -2613,14 +2613,14 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                     /* [] */0
                   ];
           }
-      case /* NotFound */1 :
+      case /* Unknown */1 :
           var num_clouds = Random.$$int(5) + 5 | 0;
           if (cby < 5) {
             return generate_clouds(cbx, cby, 2, num_clouds);
           } else {
             return /* [] */0;
           }
-      case /* NotFound */2 :
+      case /* Unknown */2 :
           if (blockh - cby === 1) {
             var cbx$1 = cbx;
             var cby$1 = cby;
@@ -2730,7 +2730,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
           } else {
             return /* [] */0;
           }
-      case /* NotFound */3 :
+      case /* Unknown */3 :
           if (stair_typ === 0 && blockh - cby > 3) {
             var cbx$2 = cbx;
             var cby$2 = cby;
@@ -2897,7 +2897,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                     /* [] */0
                   ];
           }
-      case /* NotFound */4 :
+      case /* Unknown */4 :
           if (cby + 3 - blockh === 2) {
             return /* :: */[
                     /* tuple */[
@@ -2959,7 +2959,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                     ]
                   ];
           }
-      case /* NotFound */5 :
+      case /* Unknown */5 :
           return /* :: */[
                   /* tuple */[
                     3,
