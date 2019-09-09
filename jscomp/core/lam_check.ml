@@ -74,7 +74,7 @@ let check file lam =
       | Lletrec(decl, body) ->
         check_list_snd  decl cxt;
         check_staticfails body cxt
-      | Lswitch(arg, sw, _names) ->
+      | Lswitch(arg, sw) ->
         check_staticfails arg cxt ;
         check_list_snd sw.sw_consts cxt;
         check_list_snd sw.sw_blocks cxt;
@@ -127,7 +127,7 @@ let check file lam =
         iter_list_snd  decl;
         iter body
 
-      | Lswitch(arg, sw, _names) ->
+      | Lswitch(arg, sw) ->
         iter arg;
         iter_list_snd sw.sw_consts;
         iter_list_snd sw.sw_blocks;

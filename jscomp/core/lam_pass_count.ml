@@ -148,7 +148,7 @@ let collect_occurs  lam : occ_tbl =
     | Lapply{fn = l1; args= ll; _} ->
       count bv l1; List.iter (count bv) ll 
     | Lconst cst -> ()
-    | Lswitch(l, sw, _names) ->
+    | Lswitch(l, sw) ->
       count_default bv sw ;
       count bv l;
       List.iter (fun (_, l) -> count bv l) sw.sw_consts;

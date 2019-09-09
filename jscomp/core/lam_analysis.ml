@@ -361,11 +361,11 @@ let destruct_pattern (body : Lam.t) params args =
     | x::xs, [] -> assert false                  
   in   
   match body with
-  | Lswitch (Lvar v , switch, names)
+  | Lswitch (Lvar v , switch)
     ->
     begin match aux v params args with
       | Some (Lam.Lconst _ as lam) ->
-        size (Lam.switch lam switch names) < small_inline_size
+        size (Lam.switch lam switch) < small_inline_size
       | Some _ | None -> false
     end        
   | Lifthenelse(Lvar v, then_, else_)

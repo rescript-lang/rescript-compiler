@@ -515,16 +515,16 @@ and compile_general_cases
           [switch ?default ?declaration switch_exp body]
         )
 
-and compile_cases ~is_tag cxt switch_exp table default names =
+and compile_cases ~is_tag cxt switch_exp table default sw_names =
   compile_general_cases
     (fun i ->
-      match names with
+      match sw_names with
       | None -> None
       | Some {Lam.blocks; consts} ->
         Some (if is_tag then blocks.(i) else consts.(i)))
     (fun i ->
       let comment = 
-        match names with
+        match sw_names with
         | None -> None
         | Some {Lam.blocks; consts} ->
           Some (if is_tag then blocks.(i) else consts.(i)) in
@@ -536,7 +536,7 @@ and compile_cases ~is_tag cxt switch_exp table default names =
     switch_exp
     table
     default
-and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) (names : Lam.switch_names option) = 
+and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) = 
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
 
@@ -548,7 +548,8 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) (names : L
         sw_consts;
         sw_numblocks;
         sw_blocks;
-        sw_failaction } : Lam.switch) = sw in 
+        sw_failaction;
+        sw_names } : Lam.lambda_switch) = sw in 
   let  sw_num_default  =
     match sw_failaction with
     | None -> Complete
@@ -572,20 +573,20 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) (names : L
     | { block; value = Some e } ->
       block @
       (if sw_numconsts && sw_consts = [] then
-         compile_cases ~is_tag:true cxt (E.tag e)  sw_blocks sw_blocks_default names
+         compile_cases ~is_tag:true cxt (E.tag e)  sw_blocks sw_blocks_default sw_names
        else if sw_numblocks && sw_blocks = [] then
-         compile_cases ~is_tag:false cxt e  sw_consts sw_num_default names
+         compile_cases ~is_tag:false cxt e  sw_consts sw_num_default sw_names
        else
          (* [e] will be used twice  *)
          let dispatch e =
            S.if_
              (E.is_type_number e )
-             (compile_cases ~is_tag:false cxt e sw_consts sw_num_default names
+             (compile_cases ~is_tag:false cxt e sw_consts sw_num_default sw_names
              )
              (* default still needed, could simplified*)
              ~else_:
                (compile_cases ~is_tag:true cxt (E.tag e ) sw_blocks
-                  sw_blocks_default names) in
+                  sw_blocks_default sw_names) in
            match e.expression_desc with
            | J.Var _  -> [ dispatch e]
            | _ ->
@@ -1602,11 +1603,8 @@ and compile_lambda
       compile_ifthenelse predicate t_branch f_branch lambda_cxt  
     | Lstringswitch(l, cases, default) ->
       compile_stringswitch l cases default lambda_cxt
-    | Lswitch(switch_arg, sw, names) ->
-      (* Format.eprintf "XXX Lswitch consts:%d blocks:%d@."
-        (Array.length names.consts)
-        (Array.length names.blocks); *)
-      compile_switch switch_arg sw lambda_cxt names
+    | Lswitch(switch_arg, sw) ->
+      compile_switch switch_arg sw lambda_cxt
     | Lstaticraise(i, largs) ->  
       compile_staticraise i largs lambda_cxt 
     | Lstaticcatch _  ->

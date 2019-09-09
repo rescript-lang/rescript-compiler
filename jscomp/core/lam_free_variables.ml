@@ -64,7 +64,7 @@
     *)
     | Lprim {args; _} ->
       free_list args
-    | Lswitch(arg, sw, _names) ->
+    | Lswitch(arg, sw) ->
       free arg;
       free_list_snd sw.sw_consts;
       free_list_snd sw.sw_blocks;

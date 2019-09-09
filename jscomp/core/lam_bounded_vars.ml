@@ -120,7 +120,8 @@ let rewrite (map :   _ Ident_hashtbl.t)
                   sw_blocks;
                   sw_numblocks;
                   sw_numconsts;
-                 }, names) ->
+                  sw_names;
+                 }) ->
       let l = aux l in
       Lam.switch l
               {sw_consts = 
@@ -128,9 +129,9 @@ let rewrite (map :   _ Ident_hashtbl.t)
                sw_blocks = Ext_list.map_snd  sw_blocks aux;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
-               sw_failaction =  option_map sw_failaction
+               sw_failaction = option_map sw_failaction;
+               sw_names;
               }
-              names
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lam.stringswitch l 

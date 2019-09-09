@@ -65,7 +65,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
       -> false
     | Lprim {args; _} ->
       hit_list args
-    | Lswitch(arg, sw, _names) ->
+    | Lswitch(arg, sw) ->
       hit arg ||
       hit_list_snd sw.sw_consts ||
       hit_list_snd sw.sw_blocks ||

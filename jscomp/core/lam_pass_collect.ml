@@ -153,7 +153,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
       collect body
     | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args
-    | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}, _names) ->
+    | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
       collect  l;
       Ext_list.iter_snd sw_consts collect;
       Ext_list.iter_snd sw_blocks collect;

@@ -96,7 +96,7 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
       hit fn || hit_list args
     | Lglobal_module _  (* global persistent module, play safe *)
       -> false
-    | Lswitch(arg, sw, _names) ->
+    | Lswitch(arg, sw) ->
       hit arg ||
       hit_list_snd sw.sw_consts ||
       hit_list_snd sw.sw_blocks ||
@@ -623,10 +623,10 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 #if OCAML_VERSION =~ ">4.03.0" then
       (e,s, _loc)
 #else
-      (e,s, names) 
+      (e,s) 
 #end      
       ->
-       convert_switch e s names
+       convert_switch e s
     | Lstringswitch (e, cases, default, _ ) ->
       Lam.stringswitch 
       (convert_aux e) 
@@ -727,8 +727,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                    sw_consts ;
                    sw_blocks = []; sw_numblocks = true;
                    sw_failaction = Some ifso
-                 } as px),
-                 names
+                 } as px)
                 ) 
         when Ident.same switcher3 id    &&
              not (Lam_hit.hit_variable id ifso ) && 
@@ -740,7 +739,6 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
              Ext_list.map sw_consts 
                (fun (i,act) -> i - offset, act)
           }
-          names
       | _ -> 
         Lam.let_ kind id new_e new_body
   and convert_pipe (f : Lambda.lambda) (x : Lambda.lambda) outer_loc =        
@@ -759,9 +757,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         Lam.apply fn (Ext_list.append_one args x) outer_loc App_na
       | _ ->
         Lam.apply f [x] outer_loc App_na
-    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) (names : Lambda.switch_names option) = 
+    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
         let  e = convert_aux e in
-        let names = match names with
+        let sw_names = match s.sw_names with
           | None -> None
           | Some {consts; blocks} ->
             Some {Lam.consts; blocks} in
@@ -788,9 +786,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                  sw_consts =
                    Ext_list.map_snd  sw_consts convert_aux;
                  sw_numconsts = 
-                   Ext_list.length_ge sw_consts sw_numconsts
+                   Ext_list.length_ge sw_consts sw_numconsts;
+                 sw_names;
                 }
-                names
           end
         | _ -> 
           Lam.switch  e   
@@ -798,8 +796,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
               sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
               sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
               sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
-              sw_failaction =Ext_option.map s.sw_failaction convert_aux }
-            names in
+              sw_failaction =Ext_option.map s.sw_failaction convert_aux;
+              sw_names; } in
   convert_aux lam , may_depends
 
 

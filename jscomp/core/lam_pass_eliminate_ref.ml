@@ -70,7 +70,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lam.Lglobal_module _ -> lam     
   | Lprim {primitive ; args ; loc} ->
     Lam.prim  ~primitive ~args:(Ext_list.map args (eliminate_ref id)) loc
-  | Lswitch(e, sw, names) ->
+  | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
       {sw_numconsts = sw.sw_numconsts;
        sw_consts =
@@ -79,10 +79,11 @@ let rec eliminate_ref id (lam : Lam.t) =
        sw_blocks =
          Ext_list.map sw.sw_blocks (fun (n, e) -> (n, eliminate_ref id e)) ;
        sw_failaction =
-         match sw.sw_failaction with 
+         (match sw.sw_failaction with 
          | None -> None 
-         | Some x -> Some (eliminate_ref id x)
-          } names
+         | Some x -> Some (eliminate_ref id x));
+       sw_names = sw.sw_names;
+          }
   | Lstringswitch(e, sw, default) ->
     Lam.stringswitch
       (eliminate_ref id e)
