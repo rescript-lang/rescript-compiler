@@ -295,7 +295,6 @@ let lambda_as_module
     (lambda_output : J.deps_program)
     (output_prefix : string)
      : unit = 
-  if not !Js_config.cmj_only then begin 
   let basename =  
     Ext_namespace.change_ext_ns_suffix 
       (Filename.basename
@@ -326,7 +325,7 @@ let lambda_as_module
             ) output_chan )
   
 #end
-      end
+
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 
     includes {!Pervasives.stdin, Pervasives.stdout, Pervasives.stderr}

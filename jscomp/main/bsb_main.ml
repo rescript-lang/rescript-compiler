@@ -138,18 +138,25 @@ let install_target config_opt =
   let config =
     match config_opt with
     | None ->
-    let config = Bsb_config_parse.interpret_json ~toplevel_package_specs:None ~per_proj_dir:Bsb_global_paths.cwd in
-    let _ = Ext_list.iter config.file_groups.files (fun group -> 
-    let check_file = match group.public with
-      | Export_all -> fun _ -> true
-      | Export_none -> fun _ -> false
-      | Export_set set ->  
-        fun module_name ->
-        String_set.mem set module_name in
-    String_map.iter group.sources (fun  module_name module_info -> if check_file module_name then begin String_hash_set.add config.files_to_install module_info.name_sans_extension end)) in 
-    config
+      let config = 
+        Bsb_config_parse.interpret_json
+          ~toplevel_package_specs:None
+          ~per_proj_dir:Bsb_global_paths.cwd in
+      let _ = Ext_list.iter config.file_groups.files (fun group -> 
+          let check_file = match group.public with
+            | Export_all -> fun _ -> true
+            | Export_none -> fun _ -> false
+            | Export_set set ->  
+              fun module_name ->
+                String_set.mem set module_name in
+          String_map.iter group.sources 
+            (fun  module_name module_info -> 
+               if check_file module_name then 
+                 begin String_hash_set.add config.files_to_install module_info.name_sans_extension end
+            )) in 
+      config
     | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd (Some config)
+  Bsb_world.install_targets Bsb_global_paths.cwd config
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =

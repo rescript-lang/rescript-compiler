@@ -25,7 +25,7 @@
 
 val install_targets:
   string ->
-  Bsb_config_types.t option ->
+  Bsb_config_types.t  ->
   unit
 
 val make_world_deps:

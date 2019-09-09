@@ -16744,7 +16744,7 @@ module Bsb_world : sig
 
 val install_targets:
   string ->
-  Bsb_config_types.t option ->
+  Bsb_config_types.t  ->
   unit
 
 val make_world_deps:
@@ -16784,7 +16784,7 @@ let (//) = Ext_path.combine
 (** TODO: create the animation effect 
     logging installed files
 *)
-let install_targets cwd (config : Bsb_config_types.t option) =  
+let install_targets cwd ({files_to_install; namespace; package_name} : Bsb_config_types.t ) =  
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
@@ -16799,21 +16799,19 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
     install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
-
   in   
-  Ext_option.iter config (fun {files_to_install; namespace; package_name} -> 
-      let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-      if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-      begin
-        Bsb_log.info "@{<info>Installing started@}@.";
-        begin match namespace with 
-          | None -> ()
-          | Some x -> 
-            install_filename_sans_extension destdir None  x
-        end;
-        String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
-        Bsb_log.info "@{<info>Installing finished@} @.";
-      end)
+  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+  begin
+    Bsb_log.info "@{<info>Installing started@}@.";
+    begin match namespace with 
+      | None -> ()
+      | Some x -> 
+        install_filename_sans_extension destdir None  x
+    end;
+    String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+    Bsb_log.info "@{<info>Installing finished@} @.";
+  end
 
 
 
@@ -16847,7 +16845,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          install_targets proj_dir config_opt;
+          Ext_option.iter config_opt (install_targets proj_dir);
         end
     )
 
@@ -17011,18 +17009,25 @@ let install_target config_opt =
   let config =
     match config_opt with
     | None ->
-    let config = Bsb_config_parse.interpret_json ~toplevel_package_specs:None ~per_proj_dir:Bsb_global_paths.cwd in
-    let _ = Ext_list.iter config.file_groups.files (fun group -> 
-    let check_file = match group.public with
-      | Export_all -> fun _ -> true
-      | Export_none -> fun _ -> false
-      | Export_set set ->  
-        fun module_name ->
-        String_set.mem set module_name in
-    String_map.iter group.sources (fun  module_name module_info -> if check_file module_name then begin String_hash_set.add config.files_to_install module_info.name_sans_extension end)) in 
-    config
+      let config = 
+        Bsb_config_parse.interpret_json
+          ~toplevel_package_specs:None
+          ~per_proj_dir:Bsb_global_paths.cwd in
+      let _ = Ext_list.iter config.file_groups.files (fun group -> 
+          let check_file = match group.public with
+            | Export_all -> fun _ -> true
+            | Export_none -> fun _ -> false
+            | Export_set set ->  
+              fun module_name ->
+                String_set.mem set module_name in
+          String_map.iter group.sources 
+            (fun  module_name module_info -> 
+               if check_file module_name then 
+                 begin String_hash_set.add config.files_to_install module_info.name_sans_extension end
+            )) in 
+      config
     | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd (Some config)
+  Bsb_world.install_targets Bsb_global_paths.cwd config
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
