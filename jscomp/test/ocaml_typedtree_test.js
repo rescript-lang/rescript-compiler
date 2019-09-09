@@ -45230,7 +45230,7 @@ function rollback_path(subst, _p) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         switch (p.tag | 0) {
-          case /* Unknown */1 :
+          case /* Pdot */1 :
               var p1 = p[0];
               var p1$prime = rollback_path(subst, p1);
               if (same(p1, p1$prime)) {
@@ -45243,8 +45243,8 @@ function rollback_path(subst, _p) {
                   ]);
                 continue ;
               }
-          case /* Unknown */0 :
-          case /* Unknown */2 :
+          case /* Pident */0 :
+          case /* Papply */2 :
               return p;
           
         }
@@ -45258,7 +45258,7 @@ function rollback_path(subst, _p) {
 function collect_ids(subst, bindings, p) {
   var match = rollback_path(subst, p);
   switch (match.tag | 0) {
-    case /* Unknown */0 :
+    case /* Pident */0 :
         var id = match[0];
         var ids;
         try {
@@ -45272,8 +45272,8 @@ function collect_ids(subst, bindings, p) {
           }
         }
         return add$11(id, ids);
-    case /* Unknown */1 :
-    case /* Unknown */2 :
+    case /* Pdot */1 :
+    case /* Papply */2 :
         return /* Empty */0;
     
   }
