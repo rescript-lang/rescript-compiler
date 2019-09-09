@@ -1344,7 +1344,7 @@ catch (raw_exn){
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[

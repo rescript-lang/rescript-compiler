@@ -123,7 +123,7 @@ function compare(context, state, _a, _b) {
           break;
       
     }
-    if (exit$2 === /* Unknown */5) {
+    if (exit$2 === 5) {
       if (b.tag === /* Neg */1) {
         _b = b[0];
         continue ;
@@ -133,7 +133,7 @@ function compare(context, state, _a, _b) {
         exit$1 = 4;
       }
     }
-    if (exit$1 === /* Unknown */4 && b.tag === /* Sum */2 && is_number(a)) {
+    if (exit$1 === 4 && b.tag === /* Sum */2 && is_number(a)) {
       return -1;
     }
     switch (a.tag | 0) {
@@ -149,7 +149,7 @@ function compare(context, state, _a, _b) {
       
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           switch (b.tag | 0) {
             case /* Pow */3 :
                 return 1;
@@ -158,7 +158,7 @@ function compare(context, state, _a, _b) {
             default:
               return -1;
           }
-      case /* Unknown */2 :
+      case 2 :
           var denom = compare(context, state, da, db);
           var match = denom === 0;
           if (match) {

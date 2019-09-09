@@ -1459,14 +1459,14 @@ function get_result_and_clear_state(param) {
     }
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         var match$4 = lex_token[0];
         match$1 = /* tuple */[
           match$4[0],
           match$4[2]
         ];
         break;
-    case /* Unknown */2 :
+    case 2 :
         match$1 = /* tuple */[
           from_lb(env[/* lex_source */0], env[/* lex_lb */1]),
           Lexing.lexeme(env[/* lex_lb */1])
@@ -2789,7 +2789,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
                 if (!(c !== 60 && c !== 123)) {
                   exit = 2;
                 }
-                if (exit === /* Unknown */2) {
+                if (exit === 2) {
                   back(lexbuf$1);
                   return /* tuple */[
                           env$1,
@@ -6478,7 +6478,7 @@ function primary(env) {
     }
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         var match$6 = primitive(token$5);
         if (match$6 !== undefined) {
           token$4(env, token$5);
@@ -6493,7 +6493,7 @@ function primary(env) {
                   /* Any */0
                 ];
         }
-    case /* Unknown */2 :
+    case 2 :
         var raw$2 = Curry._2(Parser_env_Peek.value, undefined, env);
         token$4(env, token$5);
         var value$2 = token$5 === /* T_TRUE */29;
@@ -6555,7 +6555,7 @@ function param_list_or_type(env) {
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     var match = primitive(token$5);
     if (match !== undefined) {
       var match$1 = Curry._2(Parser_env_Peek.token, 1, env);
@@ -6655,7 +6655,7 @@ function function_param_list_without_parens(env) {
           exit = 1;
         }
         switch (exit) {
-          case /* Unknown */1 :
+          case 1 :
               var acc_000 = param(env$1);
               var acc$1 = /* :: */[
                 acc_000,
@@ -6666,7 +6666,7 @@ function function_param_list_without_parens(env) {
               }
               _acc = acc$1;
               continue ;
-          case /* Unknown */2 :
+          case 2 :
               var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), param(env$1)) : undefined;
               return /* tuple */[
                       rest,
@@ -6704,7 +6704,7 @@ function params$1(env, allow_default, _require_default, _acc) {
       } else {
         exit = 1;
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         if (require_default) {
           error_at(env, /* tuple */[
                 loc,
@@ -7006,7 +7006,7 @@ function properties(allow_static, env, _param) {
       exit = 1;
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$2;
           var exit$1 = 0;
@@ -7034,7 +7034,7 @@ function properties(allow_static, env, _param) {
           } else {
             exit$1 = 4;
           }
-          if (exit$1 === /* Unknown */4) {
+          if (exit$1 === 4) {
             push_lex_mode(env, /* NORMAL */0);
             var key = Curry._1(Parse.object_key, env);
             pop_lex_mode(env);
@@ -7057,13 +7057,13 @@ function properties(allow_static, env, _param) {
             callProperties
           ];
           continue ;
-      case /* Unknown */2 :
+      case 2 :
           return /* tuple */[
                   List.rev(acc),
                   List.rev(indexers),
                   List.rev(callProperties)
                 ];
-      case /* Unknown */3 :
+      case 3 :
           var call_prop = call_property(env, start_loc, $$static);
           semicolon$1(env);
           _param = /* tuple */[
@@ -7383,7 +7383,7 @@ function param_list(env, _param) {
       exit = 1;
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           var match = param$1(env);
           var $$default = match[1];
           var has_default$1 = has_default || $$default !== undefined;
@@ -7402,7 +7402,7 @@ function param_list(env, _param) {
             has_default$1
           ];
           continue ;
-      case /* Unknown */2 :
+      case 2 :
           var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28)) : undefined;
           if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
             error$1(env, /* ParameterAfterRestParameter */47);
@@ -7502,7 +7502,7 @@ function _function(env) {
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     var id$1 = Curry._2(Parse.identifier, /* StrictFunctionName */30, env);
     match$2 = /* tuple */[
       Curry._1(type_parameter_declaration$1, env),
@@ -7969,7 +7969,7 @@ function left_hand_side(env) {
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     expr = Curry._2(Parser_env_Peek.is_function, undefined, env) ? _function$1(env) : primary$1(env);
   }
   var expr$1 = member(env, expr);
@@ -8438,7 +8438,7 @@ function primary$1(env) {
     }
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         if (Curry._2(Parser_env_Peek.is_identifier, undefined, env)) {
           var id$1 = Curry._2(Parse.identifier, undefined, env);
           return /* tuple */[
@@ -8458,7 +8458,7 @@ function primary$1(env) {
                       ]])
                 ];
         }
-    case /* Unknown */2 :
+    case 2 :
         var raw$4 = Curry._2(Parser_env_Peek.value, undefined, env);
         token$4(env, token$5);
         var value$4 = /* Boolean */Block.__(1, [token$5 === /* T_TRUE */29]);
@@ -8549,7 +8549,7 @@ function identifier_or_reserved_keyword(env) {
     error_unexpected(env);
     err = undefined;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     err = /* tuple */[
       lex_loc,
       get_unexpected_error(/* tuple */[
@@ -8684,7 +8684,7 @@ function assignment(env) {
   } else {
     exit = 2;
   }
-  if (exit === /* Unknown */2 && !match$1) {
+  if (exit === 2 && !match$1) {
     return assignment_but_not_arrow_function(env);
   }
   var match$3 = Curry._2(Parser_env_Try.to_parse, env, try_assignment_but_not_arrow_function);
@@ -9613,7 +9613,7 @@ function property$1(env) {
         
       }
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       tmp = init(env, start_loc, match$1[1], async, match);
     }
     return /* Property */Block.__(0, [tmp]);
@@ -9697,7 +9697,7 @@ function init(env, start_loc, key, async, generator) {
     exit = 1;
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         token$4(env, /* T_COLON */77);
         match$1 = /* tuple */[
           Curry._1(Parse.assignment, env),
@@ -9705,7 +9705,7 @@ function init(env, start_loc, key, async, generator) {
           false
         ];
         break;
-    case /* Unknown */2 :
+    case 2 :
         var tmp;
         switch (key.tag | 0) {
           case /* Literal */0 :
@@ -9733,7 +9733,7 @@ function init(env, start_loc, key, async, generator) {
           false
         ];
         break;
-    case /* Unknown */3 :
+    case 3 :
         var typeParameters = Curry._1(type_parameter_declaration$1, env);
         var match$2 = function_params(env);
         var rest = match$2[2];
@@ -9895,7 +9895,7 @@ function check_property(env, prop_map, prop) {
       default:
         
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       if (mem$1("Init", prev_kinds)) {
         error_at(env, /* tuple */[
               prop_loc,
@@ -9997,7 +9997,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
     }
     
   }
-  if (exit === /* Unknown */2 && !async && !generator) {
+  if (exit === 2 && !async && !generator) {
     var typeAnnotation = wrap(annotation_opt, env);
     var options = env[/* parse_options */20];
     var value = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_ASSIGN */75 && ($$static && options[/* esproposal_class_static_fields */1] || !$$static && options[/* esproposal_class_instance_fields */0]) ? (token$4(env, /* T_ASSIGN */75), Curry._1(Parse.expression, env)) : undefined;
@@ -10108,7 +10108,7 @@ function class_element(env) {
                       )
                   ) : 2;
                 switch (exit) {
-                  case /* Unknown */2 :
+                  case 2 :
                       var env$1 = env;
                       var start_loc$1 = start_loc;
                       var decorators$1 = decorators;
@@ -10125,7 +10125,7 @@ function class_element(env) {
                                     /* decorators */decorators$1
                                   ]
                                 ]]);
-                  case /* Unknown */3 :
+                  case 3 :
                       return init$1(env, start_loc, decorators, key$1, async, generator$1, $$static);
                   
                 }
@@ -10145,7 +10145,7 @@ function class_element(env) {
                       )
                   ) : 2;
                 switch (exit$1) {
-                  case /* Unknown */2 :
+                  case 2 :
                       var env$2 = env;
                       var start_loc$2 = start_loc;
                       var decorators$2 = decorators;
@@ -10162,7 +10162,7 @@ function class_element(env) {
                                     /* decorators */decorators$2
                                   ]
                                 ]]);
-                  case /* Unknown */3 :
+                  case 3 :
                       return init$1(env, start_loc, decorators, key$1, async, generator$1, $$static);
                   
                 }
@@ -10308,7 +10308,7 @@ function class_expression(env) {
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     var id = Curry._2(Parse.identifier, undefined, env);
     var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
     match$1 = /* tuple */[
@@ -10842,7 +10842,7 @@ function declare_export_declaration($staropt$star, env) {
             } else {
               exit$1 = 3;
             }
-            if (exit$1 === /* Unknown */3) {
+            if (exit$1 === 3) {
               var _type$1 = wrap(_type, env$1);
               var match$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
               var end_loc$1 = match$6 !== undefined ? match$6 : _type$1[0];
@@ -10899,7 +10899,7 @@ function declare_export_declaration($staropt$star, env) {
     exit = 1;
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         var match$7 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         if (typeof match$7 === "number") {
           if (match$7 !== 51) {
@@ -10934,7 +10934,7 @@ function declare_export_declaration($staropt$star, env) {
                       /* source */source$2
                     ]])
               ];
-    case /* Unknown */2 :
+    case 2 :
         var token$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         var match$10;
         var exit$2 = 0;
@@ -10966,7 +10966,7 @@ function declare_export_declaration($staropt$star, env) {
           exit$2 = 3;
         }
         switch (exit$2) {
-          case /* Unknown */3 :
+          case 3 :
               throw [
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
@@ -10975,7 +10975,7 @@ function declare_export_declaration($staropt$star, env) {
                       17
                     ]
                   ];
-          case /* Unknown */4 :
+          case 4 :
               if (typeof token$5 === "number") {
                 if (token$5 !== 25) {
                   if (token$5 !== 26) {
@@ -11298,7 +11298,7 @@ function case_list(env, _param) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       token$4(env, /* T_CASE */31);
       test = Curry._1(Parse.expression, env);
     }
@@ -11615,7 +11615,7 @@ function _object$2(restricted_error) {
       } else {
         exit = 1;
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         switch (key.tag | 0) {
           case /* Identifier */1 :
               var id = key[0];
@@ -12023,7 +12023,7 @@ function attribute(env) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       error$1(env, /* InvalidJSXAttributeValue */41);
       var loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env);
       match$1 = /* tuple */[
@@ -12414,7 +12414,7 @@ function module_item(env) {
                     } else {
                       exit$1 = 3;
                     }
-                    if (exit$1 === /* Unknown */3) {
+                    if (exit$1 === 3) {
                       if (Curry._2(Parser_env_Peek.is_class, undefined, env$2)) {
                         var _class = class_declaration(env$2, decorators$1);
                         match$6 = /* tuple */[
@@ -12480,7 +12480,7 @@ function module_item(env) {
             exit = 1;
           }
           switch (exit) {
-            case /* Unknown */1 :
+            case 1 :
                 var match$8 = Curry._2(Parser_env_Peek.token, undefined, env$2);
                 var exportKind = typeof match$8 === "number" && match$8 === 59 ? (token$3(env$2), /* ExportType */0) : /* ExportValue */1;
                 token$4(env$2, /* T_LCURLY */1);
@@ -12506,7 +12506,7 @@ function module_item(env) {
                               /* exportKind */exportKind
                             ]])
                       ];
-            case /* Unknown */2 :
+            case 2 :
                 var stmt = Curry._2(Parse.statement_list_item, decorators$1, env$2);
                 var match$11 = stmt[1];
                 var loc$1 = stmt[0];
@@ -12676,7 +12676,7 @@ function module_item(env) {
           } else {
             exit$2 = 2;
           }
-          if (exit$2 === /* Unknown */2 && !match$17) {
+          if (exit$2 === 2 && !match$17) {
             var specifiers$2 = named_or_namespace_specifier(env$4);
             var source$5 = source(env$4);
             var match$20 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$4);
@@ -12708,7 +12708,7 @@ function module_item(env) {
           } else {
             exit$3 = 1;
           }
-          if (exit$3 === /* Unknown */1) {
+          if (exit$3 === 1) {
             match$23 = /* tuple */[
               importKind,
               /* ImportDefaultSpecifier */Block.__(1, [Curry._2(Parse.identifier, undefined, env$4)])
@@ -13063,7 +13063,7 @@ function statement(env) {
                 } else {
                   exit$1 = 1;
                 }
-                if (exit$1 === /* Unknown */1) {
+                if (exit$1 === 1) {
                   var expr = Curry._1(Parse.expression, with_no_let(true, with_no_in(true, env$12)));
                   match$10 = /* tuple */[
                     /* InitExpression */Block.__(1, [expr]),
@@ -13226,7 +13226,7 @@ function statement(env) {
     } else {
       exit = 2;
     }
-    if (exit === /* Unknown */2) {
+    if (exit === 2) {
       if (Curry._2(Parser_env_Peek.is_identifier, undefined, env)) {
         var env$14 = env;
         var expr$1 = Curry._1(Parse.expression, env$14);
@@ -13584,7 +13584,7 @@ function identifier$2(restricted_error, env) {
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     if (is_strict_reserved(name)) {
       strict_error(env, /* StrictReservedWord */39);
       token$3(env);
@@ -15493,7 +15493,7 @@ function parse(content, options) {
           ]
         ];
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         props = /* array */[
           /* tuple */[
             "value",

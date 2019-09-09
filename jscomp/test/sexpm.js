@@ -79,7 +79,7 @@ function _must_escape(s) {
         }
         exit = 1;
       }
-      if (exit === /* Unknown */1 && c > 127) {
+      if (exit === 1 && c > 127) {
         throw Pervasives.Exit;
       }
       
@@ -652,10 +652,10 @@ function atom(k, t) {
         exit = c >= 9 ? 2 : 1;
       }
       switch (exit) {
-        case /* Unknown */1 :
+        case 1 :
             $$Buffer.add_char(t[/* atom */2], c);
             continue ;
-        case /* Unknown */2 :
+        case 2 :
             return _return_atom(c, k, t);
         
       }
@@ -1245,10 +1245,10 @@ function MakeDecode(funarg) {
           exit = c >= 9 ? 2 : 1;
         }
         switch (exit) {
-          case /* Unknown */1 :
+          case 1 :
               $$Buffer.add_char(t[/* atom */2], c);
               continue ;
-          case /* Unknown */2 :
+          case 2 :
               return _return_atom(c, k, t);
           
         }

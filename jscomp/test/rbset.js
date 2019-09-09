@@ -87,14 +87,14 @@ function balance_left(l, x, r) {
     exit = 1;
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         return /* Node */[
                 /* Black */0,
                 l,
                 x,
                 r
               ];
-    case /* Unknown */2 :
+    case 2 :
         return /* Node */[
                 /* Red */1,
                 /* Node */[
@@ -153,14 +153,14 @@ function balance_right(l, x, r) {
     exit = 1;
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         return /* Node */[
                 /* Black */0,
                 l,
                 x,
                 r
               ];
-    case /* Unknown */2 :
+    case 2 :
         return /* Node */[
                 /* Red */1,
                 /* Node */[
@@ -400,7 +400,7 @@ function rbalance(x1, x2, x3) {
     } else {
       exit = 2;
     }
-    if (exit === /* Unknown */2) {
+    if (exit === 2) {
       var match = x3[3];
       if (match && match[0]) {
         return /* Node */[

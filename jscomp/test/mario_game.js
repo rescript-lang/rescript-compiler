@@ -1902,7 +1902,7 @@ function process_collision(dir, c1, c2, state) {
     
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         var o1$7 = o1;
         var typ$2 = typ;
         var s2$4 = s2;
@@ -1941,7 +1941,7 @@ function process_collision(dir, c1, c2, state) {
                   ];
           }
         }
-    case /* Unknown */2 :
+    case 2 :
         var o1$8 = o1$1;
         var t2$4 = t2;
         var s2$5 = s2$1;
@@ -1961,7 +1961,7 @@ function process_collision(dir, c1, c2, state) {
                   undefined
                 ];
         }
-    case /* Unknown */3 :
+    case 3 :
         if (t2$1 !== 0) {
           if (t2$1 >= 3) {
             state[/* coins */5] = state[/* coins */5] + 1 | 0;

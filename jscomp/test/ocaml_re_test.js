@@ -677,7 +677,7 @@ function seq$1(ids, kind, x, y) {
   } else {
     exit = 2;
   }
-  if (exit === /* Unknown */2) {
+  if (exit === 2) {
     if (typeof match$1 === "number") {
       if (kind === /* First */332064784) {
         return x;
@@ -2118,7 +2118,7 @@ function merge_sequences(_param) {
                 } else {
                   exit = 2;
                 }
-                if (exit === /* Unknown */2) {
+                if (exit === 2) {
                   return /* :: */[
                           /* Sequence */Block.__(1, [/* :: */[
                                 x$1,

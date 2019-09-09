@@ -771,7 +771,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       Js_output.append_output
         (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
         (Js_output.append_output lbody (Js_output.make (
-             compile_cases ~is_tag:false new_cxt exit_expr handlers  NonComplete (Some {consts=[||]; blocks=[||]}))  ~value:(E.var v )))
+             compile_cases ~is_tag:false new_cxt exit_expr handlers  NonComplete None)  ~value:(E.var v )))
     | Declare (kind, id)
       (* declare first this we will do branching*) ->
       let declares = S.declare_variable ~kind id  :: declares in
@@ -779,7 +779,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make  declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
@@ -788,13 +788,13 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
     | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     

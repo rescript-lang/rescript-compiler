@@ -8854,7 +8854,7 @@ function typexp(s, ty) {
     }
   }
   switch (exit) {
-    case /* Unknown */1 :
+    case 1 :
         var desc$1 = ty$1[/* desc */0];
         save_desc(ty$1, desc$1);
         var ty$prime = s[/* for_saving */3] ? newpersty(/* Tvar */Block.__(0, [undefined])) : newty2(100000000, /* Tvar */Block.__(0, [undefined]));
@@ -8937,7 +8937,7 @@ function typexp(s, ty) {
                     }
                   }
                 }
-                if (exit$2 === /* Unknown */4) {
+                if (exit$2 === 4) {
                   var dup = true;
                   if (!s[/* for_saving */3]) {
                     var tmp$2 = true;
@@ -8981,7 +8981,7 @@ function typexp(s, ty) {
                             ];
                     }
                   }
-                  if (exit$3 === /* Unknown */5) {
+                  if (exit$3 === 5) {
                     save_desc(more, more[/* desc */0]);
                     more$prime = s[/* for_saving */3] ? newpersty(norm(more[/* desc */0])) : (
                         dup && is_Tvar(more) ? newty2(100000000, more[/* desc */0]) : more
@@ -9029,14 +9029,14 @@ function typexp(s, ty) {
               exit$1 = 3;
           }
         }
-        if (exit$1 === /* Unknown */3) {
+        if (exit$1 === 3) {
           tmp = copy_type_desc(undefined, (function (param) {
                   return typexp(s, param);
                 }), desc$1);
         }
         ty$prime[/* desc */0] = tmp;
         return ty$prime;
-    case /* Unknown */2 :
+    case 2 :
         if (s[/* for_saving */3] || ty$1[/* id */2] < 0) {
           var ty$prime$1 = s[/* for_saving */3] ? newpersty(norm(desc)) : newty2(ty$1[/* level */1], desc);
           save_desc(ty$1, desc);
@@ -14114,7 +14114,7 @@ function varify_constructors(var_names, t) {
                   break;
               
             }
-            if (exit === /* Unknown */1) {
+            if (exit === 1) {
               desc = /* Ptyp_constr */Block.__(3, [
                   longident,
                   List.map(loop, match[1])
@@ -14789,7 +14789,7 @@ var yyact = /* array */[
       } else {
         exit = 1;
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         if (lbs[/* lbs_attributes */3] !== /* [] */0) {
           throw [
                 $$Error$3,
@@ -16386,7 +16386,7 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === /* Unknown */2 && match.tag === /* Pexp_constant */1) {
+      if (exit === 2 && match.tag === /* Pexp_constant */1) {
         var match$2 = match[0];
         if (match$2.tag === /* Const_float */3) {
           return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
@@ -16433,7 +16433,7 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === /* Unknown */2 && desc.tag === /* Pexp_constant */1 && desc[0].tag === /* Const_float */3) {
+      if (exit === 2 && desc.tag === /* Pexp_constant */1 && desc[0].tag === /* Const_float */3) {
         return mkexp(desc);
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
@@ -19894,7 +19894,7 @@ catch (exn$1){
   }
 }
 
-if (exit === /* Unknown */1) {
+if (exit === 1) {
   tmp = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
 }
 
@@ -19997,7 +19997,7 @@ function query(loc, str) {
           throw exn$1;
         }
       }
-      if (exit === /* Unknown */2) {
+      if (exit === 2) {
         try {
           return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
         }
@@ -20210,7 +20210,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       semantic_version_parse(str, 1, last_index)
                     ];
                   }
-                  if (exit$2 === /* Unknown */1) {
+                  if (exit$2 === 1) {
                     match = /* tuple */[
                       /* Exact */172069535,
                       semantic_version_parse(str, 0, last_index)
@@ -20246,7 +20246,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     return Caml_obj.caml_greaterequal(lversion, version);
                   }
                 }
-                if (exit$1 === /* Unknown */3) {
+                if (exit$1 === 3) {
                   throw [
                         $$Error$4,
                         /* Conditional_expr_expected_type */Block.__(7, [
@@ -20258,7 +20258,7 @@ function directive_parse(token_with_comments, lexbuf) {
                 }
                 
               }
-              if (exit === /* Unknown */2) {
+              if (exit === 2) {
                 throw [
                       $$Error$4,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -20313,7 +20313,7 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       exit$3 = 1;
     }
-    if (exit$3 === /* Unknown */1) {
+    if (exit$3 === 1) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -22309,7 +22309,7 @@ function wrap$1(parsing_fun, lexbuf) {
     } else {
       exit$1 = 3;
     }
-    if (exit$1 === /* Unknown */3) {
+    if (exit$1 === 3) {
       if (err[0] === $$Error$3 && input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
@@ -22317,7 +22317,7 @@ function wrap$1(parsing_fun, lexbuf) {
         exit = 2;
       }
     }
-    if (exit === /* Unknown */2 && err !== Parsing.Parse_error && err !== Escape_error) {
+    if (exit === 2 && err !== Parsing.Parse_error && err !== Escape_error) {
       throw err;
     }
     var loc = curr(lexbuf);
@@ -24222,7 +24222,7 @@ function save_cmt(filename, modname, binary_annots, sourcefile, initial_env, sg)
     catch (exn){
       
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       Caml_sys.caml_sys_system_command(cmd + (" -cmt-add " + (filename + (
                 sourcefile !== undefined ? ":" + sourcefile : ""
               ))));
@@ -24981,7 +24981,7 @@ function merge_row_fields(fi1, fi2) {
             /* [] */0
           ];
   }
-  if (exit === /* Unknown */2 && !fi2[1] && !List.mem_assoc(fi2[0][0], fi1)) {
+  if (exit === 2 && !fi2[1] && !List.mem_assoc(fi2[0][0], fi1)) {
     return /* tuple */[
             fi1,
             fi2,
@@ -26038,7 +26038,7 @@ function copy(env, partial, keep_names, ty) {
               } else {
                 exit = 1;
               }
-              if (exit === /* Unknown */1) {
+              if (exit === 1) {
                 var abbrev = abbreviations[0][0];
                 var tmp$1;
                 tmp$1 = typeof abbrev === "number" || abbrev.tag ? abbrev : /* Mlink */Block.__(1, [abbreviations[0]]);
@@ -26091,7 +26091,7 @@ function copy(env, partial, keep_names, ty) {
                   }
                 }
               }
-              if (exit$1 === /* Unknown */1) {
+              if (exit$1 === 1) {
                 var keep = more[/* level */1] !== 100000000;
                 var match$9 = more[/* desc */0];
                 var more$prime;
@@ -26122,13 +26122,13 @@ function copy(env, partial, keep_names, ty) {
                   }
                 }
                 switch (exit$2) {
-                  case /* Unknown */2 :
+                  case 2 :
                       if (keep) {
                         save_desc(more, more[/* desc */0]);
                       }
                       more$prime = copy$1(more);
                       break;
-                  case /* Unknown */3 :
+                  case 3 :
                       save_desc(more, more[/* desc */0]);
                       more$prime = keep ? more : newty2(current_level[0], more[/* desc */0]);
                       break;
@@ -26536,7 +26536,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
               visited$1 = visited;
           }
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           visited$1 = /* :: */[
             /* tuple */[
               ty$1,
@@ -26662,7 +26662,7 @@ function instance_label(fixed, lbl) {
   } else {
     match$1 = instance_poly(undefined, fixed, match[1], match[0]);
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     match$1 = /* tuple */[
       /* [] */0,
       copy(undefined, undefined, undefined, lbl[/* lbl_arg */2])
@@ -27226,7 +27226,7 @@ function occur_rec(env, visited, ty0, ty) {
                       exit = 2;
                   }
                 }
-                if (exit === /* Unknown */2) {
+                if (exit === 2) {
                   if (recursive_types[0] && is_contractive(env, ty$prime)) {
                     return 0;
                   } else {
@@ -27957,7 +27957,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               exit = 2;
           }
         }
-        if (exit === /* Unknown */2 && typeof match$1 !== "number" && !match$1.tag) {
+        if (exit === 2 && typeof match$1 !== "number" && !match$1.tag) {
           return /* () */0;
         }
         var t1$prime = expand_head_opt(env, t1$1);
@@ -28133,7 +28133,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                 } else {
                                   exit$3 = 2;
                                 }
-                                if (exit$3 === /* Unknown */2) {
+                                if (exit$3 === 2) {
                                   if (non_aliasable(p1$1, decl)) {
                                     exit$2 = 1;
                                   } else {
@@ -28234,7 +28234,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                     /* [] */0
                                   ];
                             }
-                            if (exit$2 === /* Unknown */1) {
+                            if (exit$2 === 1) {
                               if (typeof match$5 === "number") {
                                 if (match$5 !== 0) {
                                   throw [
@@ -28370,7 +28370,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                                 exit$1 = 3;
                                               }
                                             }
-                                            if (exit$1 === /* Unknown */3 && match[1]) {
+                                            if (exit$1 === 3 && match[1]) {
                                               exit = 2;
                                             }
                                             
@@ -28427,7 +28427,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                               return /* () */0;
                                             }
                                           }
-                                          if (exit === /* Unknown */2) {
+                                          if (exit === 2) {
                                             if (typeof match$1 === "number" || match$1.tag) {
                                               return /* () */0;
                                             } else if (match$1[0] === undefined) {
@@ -28512,7 +28512,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                 ];
                         }
                       }
-                      if (exit$4 === /* Unknown */3) {
+                      if (exit$4 === 3) {
                         if (typeof match$3 === "number") {
                           throw [
                                 Unify,
@@ -28560,7 +28560,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                   
                 }
               }
-              if (exit$1 === /* Unknown */2) {
+              if (exit$1 === 2) {
                 if (typeof match$3 === "number") {
                   throw [
                         Unify,
@@ -29020,7 +29020,7 @@ function unify(env, t1, t2) {
                 } else {
                   unify2(env, t1$1, t2$1);
                 }
-                if (exit$1 === /* Unknown */2) {
+                if (exit$1 === 2) {
                   occur(env[0], t1$1, t2$1);
                   occur_univar(env[0], t2$1);
                   link_type(t1$1, t2$1);
@@ -29095,7 +29095,7 @@ function unify(env, t1, t2) {
               exit = 1;
           }
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           if (typeof match$1 === "number" || match$1.tag) {
             unify2(env, t1$1, t2$1);
           } else {
@@ -29173,7 +29173,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
         exit = 2;
     }
   }
-  if (exit === /* Unknown */2 && typeof d2 !== "number" && !d2.tag) {
+  if (exit === 2 && typeof d2 !== "number" && !d2.tag) {
     occur(env[0], t2$prime, t1);
     occur_univar(env[0], t1);
     return link_type(t2$prime, t1);
@@ -29357,7 +29357,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 exit$4 = 5;
               }
             }
-            if (exit$4 === /* Unknown */5) {
+            if (exit$4 === 5) {
               switch (p1.tag | 0) {
                 case /* Pident */0 :
                     if (d1[1]) {
@@ -29391,7 +29391,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                           
                         }
                       }
-                      if (exit$5 === /* Unknown */6) {
+                      if (exit$5 === 6) {
                         if (is_newtype(env[0], p1) && generate_equations[0]) {
                           reify(env, t2$prime);
                           add_gadt_equation(env, p, t2$prime);
@@ -29555,7 +29555,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       ];
               }
             }
-            if (exit$6 === /* Unknown */5) {
+            if (exit$6 === 5) {
               if (typeof d2 === "number") {
                 throw [
                       Unify,
@@ -29627,7 +29627,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
           exit$3 = 4;
       }
     }
-    if (exit$3 === /* Unknown */4) {
+    if (exit$3 === 4) {
       if (typeof d2 === "number" || d2.tag !== /* Tconstr */3) {
         exit$2 = 3;
       } else {
@@ -29649,7 +29649,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
         }
       }
     }
-    if (exit$2 === /* Unknown */3) {
+    if (exit$2 === 3) {
       if (typeof d1 === "number") {
         throw [
               Unify,
@@ -29665,7 +29665,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
       }
     }
     switch (exit$1) {
-      case /* Unknown */1 :
+      case 1 :
           if (umode[0] === /* Pattern */1) {
             reify(env, t1$prime);
             reify(env, t2$prime);
@@ -29680,7 +29680,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 ];
           }
           break;
-      case /* Unknown */2 :
+      case 2 :
           var match$8 = field_kind_repr(kind);
           if (typeof match$8 === "number") {
             throw [
@@ -29766,7 +29766,7 @@ function make_rowvar(level, use1, rest1, use2, rest2) {
           exit$1 = 2;
         }
       }
-      if (exit$1 === /* Unknown */2) {
+      if (exit$1 === 2) {
         if (use2) {
           set_name(rest2, name1);
         }
@@ -29777,7 +29777,7 @@ function make_rowvar(level, use1, rest1, use2, rest2) {
       exit = 1;
     }
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     if (typeof match$1 === "number" || match$1.tag) {
       name = undefined;
     } else {
@@ -30794,7 +30794,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
               exit = 1;
           }
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           var t1$prime = expand_head(env, t1$1);
           var t2$prime = expand_head(env, t2$1);
           var t1$prime$1 = repr(t1$prime);
@@ -30986,7 +30986,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                     /* [] */0
                                   ];
                             }
-                            if (exit$2 === /* Unknown */2) {
+                            if (exit$2 === 2) {
                               if (typeof match$7 === "number" || match$7.tag !== /* Tunivar */9) {
                                 exit$1 = 1;
                               } else {
@@ -30996,7 +30996,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                     ];
                               }
                             }
-                            if (exit$1 === /* Unknown */1 && !static_row(row1$1)) {
+                            if (exit$1 === 1 && !static_row(row1$1)) {
                               if (may_inst) {
                                 var ext = newty2(100000000, /* Tvariant */Block.__(8, [/* record */[
                                           /* row_fields */r2$1,
@@ -31232,7 +31232,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        if (exit$3 === /* Unknown */2) {
+                        if (exit$3 === 2) {
                           if (typeof match$3 === "number") {
                             throw [
                                   Unify,
@@ -31644,7 +31644,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
               exit = 1;
           }
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           var t1$prime = expand_head_rigid(env, t1$1);
           var t2$prime = expand_head_rigid(env, t2$1);
           var t1$prime$1 = repr(t1$prime);
@@ -32043,7 +32043,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        if (exit$1 === /* Unknown */2) {
+                        if (exit$1 === 2) {
                           if (typeof match$3 === "number") {
                             throw [
                                   Unify,
@@ -32379,7 +32379,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
           break;
       
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       return moregen_clty(true, type_pairs, env, cty1, cty2[2]);
     }
     
@@ -32567,7 +32567,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                 break;
             
           }
-          if (exit$1 === /* Unknown */3) {
+          if (exit$1 === 3) {
             return equal_clty(true, type_pairs, subst, env, cty1$1, cty2);
           }
           break;
@@ -32675,9 +32675,9 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
       
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           return equal_clty(true, type_pairs, subst, env, cty1, cty2[2]);
-      case /* Unknown */2 :
+      case 2 :
           throw [
                 Failure,
                 trace ? /* [] */0 : /* :: */[
@@ -34036,7 +34036,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         exit = 1;
                     }
                   }
-                  if (exit$4 === /* Unknown */7) {
+                  if (exit$4 === 7) {
                     if (typeof match$1 === "number") {
                       exit = 1;
                     } else {
@@ -34170,14 +34170,14 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                 exit$3 = 6;
             }
           }
-          if (exit$3 === /* Unknown */6) {
+          if (exit$3 === 6) {
             if (typeof match$1 === "number" || match$1.tag) {
               exit$2 = 5;
             } else {
               exit = 2;
             }
           }
-          if (exit$2 === /* Unknown */5) {
+          if (exit$2 === 5) {
             if (typeof match === "number" || !(match.tag === /* Tconstr */3 && generic_abbrev(env, match[0]) && safe_abbrev(env, t1$1))) {
               exit$1 = 4;
             } else {
@@ -34186,7 +34186,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
               continue ;
             }
           }
-          if (exit$1 === /* Unknown */4 && typeof match$1 !== "number" && match$1.tag === /* Tconstr */3 && generic_abbrev(env, match$1[0]) && safe_abbrev(env, t2$1)) {
+          if (exit$1 === 4 && typeof match$1 !== "number" && match$1.tag === /* Tconstr */3 && generic_abbrev(env, match$1[0]) && safe_abbrev(env, t2$1)) {
             _t2 = expand_abbrev(env)(t2$1);
             _t1 = t1$1;
             continue ;
@@ -34269,8 +34269,8 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
             }
           }
           switch (exit) {
-            case /* Unknown */1 :
-            case /* Unknown */2 :
+            case 1 :
+            case 2 :
                 return /* :: */[
                         /* tuple */[
                           trace,
@@ -34468,7 +34468,7 @@ function normalize_type_rec(env, visited, ty) {
                         set_name(nm, undefined);
                     }
                   }
-                  if (exit === /* Unknown */1 && v$prime !== v) {
+                  if (exit === 1 && v$prime !== v) {
                     set_name(nm, /* tuple */[
                           n,
                           /* :: */[
@@ -34709,7 +34709,7 @@ function nondep_type_rec(env, id, _ty) {
               exit = 1;
           }
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           tmp = copy_type_desc(undefined, (function (param) {
                   return nondep_type_rec(env, id, param);
                 }), ty[/* desc */0]);
@@ -35411,7 +35411,7 @@ function print_simple_out_type(ppf, ty) {
                       break;
                   
                 }
-                if (exit$1 === /* Unknown */3) {
+                if (exit$1 === 3) {
                   var name = id[1];
                   var exit$2 = 0;
                   switch (name) {
@@ -35483,7 +35483,7 @@ function print_simple_out_type(ppf, ty) {
                                     print_ident(ppf, id);
                                     return Format.pp_close_box(ppf, /* () */0);
                                   }
-                                  if (exit$3 === /* Unknown */5) {
+                                  if (exit$3 === 5) {
                                     return Curry._2(Format.fprintf(ppf, /* Format */[
                                                     /* Formatting_gen */Block.__(18, [
                                                         /* Open_box */Block.__(1, [/* Format */[
@@ -35536,7 +35536,7 @@ function print_simple_out_type(ppf, ty) {
                     default:
                       exit = 2;
                   }
-                  if (exit$2 === /* Unknown */4) {
+                  if (exit$2 === 4) {
                     var tyl$1 = ty[1];
                     if (tyl$1) {
                       var match$7 = tyl$1[0];
@@ -35609,7 +35609,7 @@ function print_simple_out_type(ppf, ty) {
                                 print_ident(ppf, id);
                                 return Format.pp_close_box(ppf, /* () */0);
                               }
-                              if (exit$4 === /* Unknown */5) {
+                              if (exit$4 === 5) {
                                 switch (name) {
                                   case "fn" :
                                       return Curry._2(Format.fprintf(ppf, /* Format */[
@@ -35716,7 +35716,7 @@ function print_simple_out_type(ppf, ty) {
                 break;
             
           }
-          if (exit === /* Unknown */2) {
+          if (exit === 2) {
             Format.pp_open_box(ppf, 0);
             print_typargs(ppf, ty[1]);
             print_ident(ppf, id);
@@ -39783,7 +39783,7 @@ function name_of_type(t) {
             name = new_name(/* () */0);
         }
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         var match$1 = match[0];
         if (match$1 !== undefined) {
           var name$1 = match$1;
@@ -40191,7 +40191,7 @@ function tree_of_typexp(sch, ty) {
                     } else {
                       exit = 2;
                     }
-                    if (exit === /* Unknown */2) {
+                    if (exit === 2) {
                       inh = /* Ovar_name */Block.__(1, [
                           tree_of_path(p),
                           List.map((function (param) {
@@ -40966,7 +40966,7 @@ function tree_of_class_type(sch, params, _param) {
                 exit = 1;
               }
             }
-            if (exit === /* Unknown */1) {
+            if (exit === 1) {
               ty$1 = newconstr(/* Pident */Block.__(0, [create("<hidden>")]), /* [] */0);
             }
             
@@ -41266,7 +41266,7 @@ function tree_of_signature_rec(env$prime, in_type_group, param) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       set_printing_env(env$prime);
       in_type_group$1 = item.tag === /* Sig_type */1 && item[2] < 2 ? true : false;
     }
@@ -41821,7 +41821,7 @@ function has_explanation(unif, t3, t4) {
           } else {
             exit$2 = 4;
           }
-          if (exit$2 === /* Unknown */4) {
+          if (exit$2 === 4) {
             if (typeof match$1 === "number") {
               return true;
             } else {
@@ -41856,14 +41856,14 @@ function has_explanation(unif, t3, t4) {
         exit$1 = 3;
     }
   }
-  if (exit$1 === /* Unknown */3) {
+  if (exit$1 === 3) {
     if (typeof match$1 === "number" || match$1.tag) {
       exit = 2;
     } else {
       return true;
     }
   }
-  if (exit === /* Unknown */2 && typeof match !== "number" && match.tag !== /* Tconstr */3) {
+  if (exit === 2 && typeof match !== "number" && match.tag !== /* Tconstr */3) {
     return false;
   }
   if (typeof match$1 === "number" || match$1.tag !== /* Tfield */5) {
@@ -42146,7 +42146,7 @@ function explanation(unif, mis, ppf) {
                                     "@,These two variant types have no intersection"
                                   ]);
                       }
-                      if (exit$5 === /* Unknown */11) {
+                      if (exit$5 === 11) {
                         return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                         /* Formatting_lit */Block.__(17, [
                                             /* Break */Block.__(0, [
@@ -42194,7 +42194,7 @@ function explanation(unif, mis, ppf) {
                     } else {
                       exit$4 = 10;
                     }
-                    if (exit$4 === /* Unknown */10) {
+                    if (exit$4 === 10) {
                       if (match$5 || !match$6) {
                         return /* () */0;
                       } else {
@@ -42267,14 +42267,14 @@ function explanation(unif, mis, ppf) {
           exit$3 = 9;
       }
     }
-    if (exit$3 === /* Unknown */9) {
+    if (exit$3 === 9) {
       if (typeof match$2 === "number" || match$2.tag) {
         exit$2 = 8;
       } else {
         exit$1 = 5;
       }
     }
-    if (exit$2 === /* Unknown */8 && typeof match$1 !== "number" && match$1.tag === /* Tfield */5) {
+    if (exit$2 === 8 && typeof match$1 !== "number" && match$1.tag === /* Tfield */5) {
       lab = match$1[0];
       exit$1 = 6;
     }
@@ -42285,7 +42285,7 @@ function explanation(unif, mis, ppf) {
       exit$1 = 6;
     }
     switch (exit$1) {
-      case /* Unknown */3 :
+      case 3 :
           return Format.fprintf(ppf$1, /* Format */[
                       /* Formatting_lit */Block.__(17, [
                           /* Break */Block.__(0, [
@@ -42300,7 +42300,7 @@ function explanation(unif, mis, ppf) {
                         ]),
                       "@,Self type cannot escape its class"
                     ]);
-      case /* Unknown */4 :
+      case 4 :
           return Curry._2(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -42318,7 +42318,7 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,The universal variable %a would escape its scope"
                         ]), type_expr$1, is_Tunivar(t3) ? t3 : t4);
-      case /* Unknown */5 :
+      case 5 :
           var match$7 = is_Tvar(t3) ? /* tuple */[
               t3,
               t4
@@ -42406,7 +42406,7 @@ function explanation(unif, mis, ppf) {
                             "@,@[<hov>This instance of %a is ambiguous:@ %s@]"
                           ]), type_expr$1, t$prime, "it would escape the scope of its equation");
           }
-      case /* Unknown */6 :
+      case 6 :
           if (lab === dummy_method) {
             return Format.fprintf(ppf$1, /* Format */[
                         /* Formatting_lit */Block.__(17, [
@@ -42429,7 +42429,7 @@ function explanation(unif, mis, ppf) {
       
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           return Curry._1(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -42459,7 +42459,7 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,@[The %s object type has an abstract row, it cannot be closed@]"
                         ]), t4[/* desc */0] === /* Tnil */0 ? "first" : "second");
-      case /* Unknown */2 :
+      case 2 :
           if (typeof match$1 !== "number") {
             switch (match$1.tag | 0) {
               case /* Tconstr */3 :
@@ -42505,14 +42505,14 @@ function explanation(unif, mis, ppf) {
                   } else {
                     exit$6 = 4;
                   }
-                  if (exit$6 === /* Unknown */4) {
+                  if (exit$6 === 4) {
                     var exit$7 = 0;
                     if (typeof match$2 === "number" || match$2.tag === /* Tconstr */3) {
                       exit$7 = 5;
                     } else {
                       return /* () */0;
                     }
-                    if (exit$7 === /* Unknown */5) {
+                    if (exit$7 === 5) {
                       return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                       /* Formatting_lit */Block.__(17, [
                                           /* Break */Block.__(0, [
@@ -43879,7 +43879,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       if (typeof match === "number") {
         err = match === /* Type_abstract */0 || typeof match$1 !== "number" ? /* :: */[
             /* Kind */2,
@@ -44043,7 +44043,7 @@ function extension_constructors(env, id, ext1, ext2) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       tmp = for_all2((function (ty1, ty2) {
               return equal$4(env, true, /* :: */[
                           ty1,
@@ -44130,7 +44130,7 @@ function strengthen_sig(env, sg, p) {
           } else {
             exit = 1;
           }
-          if (exit === /* Unknown */1) {
+          if (exit === 1) {
             var manif = newty2(100000000, /* Tconstr */Block.__(3, [
                     /* Pdot */Block.__(1, [
                         p,
@@ -47758,7 +47758,7 @@ function compat(_p, _q) {
       }
     }
     switch (exit) {
-      case /* Unknown */1 :
+      case 1 :
           if (typeof match$1 === "number") {
             return true;
           } else {
@@ -47777,14 +47777,14 @@ function compat(_p, _q) {
                 }
             }
           }
-      case /* Unknown */2 :
+      case 2 :
           if (compat(p, match$1[0])) {
             return true;
           } else {
             _q = match$1[1];
             continue ;
           }
-      case /* Unknown */3 :
+      case 3 :
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -49314,7 +49314,7 @@ function filter_all(pat0, pss) {
         tmp = /* [] */0;
     }
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     tmp = /* :: */[
       /* tuple */[
         pat0,
@@ -50389,7 +50389,7 @@ function satisfiable(_pss, _qs) {
           }
         }
         switch (exit) {
-          case /* Unknown */1 :
+          case 1 :
               var qs$2 = qs[1];
               var q0 = discr_pat(omega, pss);
               var constrs = filter_all(q0, pss);
@@ -50415,7 +50415,7 @@ function satisfiable(_pss, _qs) {
                 _pss = filter_extra(pss);
                 continue ;
               }
-          case /* Unknown */2 :
+          case 2 :
               var q0$1 = discr_pat(q, pss);
               _qs = Pervasives.$at(simple_match_args(q0$1, q), qs[1]);
               _pss = filter_one(q0$1, pss);
@@ -51099,7 +51099,7 @@ function every_satisfiables(_pss, _qs) {
         }
       }
       switch (exit) {
-        case /* Unknown */1 :
+        case 1 :
             var q0 = discr_pat$1(q, pss);
             _qs = /* record */[
               /* no_ors */qs[/* no_ors */0],
@@ -51108,7 +51108,7 @@ function every_satisfiables(_pss, _qs) {
             ];
             _pss = filter_one$1(q0, pss);
             continue ;
-        case /* Unknown */2 :
+        case 2 :
             if (is_var_column(pss)) {
               _qs = remove(qs);
               _pss = List.map(remove, pss);
@@ -51403,7 +51403,7 @@ function le_pat(_p, _q) {
         
       }
     }
-    if (exit === /* Unknown */2 && typeof match$1 !== "number" && match$1.tag === /* Tpat_alias */1) {
+    if (exit === 2 && typeof match$1 !== "number" && match$1.tag === /* Tpat_alias */1) {
       _q = match$1[0];
       continue ;
     }
@@ -51911,7 +51911,7 @@ function do_check_partial(pred, exhaust, loc, casel, pss) {
           } else {
             errmsg = "_\nMatching over values of extensible variant types must include\na wild card pattern in order to be exhaustive.";
           }
-          if (exit === /* Unknown */1) {
+          if (exit === 1) {
             try {
               var buf = $$Buffer.create(16);
               var fmt = Format.formatter_of_buffer(buf);
@@ -52191,7 +52191,7 @@ function error_of_extension(ext) {
                 } else {
                   exit = 2;
                 }
-                if (exit === /* Unknown */2) {
+                if (exit === 2) {
                   return error(loc, sub_from(inner), undefined, msg);
                 }
                 
@@ -52258,7 +52258,7 @@ newrecord$1[/* attribute */0] = (function (param, a) {
       default:
         
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       var match = a[1];
       switch (match.tag | 0) {
         case /* PStr */0 :
@@ -52359,9 +52359,9 @@ function warning_attribute(attrs) {
                     return /* () */0;
                 }
                 switch (exit) {
-                  case /* Unknown */1 :
+                  case 1 :
                       return $$process(match[/* loc */1], txt, false, param[1]);
-                  case /* Unknown */2 :
+                  case 2 :
                       return $$process(match[/* loc */1], txt, true, param[1]);
                   
                 }
@@ -53431,7 +53431,7 @@ function transl_type(env, policy, styp) {
                     exit = 1;
                 }
               }
-              if (exit === /* Unknown */1) {
+              if (exit === 1) {
                 throw [
                       $$Error$6,
                       sty[/* ptyp_loc */1],
@@ -53508,7 +53508,7 @@ function transl_type(env, policy, styp) {
               } else {
                 exit$1 = 1;
               }
-              if (exit$1 === /* Unknown */1) {
+              if (exit$1 === 1) {
                 if (List.length(stl) > 1 || c && stl !== /* [] */0) {
                   throw [
                         $$Error$6,
@@ -55626,7 +55626,7 @@ function build_or_pat(env, loc, lid) {
       exit = 1;
     }
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     throw [
           $$Error$7,
           loc,
@@ -56100,7 +56100,7 @@ function disambiguate($staropt$star, $staropt$star$1, scope, lid, env, opath, lb
   if (!(scope$1 && scope$1[0][0] === lbl)) {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     prerr_warning(lid[/* loc */1], /* Disambiguated_name */Block.__(25, [lbl[/* lbl_name */0]]));
   }
   return lbl;
@@ -56207,7 +56207,7 @@ function disambiguate_lid_a_list(loc, closed, env, opath, lid_a_list) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       match = disambiguate_label_by_ids(opath === undefined, env, closed, ids, scope);
     }
     var labels = match[1];
@@ -56338,7 +56338,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
   } else {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     var match$1 = find_record_qual(lid_a_list);
     var lid_a_list$1;
     if (match$1 !== undefined) {
@@ -56655,7 +56655,7 @@ function disambiguate$1($staropt$star, $staropt$star$1, scope, lid, env, opath, 
   if (!(scope$1 && scope$1[0][0] === lbl)) {
     exit = 1;
   }
-  if (exit === /* Unknown */1) {
+  if (exit === 1) {
     prerr_warning(lid[/* loc */1], /* Disambiguated_name */Block.__(25, [lbl[/* cstr_name */0]]));
   }
   return lbl;
@@ -56885,7 +56885,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                 break;
             
           }
-          if (exit === /* Unknown */1) {
+          if (exit === 1) {
             constrs$1 = find_all_constructors(env[0], lid[/* loc */1], lid[/* txt */0]);
           }
           var check_lk = function (tpath, constr) {
@@ -58622,7 +58622,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         } else {
           exit = 1;
         }
-        if (exit === /* Unknown */1) {
+        if (exit === 1) {
           scp = rec_flag ? /* Idef */Block.__(1, [loc]) : /* Idef */Block.__(1, [sbody[/* pexp_loc */1]]);
         }
         var match$10 = type_let(undefined, undefined, env, rec_flag, match[1], scp, true);
@@ -59625,7 +59625,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
             }
           }
-          if (exit$1 === /* Unknown */1) {
+          if (exit$1 === 1) {
             if (free_variables$1(Caml_option.some(env), arg$4[/* exp_type */3]) === /* [] */0 && free_variables$1(Caml_option.some(env), ty$prime$1) === /* [] */0) {
               var tmp$3 = false;
               if (!gen$1) {
@@ -59863,7 +59863,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
             }
           }
-          if (exit$2 === /* Unknown */1) {
+          if (exit$2 === 1) {
             match$48 = /* tuple */[
               /* Tmeth_name */Block.__(0, [met]),
               undefined,
@@ -60012,7 +60012,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     ])
                 ];
           }
-          if (exit$3 === /* Unknown */1) {
+          if (exit$3 === 1) {
             throw [
                   $$Error$7,
                   loc,
@@ -60532,7 +60532,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
                 ])
             ];
       }
-      if (exit === /* Unknown */1) {
+      if (exit === 1) {
         throw [
               $$Error$7,
               loc_fun,
@@ -61342,7 +61342,7 @@ function type_application(env, funct, sargs) {
                 exit = 1;
             }
           }
-          if (exit === /* Unknown */1) {
+          if (exit === 1) {
             var ty_fun$4;
             ty_fun$4 = typeof td === "number" || td.tag !== /* Tarrow */1 ? ty_fun$3 : newty2(current_level[0], td);
             var ty_res = result_type(Pervasives.$at(omitted$2, ignored[0]), ty_fun$4);
@@ -61369,7 +61369,7 @@ function type_application(env, funct, sargs) {
                     /* Incoherent_label_order */1
                   ];
             }
-            if (exit$1 === /* Unknown */2) {
+            if (exit$1 === 2) {
               throw [
                     $$Error$7,
                     funct[/* exp_loc */1],
@@ -61712,7 +61712,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
                   } else {
                     throw exn;
                   }
-                  if (exit === /* Unknown */1) {
+                  if (exit === 1) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
@@ -63866,7 +63866,7 @@ function make_constructor(env, type_path, type_params, sargs, sret_type) {
     if (typeof match === "number" || !(match.tag === /* Tconstr */3 && same(type_path, match[0]))) {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       throw [
             $$Error$8,
             sret_type$1[/* ptyp_loc */1],
@@ -67945,7 +67945,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
             } else {
               exit = 1;
             }
-            if (exit === /* Unknown */1) {
+            if (exit === 1) {
               throw [
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
@@ -72060,7 +72060,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                       } else {
                         exit$1 = 3;
                       }
-                      if (exit$1 === /* Unknown */3) {
+                      if (exit$1 === 3) {
                         if (id[/* name */1] === s) {
                           var tdecl$1 = transl_with_constraint(initial_env, id, undefined, decl, sdecl);
                           var newdecl$1 = tdecl$1[/* typ_type */3];
@@ -72093,7 +72093,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                       break;
                   
                 }
-                if (exit === /* Unknown */2) {
+                if (exit === 2) {
                   if (id[/* name */1] === s + "#row") {
                     _row_id = id;
                     _sg = rem;
@@ -72202,7 +72202,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                     
                   }
                 }
-                if (exit$2 === /* Unknown */2 && id$1[/* name */1] === s$1) {
+                if (exit$2 === 2 && id$1[/* name */1] === s$1) {
                   var match$3 = merge(env, extract_sig(env, loc, md[/* md_type */0]), namelist$1, undefined);
                   var match$4 = match$3[0];
                   return /* tuple */[
@@ -72843,7 +72843,7 @@ function remove_duplicates(val_ids, ext_ids, _param) {
                 exit = 2;
               }
             }
-            if (exit === /* Unknown */2 && List.exists((function(id$1){
+            if (exit === 2 && List.exists((function(id$1){
                   return function (param) {
                     return equal(id$1, param);
                   }
@@ -73858,7 +73858,7 @@ function modtype_of_package(env, loc, p, nl, tl) {
     } else {
       exit = 1;
     }
-    if (exit === /* Unknown */1) {
+    if (exit === 1) {
       if (nl === /* [] */0) {
         return /* Mty_ident */Block.__(0, [p]);
       } else {
@@ -73992,7 +73992,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           } else {
             exit = 1;
           }
-          if (exit === /* Unknown */1) {
+          if (exit === 1) {
             var mty$2 = sttn ? strengthen$1(env, mty, path) : mty;
             node = /* record */[
               md_000,
@@ -74226,7 +74226,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
               exit$1 = 1;
           }
         }
-        if (exit$1 === /* Unknown */1) {
+        if (exit$1 === 1) {
           throw [
                 $$Error$10,
                 smod[/* pmod_loc */1],

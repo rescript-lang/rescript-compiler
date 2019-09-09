@@ -65,7 +65,7 @@ catch (raw_exn){
   }
 }
 
-if (exit === /* Unknown */1) {
+if (exit === 1) {
   add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));

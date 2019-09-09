@@ -144,7 +144,7 @@ if (typeof ty$2 === "number" || ty$2.tag !== /* JSONNumber */1) {
   eq("File \"js_json_test.ml\", line 74, characters 31-38", ty$2[0], 1.23456789);
 }
 
-if (exit === /* Unknown */1) {
+if (exit === 1) {
   add_test("File \"js_json_test.ml\", line 75, characters 18-25", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
@@ -162,7 +162,7 @@ if (typeof ty$3 === "number" || ty$3.tag !== /* JSONNumber */1) {
   eq("File \"js_json_test.ml\", line 84, characters 31-38", ty$3[0] | 0, -1347440721);
 }
 
-if (exit$1 === /* Unknown */1) {
+if (exit$1 === 1) {
   add_test("File \"js_json_test.ml\", line 85, characters 18-25", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
