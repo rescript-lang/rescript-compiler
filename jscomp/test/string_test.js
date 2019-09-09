@@ -35,23 +35,23 @@ function ff(x) {
 function gg(x) {
   var a;
   switch (x) {
-    case /* Unknown */0 :
-    case /* Unknown */1 :
-    case /* Unknown */2 :
+    case 0 :
+    case 1 :
+    case 2 :
         a = 3;
         break;
-    case /* Unknown */3 :
+    case 3 :
         a = 4;
         break;
-    case /* Unknown */4 :
+    case 4 :
         a = 6;
         break;
-    case /* Unknown */5 :
-    case /* Unknown */6 :
-    case /* Unknown */7 :
+    case 5 :
+    case 6 :
+    case 7 :
         a = 8;
         break;
-    case /* Unknown */8 :
+    case 8 :
         a = 7;
         break;
     default:

@@ -63,11 +63,11 @@ function fooC(param) {
 
 function switchNum(param) {
   switch (param) {
-    case /* Unknown */0 :
+    case 0 :
         return "0";
-    case /* Unknown */1 :
+    case 1 :
         return "1";
-    case /* Unknown */2 :
+    case 2 :
         return "2";
     default:
       return "_";

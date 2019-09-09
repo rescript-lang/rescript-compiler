@@ -1465,7 +1465,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           var c = Lexing.lexeme_char(lexbuf, 1);
           ___ocaml_lex_state = 55;
           _l = /* :: */[
@@ -1473,16 +1473,16 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
             l
           ];
           continue ;
-      case /* Unknown */1 :
+      case 1 :
           return /* String_value */[$$String.concat("", List.rev(l))];
-      case /* Unknown */2 :
+      case 2 :
           ___ocaml_lex_state = 55;
           _l = /* :: */[
             Lexing.lexeme(lexbuf),
             l
           ];
           continue ;
-      case /* Unknown */3 :
+      case 3 :
           return /* String_eof */0;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
@@ -1498,17 +1498,17 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           update_loc(lexbuf);
           return /* Comment_value */[$$String.concat("", List.rev(l))];
-      case /* Unknown */1 :
+      case 1 :
           ___ocaml_lex_state = 41;
           _l = /* :: */[
             Lexing.lexeme(lexbuf),
             l
           ];
           continue ;
-      case /* Unknown */2 :
+      case 2 :
           return /* Comment_eof */0;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
@@ -1524,21 +1524,21 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           update_loc(lexbuf);
           ___ocaml_lex_state = 47;
           continue ;
-      case /* Unknown */1 :
+      case 1 :
           Lexing.lexeme(lexbuf);
           return /* Comment_value */[$$String.concat("", List.rev(l))];
-      case /* Unknown */2 :
+      case 2 :
           ___ocaml_lex_state = 47;
           _l = /* :: */[
             Lexing.lexeme(lexbuf),
             l
           ];
           continue ;
-      case /* Unknown */3 :
+      case 3 :
           return /* Comment_eof */0;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
@@ -1555,29 +1555,29 @@ function lexer(lexbuf) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           return /* LBRACE */15;
-      case /* Unknown */1 :
+      case 1 :
           return /* RBRACE */14;
-      case /* Unknown */2 :
+      case 2 :
           return /* LBRACKET */17;
-      case /* Unknown */3 :
+      case 3 :
           return /* RBRACKET */16;
-      case /* Unknown */4 :
+      case 4 :
           return /* RPAREN */18;
-      case /* Unknown */5 :
+      case 5 :
           return /* LPAREN */19;
-      case /* Unknown */6 :
+      case 6 :
           return /* LANGLEB */21;
-      case /* Unknown */7 :
+      case 7 :
           return /* RANGLEB */20;
-      case /* Unknown */8 :
+      case 8 :
           return /* EQUAL */22;
-      case /* Unknown */9 :
+      case 9 :
           return /* SEMICOLON */23;
-      case /* Unknown */10 :
+      case 10 :
           return /* COMMA */24;
-      case /* Unknown */11 :
+      case 11 :
           var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf$1, 41);
           if (match) {
             ___ocaml_lex_state = 0;
@@ -1585,7 +1585,7 @@ function lexer(lexbuf) {
           } else {
             return /* EOF */25;
           }
-      case /* Unknown */12 :
+      case 12 :
           var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
           if (match$1) {
             ___ocaml_lex_state = 0;
@@ -1593,27 +1593,27 @@ function lexer(lexbuf) {
           } else {
             return /* EOF */25;
           }
-      case /* Unknown */13 :
+      case 13 :
           var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
           if (match$2) {
             return /* STRING */Block.__(2, [match$2[0]]);
           } else {
             return /* EOF */25;
           }
-      case /* Unknown */14 :
+      case 14 :
           return /* INT */Block.__(3, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf$1))]);
-      case /* Unknown */15 :
+      case 15 :
           return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf$1))]);
-      case /* Unknown */16 :
+      case 16 :
           return /* FLOAT */Block.__(4, [Number.NaN]);
-      case /* Unknown */17 :
+      case 17 :
           update_loc(lexbuf$1);
           ___ocaml_lex_state = 0;
           continue ;
-      case /* Unknown */18 :
+      case 18 :
           ___ocaml_lex_state = 0;
           continue ;
-      case /* Unknown */19 :
+      case 19 :
           var loc = from_lexbuf(lexbuf$1);
           var ident = Lexing.lexeme(lexbuf$1);
           switch (ident) {
@@ -1655,9 +1655,9 @@ function lexer(lexbuf) {
                           ident
                         ]]);
           }
-      case /* Unknown */20 :
+      case 20 :
           return /* EOF */25;
-      case /* Unknown */21 :
+      case 21 :
           var s = Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "Unknown character found ",
@@ -1874,23 +1874,23 @@ function scope(scope$1, f) {
 
 function indentation_prefix(n) {
   switch (n) {
-    case /* Unknown */0 :
+    case 0 :
         return "";
-    case /* Unknown */1 :
+    case 1 :
         return "  ";
-    case /* Unknown */2 :
+    case 2 :
         return "    ";
-    case /* Unknown */3 :
+    case 3 :
         return "      ";
-    case /* Unknown */4 :
+    case 4 :
         return "        ";
-    case /* Unknown */5 :
+    case 5 :
         return "          ";
-    case /* Unknown */6 :
+    case 6 :
         return "            ";
-    case /* Unknown */7 :
+    case 7 :
         return "              ";
-    case /* Unknown */8 :
+    case 8 :
         return "                ";
     default:
       return Caml_bytes.bytes_to_string(Bytes.make(n, /* " " */32));

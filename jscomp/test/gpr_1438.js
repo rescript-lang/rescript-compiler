@@ -3,32 +3,32 @@
 
 function actionKey(key, a, b, c, d, e) {
   switch (key) {
-    case /* Unknown */98 :
+    case 98 :
         return c;
-    case /* Unknown */106 :
+    case 106 :
         return d;
-    case /* Unknown */107 :
+    case 107 :
         return e;
-    case /* Unknown */116 :
+    case 116 :
         return b;
-    case /* Unknown */100 :
-    case /* Unknown */101 :
-    case /* Unknown */102 :
-    case /* Unknown */103 :
-    case /* Unknown */104 :
-    case /* Unknown */105 :
-    case /* Unknown */108 :
-    case /* Unknown */109 :
-    case /* Unknown */110 :
-    case /* Unknown */111 :
-    case /* Unknown */112 :
-    case /* Unknown */113 :
-    case /* Unknown */114 :
-    case /* Unknown */115 :
-    case /* Unknown */117 :
+    case 100 :
+    case 101 :
+    case 102 :
+    case 103 :
+    case 104 :
+    case 105 :
+    case 108 :
+    case 109 :
+    case 110 :
+    case 111 :
+    case 112 :
+    case 113 :
+    case 114 :
+    case 115 :
+    case 117 :
         break;
-    case /* Unknown */99 :
-    case /* Unknown */118 :
+    case 99 :
+    case 118 :
         return a;
     default:
       

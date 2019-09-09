@@ -25,26 +25,26 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           ___ocaml_lex_state = 0;
           continue ;
-      case /* Unknown */1 :
+      case 1 :
           return /* NUMERAL */Block.__(0, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
-      case /* Unknown */2 :
+      case 2 :
           return /* IDENT */Block.__(1, [Lexing.lexeme(lexbuf)]);
-      case /* Unknown */3 :
+      case 3 :
           return /* PLUS */0;
-      case /* Unknown */4 :
+      case 4 :
           return /* MINUS */1;
-      case /* Unknown */5 :
+      case 5 :
           return /* TIMES */2;
-      case /* Unknown */6 :
+      case 6 :
           return /* DIVIDE */3;
-      case /* Unknown */7 :
+      case 7 :
           return /* LPAREN */5;
-      case /* Unknown */8 :
+      case 8 :
           return /* RPAREN */6;
-      case /* Unknown */9 :
+      case 9 :
           return /* EOF */7;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);

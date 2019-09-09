@@ -422,9 +422,9 @@ var letter_all = loop(104);
 
 function letter(param) {
   switch (param) {
-    case /* Unknown */97 :
+    case 97 :
         return letter_all;
-    case /* Unknown */99 :
+    case 99 :
         return /* :: */[
                 1,
                 /* :: */[
@@ -432,22 +432,22 @@ function letter(param) {
                   /* [] */0
                 ]
               ];
-    case /* Unknown */100 :
+    case 100 :
         return /* :: */[
                 3,
                 /* [] */0
               ];
-    case /* Unknown */101 :
+    case 101 :
         return /* :: */[
                 4,
                 /* [] */0
               ];
-    case /* Unknown */102 :
+    case 102 :
         return /* :: */[
                 5,
                 /* [] */0
               ];
-    case /* Unknown */107 :
+    case 107 :
         return /* :: */[
                 32,
                 /* :: */[
@@ -473,32 +473,32 @@ function letter(param) {
                   ]
                 ]
               ];
-    case /* Unknown */108 :
+    case 108 :
         return /* :: */[
                 6,
                 /* [] */0
               ];
-    case /* Unknown */109 :
+    case 109 :
         return /* :: */[
                 7,
                 /* [] */0
               ];
-    case /* Unknown */112 :
+    case 112 :
         return /* :: */[
                 8,
                 /* [] */0
               ];
-    case /* Unknown */114 :
+    case 114 :
         return /* :: */[
                 9,
                 /* [] */0
               ];
-    case /* Unknown */115 :
+    case 115 :
         return /* :: */[
                 10,
                 /* [] */0
               ];
-    case /* Unknown */117 :
+    case 117 :
         return /* :: */[
                 11,
                 /* :: */[
@@ -506,23 +506,23 @@ function letter(param) {
                   /* [] */0
                 ]
               ];
-    case /* Unknown */118 :
+    case 118 :
         return /* :: */[
                 13,
                 /* [] */0
               ];
-    case /* Unknown */98 :
-    case /* Unknown */103 :
-    case /* Unknown */104 :
-    case /* Unknown */105 :
-    case /* Unknown */106 :
-    case /* Unknown */110 :
-    case /* Unknown */111 :
-    case /* Unknown */113 :
-    case /* Unknown */116 :
-    case /* Unknown */119 :
+    case 98 :
+    case 103 :
+    case 104 :
+    case 105 :
+    case 106 :
+    case 110 :
+    case 111 :
+    case 113 :
+    case 116 :
+    case 119 :
         return /* [] */0;
-    case /* Unknown */120 :
+    case 120 :
         return /* :: */[
                 14,
                 /* :: */[
@@ -563,12 +563,12 @@ function letter(param) {
                   ]
                 ]
               ];
-    case /* Unknown */121 :
+    case 121 :
         return /* :: */[
                 26,
                 /* [] */0
               ];
-    case /* Unknown */122 :
+    case 122 :
         return /* :: */[
                 27,
                 /* [] */0
@@ -695,14 +695,14 @@ function parse_opt(error, active, flags, s) {
           }
         } else if (c >= 43) {
           switch (c - 43 | 0) {
-            case /* Unknown */0 :
+            case 0 :
                 return loop_letter_num(set, i + 1 | 0);
-            case /* Unknown */1 :
+            case 1 :
                 throw [
                       Arg.Bad,
                       "Ill-formed list of warnings"
                     ];
-            case /* Unknown */2 :
+            case 2 :
                 return loop_letter_num(clear, i + 1 | 0);
             
           }
@@ -9864,7 +9864,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       }
                     } else if (v >= 60) {
                       switch (v - 60 | 0) {
-                        case /* Unknown */0 :
+                        case 0 :
                             if (last_index === 0) {
                               throw [
                                     $$Error$2,
@@ -9880,10 +9880,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                 semantic_version_parse(str, 1, last_index)
                               ];
                             break;
-                        case /* Unknown */1 :
+                        case 1 :
                             exit$2 = 1;
                             break;
-                        case /* Unknown */2 :
+                        case 2 :
                             if (last_index === 0) {
                               throw [
                                     $$Error$2,
@@ -10636,16 +10636,16 @@ function char_for_backslash(c) {
       return c;
     } else {
       switch (c - 110 | 0) {
-        case /* Unknown */0 :
+        case 0 :
             return /* "\n" */10;
-        case /* Unknown */4 :
+        case 4 :
             return /* "\r" */13;
-        case /* Unknown */1 :
-        case /* Unknown */2 :
-        case /* Unknown */3 :
-        case /* Unknown */5 :
+        case 1 :
+        case 2 :
+        case 3 :
+        case 5 :
             return c;
-        case /* Unknown */6 :
+        case 6 :
             return /* "\t" */9;
         
       }
@@ -10980,7 +10980,7 @@ function token(lexbuf) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           if (!escaped_newlines[0]) {
             throw [
                   $$Error$2,
@@ -10990,28 +10990,28 @@ function token(lexbuf) {
           }
           update_loc(lexbuf$1, undefined, 1, false, 0);
           return token(lexbuf$1);
-      case /* Unknown */1 :
+      case 1 :
           update_loc(lexbuf$1, undefined, 1, false, 0);
           return /* EOL */100;
-      case /* Unknown */2 :
+      case 2 :
           return token(lexbuf$1);
-      case /* Unknown */3 :
+      case 3 :
           return /* UNDERSCORE */94;
-      case /* Unknown */4 :
+      case 4 :
           return /* TILDE */89;
-      case /* Unknown */5 :
+      case 5 :
           return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
-      case /* Unknown */6 :
+      case 6 :
           prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
-      case /* Unknown */7 :
+      case 7 :
           return /* QUESTION */76;
-      case /* Unknown */8 :
+      case 8 :
           return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
-      case /* Unknown */9 :
+      case 9 :
           prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
-      case /* Unknown */10 :
+      case 10 :
           var s = Lexing.lexeme(lexbuf$1);
           try {
             return Hashtbl.find(keyword_table, s);
@@ -11023,15 +11023,15 @@ function token(lexbuf) {
               throw exn;
             }
           }
-      case /* Unknown */11 :
+      case 11 :
           prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */12 :
+      case 12 :
           return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */13 :
+      case 13 :
           prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
           return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */14 :
+      case 14 :
           try {
             return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
           }
@@ -11046,9 +11046,9 @@ function token(lexbuf) {
             }
             throw exn$1;
           }
-      case /* Unknown */15 :
+      case 15 :
           return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf$1))]);
-      case /* Unknown */16 :
+      case 16 :
           try {
             return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
           }
@@ -11063,7 +11063,7 @@ function token(lexbuf) {
             }
             throw exn$2;
           }
-      case /* Unknown */17 :
+      case 17 :
           try {
             return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
           }
@@ -11078,7 +11078,7 @@ function token(lexbuf) {
             }
             throw exn$3;
           }
-      case /* Unknown */18 :
+      case 18 :
           try {
             return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
           }
@@ -11093,7 +11093,7 @@ function token(lexbuf) {
             }
             throw exn$4;
           }
-      case /* Unknown */19 :
+      case 19 :
           reset_string_buffer(/* () */0);
           is_in_string[0] = true;
           var string_start = lexbuf$1[/* lex_start_p */10];
@@ -11105,7 +11105,7 @@ function token(lexbuf) {
                       get_stored_string(/* () */0),
                       undefined
                     ]]);
-      case /* Unknown */20 :
+      case 20 :
           reset_string_buffer(/* () */0);
           var delim = Lexing.lexeme(lexbuf$1);
           var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
@@ -11119,18 +11119,18 @@ function token(lexbuf) {
                       get_stored_string(/* () */0),
                       delim$1
                     ]]);
-      case /* Unknown */21 :
+      case 21 :
           update_loc(lexbuf$1, undefined, 1, false, 1);
           return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
-      case /* Unknown */22 :
+      case 22 :
           return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
-      case /* Unknown */23 :
+      case 23 :
           return /* CHAR */Block.__(0, [char_for_backslash(Lexing.lexeme_char(lexbuf$1, 2))]);
-      case /* Unknown */24 :
+      case 24 :
           return /* CHAR */Block.__(0, [char_for_decimal_code(lexbuf$1, 2)]);
-      case /* Unknown */25 :
+      case 25 :
           return /* CHAR */Block.__(0, [char_for_hexadecimal_code(lexbuf$1, 3)]);
-      case /* Unknown */26 :
+      case 26 :
           var l = Lexing.lexeme(lexbuf$1);
           var esc = $$String.sub(l, 1, l.length - 1 | 0);
           throw [
@@ -11138,16 +11138,16 @@ function token(lexbuf) {
                 /* Illegal_escape */Block.__(1, [esc]),
                 curr(lexbuf$1)
               ];
-      case /* Unknown */27 :
+      case 27 :
           var match = with_comment_buffer(comment, lexbuf$1);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       match[0],
                       match[1]
                     ]]);
-      case /* Unknown */28 :
+      case 28 :
           var match$1 = with_comment_buffer(comment, lexbuf$1);
           return /* DOCSTRING */Block.__(19, [docstring(match$1[0], match$1[1])]);
-      case /* Unknown */29 :
+      case 29 :
           var stars = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
           var match$2 = with_comment_buffer((function(stars){
               return function (lexbuf) {
@@ -11159,7 +11159,7 @@ function token(lexbuf) {
                       match$2[0],
                       match$2[1]
                     ]]);
-      case /* Unknown */30 :
+      case 30 :
           if (print_warnings[0]) {
             prerr_warning(curr(lexbuf$1), /* Comment_start */0);
           }
@@ -11168,13 +11168,13 @@ function token(lexbuf) {
                       match$3[0],
                       match$3[1]
                     ]]);
-      case /* Unknown */31 :
+      case 31 :
           var stars$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5] - 2 | 0);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       stars$1,
                       curr(lexbuf$1)
                     ]]);
-      case /* Unknown */32 :
+      case 32 :
           var loc = curr(lexbuf$1);
           prerr_warning(loc, /* Comment_not_end */1);
           lexbuf$1[/* lex_curr_pos */5] = lexbuf$1[/* lex_curr_pos */5] - 1 | 0;
@@ -11186,123 +11186,123 @@ function token(lexbuf) {
             /* pos_cnum */curpos[/* pos_cnum */3] - 1 | 0
           ];
           return /* STAR */86;
-      case /* Unknown */33 :
+      case 33 :
           var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
           var name = Lexing.sub_lexeme_opt(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 3), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 2));
           update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), true, 0);
           return token(lexbuf$1);
-      case /* Unknown */34 :
+      case 34 :
           return /* SHARP */84;
-      case /* Unknown */35 :
+      case 35 :
           return /* AMPERSAND */1;
-      case /* Unknown */36 :
+      case 36 :
           return /* AMPERAMPER */0;
-      case /* Unknown */37 :
+      case 37 :
           return /* BACKQUOTE */5;
-      case /* Unknown */38 :
+      case 38 :
           return /* QUOTE */77;
-      case /* Unknown */39 :
+      case 39 :
           return /* LPAREN */54;
-      case /* Unknown */40 :
+      case 40 :
           return /* RPAREN */81;
-      case /* Unknown */41 :
+      case 41 :
           return /* STAR */86;
-      case /* Unknown */42 :
+      case 42 :
           return /* COMMA */16;
-      case /* Unknown */43 :
+      case 43 :
           return /* MINUSGREATER */62;
-      case /* Unknown */44 :
+      case 44 :
           return /* DOT */20;
-      case /* Unknown */45 :
+      case 45 :
           return /* DOTDOT */21;
-      case /* Unknown */46 :
+      case 46 :
           return /* COLON */12;
-      case /* Unknown */47 :
+      case 47 :
           return /* COLONCOLON */13;
-      case /* Unknown */48 :
+      case 48 :
           return /* COLONEQUAL */14;
-      case /* Unknown */49 :
+      case 49 :
           return /* COLONGREATER */15;
-      case /* Unknown */50 :
+      case 50 :
           return /* SEMI */82;
-      case /* Unknown */51 :
+      case 51 :
           return /* SEMISEMI */83;
-      case /* Unknown */52 :
+      case 52 :
           return /* LESS */51;
-      case /* Unknown */53 :
+      case 53 :
           return /* LESSMINUS */52;
-      case /* Unknown */54 :
+      case 54 :
           return /* EQUAL */26;
-      case /* Unknown */55 :
+      case 55 :
           return /* LBRACKET */45;
-      case /* Unknown */56 :
+      case 56 :
           return /* LBRACKETBAR */46;
-      case /* Unknown */57 :
+      case 57 :
           return /* LBRACKETLESS */47;
-      case /* Unknown */58 :
+      case 58 :
           return /* LBRACKETGREATER */48;
-      case /* Unknown */59 :
+      case 59 :
           return /* RBRACKET */79;
-      case /* Unknown */60 :
+      case 60 :
           return /* LBRACE */43;
-      case /* Unknown */61 :
+      case 61 :
           return /* LBRACELESS */44;
-      case /* Unknown */62 :
+      case 62 :
           return /* BAR */7;
-      case /* Unknown */63 :
+      case 63 :
           return /* BARBAR */8;
-      case /* Unknown */64 :
+      case 64 :
           return /* BARRBRACKET */9;
-      case /* Unknown */65 :
+      case 65 :
           return /* GREATER */34;
-      case /* Unknown */66 :
+      case 66 :
           return /* GREATERRBRACKET */36;
-      case /* Unknown */67 :
+      case 67 :
           return /* RBRACE */78;
-      case /* Unknown */68 :
+      case 68 :
           return /* GREATERRBRACE */35;
-      case /* Unknown */69 :
+      case 69 :
           return /* LBRACKETAT */55;
-      case /* Unknown */70 :
+      case 70 :
           return /* LBRACKETPERCENT */49;
-      case /* Unknown */71 :
+      case 71 :
           return /* LBRACKETPERCENTPERCENT */50;
-      case /* Unknown */72 :
+      case 72 :
           return /* LBRACKETATAT */56;
-      case /* Unknown */73 :
+      case 73 :
           return /* LBRACKETATATAT */57;
-      case /* Unknown */74 :
+      case 74 :
           return /* BANG */6;
-      case /* Unknown */75 :
+      case 75 :
           return /* INFIXOP0 */Block.__(2, ["!="]);
-      case /* Unknown */76 :
+      case 76 :
           return /* PLUS */72;
-      case /* Unknown */77 :
+      case 77 :
           return /* PLUSDOT */73;
-      case /* Unknown */78 :
+      case 78 :
           return /* PLUSEQ */74;
-      case /* Unknown */79 :
+      case 79 :
           return /* MINUS */60;
-      case /* Unknown */80 :
+      case 80 :
           return /* MINUSDOT */61;
-      case /* Unknown */81 :
-      case /* Unknown */82 :
+      case 81 :
+      case 82 :
           return /* PREFIXOP */Block.__(14, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */83 :
+      case 83 :
           return /* INFIXOP0 */Block.__(2, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */84 :
+      case 84 :
           return /* INFIXOP1 */Block.__(3, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */85 :
+      case 85 :
           return /* INFIXOP2 */Block.__(4, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */86 :
+      case 86 :
           return /* INFIXOP4 */Block.__(6, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */87 :
+      case 87 :
           return /* PERCENT */71;
-      case /* Unknown */88 :
+      case 88 :
           return /* INFIXOP3 */Block.__(5, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */89 :
+      case 89 :
           return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
-      case /* Unknown */90 :
+      case 90 :
           if (if_then_else[0] !== /* Dir_out */2) {
             if (if_then_else[0] === /* Dir_if_true */0) {
               throw [
@@ -11319,7 +11319,7 @@ function token(lexbuf) {
           } else {
             return /* EOF */25;
           }
-      case /* Unknown */91 :
+      case 91 :
           throw [
                 $$Error$2,
                 /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
@@ -11338,19 +11338,19 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           update_loc(lexbuf, undefined, 1, false, 0);
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 183;
           continue ;
-      case /* Unknown */1 :
+      case 1 :
           is_in_string[0] = false;
           throw [
                 $$Error$2,
                 /* Unterminated_string */0,
                 string_start_loc[0]
               ];
-      case /* Unknown */2 :
+      case 2 :
           var edelim = Lexing.lexeme(lexbuf);
           var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
           if (delim === edelim$1) {
@@ -11360,7 +11360,7 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 183;
             continue ;
           }
-      case /* Unknown */3 :
+      case 3 :
           store_string_char(Lexing.lexeme_char(lexbuf, 0));
           ___ocaml_lex_state = 183;
           continue ;
@@ -11380,22 +11380,22 @@ function string(lexbuf) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           return /* () */0;
-      case /* Unknown */1 :
+      case 1 :
           var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
           update_loc(lexbuf$1, undefined, 1, false, space.length);
           return string(lexbuf$1);
-      case /* Unknown */2 :
+      case 2 :
           store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
           return string(lexbuf$1);
-      case /* Unknown */3 :
+      case 3 :
           store_string_char(char_for_decimal_code(lexbuf$1, 1));
           return string(lexbuf$1);
-      case /* Unknown */4 :
+      case 4 :
           store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
           return string(lexbuf$1);
-      case /* Unknown */5 :
+      case 5 :
           if (comment_start_loc[0] !== /* [] */0) {
             return string(lexbuf$1);
           } else {
@@ -11405,21 +11405,21 @@ function string(lexbuf) {
             store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
             return string(lexbuf$1);
           }
-      case /* Unknown */6 :
+      case 6 :
           if (comment_start_loc[0] === /* [] */0) {
             prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
           }
           update_loc(lexbuf$1, undefined, 1, false, 0);
           store_string(Lexing.lexeme(lexbuf$1));
           return string(lexbuf$1);
-      case /* Unknown */7 :
+      case 7 :
           is_in_string[0] = false;
           throw [
                 $$Error$2,
                 /* Unterminated_string */0,
                 string_start_loc[0]
               ];
-      case /* Unknown */8 :
+      case 8 :
           store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
           return string(lexbuf$1);
       default:
@@ -11435,7 +11435,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case /* Unknown */0 :
+      case 0 :
           comment_start_loc[0] = /* :: */[
             curr(lexbuf),
             comment_start_loc[0]
@@ -11443,7 +11443,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 132;
           continue ;
-      case /* Unknown */1 :
+      case 1 :
           var match = comment_start_loc[0];
           if (match) {
             var l = match[1];
@@ -11466,7 +11466,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   ]
                 ];
           }
-      case /* Unknown */2 :
+      case 2 :
           string_start_loc[0] = curr(lexbuf);
           store_string_char(/* "\"" */34);
           is_in_string[0] = true;
@@ -11514,7 +11514,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           store_string_char(/* "\"" */34);
           ___ocaml_lex_state = 132;
           continue ;
-      case /* Unknown */3 :
+      case 3 :
           var delim = Lexing.lexeme(lexbuf);
           var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
           string_start_loc[0] = curr(lexbuf);
@@ -11566,12 +11566,12 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           store_string_char(/* "}" */125);
           ___ocaml_lex_state = 132;
           continue ;
-      case /* Unknown */5 :
+      case 5 :
           update_loc(lexbuf, undefined, 1, false, 1);
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 132;
           continue ;
-      case /* Unknown */10 :
+      case 10 :
           var match$5 = comment_start_loc[0];
           if (match$5) {
             var start$2 = List.hd(List.rev(comment_start_loc[0]));
@@ -11591,17 +11591,17 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   ]
                 ];
           }
-      case /* Unknown */11 :
+      case 11 :
           update_loc(lexbuf, undefined, 1, false, 0);
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 132;
           continue ;
-      case /* Unknown */4 :
-      case /* Unknown */6 :
-      case /* Unknown */7 :
-      case /* Unknown */8 :
-      case /* Unknown */9 :
-      case /* Unknown */12 :
+      case 4 :
+      case 6 :
+      case 7 :
+      case 8 :
+      case 9 :
+      case 12 :
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 132;
           continue ;
