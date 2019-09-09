@@ -87,10 +87,10 @@ function rollback_path(subst, p) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       switch (p.tag | 0) {
-        case /* Unknown */1 :
+        case /* Pdot */1 :
             return "Pdot";
-        case /* Unknown */0 :
-        case /* Unknown */2 :
+        case /* Pident */0 :
+        case /* Papply */2 :
             return "Pident | Papply";
         
       }
