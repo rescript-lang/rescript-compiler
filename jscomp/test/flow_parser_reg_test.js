@@ -1459,14 +1459,14 @@ function get_result_and_clear_state(param) {
     }
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         var match$4 = lex_token[0];
         match$1 = /* tuple */[
           match$4[0],
           match$4[2]
         ];
         break;
-    case 2 :
+    case /* Unknown */2 :
         match$1 = /* tuple */[
           from_lb(env[/* lex_source */0], env[/* lex_lb */1]),
           Lexing.lexeme(env[/* lex_lb */1])
@@ -6478,7 +6478,7 @@ function primary(env) {
     }
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         var match$6 = primitive(token$5);
         if (match$6 !== undefined) {
           token$4(env, token$5);
@@ -6493,7 +6493,7 @@ function primary(env) {
                   /* Any */0
                 ];
         }
-    case 2 :
+    case /* Unknown */2 :
         var raw$2 = Curry._2(Parser_env_Peek.value, undefined, env);
         token$4(env, token$5);
         var value$2 = token$5 === /* T_TRUE */29;
@@ -6655,7 +6655,7 @@ function function_param_list_without_parens(env) {
           exit = 1;
         }
         switch (exit) {
-          case 1 :
+          case /* Unknown */1 :
               var acc_000 = param(env$1);
               var acc$1 = /* :: */[
                 acc_000,
@@ -6666,7 +6666,7 @@ function function_param_list_without_parens(env) {
               }
               _acc = acc$1;
               continue ;
-          case 2 :
+          case /* Unknown */2 :
               var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), param(env$1)) : undefined;
               return /* tuple */[
                       rest,
@@ -7006,7 +7006,7 @@ function properties(allow_static, env, _param) {
       exit = 1;
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$2;
           var exit$1 = 0;
@@ -7057,13 +7057,13 @@ function properties(allow_static, env, _param) {
             callProperties
           ];
           continue ;
-      case 2 :
+      case /* Unknown */2 :
           return /* tuple */[
                   List.rev(acc),
                   List.rev(indexers),
                   List.rev(callProperties)
                 ];
-      case 3 :
+      case /* Unknown */3 :
           var call_prop = call_property(env, start_loc, $$static);
           semicolon$1(env);
           _param = /* tuple */[
@@ -7383,7 +7383,7 @@ function param_list(env, _param) {
       exit = 1;
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           var match = param$1(env);
           var $$default = match[1];
           var has_default$1 = has_default || $$default !== undefined;
@@ -7402,7 +7402,7 @@ function param_list(env, _param) {
             has_default$1
           ];
           continue ;
-      case 2 :
+      case /* Unknown */2 :
           var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28)) : undefined;
           if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
             error$1(env, /* ParameterAfterRestParameter */47);
@@ -8438,7 +8438,7 @@ function primary$1(env) {
     }
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         if (Curry._2(Parser_env_Peek.is_identifier, undefined, env)) {
           var id$1 = Curry._2(Parse.identifier, undefined, env);
           return /* tuple */[
@@ -8458,7 +8458,7 @@ function primary$1(env) {
                       ]])
                 ];
         }
-    case 2 :
+    case /* Unknown */2 :
         var raw$4 = Curry._2(Parser_env_Peek.value, undefined, env);
         token$4(env, token$5);
         var value$4 = /* Boolean */Block.__(1, [token$5 === /* T_TRUE */29]);
@@ -9697,7 +9697,7 @@ function init(env, start_loc, key, async, generator) {
     exit = 1;
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         token$4(env, /* T_COLON */77);
         match$1 = /* tuple */[
           Curry._1(Parse.assignment, env),
@@ -9705,7 +9705,7 @@ function init(env, start_loc, key, async, generator) {
           false
         ];
         break;
-    case 2 :
+    case /* Unknown */2 :
         var tmp;
         switch (key.tag | 0) {
           case /* Literal */0 :
@@ -9733,7 +9733,7 @@ function init(env, start_loc, key, async, generator) {
           false
         ];
         break;
-    case 3 :
+    case /* Unknown */3 :
         var typeParameters = Curry._1(type_parameter_declaration$1, env);
         var match$2 = function_params(env);
         var rest = match$2[2];
@@ -10108,7 +10108,7 @@ function class_element(env) {
                       )
                   ) : 2;
                 switch (exit) {
-                  case 2 :
+                  case /* Unknown */2 :
                       var env$1 = env;
                       var start_loc$1 = start_loc;
                       var decorators$1 = decorators;
@@ -10125,7 +10125,7 @@ function class_element(env) {
                                     /* decorators */decorators$1
                                   ]
                                 ]]);
-                  case 3 :
+                  case /* Unknown */3 :
                       return init$1(env, start_loc, decorators, key$1, async, generator$1, $$static);
                   
                 }
@@ -10145,7 +10145,7 @@ function class_element(env) {
                       )
                   ) : 2;
                 switch (exit$1) {
-                  case 2 :
+                  case /* Unknown */2 :
                       var env$2 = env;
                       var start_loc$2 = start_loc;
                       var decorators$2 = decorators;
@@ -10162,7 +10162,7 @@ function class_element(env) {
                                     /* decorators */decorators$2
                                   ]
                                 ]]);
-                  case 3 :
+                  case /* Unknown */3 :
                       return init$1(env, start_loc, decorators, key$1, async, generator$1, $$static);
                   
                 }
@@ -10899,7 +10899,7 @@ function declare_export_declaration($staropt$star, env) {
     exit = 1;
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         var match$7 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         if (typeof match$7 === "number") {
           if (match$7 !== 51) {
@@ -10934,7 +10934,7 @@ function declare_export_declaration($staropt$star, env) {
                       /* source */source$2
                     ]])
               ];
-    case 2 :
+    case /* Unknown */2 :
         var token$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         var match$10;
         var exit$2 = 0;
@@ -10966,7 +10966,7 @@ function declare_export_declaration($staropt$star, env) {
           exit$2 = 3;
         }
         switch (exit$2) {
-          case 3 :
+          case /* Unknown */3 :
               throw [
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
@@ -10975,7 +10975,7 @@ function declare_export_declaration($staropt$star, env) {
                       17
                     ]
                   ];
-          case 4 :
+          case /* Unknown */4 :
               if (typeof token$5 === "number") {
                 if (token$5 !== 25) {
                   if (token$5 !== 26) {
@@ -12480,7 +12480,7 @@ function module_item(env) {
             exit = 1;
           }
           switch (exit) {
-            case 1 :
+            case /* Unknown */1 :
                 var match$8 = Curry._2(Parser_env_Peek.token, undefined, env$2);
                 var exportKind = typeof match$8 === "number" && match$8 === 59 ? (token$3(env$2), /* ExportType */0) : /* ExportValue */1;
                 token$4(env$2, /* T_LCURLY */1);
@@ -12506,7 +12506,7 @@ function module_item(env) {
                               /* exportKind */exportKind
                             ]])
                       ];
-            case 2 :
+            case /* Unknown */2 :
                 var stmt = Curry._2(Parse.statement_list_item, decorators$1, env$2);
                 var match$11 = stmt[1];
                 var loc$1 = stmt[0];

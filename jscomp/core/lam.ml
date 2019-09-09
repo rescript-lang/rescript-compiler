@@ -94,7 +94,7 @@ module Types = struct
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
-    | Lswitch of t * switch * switch_names
+    | Lswitch of t * switch * switch_names option
     | Lstringswitch of t * (string * t) list * t option
     | Lstaticraise of int * t list
     | Lstaticcatch of t * (int * ident list) * t
@@ -152,7 +152,7 @@ module X = struct
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
-      | Lswitch of t * switch * switch_names
+      | Lswitch of t * switch * switch_names option
       | Lstringswitch of t * (string * t) list * t option
       | Lstaticraise of int * t list
       | Lstaticcatch of t * (int * ident list) * t

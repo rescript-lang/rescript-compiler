@@ -98,7 +98,7 @@ function escaped(s) {
         }
       }
       switch (exit) {
-        case 1 :
+        case /* Unknown */1 :
             s$prime[n] = /* "\\" */92;
             n = n + 1 | 0;
             s$prime[n] = 48 + (c / 100 | 0) | 0;
@@ -107,7 +107,7 @@ function escaped(s) {
             n = n + 1 | 0;
             s$prime[n] = 48 + c % 10 | 0;
             break;
-        case 2 :
+        case /* Unknown */2 :
             s$prime[n] = /* "\\" */92;
             n = n + 1 | 0;
             s$prime[n] = c;

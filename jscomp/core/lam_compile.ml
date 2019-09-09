@@ -518,14 +518,20 @@ and compile_general_cases
 and compile_cases ~is_tag cxt switch_exp table default names =
   compile_general_cases
     (fun i ->
-    if names.Lam.consts = [| "Constant" |] then None else
-    match (if is_tag then names.Lam.blocks.(i) else names.consts.(i)) with
-      | s -> Some s
-      | exception Invalid_argument _  -> Some "Unknown")
+      match names with
+      | None -> None
+      | Some {Lam.blocks; consts} ->
+        match (if is_tag then blocks.(i) else consts.(i)) with
+        | s -> Some s
+        | exception Invalid_argument _  -> Some "Unknown")
     (fun i ->
-      let comment = match (if is_tag then names.Lam.blocks.(i) else names.consts.(i)) with
-        | s -> Some s 
-        | exception Invalid_argument _ -> Some "Unknown" in
+      let comment = 
+        match names with
+        | None -> None
+        | Some {Lam.blocks; consts} ->
+          match (if is_tag then blocks.(i) else consts.(i)) with
+          | s -> Some s
+          | exception Invalid_argument _  -> Some "Unknown" in
       {(E.small_int i) with comment})
     E.int_equal
     cxt
@@ -534,7 +540,7 @@ and compile_cases ~is_tag cxt switch_exp table default names =
     switch_exp
     table
     default
-and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) names = 
+and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) (names : Lam.switch_names option) = 
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
 
@@ -765,7 +771,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       Js_output.append_output
         (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
         (Js_output.append_output lbody (Js_output.make (
-             compile_cases ~is_tag:false new_cxt exit_expr handlers  NonComplete {consts=[| "Constant" |]; blocks=[||]})  ~value:(E.var v )))
+             compile_cases ~is_tag:false new_cxt exit_expr handlers  NonComplete (Some {consts=[||]; blocks=[||]}))  ~value:(E.var v )))
     | Declare (kind, id)
       (* declare first this we will do branching*) ->
       let declares = S.declare_variable ~kind id  :: declares in
@@ -773,7 +779,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make  declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete {consts=[|"Constant"|]; blocks=[||]})))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
@@ -782,13 +788,13 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete {consts=[|"Constant"|]; blocks=[||]})))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
     | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete {consts=[|"Constant"|]; blocks=[||]})))
+           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete (Some {consts=[||]; blocks=[||]}))))
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     

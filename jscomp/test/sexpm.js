@@ -652,10 +652,10 @@ function atom(k, t) {
         exit = c >= 9 ? 2 : 1;
       }
       switch (exit) {
-        case 1 :
+        case /* Unknown */1 :
             $$Buffer.add_char(t[/* atom */2], c);
             continue ;
-        case 2 :
+        case /* Unknown */2 :
             return _return_atom(c, k, t);
         
       }
@@ -1245,10 +1245,10 @@ function MakeDecode(funarg) {
           exit = c >= 9 ? 2 : 1;
         }
         switch (exit) {
-          case 1 :
+          case /* Unknown */1 :
               $$Buffer.add_char(t[/* atom */2], c);
               continue ;
-          case 2 :
+          case /* Unknown */2 :
               return _return_atom(c, k, t);
           
         }

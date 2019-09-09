@@ -759,9 +759,12 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         Lam.apply fn (Ext_list.append_one args x) outer_loc App_na
       | _ ->
         Lam.apply f [x] outer_loc App_na
-    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) (names : Lambda.switch_names) = 
+    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) (names : Lambda.switch_names option) = 
         let  e = convert_aux e in
-        let names = {Lam.consts=names.consts; blocks = names.blocks} in
+        let names = match names with
+          | None -> None
+          | Some {consts; blocks} ->
+            Some {Lam.consts; blocks} in
         match s with
         | {
           sw_failaction = None ;

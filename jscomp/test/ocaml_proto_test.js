@@ -4098,7 +4098,7 @@ function compile_default_p2(all_types, field) {
       return invalid_default_value(field_name$1, "default value not supported for message", /* () */0);
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           switch (constant.tag | 0) {
             case /* Constant_int */2 :
                 return /* Constant_float */Block.__(3, [constant[0]]);
@@ -4107,13 +4107,13 @@ function compile_default_p2(all_types, field) {
             default:
               return invalid_default_value(field_name$1, "invalid default type (float/int expected)", /* () */0);
           }
-      case 2 :
+      case /* Unknown */2 :
           if (constant.tag === /* Constant_int */2) {
             return constant;
           } else {
             return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
           }
-      case 3 :
+      case /* Unknown */3 :
           if (constant.tag === /* Constant_int */2) {
             if (constant[0] >= 0) {
               return constant;

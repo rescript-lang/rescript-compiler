@@ -66,7 +66,7 @@ and  t =  private
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
-  | Lswitch of t * switch * switch_names
+  | Lswitch of t * switch * switch_names option
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
   | Lstaticcatch of t * (int * ident list) * t
@@ -116,7 +116,7 @@ val letrec : (ident * t) list -> t -> t
 val if_ : t -> t -> t -> t 
 
 (** constant folding*)
-val switch : t -> switch -> switch_names -> t 
+val switch : t -> switch -> switch_names option -> t 
 (** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 

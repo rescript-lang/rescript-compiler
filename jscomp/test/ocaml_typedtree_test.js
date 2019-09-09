@@ -8854,7 +8854,7 @@ function typexp(s, ty) {
     }
   }
   switch (exit) {
-    case 1 :
+    case /* Unknown */1 :
         var desc$1 = ty$1[/* desc */0];
         save_desc(ty$1, desc$1);
         var ty$prime = s[/* for_saving */3] ? newpersty(/* Tvar */Block.__(0, [undefined])) : newty2(100000000, /* Tvar */Block.__(0, [undefined]));
@@ -9036,7 +9036,7 @@ function typexp(s, ty) {
         }
         ty$prime[/* desc */0] = tmp;
         return ty$prime;
-    case 2 :
+    case /* Unknown */2 :
         if (s[/* for_saving */3] || ty$1[/* id */2] < 0) {
           var ty$prime$1 = s[/* for_saving */3] ? newpersty(norm(desc)) : newty2(ty$1[/* level */1], desc);
           save_desc(ty$1, desc);
@@ -26122,13 +26122,13 @@ function copy(env, partial, keep_names, ty) {
                   }
                 }
                 switch (exit$2) {
-                  case 2 :
+                  case /* Unknown */2 :
                       if (keep) {
                         save_desc(more, more[/* desc */0]);
                       }
                       more$prime = copy$1(more);
                       break;
-                  case 3 :
+                  case /* Unknown */3 :
                       save_desc(more, more[/* desc */0]);
                       more$prime = keep ? more : newty2(current_level[0], more[/* desc */0]);
                       break;
@@ -29665,7 +29665,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
       }
     }
     switch (exit$1) {
-      case 1 :
+      case /* Unknown */1 :
           if (umode[0] === /* Pattern */1) {
             reify(env, t1$prime);
             reify(env, t2$prime);
@@ -29680,7 +29680,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 ];
           }
           break;
-      case 2 :
+      case /* Unknown */2 :
           var match$8 = field_kind_repr(kind);
           if (typeof match$8 === "number") {
             throw [
@@ -32675,9 +32675,9 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
       
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           return equal_clty(true, type_pairs, subst, env, cty1, cty2[2]);
-      case 2 :
+      case /* Unknown */2 :
           throw [
                 Failure,
                 trace ? /* [] */0 : /* :: */[
@@ -34269,8 +34269,8 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
             }
           }
           switch (exit) {
-            case 1 :
-            case 2 :
+            case /* Unknown */1 :
+            case /* Unknown */2 :
                 return /* :: */[
                         /* tuple */[
                           trace,
@@ -42285,7 +42285,7 @@ function explanation(unif, mis, ppf) {
       exit$1 = 6;
     }
     switch (exit$1) {
-      case 3 :
+      case /* Unknown */3 :
           return Format.fprintf(ppf$1, /* Format */[
                       /* Formatting_lit */Block.__(17, [
                           /* Break */Block.__(0, [
@@ -42300,7 +42300,7 @@ function explanation(unif, mis, ppf) {
                         ]),
                       "@,Self type cannot escape its class"
                     ]);
-      case 4 :
+      case /* Unknown */4 :
           return Curry._2(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -42318,7 +42318,7 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,The universal variable %a would escape its scope"
                         ]), type_expr$1, is_Tunivar(t3) ? t3 : t4);
-      case 5 :
+      case /* Unknown */5 :
           var match$7 = is_Tvar(t3) ? /* tuple */[
               t3,
               t4
@@ -42406,7 +42406,7 @@ function explanation(unif, mis, ppf) {
                             "@,@[<hov>This instance of %a is ambiguous:@ %s@]"
                           ]), type_expr$1, t$prime, "it would escape the scope of its equation");
           }
-      case 6 :
+      case /* Unknown */6 :
           if (lab === dummy_method) {
             return Format.fprintf(ppf$1, /* Format */[
                         /* Formatting_lit */Block.__(17, [
@@ -42429,7 +42429,7 @@ function explanation(unif, mis, ppf) {
       
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           return Curry._1(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -42459,7 +42459,7 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,@[The %s object type has an abstract row, it cannot be closed@]"
                         ]), t4[/* desc */0] === /* Tnil */0 ? "first" : "second");
-      case 2 :
+      case /* Unknown */2 :
           if (typeof match$1 !== "number") {
             switch (match$1.tag | 0) {
               case /* Tconstr */3 :
@@ -47758,7 +47758,7 @@ function compat(_p, _q) {
       }
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           if (typeof match$1 === "number") {
             return true;
           } else {
@@ -47777,14 +47777,14 @@ function compat(_p, _q) {
                 }
             }
           }
-      case 2 :
+      case /* Unknown */2 :
           if (compat(p, match$1[0])) {
             return true;
           } else {
             _q = match$1[1];
             continue ;
           }
-      case 3 :
+      case /* Unknown */3 :
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -50389,7 +50389,7 @@ function satisfiable(_pss, _qs) {
           }
         }
         switch (exit) {
-          case 1 :
+          case /* Unknown */1 :
               var qs$2 = qs[1];
               var q0 = discr_pat(omega, pss);
               var constrs = filter_all(q0, pss);
@@ -50415,7 +50415,7 @@ function satisfiable(_pss, _qs) {
                 _pss = filter_extra(pss);
                 continue ;
               }
-          case 2 :
+          case /* Unknown */2 :
               var q0$1 = discr_pat(q, pss);
               _qs = Pervasives.$at(simple_match_args(q0$1, q), qs[1]);
               _pss = filter_one(q0$1, pss);
@@ -51099,7 +51099,7 @@ function every_satisfiables(_pss, _qs) {
         }
       }
       switch (exit) {
-        case 1 :
+        case /* Unknown */1 :
             var q0 = discr_pat$1(q, pss);
             _qs = /* record */[
               /* no_ors */qs[/* no_ors */0],
@@ -51108,7 +51108,7 @@ function every_satisfiables(_pss, _qs) {
             ];
             _pss = filter_one$1(q0, pss);
             continue ;
-        case 2 :
+        case /* Unknown */2 :
             if (is_var_column(pss)) {
               _qs = remove(qs);
               _pss = List.map(remove, pss);
@@ -52359,9 +52359,9 @@ function warning_attribute(attrs) {
                     return /* () */0;
                 }
                 switch (exit) {
-                  case 1 :
+                  case /* Unknown */1 :
                       return $$process(match[/* loc */1], txt, false, param[1]);
-                  case 2 :
+                  case /* Unknown */2 :
                       return $$process(match[/* loc */1], txt, true, param[1]);
                   
                 }

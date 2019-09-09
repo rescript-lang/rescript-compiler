@@ -149,7 +149,7 @@ function compare(context, state, _a, _b) {
       
     }
     switch (exit) {
-      case 1 :
+      case /* Unknown */1 :
           switch (b.tag | 0) {
             case /* Pow */3 :
                 return 1;
@@ -158,7 +158,7 @@ function compare(context, state, _a, _b) {
             default:
               return -1;
           }
-      case 2 :
+      case /* Unknown */2 :
           var denom = compare(context, state, da, db);
           var match = denom === 0;
           if (match) {
