@@ -1,6 +1,31 @@
 `*` means  potential break changes
+# 5.2.0
 
-# 5.1.0
+Features
+- #3803 Add a -install flag for mono-repository improvement for parallel compilation
+- #3790 #3802 #3799 #3792 Compile locla modules to objects and clean up
+- #3780 Better code generation for if branches
+- #3799 Improve code gen, better code equality for block
+- #3778 #3770 Improve pattern match compilation against the outer-most staticfail
+- #3764 better code gen for lazy evaluation
+
+Fixes
+- #3809 Escape question mark and ampersand to special chars
+- #3805 #3796 Fix stale builds (module alias + namespace interaction)
+- #3777 More friendly error message for invalid package name
+- #3794 Calling genType from bsc instead from the patched ocaml compiler
+- #3784 avoid trailing white space in case branch
+- #3781 #3783 quote package path properly
+- #3793 pass bs-version to genType
+- #3674 installation from master works out of box
+
+Docs 
+- #3795 Fix docs for stringifyAny
+- #3788 Rename getUnasfe to getUnsafe
+
+
+
+# 5.1.0 (2019/08/15)
 
 Features
 - #3731 #3734 #3724 #3714 enable bsc for reason, so that for one file, `bsc hi.re` works
