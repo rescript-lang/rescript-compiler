@@ -11,12 +11,6 @@ let c = C (4,2)
 
 let d = D (4,2)
 
-let () = Js.log2 "a1" a1
-let () = Js.log2 "a2" a2
-let () = Js.log2 "b" b
-let () = Js.log2 "c" c
-let () = Js.log2 "d" d
-
 let foo = function
 | A1 -> 1
 | A2 -> 2
@@ -37,3 +31,27 @@ let switchNum = function
 | 1 -> "1"
 | 2 -> "2"
 | _ -> "_"
+
+module Path = struct
+  type t =
+      Pident of string
+    | Pdot of t * string * int
+    | Papply of t * t
+  let same = (=)
+  let compare = compare
+end
+
+module Make(M : sig type t = Path.t end) = struct
+  type t = M.t
+  let find (x:t) = ()
+end
+
+module M = Make(Path)
+
+let rollback_path subst p =
+  let _ = M.find p in
+  try "try"
+  with Not_found ->
+    match p with
+      Pident _ | Papply _ -> "Pident | Papply"
+    | Pdot _ -> "Pdot"
