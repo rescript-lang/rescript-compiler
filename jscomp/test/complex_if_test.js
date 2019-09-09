@@ -62,34 +62,34 @@ function escaped(s) {
         exit = 1;
       } else {
         switch (c) {
-          case 8 :
+          case /* NotFound */8 :
               s$prime[n] = /* "\\" */92;
               n = n + 1 | 0;
               s$prime[n] = /* "b" */98;
               break;
-          case 9 :
+          case /* NotFound */9 :
               s$prime[n] = /* "\\" */92;
               n = n + 1 | 0;
               s$prime[n] = /* "t" */116;
               break;
-          case 10 :
+          case /* NotFound */10 :
               s$prime[n] = /* "\\" */92;
               n = n + 1 | 0;
               s$prime[n] = /* "n" */110;
               break;
-          case 0 :
-          case 1 :
-          case 2 :
-          case 3 :
-          case 4 :
-          case 5 :
-          case 6 :
-          case 7 :
-          case 11 :
-          case 12 :
+          case /* NotFound */0 :
+          case /* NotFound */1 :
+          case /* NotFound */2 :
+          case /* NotFound */3 :
+          case /* NotFound */4 :
+          case /* NotFound */5 :
+          case /* NotFound */6 :
+          case /* NotFound */7 :
+          case /* NotFound */11 :
+          case /* NotFound */12 :
               exit = 1;
               break;
-          case 13 :
+          case /* NotFound */13 :
               s$prime[n] = /* "\\" */92;
               n = n + 1 | 0;
               s$prime[n] = /* "r" */114;

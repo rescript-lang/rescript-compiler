@@ -23,22 +23,22 @@ function f1(x) {
 function f3(x) {
   var tmp;
   switch (x) {
-    case 0 :
+    case /* NotFound */0 :
         tmp = (function (x) {
             return x + 1 | 0;
           });
         break;
-    case 1 :
+    case /* NotFound */1 :
         tmp = (function (x) {
             return x + 2 | 0;
           });
         break;
-    case 2 :
+    case /* NotFound */2 :
         tmp = (function (x) {
             return x + 3 | 0;
           });
         break;
-    case 3 :
+    case /* NotFound */3 :
         tmp = (function (x) {
             return x + 4 | 0;
           });

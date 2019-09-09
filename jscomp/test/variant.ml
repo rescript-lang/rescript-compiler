@@ -32,3 +32,8 @@ let fooC = function
 | C (n,m) -> n+m
 | _ -> 42
 
+let switchNum = function
+| 0 -> "0"
+| 1 -> "1"
+| 2 -> "2"
+| _ -> "_"

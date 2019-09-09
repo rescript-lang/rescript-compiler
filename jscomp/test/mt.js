@@ -57,22 +57,22 @@ function close_enough($staropt$star, a, b) {
 
 function handleCode(spec) {
   switch (spec.tag | 0) {
-    case 0 :
+    case /* Eq */0 :
         Assert.deepEqual(spec[0], spec[1]);
         return /* () */0;
-    case 1 :
+    case /* Neq */1 :
         Assert.notDeepEqual(spec[0], spec[1]);
         return /* () */0;
-    case 2 :
+    case /* StrictEq */2 :
         Assert.strictEqual(spec[0], spec[1]);
         return /* () */0;
-    case 3 :
+    case /* StrictNeq */3 :
         Assert.notStrictEqual(spec[0], spec[1]);
         return /* () */0;
-    case 4 :
+    case /* Ok */4 :
         Assert.ok(spec[0]);
         return /* () */0;
-    case 5 :
+    case /* Approx */5 :
         var b = spec[1];
         var a = spec[0];
         if (close_enough(undefined, a, b)) {
@@ -81,7 +81,7 @@ function handleCode(spec) {
           Assert.deepEqual(a, b);
           return /* () */0;
         }
-    case 6 :
+    case /* ApproxThreshold */6 :
         var b$1 = spec[2];
         var a$1 = spec[1];
         if (close_enough(spec[0], a$1, b$1)) {
@@ -90,12 +90,12 @@ function handleCode(spec) {
           Assert.deepEqual(a$1, b$1);
           return /* () */0;
         }
-    case 7 :
+    case /* ThrowAny */7 :
         Assert.throws(spec[0]);
         return /* () */0;
-    case 8 :
+    case /* Fail */8 :
         return assert_fail("failed");
-    case 9 :
+    case /* FailWith */9 :
         return assert_fail(spec[0]);
     
   }
@@ -126,7 +126,7 @@ function from_pair_suites(name, suites) {
                     var name = param[0];
                     var match = Curry._1(param[1], /* () */0);
                     switch (match.tag | 0) {
-                      case 0 :
+                      case /* Eq */0 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
@@ -134,7 +134,7 @@ function from_pair_suites(name, suites) {
                                 match[1]
                               ]);
                           return /* () */0;
-                      case 1 :
+                      case /* Neq */1 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
@@ -142,7 +142,7 @@ function from_pair_suites(name, suites) {
                                 match[1]
                               ]);
                           return /* () */0;
-                      case 2 :
+                      case /* StrictEq */2 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
@@ -150,7 +150,7 @@ function from_pair_suites(name, suites) {
                                 match[1]
                               ]);
                           return /* () */0;
-                      case 3 :
+                      case /* StrictNeq */3 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
@@ -158,14 +158,14 @@ function from_pair_suites(name, suites) {
                                 match[1]
                               ]);
                           return /* () */0;
-                      case 4 :
+                      case /* Ok */4 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
                                 "ok?"
                               ]);
                           return /* () */0;
-                      case 5 :
+                      case /* Approx */5 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
@@ -173,7 +173,7 @@ function from_pair_suites(name, suites) {
                                 match[1]
                               ]);
                           return /* () */0;
-                      case 6 :
+                      case /* ApproxThreshold */6 :
                           console.log(/* tuple */[
                                 name,
                                 match[1],
@@ -184,12 +184,12 @@ function from_pair_suites(name, suites) {
                                 ")"
                               ]);
                           return /* () */0;
-                      case 7 :
+                      case /* ThrowAny */7 :
                           return /* () */0;
-                      case 8 :
+                      case /* Fail */8 :
                           console.log("failed");
                           return /* () */0;
-                      case 9 :
+                      case /* FailWith */9 :
                           console.log("failed: " + match[0]);
                           return /* () */0;
                       

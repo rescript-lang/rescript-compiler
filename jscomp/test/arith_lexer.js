@@ -25,26 +25,26 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case 0 :
+      case /* NotFound */0 :
           ___ocaml_lex_state = 0;
           continue ;
-      case 1 :
+      case /* NotFound */1 :
           return /* NUMERAL */Block.__(0, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
-      case 2 :
+      case /* NotFound */2 :
           return /* IDENT */Block.__(1, [Lexing.lexeme(lexbuf)]);
-      case 3 :
+      case /* NotFound */3 :
           return /* PLUS */0;
-      case 4 :
+      case /* NotFound */4 :
           return /* MINUS */1;
-      case 5 :
+      case /* NotFound */5 :
           return /* TIMES */2;
-      case 6 :
+      case /* NotFound */6 :
           return /* DIVIDE */3;
-      case 7 :
+      case /* NotFound */7 :
           return /* LPAREN */5;
-      case 8 :
+      case /* NotFound */8 :
           return /* RPAREN */6;
-      case 9 :
+      case /* NotFound */9 :
           return /* EOF */7;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
@@ -60,19 +60,19 @@ function lexeme(lexbuf) {
 
 function str(e) {
   switch (e.tag | 0) {
-    case 0 :
+    case /* Numeral */0 :
         return Pervasives.string_of_float(e[0]);
-    case 1 :
+    case /* Plus */1 :
         return str(e[0]) + ("+" + str(e[1]));
-    case 2 :
+    case /* Minus */2 :
         return str(e[0]) + ("-" + str(e[1]));
-    case 3 :
+    case /* Times */3 :
         return str(e[0]) + ("*" + str(e[1]));
-    case 4 :
+    case /* Divide */4 :
         return str(e[0]) + ("/" + str(e[1]));
-    case 5 :
+    case /* Negate */5 :
         return "-" + str(e[0]);
-    case 6 :
+    case /* Variable */6 :
         return e[0];
     
   }

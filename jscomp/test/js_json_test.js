@@ -173,11 +173,11 @@ function test(v) {
   var ty = Js_json.classify(json);
   if (typeof ty === "number") {
     switch (ty) {
-      case 0 :
+      case /* JSONFalse */0 :
           return eq("File \"js_json_test.ml\", line 95, characters 31-38", false, v);
-      case 1 :
+      case /* JSONTrue */1 :
           return eq("File \"js_json_test.ml\", line 94, characters 30-37", true, v);
-      case 2 :
+      case /* JSONNull */2 :
           return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
                         return /* Ok */Block.__(4, [false]);
                       }));
@@ -273,7 +273,7 @@ function eq_at_i(loc, json, i, kind, expected) {
   } else if (ty.tag === /* JSONArray */3) {
     var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty[0], i));
     switch (kind) {
-      case 0 :
+      case /* String */0 :
           if (typeof ty$1 === "number") {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
@@ -285,7 +285,7 @@ function eq_at_i(loc, json, i, kind, expected) {
           } else {
             return eq(loc, ty$1[0], expected);
           }
-      case 1 :
+      case /* Number */1 :
           if (typeof ty$1 === "number") {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
@@ -297,7 +297,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [false]);
                         }));
           }
-      case 2 :
+      case /* Object */2 :
           if (typeof ty$1 === "number") {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
@@ -309,7 +309,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [false]);
                         }));
           }
-      case 3 :
+      case /* Array */3 :
           if (typeof ty$1 === "number") {
             return add_test(loc, (function (param) {
                           return /* Ok */Block.__(4, [false]);
@@ -321,14 +321,14 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [false]);
                         }));
           }
-      case 4 :
+      case /* Boolean */4 :
           if (typeof ty$1 === "number") {
             switch (ty$1) {
-              case 0 :
+              case /* JSONFalse */0 :
                   return eq(loc, false, expected);
-              case 1 :
+              case /* JSONTrue */1 :
                   return eq(loc, true, expected);
-              case 2 :
+              case /* JSONNull */2 :
                   return add_test(loc, (function (param) {
                                 return /* Ok */Block.__(4, [false]);
                               }));
@@ -339,7 +339,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [false]);
                         }));
           }
-      case 5 :
+      case /* Null */5 :
           if (typeof ty$1 === "number") {
             if (ty$1 >= 2) {
               return add_test(loc, (function (param) {

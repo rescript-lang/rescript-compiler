@@ -33,11 +33,11 @@ function foo(param) {
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* B */0 :
           return param[0];
-      case 1 :
+      case /* C */1 :
           return param[0] + param[1] | 0;
-      case 2 :
+      case /* D */2 :
           var match = param[0];
           return match[0] + match[1] | 0;
       
@@ -61,6 +61,19 @@ function fooC(param) {
   }
 }
 
+function switchNum(param) {
+  switch (param) {
+    case /* NotFound */0 :
+        return "0";
+    case /* NotFound */1 :
+        return "1";
+    case /* NotFound */2 :
+        return "2";
+    default:
+      return "_";
+  }
+}
+
 var a1 = /* A1 */0;
 
 var a2 = /* A2 */1;
@@ -73,4 +86,5 @@ exports.d = d;
 exports.foo = foo;
 exports.fooA1 = fooA1;
 exports.fooC = fooC;
+exports.switchNum = switchNum;
 /*  Not a pure module */

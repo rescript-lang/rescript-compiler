@@ -5,12 +5,12 @@ function isfree(id, _param) {
   while(true) {
     var param = _param;
     switch (param.tag | 0) {
-      case 0 :
+      case /* Pident */0 :
           return id === param[0];
-      case 1 :
+      case /* Pdot */1 :
           _param = param[0];
           continue ;
-      case 2 :
+      case /* Papply */2 :
           if (isfree(id, param[0])) {
             return true;
           } else {

@@ -42,7 +42,8 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
-               should_break = false (* FIXME: if true, still print break*)
+               should_break = false; (* FIXME: if true, still print break*)
+               comment = None;
               })))]
 
 (** invariant: optional is not allowed in this case *)
@@ -61,7 +62,8 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
-               should_break = false (* FIXME: if true, still print break*)
+               should_break = false; (* FIXME: if true, still print break*)
+               comment = None;
               }) ))]
       , (* TODO: improve, one dispatch later,
            the problem is that we can not create bindings
@@ -89,7 +91,8 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
-               should_break = false (* FIXME: if true, still print break*)
+               should_break = false; (* FIXME: if true, still print break*)
+               comment = None;
               }) ))]
 
 let eval_as_unwrap (arg : J.expression) : E.t =

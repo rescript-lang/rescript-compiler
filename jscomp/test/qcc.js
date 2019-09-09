@@ -828,7 +828,7 @@ function binary(stk, lvl) {
 function unary(stk) {
   var match = Curry._1(next$1, /* () */0);
   switch (match.tag | 0) {
-    case 0 :
+    case /* Op */0 :
         var o = match[0];
         switch (o) {
           case "&" :
@@ -916,12 +916,12 @@ function unary(stk) {
               return 0;
             }
         }
-    case 1 :
+    case /* ILit */1 :
         return load(0, match[0]);
-    case 2 :
+    case /* SLit */2 :
         out(18616);
         return le(64, match[0]);
-    case 3 :
+    case /* Sym */3 :
         var i = match[0];
         if (List.mem_assoc(i, stk)) {
           var l = List.assoc(i, stk);
@@ -1386,7 +1386,7 @@ function top(_param) {
             var regs = _regs;
             var match = Curry._1(next$1, /* () */0);
             switch (match.tag | 0) {
-              case 0 :
+              case /* Op */0 :
                   if (match[0] === ")") {
                     return stk;
                   } else {
@@ -1395,13 +1395,13 @@ function top(_param) {
                           "[var] or ) expected"
                         ];
                   }
-              case 1 :
-              case 2 :
+              case /* ILit */1 :
+              case /* SLit */2 :
                   throw [
                         Caml_builtin_exceptions.failure,
                         "[var] or ) expected"
                       ];
-              case 3 :
+              case /* Sym */3 :
                   var r = List.hd(regs);
                   push(r);
                   if (nextis(/* Op */Block.__(0, [","]))) {
@@ -1719,7 +1719,7 @@ function elfgen(outf) {
 function main(param) {
   var ppsym = function (param) {
     switch (param.tag | 0) {
-      case 0 :
+      case /* Op */0 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Operator '",
@@ -1733,7 +1733,7 @@ function main(param) {
                             ]),
                           "Operator '%s'\n"
                         ]), param[0]);
-      case 1 :
+      case /* ILit */1 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Int literal ",
@@ -1749,7 +1749,7 @@ function main(param) {
                             ]),
                           "Int literal %d\n"
                         ]), param[0]);
-      case 2 :
+      case /* SLit */2 :
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Str literal ",
@@ -1763,7 +1763,7 @@ function main(param) {
                             ]),
                           "Str literal %S\n"
                         ]), param[1]);
-      case 3 :
+      case /* Sym */3 :
           var i = param[0];
           return Curry._2(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [

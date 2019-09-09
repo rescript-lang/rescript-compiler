@@ -10,11 +10,11 @@ function f9(param) {
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
-      case 1 :
+      case /* T64 */0 :
+      case /* T65 */1 :
           return 2;
-      case 2 :
-      case 3 :
+      case /* T66 */2 :
+      case /* T68 */3 :
           return 3;
       
     }

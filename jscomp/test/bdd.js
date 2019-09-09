@@ -237,13 +237,13 @@ function and2(n1, n2) {
         var match = cmpVar(v1, v2);
         var f;
         switch (match) {
-          case 0 :
+          case /* LESS */0 :
               f = mkNode(and2(l1, n2), v1, and2(r1, n2));
               break;
-          case 1 :
+          case /* EQUAL */1 :
               f = mkNode(and2(l1, l2), v1, and2(r1, r2));
               break;
-          case 2 :
+          case /* GREATER */2 :
               f = mkNode(and2(n1, l2), v2, and2(n1, r2));
               break;
           
@@ -287,13 +287,13 @@ function xor(n1, n2) {
         var match = cmpVar(v1, v2);
         var f;
         switch (match) {
-          case 0 :
+          case /* LESS */0 :
               f = mkNode(xor(l1, n2), v1, xor(r1, n2));
               break;
-          case 1 :
+          case /* EQUAL */1 :
               f = mkNode(xor(l1, l2), v1, xor(r1, r2));
               break;
-          case 2 :
+          case /* GREATER */2 :
               f = mkNode(xor(n1, l2), v2, xor(n1, r2));
               break;
           

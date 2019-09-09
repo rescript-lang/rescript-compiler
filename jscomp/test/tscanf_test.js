@@ -1448,7 +1448,7 @@ function scan_elems$2(ib, accu) {
                   if (c >= 91) {
                     if (c < 94) {
                       switch (c - 91 | 0) {
-                        case 0 :
+                        case /* NotFound */0 :
                             if (accu === /* [] */0) {
                               return scan_elems$2(ib, /* :: */[
                                           i,
@@ -1456,9 +1456,9 @@ function scan_elems$2(ib, accu) {
                                         ]);
                             }
                             break;
-                        case 1 :
+                        case /* NotFound */1 :
                             break;
-                        case 2 :
+                        case /* NotFound */2 :
                             return List.rev(/* :: */[
                                         i,
                                         accu

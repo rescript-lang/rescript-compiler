@@ -27,45 +27,45 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
-      case 0 :
+      case /* NotFound */0 :
           Curry._1(l, "new line");
           ___ocaml_lex_state = 0;
           continue ;
-      case 1 :
+      case /* NotFound */1 :
           Curry._1(l, "number");
           Curry._1(l, Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 0;
           continue ;
-      case 2 :
+      case /* NotFound */2 :
           Curry._1(l, "ident");
           Curry._1(l, Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 0;
           continue ;
-      case 3 :
+      case /* NotFound */3 :
           Curry._1(l, "+");
           ___ocaml_lex_state = 0;
           continue ;
-      case 4 :
+      case /* NotFound */4 :
           Curry._1(l, "-");
           ___ocaml_lex_state = 0;
           continue ;
-      case 5 :
+      case /* NotFound */5 :
           Curry._1(l, "*");
           ___ocaml_lex_state = 0;
           continue ;
-      case 6 :
+      case /* NotFound */6 :
           Curry._1(l, "/");
           ___ocaml_lex_state = 0;
           continue ;
-      case 7 :
+      case /* NotFound */7 :
           Curry._1(l, "(");
           ___ocaml_lex_state = 0;
           continue ;
-      case 8 :
+      case /* NotFound */8 :
           Curry._1(l, ")");
           ___ocaml_lex_state = 0;
           continue ;
-      case 9 :
+      case /* NotFound */9 :
           return Curry._1(l, "eof");
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);

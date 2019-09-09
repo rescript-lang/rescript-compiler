@@ -67,7 +67,7 @@ if (match) {
                                     var match$28 = match$27[0];
                                     var match$29 = match$28[/* txt */0];
                                     switch (match$29.tag | 0) {
-                                      case 0 :
+                                      case /* Lident */0 :
                                           if (match$29[0] === "|>") {
                                             var match$30 = match$28[/* loc */1];
                                             var match$31 = match$30[/* loc_start */0];
@@ -94,7 +94,7 @@ if (match) {
                                                             var match$42 = match$41[0];
                                                             var match$43 = match$42[/* txt */0];
                                                             switch (match$43.tag | 0) {
-                                                              case 0 :
+                                                              case /* Lident */0 :
                                                                   if (match$43[0] === "|>") {
                                                                     var match$44 = match$42[/* loc */1];
                                                                     var match$45 = match$44[/* loc_start */0];
@@ -118,7 +118,7 @@ if (match) {
                                                                                   var match$54 = match$53[0];
                                                                                   var match$55 = match$54[/* txt */0];
                                                                                   switch (match$55.tag | 0) {
-                                                                                    case 0 :
+                                                                                    case /* Lident */0 :
                                                                                         if (match$55[0] === "str") {
                                                                                           var match$56 = match$54[/* loc */1];
                                                                                           var match$57 = match$56[/* loc_start */0];
@@ -142,10 +142,10 @@ if (match) {
                                                                                                         var match$66 = match$65[0];
                                                                                                         var match$67 = match$66[/* txt */0];
                                                                                                         switch (match$67.tag | 0) {
-                                                                                                          case 1 :
+                                                                                                          case /* Ldot */1 :
                                                                                                               var match$68 = match$67[0];
                                                                                                               switch (match$68.tag | 0) {
-                                                                                                                case 0 :
+                                                                                                                case /* Lident */0 :
                                                                                                                     if (match$68[0] === "Lexing" && match$67[1] === "from_string") {
                                                                                                                       var match$69 = match$66[/* loc */1];
                                                                                                                       var match$70 = match$69[/* loc_start */0];
@@ -174,10 +174,10 @@ if (match) {
                                                                                                                                         var match$82 = match$81[0];
                                                                                                                                         var match$83 = match$82[/* txt */0];
                                                                                                                                         switch (match$83.tag | 0) {
-                                                                                                                                          case 1 :
+                                                                                                                                          case /* Ldot */1 :
                                                                                                                                               var match$84 = match$83[0];
                                                                                                                                               switch (match$84.tag | 0) {
-                                                                                                                                                case 0 :
+                                                                                                                                                case /* Lident */0 :
                                                                                                                                                     if (match$84[0] === "Parse" && match$83[1] === "implementation") {
                                                                                                                                                       var match$85 = match$82[/* loc */1];
                                                                                                                                                       var match$86 = match$85[/* loc_start */0];
@@ -239,15 +239,15 @@ if (match) {
                                                                                                                                                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                     }
                                                                                                                                                     break;
-                                                                                                                                                case 1 :
-                                                                                                                                                case 2 :
+                                                                                                                                                case /* Ldot */1 :
+                                                                                                                                                case /* Lapply */2 :
                                                                                                                                                     eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                     break;
                                                                                                                                                 
                                                                                                                                               }
                                                                                                                                               break;
-                                                                                                                                          case 0 :
-                                                                                                                                          case 2 :
+                                                                                                                                          case /* Lident */0 :
+                                                                                                                                          case /* Lapply */2 :
                                                                                                                                               eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                               break;
                                                                                                                                           
@@ -281,15 +281,15 @@ if (match) {
                                                                                                                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                     }
                                                                                                                     break;
-                                                                                                                case 1 :
-                                                                                                                case 2 :
+                                                                                                                case /* Ldot */1 :
+                                                                                                                case /* Lapply */2 :
                                                                                                                     eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                     break;
                                                                                                                 
                                                                                                               }
                                                                                                               break;
-                                                                                                          case 0 :
-                                                                                                          case 2 :
+                                                                                                          case /* Lident */0 :
+                                                                                                          case /* Lapply */2 :
                                                                                                               eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                               break;
                                                                                                           
@@ -317,8 +317,8 @@ if (match) {
                                                                                           eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                         }
                                                                                         break;
-                                                                                    case 1 :
-                                                                                    case 2 :
+                                                                                    case /* Ldot */1 :
+                                                                                    case /* Lapply */2 :
                                                                                         eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                         break;
                                                                                     
@@ -346,8 +346,8 @@ if (match) {
                                                                     eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                   }
                                                                   break;
-                                                              case 1 :
-                                                              case 2 :
+                                                              case /* Ldot */1 :
+                                                              case /* Lapply */2 :
                                                                   eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                   break;
                                                               
@@ -378,8 +378,8 @@ if (match) {
                                             eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                           }
                                           break;
-                                      case 1 :
-                                      case 2 :
+                                      case /* Ldot */1 :
+                                      case /* Lapply */2 :
                                           eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                           break;
                                       
