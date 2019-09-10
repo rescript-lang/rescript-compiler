@@ -1,7 +1,10 @@
 'use strict';
 
 var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function foo(param) {
@@ -100,6 +103,39 @@ function rollback_path(subst, p) {
   }
 }
 
+var EA1 = Caml_exceptions.create("Variant.EA1");
+
+var EA2 = Caml_exceptions.create("Variant.EA2");
+
+var EB = Caml_exceptions.create("Variant.EB");
+
+var EC = Caml_exceptions.create("Variant.EC");
+
+var ED = Caml_exceptions.create("Variant.ED");
+
+function fooExn(f) {
+  try {
+    return Curry._1(f, /* () */0);
+  }
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn === EA1) {
+      return 1;
+    } else if (exn === EA2) {
+      return 2;
+    } else if (exn[0] === EB) {
+      return exn[1];
+    } else if (exn[0] === EC) {
+      return exn[1] + exn[2] | 0;
+    } else if (exn[0] === ED) {
+      var match = exn[1];
+      return match[0] + match[1] | 0;
+    } else {
+      throw exn;
+    }
+  }
+}
+
 var a1 = /* A1 */0;
 
 var a2 = /* A2 */1;
@@ -129,4 +165,10 @@ exports.Path = Path;
 exports.Make = Make;
 exports.M = M;
 exports.rollback_path = rollback_path;
+exports.EA1 = EA1;
+exports.EA2 = EA2;
+exports.EB = EB;
+exports.EC = EC;
+exports.ED = ED;
+exports.fooExn = fooExn;
 /* No side effect */

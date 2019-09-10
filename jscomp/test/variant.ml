@@ -55,3 +55,17 @@ let rollback_path subst p =
     match p with
       Pident _ | Papply _ -> "Pident | Papply"
     | Pdot _ -> "Pdot"
+
+
+ exception EA1
+ exception EA2
+ exception EB of int
+ exception EC of int * int
+ exception ED of pair
+
+let fooExn f = try f () with
+| EA1 -> 1
+| EA2 -> 2
+| EB n -> n
+| EC (n,m) -> n+m
+| ED (n,m) -> n+m
