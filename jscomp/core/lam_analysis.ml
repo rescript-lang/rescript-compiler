@@ -217,7 +217,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         -> false 
     )
   | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 
-  | Lswitch _ -> false 
+  | Lswitch (_,_) -> false 
   | Lstringswitch (_,_,_) -> false
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 

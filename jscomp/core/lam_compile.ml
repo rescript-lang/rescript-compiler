@@ -515,20 +515,10 @@ and compile_general_cases
           [switch ?default ?declaration switch_exp body]
         )
 
-and compile_cases ~is_tag cxt switch_exp table default sw_names =
+and compile_cases cxt switch_exp table default get_name =
   compile_general_cases
-    (fun i ->
-      match sw_names with
-      | None -> None
-      | Some {Lam.blocks; consts} ->
-        Some (if is_tag then blocks.(i) else consts.(i)))
-    (fun i ->
-      let comment = 
-        match sw_names with
-        | None -> None
-        | Some {Lam.blocks; consts} ->
-          Some (if is_tag then blocks.(i) else consts.(i)) in
-      {(E.small_int i) with comment})
+    get_name
+    (fun i -> {(E.small_int i) with comment = get_name i})
     E.int_equal
     cxt
     (fun  ?default ?declaration e clauses    ->
@@ -564,6 +554,11 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
       if sw_numblocks
       then Complete
       else Default x in
+  let get_name is_const i =
+    match sw_names with
+    | None -> None
+    | Some {blocks; consts} ->
+      Some (if is_const then consts.(i) else blocks.(i)) in
   let compile_whole  (cxt  : Lam_compile_context.t ) =
     match compile_lambda 
             {cxt with  continuation = NeedValue Not_tail}
@@ -573,20 +568,20 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
     | { block; value = Some e } ->
       block @
       (if sw_numconsts && sw_consts = [] then
-         compile_cases ~is_tag:true cxt (E.tag e)  sw_blocks sw_blocks_default sw_names
+         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default (get_name false)
        else if sw_numblocks && sw_blocks = [] then
-         compile_cases ~is_tag:false cxt e  sw_consts sw_num_default sw_names
+         compile_cases cxt e  sw_consts sw_num_default (get_name true)
        else
          (* [e] will be used twice  *)
          let dispatch e =
            S.if_
              (E.is_type_number e )
-             (compile_cases ~is_tag:false cxt e sw_consts sw_num_default sw_names
+             (compile_cases cxt e sw_consts sw_num_default (get_name true)
              )
              (* default still needed, could simplified*)
              ~else_:
-               (compile_cases ~is_tag:true cxt (E.tag e ) sw_blocks
-                  sw_blocks_default sw_names) in
+               (compile_cases cxt (E.tag e ) sw_blocks
+                  sw_blocks_default (get_name false)) in
            match e.expression_desc with
            | J.Var _  -> [ dispatch e]
            | _ ->
@@ -768,7 +763,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       Js_output.append_output
         (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
         (Js_output.append_output lbody (Js_output.make (
-             compile_cases ~is_tag:false new_cxt exit_expr handlers  NonComplete None)  ~value:(E.var v )))
+             compile_cases new_cxt exit_expr handlers  NonComplete (fun _ -> None))  ~value:(E.var v )))
     | Declare (kind, id)
       (* declare first this we will do branching*) ->
       let declares = S.declare_variable ~kind id  :: declares in
@@ -776,7 +771,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make  declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
@@ -785,13 +780,13 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
     | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases ~is_tag:false new_cxt exit_expr handlers NonComplete None)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     

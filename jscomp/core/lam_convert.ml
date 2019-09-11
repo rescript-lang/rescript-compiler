@@ -625,8 +625,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 #else
       (e,s) 
 #end      
-      ->
-       convert_switch e s
+      -> convert_switch e s
     | Lstringswitch (e, cases, default, _ ) ->
       Lam.stringswitch 
       (convert_aux e) 

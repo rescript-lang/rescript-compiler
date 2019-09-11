@@ -733,13 +733,13 @@ let if_ (a : t) (b : t) (c : t) : t =
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
                        ({sw_blocks = []; sw_numblocks = true; sw_consts ;
-                         sw_numconsts; sw_failaction = None; sw_names; } as body)
+                         sw_numconsts; sw_failaction = None} as body)
                      )
              when Ident.same xx yy 
                && complete_range sw_consts ~start:0 ~finish:range
              ->  
              Lswitch(switch_arg, 
-                     { body with sw_failaction = Some b; sw_numconsts = false; sw_names; })
+                     { body with sw_failaction = Some b; sw_numconsts = false; })
            |  _ -> Lifthenelse(a,b,c)      
          end
        | _ ->  Lifthenelse (a,b,c))
