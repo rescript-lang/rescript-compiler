@@ -758,10 +758,6 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         Lam.apply f [x] outer_loc App_na
     and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
         let  e = convert_aux e in
-        let sw_names = match s.sw_names with
-          | None -> None
-          | Some {consts; blocks} ->
-            Some {Lam.consts; blocks} in
         match s with
         | {
           sw_failaction = None ;
@@ -786,7 +782,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                    Ext_list.map_snd  sw_consts convert_aux;
                  sw_numconsts = 
                    Ext_list.length_ge sw_consts sw_numconsts;
-                 sw_names;
+                 sw_names = s.sw_names;
                 }
           end
         | _ -> 
@@ -796,7 +792,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
               sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
               sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
               sw_failaction =Ext_option.map s.sw_failaction convert_aux;
-              sw_names; } in
+              sw_names = s.sw_names } in
   convert_aux lam , may_depends
 
 

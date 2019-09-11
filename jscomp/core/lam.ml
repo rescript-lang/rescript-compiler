@@ -31,7 +31,6 @@ type apply_status =
 
 
 module Types = struct
-  type switch_names = {consts: string array; blocks: string array}
 
   type lambda_switch =
     { sw_numconsts: bool; (* TODO: refine its representation *)
@@ -39,7 +38,7 @@ module Types = struct
       sw_numblocks: bool;
       sw_blocks: (int * t) list;
       sw_failaction : t option;
-      sw_names : switch_names option }
+      sw_names : Lambda.switch_names option }
   (* 
     Invariant: 
     length (sw_consts) <= sw_numconsts 
@@ -109,7 +108,6 @@ module Types = struct
 end
 
 module X = struct
-  type switch_names = Types.switch_names = {consts: string array; blocks: string array}
 
   type lambda_switch
     = Types.lambda_switch
@@ -119,7 +117,7 @@ module X = struct
         sw_numblocks: bool;
         sw_blocks: (int * t) list;
         sw_failaction: t option;
-        sw_names: switch_names option }
+        sw_names: Lambda.switch_names option }
   and prim_info
     =  Types.prim_info
     =
