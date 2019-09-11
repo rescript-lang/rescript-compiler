@@ -161,7 +161,7 @@ type _ t =
 let query_and_add_if_not_exist 
     (type u)
     (oid : Lam_module_ident.t) 
-    (env : u t)  ~(found: bool -> _) =
+     ~(found: bool -> _) =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     begin match oid.kind with
@@ -240,7 +240,7 @@ let add = Lam_module_ident.Hash_set.add
 (* Conservative interface *)
 let is_pure_module (id : Lam_module_ident.t)  = 
   id.kind = Runtime ||
-  query_and_add_if_not_exist id No_env
+  query_and_add_if_not_exist id 
     ~found:(fun x ->  x)
 
 let get_required_modules 
