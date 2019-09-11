@@ -56,7 +56,6 @@ type env_value =
 
 
 type ident_info = {
-  (* id : Ident.t; *)
   name : string;
   arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
@@ -89,16 +88,16 @@ let reset () =
 *)
 let add_js_module 
     (hint_name : External_ffi_types.module_bind_name)
-    module_name : Ident.t 
+    (module_name : string) : Ident.t 
   = 
   let id = 
-    Ident.create @@ 
+    Ident.create 
       (match hint_name with 
        | Phint_name hint_name -> 
-        Ext_string.capitalize_ascii hint_name 
-        (* make sure the module name is capitalized
-           TODO: maybe a warning if the user hint is not good
-        *)
+         Ext_string.capitalize_ascii hint_name 
+       (* make sure the module name is capitalized
+          TODO: maybe a warning if the user hint is not good
+       *)
        | Phint_nothing -> 
          Ext_modulename.js_id_name_of_hint_name module_name
       )
@@ -122,33 +121,26 @@ let add_js_module
 
 let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
   let oid  = Lam_module_ident.of_ml module_id in
-  match Lam_module_ident.Hash.find_opt cached_tbl oid with 
-  | None -> 
-    let cmj_path, cmj_table = 
-      Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
-    oid  +> Ml {  cmj_table ; cmj_path  }  ;
-    let arity, closed_lambda =        
-      Js_cmj_format.query_by_name cmj_table name         
-    in
-    {
-      name ;
-      arity ;
-      closed_lambda
-    }
-    
-  | Some (Ml { cmj_table } )
-    -> 
-    let arity , closed_lambda =  
-      Js_cmj_format.query_by_name cmj_table name 
-    in
-    { 
-      name; 
-      arity;
-      closed_lambda
-      (* TODO shall we cache the arity ?*) 
-    } 
-  | Some (Runtime _) -> assert false
-  | Some External  -> assert false
+  let cmj_table = 
+    match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+    | None -> 
+      let cmj_path, cmj_table = 
+        Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
+      oid  +> Ml {  cmj_table ; cmj_path  }  ;
+      cmj_table
+    | Some (Ml { cmj_table } )
+      -> cmj_table
+    | Some (Runtime _) -> assert false
+    | Some External  -> assert false in 
+  let arity , closed_lambda =  
+    Js_cmj_format.query_by_name cmj_table name 
+  in
+  { 
+    name; 
+    arity;
+    closed_lambda
+    (* TODO shall we cache the arity ?*) 
+  } 
 
 
 
