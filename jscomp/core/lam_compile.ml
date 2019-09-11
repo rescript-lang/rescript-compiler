@@ -127,7 +127,7 @@ let rec
     (id : Ident.t)
     pos
   : Js_output.t =  
-  match Lam_compile_env.cached_find_ml_id_pos id pos  with      
+  match Lam_compile_env.query_external_id_info id pos  with      
   | { closed_lambda = Some lam}
       when Lam_util.not_function lam
       ->
@@ -171,7 +171,7 @@ and compile_external_field_apply
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
-    Lam_compile_env.cached_find_ml_id_pos id pos  in 
+    Lam_compile_env.query_external_id_info id pos  in 
   let args_code, args =
       let dummy = [], [] in 
       if args_lambda = [] then dummy

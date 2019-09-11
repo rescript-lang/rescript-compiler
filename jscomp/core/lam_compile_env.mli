@@ -88,10 +88,10 @@ val add_js_module :
    pay attention to for those modules are actually used or not
 *)
 (**
-  [cached_find_ml_id_pos id pos env found]
+  [query_external_id_info id pos env found]
   will raise if not found
 *)
-val cached_find_ml_id_pos : 
+val query_external_id_info : 
   Ident.t ->
   string -> 
   ident_info

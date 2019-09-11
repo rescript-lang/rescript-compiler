@@ -119,7 +119,7 @@ let add_js_module
 
 
 
-let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
+let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
   let oid  = Lam_module_ident.of_ml module_id in
   let cmj_table = 
     match Lam_module_ident.Hash.find_opt cached_tbl oid with 

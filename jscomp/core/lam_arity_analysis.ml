@@ -46,7 +46,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   | Llet(_,_,_, l ) -> get_arity meta l 
   | Lprim {primitive = Pfield (_, Fld_module fld_name); 
            args =  [ Lglobal_module id  ]; _} -> 
-    begin match (Lam_compile_env.cached_find_ml_id_pos id fld_name).arity with 
+    begin match (Lam_compile_env.query_external_id_info id fld_name).arity with 
       | Single x -> x 
       | Submodule _ -> Lam_arity.na
     end
@@ -54,7 +54,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
            args =  [ Lprim{primitive = Pfield(n,Fld_module fld_name); 
                            args = [ Lglobal_module id]}  ]
           ; _} ->
-    begin match (Lam_compile_env.cached_find_ml_id_pos id fld_name ).arity with 
+    begin match (Lam_compile_env.query_external_id_info id fld_name ).arity with 
       | Submodule subs -> subs.(m) (* TODO: shall we store it as array?*)
       | Single _ -> Lam_arity.na
     end

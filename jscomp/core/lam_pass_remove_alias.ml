@@ -155,7 +155,7 @@ let simplify_alias
                       _} as l1;
              args; loc ; status} ->
       begin
-        match  Lam_compile_env.cached_find_ml_id_pos ident fld_name with                   
+        match  Lam_compile_env.query_external_id_info ident fld_name with                   
         | {closed_lambda=Some Lfunction{params; body; _} } 
           (** be more cautious when do cross module inlining *)
           when
