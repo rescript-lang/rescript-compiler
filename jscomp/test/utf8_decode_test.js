@@ -57,14 +57,14 @@ function utf8_decode(strm) {
                         ];
                   } else {
                     switch (match$1.tag | 0) {
-                      case 0 :
+                      case /* Single */0 :
                           return Stream.icons(match$1[0], utf8_decode(strm));
-                      case 1 :
+                      case /* Cont */1 :
                           throw [
                                 Stream.$$Error,
                                 "Unexpected continuation byte"
                               ];
-                      case 2 :
+                      case /* Leading */2 :
                           var follow = function (strm, _n, _c) {
                             while(true) {
                               var c = _c;
@@ -78,7 +78,7 @@ function utf8_decode(strm) {
                                         Stream.$$Error,
                                         "Continuation byte expected"
                                       ];
-                                } else if (match.tag === 1) {
+                                } else if (match.tag === /* Cont */1) {
                                   _c = (c << 6) | match[0] & 63;
                                   _n = n - 1 | 0;
                                   continue ;
@@ -127,17 +127,17 @@ function decode(bytes, offset) {
         ];
   } else {
     switch (match.tag | 0) {
-      case 0 :
+      case /* Single */0 :
           return /* tuple */[
                   match[0],
                   offset$1 + 1 | 0
                 ];
-      case 1 :
+      case /* Cont */1 :
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "decode"
               ];
-      case 2 :
+      case /* Leading */2 :
           var _n = match[0];
           var _c = match[1];
           var _offset = offset$1 + 1 | 0;
@@ -157,7 +157,7 @@ function decode(bytes, offset) {
                       Caml_builtin_exceptions.invalid_argument,
                       "decode"
                     ];
-              } else if (match$1.tag === 1) {
+              } else if (match$1.tag === /* Cont */1) {
                 _offset = offset$2 + 1 | 0;
                 _c = (c << 6) | match$1[0] & 63;
                 _n = n - 1 | 0;

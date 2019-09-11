@@ -3,18 +3,18 @@
 
 function f9(param) {
   if (typeof param === "number") {
-    if (param === 3) {
+    if (param === /* T63 */3) {
       return 3;
     } else {
       return 1;
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
-      case 1 :
+      case /* T64 */0 :
+      case /* T65 */1 :
           return 2;
-      case 2 :
-      case 3 :
+      case /* T66 */2 :
+      case /* T68 */3 :
           return 3;
       
     }

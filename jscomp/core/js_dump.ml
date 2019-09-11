@@ -499,12 +499,13 @@ and  pp_function is_method
 and pp_one_case_clause : 'a .
   _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
   = fun cxt f  pp_cond
-    ({switch_case; switch_body ; should_break } : _ J.case_clause) ->
+    ({switch_case; switch_body ; should_break; comment; } : _ J.case_clause) ->
     let cxt =
       P.group f 1  (fun _ ->
           P.group f 1 (fun _ ->
               P.string f L.case;
               P.space f ;
+              pp_comment_option f comment;
               pp_cond  f switch_case; (* could be integer or string *)
               P.space f ;
               P.string f L.colon  );

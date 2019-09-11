@@ -99,10 +99,10 @@ function order_of_filename(param) {
     return 1;
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* LibFile */0 :
           return 2;
-      case 1 :
-      case 2 :
+      case /* SourceFile */1 :
+      case /* JsonFile */2 :
           return 3;
       
     }
@@ -159,139 +159,139 @@ var $$Error = Caml_exceptions.create("Flow_parser_reg_test.Parse_error.Error");
 function error(param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* UnexpectedNumber */0 :
           return "Unexpected number";
-      case 1 :
+      case /* UnexpectedString */1 :
           return "Unexpected string";
-      case 2 :
+      case /* UnexpectedIdentifier */2 :
           return "Unexpected identifier";
-      case 3 :
+      case /* UnexpectedReserved */3 :
           return "Unexpected reserved word";
-      case 4 :
+      case /* UnexpectedEOS */4 :
           return "Unexpected end of input";
-      case 5 :
+      case /* UnexpectedTypeAlias */5 :
           return "Type aliases are not allowed in untyped mode";
-      case 6 :
+      case /* UnexpectedTypeAnnotation */6 :
           return "Type annotations are not allowed in untyped mode";
-      case 7 :
+      case /* UnexpectedTypeDeclaration */7 :
           return "Type declarations are not allowed in untyped mode";
-      case 8 :
+      case /* UnexpectedTypeImport */8 :
           return "Type imports are not allowed in untyped mode";
-      case 9 :
+      case /* UnexpectedTypeExport */9 :
           return "Type exports are not allowed in untyped mode";
-      case 10 :
+      case /* UnexpectedTypeInterface */10 :
           return "Interfaces are not allowed in untyped mode";
-      case 11 :
+      case /* NewlineAfterThrow */11 :
           return "Illegal newline after throw";
-      case 12 :
+      case /* InvalidRegExp */12 :
           return "Invalid regular expression";
-      case 13 :
+      case /* UnterminatedRegExp */13 :
           return "Invalid regular expression: missing /";
-      case 14 :
+      case /* InvalidLHSInAssignment */14 :
           return "Invalid left-hand side in assignment";
-      case 15 :
+      case /* InvalidLHSInExponentiation */15 :
           return "Invalid left-hand side in exponentiation expression";
-      case 16 :
+      case /* InvalidLHSInForIn */16 :
           return "Invalid left-hand side in for-in";
-      case 17 :
+      case /* InvalidLHSInForOf */17 :
           return "Invalid left-hand side in for-of";
-      case 18 :
+      case /* ExpectedPatternFoundExpression */18 :
           return "Expected an object pattern, array pattern, or an identifier but found an expression instead";
-      case 19 :
+      case /* MultipleDefaultsInSwitch */19 :
           return "More than one default clause in switch statement";
-      case 20 :
+      case /* NoCatchOrFinally */20 :
           return "Missing catch or finally after try";
-      case 21 :
+      case /* IllegalContinue */21 :
           return "Illegal continue statement";
-      case 22 :
+      case /* IllegalBreak */22 :
           return "Illegal break statement";
-      case 23 :
+      case /* IllegalReturn */23 :
           return "Illegal return statement";
-      case 24 :
+      case /* IllegalYield */24 :
           return "Illegal yield expression";
-      case 25 :
+      case /* StrictModeWith */25 :
           return "Strict mode code may not include a with statement";
-      case 26 :
+      case /* StrictCatchVariable */26 :
           return "Catch variable may not be eval or arguments in strict mode";
-      case 27 :
+      case /* StrictVarName */27 :
           return "Variable name may not be eval or arguments in strict mode";
-      case 28 :
+      case /* StrictParamName */28 :
           return "Parameter name eval or arguments is not allowed in strict mode";
-      case 29 :
+      case /* StrictParamDupe */29 :
           return "Strict mode function may not have duplicate parameter names";
-      case 30 :
+      case /* StrictFunctionName */30 :
           return "Function name may not be eval or arguments in strict mode";
-      case 31 :
+      case /* StrictOctalLiteral */31 :
           return "Octal literals are not allowed in strict mode.";
-      case 32 :
+      case /* StrictDelete */32 :
           return "Delete of an unqualified identifier in strict mode.";
-      case 33 :
+      case /* StrictDuplicateProperty */33 :
           return "Duplicate data property in object literal not allowed in strict mode";
-      case 34 :
+      case /* AccessorDataProperty */34 :
           return "Object literal may not have data and accessor property with the same name";
-      case 35 :
+      case /* AccessorGetSet */35 :
           return "Object literal may not have multiple get/set accessors with the same name";
-      case 36 :
+      case /* StrictLHSAssignment */36 :
           return "Assignment to eval or arguments is not allowed in strict mode";
-      case 37 :
+      case /* StrictLHSPostfix */37 :
           return "Postfix increment/decrement may not have eval or arguments operand in strict mode";
-      case 38 :
+      case /* StrictLHSPrefix */38 :
           return "Prefix increment/decrement may not have eval or arguments operand in strict mode";
-      case 39 :
+      case /* StrictReservedWord */39 :
           return "Use of future reserved word in strict mode";
-      case 40 :
+      case /* JSXAttributeValueEmptyExpression */40 :
           return "JSX attributes must only be assigned a non-empty expression";
-      case 41 :
+      case /* InvalidJSXAttributeValue */41 :
           return "JSX value should be either an expression or a quoted JSX text";
-      case 42 :
+      case /* NoUninitializedConst */42 :
           return "Const must be initialized";
-      case 43 :
+      case /* NoUninitializedDestructuring */43 :
           return "Destructuring assignment must be initialized";
-      case 44 :
+      case /* NewlineBeforeArrow */44 :
           return "Illegal newline before arrow";
-      case 45 :
+      case /* StrictFunctionStatement */45 :
           return "In strict mode code, functions can only be declared at top level or immediately within another function.";
-      case 46 :
+      case /* AdjacentJSXElements */46 :
           return "Unexpected token <. Remember, adjacent JSX elements must be wrapped in an enclosing parent tag";
-      case 47 :
+      case /* ParameterAfterRestParameter */47 :
           return "Rest parameter must be final parameter of an argument list";
-      case 48 :
+      case /* AsyncGenerator */48 :
           return "A function may not be both async and a generator";
-      case 49 :
+      case /* DeclareAsync */49 :
           return "async is an implementation detail and isn't necessary for your declare function statement. It is sufficient for your declare function to just have a Promise return type.";
-      case 50 :
+      case /* DeclareExportLet */50 :
           return "`declare export let` is not supported. Use `declare export var` instead.";
-      case 51 :
+      case /* DeclareExportConst */51 :
           return "`declare export const` is not supported. Use `declare export var` instead.";
-      case 52 :
+      case /* DeclareExportType */52 :
           return "`declare export type` is not supported. Use `export type` instead.";
-      case 53 :
+      case /* DeclareExportInterface */53 :
           return "`declare export interface` is not supported. Use `export interface` instead.";
-      case 54 :
+      case /* UnexpectedExportStarAs */54 :
           return "`export * as` is an early-stage proposal and is not enabled by default. To enable support in the parser, use the `esproposal_export_star_as` option";
-      case 55 :
+      case /* ExportNamelessClass */55 :
           return "When exporting a class as a named export, you must specify a class name. Did you mean `export default class ...`?";
-      case 56 :
+      case /* ExportNamelessFunction */56 :
           return "When exporting a function as a named export, you must specify a function name. Did you mean `export default function ...`?";
-      case 57 :
+      case /* UnsupportedDecorator */57 :
           return "Found a decorator in an unsupported position.";
-      case 58 :
+      case /* MissingTypeParamDefault */58 :
           return "Type parameter declaration needs a default, since a preceding type parameter declaration has a default.";
-      case 59 :
+      case /* WindowsFloatOfString */59 :
           return "The Windows version of OCaml has a bug in how it parses hexidecimal numbers. It is fixed in OCaml 4.03.0. Until we can switch to 4.03.0, please avoid either hexidecimal notation or Windows.";
-      case 60 :
+      case /* DuplicateDeclareModuleExports */60 :
           return "Duplicate `declare module.exports` statement!";
-      case 61 :
+      case /* AmbiguousDeclareModuleKind */61 :
           return "Found both `declare module.exports` and `declare export` in the same module. Modules can only have 1 since they are either an ES module xor they are a CommonJS module.";
       
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* Assertion */0 :
           return "Unexpected parser state: " + param[0];
-      case 1 :
+      case /* UnexpectedToken */1 :
           return "Unexpected token " + param[0];
-      case 2 :
+      case /* UnexpectedTokenWithSuggestion */2 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Unexpected token `",
@@ -311,15 +311,15 @@ function error(param) {
                             ]),
                           "Unexpected token `%s`. Did you mean `%s`?"
                         ]), param[0], param[1]);
-      case 3 :
+      case /* InvalidRegExpFlags */3 :
           return "Invalid flags supplied to RegExp constructor '" + (param[0] + "'");
-      case 4 :
+      case /* UnknownLabel */4 :
           return "Undefined label '" + (param[0] + "'");
-      case 5 :
+      case /* Redeclaration */5 :
           return param[0] + (" '" + (param[1] + "' has already been declared"));
-      case 6 :
+      case /* ExpectedJSXClosingTag */6 :
           return "Expected corresponding JSX closing tag for " + param[0];
-      case 7 :
+      case /* DuplicateExport */7 :
           return Curry._1(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Duplicate export for `",
@@ -1109,245 +1109,245 @@ Caml_module.update_mod([[
 function token_to_string(param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* T_IDENTIFIER */0 :
           return "T_IDENTIFIER";
-      case 1 :
+      case /* T_LCURLY */1 :
           return "T_LCURLY";
-      case 2 :
+      case /* T_RCURLY */2 :
           return "T_RCURLY";
-      case 3 :
+      case /* T_LPAREN */3 :
           return "T_LPAREN";
-      case 4 :
+      case /* T_RPAREN */4 :
           return "T_RPAREN";
-      case 5 :
+      case /* T_LBRACKET */5 :
           return "T_LBRACKET";
-      case 6 :
+      case /* T_RBRACKET */6 :
           return "T_RBRACKET";
-      case 7 :
+      case /* T_SEMICOLON */7 :
           return "T_SEMICOLON";
-      case 8 :
+      case /* T_COMMA */8 :
           return "T_COMMA";
-      case 9 :
+      case /* T_PERIOD */9 :
           return "T_PERIOD";
-      case 10 :
+      case /* T_ARROW */10 :
           return "T_ARROW";
-      case 11 :
+      case /* T_ELLIPSIS */11 :
           return "T_ELLIPSIS";
-      case 12 :
+      case /* T_AT */12 :
           return "T_AT";
-      case 13 :
+      case /* T_FUNCTION */13 :
           return "T_FUNCTION";
-      case 14 :
+      case /* T_IF */14 :
           return "T_IF";
-      case 15 :
+      case /* T_IN */15 :
           return "T_IN";
-      case 16 :
+      case /* T_INSTANCEOF */16 :
           return "T_INSTANCEOF";
-      case 17 :
+      case /* T_RETURN */17 :
           return "T_RETURN";
-      case 18 :
+      case /* T_SWITCH */18 :
           return "T_SWITCH";
-      case 19 :
+      case /* T_THIS */19 :
           return "T_THIS";
-      case 20 :
+      case /* T_THROW */20 :
           return "T_THROW";
-      case 21 :
+      case /* T_TRY */21 :
           return "T_TRY";
-      case 22 :
+      case /* T_VAR */22 :
           return "T_VAR";
-      case 23 :
+      case /* T_WHILE */23 :
           return "T_WHILE";
-      case 24 :
+      case /* T_WITH */24 :
           return "T_WITH";
-      case 25 :
+      case /* T_CONST */25 :
           return "T_CONST";
-      case 26 :
+      case /* T_LET */26 :
           return "T_LET";
-      case 27 :
+      case /* T_NULL */27 :
           return "T_NULL";
-      case 28 :
+      case /* T_FALSE */28 :
           return "T_FALSE";
-      case 29 :
+      case /* T_TRUE */29 :
           return "T_TRUE";
-      case 30 :
+      case /* T_BREAK */30 :
           return "T_BREAK";
-      case 31 :
+      case /* T_CASE */31 :
           return "T_CASE";
-      case 32 :
+      case /* T_CATCH */32 :
           return "T_CATCH";
-      case 33 :
+      case /* T_CONTINUE */33 :
           return "T_CONTINUE";
-      case 34 :
+      case /* T_DEFAULT */34 :
           return "T_DEFAULT";
-      case 35 :
+      case /* T_DO */35 :
           return "T_DO";
-      case 36 :
+      case /* T_FINALLY */36 :
           return "T_FINALLY";
-      case 37 :
+      case /* T_FOR */37 :
           return "T_FOR";
-      case 38 :
+      case /* T_CLASS */38 :
           return "T_CLASS";
-      case 39 :
+      case /* T_EXTENDS */39 :
           return "T_EXTENDS";
-      case 40 :
+      case /* T_STATIC */40 :
           return "T_STATIC";
-      case 41 :
+      case /* T_ELSE */41 :
           return "T_ELSE";
-      case 42 :
+      case /* T_NEW */42 :
           return "T_NEW";
-      case 43 :
+      case /* T_DELETE */43 :
           return "T_DELETE";
-      case 44 :
+      case /* T_TYPEOF */44 :
           return "T_TYPEOF";
-      case 45 :
+      case /* T_VOID */45 :
           return "T_VOID";
-      case 46 :
+      case /* T_ENUM */46 :
           return "T_ENUM";
-      case 47 :
+      case /* T_EXPORT */47 :
           return "T_EXPORT";
-      case 48 :
+      case /* T_IMPORT */48 :
           return "T_IMPORT";
-      case 49 :
+      case /* T_SUPER */49 :
           return "T_SUPER";
-      case 50 :
+      case /* T_IMPLEMENTS */50 :
           return "T_IMPLEMENTS";
-      case 51 :
+      case /* T_INTERFACE */51 :
           return "T_INTERFACE";
-      case 52 :
+      case /* T_PACKAGE */52 :
           return "T_PACKAGE";
-      case 53 :
+      case /* T_PRIVATE */53 :
           return "T_PRIVATE";
-      case 54 :
+      case /* T_PROTECTED */54 :
           return "T_PROTECTED";
-      case 55 :
+      case /* T_PUBLIC */55 :
           return "T_PUBLIC";
-      case 56 :
+      case /* T_YIELD */56 :
           return "T_YIELD";
-      case 57 :
+      case /* T_DEBUGGER */57 :
           return "T_DEBUGGER";
-      case 58 :
+      case /* T_DECLARE */58 :
           return "T_DECLARE";
-      case 59 :
+      case /* T_TYPE */59 :
           return "T_TYPE";
-      case 60 :
+      case /* T_OF */60 :
           return "T_OF";
-      case 61 :
+      case /* T_ASYNC */61 :
           return "T_ASYNC";
-      case 62 :
+      case /* T_AWAIT */62 :
           return "T_AWAIT";
-      case 63 :
+      case /* T_RSHIFT3_ASSIGN */63 :
           return "T_RSHIFT3_ASSIGN";
-      case 64 :
+      case /* T_RSHIFT_ASSIGN */64 :
           return "T_RSHIFT_ASSIGN";
-      case 65 :
+      case /* T_LSHIFT_ASSIGN */65 :
           return "T_LSHIFT_ASSIGN";
-      case 66 :
+      case /* T_BIT_XOR_ASSIGN */66 :
           return "T_BIT_XOR_ASSIGN";
-      case 67 :
+      case /* T_BIT_OR_ASSIGN */67 :
           return "T_BIT_OR_ASSIGN";
-      case 68 :
+      case /* T_BIT_AND_ASSIGN */68 :
           return "T_BIT_AND_ASSIGN";
-      case 69 :
+      case /* T_MOD_ASSIGN */69 :
           return "T_MOD_ASSIGN";
-      case 70 :
+      case /* T_DIV_ASSIGN */70 :
           return "T_DIV_ASSIGN";
-      case 71 :
+      case /* T_MULT_ASSIGN */71 :
           return "T_MULT_ASSIGN";
-      case 72 :
+      case /* T_EXP_ASSIGN */72 :
           return "T_EXP_ASSIGN";
-      case 73 :
+      case /* T_MINUS_ASSIGN */73 :
           return "T_MINUS_ASSIGN";
-      case 74 :
+      case /* T_PLUS_ASSIGN */74 :
           return "T_PLUS_ASSIGN";
-      case 75 :
+      case /* T_ASSIGN */75 :
           return "T_ASSIGN";
-      case 76 :
+      case /* T_PLING */76 :
           return "T_PLING";
-      case 77 :
+      case /* T_COLON */77 :
           return "T_COLON";
-      case 78 :
+      case /* T_OR */78 :
           return "T_OR";
-      case 79 :
+      case /* T_AND */79 :
           return "T_AND";
-      case 80 :
+      case /* T_BIT_OR */80 :
           return "T_BIT_OR";
-      case 81 :
+      case /* T_BIT_XOR */81 :
           return "T_BIT_XOR";
-      case 82 :
+      case /* T_BIT_AND */82 :
           return "T_BIT_AND";
-      case 83 :
+      case /* T_EQUAL */83 :
           return "T_EQUAL";
-      case 84 :
+      case /* T_NOT_EQUAL */84 :
           return "T_NOT_EQUAL";
-      case 85 :
+      case /* T_STRICT_EQUAL */85 :
           return "T_STRICT_EQUAL";
-      case 86 :
+      case /* T_STRICT_NOT_EQUAL */86 :
           return "T_STRICT_NOT_EQUAL";
-      case 87 :
+      case /* T_LESS_THAN_EQUAL */87 :
           return "T_LESS_THAN_EQUAL";
-      case 88 :
+      case /* T_GREATER_THAN_EQUAL */88 :
           return "T_GREATER_THAN_EQUAL";
-      case 89 :
+      case /* T_LESS_THAN */89 :
           return "T_LESS_THAN";
-      case 90 :
+      case /* T_GREATER_THAN */90 :
           return "T_GREATER_THAN";
-      case 91 :
+      case /* T_LSHIFT */91 :
           return "T_LSHIFT";
-      case 92 :
+      case /* T_RSHIFT */92 :
           return "T_RSHIFT";
-      case 93 :
+      case /* T_RSHIFT3 */93 :
           return "T_RSHIFT3";
-      case 94 :
+      case /* T_PLUS */94 :
           return "T_PLUS";
-      case 95 :
+      case /* T_MINUS */95 :
           return "T_MINUS";
-      case 96 :
+      case /* T_DIV */96 :
           return "T_DIV";
-      case 97 :
+      case /* T_MULT */97 :
           return "T_MULT";
-      case 98 :
+      case /* T_EXP */98 :
           return "T_EXP";
-      case 99 :
+      case /* T_MOD */99 :
           return "T_MOD";
-      case 100 :
+      case /* T_NOT */100 :
           return "T_NOT";
-      case 101 :
+      case /* T_BIT_NOT */101 :
           return "T_BIT_NOT";
-      case 102 :
+      case /* T_INCR */102 :
           return "T_INCR";
-      case 103 :
+      case /* T_DECR */103 :
           return "T_DECR";
-      case 104 :
+      case /* T_ERROR */104 :
           return "T_ERROR";
-      case 105 :
+      case /* T_EOF */105 :
           return "T_EOF";
-      case 106 :
+      case /* T_JSX_IDENTIFIER */106 :
           return "T_JSX_IDENTIFIER";
-      case 107 :
+      case /* T_ANY_TYPE */107 :
           return "T_ANY_TYPE";
-      case 108 :
+      case /* T_BOOLEAN_TYPE */108 :
           return "T_BOOLEAN_TYPE";
-      case 109 :
+      case /* T_NUMBER_TYPE */109 :
           return "T_NUMBER_TYPE";
-      case 110 :
+      case /* T_STRING_TYPE */110 :
           return "T_STRING_TYPE";
-      case 111 :
+      case /* T_VOID_TYPE */111 :
           return "T_VOID_TYPE";
       
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* T_NUMBER */0 :
           return "T_NUMBER";
-      case 1 :
+      case /* T_STRING */1 :
           return "T_STRING";
-      case 2 :
+      case /* T_TEMPLATE_PART */2 :
           return "T_TEMPLATE_PART";
-      case 3 :
+      case /* T_REGEXP */3 :
           return "T_REGEXP";
-      case 4 :
+      case /* T_JSX_TEXT */4 :
           return "T_JSX_TEXT";
-      case 5 :
+      case /* T_NUMBER_SINGLETON_TYPE */5 :
           return "T_NUMBER_SINGLETON_TYPE";
       
     }
@@ -1436,22 +1436,22 @@ function get_result_and_clear_state(param) {
     exit = 2;
   } else {
     switch (lex_token.tag | 0) {
-      case 2 :
+      case /* T_TEMPLATE_PART */2 :
           var match$2 = lex_token[0];
           match$1 = /* tuple */[
             match$2[0],
             match$2[1][/* literal */2]
           ];
           break;
-      case 3 :
+      case /* T_REGEXP */3 :
           var match$3 = lex_token[0];
           match$1 = /* tuple */[
             match$3[0],
             "/" + (match$3[1] + ("/" + match$3[2]))
           ];
           break;
-      case 1 :
-      case 4 :
+      case /* T_STRING */1 :
+      case /* T_JSX_TEXT */4 :
           exit = 1;
           break;
       default:
@@ -1878,13 +1878,13 @@ function mk_num_singleton(number_type, num, neg) {
   var value;
   if (number_type !== 0) {
     switch (number_type - 1 | 0) {
-      case 0 :
+      case /* BINARY */0 :
           value = Caml_format.caml_int_of_string("0o" + num);
           break;
-      case 1 :
+      case /* LEGACY_OCTAL */1 :
           value = Caml_format.caml_int_of_string(num);
           break;
-      case 2 :
+      case /* OCTAL */2 :
           value = float_of_string(num);
           break;
       
@@ -2768,7 +2768,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
       case 0 :
           var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
           switch (mode$1) {
-            case 0 :
+            case /* JSX_SINGLE_QUOTED_TEXT */0 :
                 if (c === 39) {
                   return /* tuple */[
                           env$1,
@@ -2776,7 +2776,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
                         ];
                 }
                 break;
-            case 1 :
+            case /* JSX_DOUBLE_QUOTED_TEXT */1 :
                 if (c === 34) {
                   return /* tuple */[
                           env$1,
@@ -2784,7 +2784,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
                         ];
                 }
                 break;
-            case 2 :
+            case /* JSX_CHILD_TEXT */2 :
                 var exit = 0;
                 if (!(c !== 60 && c !== 123)) {
                   exit = 2;
@@ -4982,23 +4982,23 @@ function lex(t) {
   var match = t[/* la_lex_mode */2];
   var match$1;
   switch (match) {
-    case 1 :
+    case /* TYPE */1 :
         match$1 = type_token$1(lex_env);
         break;
-    case 2 :
+    case /* JSX_TAG */2 :
         match$1 = jsx_tag(lex_env);
         break;
-    case 3 :
+    case /* JSX_CHILD */3 :
         match$1 = jsx_child$1(lex_env);
         break;
-    case 4 :
+    case /* TEMPLATE */4 :
         match$1 = template_tail(lex_env);
         break;
-    case 5 :
+    case /* REGEXP */5 :
         match$1 = regexp(lex_env);
         break;
-    case 0 :
-    case 6 :
+    case /* NORMAL */0 :
+    case /* PREDICATE */6 :
         match$1 = token$1(lex_env);
         break;
     
@@ -5422,19 +5422,19 @@ function get_unexpected_error(param) {
   var tmp = param[0];
   if (typeof tmp === "number") {
     switch (tmp) {
-      case 0 :
+      case /* T_IDENTIFIER */0 :
           return /* UnexpectedIdentifier */2;
-      case 105 :
+      case /* T_EOF */105 :
           return /* UnexpectedEOS */4;
       default:
         
     }
   } else {
     switch (tmp.tag | 0) {
-      case 0 :
+      case /* T_NUMBER */0 :
           return /* UnexpectedNumber */0;
-      case 1 :
-      case 4 :
+      case /* T_STRING */1 :
+      case /* T_JSX_TEXT */4 :
           return /* UnexpectedString */1;
       default:
         
@@ -6262,15 +6262,15 @@ function primitive(param) {
     if (param !== 27) {
       if (param >= 107) {
         switch (param - 107 | 0) {
-          case 0 :
+          case /* T_IDENTIFIER */0 :
               return /* Any */0;
-          case 1 :
+          case /* T_LCURLY */1 :
               return /* Boolean */5;
-          case 2 :
+          case /* T_RCURLY */2 :
               return /* Number */3;
-          case 3 :
+          case /* T_LPAREN */3 :
               return /* String */4;
-          case 4 :
+          case /* T_RPAREN */4 :
               return /* Void */1;
           
         }
@@ -6349,19 +6349,19 @@ function primary(env) {
   var exit = 0;
   if (typeof token$5 === "number") {
     switch (token$5) {
-      case 0 :
+      case /* T_IDENTIFIER */0 :
           var match = generic(env);
           return /* tuple */[
                   match[0],
                   /* Generic */Block.__(4, [match[1]])
                 ];
-      case 1 :
+      case /* T_LCURLY */1 :
           var match$1 = Curry._2(_object, undefined, env);
           return /* tuple */[
                   match$1[0],
                   /* Object */Block.__(2, [match$1[1]])
                 ];
-      case 3 :
+      case /* T_LPAREN */3 :
           var env$1 = env;
           var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
           var match$2 = param_list_or_type(env$1);
@@ -6382,7 +6382,7 @@ function primary(env) {
                         ]])
                   ];
           }
-      case 5 :
+      case /* T_LBRACKET */5 :
           var env$2 = env;
           var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
           token$4(env$2, /* T_LBRACKET */5);
@@ -6393,11 +6393,11 @@ function primary(env) {
                   btwn(start_loc$1, end_loc$1),
                   /* Tuple */Block.__(8, [tl])
                 ];
-      case 28 :
-      case 29 :
+      case /* T_FALSE */28 :
+      case /* T_TRUE */29 :
           exit = 2;
           break;
-      case 44 :
+      case /* T_TYPEOF */44 :
           var start_loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env);
           token$4(env, /* T_TYPEOF */44);
           var t = primary(env);
@@ -6405,7 +6405,7 @@ function primary(env) {
                   btwn(start_loc$2, t[0]),
                   /* Typeof */Block.__(7, [t])
                 ];
-      case 89 :
+      case /* T_LESS_THAN */89 :
           var env$3 = env;
           var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env$3);
           var typeParameters = Curry._2(type_parameter_declaration, false, env$3);
@@ -6422,7 +6422,7 @@ function primary(env) {
                         /* typeParameters */typeParameters
                       ]])
                 ];
-      case 97 :
+      case /* T_MULT */97 :
           token$4(env, /* T_MULT */97);
           return /* tuple */[
                   loc,
@@ -6433,7 +6433,7 @@ function primary(env) {
     }
   } else {
     switch (token$5.tag | 0) {
-      case 1 :
+      case /* T_STRING */1 :
           var match$5 = token$5[0];
           var octal = match$5[3];
           var raw = match$5[2];
@@ -6455,7 +6455,7 @@ function primary(env) {
                         /* raw */raw
                       ]])
                 ];
-      case 5 :
+      case /* T_NUMBER_SINGLETON_TYPE */5 :
           var value$1 = token$5[1];
           var number_type = token$5[0];
           var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
@@ -6523,27 +6523,27 @@ function param_list_or_type(env) {
         exit = 1;
       } else {
         switch (token$5) {
-          case 0 :
+          case /* T_IDENTIFIER */0 :
               ret = function_param_or_generic_type(env);
               break;
-          case 4 :
+          case /* T_RPAREN */4 :
               ret = /* ParamList */Block.__(0, [/* tuple */[
                     undefined,
                     /* [] */0
                   ]]);
               break;
-          case 1 :
-          case 2 :
-          case 3 :
-          case 5 :
-          case 6 :
-          case 7 :
-          case 8 :
-          case 9 :
-          case 10 :
+          case /* T_LCURLY */1 :
+          case /* T_RCURLY */2 :
+          case /* T_LPAREN */3 :
+          case /* T_LBRACKET */5 :
+          case /* T_RBRACKET */6 :
+          case /* T_SEMICOLON */7 :
+          case /* T_COMMA */8 :
+          case /* T_PERIOD */9 :
+          case /* T_ARROW */10 :
               exit = 1;
               break;
-          case 11 :
+          case /* T_ELLIPSIS */11 :
               ret = /* ParamList */Block.__(0, [Curry._2(function_param_list_without_parens, env, /* [] */0)]);
               break;
           
@@ -6970,18 +6970,18 @@ function properties(allow_static, env, _param) {
             exit = 1;
           } else {
             switch (match) {
-              case 2 :
+              case /* T_RCURLY */2 :
                   exit = 2;
                   break;
-              case 3 :
+              case /* T_LPAREN */3 :
                   exit = 3;
                   break;
-              case 0 :
-              case 1 :
-              case 4 :
+              case /* T_IDENTIFIER */0 :
+              case /* T_LCURLY */1 :
+              case /* T_RPAREN */4 :
                   exit = 1;
                   break;
-              case 5 :
+              case /* T_LBRACKET */5 :
                   var indexer = indexer_property(env, start_loc, $$static);
                   semicolon$1(env);
                   _param = /* tuple */[
@@ -7218,18 +7218,18 @@ function pattern(check_env, _param) {
     var param = _param;
     var p = param[1];
     switch (p.tag | 0) {
-      case 0 :
+      case /* Object */0 :
           var check_env$1 = check_env;
           var o = p[0];
           return List.fold_left(object_property, check_env$1, o[/* properties */0]);
-      case 1 :
+      case /* Array */1 :
           var check_env$2 = check_env;
           var arr = p[0];
           return List.fold_left(array_element, check_env$2, arr[/* elements */0]);
-      case 2 :
+      case /* Assignment */2 :
           _param = p[0][/* left */0];
           continue ;
-      case 3 :
+      case /* Identifier */3 :
           var param$1 = check_env;
           var id = p[0];
           var name = id[1][/* name */0];
@@ -7249,7 +7249,7 @@ function pattern(check_env, _param) {
                   match[0],
                   add$1(name, match[1])
                 ];
-      case 4 :
+      case /* Expression */4 :
           error_at(check_env[0], /* tuple */[
                 param[0],
                 /* ExpectedPatternFoundExpression */18
@@ -7268,11 +7268,11 @@ function object_property(check_env, param) {
     var match = property[/* key */0];
     var check_env$1;
     switch (match.tag | 0) {
-      case 1 :
+      case /* Identifier */1 :
           check_env$1 = identifier_no_dupe_check(check_env, match[0]);
           break;
-      case 0 :
-      case 2 :
+      case /* Literal */0 :
+      case /* Computed */2 :
           check_env$1 = check_env;
           break;
       
@@ -7457,7 +7457,7 @@ function generator(env, is_async) {
 }
 
 function is_simple_param(param) {
-  if (param[1].tag === 3) {
+  if (param[1].tag === /* Identifier */3) {
     return true;
   } else {
     return false;
@@ -7556,7 +7556,7 @@ function variable_declaration(env) {
       /* [] */0
     ];
   } else {
-    match = id[1].tag === 3 ? /* tuple */[
+    match = id[1].tag === /* Identifier */3 ? /* tuple */[
         undefined,
         /* [] */0
       ] : /* tuple */[
@@ -7667,18 +7667,18 @@ function variable(env) {
   var match$1;
   if (typeof match === "number") {
     switch (match) {
-      case 22 :
+      case /* T_VAR */22 :
           match$1 = declarations(/* T_VAR */22, /* Var */0, env);
           break;
-      case 23 :
-      case 24 :
+      case /* T_WHILE */23 :
+      case /* T_WITH */24 :
           error_unexpected(env);
           match$1 = declarations(/* T_VAR */22, /* Var */0, env);
           break;
-      case 25 :
+      case /* T_CONST */25 :
           match$1 = $$const(env);
           break;
-      case 26 :
+      case /* T_LET */26 :
           match$1 = _let(env);
           break;
       default:
@@ -7711,8 +7711,8 @@ function is_lhs(param) {
     return false;
   } else {
     switch (tmp.tag | 0) {
-      case 13 :
-      case 18 :
+      case /* Member */13 :
+      case /* Identifier */18 :
           return true;
       default:
         return false;
@@ -7726,10 +7726,10 @@ function is_assignable_lhs(param) {
     return false;
   } else {
     switch (tmp.tag | 0) {
-      case 0 :
-      case 1 :
-      case 13 :
-      case 18 :
+      case /* Array */0 :
+      case /* Object */1 :
+      case /* Member */13 :
+      case /* Identifier */18 :
           return true;
       default:
         return false;
@@ -7742,43 +7742,43 @@ function assignment_op(env) {
   var op;
   if (typeof match === "number") {
     switch (match) {
-      case 63 :
+      case /* T_RSHIFT3_ASSIGN */63 :
           op = /* RShift3Assign */9;
           break;
-      case 64 :
+      case /* T_RSHIFT_ASSIGN */64 :
           op = /* RShiftAssign */8;
           break;
-      case 65 :
+      case /* T_LSHIFT_ASSIGN */65 :
           op = /* LShiftAssign */7;
           break;
-      case 66 :
+      case /* T_BIT_XOR_ASSIGN */66 :
           op = /* BitXorAssign */11;
           break;
-      case 67 :
+      case /* T_BIT_OR_ASSIGN */67 :
           op = /* BitOrAssign */10;
           break;
-      case 68 :
+      case /* T_BIT_AND_ASSIGN */68 :
           op = /* BitAndAssign */12;
           break;
-      case 69 :
+      case /* T_MOD_ASSIGN */69 :
           op = /* ModAssign */6;
           break;
-      case 70 :
+      case /* T_DIV_ASSIGN */70 :
           op = /* DivAssign */5;
           break;
-      case 71 :
+      case /* T_MULT_ASSIGN */71 :
           op = /* MultAssign */3;
           break;
-      case 72 :
+      case /* T_EXP_ASSIGN */72 :
           op = /* ExpAssign */4;
           break;
-      case 73 :
+      case /* T_MINUS_ASSIGN */73 :
           op = /* MinusAssign */2;
           break;
-      case 74 :
+      case /* T_PLUS_ASSIGN */74 :
           op = /* PlusAssign */1;
           break;
-      case 75 :
+      case /* T_ASSIGN */75 :
           op = /* Assign */0;
           break;
       default:
@@ -7825,18 +7825,18 @@ function peek_unary_op(env) {
           return ;
         } else {
           switch (match - 94 | 0) {
-            case 0 :
+            case /* T_IDENTIFIER */0 :
                 return /* Plus */1;
-            case 1 :
+            case /* T_LCURLY */1 :
                 return /* Minus */0;
-            case 2 :
-            case 3 :
-            case 4 :
-            case 5 :
+            case /* T_RCURLY */2 :
+            case /* T_LPAREN */3 :
+            case /* T_RPAREN */4 :
+            case /* T_LBRACKET */5 :
                 return ;
-            case 6 :
+            case /* T_RBRACKET */6 :
                 return /* Not */2;
-            case 7 :
+            case /* T_SEMICOLON */7 :
                 return /* BitNot */3;
             
           }
@@ -7848,11 +7848,11 @@ function peek_unary_op(env) {
       }
     } else if (match >= 43) {
       switch (match - 43 | 0) {
-        case 0 :
+        case /* T_IDENTIFIER */0 :
             return /* Delete */6;
-        case 1 :
+        case /* T_LCURLY */1 :
             return /* Typeof */4;
-        case 2 :
+        case /* T_RCURLY */2 :
             return /* Void */5;
         
       }
@@ -7873,7 +7873,7 @@ function unary(env) {
     var loc = btwn(begin_loc, argument[0]);
     if (operator === 6) {
       var tmp = argument[1];
-      if (typeof tmp !== "number" && tmp.tag === 18) {
+      if (typeof tmp !== "number" && tmp.tag === /* Identifier */18) {
         strict_error_at(env, /* tuple */[
               loc,
               /* StrictDelete */32
@@ -7906,7 +7906,7 @@ function unary(env) {
             ]);
       }
       var match$1 = argument$1[1];
-      if (typeof match$1 !== "number" && match$1.tag === 18 && is_restricted(match$1[0][1][/* name */0])) {
+      if (typeof match$1 !== "number" && match$1.tag === /* Identifier */18 && is_restricted(match$1[0][1][/* name */0])) {
         strict_error(env, /* StrictLHSPrefix */38);
       }
       return /* tuple */[
@@ -7937,7 +7937,7 @@ function unary(env) {
                 ]);
           }
           var match$3 = argument$2[1];
-          if (typeof match$3 !== "number" && match$3.tag === 18 && is_restricted(match$3[0][1][/* name */0])) {
+          if (typeof match$3 !== "number" && match$3.tag === /* Identifier */18 && is_restricted(match$3[0][1][/* name */0])) {
             strict_error(env$1, /* StrictLHSPostfix */37);
           }
           var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
@@ -7975,12 +7975,12 @@ function left_hand_side(env) {
   var expr$1 = member(env, expr);
   var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof match$1 === "number") {
-    if (match$1 === 3) {
+    if (match$1 === /* T_LPAREN */3) {
       return call(env, expr$1);
     } else {
       return expr$1;
     }
-  } else if (match$1.tag === 2) {
+  } else if (match$1.tag === /* T_TEMPLATE_PART */2) {
     return member(env, tagged_template(env, expr$1, match$1[0]));
   } else {
     return expr$1;
@@ -7993,7 +7993,7 @@ function call(env, _left) {
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match === "number") {
       switch (match) {
-        case 3 :
+        case /* T_LPAREN */3 :
             if (env[/* no_call */11]) {
               return left;
             } else {
@@ -8007,7 +8007,7 @@ function call(env, _left) {
               ];
               continue ;
             }
-        case 5 :
+        case /* T_LBRACKET */5 :
             token$4(env, /* T_LBRACKET */5);
             var expr = Curry._1(Parse.expression, env);
             var last_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
@@ -8022,7 +8022,7 @@ function call(env, _left) {
                   ]])
             ];
             continue ;
-        case 9 :
+        case /* T_PERIOD */9 :
             token$4(env, /* T_PERIOD */9);
             var match$2 = identifier_or_reserved_keyword(env);
             var id = match$2[0];
@@ -8038,7 +8038,7 @@ function call(env, _left) {
         default:
           return left;
       }
-    } else if (match.tag === 2) {
+    } else if (match.tag === /* T_TEMPLATE_PART */2) {
       return tagged_template(env, left, match[0]);
     } else {
       return left;
@@ -8088,7 +8088,7 @@ function _new(env, _finish_fn) {
     var callee = member(with_no_call(true, env), expr);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var callee$1;
-    callee$1 = typeof match$1 === "number" || match$1.tag !== 2 ? callee : tagged_template(env, callee, match$1[0]);
+    callee$1 = typeof match$1 === "number" || match$1.tag !== /* T_TEMPLATE_PART */2 ? callee : tagged_template(env, callee, match$1[0]);
     var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
     var args = typeof match$2 === "number" && match$2 === 3 ? Curry._1($$arguments, env) : undefined;
     return Curry._2(finish_fn, callee$1, args);
@@ -8188,14 +8188,14 @@ function number(env, number_type) {
   var value$1;
   if (number_type !== 0) {
     switch (number_type - 1 | 0) {
-      case 0 :
+      case /* BINARY */0 :
           strict_error(env, /* StrictOctalLiteral */31);
           value$1 = Caml_format.caml_int_of_string("0o" + value);
           break;
-      case 1 :
+      case /* LEGACY_OCTAL */1 :
           value$1 = Caml_format.caml_int_of_string(value);
           break;
-      case 2 :
+      case /* OCTAL */2 :
           try {
             value$1 = float_of_string(value);
           }
@@ -8223,14 +8223,14 @@ function primary$1(env) {
   var exit = 0;
   if (typeof token$5 === "number") {
     switch (token$5) {
-      case 1 :
+      case /* T_LCURLY */1 :
           var env$1 = env;
           var match = Curry._1(Parse.object_initializer, env$1);
           return /* tuple */[
                   match[0],
                   /* Object */Block.__(1, [match[1]])
                 ];
-      case 3 :
+      case /* T_LPAREN */3 :
           var env$2 = env;
           token$4(env$2, /* T_LPAREN */3);
           var expression = Curry._1(assignment, env$2);
@@ -8261,19 +8261,19 @@ function primary$1(env) {
           }
           token$4(env$2, /* T_RPAREN */4);
           return ret;
-      case 5 :
+      case /* T_LBRACKET */5 :
           var match$2 = Curry._1(array_initializer, env);
           return /* tuple */[
                   match$2[0],
                   /* Array */Block.__(0, [match$2[1]])
                 ];
-      case 19 :
+      case /* T_THIS */19 :
           token$4(env, /* T_THIS */19);
           return /* tuple */[
                   loc,
                   /* This */0
                 ];
-      case 27 :
+      case /* T_NULL */27 :
           var raw = Curry._2(Parser_env_Peek.value, undefined, env);
           token$4(env, /* T_NULL */27);
           return /* tuple */[
@@ -8283,13 +8283,13 @@ function primary$1(env) {
                         /* raw */raw
                       ]])
                 ];
-      case 28 :
-      case 29 :
+      case /* T_FALSE */28 :
+      case /* T_TRUE */29 :
           exit = 2;
           break;
-      case 38 :
+      case /* T_CLASS */38 :
           return Curry._1(Parse.class_expression, env);
-      case 49 :
+      case /* T_SUPER */49 :
           var loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
           token$4(env, /* T_SUPER */49);
           var id_001 = /* record */[
@@ -8305,14 +8305,14 @@ function primary$1(env) {
                   loc$1,
                   /* Identifier */Block.__(18, [id])
                 ];
-      case 89 :
+      case /* T_LESS_THAN */89 :
           var match$3 = Curry._1(Parse.jsx_element, env);
           return /* tuple */[
                   match$3[0],
                   /* JSXElement */Block.__(22, [match$3[1]])
                 ];
-      case 70 :
-      case 96 :
+      case /* T_DIV_ASSIGN */70 :
+      case /* T_DIV */96 :
           var env$3 = env;
           push_lex_mode(env$3, /* REGEXP */5);
           var loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env$3);
@@ -8327,7 +8327,7 @@ function primary$1(env) {
                     15
                   ]
                 ];
-          } else if (match$4.tag === 3) {
+          } else if (match$4.tag === /* T_REGEXP */3) {
             var match$6 = match$4[0];
             var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env$3);
             token$3(env$3);
@@ -8394,7 +8394,7 @@ function primary$1(env) {
     }
   } else {
     switch (token$5.tag | 0) {
-      case 0 :
+      case /* T_NUMBER */0 :
           var raw$2 = Curry._2(Parser_env_Peek.value, undefined, env);
           var value$1 = /* Number */Block.__(2, [number(env, token$5[0])]);
           return /* tuple */[
@@ -8404,7 +8404,7 @@ function primary$1(env) {
                         /* raw */raw$2
                       ]])
                 ];
-      case 1 :
+      case /* T_STRING */1 :
           var match$7 = token$5[0];
           var octal = match$7[3];
           var raw$3 = match$7[2];
@@ -8427,7 +8427,7 @@ function primary$1(env) {
                         /* raw */raw$3
                       ]])
                 ];
-      case 2 :
+      case /* T_TEMPLATE_PART */2 :
           var match$8 = Curry._2(template_literal, env, token$5[0]);
           return /* tuple */[
                   match$8[0],
@@ -8583,7 +8583,7 @@ function assignment_but_not_arrow_function(env) {
           ]);
     }
     var match$1 = expr[1];
-    if (typeof match$1 !== "number" && match$1.tag === 18 && is_restricted(match$1[0][1][/* name */0])) {
+    if (typeof match$1 !== "number" && match$1.tag === /* Identifier */18 && is_restricted(match$1[0][1][/* name */0])) {
       strict_error_at(env, /* tuple */[
             expr[0],
             /* StrictLHSAssignment */36
@@ -8628,7 +8628,7 @@ function try_assignment_but_not_arrow_function(env) {
       throw Parser_env_Try.Rollback;
     }
     var match$1 = ret[1];
-    if (typeof match$1 === "number" || !(match$1.tag === 18 && match$1[0][1][/* name */0] === "async")) {
+    if (typeof match$1 === "number" || !(match$1.tag === /* Identifier */18 && match$1[0][1][/* name */0] === "async")) {
       return ret;
     } else {
       if (!Curry._1(Parser_env_Peek.is_line_terminator, env$1)) {
@@ -8777,138 +8777,138 @@ function binary_op(env) {
         );
     } else if (switcher >= 65) {
       switch (switcher - 65 | 0) {
-        case 0 :
+        case /* T_IDENTIFIER */0 :
             ret = /* tuple */[
               /* BitOr */17,
               /* Left_assoc */Block.__(0, [2])
             ];
             break;
-        case 1 :
+        case /* T_LCURLY */1 :
             ret = /* tuple */[
               /* Xor */18,
               /* Left_assoc */Block.__(0, [3])
             ];
             break;
-        case 2 :
+        case /* T_RCURLY */2 :
             ret = /* tuple */[
               /* BitAnd */19,
               /* Left_assoc */Block.__(0, [4])
             ];
             break;
-        case 3 :
+        case /* T_LPAREN */3 :
             ret = /* tuple */[
               /* Equal */0,
               /* Left_assoc */Block.__(0, [5])
             ];
             break;
-        case 4 :
+        case /* T_RPAREN */4 :
             ret = /* tuple */[
               /* NotEqual */1,
               /* Left_assoc */Block.__(0, [5])
             ];
             break;
-        case 5 :
+        case /* T_LBRACKET */5 :
             ret = /* tuple */[
               /* StrictEqual */2,
               /* Left_assoc */Block.__(0, [5])
             ];
             break;
-        case 6 :
+        case /* T_RBRACKET */6 :
             ret = /* tuple */[
               /* StrictNotEqual */3,
               /* Left_assoc */Block.__(0, [5])
             ];
             break;
-        case 7 :
+        case /* T_SEMICOLON */7 :
             ret = /* tuple */[
               /* LessThanEqual */5,
               /* Left_assoc */Block.__(0, [6])
             ];
             break;
-        case 8 :
+        case /* T_COMMA */8 :
             ret = /* tuple */[
               /* GreaterThanEqual */7,
               /* Left_assoc */Block.__(0, [6])
             ];
             break;
-        case 9 :
+        case /* T_PERIOD */9 :
             ret = /* tuple */[
               /* LessThan */4,
               /* Left_assoc */Block.__(0, [6])
             ];
             break;
-        case 10 :
+        case /* T_ARROW */10 :
             ret = /* tuple */[
               /* GreaterThan */6,
               /* Left_assoc */Block.__(0, [6])
             ];
             break;
-        case 11 :
+        case /* T_ELLIPSIS */11 :
             ret = /* tuple */[
               /* LShift */8,
               /* Left_assoc */Block.__(0, [7])
             ];
             break;
-        case 12 :
+        case /* T_AT */12 :
             ret = /* tuple */[
               /* RShift */9,
               /* Left_assoc */Block.__(0, [7])
             ];
             break;
-        case 13 :
+        case /* T_FUNCTION */13 :
             ret = /* tuple */[
               /* RShift3 */10,
               /* Left_assoc */Block.__(0, [7])
             ];
             break;
-        case 14 :
+        case /* T_IF */14 :
             ret = /* tuple */[
               /* Plus */11,
               /* Left_assoc */Block.__(0, [8])
             ];
             break;
-        case 15 :
+        case /* T_IN */15 :
             ret = /* tuple */[
               /* Minus */12,
               /* Left_assoc */Block.__(0, [8])
             ];
             break;
-        case 16 :
+        case /* T_INSTANCEOF */16 :
             ret = /* tuple */[
               /* Div */15,
               /* Left_assoc */Block.__(0, [9])
             ];
             break;
-        case 17 :
+        case /* T_RETURN */17 :
             ret = /* tuple */[
               /* Mult */13,
               /* Left_assoc */Block.__(0, [9])
             ];
             break;
-        case 18 :
+        case /* T_SWITCH */18 :
             ret = /* tuple */[
               /* Exp */14,
               /* Right_assoc */Block.__(1, [10])
             ];
             break;
-        case 19 :
+        case /* T_THIS */19 :
             ret = /* tuple */[
               /* Mod */16,
               /* Left_assoc */Block.__(0, [9])
             ];
             break;
-        case 20 :
-        case 21 :
-        case 22 :
-        case 23 :
-        case 24 :
-        case 25 :
-        case 26 :
-        case 27 :
-        case 28 :
-        case 29 :
-        case 30 :
-        case 31 :
+        case /* T_THROW */20 :
+        case /* T_TRY */21 :
+        case /* T_VAR */22 :
+        case /* T_WHILE */23 :
+        case /* T_WITH */24 :
+        case /* T_CONST */25 :
+        case /* T_LET */26 :
+        case /* T_NULL */27 :
+        case /* T_FALSE */28 :
+        case /* T_TRUE */29 :
+        case /* T_BREAK */30 :
+        case /* T_CASE */31 :
             ret = undefined;
             break;
         
@@ -8988,7 +8988,7 @@ function binary(env) {
     var right_loc = btwn(start_loc, end_loc);
     if (Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_LESS_THAN */89) {
       var tmp = right[1];
-      if (typeof tmp !== "number" && tmp.tag === 22) {
+      if (typeof tmp !== "number" && tmp.tag === /* JSXElement */22) {
         error$1(env$1, /* AdjacentJSXElements */46);
       }
       
@@ -9102,7 +9102,7 @@ function template_parts(env, _quasis, _expressions) {
                 19
               ]
             ];
-      } else if (match$1.tag === 2) {
+      } else if (match$1.tag === /* T_TEMPLATE_PART */2) {
         var match$3 = match$1[0];
         var tail = match$3[2];
         var match$4 = match$3[1];
@@ -9219,26 +9219,26 @@ function elements(env, _acc) {
       if (match !== 105) {
         if (match < 12) {
           switch (match) {
-            case 6 :
+            case /* T_RBRACKET */6 :
                 return List.rev(acc);
-            case 8 :
+            case /* T_COMMA */8 :
                 token$4(env, /* T_COMMA */8);
                 _acc = /* :: */[
                   undefined,
                   acc
                 ];
                 continue ;
-            case 0 :
-            case 1 :
-            case 2 :
-            case 3 :
-            case 4 :
-            case 5 :
-            case 7 :
-            case 9 :
-            case 10 :
+            case /* T_IDENTIFIER */0 :
+            case /* T_LCURLY */1 :
+            case /* T_RCURLY */2 :
+            case /* T_LPAREN */3 :
+            case /* T_RPAREN */4 :
+            case /* T_LBRACKET */5 :
+            case /* T_SEMICOLON */7 :
+            case /* T_PERIOD */9 :
+            case /* T_ARROW */10 :
                 break;
-            case 11 :
+            case /* T_ELLIPSIS */11 :
                 var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_ELLIPSIS */11);
                 var argument = Curry._1(assignment, env);
@@ -9418,7 +9418,7 @@ function decorator_list(env) {
 function key(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof match === "number") {
-    if (match === 5) {
+    if (match === /* T_LBRACKET */5) {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, /* T_LBRACKET */5);
       var expr = Curry._1(Parse.assignment, with_no_in(false, env));
@@ -9432,7 +9432,7 @@ function key(env) {
     
   } else {
     switch (match.tag | 0) {
-      case 0 :
+      case /* T_NUMBER */0 :
           var raw = Curry._2(Parser_env_Peek.value, undefined, env);
           var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           var value = number(env, match[0]);
@@ -9447,7 +9447,7 @@ function key(env) {
                         ]
                       ]])
                 ];
-      case 1 :
+      case /* T_STRING */1 :
           var match$1 = match[0];
           var octal = match$1[3];
           var raw$1 = match$1[2];
@@ -9492,7 +9492,7 @@ function _method(env, kind) {
   token$4(env, /* T_LPAREN */3);
   var params;
   switch (kind) {
-    case 0 :
+    case /* Init */0 :
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
@@ -9501,10 +9501,10 @@ function _method(env, kind) {
                 16
               ]
             ];
-    case 1 :
+    case /* Get */1 :
         params = /* [] */0;
         break;
-    case 2 :
+    case /* Set */2 :
         var param = Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28);
         params = /* :: */[
           /* tuple */[
@@ -9574,7 +9574,7 @@ function property$1(env) {
     } else {
       var key$1 = match$1[1];
       switch (key$1.tag | 0) {
-        case 1 :
+        case /* Identifier */1 :
             switch (key$1[0][1][/* name */0]) {
               case "get" :
                   var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
@@ -9606,8 +9606,8 @@ function property$1(env) {
                 exit = 1;
             }
             break;
-        case 0 :
-        case 2 :
+        case /* Literal */0 :
+        case /* Computed */2 :
             exit = 1;
             break;
         
@@ -9672,19 +9672,19 @@ function init(env, start_loc, key, async, generator) {
         exit = 1;
       } else {
         switch (match) {
-          case 3 :
+          case /* T_LPAREN */3 :
               exit = 3;
               break;
-          case 0 :
-          case 1 :
-          case 4 :
-          case 5 :
-          case 6 :
-          case 7 :
+          case /* T_IDENTIFIER */0 :
+          case /* T_LCURLY */1 :
+          case /* T_RPAREN */4 :
+          case /* T_LBRACKET */5 :
+          case /* T_RBRACKET */6 :
+          case /* T_SEMICOLON */7 :
               exit = 1;
               break;
-          case 2 :
-          case 8 :
+          case /* T_RCURLY */2 :
+          case /* T_COMMA */8 :
               exit = 2;
               break;
           
@@ -9708,21 +9708,21 @@ function init(env, start_loc, key, async, generator) {
     case 2 :
         var tmp;
         switch (key.tag | 0) {
-          case 0 :
+          case /* Literal */0 :
               var lit = key[0];
               tmp = /* tuple */[
                 lit[0],
                 /* Literal */Block.__(19, [lit[1]])
               ];
               break;
-          case 1 :
+          case /* Identifier */1 :
               var id = key[0];
               tmp = /* tuple */[
                 id[0],
                 /* Identifier */Block.__(18, [id])
               ];
               break;
-          case 2 :
+          case /* Computed */2 :
               tmp = key[0];
               break;
           
@@ -9799,33 +9799,33 @@ function check_property(env, prop_map, prop) {
     var prop$1 = match[1];
     var prop_loc = match[0];
     switch (prop$1[/* key */0].tag | 0) {
-      case 0 :
-      case 1 :
+      case /* Literal */0 :
+      case /* Identifier */1 :
           break;
-      case 2 :
+      case /* Computed */2 :
           return prop_map;
       
     }
     var match$1 = prop$1[/* key */0];
     var key;
     switch (match$1.tag | 0) {
-      case 0 :
+      case /* Literal */0 :
           var match$2 = match$1[0][1][/* value */0];
           if (typeof match$2 === "number") {
             key = "null";
           } else {
             switch (match$2.tag | 0) {
-              case 0 :
+              case /* String */0 :
                   key = match$2[0];
                   break;
-              case 1 :
+              case /* Boolean */1 :
                   var b = match$2[0];
                   key = b ? "true" : "false";
                   break;
-              case 2 :
+              case /* Number */2 :
                   key = Pervasives.string_of_float(match$2[0]);
                   break;
-              case 3 :
+              case /* RegExp */3 :
                   throw [
                         Caml_builtin_exceptions.failure,
                         "RegExp cannot be property key"
@@ -9834,10 +9834,10 @@ function check_property(env, prop_map, prop) {
             }
           }
           break;
-      case 1 :
+      case /* Identifier */1 :
           key = match$1[0][1][/* name */0];
           break;
-      case 2 :
+      case /* Computed */2 :
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -9862,13 +9862,13 @@ function check_property(env, prop_map, prop) {
     var match$3 = prop$1[/* kind */2];
     var kind_string;
     switch (match$3) {
-      case 0 :
+      case /* Init */0 :
           kind_string = "Init";
           break;
-      case 1 :
+      case /* Get */1 :
           kind_string = "Get";
           break;
-      case 2 :
+      case /* Set */2 :
           kind_string = "Set";
           break;
       
@@ -10057,14 +10057,14 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   ];
   var kind;
   switch (key.tag | 0) {
-    case 0 :
+    case /* Literal */0 :
         var match$4 = key[0][1][/* value */0];
         kind = typeof match$4 === "number" || match$4.tag || match$4[0] !== "constructor" ? /* Method */1 : /* Constructor */0;
         break;
-    case 1 :
+    case /* Identifier */1 :
         kind = key[0][1][/* name */0] === "constructor" ? /* Constructor */0 : /* Method */1;
         break;
-    case 2 :
+    case /* Computed */2 :
         kind = /* Method */1;
         break;
     
@@ -10091,7 +10091,7 @@ function class_element(env) {
   if (!async && !generator$1) {
     var key$1 = match[1];
     switch (key$1.tag | 0) {
-      case 1 :
+      case /* Identifier */1 :
           switch (key$1[0][1][/* name */0]) {
             case "get" :
                 var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
@@ -10171,8 +10171,8 @@ function class_element(env) {
               
           }
           break;
-      case 0 :
-      case 2 :
+      case /* Literal */0 :
+      case /* Computed */2 :
           break;
       
     }
@@ -10430,7 +10430,7 @@ function declare($staropt$star, env) {
       if (match >= 38) {
         if (match < 62) {
           switch (match - 38 | 0) {
-            case 0 :
+            case /* T_IDENTIFIER */0 :
                 token$4(env, /* T_DECLARE */58);
                 var env$1 = env;
                 var start_loc$1 = start_loc;
@@ -10439,38 +10439,38 @@ function declare($staropt$star, env) {
                         match$1[0],
                         /* DeclareClass */Block.__(24, [match$1[1]])
                       ];
-            case 9 :
+            case /* T_PERIOD */9 :
                 if (in_module) {
                   return declare_export_declaration(in_module, env);
                 }
                 break;
-            case 13 :
+            case /* T_FUNCTION */13 :
                 token$4(env, /* T_DECLARE */58);
                 return $$interface(env);
-            case 21 :
+            case /* T_TRY */21 :
                 token$4(env, /* T_DECLARE */58);
                 return type_alias(env);
-            case 1 :
-            case 2 :
-            case 3 :
-            case 4 :
-            case 5 :
-            case 6 :
-            case 7 :
-            case 8 :
-            case 10 :
-            case 11 :
-            case 12 :
-            case 14 :
-            case 15 :
-            case 16 :
-            case 17 :
-            case 18 :
-            case 19 :
-            case 20 :
-            case 22 :
+            case /* T_LCURLY */1 :
+            case /* T_RCURLY */2 :
+            case /* T_LPAREN */3 :
+            case /* T_RPAREN */4 :
+            case /* T_LBRACKET */5 :
+            case /* T_RBRACKET */6 :
+            case /* T_SEMICOLON */7 :
+            case /* T_COMMA */8 :
+            case /* T_ARROW */10 :
+            case /* T_ELLIPSIS */11 :
+            case /* T_AT */12 :
+            case /* T_IF */14 :
+            case /* T_IN */15 :
+            case /* T_INSTANCEOF */16 :
+            case /* T_RETURN */17 :
+            case /* T_SWITCH */18 :
+            case /* T_THIS */19 :
+            case /* T_THROW */20 :
+            case /* T_VAR */22 :
                 break;
-            case 23 :
+            case /* T_WHILE */23 :
                 token$4(env, /* T_DECLARE */58);
                 error$1(env, /* DeclareAsync */49);
                 token$4(env, /* T_ASYNC */61);
@@ -10507,7 +10507,7 @@ function declare($staropt$star, env) {
           var start_loc$3 = start_loc;
           var match$3 = Curry._2(Parser_env_Peek.token, undefined, env$3);
           var id;
-          if (typeof match$3 === "number" || match$3.tag !== 1) {
+          if (typeof match$3 === "number" || match$3.tag !== /* T_STRING */1) {
             id = /* Identifier */Block.__(0, [Curry._2(Parse.identifier, undefined, env$3)]);
           } else {
             var match$4 = match$3[0];
@@ -10643,7 +10643,7 @@ function extract_ident_name(param) {
 function export_source(env) {
   contextual(env, "from");
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number" && match.tag === 1) {
+  if (typeof match !== "number" && match.tag === /* T_STRING */1) {
     var match$1 = match[0];
     var octal = match$1[3];
     var raw = match$1[2];
@@ -10816,7 +10816,7 @@ function declare_export_declaration($staropt$star, env) {
       }
     } else if (match >= 13) {
       switch (match - 13 | 0) {
-        case 21 :
+        case /* T_TRY */21 :
             token$4(env$1, /* T_DEFAULT */34);
             var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
             var match$5;
@@ -10861,33 +10861,33 @@ function declare_export_declaration($staropt$star, env) {
                           /* source */undefined
                         ]])
                   ];
-        case 1 :
-        case 2 :
-        case 3 :
-        case 4 :
-        case 5 :
-        case 6 :
-        case 7 :
-        case 8 :
-        case 10 :
-        case 11 :
-        case 14 :
-        case 15 :
-        case 16 :
-        case 17 :
-        case 18 :
-        case 19 :
-        case 20 :
-        case 22 :
-        case 23 :
-        case 24 :
+        case /* T_LCURLY */1 :
+        case /* T_RCURLY */2 :
+        case /* T_LPAREN */3 :
+        case /* T_RPAREN */4 :
+        case /* T_LBRACKET */5 :
+        case /* T_RBRACKET */6 :
+        case /* T_SEMICOLON */7 :
+        case /* T_COMMA */8 :
+        case /* T_ARROW */10 :
+        case /* T_ELLIPSIS */11 :
+        case /* T_IF */14 :
+        case /* T_IN */15 :
+        case /* T_INSTANCEOF */16 :
+        case /* T_RETURN */17 :
+        case /* T_SWITCH */18 :
+        case /* T_THIS */19 :
+        case /* T_THROW */20 :
+        case /* T_VAR */22 :
+        case /* T_WHILE */23 :
+        case /* T_WITH */24 :
             exit = 1;
             break;
-        case 0 :
-        case 9 :
-        case 12 :
-        case 13 :
-        case 25 :
+        case /* T_IDENTIFIER */0 :
+        case /* T_PERIOD */9 :
+        case /* T_AT */12 :
+        case /* T_FUNCTION */13 :
+        case /* T_CONST */25 :
             exit = 2;
             break;
         
@@ -11107,7 +11107,7 @@ function module_items(env, _module_kind, _acc) {
     var module_kind$1;
     if (module_kind !== undefined) {
       if (module_kind.tag) {
-        if (typeof stmt$1 === "number" || stmt$1.tag !== 26) {
+        if (typeof stmt$1 === "number" || stmt$1.tag !== /* DeclareModuleExports */26) {
           module_kind$1 = module_kind;
         } else {
           error$1(env, /* AmbiguousDeclareModuleKind */61);
@@ -11117,16 +11117,16 @@ function module_items(env, _module_kind, _acc) {
         module_kind$1 = module_kind;
       } else {
         switch (stmt$1.tag | 0) {
-          case 26 :
+          case /* DeclareModuleExports */26 :
               error$1(env, /* DuplicateDeclareModuleExports */60);
               module_kind$1 = module_kind;
               break;
-          case 27 :
+          case /* DeclareExportDeclaration */27 :
               var declaration = stmt$1[0][/* declaration */1];
               if (declaration !== undefined) {
                 switch (declaration.tag | 0) {
-                  case 4 :
-                  case 5 :
+                  case /* NamedType */4 :
+                  case /* Interface */5 :
                       break;
                   default:
                     error$1(env, /* AmbiguousDeclareModuleKind */61);
@@ -11144,15 +11144,15 @@ function module_items(env, _module_kind, _acc) {
       module_kind$1 = module_kind;
     } else {
       switch (stmt$1.tag | 0) {
-        case 26 :
+        case /* DeclareModuleExports */26 :
             module_kind$1 = /* CommonJS */Block.__(0, [loc]);
             break;
-        case 27 :
+        case /* DeclareExportDeclaration */27 :
             var declaration$1 = stmt$1[0][/* declaration */1];
             if (declaration$1 !== undefined) {
               switch (declaration$1.tag | 0) {
-                case 4 :
-                case 5 :
+                case /* NamedType */4 :
+                case /* Interface */5 :
                     module_kind$1 = module_kind;
                     break;
                 default:
@@ -11180,7 +11180,7 @@ function fold(acc, _param) {
     var param = _param;
     var match = param[1];
     switch (match.tag | 0) {
-      case 0 :
+      case /* Object */0 :
           return List.fold_left((function (acc, prop) {
                         if (prop.tag) {
                           return fold(acc, prop[0][1][/* argument */0]);
@@ -11188,7 +11188,7 @@ function fold(acc, _param) {
                           return fold(acc, prop[0][1][/* pattern */1]);
                         }
                       }), acc, match[0][/* properties */0]);
-      case 1 :
+      case /* Array */1 :
           return List.fold_left((function (acc, elem) {
                         if (elem !== undefined) {
                           var match = elem;
@@ -11201,10 +11201,10 @@ function fold(acc, _param) {
                           return acc;
                         }
                       }), acc, match[0][/* elements */0]);
-      case 2 :
+      case /* Assignment */2 :
           _param = match[0][/* left */0];
           continue ;
-      case 3 :
+      case /* Identifier */3 :
           var match$1 = match[0];
           return /* :: */[
                   /* tuple */[
@@ -11213,7 +11213,7 @@ function fold(acc, _param) {
                   ],
                   acc
                 ];
-      case 4 :
+      case /* Expression */4 :
           throw [
                 Caml_builtin_exceptions.failure,
                 "Parser error: No such thing as an expression pattern!"
@@ -11358,7 +11358,7 @@ function var_or_const(env) {
 function source(env) {
   contextual(env, "from");
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number" && match.tag === 1) {
+  if (typeof match !== "number" && match.tag === /* T_STRING */1) {
     var match$1 = match[0];
     var octal = match$1[3];
     var raw = match$1[2];
@@ -11461,7 +11461,7 @@ function from_expr(env, param) {
   var loc = param[0];
   if (typeof expr !== "number") {
     switch (expr.tag | 0) {
-      case 0 :
+      case /* Array */0 :
           var env$1 = env;
           var param$1 = /* tuple */[
             loc,
@@ -11496,7 +11496,7 @@ function from_expr(env, param) {
                         /* typeAnnotation */undefined
                       ]])
                 ];
-      case 1 :
+      case /* Object */1 :
           var env$2 = env;
           var param$2 = /* tuple */[
             loc,
@@ -11518,13 +11518,13 @@ function from_expr(env, param) {
                     var key = match$2[/* key */0];
                     var key$1;
                     switch (key.tag | 0) {
-                      case 0 :
+                      case /* Literal */0 :
                           key$1 = /* Literal */Block.__(0, [key[0]]);
                           break;
-                      case 1 :
+                      case /* Identifier */1 :
                           key$1 = /* Identifier */Block.__(1, [key[0]]);
                           break;
-                      case 2 :
+                      case /* Computed */2 :
                           key$1 = /* Computed */Block.__(2, [key[0]]);
                           break;
                       
@@ -11547,7 +11547,7 @@ function from_expr(env, param) {
                         /* typeAnnotation */undefined
                       ]])
                 ];
-      case 7 :
+      case /* Assignment */7 :
           var match = expr[0];
           if (match[/* operator */0] === 0) {
             return /* tuple */[
@@ -11559,7 +11559,7 @@ function from_expr(env, param) {
                   ];
           }
           break;
-      case 18 :
+      case /* Identifier */18 :
           return /* tuple */[
                   loc,
                   /* Identifier */Block.__(3, [expr[0]])
@@ -11592,13 +11592,13 @@ function _object$2(restricted_error) {
       var match$1 = match[1];
       var key;
       switch (match$1.tag | 0) {
-        case 0 :
+        case /* Literal */0 :
             key = /* Literal */Block.__(0, [match$1[0]]);
             break;
-        case 1 :
+        case /* Identifier */1 :
             key = /* Identifier */Block.__(1, [match$1[0]]);
             break;
-        case 2 :
+        case /* Computed */2 :
             key = /* Computed */Block.__(2, [match$1[0]]);
             break;
         
@@ -11617,7 +11617,7 @@ function _object$2(restricted_error) {
       }
       if (exit === 1) {
         switch (key.tag | 0) {
-          case 1 :
+          case /* Identifier */1 :
               var id = key[0];
               var pattern_000 = id[0];
               var pattern_001 = /* Identifier */Block.__(3, [id]);
@@ -11630,8 +11630,8 @@ function _object$2(restricted_error) {
                 true
               ];
               break;
-          case 0 :
-          case 2 :
+          case /* Literal */0 :
+          case /* Computed */2 :
               error_unexpected(env);
               prop = undefined;
               break;
@@ -11731,26 +11731,26 @@ function _array(restricted_error) {
         if (match !== 105) {
           if (match < 12) {
             switch (match) {
-              case 6 :
+              case /* T_RBRACKET */6 :
                   return List.rev(acc);
-              case 8 :
+              case /* T_COMMA */8 :
                   token$4(env, /* T_COMMA */8);
                   _acc = /* :: */[
                     undefined,
                     acc
                   ];
                   continue ;
-              case 0 :
-              case 1 :
-              case 2 :
-              case 3 :
-              case 4 :
-              case 5 :
-              case 7 :
-              case 9 :
-              case 10 :
+              case /* T_IDENTIFIER */0 :
+              case /* T_LCURLY */1 :
+              case /* T_RCURLY */2 :
+              case /* T_LPAREN */3 :
+              case /* T_RPAREN */4 :
+              case /* T_LBRACKET */5 :
+              case /* T_SEMICOLON */7 :
+              case /* T_PERIOD */9 :
+              case /* T_ARROW */10 :
                   break;
-              case 11 :
+              case /* T_ELLIPSIS */11 :
                   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
                   token$4(env, /* T_ELLIPSIS */11);
                   var argument = pattern$1(env, restricted_error);
@@ -11987,7 +11987,7 @@ function attribute(env) {
     var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
     var exit = 0;
     if (typeof token$5 === "number") {
-      if (token$5 === 1) {
+      if (token$5 === /* T_LCURLY */1) {
         var match$2 = expression_container(env);
         var expression_container$1 = match$2[1];
         var loc$1 = match$2[0];
@@ -12005,7 +12005,7 @@ function attribute(env) {
       } else {
         exit = 1;
       }
-    } else if (token$5.tag === 4) {
+    } else if (token$5.tag === /* T_JSX_TEXT */4) {
       var match$4 = token$5[0];
       var loc$2 = match$4[0];
       token$4(env, token$5);
@@ -12121,7 +12121,7 @@ function closing_element_without_lt(env, start_loc) {
 function child(env) {
   var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof token$5 === "number") {
-    if (token$5 === 1) {
+    if (token$5 === /* T_LCURLY */1) {
       var expression_container$1 = expression_container(env);
       return /* tuple */[
               expression_container$1[0],
@@ -12129,7 +12129,7 @@ function child(env) {
             ];
     }
     
-  } else if (token$5.tag === 4) {
+  } else if (token$5.tag === /* T_JSX_TEXT */4) {
     var match = token$5[0];
     token$4(env, token$5);
     return /* tuple */[
@@ -12219,12 +12219,12 @@ function children_and_closing(env, _acc) {
 
 function normalize(name) {
   switch (name.tag | 0) {
-    case 0 :
+    case /* Identifier */0 :
         return name[0][1][/* name */0];
-    case 1 :
+    case /* NamespacedName */1 :
         var match = name[0][1];
         return match[/* namespace */0][1][/* name */0] + (":" + match[/* name */1][1][/* name */0]);
-    case 2 :
+    case /* MemberExpression */2 :
         var match$1 = name[0][1];
         var _object = match$1[/* _object */0];
         var _object$1;
@@ -12267,7 +12267,7 @@ function module_item(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof match === "number") {
     switch (match) {
-      case 47 :
+      case /* T_EXPORT */47 :
           var env$1 = env;
           var decorators$1 = decorators;
           var env$2 = with_in_export(true, with_strict(true, env$1));
@@ -12282,7 +12282,7 @@ function module_item(env) {
                   exit = 1;
                 } else {
                   switch (match$1 - 51 | 0) {
-                    case 0 :
+                    case /* T_IDENTIFIER */0 :
                         if (!env$2[/* parse_options */20][/* types */4]) {
                           error$1(env$2, /* UnexpectedTypeExport */9);
                         }
@@ -12293,7 +12293,7 @@ function module_item(env) {
                                 Caml_builtin_exceptions.failure,
                                 "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
                               ];
-                        } else if (match$2.tag === 21) {
+                        } else if (match$2.tag === /* InterfaceDeclaration */21) {
                           record_export(env$2, /* tuple */[
                                 $$interface$1[0],
                                 extract_ident_name(match$2[0][/* id */0])
@@ -12315,7 +12315,7 @@ function module_item(env) {
                                       /* exportKind : ExportType */0
                                     ]])
                               ];
-                    case 8 :
+                    case /* T_COMMA */8 :
                         if (Curry._2(Parser_env_Peek.token, 1, env$2) !== /* T_LCURLY */1) {
                           if (!env$2[/* parse_options */20][/* types */4]) {
                             error$1(env$2, /* UnexpectedTypeExport */9);
@@ -12327,7 +12327,7 @@ function module_item(env) {
                                   Caml_builtin_exceptions.failure,
                                   "Internal Flow Error! Parsed `export type` into something other than a type alias!"
                                 ];
-                          } else if (match$3.tag === 7) {
+                          } else if (match$3.tag === /* TypeAlias */7) {
                             record_export(env$2, /* tuple */[
                                   type_alias$1[0],
                                   extract_ident_name(match$3[0][/* id */0])
@@ -12353,17 +12353,17 @@ function module_item(env) {
                           exit = 1;
                         }
                         break;
-                    case 1 :
-                    case 2 :
-                    case 3 :
-                    case 4 :
-                    case 5 :
-                    case 6 :
-                    case 7 :
-                    case 9 :
+                    case /* T_LCURLY */1 :
+                    case /* T_RCURLY */2 :
+                    case /* T_LPAREN */3 :
+                    case /* T_RPAREN */4 :
+                    case /* T_LBRACKET */5 :
+                    case /* T_RBRACKET */6 :
+                    case /* T_SEMICOLON */7 :
+                    case /* T_PERIOD */9 :
                         exit = 1;
                         break;
-                    case 10 :
+                    case /* T_ARROW */10 :
                         exit = 2;
                         break;
                     
@@ -12396,7 +12396,7 @@ function module_item(env) {
               }
             } else {
               switch (match$1) {
-                case 34 :
+                case /* T_DEFAULT */34 :
                     token$4(env$2, /* T_DEFAULT */34);
                     record_export(env$2, /* tuple */[
                           btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$2)),
@@ -12442,34 +12442,34 @@ function module_item(env) {
                                   /* exportKind : ExportValue */1
                                 ]])
                           ];
-                case 14 :
-                case 15 :
-                case 16 :
-                case 17 :
-                case 18 :
-                case 19 :
-                case 20 :
-                case 21 :
-                case 23 :
-                case 24 :
-                case 27 :
-                case 28 :
-                case 29 :
-                case 30 :
-                case 31 :
-                case 32 :
-                case 33 :
-                case 35 :
-                case 36 :
-                case 37 :
+                case /* T_IF */14 :
+                case /* T_IN */15 :
+                case /* T_INSTANCEOF */16 :
+                case /* T_RETURN */17 :
+                case /* T_SWITCH */18 :
+                case /* T_THIS */19 :
+                case /* T_THROW */20 :
+                case /* T_TRY */21 :
+                case /* T_WHILE */23 :
+                case /* T_WITH */24 :
+                case /* T_NULL */27 :
+                case /* T_FALSE */28 :
+                case /* T_TRUE */29 :
+                case /* T_BREAK */30 :
+                case /* T_CASE */31 :
+                case /* T_CATCH */32 :
+                case /* T_CONTINUE */33 :
+                case /* T_DO */35 :
+                case /* T_FINALLY */36 :
+                case /* T_FOR */37 :
                     exit = 1;
                     break;
-                case 12 :
-                case 13 :
-                case 22 :
-                case 25 :
-                case 26 :
-                case 38 :
+                case /* T_AT */12 :
+                case /* T_FUNCTION */13 :
+                case /* T_VAR */22 :
+                case /* T_CONST */25 :
+                case /* T_LET */26 :
+                case /* T_CLASS */38 :
                     exit = 2;
                     break;
                 default:
@@ -12518,7 +12518,7 @@ function module_item(env) {
                       ];
                 } else {
                   switch (match$11.tag | 0) {
-                    case 18 :
+                    case /* FunctionDeclaration */18 :
                         var match$12 = match$11[0][/* id */0];
                         if (match$12 !== undefined) {
                           names = /* :: */[
@@ -12536,7 +12536,7 @@ function module_item(env) {
                           names = /* [] */0;
                         }
                         break;
-                    case 19 :
+                    case /* VariableDeclaration */19 :
                         names = List.fold_left((function (names, param) {
                                 var id = param[1][/* id */0];
                                 var param$1 = names;
@@ -12547,7 +12547,7 @@ function module_item(env) {
                                 return List.fold_left(fold, param$1, param$2);
                               }), /* [] */0, match$11[0][/* declarations */0]);
                         break;
-                    case 20 :
+                    case /* ClassDeclaration */20 :
                         var match$13 = match$11[0][/* id */0];
                         if (match$13 !== undefined) {
                           names = /* :: */[
@@ -12588,7 +12588,7 @@ function module_item(env) {
                       ];
             
           }
-      case 48 :
+      case /* T_IMPORT */48 :
           error_on_decorators(env)(decorators);
           var env$3 = env;
           var env$4 = with_strict(true, env$3);
@@ -12634,11 +12634,11 @@ function module_item(env) {
           var match$17 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$4);
           var exit$2 = 0;
           if (typeof match$16 === "number") {
-            if (match$16 !== 8) {
+            if (match$16 !== /* T_COMMA */8) {
               exit$2 = 2;
             }
             
-          } else if (match$16.tag === 1 && importKind === /* ImportValue */2) {
+          } else if (match$16.tag === /* T_STRING */1 && importKind === /* ImportValue */2) {
             var match$18 = match$16[0];
             var octal = match$18[3];
             var raw = match$18[2];
@@ -12731,17 +12731,17 @@ function module_item(env) {
                         ]
                       ]])
                 ];
-      case 49 :
-      case 50 :
-      case 51 :
-      case 52 :
-      case 53 :
-      case 54 :
-      case 55 :
-      case 56 :
-      case 57 :
+      case /* T_SUPER */49 :
+      case /* T_IMPLEMENTS */50 :
+      case /* T_INTERFACE */51 :
+      case /* T_PACKAGE */52 :
+      case /* T_PRIVATE */53 :
+      case /* T_PROTECTED */54 :
+      case /* T_PUBLIC */55 :
+      case /* T_YIELD */56 :
+      case /* T_DEBUGGER */57 :
           return statement_list_item(decorators, env);
-      case 58 :
+      case /* T_DECLARE */58 :
           if (Curry._2(Parser_env_Peek.token, 1, env) === /* T_EXPORT */47) {
             error_on_decorators(env)(decorators);
             return declare_export_declaration(undefined, env);
@@ -12766,14 +12766,14 @@ function statement(env) {
           exit = 2;
         } else {
           switch (match) {
-            case 1 :
+            case /* T_LCURLY */1 :
                 var env$1 = env;
                 var match$1 = Curry._1(Parse.block_body, env$1);
                 return /* tuple */[
                         match$1[0],
                         /* Block */Block.__(0, [match$1[1]])
                       ];
-            case 7 :
+            case /* T_SEMICOLON */7 :
                 var env$2 = env;
                 var loc = Curry._2(Parser_env_Peek.loc, undefined, env$2);
                 token$4(env$2, /* T_SEMICOLON */7);
@@ -12781,9 +12781,9 @@ function statement(env) {
                         loc,
                         /* Empty */0
                       ];
-            case 14 :
+            case /* T_IF */14 :
                 return _if(env);
-            case 17 :
+            case /* T_RETURN */17 :
                 var env$3 = env;
                 if (!env$3[/* in_function */9]) {
                   error$1(env$3, /* IllegalReturn */23);
@@ -12800,7 +12800,7 @@ function statement(env) {
                         btwn(start_loc, end_loc),
                         /* Return */Block.__(9, [/* record */[/* argument */argument]])
                       ];
-            case 18 :
+            case /* T_SWITCH */18 :
                 var env$4 = env;
                 var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$4);
                 token$4(env$4, /* T_SWITCH */18);
@@ -12822,7 +12822,7 @@ function statement(env) {
                               /* lexical */false
                             ]])
                       ];
-            case 20 :
+            case /* T_THROW */20 :
                 var env$5 = env;
                 var start_loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env$5);
                 token$4(env$5, /* T_THROW */20);
@@ -12840,7 +12840,7 @@ function statement(env) {
                         btwn(start_loc$2, end_loc$2),
                         /* Throw */Block.__(10, [/* record */[/* argument */argument$1]])
                       ];
-            case 21 :
+            case /* T_TRY */21 :
                 var env$6 = env;
                 var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env$6);
                 token$4(env$6, /* T_TRY */21);
@@ -12889,9 +12889,9 @@ function statement(env) {
                               /* finalizer */finalizer
                             ]])
                       ];
-            case 22 :
+            case /* T_VAR */22 :
                 return var_or_const(env);
-            case 23 :
+            case /* T_WHILE */23 :
                 var env$7 = env;
                 var start_loc$5 = Curry._2(Parser_env_Peek.loc, undefined, env$7);
                 token$4(env$7, /* T_WHILE */23);
@@ -12906,7 +12906,7 @@ function statement(env) {
                               /* body */body$1
                             ]])
                       ];
-            case 24 :
+            case /* T_WITH */24 :
                 var env$8 = env;
                 var start_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env$8);
                 token$4(env$8, /* T_WITH */24);
@@ -12926,7 +12926,7 @@ function statement(env) {
                               /* body */body$2
                             ]])
                       ];
-            case 30 :
+            case /* T_BREAK */30 :
                 var env$9 = env;
                 var start_loc$7 = Curry._2(Parser_env_Peek.loc, undefined, env$9);
                 token$4(env$9, /* T_BREAK */30);
@@ -12957,7 +12957,7 @@ function statement(env) {
                         loc$3,
                         /* Break */Block.__(4, [/* record */[/* label */label]])
                       ];
-            case 33 :
+            case /* T_CONTINUE */33 :
                 var env$10 = env;
                 var start_loc$8 = Curry._2(Parser_env_Peek.loc, undefined, env$10);
                 token$4(env$10, /* T_CONTINUE */33);
@@ -12988,7 +12988,7 @@ function statement(env) {
                         loc$4,
                         /* Continue */Block.__(5, [/* record */[/* label */label$2]])
                       ];
-            case 35 :
+            case /* T_DO */35 :
                 var env$11 = env;
                 var start_loc$9 = Curry._2(Parser_env_Peek.loc, undefined, env$11);
                 token$4(env$11, /* T_DO */35);
@@ -13010,7 +13010,7 @@ function statement(env) {
                               /* test */test$1
                             ]])
                       ];
-            case 37 :
+            case /* T_FOR */37 :
                 var env$12 = env;
                 var start_loc$10 = Curry._2(Parser_env_Peek.loc, undefined, env$12);
                 token$4(env$12, /* T_FOR */37);
@@ -13024,25 +13024,25 @@ function statement(env) {
                       exit$1 = 1;
                     } else {
                       switch (match$9 - 22 | 0) {
-                        case 0 :
+                        case /* T_IDENTIFIER */0 :
                             var match$11 = declarations(/* T_VAR */22, /* Var */0, with_no_in(true, env$12));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$11[0]]),
                               match$11[1]
                             ];
                             break;
-                        case 1 :
-                        case 2 :
+                        case /* T_LCURLY */1 :
+                        case /* T_RCURLY */2 :
                             exit$1 = 1;
                             break;
-                        case 3 :
+                        case /* T_LPAREN */3 :
                             var match$12 = $$const(with_no_in(true, env$12));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$12[0]]),
                               match$12[1]
                             ];
                             break;
-                        case 4 :
+                        case /* T_RPAREN */4 :
                             var match$13 = _let(with_no_in(true, env$12));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$13[0]]),
@@ -13157,52 +13157,52 @@ function statement(env) {
                               /* body */body$6
                             ]])
                       ];
-            case 0 :
-            case 2 :
-            case 3 :
-            case 4 :
-            case 5 :
-            case 6 :
-            case 8 :
-            case 9 :
-            case 10 :
-            case 11 :
-            case 12 :
-            case 13 :
-            case 15 :
-            case 16 :
-            case 19 :
-            case 25 :
-            case 26 :
-            case 27 :
-            case 28 :
-            case 29 :
-            case 31 :
-            case 32 :
-            case 34 :
-            case 36 :
-            case 38 :
-            case 39 :
-            case 40 :
-            case 41 :
-            case 42 :
-            case 43 :
-            case 44 :
-            case 45 :
-            case 46 :
-            case 47 :
-            case 48 :
-            case 49 :
-            case 50 :
-            case 51 :
-            case 52 :
-            case 53 :
-            case 54 :
-            case 55 :
-            case 56 :
+            case /* T_IDENTIFIER */0 :
+            case /* T_RCURLY */2 :
+            case /* T_LPAREN */3 :
+            case /* T_RPAREN */4 :
+            case /* T_LBRACKET */5 :
+            case /* T_RBRACKET */6 :
+            case /* T_COMMA */8 :
+            case /* T_PERIOD */9 :
+            case /* T_ARROW */10 :
+            case /* T_ELLIPSIS */11 :
+            case /* T_AT */12 :
+            case /* T_FUNCTION */13 :
+            case /* T_IN */15 :
+            case /* T_INSTANCEOF */16 :
+            case /* T_THIS */19 :
+            case /* T_CONST */25 :
+            case /* T_LET */26 :
+            case /* T_NULL */27 :
+            case /* T_FALSE */28 :
+            case /* T_TRUE */29 :
+            case /* T_CASE */31 :
+            case /* T_CATCH */32 :
+            case /* T_DEFAULT */34 :
+            case /* T_FINALLY */36 :
+            case /* T_CLASS */38 :
+            case /* T_EXTENDS */39 :
+            case /* T_STATIC */40 :
+            case /* T_ELSE */41 :
+            case /* T_NEW */42 :
+            case /* T_DELETE */43 :
+            case /* T_TYPEOF */44 :
+            case /* T_VOID */45 :
+            case /* T_ENUM */46 :
+            case /* T_EXPORT */47 :
+            case /* T_IMPORT */48 :
+            case /* T_SUPER */49 :
+            case /* T_IMPLEMENTS */50 :
+            case /* T_INTERFACE */51 :
+            case /* T_PACKAGE */52 :
+            case /* T_PRIVATE */53 :
+            case /* T_PROTECTED */54 :
+            case /* T_PUBLIC */55 :
+            case /* T_YIELD */56 :
                 exit = 2;
                 break;
-            case 57 :
+            case /* T_DEBUGGER */57 :
                 var env$13 = env;
                 var start_loc$11 = Curry._2(Parser_env_Peek.loc, undefined, env$13);
                 token$4(env$13, /* T_DEBUGGER */57);
@@ -13233,7 +13233,7 @@ function statement(env) {
         var match$20 = Curry._2(Parser_env_Peek.token, undefined, env$14);
         var match$21 = expr$1[1];
         var loc$5 = expr$1[0];
-        if (typeof match$21 !== "number" && match$21.tag === 18 && typeof match$20 === "number" && match$20 === 77) {
+        if (typeof match$21 !== "number" && match$21.tag === /* Identifier */18 && typeof match$20 === "number" && match$20 === 77) {
           var label$4 = match$21[0];
           var match$22 = label$4[1];
           var name$2 = match$22[/* name */0];
@@ -13273,19 +13273,19 @@ function statement(env) {
             
           } else if (match >= 38) {
             switch (match - 38 | 0) {
-              case 3 :
+              case /* T_LPAREN */3 :
                   return _if(env);
-              case 0 :
-              case 4 :
-              case 5 :
-              case 6 :
-              case 7 :
-              case 8 :
+              case /* T_IDENTIFIER */0 :
+              case /* T_RPAREN */4 :
+              case /* T_LBRACKET */5 :
+              case /* T_RBRACKET */6 :
+              case /* T_SEMICOLON */7 :
+              case /* T_COMMA */8 :
                   return expression(env);
-              case 1 :
-              case 2 :
-              case 9 :
-              case 10 :
+              case /* T_LCURLY */1 :
+              case /* T_RCURLY */2 :
+              case /* T_PERIOD */9 :
+              case /* T_ARROW */10 :
                   break;
               
             }
@@ -13295,24 +13295,24 @@ function statement(env) {
           return expression(env);
         } else {
           switch (match) {
-            case 0 :
-            case 1 :
-            case 3 :
-            case 5 :
-            case 12 :
-            case 13 :
-            case 14 :
+            case /* T_IDENTIFIER */0 :
+            case /* T_LCURLY */1 :
+            case /* T_LPAREN */3 :
+            case /* T_LBRACKET */5 :
+            case /* T_AT */12 :
+            case /* T_FUNCTION */13 :
+            case /* T_IF */14 :
                 return expression(env);
-            case 2 :
-            case 4 :
-            case 6 :
-            case 7 :
-            case 8 :
-            case 9 :
-            case 10 :
-            case 11 :
-            case 15 :
-            case 16 :
+            case /* T_RCURLY */2 :
+            case /* T_RPAREN */4 :
+            case /* T_RBRACKET */6 :
+            case /* T_SEMICOLON */7 :
+            case /* T_COMMA */8 :
+            case /* T_PERIOD */9 :
+            case /* T_ARROW */10 :
+            case /* T_ELLIPSIS */11 :
+            case /* T_IN */15 :
+            case /* T_INSTANCEOF */16 :
                 break;
             
           }
@@ -13393,18 +13393,18 @@ function statement_list_item($staropt$star, env) {
     return class_declaration$1(env, decorators);
   } else if (typeof match === "number") {
     switch (match) {
-      case 51 :
+      case /* T_INTERFACE */51 :
           return $$interface(env);
-      case 52 :
-      case 53 :
-      case 54 :
-      case 55 :
-      case 56 :
-      case 57 :
+      case /* T_PACKAGE */52 :
+      case /* T_PRIVATE */53 :
+      case /* T_PROTECTED */54 :
+      case /* T_PUBLIC */55 :
+      case /* T_YIELD */56 :
+      case /* T_DEBUGGER */57 :
           return statement(env);
-      case 58 :
+      case /* T_DECLARE */58 :
           return declare(undefined, env);
-      case 59 :
+      case /* T_TYPE */59 :
           return type_alias(env);
       default:
         return statement(env);
@@ -13471,7 +13471,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
         stmts
       ];
       var match = possible_directive[1];
-      if (typeof match === "number" || match.tag !== 1) {
+      if (typeof match === "number" || match.tag !== /* Expression */1) {
         return /* tuple */[
                 env,
                 string_tokens,
@@ -13480,7 +13480,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
       } else {
         var match$1 = match[0][/* expression */0];
         var match$2 = match$1[1];
-        if (typeof match$2 === "number" || match$2.tag !== 19) {
+        if (typeof match$2 === "number" || match$2.tag !== /* Literal */19) {
           return /* tuple */[
                   env,
                   string_tokens,
@@ -13525,7 +13525,7 @@ function directives(env, term_fn, item_fn) {
           var env$2 = env$1;
           var param$1 = param;
           var token = param$1[1];
-          if (typeof token !== "number" && token.tag === 1) {
+          if (typeof token !== "number" && token.tag === /* T_STRING */1) {
             if (token[0][3]) {
               return strict_error_at(env$2, /* tuple */[
                           param$1[0],
@@ -14043,24 +14043,24 @@ function parse(content, options) {
         return node("ThisExpression", loc, /* array */[]);
       } else {
         switch (match.tag | 0) {
-          case 0 :
+          case /* Array */0 :
               return node("ArrayExpression", loc, /* array */[/* tuple */[
                             "elements",
                             array_of_list((function (param) {
                                     return option(expression_or_spread, param);
                                   }), match[0][/* elements */0])
                           ]]);
-          case 1 :
+          case /* Object */1 :
               return node("ObjectExpression", loc, /* array */[/* tuple */[
                             "properties",
                             array_of_list(object_property, match[0][/* properties */0])
                           ]]);
-          case 2 :
+          case /* Function */2 :
               return function_expression(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 3 :
+          case /* ArrowFunction */3 :
               var arrow = match[0];
               var match$1 = arrow[/* body */4];
               var body;
@@ -14109,12 +14109,12 @@ function parse(content, options) {
                             option(type_parameter_declaration, arrow[/* typeParameters */10])
                           ]
                         ]);
-          case 4 :
+          case /* Sequence */4 :
               return node("SequenceExpression", loc, /* array */[/* tuple */[
                             "expressions",
                             array_of_list(expression, match[0][/* expressions */0])
                           ]]);
-          case 5 :
+          case /* Unary */5 :
               var unary = match[0];
               var match$2 = unary[/* operator */0];
               if (match$2 >= 7) {
@@ -14126,28 +14126,28 @@ function parse(content, options) {
                 var match$3 = unary[/* operator */0];
                 var operator;
                 switch (match$3) {
-                  case 0 :
+                  case /* Minus */0 :
                       operator = "-";
                       break;
-                  case 1 :
+                  case /* Plus */1 :
                       operator = "+";
                       break;
-                  case 2 :
+                  case /* Not */2 :
                       operator = "!";
                       break;
-                  case 3 :
+                  case /* BitNot */3 :
                       operator = "~";
                       break;
-                  case 4 :
+                  case /* Typeof */4 :
                       operator = "typeof";
                       break;
-                  case 5 :
+                  case /* Void */5 :
                       operator = "void";
                       break;
-                  case 6 :
+                  case /* Delete */6 :
                       operator = "delete";
                       break;
-                  case 7 :
+                  case /* Await */7 :
                       throw [
                             Caml_builtin_exceptions.failure,
                             "matched above"
@@ -14169,75 +14169,75 @@ function parse(content, options) {
                             ]
                           ]);
               }
-          case 6 :
+          case /* Binary */6 :
               var binary = match[0];
               var match$4 = binary[/* operator */0];
               var operator$1;
               switch (match$4) {
-                case 0 :
+                case /* Equal */0 :
                     operator$1 = "==";
                     break;
-                case 1 :
+                case /* NotEqual */1 :
                     operator$1 = "!=";
                     break;
-                case 2 :
+                case /* StrictEqual */2 :
                     operator$1 = "===";
                     break;
-                case 3 :
+                case /* StrictNotEqual */3 :
                     operator$1 = "!==";
                     break;
-                case 4 :
+                case /* LessThan */4 :
                     operator$1 = "<";
                     break;
-                case 5 :
+                case /* LessThanEqual */5 :
                     operator$1 = "<=";
                     break;
-                case 6 :
+                case /* GreaterThan */6 :
                     operator$1 = ">";
                     break;
-                case 7 :
+                case /* GreaterThanEqual */7 :
                     operator$1 = ">=";
                     break;
-                case 8 :
+                case /* LShift */8 :
                     operator$1 = "<<";
                     break;
-                case 9 :
+                case /* RShift */9 :
                     operator$1 = ">>";
                     break;
-                case 10 :
+                case /* RShift3 */10 :
                     operator$1 = ">>>";
                     break;
-                case 11 :
+                case /* Plus */11 :
                     operator$1 = "+";
                     break;
-                case 12 :
+                case /* Minus */12 :
                     operator$1 = "-";
                     break;
-                case 13 :
+                case /* Mult */13 :
                     operator$1 = "*";
                     break;
-                case 14 :
+                case /* Exp */14 :
                     operator$1 = "**";
                     break;
-                case 15 :
+                case /* Div */15 :
                     operator$1 = "/";
                     break;
-                case 16 :
+                case /* Mod */16 :
                     operator$1 = "%";
                     break;
-                case 17 :
+                case /* BitOr */17 :
                     operator$1 = "|";
                     break;
-                case 18 :
+                case /* Xor */18 :
                     operator$1 = "^";
                     break;
-                case 19 :
+                case /* BitAnd */19 :
                     operator$1 = "&";
                     break;
-                case 20 :
+                case /* In */20 :
                     operator$1 = "in";
                     break;
-                case 21 :
+                case /* Instanceof */21 :
                     operator$1 = "instanceof";
                     break;
                 
@@ -14256,48 +14256,48 @@ function parse(content, options) {
                             expression(binary[/* right */2])
                           ]
                         ]);
-          case 7 :
+          case /* Assignment */7 :
               var assignment = match[0];
               var match$5 = assignment[/* operator */0];
               var operator$2;
               switch (match$5) {
-                case 0 :
+                case /* Assign */0 :
                     operator$2 = "=";
                     break;
-                case 1 :
+                case /* PlusAssign */1 :
                     operator$2 = "+=";
                     break;
-                case 2 :
+                case /* MinusAssign */2 :
                     operator$2 = "-=";
                     break;
-                case 3 :
+                case /* MultAssign */3 :
                     operator$2 = "*=";
                     break;
-                case 4 :
+                case /* ExpAssign */4 :
                     operator$2 = "**=";
                     break;
-                case 5 :
+                case /* DivAssign */5 :
                     operator$2 = "/=";
                     break;
-                case 6 :
+                case /* ModAssign */6 :
                     operator$2 = "%=";
                     break;
-                case 7 :
+                case /* LShiftAssign */7 :
                     operator$2 = "<<=";
                     break;
-                case 8 :
+                case /* RShiftAssign */8 :
                     operator$2 = ">>=";
                     break;
-                case 9 :
+                case /* RShift3Assign */9 :
                     operator$2 = ">>>=";
                     break;
-                case 10 :
+                case /* BitOrAssign */10 :
                     operator$2 = "|=";
                     break;
-                case 11 :
+                case /* BitXorAssign */11 :
                     operator$2 = "^=";
                     break;
-                case 12 :
+                case /* BitAndAssign */12 :
                     operator$2 = "&=";
                     break;
                 
@@ -14316,7 +14316,7 @@ function parse(content, options) {
                             expression(assignment[/* right */2])
                           ]
                         ]);
-          case 8 :
+          case /* Update */8 :
               var update = match[0];
               var match$6 = update[/* operator */0];
               var operator$3 = match$6 ? "--" : "++";
@@ -14334,7 +14334,7 @@ function parse(content, options) {
                             Curry._1(bool, update[/* prefix */2])
                           ]
                         ]);
-          case 9 :
+          case /* Logical */9 :
               var logical = match[0];
               var match$7 = logical[/* operator */0];
               var operator$4 = match$7 ? "&&" : "||";
@@ -14352,7 +14352,7 @@ function parse(content, options) {
                             expression(logical[/* right */2])
                           ]
                         ]);
-          case 10 :
+          case /* Conditional */10 :
               var conditional = match[0];
               return node("ConditionalExpression", loc, /* array */[
                           /* tuple */[
@@ -14368,7 +14368,7 @@ function parse(content, options) {
                             expression(conditional[/* alternate */2])
                           ]
                         ]);
-          case 11 :
+          case /* New */11 :
               var _new = match[0];
               return node("NewExpression", loc, /* array */[
                           /* tuple */[
@@ -14380,7 +14380,7 @@ function parse(content, options) {
                             array_of_list(expression_or_spread, _new[/* arguments */1])
                           ]
                         ]);
-          case 12 :
+          case /* Call */12 :
               var call = match[0];
               return node("CallExpression", loc, /* array */[
                           /* tuple */[
@@ -14392,7 +14392,7 @@ function parse(content, options) {
                             array_of_list(expression_or_spread, call[/* arguments */1])
                           ]
                         ]);
-          case 13 :
+          case /* Member */13 :
               var member = match[0];
               var match$8 = member[/* property */1];
               var property;
@@ -14411,7 +14411,7 @@ function parse(content, options) {
                             Curry._1(bool, member[/* computed */2])
                           ]
                         ]);
-          case 14 :
+          case /* Yield */14 :
               var $$yield = match[0];
               return node("YieldExpression", loc, /* array */[
                           /* tuple */[
@@ -14423,7 +14423,7 @@ function parse(content, options) {
                             Curry._1(bool, $$yield[/* delegate */1])
                           ]
                         ]);
-          case 15 :
+          case /* Comprehension */15 :
               var comp = match[0];
               return node("ComprehensionExpression", loc, /* array */[
                           /* tuple */[
@@ -14435,7 +14435,7 @@ function parse(content, options) {
                             option(expression, comp[/* filter */1])
                           ]
                         ]);
-          case 16 :
+          case /* Generator */16 :
               var gen = match[0];
               return node("GeneratorExpression", loc, /* array */[
                           /* tuple */[
@@ -14447,7 +14447,7 @@ function parse(content, options) {
                             option(expression, gen[/* filter */1])
                           ]
                         ]);
-          case 17 :
+          case /* Let */17 :
               var _let = match[0];
               return node("LetExpression", loc, /* array */[
                           /* tuple */[
@@ -14459,19 +14459,19 @@ function parse(content, options) {
                             expression(_let[/* body */1])
                           ]
                         ]);
-          case 18 :
+          case /* Identifier */18 :
               return identifier(match[0]);
-          case 19 :
+          case /* Literal */19 :
               return literal(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 20 :
+          case /* TemplateLiteral */20 :
               return template_literal(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 21 :
+          case /* TaggedTemplate */21 :
               var param$1 = /* tuple */[
                 loc,
                 match[0]
@@ -14487,12 +14487,12 @@ function parse(content, options) {
                             template_literal(tagged[/* quasi */1])
                           ]
                         ]);
-          case 22 :
+          case /* JSXElement */22 :
               return jsx_element(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 23 :
+          case /* Class */23 :
               var param$2 = /* tuple */[
                 loc,
                 match[0]
@@ -14528,7 +14528,7 @@ function parse(content, options) {
                             array_of_list(expression, c[/* classDecorators */6])
                           ]
                         ]);
-          case 24 :
+          case /* TypeCast */24 :
               var typecast = match[0];
               return node("TypeCastExpression", loc, /* array */[
                           /* tuple */[
@@ -14548,7 +14548,7 @@ function parse(content, options) {
       var match = param[1];
       var loc = param[0];
       switch (match.tag | 0) {
-        case 0 :
+        case /* Object */0 :
             var obj = match[0];
             return node("ObjectPattern", loc, /* array */[
                         /* tuple */[
@@ -14560,7 +14560,7 @@ function parse(content, options) {
                           option(type_annotation, obj[/* typeAnnotation */1])
                         ]
                       ]);
-        case 1 :
+        case /* Array */1 :
             var arr = match[0];
             return node("ArrayPattern", loc, /* array */[
                         /* tuple */[
@@ -14574,7 +14574,7 @@ function parse(content, options) {
                           option(type_annotation, arr[/* typeAnnotation */1])
                         ]
                       ]);
-        case 2 :
+        case /* Assignment */2 :
             var match$1 = match[0];
             return node("AssignmentPattern", loc, /* array */[
                         /* tuple */[
@@ -14586,9 +14586,9 @@ function parse(content, options) {
                           expression(match$1[/* right */1])
                         ]
                       ]);
-        case 3 :
+        case /* Identifier */3 :
             return identifier(match[0]);
-        case 4 :
+        case /* Expression */4 :
             return expression(match[0]);
         
       }
@@ -14598,49 +14598,49 @@ function parse(content, options) {
       var loc = param[0];
       if (typeof t === "number") {
         switch (t) {
-          case 0 :
+          case /* Any */0 :
               return node("AnyTypeAnnotation", loc, /* array */[]);
-          case 1 :
+          case /* Void */1 :
               return node("VoidTypeAnnotation", loc, /* array */[]);
-          case 2 :
+          case /* Null */2 :
               return node("NullTypeAnnotation", loc, /* array */[]);
-          case 3 :
+          case /* Number */3 :
               return node("NumberTypeAnnotation", loc, /* array */[]);
-          case 4 :
+          case /* String */4 :
               return node("StringTypeAnnotation", loc, /* array */[]);
-          case 5 :
+          case /* Boolean */5 :
               return node("BooleanTypeAnnotation", loc, /* array */[]);
-          case 6 :
+          case /* Exists */6 :
               return node("ExistsTypeAnnotation", loc, /* array */[]);
           
         }
       } else {
         switch (t.tag | 0) {
-          case 0 :
+          case /* Nullable */0 :
               var loc$1 = loc;
               var t$1 = t[0];
               return node("NullableTypeAnnotation", loc$1, /* array */[/* tuple */[
                             "typeAnnotation",
                             _type(t$1)
                           ]]);
-          case 1 :
+          case /* Function */1 :
               return function_type(/* tuple */[
                           loc,
                           t[0]
                         ]);
-          case 2 :
+          case /* Object */2 :
               return object_type(/* tuple */[
                           loc,
                           t[0]
                         ]);
-          case 3 :
+          case /* Array */3 :
               var loc$2 = loc;
               var t$2 = t[0];
               return node("ArrayTypeAnnotation", loc$2, /* array */[/* tuple */[
                             "elementType",
                             _type(t$2)
                           ]]);
-          case 4 :
+          case /* Generic */4 :
               var param$1 = /* tuple */[
                 loc,
                 t[0]
@@ -14659,7 +14659,7 @@ function parse(content, options) {
                             option(type_parameter_instantiation, g[/* typeParameters */1])
                           ]
                         ]);
-          case 5 :
+          case /* Union */5 :
               var param$2 = /* tuple */[
                 loc,
                 t[0]
@@ -14668,7 +14668,7 @@ function parse(content, options) {
                             "types",
                             array_of_list(_type, param$2[1])
                           ]]);
-          case 6 :
+          case /* Intersection */6 :
               var param$3 = /* tuple */[
                 loc,
                 t[0]
@@ -14677,7 +14677,7 @@ function parse(content, options) {
                             "types",
                             array_of_list(_type, param$3[1])
                           ]]);
-          case 7 :
+          case /* Typeof */7 :
               var param$4 = /* tuple */[
                 loc,
                 t[0]
@@ -14686,7 +14686,7 @@ function parse(content, options) {
                             "argument",
                             _type(param$4[1])
                           ]]);
-          case 8 :
+          case /* Tuple */8 :
               var param$5 = /* tuple */[
                 loc,
                 t[0]
@@ -14695,7 +14695,7 @@ function parse(content, options) {
                             "types",
                             array_of_list(_type, param$5[1])
                           ]]);
-          case 9 :
+          case /* StringLiteral */9 :
               var param$6 = /* tuple */[
                 loc,
                 t[0]
@@ -14711,7 +14711,7 @@ function parse(content, options) {
                             Curry._1(string, s[/* raw */1])
                           ]
                         ]);
-          case 10 :
+          case /* NumberLiteral */10 :
               var param$7 = /* tuple */[
                 loc,
                 t[0]
@@ -14727,7 +14727,7 @@ function parse(content, options) {
                             Curry._1(string, s$1[/* raw */1])
                           ]
                         ]);
-          case 11 :
+          case /* BooleanLiteral */11 :
               var param$8 = /* tuple */[
                 loc,
                 t[0]
@@ -14838,13 +14838,13 @@ function parse(content, options) {
       var match = $$var[/* kind */1];
       var kind;
       switch (match) {
-        case 0 :
+        case /* Var */0 :
             kind = "var";
             break;
-        case 1 :
+        case /* Let */1 :
             kind = "let";
             break;
-        case 2 :
+        case /* Const */2 :
             kind = "const";
             break;
         
@@ -14914,24 +14914,24 @@ function parse(content, options) {
       var match = param[1];
       var loc = param[0];
       if (typeof match === "number") {
-        if (match === 0) {
+        if (match === /* Empty */0) {
           return node("EmptyStatement", loc, /* array */[]);
         } else {
           return node("DebuggerStatement", loc, /* array */[]);
         }
       } else {
         switch (match.tag | 0) {
-          case 0 :
+          case /* Block */0 :
               return block(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 1 :
+          case /* Expression */1 :
               return node("ExpressionStatement", loc, /* array */[/* tuple */[
                             "expression",
                             expression(match[0][/* expression */0])
                           ]]);
-          case 2 :
+          case /* If */2 :
               var _if = match[0];
               return node("IfStatement", loc, /* array */[
                           /* tuple */[
@@ -14947,7 +14947,7 @@ function parse(content, options) {
                             option(statement, _if[/* alternate */2])
                           ]
                         ]);
-          case 3 :
+          case /* Labeled */3 :
               var labeled = match[0];
               return node("LabeledStatement", loc, /* array */[
                           /* tuple */[
@@ -14959,17 +14959,17 @@ function parse(content, options) {
                             statement(labeled[/* body */1])
                           ]
                         ]);
-          case 4 :
+          case /* Break */4 :
               return node("BreakStatement", loc, /* array */[/* tuple */[
                             "label",
                             option(identifier, match[0][/* label */0])
                           ]]);
-          case 5 :
+          case /* Continue */5 :
               return node("ContinueStatement", loc, /* array */[/* tuple */[
                             "label",
                             option(identifier, match[0][/* label */0])
                           ]]);
-          case 6 :
+          case /* With */6 :
               var _with = match[0];
               return node("WithStatement", loc, /* array */[
                           /* tuple */[
@@ -14981,12 +14981,12 @@ function parse(content, options) {
                             statement(_with[/* body */1])
                           ]
                         ]);
-          case 7 :
+          case /* TypeAlias */7 :
               return type_alias(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 8 :
+          case /* Switch */8 :
               var $$switch = match[0];
               return node("SwitchStatement", loc, /* array */[
                           /* tuple */[
@@ -15002,17 +15002,17 @@ function parse(content, options) {
                             Curry._1(bool, $$switch[/* lexical */2])
                           ]
                         ]);
-          case 9 :
+          case /* Return */9 :
               return node("ReturnStatement", loc, /* array */[/* tuple */[
                             "argument",
                             option(expression, match[0][/* argument */0])
                           ]]);
-          case 10 :
+          case /* Throw */10 :
               return node("ThrowStatement", loc, /* array */[/* tuple */[
                             "argument",
                             expression(match[0][/* argument */0])
                           ]]);
-          case 11 :
+          case /* Try */11 :
               var _try = match[0];
               return node("TryStatement", loc, /* array */[
                           /* tuple */[
@@ -15032,7 +15032,7 @@ function parse(content, options) {
                             option(block, _try[/* finalizer */3])
                           ]
                         ]);
-          case 12 :
+          case /* While */12 :
               var _while = match[0];
               return node("WhileStatement", loc, /* array */[
                           /* tuple */[
@@ -15044,7 +15044,7 @@ function parse(content, options) {
                             statement(_while[/* body */1])
                           ]
                         ]);
-          case 13 :
+          case /* DoWhile */13 :
               var dowhile = match[0];
               return node("DoWhileStatement", loc, /* array */[
                           /* tuple */[
@@ -15056,7 +15056,7 @@ function parse(content, options) {
                             expression(dowhile[/* test */1])
                           ]
                         ]);
-          case 14 :
+          case /* For */14 :
               var _for = match[0];
               var init = function (param) {
                 if (param.tag) {
@@ -15083,7 +15083,7 @@ function parse(content, options) {
                             statement(_for[/* body */3])
                           ]
                         ]);
-          case 15 :
+          case /* ForIn */15 :
               var forin = match[0];
               var match$1 = forin[/* left */0];
               var left;
@@ -15106,7 +15106,7 @@ function parse(content, options) {
                             Curry._1(bool, forin[/* each */3])
                           ]
                         ]);
-          case 16 :
+          case /* ForOf */16 :
               var forof = match[0];
               var match$2 = forof[/* left */0];
               var left$1;
@@ -15125,7 +15125,7 @@ function parse(content, options) {
                             statement(forof[/* body */2])
                           ]
                         ]);
-          case 17 :
+          case /* Let */17 :
               var _let = match[0];
               return node("LetStatement", loc, /* array */[
                           /* tuple */[
@@ -15137,7 +15137,7 @@ function parse(content, options) {
                             statement(_let[/* body */1])
                           ]
                         ]);
-          case 18 :
+          case /* FunctionDeclaration */18 :
               var fn = match[0];
               var match$3 = fn[/* id */0];
               var match$4 = match$3 !== undefined ? /* tuple */[
@@ -15194,12 +15194,12 @@ function parse(content, options) {
                             option(type_parameter_declaration, fn[/* typeParameters */10])
                           ]
                         ]);
-          case 19 :
+          case /* VariableDeclaration */19 :
               return variable_declaration(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 20 :
+          case /* ClassDeclaration */20 :
               var param$1 = /* tuple */[
                 loc,
                 match[0]
@@ -15243,27 +15243,27 @@ function parse(content, options) {
                             array_of_list(expression, c[/* classDecorators */6])
                           ]
                         ]);
-          case 21 :
+          case /* InterfaceDeclaration */21 :
               return interface_declaration(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 22 :
+          case /* DeclareVariable */22 :
               return declare_variable(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 23 :
+          case /* DeclareFunction */23 :
               return declare_function(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 24 :
+          case /* DeclareClass */24 :
               return declare_class(/* tuple */[
                           loc,
                           match[0]
                         ]);
-          case 25 :
+          case /* DeclareModule */25 :
               var m = match[0];
               var match$8 = m[/* id */0];
               var id;
@@ -15285,34 +15285,34 @@ function parse(content, options) {
                             tmp
                           ]
                         ]);
-          case 26 :
+          case /* DeclareModuleExports */26 :
               return node("DeclareModuleExports", loc, /* array */[/* tuple */[
                             "typeAnnotation",
                             type_annotation(match[0])
                           ]]);
-          case 27 :
+          case /* DeclareExportDeclaration */27 :
               var $$export = match[0];
               var match$10 = $$export[/* declaration */1];
               var declaration;
               if (match$10 !== undefined) {
                 var match$11 = match$10;
                 switch (match$11.tag | 0) {
-                  case 0 :
+                  case /* Variable */0 :
                       declaration = declare_variable(match$11[0]);
                       break;
-                  case 1 :
+                  case /* Function */1 :
                       declaration = declare_function(match$11[0]);
                       break;
-                  case 2 :
+                  case /* Class */2 :
                       declaration = declare_class(match$11[0]);
                       break;
-                  case 3 :
+                  case /* DefaultType */3 :
                       declaration = _type(match$11[0]);
                       break;
-                  case 4 :
+                  case /* NamedType */4 :
                       declaration = type_alias(match$11[0]);
                       break;
-                  case 5 :
+                  case /* Interface */5 :
                       declaration = interface_declaration(match$11[0]);
                       break;
                   
@@ -15338,7 +15338,7 @@ function parse(content, options) {
                             option(literal, $$export[/* source */3])
                           ]
                         ]);
-          case 28 :
+          case /* ExportDeclaration */28 :
               var $$export$1 = match[0];
               var match$12 = $$export$1[/* declaration */1];
               var declaration$1;
@@ -15370,11 +15370,11 @@ function parse(content, options) {
                             Curry._1(string, $$export$1[/* exportKind */4] ? "value" : "type")
                           ]
                         ]);
-          case 29 :
+          case /* ImportDeclaration */29 :
               var $$import = match[0];
               var specifiers = List.map((function (param) {
                       switch (param.tag | 0) {
-                        case 0 :
+                        case /* ImportNamedSpecifier */0 :
                             var match = param[0];
                             var local_id = match[/* local */0];
                             var remote_id = match[/* remote */1];
@@ -15389,13 +15389,13 @@ function parse(content, options) {
                                           option(identifier, local_id)
                                         ]
                                       ]);
-                        case 1 :
+                        case /* ImportDefaultSpecifier */1 :
                             var id = param[0];
                             return node("ImportDefaultSpecifier", id[0], /* array */[/* tuple */[
                                           "id",
                                           identifier(id)
                                         ]]);
-                        case 2 :
+                        case /* ImportNamespaceSpecifier */2 :
                             var param$1 = param[0];
                             return node("ImportNamespaceSpecifier", param$1[0], /* array */[/* tuple */[
                                           "id",
@@ -15407,13 +15407,13 @@ function parse(content, options) {
               var match$14 = $$import[/* importKind */0];
               var import_kind;
               switch (match$14) {
-                case 0 :
+                case /* ImportType */0 :
                     import_kind = "type";
                     break;
-                case 1 :
+                case /* ImportTypeof */1 :
                     import_kind = "typeof";
                     break;
-                case 2 :
+                case /* ImportValue */2 :
                     import_kind = "value";
                     break;
                 
@@ -15446,16 +15446,16 @@ function parse(content, options) {
         value_ = $$null;
       } else {
         switch (value.tag | 0) {
-          case 0 :
+          case /* String */0 :
               value_ = Curry._1(string, value[0]);
               break;
-          case 1 :
+          case /* Boolean */1 :
               value_ = Curry._1(bool, value[0]);
               break;
-          case 2 :
+          case /* Number */2 :
               value_ = Curry._1(number$1, value[0]);
               break;
-          case 3 :
+          case /* RegExp */3 :
               var match = value[0];
               value_ = regexp$1(loc, match[/* pattern */0], match[/* flags */1]);
               break;
@@ -15464,7 +15464,7 @@ function parse(content, options) {
       }
       var props;
       var exit = 0;
-      if (typeof value === "number" || value.tag !== 3) {
+      if (typeof value === "number" || value.tag !== /* RegExp */3) {
         exit = 1;
       } else {
         var match$1 = value[0];
@@ -15612,11 +15612,11 @@ function parse(content, options) {
     };
     var jsx_name = function (param) {
       switch (param.tag | 0) {
-        case 0 :
+        case /* Identifier */0 :
             return jsx_identifier(param[0]);
-        case 1 :
+        case /* NamespacedName */1 :
             return jsx_namespaced_name(param[0]);
-        case 2 :
+        case /* MemberExpression */2 :
             return jsx_member_expression(param[0]);
         
       }
@@ -15768,17 +15768,17 @@ function parse(content, options) {
       var match = param[1];
       var loc = param[0];
       switch (match.tag | 0) {
-        case 0 :
+        case /* Element */0 :
             return jsx_element(/* tuple */[
                         loc,
                         match[0]
                       ]);
-        case 1 :
+        case /* ExpressionContainer */1 :
             return jsx_expression_container(/* tuple */[
                         loc,
                         match[0]
                       ]);
-        case 2 :
+        case /* Text */2 :
             var param$1 = /* tuple */[
               loc,
               match[0]
@@ -15936,13 +15936,13 @@ function parse(content, options) {
       var match = prop[/* key */0];
       var key;
       switch (match.tag | 0) {
-        case 0 :
+        case /* Literal */0 :
             key = literal(match[0]);
             break;
-        case 1 :
+        case /* Identifier */1 :
             key = identifier(match[0]);
             break;
-        case 2 :
+        case /* Computed */2 :
             throw [
                   Caml_builtin_exceptions.failure,
                   "There should not be computed object type property keys"
@@ -16035,19 +16035,19 @@ function parse(content, options) {
         var match$2 = prop[/* key */0];
         var match$3;
         switch (match$2.tag | 0) {
-          case 0 :
+          case /* Literal */0 :
               match$3 = /* tuple */[
                 literal(match$2[0]),
                 false
               ];
               break;
-          case 1 :
+          case /* Identifier */1 :
               match$3 = /* tuple */[
                 identifier(match$2[0]),
                 false
               ];
               break;
-          case 2 :
+          case /* Computed */2 :
               match$3 = /* tuple */[
                 expression(match$2[0]),
                 true
@@ -16058,13 +16058,13 @@ function parse(content, options) {
         var match$4 = prop[/* kind */2];
         var kind;
         switch (match$4) {
-          case 0 :
+          case /* Init */0 :
               kind = "init";
               break;
-          case 1 :
+          case /* Get */1 :
               kind = "get";
               break;
-          case 2 :
+          case /* Set */2 :
               kind = "set";
               break;
           
@@ -16104,19 +16104,19 @@ function parse(content, options) {
         var match = prop[/* key */0];
         var match$1;
         switch (match.tag | 0) {
-          case 0 :
+          case /* Literal */0 :
               match$1 = /* tuple */[
                 literal(match[0]),
                 false
               ];
               break;
-          case 1 :
+          case /* Identifier */1 :
               match$1 = /* tuple */[
                 identifier(match[0]),
                 false
               ];
               break;
-          case 2 :
+          case /* Computed */2 :
               match$1 = /* tuple */[
                 expression(match[0]),
                 true
@@ -16152,19 +16152,19 @@ function parse(content, options) {
         var key = method_[/* key */1];
         var match$2;
         switch (key.tag | 0) {
-          case 0 :
+          case /* Literal */0 :
               match$2 = /* tuple */[
                 literal(key[0]),
                 false
               ];
               break;
-          case 1 :
+          case /* Identifier */1 :
               match$2 = /* tuple */[
                 identifier(key[0]),
                 false
               ];
               break;
-          case 2 :
+          case /* Computed */2 :
               match$2 = /* tuple */[
                 expression(key[0]),
                 true
@@ -16174,16 +16174,16 @@ function parse(content, options) {
         }
         var kind;
         switch (method_[/* kind */0]) {
-          case 0 :
+          case /* Constructor */0 :
               kind = "constructor";
               break;
-          case 1 :
+          case /* Method */1 :
               kind = "method";
               break;
-          case 2 :
+          case /* Get */2 :
               kind = "get";
               break;
-          case 3 :
+          case /* Set */3 :
               kind = "set";
               break;
           
@@ -16229,19 +16229,19 @@ function parse(content, options) {
         var match$2 = prop[/* key */0];
         var match$3;
         switch (match$2.tag | 0) {
-          case 0 :
+          case /* Literal */0 :
               match$3 = /* tuple */[
                 literal(match$2[0]),
                 false
               ];
               break;
-          case 1 :
+          case /* Identifier */1 :
               match$3 = /* tuple */[
                 identifier(match$2[0]),
                 false
               ];
               break;
-          case 2 :
+          case /* Computed */2 :
               match$3 = /* tuple */[
                 expression(match$2[0]),
                 true

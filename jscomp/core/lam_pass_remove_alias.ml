@@ -266,6 +266,7 @@ let simplify_alias
                    sw_blocks;
                    sw_numblocks;
                    sw_numconsts;
+                   sw_names;
                   }) ->
       Lam.switch (simpl  l)
         {sw_consts = 
@@ -273,7 +274,8 @@ let simplify_alias
          sw_blocks = Ext_list.map_snd sw_blocks simpl;
          sw_numconsts;
          sw_numblocks;
-         sw_failaction = Ext_option.map sw_failaction simpl
+         sw_failaction = Ext_option.map sw_failaction simpl;
+         sw_names;
         }
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (simpl  l )

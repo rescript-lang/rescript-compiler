@@ -93,6 +93,38 @@ type default_case =
 let no_effects_const  = lazy true
 let has_effects_const = lazy false
 
+let names_from_construct_pattern (pat: Typedtree.pattern) =
+  let names_from_type_variant cstrs =
+    let (consts, blocks) = List.fold_left
+      (fun (consts, blocks) cstr ->
+        if cstr.Types.cd_args = []
+        then (Ident.name cstr.Types.cd_id :: consts, blocks)
+        else (consts, Ident.name cstr.Types.cd_id :: blocks))
+      ([], []) cstrs in
+    Some {Lambda.consts = consts |> List.rev |> Array.of_list;
+          blocks = blocks |> List.rev |> Array.of_list } in
+
+  let rec resolve_path n path =
+    match Env.find_type path pat.pat_env with
+    | {type_kind = Type_variant cstrs} ->
+      names_from_type_variant cstrs
+    | {type_kind = Type_abstract; type_manifest = Some t} ->
+      ( match (Ctype.unalias t).desc with
+        | Tconstr (pathn, _, _) ->
+          (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
+          resolve_path (n+1) pathn
+        | _ -> None)
+    | {type_kind = Type_abstract; type_manifest = None} ->
+      None
+    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
+      None in
+
+  match (Btype.repr pat.pat_type).desc with
+    | Tconstr (path, _, _) -> resolve_path 0 path
+    | _ -> assert false
+
+ let () = Matching.names_from_construct_pattern := names_from_construct_pattern
+
 (** We drop the ability of cross-compiling
         the compiler has to be the same running
 *)
@@ -412,6 +444,7 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
 and compile_general_cases
  :
   'a .
+  ('a -> string option) ->
   ('a -> J.expression) ->
   (J.expression -> J.expression -> J.expression) ->
   Lam_compile_context.t ->
@@ -421,6 +454,7 @@ and compile_general_cases
   _ ->
   ('a * Lam.t) list -> default_case -> J.block
   = fun
+  (make_comment : _ -> string option)
   (make_exp : _ -> J.expression)
   (eq_exp : J.expression -> J.expression -> J.expression)
   (cxt : Lam_compile_context.t)
@@ -499,10 +533,11 @@ and compile_general_cases
                               should_break && Lam_exit_code.has_exit lam in
                         {J.switch_case ;
                             switch_body;
-                            should_break
+                            should_break;
+                            comment = make_comment switch_case;
                         }
                       else
-                        { switch_case; switch_body = []; should_break = false }
+                        { switch_case; switch_body = []; should_break = false; comment = make_comment switch_case; }
                     )                   
               
               (* TODO: we should also group default *)
@@ -512,9 +547,10 @@ and compile_general_cases
           [switch ?default ?declaration switch_exp body]
         )
 
-and compile_cases cxt switch_exp table default =
+and compile_cases cxt switch_exp table default get_name =
   compile_general_cases
-    E.small_int
+    get_name
+    (fun i -> {(E.small_int i) with comment = get_name i})
     E.int_equal
     cxt
     (fun  ?default ?declaration e clauses    ->
@@ -534,7 +570,8 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
         sw_consts;
         sw_numblocks;
         sw_blocks;
-        sw_failaction } : Lam.switch) = sw in 
+        sw_failaction;
+        sw_names } : Lam.lambda_switch) = sw in 
   let  sw_num_default  =
     match sw_failaction with
     | None -> Complete
@@ -549,6 +586,11 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
       if sw_numblocks
       then Complete
       else Default x in
+  let get_name is_const i =
+    match sw_names with
+    | None -> None
+    | Some {blocks; consts} ->
+      Some (if is_const then consts.(i) else blocks.(i)) in
   let compile_whole  (cxt  : Lam_compile_context.t ) =
     match compile_lambda 
             {cxt with  continuation = NeedValue Not_tail}
@@ -558,20 +600,20 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
     | { block; value = Some e } ->
       block @
       (if sw_numconsts && sw_consts = [] then
-         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
+         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default (get_name false)
        else if sw_numblocks && sw_blocks = [] then
-         compile_cases cxt e  sw_consts sw_num_default
+         compile_cases cxt e  sw_consts sw_num_default (get_name true)
        else
          (* [e] will be used twice  *)
          let dispatch e =
            S.if_
              (E.is_type_number e )
-             (compile_cases cxt e sw_consts sw_num_default
+             (compile_cases cxt e sw_consts sw_num_default (get_name true)
              )
              (* default still needed, could simplified*)
              ~else_:
-               (compile_cases  cxt (E.tag e ) sw_blocks
-                  sw_blocks_default) in
+               (compile_cases cxt (E.tag e ) sw_blocks
+                  sw_blocks_default (get_name false)) in
            match e.expression_desc with
            | J.Var _  -> [ dispatch e]
            | _ ->
@@ -597,6 +639,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
 
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
+    (fun s -> None)
     E.str
     E.string_equal
     cxt
@@ -752,7 +795,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       Js_output.append_output
         (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
         (Js_output.append_output lbody (Js_output.make (
-             compile_cases new_cxt exit_expr handlers  NonComplete)  ~value:(E.var v )))
+             compile_cases new_cxt exit_expr handlers  NonComplete (fun _ -> None))  ~value:(E.var v )))
     | Declare (kind, id)
       (* declare first this we will do branching*) ->
       let declares = S.declare_variable ~kind id  :: declares in
@@ -760,7 +803,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make  declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
@@ -769,13 +812,13 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
     | Assign _  ->
       let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
-           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete (fun _ -> None))))
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
@@ -1588,7 +1631,7 @@ and compile_lambda
     | Lstringswitch(l, cases, default) ->
       compile_stringswitch l cases default lambda_cxt
     | Lswitch(switch_arg, sw) ->
-      compile_switch switch_arg sw lambda_cxt 
+      compile_switch switch_arg sw lambda_cxt
     | Lstaticraise(i, largs) ->  
       compile_staticraise i largs lambda_cxt 
     | Lstaticcatch _  ->

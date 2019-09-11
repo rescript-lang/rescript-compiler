@@ -302,7 +302,7 @@ let rec size (lam : Lam.t) =
              args; _} -> size_lams (size fn) args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction {body} -> size body 
-    | Lswitch(_, _) -> really_big ()
+    | Lswitch _ -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
         Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 

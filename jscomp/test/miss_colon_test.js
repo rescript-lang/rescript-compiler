@@ -19,7 +19,7 @@ function $plus$colon(_f, _g) {
       }
     }
     switch (g.tag | 0) {
-      case 0 :
+      case /* Int */0 :
           if (g[0] !== 0) {
             return /* Add */Block.__(2, [
                       f,
@@ -28,12 +28,12 @@ function $plus$colon(_f, _g) {
           } else {
             return f;
           }
-      case 2 :
+      case /* Add */2 :
           _g = g[1];
           _f = $plus$colon(f, g[0]);
           continue ;
-      case 1 :
-      case 3 :
+      case /* Var */1 :
+      case /* Mul */3 :
           return /* Add */Block.__(2, [
                     f,
                     g
@@ -74,7 +74,7 @@ function $star$colon(_f, _g) {
       return g;
     }
     switch (g.tag | 0) {
-      case 0 :
+      case /* Int */0 :
           if (g[0] !== 1) {
             return /* Mul */Block.__(3, [
                       f,
@@ -83,13 +83,13 @@ function $star$colon(_f, _g) {
           } else {
             return f;
           }
-      case 1 :
-      case 2 :
+      case /* Var */1 :
+      case /* Add */2 :
           return /* Mul */Block.__(3, [
                     f,
                     g
                   ]);
-      case 3 :
+      case /* Mul */3 :
           _g = g[1];
           _f = $star$colon(f, g[0]);
           continue ;
@@ -100,12 +100,12 @@ function $star$colon(_f, _g) {
 
 function simplify(f) {
   switch (f.tag | 0) {
-    case 0 :
-    case 1 :
+    case /* Int */0 :
+    case /* Var */1 :
         return f;
-    case 2 :
+    case /* Add */2 :
         return $plus$colon(simplify(f[0]), simplify(f[1]));
-    case 3 :
+    case /* Mul */3 :
         return $star$colon(simplify(f[0]), simplify(f[1]));
     
   }

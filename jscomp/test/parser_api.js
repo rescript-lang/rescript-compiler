@@ -1249,21 +1249,21 @@ function cut_at(s, c) {
 
 function ansi_of_color(param) {
   switch (param) {
-    case 0 :
+    case /* Black */0 :
         return "0";
-    case 1 :
+    case /* Red */1 :
         return "1";
-    case 2 :
+    case /* Green */2 :
         return "2";
-    case 3 :
+    case /* Yellow */3 :
         return "3";
-    case 4 :
+    case /* Blue */4 :
         return "4";
-    case 5 :
+    case /* Magenta */5 :
         return "5";
-    case 6 :
+    case /* Cyan */6 :
         return "6";
-    case 7 :
+    case /* White */7 :
         return "7";
     
   }
@@ -1272,11 +1272,11 @@ function ansi_of_color(param) {
 function code_of_style(param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* Bold */0 :
           return "1";
-      case 1 :
+      case /* Reset */1 :
           return "0";
-      case 2 :
+      case /* Dim */2 :
           return "2";
       
     }
@@ -1439,11 +1439,11 @@ function setup(o) {
     var tmp;
     if (o !== undefined) {
       switch (o) {
-        case 1 :
+        case /* Always */1 :
             tmp = true;
             break;
-        case 0 :
-        case 2 :
+        case /* Auto */0 :
+        case /* Never */2 :
             tmp = false;
             break;
         
@@ -1517,117 +1517,117 @@ var Terminfo = { };
 function number(param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* Comment_start */0 :
           return 1;
-      case 1 :
+      case /* Comment_not_end */1 :
           return 2;
-      case 2 :
+      case /* Partial_application */2 :
           return 5;
-      case 3 :
+      case /* Labels_omitted */3 :
           return 6;
-      case 4 :
+      case /* Statement_type */4 :
           return 10;
-      case 5 :
+      case /* Unused_match */5 :
           return 11;
-      case 6 :
+      case /* Unused_pat */6 :
           return 12;
-      case 7 :
+      case /* Illegal_backslash */7 :
           return 14;
-      case 8 :
+      case /* Unerasable_optional_argument */8 :
           return 16;
-      case 9 :
+      case /* Unused_argument */9 :
           return 20;
-      case 10 :
+      case /* Nonreturning_statement */10 :
           return 21;
-      case 11 :
+      case /* Useless_record_with */11 :
           return 23;
-      case 12 :
+      case /* All_clauses_guarded */12 :
           return 25;
-      case 13 :
+      case /* Wildcard_arg_to_constant_constr */13 :
           return 28;
-      case 14 :
+      case /* Eol_in_string */14 :
           return 29;
-      case 15 :
+      case /* Unused_rec_flag */15 :
           return 39;
-      case 16 :
+      case /* Bs_polymorphic_comparison */16 :
           return 102;
       
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* Deprecated */0 :
           return 3;
-      case 1 :
+      case /* Fragile_match */1 :
           return 4;
-      case 2 :
+      case /* Method_override */2 :
           return 7;
-      case 3 :
+      case /* Partial_match */3 :
           return 8;
-      case 4 :
+      case /* Non_closed_record_pattern */4 :
           return 9;
-      case 5 :
+      case /* Instance_variable_override */5 :
           return 13;
-      case 6 :
+      case /* Implicit_public_methods */6 :
           return 15;
-      case 7 :
+      case /* Undeclared_virtual_method */7 :
           return 17;
-      case 8 :
+      case /* Not_principal */8 :
           return 18;
-      case 9 :
+      case /* Without_principality */9 :
           return 19;
-      case 10 :
+      case /* Preprocessor */10 :
           return 22;
-      case 11 :
+      case /* Bad_module_name */11 :
           return 24;
-      case 12 :
+      case /* Unused_var */12 :
           return 26;
-      case 13 :
+      case /* Unused_var_strict */13 :
           return 27;
-      case 14 :
+      case /* Duplicate_definitions */14 :
           return 30;
-      case 15 :
+      case /* Multiple_definition */15 :
           return 31;
-      case 16 :
+      case /* Unused_value_declaration */16 :
           return 32;
-      case 17 :
+      case /* Unused_open */17 :
           return 33;
-      case 18 :
+      case /* Unused_type_declaration */18 :
           return 34;
-      case 19 :
+      case /* Unused_for_index */19 :
           return 35;
-      case 20 :
+      case /* Unused_ancestor */20 :
           return 36;
-      case 21 :
+      case /* Unused_constructor */21 :
           return 37;
-      case 22 :
+      case /* Unused_extension */22 :
           return 38;
-      case 23 :
+      case /* Name_out_of_scope */23 :
           return 40;
-      case 24 :
+      case /* Ambiguous_name */24 :
           return 41;
-      case 25 :
+      case /* Disambiguated_name */25 :
           return 42;
-      case 26 :
+      case /* Nonoptional_label */26 :
           return 43;
-      case 27 :
+      case /* Open_shadow_identifier */27 :
           return 44;
-      case 28 :
+      case /* Open_shadow_label_constructor */28 :
           return 45;
-      case 29 :
+      case /* Bad_env_variable */29 :
           return 46;
-      case 30 :
+      case /* Attribute_payload */30 :
           return 47;
-      case 31 :
+      case /* Eliminated_optional_arguments */31 :
           return 48;
-      case 32 :
+      case /* No_cmi_file */32 :
           return 49;
-      case 33 :
+      case /* Bad_docstring */33 :
           return 50;
-      case 34 :
+      case /* Bs_unused_attribute */34 :
           return 101;
-      case 35 :
+      case /* Bs_ffi_warning */35 :
           return 103;
-      case 36 :
+      case /* Bs_derive_warning */36 :
           return 104;
       
     }
@@ -2022,54 +2022,54 @@ parse_options(true, defaults_warn_error);
 function message(param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* Comment_start */0 :
           return "this is the start of a comment.";
-      case 1 :
+      case /* Comment_not_end */1 :
           return "this is not the end of a comment.";
-      case 2 :
+      case /* Partial_application */2 :
           return "this function application is partial,\nmaybe some arguments are missing.";
-      case 3 :
+      case /* Labels_omitted */3 :
           return "labels were omitted in the application of this function.";
-      case 4 :
+      case /* Statement_type */4 :
           return "this expression should have type unit.";
-      case 5 :
+      case /* Unused_match */5 :
           return "this match case is unused.";
-      case 6 :
+      case /* Unused_pat */6 :
           return "this sub-pattern is unused.";
-      case 7 :
+      case /* Illegal_backslash */7 :
           return "illegal backslash escape in string.";
-      case 8 :
+      case /* Unerasable_optional_argument */8 :
           return "this optional argument cannot be erased.";
-      case 9 :
+      case /* Unused_argument */9 :
           return "this argument will not be used by the function.";
-      case 10 :
+      case /* Nonreturning_statement */10 :
           return "this statement never returns (or has an unsound type.)";
-      case 11 :
+      case /* Useless_record_with */11 :
           return "all the fields are explicitly listed in this record:\nthe 'with' clause is useless.";
-      case 12 :
+      case /* All_clauses_guarded */12 :
           return "bad style, all clauses in this pattern-matching are guarded.";
-      case 13 :
+      case /* Wildcard_arg_to_constant_constr */13 :
           return "wildcard pattern given as argument to a constant constructor";
-      case 14 :
+      case /* Eol_in_string */14 :
           return "unescaped end-of-line in a string constant (non-portable code)";
-      case 15 :
+      case /* Unused_rec_flag */15 :
           return "unused rec flag.";
-      case 16 :
+      case /* Bs_polymorphic_comparison */16 :
           return "polymorphic comparison introduced (maybe unsafe)";
       
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* Deprecated */0 :
           return "deprecated: " + param[0];
-      case 1 :
+      case /* Fragile_match */1 :
           var s = param[0];
           if (s === "") {
             return "this pattern-matching is fragile.";
           } else {
             return "this pattern-matching is fragile.\nIt will remain exhaustive when constructors are added to type " + (s + ".");
           }
-      case 2 :
+      case /* Method_override */2 :
           var match = param[0];
           if (match) {
             var slist = match[1];
@@ -2098,16 +2098,16 @@ function message(param) {
                   ]
                 ];
           }
-      case 3 :
+      case /* Partial_match */3 :
           var s$1 = param[0];
           if (s$1 === "") {
             return "this pattern-matching is not exhaustive.";
           } else {
             return "this pattern-matching is not exhaustive.\nHere is an example of a value that is not matched:\n" + s$1;
           }
-      case 4 :
+      case /* Non_closed_record_pattern */4 :
           return "the following labels are not bound in this record pattern:\n" + (param[0] + "\nEither bind these labels explicitly or add '; _' to the pattern.");
-      case 5 :
+      case /* Instance_variable_override */5 :
           var match$1 = param[0];
           if (match$1) {
             var slist$1 = match$1[1];
@@ -2136,22 +2136,22 @@ function message(param) {
                   ]
                 ];
           }
-      case 6 :
+      case /* Implicit_public_methods */6 :
           return "the following private methods were made public implicitly:\n " + ($$String.concat(" ", param[0]) + ".");
-      case 7 :
+      case /* Undeclared_virtual_method */7 :
           return "the virtual method " + (param[0] + " is not declared.");
-      case 8 :
+      case /* Not_principal */8 :
           return param[0] + " is not principal.";
-      case 9 :
+      case /* Without_principality */9 :
           return param[0] + " without principality.";
-      case 10 :
+      case /* Preprocessor */10 :
           return param[0];
-      case 11 :
+      case /* Bad_module_name */11 :
           return "bad source file name: \"" + (param[0] + "\" is not a valid module name.");
-      case 12 :
-      case 13 :
+      case /* Unused_var */12 :
+      case /* Unused_var_strict */13 :
           return "unused variable " + (param[0] + ".");
-      case 14 :
+      case /* Duplicate_definitions */14 :
           return Curry._4(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "the ",
@@ -2183,7 +2183,7 @@ function message(param) {
                             ]),
                           "the %s %s is defined in both types %s and %s."
                         ]), param[0], param[1], param[2], param[3]);
-      case 15 :
+      case /* Multiple_definition */15 :
           return Curry._3(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "files ",
@@ -2206,17 +2206,17 @@ function message(param) {
                             ]),
                           "files %s and %s both define a module named %s"
                         ]), param[1], param[2], param[0]);
-      case 16 :
+      case /* Unused_value_declaration */16 :
           return "unused value " + (param[0] + ".");
-      case 17 :
+      case /* Unused_open */17 :
           return "unused open " + (param[0] + ".");
-      case 18 :
+      case /* Unused_type_declaration */18 :
           return "unused type " + (param[0] + ".");
-      case 19 :
+      case /* Unused_for_index */19 :
           return "unused for-loop index " + (param[0] + ".");
-      case 20 :
+      case /* Unused_ancestor */20 :
           return "unused ancestor variable " + (param[0] + ".");
-      case 21 :
+      case /* Unused_constructor */21 :
           var s$2 = param[0];
           if (param[1]) {
             return "constructor " + (s$2 + " is never used to build values.\n(However, this constructor appears in patterns.)");
@@ -2225,7 +2225,7 @@ function message(param) {
           } else {
             return "unused constructor " + (s$2 + ".");
           }
-      case 22 :
+      case /* Unused_extension */22 :
           var s$3 = param[0];
           if (param[1]) {
             return "extension constructor " + (s$3 + " is never used to build values.\n(However, this constructor appears in patterns.)");
@@ -2234,7 +2234,7 @@ function message(param) {
           } else {
             return "unused extension constructor " + (s$3 + ".");
           }
-      case 23 :
+      case /* Name_out_of_scope */23 :
           var slist$2 = param[1];
           var ty = param[0];
           if (slist$2 && !slist$2[1] && !param[2]) {
@@ -2253,7 +2253,7 @@ function message(param) {
                 ];
           }
           break;
-      case 24 :
+      case /* Ambiguous_name */24 :
           var slist$3 = param[0];
           if (slist$3 && !slist$3[1] && !param[2]) {
             return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
@@ -2271,11 +2271,11 @@ function message(param) {
                 ];
           }
           break;
-      case 25 :
+      case /* Disambiguated_name */25 :
           return "this use of " + (param[0] + " required disambiguation.");
-      case 26 :
+      case /* Nonoptional_label */26 :
           return "the label " + (param[0] + " is not optional.");
-      case 27 :
+      case /* Open_shadow_identifier */27 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "this open statement shadows the ",
@@ -2295,7 +2295,7 @@ function message(param) {
                             ]),
                           "this open statement shadows the %s identifier %s (which is later used)"
                         ]), param[0], param[1]);
-      case 28 :
+      case /* Open_shadow_label_constructor */28 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "this open statement shadows the ",
@@ -2315,7 +2315,7 @@ function message(param) {
                             ]),
                           "this open statement shadows the %s %s (which is later used)"
                         ]), param[0], param[1]);
-      case 29 :
+      case /* Bad_env_variable */29 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "illegal environment variable ",
@@ -2332,7 +2332,7 @@ function message(param) {
                             ]),
                           "illegal environment variable %s : %s"
                         ]), param[0], param[1]);
-      case 30 :
+      case /* Attribute_payload */30 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "illegal payload for attribute '",
@@ -2349,7 +2349,7 @@ function message(param) {
                             ]),
                           "illegal payload for attribute '%s'.\n%s"
                         ]), param[0], param[1]);
-      case 31 :
+      case /* Eliminated_optional_arguments */31 :
           var sl = param[0];
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
@@ -2367,19 +2367,19 @@ function message(param) {
                             ]),
                           "implicit elimination of optional argument%s %s"
                         ]), List.length(sl) === 1 ? "" : "s", $$String.concat(", ", sl));
-      case 32 :
+      case /* No_cmi_file */32 :
           return "no cmi file was found in path for module " + param[0];
-      case 33 :
+      case /* Bad_docstring */33 :
           if (param[0]) {
             return "unattached documentation comment (ignored)";
           } else {
             return "ambiguous documentation comment";
           }
-      case 34 :
+      case /* Bs_unused_attribute */34 :
           return "Unused BuckleScript attribute: " + param[0];
-      case 35 :
+      case /* Bs_ffi_warning */35 :
           return "BuckleScript FFI warning: " + param[0];
-      case 36 :
+      case /* Bs_derive_warning */36 :
           return "BuckleScript bs.deriving warning: " + param[0];
       
     }
@@ -3756,19 +3756,19 @@ function flatten(lid) {
     var param = _param;
     var accu = _accu;
     switch (param.tag | 0) {
-      case 0 :
+      case /* Lident */0 :
           return /* :: */[
                   param[0],
                   accu
                 ];
-      case 1 :
+      case /* Ldot */1 :
           _param = param[0];
           _accu = /* :: */[
             param[1],
             accu
           ];
           continue ;
-      case 2 :
+      case /* Lapply */2 :
           return fatal_error("Longident.flat");
       
     }
@@ -3777,11 +3777,11 @@ function flatten(lid) {
 
 function last(param) {
   switch (param.tag | 0) {
-    case 0 :
+    case /* Lident */0 :
         return param[0];
-    case 1 :
+    case /* Ldot */1 :
         return param[1];
-    case 2 :
+    case /* Lapply */2 :
         return fatal_error("Longident.last");
     
   }
@@ -3836,11 +3836,11 @@ function warn_bad_docstrings(param) {
     return List.iter((function (ds) {
                   var match = ds[/* ds_attached */2];
                   switch (match) {
-                    case 0 :
+                    case /* Unattached */0 :
                         return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [true]));
-                    case 1 :
+                    case /* Info */1 :
                         return /* () */0;
-                    case 2 :
+                    case /* Docs */2 :
                         var match$1 = ds[/* ds_associated */3];
                         if (match$1 >= 2) {
                           return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [false]));
@@ -4453,7 +4453,7 @@ function extension(loc, attrs, a) {
 
 function force_poly(t) {
   var match = t[/* ptyp_desc */0];
-  if (typeof match !== "number" && match.tag === 8) {
+  if (typeof match !== "number" && match.tag === /* Ptyp_poly */8) {
     return t;
   }
   return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
@@ -5847,7 +5847,7 @@ var Escape_error = Caml_exceptions.create("Parser_api.Syntaxerr.Escape_error");
 
 function prepare_error(param) {
   switch (param.tag | 0) {
-    case 0 :
+    case /* Unclosed */0 :
         var closing = param[3];
         var opening = param[1];
         return Curry._1(errorf(param[2], /* :: */[
@@ -5896,7 +5896,7 @@ function prepare_error(param) {
                           ]),
                         "Syntax error: '%s' expected"
                       ]), closing);
-    case 1 :
+    case /* Expecting */1 :
         return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
@@ -5910,7 +5910,7 @@ function prepare_error(param) {
                           ]),
                         "Syntax error: %s expected."
                       ]), param[1]);
-    case 2 :
+    case /* Not_expecting */2 :
         return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
@@ -5924,7 +5924,7 @@ function prepare_error(param) {
                           ]),
                         "Syntax error: %s not expected."
                       ]), param[1]);
-    case 3 :
+    case /* Applicative_path */3 :
         return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error: applicative paths of the form F(X).t are not supported when the option -no-app-func is set.",
@@ -5932,7 +5932,7 @@ function prepare_error(param) {
                       ]),
                     "Syntax error: applicative paths of the form F(X).t are not supported when the option -no-app-func is set."
                   ]);
-    case 4 :
+    case /* Variable_in_scope */4 :
         var $$var = param[1];
         return Curry._2(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
@@ -5953,7 +5953,7 @@ function prepare_error(param) {
                           ]),
                         "In this scoped type, variable '%s is reserved for the local type %s."
                       ]), $$var, $$var);
-    case 5 :
+    case /* Other */5 :
         return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error",
@@ -5961,7 +5961,7 @@ function prepare_error(param) {
                       ]),
                     "Syntax error"
                   ]);
-    case 6 :
+    case /* Ill_formed_ast */6 :
         return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "broken invariant in parsetree: ",
@@ -6354,7 +6354,7 @@ function bigarray_function(str, name) {
 
 function bigarray_untuplify(exp) {
   var match = exp[/* pexp_desc */0];
-  if (match.tag === 8) {
+  if (match.tag === /* Pexp_tuple */8) {
     return match[0];
   } else {
     return /* :: */[
@@ -6402,27 +6402,27 @@ function varify_constructors(var_names, t) {
       desc = /* Ptyp_any */0;
     } else {
       switch (match.tag | 0) {
-        case 0 :
+        case /* Ptyp_var */0 :
             var x = match[0];
             check_variable(var_names, t[/* ptyp_loc */1], x);
             desc = /* Ptyp_var */Block.__(0, [x]);
             break;
-        case 1 :
+        case /* Ptyp_arrow */1 :
             desc = /* Ptyp_arrow */Block.__(1, [
                 match[0],
                 loop(match[1]),
                 loop(match[2])
               ]);
             break;
-        case 2 :
+        case /* Ptyp_tuple */2 :
             desc = /* Ptyp_tuple */Block.__(2, [List.map(loop, match[0])]);
             break;
-        case 3 :
+        case /* Ptyp_constr */3 :
             var longident = match[0];
             var match$1 = longident[/* txt */0];
             var exit = 0;
             switch (match$1.tag | 0) {
-              case 0 :
+              case /* Lident */0 :
                   if (match[1]) {
                     exit = 1;
                   } else {
@@ -6434,8 +6434,8 @@ function varify_constructors(var_names, t) {
                     }
                   }
                   break;
-              case 1 :
-              case 2 :
+              case /* Ldot */1 :
+              case /* Lapply */2 :
                   exit = 1;
                   break;
               
@@ -6447,7 +6447,7 @@ function varify_constructors(var_names, t) {
                 ]);
             }
             break;
-        case 4 :
+        case /* Ptyp_object */4 :
             desc = /* Ptyp_object */Block.__(4, [
                 List.map((function (param) {
                         return /* tuple */[
@@ -6459,13 +6459,13 @@ function varify_constructors(var_names, t) {
                 match[1]
               ]);
             break;
-        case 5 :
+        case /* Ptyp_class */5 :
             desc = /* Ptyp_class */Block.__(5, [
                 match[0],
                 List.map(loop, match[1])
               ]);
             break;
-        case 6 :
+        case /* Ptyp_alias */6 :
             var string = match[1];
             check_variable(var_names, t[/* ptyp_loc */1], string);
             desc = /* Ptyp_alias */Block.__(6, [
@@ -6473,14 +6473,14 @@ function varify_constructors(var_names, t) {
                 string
               ]);
             break;
-        case 7 :
+        case /* Ptyp_variant */7 :
             desc = /* Ptyp_variant */Block.__(7, [
                 List.map(loop_row_field, match[0]),
                 match[1],
                 match[2]
               ]);
             break;
-        case 8 :
+        case /* Ptyp_poly */8 :
             var string_lst = match[0];
             var partial_arg = t[/* ptyp_loc */1];
             List.iter((function (param) {
@@ -6491,7 +6491,7 @@ function varify_constructors(var_names, t) {
                 loop(match[1])
               ]);
             break;
-        case 9 :
+        case /* Ptyp_package */9 :
             var match$2 = match[0];
             desc = /* Ptyp_package */Block.__(9, [/* tuple */[
                   match$2[0],
@@ -6503,7 +6503,7 @@ function varify_constructors(var_names, t) {
                         }), match$2[1])
                 ]]);
             break;
-        case 10 :
+        case /* Ptyp_extension */10 :
             var match$3 = match[0];
             desc = /* Ptyp_extension */Block.__(10, [/* tuple */[
                   match$3[0],
@@ -8688,16 +8688,16 @@ var yyact = /* array */[
       var exit = 0;
       switch (name) {
         case "-" :
-            if (match.tag === 1) {
+            if (match.tag === /* Pexp_constant */1) {
               var match$1 = match[0];
               switch (match$1.tag | 0) {
-                case 0 :
+                case /* Const_int */0 :
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_int */Block.__(0, [-match$1[0] | 0])]));
-                case 4 :
+                case /* Const_int32 */4 :
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_int32 */Block.__(4, [-match$1[0] | 0])]));
-                case 5 :
+                case /* Const_int64 */5 :
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_int64 */Block.__(5, [Caml_int64.neg(match$1[0])])]));
-                case 6 :
+                case /* Const_nativeint */6 :
                     return mkexp(/* Pexp_constant */Block.__(1, [/* Const_nativeint */Block.__(6, [-match$1[0]])]));
                 default:
                   exit = 2;
@@ -8712,9 +8712,9 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2 && match.tag === 1) {
+      if (exit === 2 && match.tag === /* Pexp_constant */1) {
         var match$2 = match[0];
-        if (match$2.tag === 3) {
+        if (match$2.tag === /* Const_float */3) {
           return mkexp(/* Pexp_constant */Block.__(1, [/* Const_float */Block.__(3, [neg_float_string(match$2[0])])]));
         }
         
@@ -8739,11 +8739,11 @@ var yyact = /* array */[
       var exit = 0;
       switch (name) {
         case "+" :
-            if (desc.tag === 1) {
+            if (desc.tag === /* Pexp_constant */1) {
               switch (desc[0].tag | 0) {
-                case 1 :
-                case 2 :
-                case 3 :
+                case /* Const_char */1 :
+                case /* Const_string */2 :
+                case /* Const_float */3 :
                     exit = 2;
                     break;
                 default:
@@ -8759,7 +8759,7 @@ var yyact = /* array */[
         default:
           
       }
-      if (exit === 2 && desc.tag === 1 && desc[0].tag === 3) {
+      if (exit === 2 && desc.tag === /* Pexp_constant */1 && desc[0].tag === /* Const_float */3) {
         return mkexp(desc);
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
@@ -12185,13 +12185,13 @@ function type_of_directive(x) {
     return /* Dir_type_null */4;
   } else {
     switch (x.tag | 0) {
-      case 0 :
+      case /* Dir_bool */0 :
           return /* Dir_type_bool */0;
-      case 1 :
+      case /* Dir_float */1 :
           return /* Dir_type_float */1;
-      case 2 :
+      case /* Dir_int */2 :
           return /* Dir_type_int */2;
-      case 3 :
+      case /* Dir_string */3 :
           return /* Dir_type_string */3;
       
     }
@@ -12200,15 +12200,15 @@ function type_of_directive(x) {
 
 function string_of_type_directive(x) {
   switch (x) {
-    case 0 :
+    case /* Dir_type_bool */0 :
         return "bool";
-    case 1 :
+    case /* Dir_type_float */1 :
         return "float";
-    case 2 :
+    case /* Dir_type_int */2 :
         return "int";
-    case 3 :
+    case /* Dir_type_string */3 :
         return "string";
-    case 4 :
+    case /* Dir_type_null */4 :
         return "null";
     
   }
@@ -12444,13 +12444,13 @@ function pp_directive_value(fmt, x) {
     return Format.pp_print_string(fmt, "null");
   } else {
     switch (x.tag | 0) {
-      case 0 :
+      case /* Dir_bool */0 :
           return Format.pp_print_bool(fmt, x[0]);
-      case 1 :
+      case /* Dir_float */1 :
           return Format.pp_print_float(fmt, x[0]);
-      case 2 :
+      case /* Dir_int */2 :
           return Format.pp_print_int(fmt, x[0]);
-      case 3 :
+      case /* Dir_string */3 :
           return Curry._1(Format.fprintf(fmt, /* Format */[
                           /* Caml_string */Block.__(3, [
                               /* No_padding */0,
@@ -12594,9 +12594,9 @@ function define_key_value(key, v) {
 function value_of_token(loc, t) {
   if (typeof t === "number") {
     switch (t) {
-      case 29 :
+      case /* FALSE */29 :
           return /* Dir_bool */Block.__(0, [false]);
-      case 91 :
+      case /* TRUE */91 :
           return /* Dir_bool */Block.__(0, [true]);
       default:
         throw [
@@ -12607,13 +12607,13 @@ function value_of_token(loc, t) {
     }
   } else {
     switch (t.tag | 0) {
-      case 1 :
+      case /* FLOAT */1 :
           return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(t[0])]);
-      case 7 :
+      case /* INT */7 :
           return /* Dir_int */Block.__(2, [t[0]]);
-      case 16 :
+      case /* STRING */16 :
           return /* Dir_string */Block.__(3, [t[0][0]]);
-      case 17 :
+      case /* UIDENT */17 :
           return query(loc, t[0]);
       default:
         throw [
@@ -12638,13 +12638,13 @@ function directive_parse(token_with_comments, lexbuf) {
         var t = Curry._1(token_with_comments, lexbuf);
         if (typeof t === "number") {
           switch (t) {
-            case 25 :
+            case /* EOF */25 :
                 throw [
                       $$Error$2,
                       /* Unterminated_if */2,
                       curr(lexbuf)
                     ];
-            case 100 :
+            case /* EOL */100 :
                 _param = /* () */0;
                 continue ;
             default:
@@ -12652,8 +12652,8 @@ function directive_parse(token_with_comments, lexbuf) {
           }
         } else {
           switch (t.tag | 0) {
-            case 18 :
-            case 19 :
+            case /* COMMENT */18 :
+            case /* DOCSTRING */19 :
                 _param = /* () */0;
                 continue ;
             default:
@@ -12681,25 +12681,25 @@ function directive_parse(token_with_comments, lexbuf) {
     var op = token(/* () */0);
     if (typeof op === "number") {
       switch (op) {
-        case 26 :
-        case 34 :
-        case 51 :
+        case /* EQUAL */26 :
+        case /* GREATER */34 :
+        case /* LESS */51 :
             break;
         default:
           return Curry._1(no, op);
       }
-    } else if (op.tag === 2) {
+    } else if (op.tag === /* INFIXOP0 */2) {
       switch (op[0]) {
         case "=~" :
             if (calc) {
               var exit = 0;
-              if (typeof lhs === "number" || lhs.tag !== 3) {
+              if (typeof lhs === "number" || lhs.tag !== /* Dir_string */3) {
                 exit = 2;
               } else {
                 var curr_loc = curr(lexbuf);
                 var rhs = value_of_token(curr_loc, token(/* () */0));
                 var exit$1 = 0;
-                if (typeof rhs === "number" || rhs.tag !== 3) {
+                if (typeof rhs === "number" || rhs.tag !== /* Dir_string */3) {
                   exit$1 = 3;
                 } else {
                   return semver(curr_loc, lhs[0], rhs[0]);
@@ -12745,19 +12745,19 @@ function directive_parse(token_with_comments, lexbuf) {
     var exit$2 = 0;
     if (typeof op === "number") {
       switch (op) {
-        case 26 :
+        case /* EQUAL */26 :
             f = Caml_obj.caml_equal;
             break;
-        case 34 :
+        case /* GREATER */34 :
             f = Caml_obj.caml_greaterthan;
             break;
-        case 51 :
+        case /* LESS */51 :
             f = Caml_obj.caml_lessthan;
             break;
         default:
           exit$2 = 1;
       }
-    } else if (op.tag === 2) {
+    } else if (op.tag === /* INFIXOP0 */2) {
       switch (op[0]) {
         case "<=" :
             f = Caml_obj.caml_lessequal;
@@ -12794,9 +12794,9 @@ function directive_parse(token_with_comments, lexbuf) {
     var curr_loc = curr(lexbuf);
     if (typeof curr_token === "number") {
       switch (curr_token) {
-        case 29 :
+        case /* FALSE */29 :
             return false;
-        case 54 :
+        case /* LPAREN */54 :
             var v = parse_or_aux(calc, parse_and_aux(calc, parse_relation(calc)));
             var match = token(/* () */0);
             if (typeof match === "number") {
@@ -12815,7 +12815,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     curr(lexbuf)
                   ];
             }
-        case 91 :
+        case /* TRUE */91 :
             return true;
         default:
           throw [
@@ -12826,7 +12826,7 @@ function directive_parse(token_with_comments, lexbuf) {
       }
     } else {
       switch (curr_token.tag | 0) {
-        case 1 :
+        case /* FLOAT */1 :
             return token_op(calc, (function (e) {
                           throw [
                                 $$Error$2,
@@ -12837,13 +12837,13 @@ function directive_parse(token_with_comments, lexbuf) {
                                 curr_loc
                               ];
                         }), /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(curr_token[0])]));
-        case 7 :
+        case /* INT */7 :
             var v$1 = curr_token[0];
             return token_op(calc, (function (e) {
                           push(e);
                           return v$1 !== 0;
                         }), /* Dir_int */Block.__(2, [v$1]));
-        case 11 :
+        case /* LIDENT */11 :
             var r = curr_token[0];
             switch (r) {
               case "defined" :
@@ -12864,7 +12864,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     /* Unexpected_token_in_conditional */4,
                     loc
                   ];
-            } else if (t.tag === 17) {
+            } else if (t.tag === /* UIDENT */17) {
               var s = t[0];
               if (calc) {
                 if (Caml_string.get(r, 0) === /* "u" */117) {
@@ -12883,7 +12883,7 @@ function directive_parse(token_with_comments, lexbuf) {
                   ];
             }
             break;
-        case 16 :
+        case /* STRING */16 :
             return token_op(calc, (function (e) {
                           throw [
                                 $$Error$2,
@@ -12894,7 +12894,7 @@ function directive_parse(token_with_comments, lexbuf) {
                                 curr_loc
                               ];
                         }), /* Dir_string */Block.__(3, [curr_token[0][0]]));
-        case 17 :
+        case /* UIDENT */17 :
             var value_v = query(curr_loc, curr_token[0]);
             return token_op(calc, (function (e) {
                           push(e);
@@ -12971,7 +12971,7 @@ function directive_parse(token_with_comments, lexbuf) {
 }
 
 function is_elif(i) {
-  if (typeof i === "number" || !(i.tag === 11 && i[0] === "elif")) {
+  if (typeof i === "number" || !(i.tag === /* LIDENT */11 && i[0] === "elif")) {
     return false;
   } else {
     return true;
@@ -13550,7 +13550,7 @@ function comments(param) {
 function report_error$2(ppf, param) {
   if (typeof param === "number") {
     switch (param) {
-      case 0 :
+      case /* Unterminated_string */0 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "String literal not terminated",
@@ -13558,7 +13558,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "String literal not terminated"
                     ]);
-      case 1 :
+      case /* Unterminated_paren_in_conditional */1 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Unterminated parens in conditional predicate",
@@ -13566,7 +13566,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "Unterminated parens in conditional predicate"
                     ]);
-      case 2 :
+      case /* Unterminated_if */2 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "#if not terminated",
@@ -13574,7 +13574,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "#if not terminated"
                     ]);
-      case 3 :
+      case /* Unterminated_else */3 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "#else not terminated",
@@ -13582,7 +13582,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "#else not terminated"
                     ]);
-      case 4 :
+      case /* Unexpected_token_in_conditional */4 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Unexpected token in conditional predicate",
@@ -13590,7 +13590,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "Unexpected token in conditional predicate"
                     ]);
-      case 5 :
+      case /* Expect_hash_then_in_conditional */5 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Expect `then` after conditional predicate",
@@ -13598,7 +13598,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "Expect `then` after conditional predicate"
                     ]);
-      case 6 :
+      case /* Unexpected_directive */6 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Unexpected directive",
@@ -13610,7 +13610,7 @@ function report_error$2(ppf, param) {
     }
   } else {
     switch (param.tag | 0) {
-      case 0 :
+      case /* Illegal_character */0 :
           return Curry._1(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal character (",
@@ -13624,7 +13624,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "Illegal character (%s)"
                         ]), Char.escaped(param[0]));
-      case 1 :
+      case /* Illegal_escape */1 :
           return Curry._1(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal backslash escape in string or character (",
@@ -13638,7 +13638,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "Illegal backslash escape in string or character (%s)"
                         ]), param[0]);
-      case 2 :
+      case /* Unterminated_comment */2 :
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Comment not terminated",
@@ -13646,7 +13646,7 @@ function report_error$2(ppf, param) {
                         ]),
                       "Comment not terminated"
                     ]);
-      case 3 :
+      case /* Unterminated_string_in_comment */3 :
           return Curry._2(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "This comment contains an unterminated string literal",
@@ -13660,7 +13660,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "This comment contains an unterminated string literal@.%aString literal begins here"
                         ]), print_error, param[1]);
-      case 4 :
+      case /* Keyword_as_label */4 :
           return Curry._1(Format.fprintf(ppf, /* Format */[
                           /* Char_literal */Block.__(12, [
                               /* "`" */96,
@@ -13674,7 +13674,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "`%s' is a keyword, it cannot be used as label name"
                         ]), param[0]);
-      case 5 :
+      case /* Literal_overflow */5 :
           return Curry._1(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Integer literal exceeds the range of representable integers of type ",
@@ -13685,7 +13685,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "Integer literal exceeds the range of representable integers of type %s"
                         ]), param[0]);
-      case 6 :
+      case /* Illegal_semver */6 :
           return Curry._1(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal semantic version string ",
@@ -13696,7 +13696,7 @@ function report_error$2(ppf, param) {
                             ]),
                           "Illegal semantic version string %s"
                         ]), param[0]);
-      case 7 :
+      case /* Conditional_expr_expected_type */7 :
           return Curry._2(Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Conditional expression type mismatch (",
@@ -14427,7 +14427,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
   var match = token_with_comments(lexbuf);
   if (typeof match === "number") {
     switch (match) {
-      case 23 :
+      case /* ELSE */23 :
           if (if_then_else$1 !== 0) {
             throw [
                   $$Error$2,
@@ -14436,7 +14436,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                 ];
           }
           break;
-      case 24 :
+      case /* END */24 :
           if (if_then_else$1 >= 2) {
             throw [
                   $$Error$2,
@@ -14446,7 +14446,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
           }
           if_then_else[0] = /* Dir_out */2;
           return Curry._1(cont, lexbuf);
-      case 37 :
+      case /* IF */37 :
           if (if_then_else$1 >= 2) {
             if (directive_parse(token_with_comments, lexbuf)) {
               if_then_else[0] = /* Dir_if_true */0;
@@ -14506,7 +14506,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       default:
         return Curry._1(look_ahead, match);
     }
-  } else if (match.tag === 11 && match[0] === "elif") {
+  } else if (match.tag === /* LIDENT */11 && match[0] === "elif") {
     if (if_then_else$1 !== 0) {
       throw [
             $$Error$2,
@@ -14614,7 +14614,7 @@ function token$1(lexbuf) {
       var tok = token_with_comments(lexbuf);
       if (typeof tok === "number") {
         switch (tok) {
-          case 84 :
+          case /* SHARP */84 :
               if (at_bol(lexbuf)) {
                 return interpret_directive(lexbuf, (function(lines,docs){
                           return function (lexbuf) {
@@ -14626,7 +14626,7 @@ function token$1(lexbuf) {
                             }));
               }
               break;
-          case 100 :
+          case /* EOL */100 :
               var lines$prime = lines !== 0 ? /* BlankLine */2 : /* NewLine */1;
               _lines = lines$prime;
               continue ;
@@ -14635,7 +14635,7 @@ function token$1(lexbuf) {
         }
       } else {
         switch (tok.tag | 0) {
-          case 18 :
+          case /* COMMENT */18 :
               var match = tok[0];
               add_comment(/* tuple */[
                     match[0],
@@ -14644,7 +14644,7 @@ function token$1(lexbuf) {
               var lines$prime$1 = lines >= 2 ? /* BlankLine */2 : /* NoLine */0;
               _lines = lines$prime$1;
               continue ;
-          case 19 :
+          case /* DOCSTRING */19 :
               var doc = tok[0];
               add_docstring_comment(doc);
               var docs$prime;
@@ -14817,16 +14817,16 @@ function skip_phrase(lexbuf) {
       if (exn[0] === $$Error$2) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
-          if (tmp === 0) {
+          if (tmp === /* Unterminated_string */0) {
             continue ;
           } else {
             throw exn;
           }
         } else {
           switch (tmp.tag | 0) {
-            case 0 :
-            case 2 :
-            case 3 :
+            case /* Illegal_character */0 :
+            case /* Unterminated_comment */2 :
+            case /* Unterminated_string_in_comment */3 :
                 continue ;
             default:
               throw exn;

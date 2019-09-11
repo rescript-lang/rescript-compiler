@@ -28,13 +28,13 @@
 
 type ident = Ident.t
 
-
-type switch  =
+type lambda_switch  =
   { sw_numconsts: bool;
     sw_consts: (int * t) list;
     sw_numblocks: bool;
     sw_blocks: (int * t) list;
-    sw_failaction : t option}
+    sw_failaction: t option;
+    sw_names: Lambda.switch_names option }
 and apply_status =
   | App_na
   | App_ml_full
@@ -65,7 +65,7 @@ and  t =  private
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
-  | Lswitch of t * switch
+  | Lswitch of t * lambda_switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
   | Lstaticcatch of t * (int * ident list) * t
@@ -115,7 +115,7 @@ val letrec : (ident * t) list -> t -> t
 val if_ : t -> t -> t -> t 
 
 (** constant folding*)
-val switch : t -> switch  -> t 
+val switch : t -> lambda_switch -> t 
 (** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 

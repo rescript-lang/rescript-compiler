@@ -444,12 +444,12 @@ class virtual map =
   *)
         'a 'a_out.
         ('self_type -> 'a -> 'a_out) -> 'a case_clause -> 'a_out case_clause =
-      fun _f_a { switch_case = _x; switch_body = _x_i1; should_break = _x_i2
+      fun _f_a { switch_case = _x; switch_body = _x_i1; should_break = _x_i2; comment
         } ->
         let _x = _f_a o _x in
         let _x_i1 = o#block _x_i1 in
         let _x_i2 = o#bool _x_i2
-        in { switch_case = _x; switch_body = _x_i1; should_break = _x_i2; }
+        in { switch_case = _x; switch_body = _x_i1; should_break = _x_i2; comment }
     method block : block -> block = (* true means break *)
       (* TODO: For efficency: block should not be a list, it should be able to 
    be concatenated in both ways 

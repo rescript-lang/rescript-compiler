@@ -625,7 +625,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 #else
       (e,s) 
 #end      
-      -> convert_switch e s 
+      -> convert_switch e s
     | Lstringswitch (e, cases, default, _ ) ->
       Lam.stringswitch 
       (convert_aux e) 
@@ -781,7 +781,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                  sw_consts =
                    Ext_list.map_snd  sw_consts convert_aux;
                  sw_numconsts = 
-                   Ext_list.length_ge sw_consts sw_numconsts
+                   Ext_list.length_ge sw_consts sw_numconsts;
+                 sw_names = s.sw_names;
                 }
           end
         | _ -> 
@@ -790,7 +791,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
               sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
               sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
               sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
-              sw_failaction =Ext_option.map s.sw_failaction convert_aux } in
+              sw_failaction =Ext_option.map s.sw_failaction convert_aux;
+              sw_names = s.sw_names } in
   convert_aux lam , may_depends
 
 
