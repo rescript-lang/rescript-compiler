@@ -39,7 +39,7 @@ type path = string
 
 
 type _ t = 
-  | No_env :  (path * Js_cmj_format.t) t 
+  | No_env  : bool t 
   | Has_env : Env.t  -> bool t 
 
 

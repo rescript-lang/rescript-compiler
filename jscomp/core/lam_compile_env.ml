@@ -149,7 +149,7 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
    [Runtime] 
    and [externals]*)
 type _ t = 
-  | No_env :  (path * Js_cmj_format.t) t 
+  | No_env :  bool t 
   | Has_env : Env.t  -> bool t (* Indicate it is pure or not *)
 
 
@@ -170,7 +170,7 @@ let query_and_add_if_not_exist
           | Has_env _ -> 
             found true
           | No_env -> 
-            found cmj_info)        
+            found (Js_cmj_format.is_pure cmj_table))        
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
@@ -185,7 +185,7 @@ let query_and_add_if_not_exist
               found  (Js_cmj_format.is_pure cmj_table)
             end
           | No_env -> 
-            found cmj_info)
+            found (Js_cmj_format.is_pure cmj_table))
         
 
       | External _  -> 
@@ -198,7 +198,7 @@ let query_and_add_if_not_exist
             -> 
             found false
           | No_env -> 
-            found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
+            found false
             (* FIXME: #154, it come from External, should be okay *)
         end
 
@@ -207,7 +207,7 @@ let query_and_add_if_not_exist
     begin match env with 
       | Has_env _ -> 
         found   (Js_cmj_format.is_pure cmj_table)
-      | No_env  -> found (cmj_path,cmj_table)
+      | No_env  -> found (Js_cmj_format.is_pure cmj_table)
     end
 
   | Some (Runtime {cmj_path; cmj_table}) -> 
@@ -215,14 +215,14 @@ let query_and_add_if_not_exist
       | Has_env _ -> 
         found true
       | No_env -> 
-        found (cmj_path, cmj_table) 
+        found (Js_cmj_format.is_pure cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
         found false
       | No_env -> 
-        found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
+        found false (* External is okay *)
     end
 
 
@@ -277,8 +277,7 @@ let is_pure_module (id : Lam_module_ident.t)  =
   id.kind = Runtime ||
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
-    ~found:(fun (_,x) -> 
-      Js_cmj_format.is_pure x)
+    ~found:(fun x ->  x)
 
 let get_required_modules 
     extras 
