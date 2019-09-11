@@ -40,7 +40,7 @@ type ml_module_info = {
 }
 
 type env_value = 
-  | Visit of ml_module_info
+  | Ml of ml_module_info
   | Runtime  of ml_module_info
   (** 
      [Runtime (pure, path, cmj_format)]
@@ -126,7 +126,7 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
   | None -> 
     let cmj_path, cmj_table = 
       Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
-    oid  +> Visit {  cmj_table ; cmj_path  }  ;
+    oid  +> Ml {  cmj_table ; cmj_path  }  ;
     let arity, closed_lambda =        
       Js_cmj_format.query_by_name cmj_table name         
     in
@@ -136,7 +136,7 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
       closed_lambda
     }
     
-  | Some (Visit { cmj_table } )
+  | Some (Ml { cmj_table } )
     -> 
     let arity , closed_lambda =  
       Js_cmj_format.query_by_name cmj_table name 
@@ -189,7 +189,7 @@ let query_and_add_if_not_exist
                 Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some _ -> 
-              oid +> Visit {cmj_table;cmj_path } ;
+              oid +> Ml {cmj_table;cmj_path } ;
               found  (Js_cmj_format.is_pure cmj_table)
             end
           | No_env -> 
@@ -211,7 +211,7 @@ let query_and_add_if_not_exist
         end
 
     end
-  | Some (Visit { cmj_table; cmj_path}) -> 
+  | Some (Ml { cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
         found   (Js_cmj_format.is_pure cmj_table)
@@ -240,7 +240,7 @@ let get_package_path_from_cmj
     ( id : Lam_module_ident.t) 
    = 
   match Lam_module_ident.Hash.find_opt cached_tbl id with 
-  | Some (Visit {cmj_table ; cmj_path}) -> 
+  | Some (Ml {cmj_table ; cmj_path}) -> 
      (cmj_path, 
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
@@ -258,7 +258,7 @@ let get_package_path_from_cmj
     | Ml -> 
       let (cmj_path, cmj_table) = 
         Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
-      id +> Visit {cmj_table;cmj_path };  
+      id +> Ml {cmj_table;cmj_path };  
       (cmj_path, 
        Js_cmj_format.get_npm_package_path cmj_table, 
        Js_cmj_format.get_cmj_case cmj_table )              
