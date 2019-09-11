@@ -158,7 +158,7 @@ type _ t =
 let query_and_add_if_not_exist 
     (type u)
     (oid : Lam_module_ident.t) 
-    (env : u t) ~not_found ~(found: u -> _) =
+    (env : u t) ~not_found ~(found: bool -> _) =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     begin match oid.kind with
@@ -192,24 +192,12 @@ let query_and_add_if_not_exist
         oid +> External;
         (** This might be wrong, if we happen to expand  an js module
             we should assert false (but this in general should not happen)
+            FIXME: #154, it come from External, should be okay
         *)
-        begin match env with 
-          | Has_env _ 
-            -> 
-            found false
-          | No_env -> 
-            found false
-            (* FIXME: #154, it come from External, should be okay *)
-        end
-
+        found false
     end
-  | Some (Ml { cmj_table; cmj_path}) -> 
-    begin match env with 
-      | Has_env _ -> 
-        found   (Js_cmj_format.is_pure cmj_table)
-      | No_env  -> found (Js_cmj_format.is_pure cmj_table)
-    end
-
+  | Some (Ml { cmj_table; cmj_path}) ->     
+      found   (Js_cmj_format.is_pure cmj_table)    
   | Some (Runtime {cmj_path; cmj_table}) -> 
     begin match env with 
       | Has_env _ -> 
@@ -217,13 +205,8 @@ let query_and_add_if_not_exist
       | No_env -> 
         found (Js_cmj_format.is_pure cmj_table) 
     end
-  | Some External -> 
-    begin match env with 
-      | Has_env _ -> 
-        found false
-      | No_env -> 
-        found false (* External is okay *)
-    end
+  | Some External -> found false
+  
 
 
 

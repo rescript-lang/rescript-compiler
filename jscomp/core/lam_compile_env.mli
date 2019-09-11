@@ -99,7 +99,7 @@ val query_external_id_info :
 val query_and_add_if_not_exist : 
   Lam_module_ident.t ->
   'a t -> not_found:(unit -> 'b) ->
-  found:('a -> 'b) -> 'b
+  found:(bool -> 'b) -> 'b
 
 val is_pure_module : Lam_module_ident.t -> bool
 
