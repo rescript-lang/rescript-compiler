@@ -54,10 +54,8 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 
 type t = {
-  env : Env.t;
   export_idents : Ident_set.t ;
   exports : Ident.t list ; (*It is kept since order matters? *)
-
   alias_tbl : alias_tbl; 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers

@@ -595,7 +595,7 @@ let lambda_as_module env  ppf (lam : Lam.t) =
     env_lambda env ppf lam;
     fprintf ppf "; lambda-failure"
 
-let seriaize env (filename : string) (lam : Lam.t) : unit =
+let seriaize (filename : string) (lam : Lam.t) : unit =
   let ou = open_out filename  in
   let old = Format.get_margin () in
   let () = Format.set_margin 10000 in

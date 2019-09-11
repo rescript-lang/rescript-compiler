@@ -161,7 +161,7 @@ type _ t =
 let query_and_add_if_not_exist 
     (type u)
     (oid : Lam_module_ident.t) 
-     ~(found: bool -> _) =
+     =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     begin match oid.kind with
@@ -169,25 +169,25 @@ let query_and_add_if_not_exist
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime {cmj_path;cmj_table} ; 
-        found (Js_cmj_format.is_pure cmj_table)
+        Js_cmj_format.is_pure cmj_table
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Ml {cmj_table;cmj_path } ;
-        found (Js_cmj_format.is_pure cmj_table)
+        Js_cmj_format.is_pure cmj_table
       | External _  -> 
         oid +> External;
         (** This might be wrong, if we happen to expand  an js module
             we should assert false (but this in general should not happen)
             FIXME: #154, it come from External, should be okay
         *)
-        found false
+        false
     end
   | Some (Ml { cmj_table }) 
   | Some (Runtime {cmj_table}) -> 
-    found (Js_cmj_format.is_pure cmj_table) 
-  | Some External -> found false
+    Js_cmj_format.is_pure cmj_table
+  | Some External -> false
   
 
 
@@ -228,7 +228,7 @@ let add = Lam_module_ident.Hash_set.add
 let is_pure_module (id : Lam_module_ident.t)  = 
   id.kind = Runtime ||
   query_and_add_if_not_exist id 
-    ~found:(fun x ->  x)
+    
 
 let get_required_modules 
     extras 
