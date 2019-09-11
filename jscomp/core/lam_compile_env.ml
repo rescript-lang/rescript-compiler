@@ -224,19 +224,6 @@ let get_package_path_from_cmj
 let add = Lam_module_ident.Hash_set.add
 
 
-
-(* let is_pure_module (id : Lam_module_ident.t) = 
-  match id.kind with 
-  | Runtime -> true 
-  | External _ -> false
-  | Ml -> 
-    match Lam_module_ident.Hash.find_opt cached_tbl id with
-    | Some (Visit {cmj_table = {pure}}) -> pure 
-    | Some _ -> assert false 
-    | None ->  *)
-
-
-
 (* Conservative interface *)
 let is_pure_module (id : Lam_module_ident.t)  = 
   id.kind = Runtime ||
