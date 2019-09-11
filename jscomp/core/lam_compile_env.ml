@@ -166,11 +166,7 @@ let query_and_add_if_not_exist
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime {cmj_path;cmj_table} ; 
-         (match env with 
-          | Has_env _ -> 
-            found true
-          | No_env -> 
-            found (Js_cmj_format.is_pure cmj_table))        
+        found (Js_cmj_format.is_pure cmj_table)
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
@@ -185,9 +181,7 @@ let query_and_add_if_not_exist
               found  (Js_cmj_format.is_pure cmj_table)
             end
           | No_env -> 
-            found (Js_cmj_format.is_pure cmj_table))
-        
-
+            found (Js_cmj_format.is_pure cmj_table))        
       | External _  -> 
         oid +> External;
         (** This might be wrong, if we happen to expand  an js module
@@ -196,15 +190,9 @@ let query_and_add_if_not_exist
         *)
         found false
     end
-  | Some (Ml { cmj_table; cmj_path}) ->     
-      found   (Js_cmj_format.is_pure cmj_table)    
-  | Some (Runtime {cmj_path; cmj_table}) -> 
-    begin match env with 
-      | Has_env _ -> 
-        found true
-      | No_env -> 
-        found (Js_cmj_format.is_pure cmj_table) 
-    end
+  | Some (Ml { cmj_table }) 
+  | Some (Runtime {cmj_table}) -> 
+    found (Js_cmj_format.is_pure cmj_table) 
   | Some External -> found false
   
 
