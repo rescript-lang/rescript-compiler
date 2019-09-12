@@ -180,16 +180,13 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 
 
 let count_alias_globals 
-    env 
     (export_idents : Ident.t list)
     (export_sets  : Ident_set.t)
     (lam : Lam.t) : Lam_stats.t =
   let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
-
      exports =  export_idents;
-     env;
      export_idents = export_sets;
     } in 
   collect_helper  meta lam ; 

@@ -224,7 +224,7 @@ let generate_label ?(name="") ()  =
 let log_counter = ref 0
 
 
-let dump env ext  lam = 
+let dump ext  lam = 
 #if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then
       ()
 #else
@@ -234,7 +234,7 @@ let dump env ext  lam =
       begin 
         incr log_counter;
         Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
-        Lam_print.seriaize env 
+        Lam_print.seriaize  
           (Ext_filename.new_extension
              !Location.input_name
            (Printf.sprintf ".%02d%s.lam" !log_counter ext)

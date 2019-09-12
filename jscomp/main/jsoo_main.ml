@@ -80,7 +80,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
   (* Env.set_unit_name modulename; *)
   Lam_compile_env.reset () ;
   let env = Compmisc.initial_env() in (* Question ?? *)
-  let finalenv = ref Env.empty in
+  (* let finalenv = ref Env.empty in *)
   let types_signature = ref [] in
   if use_super_errors then begin
     Misc.Color.setup (Some Always);
@@ -99,8 +99,8 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
     | V3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
     let ast = Bs_builtin_ppx.rewrite_implementation ast in 
     let typed_tree = 
-      let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
-      finalenv := c ;
+      let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
+      (* finalenv := c ; *)
       types_signature := signature;
       (a,b) in      
   typed_tree
@@ -117,7 +117,7 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
                           ~output_prefix:"" (* does not matter here *)
                           NodeJS
                           (Lam_compile_main.compile ""
-                             !finalenv  lam)
+                              lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in
       Js.Unsafe.(obj [| "js_code", inject @@ Js.string v |]) )

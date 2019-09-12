@@ -40,7 +40,7 @@ type ml_module_info = {
 }
 
 type env_value = 
-  | Visit of ml_module_info
+  | Ml of ml_module_info
   | Runtime  of ml_module_info
   (** 
      [Runtime (pure, path, cmj_format)]
@@ -56,7 +56,6 @@ type env_value =
 
 
 type ident_info = {
-  (* id : Ident.t; *)
   name : string;
   arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
@@ -89,16 +88,16 @@ let reset () =
 *)
 let add_js_module 
     (hint_name : External_ffi_types.module_bind_name)
-    module_name : Ident.t 
+    (module_name : string) : Ident.t 
   = 
   let id = 
-    Ident.create @@ 
+    Ident.create 
       (match hint_name with 
        | Phint_name hint_name -> 
-        Ext_string.capitalize_ascii hint_name 
-        (* make sure the module name is capitalized
-           TODO: maybe a warning if the user hint is not good
-        *)
+         Ext_string.capitalize_ascii hint_name 
+       (* make sure the module name is capitalized
+          TODO: maybe a warning if the user hint is not good
+       *)
        | Phint_nothing -> 
          Ext_modulename.js_id_name_of_hint_name module_name
       )
@@ -120,35 +119,28 @@ let add_js_module
 
 
 
-let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
+let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
   let oid  = Lam_module_ident.of_ml module_id in
-  match Lam_module_ident.Hash.find_opt cached_tbl oid with 
-  | None -> 
-    let cmj_path, cmj_table = 
-      Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
-    oid  +> Visit {  cmj_table ; cmj_path  }  ;
-    let arity, closed_lambda =        
-      Js_cmj_format.query_by_name cmj_table name         
-    in
-    {
-      name ;
-      arity ;
-      closed_lambda
-    }
-    
-  | Some (Visit { cmj_table } )
-    -> 
-    let arity , closed_lambda =  
-      Js_cmj_format.query_by_name cmj_table name 
-    in
-    { 
-      name; 
-      arity;
-      closed_lambda
-      (* TODO shall we cache the arity ?*) 
-    } 
-  | Some (Runtime _) -> assert false
-  | Some External  -> assert false
+  let cmj_table = 
+    match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+    | None -> 
+      let cmj_path, cmj_table = 
+        Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
+      oid  +> Ml {  cmj_table ; cmj_path  }  ;
+      cmj_table
+    | Some (Ml { cmj_table } )
+      -> cmj_table
+    | Some (Runtime _) -> assert false
+    | Some External  -> assert false in 
+  let arity , closed_lambda =  
+    Js_cmj_format.query_by_name cmj_table name 
+  in
+  { 
+    name; 
+    arity;
+    closed_lambda
+    (* TODO shall we cache the arity ?*) 
+  } 
 
 
 
@@ -157,16 +149,19 @@ let cached_find_ml_id_pos (module_id : Ident.t) name : ident_info =
    [Runtime] 
    and [externals]*)
 type _ t = 
-  | No_env :  (path * Js_cmj_format.t) t 
+  | No_env :  bool t 
   | Has_env : Env.t  -> bool t (* Indicate it is pure or not *)
 
 
-(* -FIXME: 
-  Here [not_found] only means cmi not found, not cmj not found *)
+(* 
+  FIXME: 
+  Here [not_found] only means cmi not found, not cmj not found
+  We do need handle cases when [not_found] hit in a graceful way
+*)
 let query_and_add_if_not_exist 
     (type u)
     (oid : Lam_module_ident.t) 
-    (env : u t) ~not_found ~(found: u -> _) =
+     =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     begin match oid.kind with
@@ -174,64 +169,26 @@ let query_and_add_if_not_exist
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime {cmj_path;cmj_table} ; 
-         (match env with 
-          | Has_env _ -> 
-            found true
-          | No_env -> 
-            found cmj_info)        
+        Js_cmj_format.is_pure cmj_table
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
-        ( match env with 
-          | Has_env env -> 
-            begin match 
-                Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
-            | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
-            | Some _ -> 
-              oid +> Visit {cmj_table;cmj_path } ;
-              found  (Js_cmj_format.is_pure cmj_table)
-            end
-          | No_env -> 
-            found cmj_info)
-        
-
+        oid +> Ml {cmj_table;cmj_path } ;
+        Js_cmj_format.is_pure cmj_table
       | External _  -> 
         oid +> External;
         (** This might be wrong, if we happen to expand  an js module
             we should assert false (but this in general should not happen)
+            FIXME: #154, it come from External, should be okay
         *)
-        begin match env with 
-          | Has_env _ 
-            -> 
-            found false
-          | No_env -> 
-            found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
-            (* FIXME: #154, it come from External, should be okay *)
-        end
-
+        false
     end
-  | Some (Visit { cmj_table; cmj_path}) -> 
-    begin match env with 
-      | Has_env _ -> 
-        found   (Js_cmj_format.is_pure cmj_table)
-      | No_env  -> found (cmj_path,cmj_table)
-    end
-
-  | Some (Runtime {cmj_path; cmj_table}) -> 
-    begin match env with 
-      | Has_env _ -> 
-        found true
-      | No_env -> 
-        found (cmj_path, cmj_table) 
-    end
-  | Some External -> 
-    begin match env with 
-      | Has_env _ -> 
-        found false
-      | No_env -> 
-        found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
-    end
+  | Some (Ml { cmj_table }) 
+  | Some (Runtime {cmj_table}) -> 
+    Js_cmj_format.is_pure cmj_table
+  | Some External -> false
+  
 
 
 
@@ -240,7 +197,7 @@ let get_package_path_from_cmj
     ( id : Lam_module_ident.t) 
    = 
   match Lam_module_ident.Hash.find_opt cached_tbl id with 
-  | Some (Visit {cmj_table ; cmj_path}) -> 
+  | Some (Ml {cmj_table ; cmj_path}) -> 
      (cmj_path, 
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
@@ -258,7 +215,7 @@ let get_package_path_from_cmj
     | Ml -> 
       let (cmj_path, cmj_table) = 
         Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
-      id +> Visit {cmj_table;cmj_path };  
+      id +> Ml {cmj_table;cmj_path };  
       (cmj_path, 
        Js_cmj_format.get_npm_package_path cmj_table, 
        Js_cmj_format.get_cmj_case cmj_table )              
@@ -267,26 +224,11 @@ let get_package_path_from_cmj
 let add = Lam_module_ident.Hash_set.add
 
 
-
-(* let is_pure_module (id : Lam_module_ident.t) = 
-  match id.kind with 
-  | Runtime -> true 
-  | External _ -> false
-  | Ml -> 
-    match Lam_module_ident.Hash.find_opt cached_tbl id with
-    | Some (Visit {cmj_table = {pure}}) -> pure 
-    | Some _ -> assert false 
-    | None ->  *)
-
-
-
 (* Conservative interface *)
 let is_pure_module (id : Lam_module_ident.t)  = 
   id.kind = Runtime ||
-  query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> false) 
-    ~found:(fun (_,x) -> 
-      Js_cmj_format.is_pure x)
+  query_and_add_if_not_exist id 
+    
 
 let get_required_modules 
     extras 

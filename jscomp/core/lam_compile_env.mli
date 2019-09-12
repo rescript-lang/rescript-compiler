@@ -39,7 +39,7 @@ type path = string
 
 
 type _ t = 
-  | No_env :  (path * Js_cmj_format.t) t 
+  | No_env  : bool t 
   | Has_env : Env.t  -> bool t 
 
 
@@ -88,18 +88,14 @@ val add_js_module :
    pay attention to for those modules are actually used or not
 *)
 (**
-  [cached_find_ml_id_pos id pos env found]
+  [query_external_id_info id pos env found]
   will raise if not found
 *)
-val cached_find_ml_id_pos : 
+val query_external_id_info : 
   Ident.t ->
   string -> 
   ident_info
 
-val query_and_add_if_not_exist : 
-  Lam_module_ident.t ->
-  'a t -> not_found:(unit -> 'b) ->
-  found:('a -> 'b) -> 'b
 
 val is_pure_module : Lam_module_ident.t -> bool
 

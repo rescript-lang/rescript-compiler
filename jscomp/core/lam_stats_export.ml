@@ -107,14 +107,9 @@ let get_dependent_module_effect
   (external_ids : Lam_module_ident.t list) = 
   if maybe_pure = None then
     let non_pure_module =  
-      Ext_list.find_first_not external_ids
-        (fun id -> 
-           id.kind = Runtime ||
-           Lam_compile_env.query_and_add_if_not_exist id 
-             (Has_env meta.env )
-             ~not_found:(fun _ -> false ) 
-             ~found:(fun pure -> pure)
-        ) in 
+      Ext_list.find_first_not external_ids        
+        Lam_compile_env.is_pure_module            
+    in 
     Ext_option.map  non_pure_module (fun x -> Lam_module_ident.name x)
   else 
     maybe_pure

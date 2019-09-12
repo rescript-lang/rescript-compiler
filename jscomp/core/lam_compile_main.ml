@@ -117,9 +117,9 @@ let no_side_effects (rest : Lam_group.t list) : string option =
         else None (* TODO :*))
 
 
-let _d  = fun env s lam -> 
+let _d  = fun  s lam -> 
 #if undefined BS_RELEASE_BUILD then 
-    Lam_util.dump env s lam ;
+    Lam_util.dump  s lam ;
     Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
     ignore @@ Lam_check.check !Location.input_name lam;
     Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
@@ -131,7 +131,6 @@ let _d  = fun env s lam ->
 *)
 let compile  
     (output_prefix : string) 
-    (env : Env.t) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
@@ -146,23 +145,23 @@ let compile
   let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
 
   let _j = Js_pass_debug.dump in
-  let lam = _d env "initial"  lam in
+  let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
-  let lam = _d  env "flatten0" lam in
+  let lam = _d  "flatten0" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env 
+    Lam_pass_collect.count_alias_globals 
       export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam
-      |> _d env "flattern1"
+      |> _d "flattern1"
       |>  Lam_pass_exits.simplify_exits
-      |> _d env "simplyf_exits"
+      |> _d "simplyf_exits"
       |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
-      |> _d env "simplify_alias"
+      |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
-      |> _d env "flatten2"
+      |> _d  "flatten2"
     in  (* Inling happens*)
 
     let ()  = Lam_pass_collect.collect_helper meta lam in
@@ -171,29 +170,29 @@ let compile
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = 
       lam
-      |> _d env "alpha_before"
+      |> _d "alpha_before"
       |> Lam_pass_alpha_conversion.alpha_conversion meta
-      |> _d env "alpha_after"
+      |> _d "alpha_after"
       |> Lam_pass_exits.simplify_exits in    
     let () = Lam_pass_collect.collect_helper meta lam in
 
 
     lam
-    |> _d env "simplify_alias_before"
+    |> _d "simplify_alias_before"
     |>  Lam_pass_remove_alias.simplify_alias meta 
-    |> _d env "alpha_conversion"
+    |> _d "alpha_conversion"
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
-    |> _d env "before-simplify_lets"
+    |> _d  "before-simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
 
-    |> _d env "before-simplify-exits"
+    |> _d "before-simplify-exits"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
-    |> _d env "simplify_lets"
+    |> _d "simplify_lets"
 #if undefined BS_RELEASE_BUILD then    
     |> (fun lam -> 
        let () = 
@@ -215,7 +214,7 @@ let compile
         Ext_filename.new_extension !Location.input_name  ".lambda" in
       Ext_fmt.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
-          (Lam_group.pp_group env) fmt (coerced_input.groups) 
+          Lam_group.pp_group  fmt (coerced_input.groups) 
       end;
   in
 #end  
