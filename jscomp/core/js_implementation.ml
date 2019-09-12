@@ -22,9 +22,13 @@ let fprintf = Format.fprintf
 
 
 
-let print_if ppf flag printer arg =
+let print_if_pipe ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
   arg
+
+let print_if ppf flag printer arg =
+  if !flag then fprintf ppf "%a@." printer arg
+  
 
 
 let process_with_gentype filename =    
@@ -103,15 +107,15 @@ let interface ppf fname outputprefix =
   Compmisc.init_path false;
   Pparse.parse_interface ~tool_name:Js_config.tool_name ppf fname
   |> Ppx_entry.rewrite_signature
-  |> print_if ppf Clflags.dump_parsetree Printast.interface
-  |> print_if ppf Clflags.dump_source Pprintast.signature 
+  |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
+  |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
 let interface_mliast ppf fname outputprefix  = 
   Compmisc.init_path false;
   Binary_ast.read_ast Mli fname 
-  |> print_if ppf Clflags.dump_parsetree Printast.interface
-  |> print_if ppf Clflags.dump_source Pprintast.signature 
+  |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
+  |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
 
@@ -140,27 +144,25 @@ let after_parsing_impl ppf  outputprefix ast =
       Lam_compile_env.reset () ;
       let env = Compmisc.initial_env() in
       Env.set_unit_name modulename;
-
       let (typedtree, coercion, _, _) =
-        ast 
-        |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) !Location.input_name outputprefix modulename env 
-        |> print_if ppf Clflags.dump_typedtree
-          (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
-      in
+        Typemod.type_implementation_more 
+          ?check_exists:(if !Js_config.force_cmi then None else Some ()) 
+          !Location.input_name outputprefix modulename env ast  in 
+      let typedtree_coercion = (typedtree, coercion) in        
+      print_if ppf Clflags.dump_typedtree
+        Printtyped.implementation_with_coercion  typedtree_coercion ;
       if !Clflags.print_types || !Js_config.cmi_only then begin
         Warnings.check_fatal ();
       end else begin
-        (typedtree, coercion)
-        |> Translmod.transl_implementation modulename
-        |> (fun lambda -> 
-            let js_program =  
-            print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
-            |> Lam_compile_main.compile outputprefix in 
-            if not !Js_config.cmj_only then 
-              Lam_compile_main.lambda_as_module
-                js_program
-                outputprefix 
-          );
+        let lambda = Translmod.transl_implementation modulename typedtree_coercion in 
+        let js_program =  
+          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
+          |> Lam_compile_main.compile outputprefix in 
+        if not !Js_config.cmj_only then 
+          Lam_compile_main.lambda_as_module
+            js_program
+            outputprefix 
+        ;
       end;
       process_with_gentype (outputprefix ^ ".cmt")        
     end
@@ -168,15 +170,15 @@ let implementation ppf fname outputprefix =
   Compmisc.init_path false;
   Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf fname
   |> Ppx_entry.rewrite_implementation
-  |> print_if ppf Clflags.dump_parsetree Printast.implementation
-  |> print_if ppf Clflags.dump_source Pprintast.structure
+  |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
+  |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 
 
 let implementation_mlast ppf fname outputprefix = 
   Compmisc.init_path false;
   Binary_ast.read_ast Ml fname
-  |> print_if ppf Clflags.dump_parsetree Printast.implementation
-  |> print_if ppf Clflags.dump_source Pprintast.structure
+  |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
+  |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf  outputprefix 
 
 
@@ -212,7 +214,7 @@ let implementation_map ppf sourcefile outputprefix =
     )  in 
   Compmisc.init_path false;
   ml_ast
-  |> print_if ppf Clflags.dump_parsetree Printast.implementation
-  |> print_if ppf Clflags.dump_source Pprintast.structure
+  |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
+  |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 
 

@@ -28,9 +28,14 @@
 *)
 
 
+type path = string  
+type cmj_load_info = {
+  cmj_table : Js_cmj_format.t ; 
+  cmj_path : path ;
+}
 
 #if BS_COMPILER_IN_BROWSER then 
-let find_cmj_exn file : string * Js_cmj_format.t = 
+let find_cmj_exn file : cmj_load_info = 
   let target = Ext_string.uncapitalize_ascii (Filename.basename file) in
   match String_map.find_exn !Js_cmj_datasets.data_sets target with
   | v
@@ -41,18 +46,18 @@ let find_cmj_exn file : string * Js_cmj_format.t =
         Ext_log.warn __LOC__ 
           "@[%s corrupted in database, when looking %s while compiling %s please update @]"  file target !Location.input_name  ;
         Bs_exception.error (Cmj_not_found file)
-      | v ->  "BROWSER", v 
+      | v ->  {cmj_path = "BROWSER"; cmj_table = v} 
       (* see {!Js_packages_info.string_of_module_id} *)
     end
   | exception Not_found 
     ->     
     Bs_exception.error (Cmj_not_found file)
 #else    
-let find_cmj_exn file : string * Js_cmj_format.t = 
+let find_cmj_exn file : cmj_load_info = 
   match Config_util.find_opt file with
   | Some f
     -> 
-    f, Js_cmj_format.from_file f             
+    {cmj_path = f; cmj_table =  Js_cmj_format.from_file f}
   | None -> 
     (* ONLY read the stored cmj data in browser environment *)
     Bs_exception.error (Cmj_not_found file)

@@ -27,7 +27,13 @@
     it depends on {!Js_cmj_datasets}, for non-browser environment, it fails
  *)
 
-
+type path = string  
+type cmj_load_info = {
+  cmj_table : Js_cmj_format.t ; 
+  cmj_path : path ;
+}
 
 (** return path and meta data *)
-val find_cmj_exn : string -> string * Js_cmj_format.t
+val find_cmj_exn : 
+   string -> 
+   cmj_load_info
