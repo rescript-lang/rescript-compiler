@@ -141,7 +141,7 @@ let after_parsing_impl ppf  outputprefix ast =
       let env = Compmisc.initial_env() in
       Env.set_unit_name modulename;
 
-      let (typedtree, coercion, finalenv, current_signature) =
+      let (typedtree, coercion, _, _) =
         ast 
         |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) !Location.input_name outputprefix modulename env 
         |> print_if ppf Clflags.dump_typedtree
@@ -155,7 +155,7 @@ let after_parsing_impl ppf  outputprefix ast =
         |> (fun lambda -> 
             let js_program =  
             print_if ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
-            |> Lam_compile_main.compile outputprefix finalenv in 
+            |> Lam_compile_main.compile outputprefix in 
             if not !Js_config.cmj_only then 
               Lam_compile_main.lambda_as_module
                 js_program

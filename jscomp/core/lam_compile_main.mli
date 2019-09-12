@@ -39,7 +39,6 @@
  *)
 val compile :  
   string -> 
-  Env.t ->   
   Lambda.lambda -> 
   J.deps_program
 

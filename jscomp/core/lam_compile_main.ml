@@ -131,7 +131,6 @@ let _d  = fun  s lam ->
 *)
 let compile  
     (output_prefix : string) 
-    (env : Env.t) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
