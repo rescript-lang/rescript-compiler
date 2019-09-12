@@ -54,17 +54,17 @@ let str_of_kind (kind : Lam_compat.let_kind) =
   | StrictOpt -> "o"
   | Variable -> "v"
 
-let pp_group env fmt ( x : t) =
+let pp_group fmt ( x : t) =
   match x with
   | Single (kind, id, lam) ->
     Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind)
-      (Lam_print.env_lambda env) lam
+      Lam_print.lambda lam
   | Recursive lst ->
     List.iter (fun (id,lam) ->
         Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
+          "@[let %a@ =r@ %a@ @]" Ident.print id Lam_print.lambda lam
       ) lst
-  | Nop lam -> Lam_print.env_lambda env fmt lam
+  | Nop lam -> Lam_print.lambda fmt lam
 
 
 

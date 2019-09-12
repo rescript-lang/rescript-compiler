@@ -398,7 +398,7 @@ let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string =
 
 
 
-let lambda use_env env ppf v  =
+let lambda ppf v  =
   let rec lam ppf (l : Lam.t) = match l with 
     | Lvar id ->
       Ident.print ppf id
@@ -437,18 +437,10 @@ let lambda use_env env ppf v  =
         "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
       fprintf ppf ")@ %a)@]"  lam body
     | Lprim { 
-        primitive = Pfield (n,_); 
+        primitive = Pfield (n,Fld_module s); 
         args = [ Lglobal_module id ]
-        ;  _} when use_env ->
-      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
-
-    | Lprim { 
-        primitive  = Psetfield (n,_); 
-        args = [ Lglobal_module id  ;
-                 e ]
-        ;  _} when use_env  ->
-      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
-        lam e
+        ;  _} ->
+      fprintf ppf "%s.%s/%d" id.name s n
     | Lprim{primitive = prim; args = largs;  _} ->
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
@@ -540,8 +532,6 @@ let lambda use_env env ppf v  =
 
 let structured_constant = struct_const
 
-let env_lambda = lambda true 
-let lambda = lambda false Env.empty
 
 let rec flatten_seq acc (lam : Lam.t) =
   match lam with 
@@ -579,10 +569,10 @@ let lambda_as_module env  ppf (lam : Lam.t) =
           (fun (left, l) ->
              match left with 
              | Id { kind = k; id } ->
-               fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
+               fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) lambda l
              | Nop -> 
 
-               fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
+               fprintf ppf "@[<2>%a@]@."  lambda l
           )
 
         @@ List.rev rest
@@ -592,7 +582,7 @@ let lambda_as_module env  ppf (lam : Lam.t) =
     end
   (* | _ -> raise Not_a_module *)
   with _ -> 
-    env_lambda env ppf lam;
+    lambda ppf lam;
     fprintf ppf "; lambda-failure"
 
 let seriaize (filename : string) (lam : Lam.t) : unit =

@@ -38,7 +38,10 @@ type t =
 
 (** Tricky to be complete *)
 
-val pp_group : Env.t -> Format.formatter -> t -> unit
+val pp_group : 
+  Format.formatter -> 
+  t -> 
+  unit
 
 val single :
   Lam_compat.let_kind ->
