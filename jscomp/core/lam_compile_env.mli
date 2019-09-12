@@ -24,23 +24,10 @@
 
 
 
-
-
-
-
-
 (** Helper for global Ocaml module index into meaningful names  *) 
 
 
 
-type path = string 
-
-
-
-
-type _ t = 
-  | No_env  : bool t 
-  | Has_env : Env.t  -> bool t 
 
 
 type ident_info = {
