@@ -67,21 +67,7 @@ let cmj_magic_number =  "BUCKLE20171012"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
-let pure_dummy = 
-  {
-    values = empty_values;
-    pure = true;
-    npm_package_path = Js_packages_info.empty;
-    cmj_case = Little_js;
-  }
 
-let no_pure_dummy = 
-  {
-    values = empty_values;
-    pure = false;
-    npm_package_path = Js_packages_info.empty;  
-    cmj_case = Little_js; (** TODO: consistent with Js_config.bs_suffix default *)
-  }
 
 let digest_length = 16 (*16 chars *)
 

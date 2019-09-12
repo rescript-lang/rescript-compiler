@@ -93,8 +93,7 @@ val get_cmj_case :
   cmj_case 
 
 val single_na : arity
-val pure_dummy : t
-val no_pure_dummy : t
+
 
 
 val from_file : string -> t
