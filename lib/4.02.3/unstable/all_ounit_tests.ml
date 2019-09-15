@@ -16537,7 +16537,8 @@ let resize b more =
      this tricky function that is slow anyway. *)
   Bytes.blit b.buffer 0 new_buffer 0 b.position;
   b.buffer <- new_buffer;
-  b.length <- !new_len  
+  b.length <- !new_len ;
+  assert (b.position + more <= b.length)
 
 let add_char b c =
   let pos = b.position in
@@ -16550,7 +16551,7 @@ let add_substring b s offset len =
   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  Bytes.blit_string s offset b.buffer b.position len;
+  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
   b.position <- new_position  
 
 
@@ -16561,7 +16562,7 @@ let add_string b s =
   let len = String.length s in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  Bytes.blit_string s 0 b.buffer b.position len;
+  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
   b.position <- new_position  
 
 (* TODO: micro-optimzie *)
@@ -16571,7 +16572,7 @@ let add_string_char b s c =
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   let b_buffer = b.buffer in 
-  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
   Bytes.unsafe_set b_buffer (new_position - 1) c;
   b.position <- new_position 
 
@@ -16583,7 +16584,7 @@ let add_char_string b c s  =
   let b_buffer = b.buffer in 
   let b_position = b.position in 
   Bytes.unsafe_set b_buffer b_position c ; 
-  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
   b.position <- new_position
 
 
