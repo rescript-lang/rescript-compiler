@@ -19296,6 +19296,10 @@ type app_pattern = {
   args : Parsetree.expression list
 }
 
+let sane_property_name_check loc s = 
+  if String.contains s '#'then 
+    Location.raise_errorf ~loc 
+      "property name (%s) can not contain speical character #" s 
 (* match fn as *)   
 let view_as_app (fn : exp) s : app_pattern option =      
   match fn.pexp_desc with 
@@ -19330,7 +19334,7 @@ let app_exp_mapper
    | Some {op; loc} ->
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
    | None -> 
-     match view_as_app e infix_ops with   
+     (match view_as_app e infix_ops with   
      | Some { op = "|."; args =  [obj_arg; fn];loc} ->
       (*
         a |. f
@@ -19401,9 +19405,14 @@ let app_exp_mapper
            Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
            {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
          | 
-           {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+           {pexp_desc = 
+              (Pexp_ident {txt = Lident name;_ } 
+            | Pexp_constant (Const_string(name,None)))
+            ;
+             pexp_loc}
            (* f##paint  *)
            ->
+           sane_property_name_check pexp_loc name ;
            { e with pexp_desc =
                       Ast_util.js_property loc (self.expr self obj) name
            }
@@ -19425,8 +19434,15 @@ let app_exp_mapper
      *)
      | Some {op = "#="; loc; args = [obj; arg]}  ->
        begin match view_as_app obj ["##"] with
-         | Some { args = [obj; {pexp_desc = Pexp_ident {txt = Lident name}}]}
+         | Some { args = [obj; {
+             pexp_desc = 
+               Pexp_ident {txt = Lident name}
+               | Pexp_constant (Const_string (name, None)); pexp_loc
+           }
+           ]
+           }
            -> 
+           sane_property_name_check pexp_loc name;
            Exp.constraint_ ~loc
              { e with
                pexp_desc =
@@ -19453,7 +19469,7 @@ let app_exp_mapper
            {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
-
+     )
 end
 module Ast_signature : sig 
 #1 "ast_signature.mli"
