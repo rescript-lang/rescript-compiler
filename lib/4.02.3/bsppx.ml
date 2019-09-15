@@ -22578,7 +22578,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
            {[class type x = int -> object
                end[@bs]]}
 *)
-let setupChromeDebugger : Longident.t =  Ldot (Ldot (Lident"Belt","Debug"), "setupChromeDebugger")
+
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
