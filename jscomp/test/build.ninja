@@ -395,6 +395,7 @@ build test/map_test.cmi : cc test/map_test.mli | $stdlib
 build test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $stdlib
 build test/method_chain.cmi test/method_chain.cmj : cc test/method_chain.ml | $stdlib
 build test/method_name_test.cmi test/method_name_test.cmj : cc test/method_name_test.ml | test/mt.cmj $stdlib
+build test/method_string_name.cmi test/method_string_name.cmj : cc test/method_string_name.re | $stdlib
 build test/minimal_test.cmi test/minimal_test.cmj : cc test/minimal_test.ml | $stdlib
 build test/miss_colon_test.cmi test/miss_colon_test.cmj : cc test/miss_colon_test.ml | $stdlib
 build test/mock_mt.cmi test/mock_mt.cmj : cc test/mock_mt.ml | test/mt.cmj $stdlib
