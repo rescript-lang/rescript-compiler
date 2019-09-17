@@ -462,7 +462,7 @@ val partition : 'a array ->  ('a -> bool) -> 'a array * 'a array
 (** [partition f a] split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false
 
     @example {[
-      partition [|1;2;3;4;5|] (fun x  -> if (x mod 2) = 0 then true else false) = ([|2;4|], [|1;2;3|]);;
+      partition [|1;2;3;4;5|] (fun x -> if (x mod 2) = 0 then true else false) = ([|2;4|], [|1;2;3|]);;
       partition [|1;2;3;4;5|] (fun x -> if (x mod 2) <> 0 then true else false) = ([|1;2;3|], [|2;4|]);;
     ]}
 *)
