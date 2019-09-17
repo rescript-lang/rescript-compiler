@@ -67,8 +67,8 @@ val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
   When [res] is [Ok n], returns [f n], otherwise [default].
   
   @example{[
-    mapWithDefault good 0 (function x -> x / 2) = 21
-    mapWithDefault bad 0 (function x -> x / 2) = 0
+    mapWithDefault good 0 (fun x -> x / 2) = 21
+    mapWithDefault bad 0 (fun x -> x / 2) = 0
   ]}
 *)
 
