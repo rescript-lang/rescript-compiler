@@ -60,7 +60,7 @@ val isSorted: 'a array -> ('a -> 'a -> int) -> bool
 (** [isSorted arr cmp]
     @return true if array is increasingly sorted (equal is okay )
     @example {[
-     isSorted [|1;1;2;3;4|] (fun x y -> compare x y)) = true
+     isSorted [|1;1;2;3;4|] (fun x y -> compare x y) = true
    ]}
 *)
 
