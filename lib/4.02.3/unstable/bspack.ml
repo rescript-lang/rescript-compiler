@@ -1993,6 +1993,7 @@ val symbol_gloc: unit -> t
 val rhs_loc: int -> t
 
 val input_name: string ref
+val set_input_name: string -> unit 
 val input_lexbuf: Lexing.lexbuf option ref
 
 val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
@@ -2154,7 +2155,8 @@ let rhs_loc n = {
 
 let input_name = ref "_none_"
 let input_lexbuf = ref (None : lexbuf option)
-
+let set_input_name name =
+  if name <> "" then input_name := name
 (* Terminal info *)
 
 let status = ref Terminfo.Uninitialised
@@ -8159,6 +8161,8 @@ val force_cmj : bool ref
 val jsx_version : int ref
 val refmt : string option ref
 val is_reason : bool ref 
+
+val no_js_stdout : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8271,6 +8275,8 @@ let jsx_version = ref (-1)
 let refmt = ref None
 
 let is_reason = ref false
+
+let no_js_stdout = ref false
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
@@ -8349,7 +8355,7 @@ let read_ast (type t ) (kind : t  kind) ic : t  =
     | Mli -> Config.ast_intf_magic_number in 
   let buffer = really_input_string ic (String.length magic) in
   assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.input_name := input_value ic;
+  Location.set_input_name @@ input_value ic;
   input_value ic 
 
 let write_ast (type t) (kind : t kind) 

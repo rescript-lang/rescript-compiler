@@ -108,3 +108,5 @@ let jsx_version = ref (-1)
 let refmt = ref None
 
 let is_reason = ref false
+
+let no_js_stdout = ref false

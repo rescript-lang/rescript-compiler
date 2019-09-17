@@ -49,7 +49,7 @@ let process_file ppf sourcefile =
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
-  Location.input_name := sourcefile;  
+  Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
   let input = 
     if ext = Literals.suffix_ml  then 
@@ -329,8 +329,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     " no code for assert false"
   )  
 
-  :: Ocaml_options.mk_impl impl
-  :: Ocaml_options.mk_intf intf 
+  :: Ocaml_options.mk_impl 
+    (fun file  ->  Js_config.no_js_stdout := true;  impl file )  
+  :: Ocaml_options.mk_intf 
+    (fun file -> Js_config.no_js_stdout := true ; intf file)
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
