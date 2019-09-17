@@ -301,7 +301,7 @@ let lambda_as_module
       (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
-  if Js_packages_info.is_empty package_info && not !Js_config.no_js_stdout then     
+  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then     
     Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout      
   else
     Js_packages_info.iter package_info (fun {module_system; path = _path} -> 

@@ -330,9 +330,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   )  
 
   :: Ocaml_options.mk_impl 
-    (fun file  ->  Js_config.no_js_stdout := true;  impl file )  
+    (fun file  ->  Js_config.js_stdout := false;  impl file )  
   :: Ocaml_options.mk_intf 
-    (fun file -> Js_config.no_js_stdout := true ; intf file)
+    (fun file -> Js_config.js_stdout := false ; intf file)
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 

@@ -109,4 +109,4 @@ let refmt = ref None
 
 let is_reason = ref false
 
-let no_js_stdout = ref false
+let js_stdout = ref true
