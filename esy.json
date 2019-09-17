@@ -1,6 +1,6 @@
 {
-  "name": "bucklescript",
-  "version": "5.1.0",
+  "name": "bs-platform",
+  "version": "5.2.0-dev.2",
   "dependencies": {
     "ocaml": "4.02.3000+BS"
   },
@@ -48,7 +48,7 @@
         "scope": "global"
       },
       "PATH": {
-        "val": "#{reason-rocket.lib : $PATH}",
+        "val": "#{bucklescript.lib : $PATH}",
         "scope": "global"
       }
     }
@@ -56,7 +56,7 @@
   "description": "bucklescript compiler for use in esy, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reuniverse/reason-rocket.git"
+    "url": "git+https://github.com/bucklescript/bucklescript.git"
   },
   "keywords": ["ocaml", "bucklescript", "stdlib", "functional programming"],
   "author": {
@@ -64,13 +64,13 @@
   },
   "maintainers": [
     {
-      "name": "reuniverse",
-      "email": "ulrik.strid@outlook.com"
+      "name": "hongbo_zhang",
+      "email": "bobzhang1988@gmail.com"
     }
   ],
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/reuniverse/reason-rocket/issues"
+    "url": "https://github.com/bucklescript/bucklescript/issues"
   },
-  "homepage": "https://github.com/reuniverse/reason-rocket#readme"
+  "homepage": "https://github.com/bucklescript/bucklescript#readme"
 }
