@@ -1,5 +1,5 @@
 {
-  "name": "reason-rocket",
+  "name": "bucklescript",
   "version": "5.1.0",
   "dependencies": {
     "ocaml": "4.02.3000+BS"
