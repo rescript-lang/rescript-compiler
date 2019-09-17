@@ -77,7 +77,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Blk_extension_slot -> 
       let t : Lam_tag_info.t = Blk_extension_slot in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
-    | Blk_lazy_general 
+    | Blk_lazy_general
     | Blk_lazy_forward
     | Blk_na -> 
       let t : Lam_tag_info.t = Blk_na in 
@@ -92,7 +92,3 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
       Const_block(i,t, Ext_list.map xs convert_constant)
 #end        
     end
-    
-
-    
-

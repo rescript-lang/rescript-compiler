@@ -322,8 +322,8 @@ external equal : t -> t -> bool = "caml_bytes_equal"
 
 (* Deprecated functions implemented via other deprecated functions *)
 [@@@ocaml.warning "-3"]
-let uppercase s = map Char.uppercase s
-let lowercase s = map Char.lowercase s
+let uppercase s = map Char.uppercase_ascii s
+let lowercase s = map Char.lowercase_ascii s
 
-let capitalize s = apply1 Char.uppercase s
-let uncapitalize s = apply1 Char.lowercase s
+let capitalize s = apply1 Char.uppercase_ascii s
+let uncapitalize s = apply1 Char.lowercase_ascii s
