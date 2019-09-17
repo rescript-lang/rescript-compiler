@@ -1,0 +1,35 @@
+{
+  "checksum": "164649646a7e0e0e01d302a1c1c4137b",
+  "root": "reason-rocket@link-dev:./esy.json",
+  "node": {
+    "reason-rocket@link-dev:./esy.json": {
+      "id": "reason-rocket@link-dev:./esy.json",
+      "name": "reason-rocket",
+      "version": "link-dev:./esy.json",
+      "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d@d41d8cd9"
+      ]
+    },
+    "ocaml@github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d@d41d8cd9": {
+      "id":
+        "ocaml@github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d@d41d8cd9",
+      "name": "ocaml",
+      "version":
+        "github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d",
+      "source": {
+        "type": "install",
+        "source": [
+          "github:ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [],
+      "devDependencies": []
+    }
+  }
+}
