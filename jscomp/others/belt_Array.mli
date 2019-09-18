@@ -610,9 +610,9 @@ external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
   If [n] is less than zero;raises a [RangeError].
 
   @example {[
-    let arr = [|"ant";"bee";"cat";"dog";"elk"|] in
-    let () = truncateToLengthUnsafe arr 3 in
-    arr = [|"ant";"bee";"cat"|] = true;;
+    let arr = [|"ant";"bee";"cat";"dog";"elk"|];;
+    let () = truncateToLengthUnsafe arr 3;;
+    arr = [|"ant";"bee";"cat"|];;
   ]}
 
 *)
