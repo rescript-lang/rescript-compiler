@@ -8,6 +8,7 @@ Features
 - #3799 Improve code gen, better code equality for block
 - #3778 #3770 Improve pattern match compilation against the outer-most staticfail
 - #3764 better code gen for lazy evaluation
+- #3822 allow `f##"Content-Type"` for uncommon property name
 
 Fixes
 - #3809 Escape question mark and ampersand to special chars
@@ -18,10 +19,17 @@ Fixes
 - #3781 #3783 quote package path properly
 - #3793 pass bs-version to genType
 - #3674 installation from master works out of box
+- #3823 fix reason language server 
 
 Docs 
 - #3795 Fix docs for stringifyAny
 - #3788 Rename getUnasfe to getUnsafe
+- #3830 fix isSortedExample
+- #3829 fix mapWithDefault example
+- #3828 fix getExn example
+- #3827 fix partition example
+- #3826 simplify truncateToLengthUnsafe example
+
 
 
 
