@@ -2648,7 +2648,7 @@ val jsx_version : int ref
 val refmt : string option ref
 val is_reason : bool ref 
 
-val no_js_stdout : bool ref 
+val js_stdout : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2762,7 +2762,7 @@ let refmt = ref None
 
 let is_reason = ref false
 
-let no_js_stdout = ref false
+let js_stdout = ref true
 end
 (** Interface as module  *)
 module Asttypes
