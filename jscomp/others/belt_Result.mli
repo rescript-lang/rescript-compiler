@@ -54,8 +54,8 @@ val getExn : ('a, 'b) t -> 'a
   when [res] is [Error m], {b raise} an exception
   
   @example {[
-    getExn good = 42
-    getExn bad (* raises exception *)
+    getExn good = 42;;
+    getExn bad;; (* raises exception *)
   ]}
 *)
 
