@@ -77,16 +77,20 @@ let caml_obj_block tag size =
    ]}
 *)
 
-let caml_obj_dup (x : Caml_obj_extern.t) =
+(* let caml_obj_dup (x : Caml_obj_extern.t) =
   let len = Caml_obj_extern.length x in
   let v = Caml_array_extern.new_uninitialized  len in
   for i = 0 to len - 1 do
     Caml_array_extern.unsafe_set v i (Caml_obj_extern.field x i)
   done;
   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) (Caml_obj_extern.tag x );
-  Caml_obj_extern.repr v
+  Caml_obj_extern.repr v *)
 
-
+let record_copy = fun%raw r ->  {|
+return Object.assign({}, r)
+|}
+  
+let caml_obj_dup = record_copy
 
 let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
   let len = Caml_obj_extern.length x in

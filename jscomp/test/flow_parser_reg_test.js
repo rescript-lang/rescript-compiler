@@ -5180,61 +5180,61 @@ function lookahead($staropt$star, env) {
 }
 
 function with_strict(in_strict_mode, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.in_strict_mode = in_strict_mode;
   return newrecord;
 }
 
 function with_in_function(in_function, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.in_function = in_function;
   return newrecord;
 }
 
 function with_allow_yield(allow_yield, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.allow_yield = allow_yield;
   return newrecord;
 }
 
 function with_no_let(no_let, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.no_let = no_let;
   return newrecord;
 }
 
 function with_in_loop(in_loop, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.in_loop = in_loop;
   return newrecord;
 }
 
 function with_no_in(no_in, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.no_in = no_in;
   return newrecord;
 }
 
 function with_in_switch(in_switch, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.in_switch = in_switch;
   return newrecord;
 }
 
 function with_in_export(in_export, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.in_export = in_export;
   return newrecord;
 }
 
 function with_no_call(no_call, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.no_call = no_call;
   return newrecord;
 }
 
 function with_error_callback(error_callback, env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.error_callback = error_callback;
   return newrecord;
 }
@@ -5248,19 +5248,19 @@ function error_list(env) {
 }
 
 function without_error_callback(env) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.error_callback = undefined;
   return newrecord;
 }
 
 function add_label(env, label) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.labels = add(label, env.labels);
   return newrecord;
 }
 
 function enter_function(env, async, generator) {
-  var newrecord = Caml_array.caml_array_dup(env);
+  var newrecord = Caml_obj.caml_obj_dup(env);
   newrecord.labels = /* Empty */0;
   newrecord.in_loop = false;
   newrecord.in_switch = false;

@@ -8779,7 +8779,7 @@ function loc(s, x) {
   }
 }
 
-var newrecord = Caml_array.caml_array_dup(default_mapper);
+var newrecord = Caml_obj.caml_obj_dup(default_mapper);
 
 newrecord.location = (function (_this, _loc) {
     return none;
@@ -52521,7 +52521,7 @@ function check_deprecated(loc, attrs, s) {
               }), attrs);
 }
 
-var newrecord$1 = Caml_array.caml_array_dup(default_mapper);
+var newrecord$1 = Caml_obj.caml_obj_dup(default_mapper);
 
 newrecord$1.attribute = (function (param, a) {
     var exit = 0;

@@ -1,7 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = /* record */{
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  var newrecord = Caml_array.caml_array_dup(x);
+  var newrecord = Caml_obj.caml_obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }

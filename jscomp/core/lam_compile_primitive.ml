@@ -624,7 +624,7 @@ let translate  loc
                 ),_) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
-    Lam_dispatch_primitive.translate loc "caml_array_dup" args
+    Lam_dispatch_primitive.translate loc "caml_obj_dup" args
 #if OCAML_VERSION =~ ">4.03.0" then
   | Pduprecord (Record_unboxed _inlined,_) 
     -> assert false
