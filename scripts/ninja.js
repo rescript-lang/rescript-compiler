@@ -861,7 +861,7 @@ async function runtimeNinja(devmode = true) {
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode
     ? useEnv
-      ? "build.ninja"
+      ? "env.ninja"
       : "build.ninja"
     : "release.ninja";
   var templateRuntimeRules = `
@@ -959,7 +959,7 @@ async function othersNinja(devmode = true) {
   var externalDeps = [runtimeTarget];
   var ninjaOutput = devmode
     ? useEnv
-      ? "build.ninja"
+      ? "env.ninja"
       : "build.ninja"
     : "release.ninja";
   var ninjaCwd = "others";
@@ -1081,7 +1081,7 @@ async function stdlibNinja(devmode = true) {
   var externalDeps = [othersTarget];
   var ninjaOutput = devmode
     ? useEnv
-      ? "build.ninja"
+      ? "env.ninja"
       : "build.ninja"
     : "release.ninja";
   var bsc_flags = "bsc_flags";
@@ -1224,7 +1224,7 @@ function baseName(x) {
  * @returns {Promise<void>}
  */
 async function testNinja() {
-  var ninjaOutput = useEnv ? "build.ninja" : "build.ninja";
+  var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
 ${BSC_COMPILER}
@@ -1394,25 +1394,16 @@ function updateRelease() {
 function updateDev() {
   if (useEnv) {
     writeFileAscii(
-      path.join(jscompDir, "build.ninja"),
+      path.join(jscompDir, "env.ninja"),
       `
 ${getEnnvConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
-subninja runtime/build.ninja
-subninja others/build.ninja
-subninja $stdlib/build.ninja
-subninja test/build.ninja
+subninja runtime/env.ninja
+subninja others/env.ninja
+subninja $stdlib/env.ninja
+subninja test/env.ninja
 build all: phony runtime others $stdlib test
-`
-    );
-    writeFileAscii(
-      path.join(jscompDir, "..", "lib", "build.ninja"),
-      `
-ocamlopt = ocamlopt.opt 
-ext = exe
-INCL= ${version6() ? "4.06.1+BS" : "4.02.3+BS"}
-include body.ninja               
 `
     );
   } else {
@@ -1501,7 +1492,6 @@ function getEnnvConfigNinja() {
 ocamlopt = ocamlopt.opt    
 ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
-ocaml = ocaml
 `;
 }
 
@@ -1760,7 +1750,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(path.resolve(jscompDir, vendorNinjaPath), {
+          cp.execFileSync(vendorNinjaPath, {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2]
@@ -1792,19 +1782,10 @@ function main() {
 
         break;
       case "cleanbuild":
-        console.log(`run cleaning first`);
-        cp.execSync(`node ${__filename} clean`, {
-          cwd: __dirname,
-          stdio: [0, 1, 2]
-        });
-        cp.execSync(`node ${__filename} config`, {
-          cwd: __dirname,
-          stdio: [0, 1, 2]
-        });
-        cp.execSync(`node ${__filename} build`, {
-          cwd: __dirname,
-          stdio: [0, 1, 2]
-        });
+        console.log(`run cleaning first`)
+        cp.execSync(`node ${__filename} clean`,{cwd:__dirname,stdio:[0,1,2]})
+        cp.execSync(`node ${__filename} config`,{cwd:__dirname,stdio:[0,1,2]})
+        cp.execSync(`node ${__filename} build`,{cwd:__dirname,stdio:[0,1,2]})
         break;
       case "docs":
         console.log(`building docs`);
