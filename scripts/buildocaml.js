@@ -4,7 +4,10 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-var ocamlSrcDir = path.join(__dirname, "..", "ocaml");
+var ocamlSrcDir =
+  process.env.ESY === "true"
+    ? process.env.OCAMLLIB
+    : path.join(__dirname, "..", "ocaml");
 var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
 
 /**

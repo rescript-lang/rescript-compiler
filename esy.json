@@ -12,7 +12,7 @@
   },
   "esy": {
     "buildsInSource": true,
-    "build": [
+    "buildDev": [
       "echo 'config'",
       ["node", "./scripts/ninja.js", "config", "-env"],
       "echo 'build'",
@@ -26,6 +26,10 @@
       ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
     ],
+    "build": [["node", "./scripts/install.js"]],
+    "buildEnv": {
+      "ESY": "true"
+    },
     "exportedEnv": {
       "OCAMLLIB": {
         "val": "#{self.lib / 'ocaml' }",
