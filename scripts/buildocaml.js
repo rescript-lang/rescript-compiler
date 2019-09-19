@@ -5,6 +5,24 @@ var path = require("path");
 var fs = require("fs");
 
 var ocamlSrcDir = path.join(__dirname, "..", "ocaml");
+var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
+
+/**
+ * Ensures the ocaml folder exists at the root of the project, either from the submodule,
+ * or by extracting the vendor/ocaml.tar.gz there
+ */
+function ensureOCamlExistsSync() {
+  if (!fs.existsSync(ocamlSrcDir)) {
+    fs.mkdirSync(ocamlSrcDir);
+  }
+  if (!fs.existsSync(ocamlVersionFilePath)) {
+    cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
+      cwd: ocamlSrcDir,
+      stdio: [0, 1, 2]
+    });
+  }
+}
+
 /**
  * @type {string}
  */
@@ -19,16 +37,10 @@ function getVersionPrefix() {
     return cached;
   }
 
-  var file = path.join(__dirname, "..", "ocaml", "VERSION");
-  if (!fs.existsSync(file)) {
-    cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
-      cwd: ocamlSrcDir,
-      stdio: [0, 1, 2]
-    });
-  }
+  ensureOCamlExistsSync();
 
-  console.log(`${file} is used in version detection`);
-  var version = fs.readFileSync(file, "ascii");
+  console.log(`${ocamlVersionFilePath} is used in version detection`);
+  var version = fs.readFileSync(ocamlVersionFilePath, "ascii");
   cached = version.substr(0, version.indexOf("+"));
   return cached;
 }
@@ -39,15 +51,7 @@ exports.getVersionPrefix = getVersionPrefix;
  * @param {boolean} config
  */
 function build(config) {
-  if (!fs.existsSync(ocamlSrcDir)) {
-    fs.mkdirSync(ocamlSrcDir);
-  }
-  if (!fs.existsSync(path.join(ocamlSrcDir, "VERSION"))) {
-    cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
-      cwd: ocamlSrcDir,
-      stdio: [0, 1, 2]
-    });
-  }
+  ensureOCamlExistsSync();
 
   var prefix = path.normalize(
     path.join(__dirname, "..", "native", getVersionPrefix())
