@@ -12,20 +12,6 @@
   },
   "esy": {
     "buildsInSource": true,
-    "buildDev": [
-      "echo 'config'",
-      ["node", "./scripts/ninja.js", "config", "-env"],
-      "echo 'build'",
-      ["node", "./scripts/ninja.js", "build", "-env"],
-      "echo 'install'",
-      ["cp", "-r", "-f", "#{self.root / 'bsconfig.json'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'esy.json'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'package.json'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'jscomp'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'lib'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
-      ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
-    ],
     "build": [
       ["node", "./scripts/install.js"],
       ["cp", "-r", "-f", "#{self.root / 'bsconfig.json'}", "#{self.install}"],
