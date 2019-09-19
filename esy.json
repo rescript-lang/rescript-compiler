@@ -26,7 +26,16 @@
       ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
     ],
-    "build": [["node", "./scripts/install.js"]],
+    "build": [
+      ["node", "./scripts/install.js"],
+      ["cp", "-r", "-f", "#{self.root / 'bsconfig.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'esy.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'package.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'jscomp'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'lib'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
+    ],
     "buildEnv": {
       "ESY": "true"
     },
@@ -52,7 +61,7 @@
         "scope": "global"
       },
       "PATH": {
-        "val": "#{bucklescript.lib : $PATH}",
+        "val": "#{self.lib : $PATH}",
         "scope": "global"
       }
     }
