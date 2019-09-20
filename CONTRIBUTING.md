@@ -61,31 +61,11 @@ This is primarily used when you need to test the repo with a different OCaml tha
 For example, you might be testing BuckleScript on the 4.06 OCaml compiler instead of 4.02. Clone our patched [OCaml 4.06](https://github.com/bucklescript/ocaml), then do:
 
 ```
-./configure -prefix `pwd` && make -j9 world.opt && make install
-```
-
-Make sure the new compiler (`ocamlopt.opt`) is in your environment:
-
-```
-export PATH="/absolute-path-to-the-bucklescript-forked-ocaml-repo/bin:$PATH"
-```
-
-Then:
-
-```
-./scripts/ninja.js -env && ninja -C jscomp -f env.ninja
-```
-
-Done!
-
-Tip: you can also quickly switch between the environment compiler and the vendored one like so:
-
-```
-ninja -C jscomp -f env.ninja -t clean && ninja -C jscomp
+git -C ocaml checkout 4.06.1+BS && node ./scripts/buildocaml.js
 ```
 
 ```
-ninja -C jscomp -t clean && ninja -C jscomp -f env.ninja
+./scripts/ninja.js cleanbuild
 ```
 
 Note: clean up is necessary since the binary artifacts between versions of compiler may be incompatible.
@@ -100,25 +80,12 @@ cd foo
 npm run build
 ```
 
-And whenever you modify a file in bucklescript, run this inside `jscomp/`:
+And whenever you modify a file in bucklescript, run this:
 
 ```
-make ../lib/bsc.exe && ./install-bsc.sh # build the compiler and make it available globally
-make ../lib/bsb.exe && ./install-bsb.sh # build the build system and make it available globally
+npm install -g .
 ```
 
-This will substitute the global `bsc.exe` & `bsb.exe` you just installed with the newly built one. Then run `npm run build` again in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
-
-## Troubleshooting
-
-Did any of the above step not work?
-
-- If you get compilation errors even from a supposedly clean compilation, you might have skipped the opam reinstall step above: `opam switch reinstall 4.02.3+buckle-master`
-- Make sure you did ``eval `opam config env` `` in your CLI/bashrc/zshrc
-- **If the vendored ocaml changed between when you last iterated on the repo and now**, you probably skipped the `opam switch reinstall 4.02.3+buckle-master` part. You'll have to do `git clean -xdf` and then restart with the build instructions. Careful, as `git clean` removes your uncommitted changes.
-- **If these fail too**, make sure you do have the correct `ocamlopt` in your environment: `which ocamlopt` should show an `opam` path, not `reason-cli` path. If you see the latter, this means it overrode the global `ocamlopt` BuckleScript needed. In this case, either temporarily uninstall reason-cli or make sure your opam PATH overrides the reason-cli PATH (and not the other way around) in your bashrc/zshrc.
-
-Whenever there are dependencies changes: do `make depend` in the specific directory, when available. This allows the makefile to track new dependencies.
 
 ## Change the Vendored OCaml Compiler
 
@@ -126,10 +93,8 @@ This section is reserved for when you're making a change to the vendored ocaml c
 
 ```
 # at project root
-cd jscomp
-make force-snapshotml # make sure your changes are reflected in jscomp/bin/whole_compiler.ml
-make -C ../lib bsc.exe && ./install-bsc.sh
-make -C ../lib bsb.exe && ./install-bsb.sh
+cd ocaml && make -j9 world.opt && make install && cd ..
+./scripts/ninja.js cleanbuild
 ```
 
 ## Contributing to the runtime
