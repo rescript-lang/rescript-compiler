@@ -56,21 +56,26 @@ exports.getVersionPrefix = getVersionPrefix;
 function build(config) {
   ensureOCamlExistsSync();
 
-  var prefix = path.normalize(
-    path.join(__dirname, "..", "native", getVersionPrefix())
-  );
-  if (config) {
+  var prefix =
+    process.env.ESY === "true"
+      ? process.env.cur__install
+      : path.normalize(
+          path.join(__dirname, "..", "native", getVersionPrefix())
+        );
+  if (config && process.env.ESY !== "true") {
     cp.execSync(
       "./configure -prefix " +
         prefix +
         " -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && make clean",
-      { cwd: path.join(__dirname, "..", "ocaml"), stdio: [0, 1, 2] }
+      { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
     );
   }
-  cp.execSync("make -j9 world.opt && make install ", {
-    cwd: path.join(__dirname, "..", "ocaml"),
-    stdio: [0, 1, 2]
-  });
+  if (process.env.ESY !== "true") {
+    cp.execSync("make -j9 world.opt && make install ", {
+      cwd: ocamlSrcDir,
+      stdio: [0, 1, 2]
+    });
+  }
 }
 
 exports.build = build;
