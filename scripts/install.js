@@ -310,14 +310,17 @@ function provideCompiler() {
     return myVersion;
   } else {
     myVersion = require("./buildocaml.js").getVersionPrefix();
-    var ocamlopt = path.join(
-      __dirname,
-      "..",
-      "native",
-      myVersion,
-      "bin",
-      "ocamlopt.opt"
-    );
+    var ocamlopt =
+      process.env.ESY === "true"
+        ? "ocamlopt.opt"
+        : path.join(
+            __dirname,
+            "..",
+            "native",
+            myVersion,
+            "bin",
+            "ocamlopt.opt"
+          );
     if (!fs.existsSync(ocamlopt)) {
       require("./buildocaml.js").build(true);
     } else {
