@@ -1,4 +1,4 @@
 
 
 val setupChromeDebugger : unit -> unit 
-[@@ocaml.deprecated "This call is reduandent, simply remoe it"]
+[@@ocaml.deprecated "This call is redundant, simply remove it"]
