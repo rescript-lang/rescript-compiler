@@ -90,7 +90,7 @@ let caml_block_create = "__"
 
 (** debug symbols *)
 let block_record = "record"
-let block_local_module = "localModule"
+
 let block_poly_var = "polyVar"
 let block_variant = "variant"
 let block_simple_variant = "simpleVariant"

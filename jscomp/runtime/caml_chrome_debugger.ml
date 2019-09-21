@@ -128,9 +128,7 @@ var formatter = {
      } else if ((recordVariant =  x[Symbol.for('BsVariant')]) !== undefined){
          return variantPreview(x, recordVariant)
      } else if (isOCamlExceptionOrExtension(x)){
-       return ['div',{}, `${x[0][0]}(…)`]
-     } else if ((recordModule =  x[Symbol.for('BsLocalModule')]) !== undefined){
-       return ['div', {}, 'Module' ]
+       return ['div',{}, `${x[0][0]}(…)`]     
      } else if ((recordPolyVar = x[Symbol.for('BsPolyVar')] ) !== undefined){
        return ['div', {}, `\`${recordPolyVar}#${x[0]}`]
      }
@@ -146,8 +144,6 @@ var formatter = {
      } else if ((recordVariant = x[Symbol.for('BsVariant')] ) !== undefined){
          return recordVariant
      } else if(isOCamlExceptionOrExtension(x)){
-       return true
-     } else if ((recordModule = x[Symbol.for('BsLocalModule')] ) !== undefined){
        return true
      } else if( (recordPolyVar = x[Symbol.for('BsPolyVar')]) !== undefined){
        return true
@@ -220,9 +216,6 @@ let simpleVariant meta xs =
   setupOnce ();
   xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
   
-let localModule meta xs =   
-  setupOnce ();
-  xs |. addProp (cacheSymbol "BsLocalModule") [%obj {value = meta}]
 
 let polyVar meta xs =   
   setupOnce ();

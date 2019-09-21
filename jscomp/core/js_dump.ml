@@ -115,9 +115,6 @@ let dbg_record f =
   dbg_block_dot f ;
   P.string f L.block_record
 
-let dbg_local_module f =   
-  dbg_block_dot f;
-  P.string f L.block_local_module
 
 let dbg_poly_var f =   
   dbg_block_dot f;
@@ -893,13 +890,13 @@ and expression_desc cxt (level:int) f x : cxt  =
                                  E.array mutable_flag 
                                    (Ext_list.map el drop_comment) ]
                             )
-        | Blk_module labels ->         
-          dbg_local_module f;
-          P.paren_group f 1 (fun _ -> arguments cxt f 
-                                [E.array Immutable
-                                   (Ext_list.map labels E.str);
-                                 E.array mutable_flag
-                                   (Ext_list.map el drop_comment)])
+        | Blk_module labels -> 
+          assert false 
+            (* 
+              This can not happen, see the pattern match on previous branch 
+              TODO: we still need clean up local module compilation 
+              to make it more obvious
+            *)
         | Blk_variant name ->  
           dbg_poly_var f;
           P.paren_group f 1 (fun _ -> arguments cxt f [ 
