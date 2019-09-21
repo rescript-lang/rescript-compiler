@@ -31,6 +31,6 @@ val variant : 'a -> int ->  obj -> obj
 
 val simpleVariant : 'a -> obj -> obj
 
-val localModule : 'a -> obj -> obj 
+
 
 val polyVar : 'a -> obj -> obj
