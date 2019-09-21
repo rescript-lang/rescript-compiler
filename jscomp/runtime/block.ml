@@ -35,30 +35,5 @@ let __ tag block =
   Caml_obj_extern.set_tag block tag; block
 
 
-type symbol
-
-
-external cacheSymbol : string -> symbol = "for"
- [@@bs.scope "Symbol"] [@@bs.val]
-external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a = 
-  "defineProperty"  [@@bs.scope "Object"] [@@bs.val]
-
-
-(* It won't affect [Object.keys] using [Object.defineProperty*)
-let record  meta xs =
-  xs |.addProp (cacheSymbol "BsRecord") [%obj {value = meta}]
-
-let variant meta tag xs =     
-  xs |. Caml_obj_extern.set_tag tag;
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
-
-let simpleVariant meta xs =       
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
-  
-let localModule meta xs =   
-  xs |. addProp (cacheSymbol "BsLocalModule") [%obj {value = meta}]
-
-let polyVar meta xs =   
-  xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
 
 
