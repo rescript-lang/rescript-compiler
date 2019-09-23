@@ -106,7 +106,7 @@ let resolve_bs_package ~cwd (package : t) =
  * npm_config_prefix, bs_custom_resolution allows these to specify the
  * exact location of build cache, but on a per-package basis. Implemented as
  * environment lookup to avoid invasive changes to bsconfig and mandates. *)
-let custom_resolution =
+let custom_resolution () =
  match Sys.getenv "bs_custom_resolution" with
   | exception Not_found  -> false
   | "true"  -> true
@@ -126,7 +126,7 @@ let pkg_name_as_variable pkg =
   |> Str.global_replace regex_hyphen "_"
 
 let resolve_bs_package ~cwd (pkg : t) =
-  if custom_resolution then
+  if custom_resolution () then
   begin
     Bsb_log.info "@{<info>Using Custom Resolution@}@.";
     let custom_pkg_loc = pkg_name_as_variable pkg ^ "__install" in
