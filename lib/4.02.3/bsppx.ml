@@ -26195,6 +26195,8 @@ end = struct
 
 
 let () = 
+  (* bsppx.exe is used by merlin/ocamldoc*)
+  Clflags.bs_only := true;
   Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
 
 
