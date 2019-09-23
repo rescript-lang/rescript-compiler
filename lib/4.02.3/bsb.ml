@@ -8547,25 +8547,6 @@ let cache : string Coll.t = Coll.create 0
 
 let to_list cb  =   
   Coll.to_list cache  cb 
-  
-(** TODO: collect all warnings and print later *)
-let resolve_bs_package ~cwd (package : t) =
-  match Coll.find_opt cache package with
-  | None ->
-    let result = resolve_bs_package_aux ~cwd package in
-    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
-    Coll.add cache package result ;
-    result
-  | Some x
-    ->
-    let result = resolve_bs_package_aux ~cwd package in
-    if result <> x then
-      begin
-        Bsb_log.warn
-          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
-            Bsb_pkg_types.print package x result cwd;
-      end;
-    x
 
 (* Some package managers will implement "postinstall" caches, that do not
  * keep their build artifacts in the local node_modules. Similar to
@@ -8591,41 +8572,56 @@ let pkg_name_as_variable pkg =
   |> Str.global_replace regex_dot "__dot__"
   |> Str.global_replace regex_hyphen "_"
 
-let resolve_bs_package ~cwd (pkg : t) =
+let resolve_bs_package ~cwd (package : t) =
   if custom_resolution () then
   begin
     Bsb_log.info "@{<info>Using Custom Resolution@}@.";
-    let custom_pkg_loc = pkg_name_as_variable pkg ^ "__install" in
+    let custom_pkg_loc = pkg_name_as_variable package ^ "__install" in
     match Sys.getenv custom_pkg_loc with
     | exception Not_found ->
         begin
           Bsb_log.error
             "@{<error>Custom resolution of package %s does not exist in var %s @}@."
-            (Bsb_pkg_types.to_string pkg)
+            (Bsb_pkg_types.to_string package)
             custom_pkg_loc;
-          Bsb_exception.package_not_found ~pkg ~json:None
+          Bsb_exception.package_not_found ~pkg:package ~json:None
         end
     | path when not (Sys.file_exists path) ->
         begin
           Bsb_log.error
             "@{<error>Custom resolution of package %s does not exist on disk: %s=%s @}@."
-            (Bsb_pkg_types.to_string pkg)
+            (Bsb_pkg_types.to_string package)
             custom_pkg_loc
             path;
-          Bsb_exception.package_not_found ~pkg ~json:None
+          Bsb_exception.package_not_found ~pkg:package ~json:None
         end
     | path ->
       begin
         Bsb_log.info
           "@{<info>Custom Resolution of package %s in var %s found at %s@}@."
-          (Bsb_pkg_types.to_string pkg)
+          (Bsb_pkg_types.to_string package)
           custom_pkg_loc
           path;
         path
       end
     end
   else
-    resolve_bs_package ~cwd pkg
+    match Coll.find_opt cache package with
+    | None ->
+      let result = resolve_bs_package_aux ~cwd package in
+      Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
+      Coll.add cache package result ;
+      result
+    | Some x
+      ->
+      let result = resolve_bs_package_aux ~cwd package in
+      if result <> x then
+        begin
+          Bsb_log.warn
+            "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
+              Bsb_pkg_types.print package x result cwd;
+        end;
+      x
 
 
 
