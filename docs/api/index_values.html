@@ -4008,7 +4008,7 @@ The return type is <code class="code">float</code> because this function returns
     <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length arr - offset</code>
 <p>
 
-    <code class="code">fill arr offset:(-1) len:1 </code> means fill the last element,
+    <code class="code">fill arr ~offset:(-1) ~len:1</code> means fill the last element,
     if the array does not have enough data;<code class="code">fill</code> will ignore it<br>
  
                 </div>
@@ -5777,7 +5777,7 @@ The return type is <code class="code">float</code> because this function returns
 <p>
 
     Call <code class="code">f</code> on each element of <code class="code">xs</code> from the beginning to end. <code class="code">f</code> returns <code class="code">unit</code>;so no
-    new array is created. Use <code class="code">foreach</code> when you are primarily concerned with repetitively
+    new array is created. Use <code class="code">forEach</code> when you are primarily concerned with repetitively
     creating side effects.<br>
  
                 </div>

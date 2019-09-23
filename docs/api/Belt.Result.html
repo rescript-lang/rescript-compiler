@@ -130,8 +130,8 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">    getExn good = 42
-    getExn bad (* raises exception *)
+                    <pre class="example"> <pre class="codepre"><code class="code">    getExn good = 42;;
+    getExn bad;; (* raises exception *)
   </code></pre>  </pre>
                     </div>
                     </div>
@@ -147,8 +147,8 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">    mapWithDefault good 0 (function x -&gt; x / 2) = 21
-    mapWithDefault bad 0 (function x -&gt; x / 2) = 0
+                    <pre class="example"> <pre class="codepre"><code class="code">    mapWithDefault good 0 (fun x -&gt; x / 2) = 21
+    mapWithDefault bad 0 (fun x -&gt; x / 2) = 0
   </code></pre>  </pre>
                     </div>
                     </div>
