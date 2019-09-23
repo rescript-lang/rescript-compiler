@@ -1,9 +1,10 @@
 `*` means  potential break changes
-# 5.2.0
+# 5.2.0 (2019/09/17)
 
 Features
 - #3803 Add a -install flag for mono-repository improvement for parallel compilation
-- #3790 #3802 #3799 #3792 Compile locla modules to objects and clean up
+- #3790 #3802 #3799 #3792 #3836 Compile locla modules to objects and clean up
+- #3836 initial support of esy
 - #3780 Better code generation for if branches
 - #3799 Improve code gen, better code equality for block
 - #3778 #3770 Improve pattern match compilation against the outer-most staticfail
