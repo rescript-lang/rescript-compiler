@@ -15,6 +15,7 @@
 *)
 
 #ifdef BS_NO_COMPILER_PATCH
+open Migrate_parsetree
 open Ast_404
 #endif
 
@@ -402,6 +403,14 @@ let identifier_mapper f super =
     in
     super.value_description mapper desc
   end;
+  type_declaration = begin fun mapper type_decl ->
+    let type_decl' =
+      { type_decl with ptype_name =
+        { type_decl.ptype_name with txt = f type_decl.ptype_name.txt }
+      }
+    in
+    super.type_declaration mapper type_decl'
+  end;
 }
 
 let remove_stylistic_attrs_mapper_maker super =
@@ -498,17 +507,40 @@ type error = Syntax_error of string
 
 exception Error of Location.t * error
 
-let report_error ppf (Syntax_error err) =
-  Format.(fprintf ppf "%s" err)
+let location_print_error =
+#if OCAML_VERSION >= (4, 8, 0)
+  Location.print_report
+#else
+  Location.report_error
+#endif
 
-let () =
-  Location.register_error_of_exn
-    (function
-     | Error (loc, err) ->
-        Some (Location.error_of_printer loc report_error err)
-     | _ ->
-        None
-     )
+let report_error ppf error =
+  match error with
+  | Error (loc, (Syntax_error err)) ->
+    let pp =
+      Location.error_of_printer
+#if OCAML_VERSION >= (4, 8, 0)
+      ~loc
+#else
+      loc
+#endif
+      (fun ppf e -> Format.(fprintf ppf "%s" e)) err
+    in
+    Format.fprintf ppf "@[%a@]@." location_print_error pp
+  | Syntaxerr.Error _ as exn ->
+    begin match Location.error_of_exn exn with
+#if OCAML_VERSION >= (4, 6, 0)
+    | Some (`Ok err) ->
+#else
+    | Some err ->
+#endif
+      Format.(fprintf ppf "@[%a@]@." location_print_error err)
+    | _ -> assert false
+    end
+  | _ ->
+    Format.eprintf
+      "Unknown error: please file an issue at github.com/facebook/reason@.";
+    exit 1
 
 let map_first f = function
   | [] -> invalid_arg "Syntax_util.map_first: empty list"
@@ -564,3 +596,12 @@ let explode_str str =
   in
     loop [] (String.length str - 1)
 #endif
+
+
+module Clflags = struct
+  include Clflags
+
+#if OCAML_VERSION >= (4, 8, 0)
+  let fast = unsafe
+#endif
+end
