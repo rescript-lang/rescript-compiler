@@ -8572,6 +8572,7 @@ let pkg_name_as_variable pkg =
   |> Str.global_replace regex_dot "__dot__"
   |> Str.global_replace regex_hyphen "_"
 
+(** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   if custom_resolution () then
   begin
