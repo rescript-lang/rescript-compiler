@@ -107,21 +107,20 @@ function f8(param) {
 
 function f9(param) {
   if (typeof param === "number") {
-    switch (param) {
-      case /* T60 */0 :
-      case /* T61 */1 :
-      case /* T62 */2 :
-          return 1;
-      default:
-        return 3;
+    if (param === /* T63 */3) {
+      return 3;
+    } else {
+      return 1;
     }
   } else {
     switch (param.tag | 0) {
       case /* T64 */0 :
       case /* T65 */1 :
           return 2;
-      default:
-        return 3;
+      case /* T66 */2 :
+      case /* T68 */3 :
+          return 3;
+      
     }
   }
 }

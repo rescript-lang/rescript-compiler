@@ -55,8 +55,6 @@ var four = /* record */[/* contents */2];
 
 var three = /* record */[/* contents */3];
 
-var h = Block.__(250, [fib]);
-
 var v = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -77,39 +75,24 @@ function fib(n) {
     case 2 :
         return three[0];
     case 3 :
-        v[0] = CamlinternalLazy.force(h);
+        v[0] = CamlinternalLazy.force(fib);
         return 1;
     default:
       return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
 
-var ys = [];
-
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
-
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
-  ]
-];
-
 function zs(param) {
   return List.hd(xs[0]);
 }
 
-var xs_000$1 = /* :: */[
+var xs_000 = /* :: */[
   2,
   /* [] */0
 ];
 
 var xs = /* tuple */[
-  xs_000$1,
+  xs_000,
   zs
 ];
 
@@ -493,4 +476,4 @@ exports.fake_minus = fake_minus;
 exports.fake_inline = fake_inline;
 exports.fake_inline_minus = fake_inline_minus;
 exports.fake_inline_inlie2 = fake_inline_inlie2;
-/* xs Not a pure module */
+/* fake_z2 Not a pure module */

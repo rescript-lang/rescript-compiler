@@ -1011,7 +1011,9 @@ b("File \"bs_list_test.ml\", line 182, characters 4-11", Belt_List.hasAssoc(/* :
               /* [] */0
             ]
           ]
-        ], 2, Caml_obj.caml_equal));
+        ], 2, (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc(/* :: */[
           /* tuple */[
@@ -1031,7 +1033,9 @@ b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc(/* 
               /* [] */0
             ]
           ]
-        ], 4, Caml_obj.caml_equal));
+        ], 4, (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_list_test.ml\", line 184, characters 4-11", Belt_List.hasAssoc(/* :: */[
           /* tuple */[
@@ -1073,7 +1077,9 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */[
               /* [] */0
             ]
           ]
-        ], 3, Caml_obj.caml_equal), /* :: */[
+        ], 3, (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         1,
         "1"
@@ -1105,7 +1111,9 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */[
               /* [] */0
             ]
           ]
-        ], 1, Caml_obj.caml_equal), /* :: */[
+        ], 1, (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         2,
         "2"
@@ -1137,7 +1145,9 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */[
               /* [] */0
             ]
           ]
-        ], 2, Caml_obj.caml_equal), /* :: */[
+        ], 2, (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         1,
         "1"
@@ -1169,7 +1179,9 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */[
               /* [] */0
             ]
           ]
-        ], 0, Caml_obj.caml_equal), /* :: */[
+        ], 0, (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         1,
         "1"
@@ -1311,7 +1323,9 @@ var ll0 = Belt_List.removeAssoc(ll, 0, eqx);
 
 b("File \"bs_list_test.ml\", line 196, characters 5-12", ll === ll0);
 
-var ll1 = Belt_List.setAssoc(ll, 2, "22", Caml_obj.caml_equal);
+var ll1 = Belt_List.setAssoc(ll, 2, "22", (function (prim, prim$1) {
+        return prim === prim$1;
+      }));
 
 eq("File \"bs_list_test.ml\", line 198, characters 5-12", ll1, /* :: */[
       /* tuple */[
@@ -1333,7 +1347,9 @@ eq("File \"bs_list_test.ml\", line 198, characters 5-12", ll1, /* :: */[
       ]
     ]);
 
-var ll2 = Belt_List.setAssoc(ll1, 22, "2", Caml_obj.caml_equal);
+var ll2 = Belt_List.setAssoc(ll1, 22, "2", (function (prim, prim$1) {
+        return prim === prim$1;
+      }));
 
 b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2, /* :: */[
           /* tuple */[
@@ -1363,7 +1379,9 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Bel
                   /* [] */0
                 ]
               ]
-            ], 2, "x", Caml_obj.caml_equal), /* :: */[
+            ], 2, "x", (function (prim, prim$1) {
+                return prim === prim$1;
+              })), /* :: */[
           /* tuple */[
             1,
             "a"
@@ -1395,7 +1413,9 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
                 ],
                 /* [] */0
               ]
-            ], 2, "2", Caml_obj.caml_equal), /* :: */[
+            ], 2, "2", (function (prim, prim$1) {
+                return prim === prim$1;
+              })), /* :: */[
           /* tuple */[
             2,
             "2"
@@ -1415,7 +1435,9 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
           ]
         ]));
 
-eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* [] */0, 1, "1", Caml_obj.caml_equal), /* :: */[
+eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* [] */0, 1, "1", (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         1,
         "1"
@@ -1431,7 +1453,9 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Belt_List.setAssoc(/* 
             "2"
           ],
           /* [] */0
-        ], 1, "1", Caml_obj.caml_equal), /* :: */[
+        ], 1, "1", (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         1,
         "1"
@@ -1451,7 +1475,9 @@ eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc(/* 
             ],
             /* [] */0
           ]
-        ], 1, "1", Caml_obj.caml_equal), /* :: */[
+        ], 1, "1", (function (prim, prim$1) {
+            return prim === prim$1;
+          })), /* :: */[
       /* tuple */[
         0,
         "0"
@@ -1483,7 +1509,9 @@ b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.caml_equal(Bel
                   /* [] */0
                 ]
               ]
-            ], 2, Caml_obj.caml_equal), "b"));
+            ], 2, (function (prim, prim$1) {
+                return prim === prim$1;
+              })), "b"));
 
 b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc(/* :: */[
           /* tuple */[
@@ -1503,7 +1531,9 @@ b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc(/* :
               /* [] */0
             ]
           ]
-        ], 4, Caml_obj.caml_equal) === undefined);
+        ], 4, (function (prim, prim$1) {
+            return prim === prim$1;
+          })) === undefined);
 
 eq("File \"bs_list_test.ml\", line 216, characters 5-12", /* tuple */[
       Belt_List.head(length_10_id),
@@ -2097,7 +2127,7 @@ b("File \"bs_list_test.ml\", line 310, characters 4-11", Belt_List.cmp(/* :: */[
               ]
             ]
           ]
-        ], Caml_obj.caml_compare) > 0);
+        ], Caml_primitive.caml_int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 311, characters 4-11", Belt_List.cmp(/* :: */[
           1,
@@ -2120,7 +2150,7 @@ b("File \"bs_list_test.ml\", line 311, characters 4-11", Belt_List.cmp(/* :: */[
               /* [] */0
             ]
           ]
-        ], Caml_obj.caml_compare) > 0);
+        ], Caml_primitive.caml_int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 312, characters 4-11", Belt_List.cmp(/* :: */[
           1,
@@ -2143,7 +2173,7 @@ b("File \"bs_list_test.ml\", line 312, characters 4-11", Belt_List.cmp(/* :: */[
               ]
             ]
           ]
-        ], Caml_obj.caml_compare) < 0);
+        ], Caml_primitive.caml_int_compare) < 0);
 
 b("File \"bs_list_test.ml\", line 313, characters 4-11", Belt_List.cmp(/* :: */[
           1,
@@ -2407,7 +2437,9 @@ b("File \"bs_list_test.ml\", line 340, characters 4-11", !Belt_List.eq(/* :: */[
               ]
             ]
           ]
-        ], Caml_obj.caml_equal));
+        ], (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 var u0 = Belt_List.makeBy(20, (function (x) {
         return x;

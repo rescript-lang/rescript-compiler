@@ -34,10 +34,15 @@ function Make(U) {
   v[0] = v[0] + 1 | 0;
   return {
           length: U.length,
+          compare_lengths: U.compare_lengths,
+          compare_length_with: U.compare_length_with,
+          cons: U.cons,
           hd: U.hd,
           tl: U.tl,
           nth: U.nth,
+          nth_opt: U.nth_opt,
           rev: U.rev,
+          init: U.init,
           append: U.append,
           rev_append: U.rev_append,
           concat: U.concat,
@@ -61,11 +66,14 @@ function Make(U) {
           mem: U.mem,
           memq: U.memq,
           find: U.find,
+          find_opt: U.find_opt,
           filter: U.filter,
           find_all: U.find_all,
           partition: U.partition,
           assoc: U.assoc,
+          assoc_opt: U.assoc_opt,
           assq: U.assq,
+          assq_opt: U.assq_opt,
           mem_assoc: U.mem_assoc,
           mem_assq: U.mem_assq,
           remove_assoc: U.remove_assoc,
@@ -89,10 +97,15 @@ function f(param) {
   v[0] = v[0] + 1 | 0;
   return {
           length: List.length,
+          compare_lengths: List.compare_lengths,
+          compare_length_with: List.compare_length_with,
+          cons: List.cons,
           hd: List.hd,
           tl: List.tl,
           nth: List.nth,
+          nth_opt: List.nth_opt,
           rev: List.rev,
+          init: List.init,
           append: List.append,
           rev_append: List.rev_append,
           concat: List.concat,
@@ -116,11 +129,14 @@ function f(param) {
           mem: List.mem,
           memq: List.memq,
           find: List.find,
+          find_opt: List.find_opt,
           filter: List.filter,
           find_all: List.find_all,
           partition: List.partition,
           assoc: List.assoc,
+          assoc_opt: List.assoc_opt,
           assq: List.assq,
+          assq_opt: List.assq_opt,
           mem_assoc: List.mem_assoc,
           mem_assq: List.mem_assq,
           remove_assoc: List.remove_assoc,
@@ -169,10 +185,15 @@ v[0] = v[0] + 1 | 0;
 
 var H = {
   length: List.length,
+  compare_lengths: List.compare_lengths,
+  compare_length_with: List.compare_length_with,
+  cons: List.cons,
   hd: List.hd,
   tl: List.tl,
   nth: List.nth,
+  nth_opt: List.nth_opt,
   rev: List.rev,
+  init: List.init,
   append: List.append,
   rev_append: List.rev_append,
   concat: List.concat,
@@ -196,11 +217,14 @@ var H = {
   mem: List.mem,
   memq: List.memq,
   find: List.find,
+  find_opt: List.find_opt,
   filter: List.filter,
   find_all: List.find_all,
   partition: List.partition,
   assoc: List.assoc,
+  assoc_opt: List.assoc_opt,
   assq: List.assq,
+  assq_opt: List.assq_opt,
   mem_assoc: List.mem_assoc,
   mem_assq: List.mem_assq,
   remove_assoc: List.remove_assoc,
@@ -238,10 +262,15 @@ function xx(param) {
   v[0] = v[0] + 1 | 0;
   return {
           length: List.length,
+          compare_lengths: List.compare_lengths,
+          compare_length_with: List.compare_length_with,
+          cons: List.cons,
           hd: List.hd,
           tl: List.tl,
           nth: List.nth,
+          nth_opt: List.nth_opt,
           rev: List.rev,
+          init: List.init,
           append: List.append,
           rev_append: List.rev_append,
           concat: List.concat,
@@ -265,11 +294,14 @@ function xx(param) {
           mem: List.mem,
           memq: List.memq,
           find: List.find,
+          find_opt: List.find_opt,
           filter: List.filter,
           find_all: List.find_all,
           partition: List.partition,
           assoc: List.assoc,
+          assoc_opt: List.assoc_opt,
           assq: List.assq,
+          assq_opt: List.assq_opt,
           mem_assoc: List.mem_assoc,
           mem_assq: List.mem_assq,
           remove_assoc: List.remove_assoc,
@@ -286,13 +318,9 @@ function xx(param) {
 
 eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(/* () */0), 4);
 
-v[0] = v[0] + 1 | 0;
+var V = xx(/* () */0);
 
-v[0] = v[0] + 1 | 0;
-
-v[0] = v[0] + 1 | 0;
-
-eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", List.length(/* :: */[
+eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, /* :: */[
           1,
           /* :: */[
             2,
