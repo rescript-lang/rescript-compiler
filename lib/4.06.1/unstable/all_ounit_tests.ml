@@ -7251,12 +7251,16 @@ val bs_suffix : bool ref
 val debug : bool ref
 
 val cmi_only  : bool ref
+val cmj_only : bool ref 
+(* stopped after generating cmj *)
 val force_cmi : bool ref 
 val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
 val is_reason : bool ref 
+
+val js_stdout : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7359,6 +7363,8 @@ let bs_suffix = ref false
 let debug = ref false
 
 let cmi_only = ref false  
+let cmj_only = ref false
+
 let force_cmi = ref false
 let force_cmj = ref false
 
@@ -7367,6 +7373,8 @@ let jsx_version = ref (-1)
 let refmt = ref None
 
 let is_reason = ref false
+
+let js_stdout = ref true
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
@@ -7445,7 +7453,7 @@ let read_ast (type t ) (kind : t  kind) ic : t  =
     | Mli -> Config.ast_intf_magic_number in 
   let buffer = really_input_string ic (String.length magic) in
   assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.input_name := input_value ic;
+  Location.set_input_name @@ input_value ic;
   input_value ic 
 
 let write_ast (type t) (kind : t kind) 
@@ -8715,7 +8723,7 @@ type 'a kind = 'a Ml_binary.kind
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter
+  List.iter (* check *)
     (fun modname  ->
 
        ignore @@ 
@@ -10448,7 +10456,7 @@ module Ext_obj : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 val dump : 'a -> string 
 val pp_any : Format.formatter -> 'a -> unit 
-
+val bt : unit -> unit
 end = struct
 #1 "ext_obj.ml"
 (* Copyright (C) 2019-Present Authors of BuckleScript 
@@ -10561,6 +10569,26 @@ let pp_any fmt v =
   (dump v )
 
 
+let bt () = 
+  let raw_bt = Printexc.backtrace_slots (Printexc.get_raw_backtrace()) in       
+  match raw_bt with 
+  | None -> ()
+  | Some raw_bt ->
+    let acc = ref [] in 
+    (for i =  Array.length raw_bt - 1  downto 0 do 
+       let slot =  raw_bt.(i) in 
+       match Printexc.Slot.location slot with 
+       | None
+         -> ()
+       | Some bt ->
+         (match !acc with 
+          | [] -> acc := [bt]
+          | hd::tl -> if hd <> bt then acc := bt :: !acc )
+
+     done); 
+    Ext_list.iter !acc (fun bt ->       
+        Printf.eprintf "File \"%s\", line %d, characters %d-%d\n"
+          bt.filename bt.line_number bt.start_char bt.end_char )
 
 end
 module Ounit_hashtbl_tests
@@ -11537,7 +11565,7 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t =
   let name =
-    String.concat "" @@ Ext_list.map 
+    String.concat "" @@ Ext_list.map
     (Ext_string.split name '-')  Ext_string.capitalize_ascii in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom
@@ -11594,6 +11622,8 @@ let name_mangle name =
       | '~' -> Buffer.add_string buffer "$tilde"
       | '#' -> Buffer.add_string buffer "$hash"
       | ':' -> Buffer.add_string buffer "$colon"
+      | '?' -> Buffer.add_string buffer "$question"
+      | '&' -> Buffer.add_string buffer "$amp"
       | 'a'..'z' | 'A'..'Z'| '_'
       | '$'
       | '0'..'9'-> Buffer.add_char buffer  c
@@ -11623,6 +11653,8 @@ let name_mangle name =
        | '~' -> Buffer.add_string buffer "$tilde"
        | '#' -> Buffer.add_string buffer "$hash"
        | ':' -> Buffer.add_string buffer "$colon"
+       | '?' -> Buffer.add_string buffer "$question"
+       | '&' -> Buffer.add_string buffer "$amp"
        | '$' -> Buffer.add_string buffer "$dollar"
        | 'a'..'z' | 'A'..'Z'| '_'
        | '0'..'9'-> Buffer.add_char buffer  c
@@ -11639,7 +11671,7 @@ let name_mangle name =
    a valid js identifier
 *)
 let convert (name : string) =
-  if  Js_reserved_map.is_reserved name  then 
+  if  Js_reserved_map.is_reserved name  then
     "$$" ^ name
   else name_mangle name
 
@@ -11670,7 +11702,6 @@ let compare (x : Ident.t ) ( y : Ident.t) =
 let equal ( x : Ident.t) ( y : Ident.t) =
   if x.stamp <> 0 then x.stamp = y.stamp
   else y.stamp = 0 && x.name = y.name
-
 
 end
 module Hash_set_ident_mask : sig 
@@ -16379,7 +16410,8 @@ let resize b more =
      this tricky function that is slow anyway. *)
   Bytes.blit b.buffer 0 new_buffer 0 b.position;
   b.buffer <- new_buffer;
-  b.length <- !new_len  
+  b.length <- !new_len ;
+  assert (b.position + more <= b.length)
 
 let add_char b c =
   let pos = b.position in
@@ -16392,7 +16424,7 @@ let add_substring b s offset len =
   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  Bytes.blit_string s offset b.buffer b.position len;
+  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
   b.position <- new_position  
 
 
@@ -16403,7 +16435,7 @@ let add_string b s =
   let len = String.length s in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  Bytes.blit_string s 0 b.buffer b.position len;
+  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
   b.position <- new_position  
 
 (* TODO: micro-optimzie *)
@@ -16413,7 +16445,7 @@ let add_string_char b s c =
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   let b_buffer = b.buffer in 
-  Bytes.blit_string s 0 b_buffer b.position s_len;
+  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
   Bytes.unsafe_set b_buffer (new_position - 1) c;
   b.position <- new_position 
 
@@ -16425,7 +16457,7 @@ let add_char_string b c s  =
   let b_buffer = b.buffer in 
   let b_position = b.position in 
   Bytes.unsafe_set b_buffer b_position c ; 
-  Bytes.blit_string s 0 b_buffer (b_position + 1) s_len;
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
   b.position <- new_position
 
 

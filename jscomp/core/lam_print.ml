@@ -151,7 +151,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n, (Fld_module s | Fld_record s)) 
     -> fprintf ppf "field %s/%i" s n
-  | Pfield (n, Fld_na) 
+  | Pfield (n, _) 
     -> fprintf ppf "field %i" n
   | Pfield_computed -> 
     fprintf ppf "field_computed"

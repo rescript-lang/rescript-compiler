@@ -93,11 +93,20 @@ type default_case =
 let no_effects_const  = lazy true
 let has_effects_const = lazy false
 
+let is_nullary_variant x = 
+  match x with 
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Types.Cstr_tuple [] -> true 
+#else  
+  |  [] -> true 
+#end  
+  | _ -> false
+
 let names_from_construct_pattern (pat: Typedtree.pattern) =
   let names_from_type_variant cstrs =
     let (consts, blocks) = List.fold_left
       (fun (consts, blocks) cstr ->
-        if cstr.Types.cd_args = []
+        if is_nullary_variant cstr.Types.cd_args 
         then (Ident.name cstr.Types.cd_id :: consts, blocks)
         else (consts, Ident.name cstr.Types.cd_id :: blocks))
       ([], []) cstrs in

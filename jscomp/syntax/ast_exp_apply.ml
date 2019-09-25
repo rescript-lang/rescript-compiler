@@ -167,7 +167,15 @@ let app_exp_mapper
          | 
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
-            | Pexp_constant (Const_string(name,None)))
+
+            | Pexp_constant (
+#if OCAML_VERSION =~ "<4.03.0" then                            
+              Const_string              
+#else                           
+              Pconst_string
+#end              
+              (name,None))
+            )
             ;
              pexp_loc}
            (* f##paint  *)
@@ -197,7 +205,13 @@ let app_exp_mapper
          | Some { args = [obj; {
              pexp_desc = 
                Pexp_ident {txt = Lident name}
-               | Pexp_constant (Const_string (name, None)); pexp_loc
+               | Pexp_constant (
+#if OCAML_VERSION =~ "<4.03.0" then                            
+              Const_string              
+#else                           
+              Pconst_string
+#end                         
+                  (name, None)); pexp_loc
            }
            ]
            }
