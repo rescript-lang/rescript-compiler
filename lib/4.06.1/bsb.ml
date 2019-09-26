@@ -8528,20 +8528,19 @@ let custom_resolution = lazy
   | exception Not_found  -> false
   | "true"  -> true
   | _ -> false)
- 
 
-let regex_at = Str.regexp "@"
-let regex_unders = Str.regexp "_+"
-let regex_slash = Str.regexp "\\/"
-let regex_dot = Str.regexp "\\."
-let regex_hyphen = Str.regexp "-"
-let pkg_name_as_variable pkg =
-  Bsb_pkg_types.to_string pkg
-  |> Str.replace_first regex_at ""
-  |> Str.global_replace regex_unders "\\0_"
-  |> Str.global_replace regex_slash "__slash__"
-  |> Str.global_replace regex_dot "__dot__"
-  |> Str.global_replace regex_hyphen "_"
+let pkg_name_as_variable package =
+  Bsb_pkg_types.to_string package
+  |> fun s -> Ext_string.split s '@'
+  |> String.concat ""
+  |> fun s -> Ext_string.split s '_'
+  |> String.concat "__"
+  |> fun s -> Ext_string.split s '/'
+  |> String.concat "__slash__"
+  |> fun s -> Ext_string.split s '.'
+  |> String.concat "__dot__"
+  |> fun s -> Ext_string.split s '-'
+  |> String.concat "_"
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
