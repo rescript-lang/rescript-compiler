@@ -8517,17 +8517,18 @@ let cache : string Coll.t = Coll.create 0
 
 let to_list cb  =   
   Coll.to_list cache  cb 
-
+  
 (* Some package managers will implement "postinstall" caches, that do not
  * keep their build artifacts in the local node_modules. Similar to
  * npm_config_prefix, bs_custom_resolution allows these to specify the
  * exact location of build cache, but on a per-package basis. Implemented as
  * environment lookup to avoid invasive changes to bsconfig and mandates. *)
-let custom_resolution () =
- match Sys.getenv "bs_custom_resolution" with
+let custom_resolution = lazy
+  (match Sys.getenv "bs_custom_resolution" with
   | exception Not_found  -> false
   | "true"  -> true
-  | _ -> false
+  | _ -> false)
+ 
 
 let regex_at = Str.regexp "@"
 let regex_unders = Str.regexp "_+"
@@ -8544,11 +8545,12 @@ let pkg_name_as_variable pkg =
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
-  if custom_resolution () then
+  if Lazy.force custom_resolution then
   begin
     Bsb_log.info "@{<info>Using Custom Resolution@}@.";
     let custom_pkg_loc = pkg_name_as_variable package ^ "__install" in
-    match Sys.getenv custom_pkg_loc with
+    let custom_pkg_location = lazy (Sys.getenv custom_pkg_loc) in
+    match Lazy.force custom_pkg_location with
     | exception Not_found ->
         begin
           Bsb_log.error
@@ -8593,7 +8595,6 @@ let resolve_bs_package ~cwd (package : t) =
               Bsb_pkg_types.print package x result cwd;
         end;
       x
-
 
 
 (** The package does not need to be a bspackage
