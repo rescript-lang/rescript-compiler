@@ -8,7 +8,7 @@
     "ocaml": "4.02.3000+BS"
   },
   "resolutions": {
-    "ocaml": "ulrikstrid/ocaml:package.json#d8d514004"
+    "ocaml": "bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb"
   },
   "esy": {
     "buildsInSource": true,
