@@ -124,6 +124,24 @@ function f(x) {
   }
 }
 
+function uuu0(o) {
+  return o.hello((function (x) {
+                return 2;
+              }));
+}
+
+function uuu1(o) {
+  return Curry._1(o, (function (x) {
+                return 2;
+              }));
+}
+
+function uuu2(o) {
+  return o((function (x) {
+                return 2;
+              }));
+}
+
 var u1 = "bad character decimal encoding \\";
 
 var v = "bad character decimal encoding \\%c%c%c";
@@ -133,4 +151,7 @@ exports.u = u;
 exports.u1 = u1;
 exports.v = v;
 exports.f = f;
+exports.uuu0 = uuu0;
+exports.uuu1 = uuu1;
+exports.uuu2 = uuu2;
 /* No side effect */

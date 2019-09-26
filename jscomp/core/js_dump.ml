@@ -348,7 +348,9 @@ let rec
 
 
 and  pp_function is_method
-    cxt (f : P.t) ?(name=No_name)  (return : bool)
+    cxt (f : P.t) 
+    ?(in_paren=false)
+    ?(name=No_name)  (return : bool)
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) : cxt =
   match b, (name,  return)  with
   | [ {statement_desc =
@@ -464,7 +466,7 @@ and  pp_function is_method
                ignore @@ pp_var_assign inner_cxt f name              
           )
           ;
-          P.string f L.lparen;
+          if not in_paren then P.string f L.lparen;
           P.string f L.function_;
           pp_paren_params inner_cxt f lexical; 
           P.brace_vgroup f 0  (fun _ ->
@@ -476,7 +478,7 @@ and  pp_function is_method
                | Name_non_top x | Name_top x -> ignore (Ext_pp_scope.ident inner_cxt f x));
               param_body ());
           pp_paren_params inner_cxt f lexical;     
-          P.string f L.rparen;
+          if not in_paren then P.string f L.rparen;
           match name with
           | No_name -> () (* expression *)
           | _ -> semi f (* has binding, a statement *)  in
@@ -565,7 +567,7 @@ and expression_desc cxt (level:int) f x : cxt  =
       comma_sp f;
       expression 0 cxt f e2 )
   | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
-    pp_function method_ cxt f false  l b env
+    pp_function method_ cxt f false  l b env ~in_paren:(level = 0)
   (* TODO:
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -583,7 +585,12 @@ and expression_desc cxt (level:int) f x : cxt  =
           | {arity  = Full }, _
           | _, [] ->
             let cxt = expression 15 cxt f e in
-            P.paren_group f 1 (fun _ -> arguments cxt  f el )
+            begin match el with 
+              | [arg] ->
+                P.paren_group f 1 (fun _ -> expression 0 cxt f arg)
+              | _ ->
+                P.paren_group f 1 (fun _ -> arguments cxt  f el )
+            end   
 
           | _ , _ ->
             let len = List.length el in

@@ -61205,11 +61205,11 @@ function type_application(env, funct, sargs) {
                     return function (param) {
                       return type_argument(env, sarg0$3, ty, ty0);
                     }
-                    }(ty,ty0,sarg0$3)) : (may_warn(sarg0$3[/* pexp_loc */1], /* Not_principal */Block.__(8, ["using an optional argument here"])), (function(ty,ty0,sarg0$3){
+                    }(ty,ty0,sarg0$3)) : (may_warn(sarg0$3[/* pexp_loc */1], /* Not_principal */Block.__(8, ["using an optional argument here"])), function(ty,ty0,sarg0$3){
                       return function (param) {
                         return option_some(type_argument(env, sarg0$3, extract_option_type(env, ty), extract_option_type(env, ty0)));
                       }
-                      }(ty,ty0,sarg0$3)))
+                      }(ty,ty0,sarg0$3))
                 ];
               }
               catch (exn$1){
@@ -61224,11 +61224,11 @@ function type_application(env, funct, sargs) {
                             lv
                           ],
                           ignored[0]
-                        ], (function(ty){
+                        ], function(ty){
                         return function (param) {
                           return option_none(instance(undefined, env, ty), none);
                         }
-                        }(ty))) : (may_warn(funct[/* exp_loc */1], /* Without_principality */Block.__(9, ["commuted an argument"])), undefined)
+                        }(ty)) : (may_warn(funct[/* exp_loc */1], /* Without_principality */Block.__(9, ["commuted an argument"])), undefined)
                   ];
                 } else {
                   throw exn$1;
@@ -61684,11 +61684,11 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
                   /* [] */0
                 ];
                 try {
-                  var pss = get_mins(le_pats, List.filter((function(qs){
+                  var pss = get_mins(le_pats, List.filter(function(qs){
                             return function (param) {
                               return compats(qs, param);
                             }
-                            }(qs)))(pref));
+                            }(qs))(pref));
                   var r = every_satisfiables(List.map(make_row, pss), /* record */[
                         /* no_ors : [] */0,
                         /* ors : [] */0,

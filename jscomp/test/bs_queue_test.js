@@ -47,7 +47,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[]) && q.leng
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), /* array */[1]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(Belt_MutableQueue.add(q, 1), q), /* array */[1]) && q.length === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -58,7 +58,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(Belt_MutableQueue.add(q, 2), q), /* array */[
           1,
           2
         ]) && q.length === 2)) {
@@ -72,7 +72,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(Belt_MutableQueue.add(q, 3), q), /* array */[
           1,
           2,
           3
@@ -87,7 +87,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(Belt_MutableQueue.add(q, 4), q), /* array */[
           1,
           2,
           3,
@@ -211,7 +211,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q)) {
 
 var q$1 = Belt_MutableQueue.make(/* () */0);
 
-if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 1), q$1)) !== 1) {
+if (Belt_MutableQueue.popExn(Belt_MutableQueue.add(q$1, 1), q$1) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -233,7 +233,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
       ];
 }
 
-if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 2), q$1)) !== 2) {
+if (Belt_MutableQueue.popExn(Belt_MutableQueue.add(q$1, 2), q$1) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -268,7 +268,7 @@ if (q$1.length !== 0) {
 
 var q$2 = Belt_MutableQueue.make(/* () */0);
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn(Belt_MutableQueue.add(q$2, 1), q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -279,7 +279,7 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
       ];
 }
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn(Belt_MutableQueue.add(q$2, 2), q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -290,7 +290,7 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
       ];
 }
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 3), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn(Belt_MutableQueue.add(q$2, 3), q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

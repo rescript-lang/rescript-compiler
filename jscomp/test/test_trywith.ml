@@ -49,3 +49,8 @@ let f (x : u) =
   | C -> 2 
 
   | _ -> assert false 
+
+let uuu0 o =  o##hello (fun x -> 2 )
+
+let uuu1 o =  o (fun x -> 2 )
+let uuu2 o =  o (fun x -> 2 ) [@bs]

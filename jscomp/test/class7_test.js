@@ -134,7 +134,7 @@ function backup_init($$class) {
         save,
         (function (self$3) {
             var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
-            self$3[copy] = Caml_option.some((copy$1[copy] = undefined, copy$1));
+            self$3[copy] = Caml_option.some(copy$1[copy] = undefined, copy$1);
             return /* () */0;
           }),
         restore,

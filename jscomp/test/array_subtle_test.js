@@ -82,7 +82,7 @@ function f(v) {
   } else {
     console.log("hi2");
   }
-  console.log((v.pop(), /* () */0));
+  console.log(v.pop(), /* () */0);
   return /* () */0;
 }
 

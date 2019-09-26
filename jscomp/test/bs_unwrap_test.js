@@ -48,7 +48,7 @@ console.log(5, some_arg !== undefined ? Caml_option.valFromOption(some_arg)[1] :
 
 console.log(6, undefined);
 
-console.log(7, Caml_option.option_get_unwrap((console.log("trace"), undefined)));
+console.log(7, Caml_option.option_get_unwrap(console.log("trace"), undefined));
 
 function dyn_log3(prim, prim$1, prim$2) {
   console.log(prim[1], prim$1 !== undefined ? Caml_option.valFromOption(prim$1)[1] : undefined);

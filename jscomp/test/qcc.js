@@ -152,7 +152,7 @@ function skip(_param) {
               _param$1 = /* () */0;
               continue ;
             } else if (peekch(/* () */0) === /* "/" */47) {
-              return skip((Curry._1(getch, /* () */0), /* () */0));
+              return skip(Curry._1(getch, /* () */0), /* () */0);
             } else {
               _param$1 = /* () */0;
               continue ;
