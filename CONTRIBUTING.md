@@ -34,6 +34,7 @@ The extension requires using an opam switch for ocaml 4.02.3, where `merlin` and
 ```
 ./script/ninja.js docs
 ```
+
 #### Edit file and test changes
 
 In general, you'd edit files and rerun `./scripts/ninja.js build`.
@@ -70,6 +71,30 @@ git -C ocaml checkout 4.06.1+BS && node ./scripts/buildocaml.js
 
 Note: clean up is necessary since the binary artifacts between versions of compiler may be incompatible.
 
+### Using esy in development
+
+You can use [esy](https://esy.sh) to develop bucklescript. By default esy will do "out of source builds" which means that all the changes will happen outside the current directory. To be able to bspack the needed files and get sources that you can commit you will have to change the following in the `esy.json`.
+
+```diff
+-"buildsInSource": true,
++"buildsInSource": "unsafe",
+```
+
+When that is changed you just run the following command it will build everything you need.
+
+    esy
+
+By default we depend on the 4.02.3+BS OCaml compiler. To be able to build with the 4.06.1+BS compiler we have a `4061.json` file that just extends the `esy.json` and overrides the OCaml dependency. To use this file instead you simply run this command instead.
+
+    esy @4061
+
+If there are problems building try to run one of the following depending on what you're building
+
+```
+esy clean
+esy @4061 clean
+```
+
 ## Test on a Dummy Project
 
 Go somewhere else and do this:
@@ -85,7 +110,6 @@ And whenever you modify a file in bucklescript, run this:
 ```
 npm install -g .
 ```
-
 
 ## Change the Vendored OCaml Compiler
 
@@ -109,6 +133,7 @@ Currently all tests are in `jscomp/test` directory and you should either add/mod
 
 - Add the filename in `jscomp/test/test.mllib`
 - Add a test suite. The specification is in `jscomp/test/mt.ml`. For example some simple tests would be like:
+
   ```ocaml
   let suites : _ Mt.pair_suites =
      ["hey", (fun _ -> Eq(true, 3 > 2));
@@ -216,7 +241,7 @@ Since BuckleScript is distributed under the terms of the [LGPL Version 3](LICENS
 are licensed under the same terms. In order for us to be able to accept your contributions,
 we will need explicit confirmation from you that you are able and willing to provide them under
 these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin
-[DCO](DCO.md).  This is very similar to the process used by the Linux(R) kernel, Samba, and many
+[DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many
 other major open source projects.
 
 To participate under these terms, all that you must do is include a line like the following as the

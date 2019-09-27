@@ -115,7 +115,7 @@ var useEnv = false;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  if (useEnv) {
+  if (useEnv || process.env.ESY === "true") {
     return `ocamldep.opt`;
   } else {
     return path.join(
@@ -1479,6 +1479,7 @@ function setSortedToString(xs) {
  * @returns {string}
  */
 function getVendorConfigNinja() {
+  if (process.env.ESY === "true") return getEnnvConfigNinja();
   var prefix = `../native/${require("./buildocaml.js").getVersionPrefix()}/bin`;
   return `
 ocamlopt = ${prefix}/ocamlopt.opt
@@ -1492,6 +1493,7 @@ function getEnnvConfigNinja() {
 ocamlopt = ocamlopt.opt    
 ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
+ocaml = ocaml
 `;
 }
 
@@ -1750,7 +1752,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(vendorNinjaPath, {
+          cp.execFileSync(path.resolve(jscompDir, vendorNinjaPath), {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2]

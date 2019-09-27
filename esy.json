@@ -8,7 +8,10 @@
     "ocaml": "4.02.3000+BS"
   },
   "resolutions": {
-    "ocaml": "ulrikstrid/ocaml:package.json#e433d5b3fbe8963ac98257d1ed3b32c01515e07d"
+    "ocaml": "bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb"
+  },
+  "scripts": {
+    "clean": "node ./scripts/ninja.js clean"
   },
   "esy": {
     "buildsInSource": true,
@@ -18,9 +21,16 @@
       ["cp", "-r", "-f", "#{self.root / 'esy.json'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'package.json'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'jscomp'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'jscomp' / 'bin'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'lib'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
+    ],
+    "buildDev": [
+      ["echo", "config"],
+      ["node", "./scripts/ninja.js", "config"],
+      ["echo", "build"],
+      ["node", "./scripts/ninja.js", "build"]
     ],
     "buildEnv": {
       "ESY": "true"
