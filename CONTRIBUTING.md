@@ -71,7 +71,7 @@ git -C ocaml checkout 4.06.1+BS && node ./scripts/buildocaml.js
 
 Note: clean up is necessary since the binary artifacts between versions of compiler may be incompatible.
 
-### Using esy in development
+### Using esy in development (experimental)
 
 You can use [esy](https://esy.sh) to develop bucklescript. By default esy will do "out of source builds" which means that all the changes will happen outside the current directory. To be able to bspack the needed files and get sources that you can commit you will have to change the following in the `esy.json`.
 
@@ -241,7 +241,7 @@ Since BuckleScript is distributed under the terms of the [LGPL Version 3](LICENS
 are licensed under the same terms. In order for us to be able to accept your contributions,
 we will need explicit confirmation from you that you are able and willing to provide them under
 these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin
-[DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many
+[DCO](DCO.md).  This is very similar to the process used by the Linux(R) kernel, Samba, and many
 other major open source projects.
 
 To participate under these terms, all that you must do is include a line like the following as the

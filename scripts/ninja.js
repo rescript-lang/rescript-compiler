@@ -28,6 +28,7 @@ var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
 var vendorNinjaPath = path.join(
+  __dirname,
   "..",
   "vendor",
   "ninja",
@@ -1752,7 +1753,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(path.resolve(jscompDir, vendorNinjaPath), {
+          cp.execFileSync(vendorNinjaPath, {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2]
@@ -1784,10 +1785,19 @@ function main() {
 
         break;
       case "cleanbuild":
-        console.log(`run cleaning first`)
-        cp.execSync(`node ${__filename} clean`,{cwd:__dirname,stdio:[0,1,2]})
-        cp.execSync(`node ${__filename} config`,{cwd:__dirname,stdio:[0,1,2]})
-        cp.execSync(`node ${__filename} build`,{cwd:__dirname,stdio:[0,1,2]})
+        console.log(`run cleaning first`);
+        cp.execSync(`node ${__filename} clean`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`node ${__filename} config`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`node ${__filename} build`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
         break;
       case "docs":
         console.log(`building docs`);
