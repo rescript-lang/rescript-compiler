@@ -4195,6 +4195,7 @@ val symbol_gloc: unit -> t
 val rhs_loc: int -> t
 
 val input_name: string ref
+val set_input_name: string -> unit 
 val input_lexbuf: Lexing.lexbuf option ref
 
 val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
@@ -4364,7 +4365,8 @@ let rhs_loc n = {
 
 let input_name = ref "_none_"
 let input_lexbuf = ref (None : lexbuf option)
-
+let set_input_name name =
+  if name <> "" then input_name := name
 (* Terminal info *)
 
 let status = ref Terminfo.Uninitialised

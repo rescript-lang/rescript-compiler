@@ -240,6 +240,9 @@ function copyPrebuiltCompilers() {
  * @returns {string|undefined}
  */
 function checkPrebuiltBscCompiler() {
+  if(process.env.BS_TRAVIS_CI){
+    return ;
+  }
   try {
     var version = String(
       cp.execFileSync(path.join(lib_dir, "bsc" + sys_extension), ["-v"])

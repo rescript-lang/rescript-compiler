@@ -1,15 +1,16 @@
 `*` means  potential break changes
-# 5.2.0
+# 5.2.0 (2019/09/23)
 
 Features
 - #3803 Add a -install flag for mono-repository improvement for parallel compilation
-- #3790 #3802 #3799 #3792 Compile locla modules to objects and clean up
+- #3790 #3802 #3799 #3792 #3836 Compile locla modules to objects and clean up
+- #3836 initial support of esy
 - #3780 Better code generation for if branches
 - #3799 Improve code gen, better code equality for block
 - #3778 #3770 Improve pattern match compilation against the outer-most staticfail
 - #3764 better code gen for lazy evaluation
 - #3822 allow `f##"Content-Type"` for uncommon property name
-
+- #3810 annoate constructor names in pattern match compilation
 Fixes
 - #3809 Escape question mark and ampersand to special chars
 - #3805 #3796 Fix stale builds (module alias + namespace interaction)

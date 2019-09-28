@@ -515,7 +515,7 @@
     <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length arr - offset</code>
 <p>
 
-    <code class="code">fill arr offset:(-1) len:1 </code> means fill the last element,
+    <code class="code">fill arr ~offset:(-1) ~len:1</code> means fill the last element,
     if the array does not have enough data;<code class="code">fill</code> will ignore it<br>
  
                     </div>
@@ -554,9 +554,9 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 -&gt;
+                    <pre class="example"> <pre class="codepre"><code class="code">      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
         [|20;21;14;15;16;25;26;27|]
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 -&gt;
+      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
         [|10;11;14;15;16;15;16;17|]
       </code></pre>  </pre>
                     </div>
@@ -579,7 +579,7 @@
 <p>
 
     Call <code class="code">f</code> on each element of <code class="code">xs</code> from the beginning to end. <code class="code">f</code> returns <code class="code">unit</code>;so no
-    new array is created. Use <code class="code">foreach</code> when you are primarily concerned with repetitively
+    new array is created. Use <code class="code">forEach</code> when you are primarily concerned with repetitively
     creating side effects.<br>
  
                     </div>
@@ -737,8 +737,8 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      predicate [|1;2;3;4;5|] (fun x -&gt; if x mod 2 = 0)  = ([|2;4|], [|1;2;3|]);;
-      predicate [|1;2;3;4;5|] (fun x -&gt; if x mod 2 &lt;&gt; 0) = ([|1;2;3|], [|2;4|]);;
+                    <pre class="example"> <pre class="codepre"><code class="code">      partition [|1;2;3;4;5|] (fun x -&gt; x mod 2 = 0  ) = ([|2;4|], [|1;2;3|]);;
+      partition [|1;2;3;4;5|] (fun x -&gt; x mod 2 &lt;&gt; 0 ) = ([|1;2;3|], [|2;4|]);;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -935,9 +935,9 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">    let arr = [|"ant";"bee";"cat";"dog";"elk"|] in
-    let () = truncateToLengthUnsafe arr 3 in
-    arr = [|"ant";"bee";"cat"|] = true;;
+                    <pre class="example"> <pre class="codepre"><code class="code">    let arr = [|"ant";"bee";"cat";"dog";"elk"|];;
+    let () = truncateToLengthUnsafe arr 3;;
+    arr = [|"ant";"bee";"cat"|];;
   </code></pre>  </pre>
                     </div>
                     </div>
