@@ -28,6 +28,7 @@ var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
 var vendorNinjaPath = path.join(
+  __dirname,
   "..",
   "vendor",
   "ninja",
@@ -115,7 +116,7 @@ var useEnv = false;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  if (useEnv) {
+  if (useEnv || process.env.ESY === "true") {
     return `ocamldep.opt`;
   } else {
     return path.join(
@@ -1479,6 +1480,7 @@ function setSortedToString(xs) {
  * @returns {string}
  */
 function getVendorConfigNinja() {
+  if (process.env.ESY === "true") return getEnnvConfigNinja();
   var prefix = `../native/${require("./buildocaml.js").getVersionPrefix()}/bin`;
   return `
 ocamlopt = ${prefix}/ocamlopt.opt
@@ -1492,6 +1494,7 @@ function getEnnvConfigNinja() {
 ocamlopt = ocamlopt.opt    
 ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
+ocaml = ocaml
 `;
 }
 
@@ -1782,10 +1785,19 @@ function main() {
 
         break;
       case "cleanbuild":
-        console.log(`run cleaning first`)
-        cp.execSync(`node ${__filename} clean`,{cwd:__dirname,stdio:[0,1,2]})
-        cp.execSync(`node ${__filename} config`,{cwd:__dirname,stdio:[0,1,2]})
-        cp.execSync(`node ${__filename} build`,{cwd:__dirname,stdio:[0,1,2]})
+        console.log(`run cleaning first`);
+        cp.execSync(`node ${__filename} clean`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`node ${__filename} config`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
+        cp.execSync(`node ${__filename} build`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2]
+        });
         break;
       case "docs":
         console.log(`building docs`);
