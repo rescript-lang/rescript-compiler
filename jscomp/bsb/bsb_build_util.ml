@@ -124,7 +124,9 @@ let resolve_bsb_magic_file ~cwd ~desc p : result  =
      mkp "/a/b/c/d"
    ]}
 *)
-let rec mkp dir = 
+let rec mkp dir =
+Bsb_log.info
+    "@{<info>mkp @} dir: %s @." dir;   
   if not (Sys.file_exists dir) then 
     let parent_dir  = Filename.dirname dir in
     if  parent_dir = Filename.current_dir_name then 
@@ -178,6 +180,7 @@ let rec walk_all_deps_aux
   (top : bool) 
   (dir : string) 
   (cb : package_context -> unit) =
+  let () = Bsb_log.info "@{<info>walk_all_deps_aux dir:@} %s @." dir in
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
@@ -229,5 +232,31 @@ let rec walk_all_deps_aux
     
 
 let walk_all_deps dir cb = 
-  let visited = String_hashtbl.create 0 in 
+  let visited = String_hashtbl.create 0 in
+  Bsb_log.info "@{<info>walk_all_deps dir:@} %s @." dir;
   walk_all_deps_aux visited [] true dir cb 
+
+let build_artifacts_dir = ref None
+
+let get_build_artifacts_location cwd =
+  let () = Bsb_log.info "@{<info>get_build_artifacts_location cwd:@} %s @." cwd in
+  let () = Bsb_log.info "@{<info>get_build_artifacts_location cur__root:@} %s @." (Sys.getenv "cur__root") in
+  let bad = match !build_artifacts_dir with
+  | Some(x) -> x
+  | None -> "not_set" in
+  let () = Bsb_log.info "@{<info>build_artifacts_dir:@} %s @." bad in
+  (* If the project's parent folder is not node_modules, we know it's the top level one. *)
+  if Sys.getenv "cur__root" = cwd then 
+    match !build_artifacts_dir with 
+    | None -> cwd
+    | Some dir -> dir
+  else begin
+    match !build_artifacts_dir with 
+    | None ->
+      cwd
+      (* (Filename.dirname (Filename.dirname cwd)) // Bsb_config.lib_lit // Bsb_config.node_modules // project_name *)
+    | Some dir ->
+      let project_name = Filename.basename cwd in
+      let () = Bsb_log.info "@{<info>build_artifacts_location:@} %s @." (dir // Bsb_config.lib_js // project_name) in
+      dir // Bsb_config.lib_js // project_name
+  end

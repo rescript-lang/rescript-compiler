@@ -126,13 +126,14 @@ let bs_package_output = "-bs-package-output"
     {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
 *)
 let package_flag ({format; in_source } : spec) dir =
+  let dir = Bsb_config.build_artifacts_dir (if in_source then dir else
+        prefix_of_format format // dir) in
   Ext_string.inter2
     bs_package_output 
     (Ext_string.concat3
        (string_of_format format)
        Ext_string.single_colon
-       (if in_source then dir else
-        prefix_of_format format // dir))
+         dir)
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -161,7 +162,7 @@ let get_list_of_output_js
              output_file_sans_extension
              (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
         in 
-        (Bsb_config.proj_rel @@ (if spec.in_source then basename
+        (Bsb_config.build_artifacts_dir @@ (if spec.in_source then basename
         else prefix_of_format spec.format // basename))         
        :: acc
     ) package_specs []

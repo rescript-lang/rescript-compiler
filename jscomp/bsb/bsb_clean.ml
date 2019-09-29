@@ -39,7 +39,8 @@ let ninja_clean  proj_dir =
     Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
 
 let clean_bs_garbage proj_dir =
-  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
+  let proj_dir = Bsb_build_util.get_build_artifacts_location proj_dir in
+  let () = Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir in
   let try_remove x =
     let x = proj_dir // x in
     if Sys.file_exists x then
@@ -56,8 +57,7 @@ let clean_bs_garbage proj_dir =
 let clean_bs_deps  proj_dir =
   Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.proj_dir
+      clean_bs_garbage (Bsb_build_util.get_build_artifacts_location proj_dir)
     )
 
-let clean_self  proj_dir = 
-    clean_bs_garbage  proj_dir
+let clean_self proj_dir = clean_bs_garbage  (Bsb_build_util.get_build_artifacts_location proj_dir)

@@ -50,6 +50,8 @@ let g_ns = "g_ns"
 
 let warnings = "warnings"
 
+let build_artifacts_dir = "build_artifacts_dir"
+
 let gentypeconfig = "gentypeconfig"
 
 let g_dev_incls = "g_dev_incls"

@@ -89,22 +89,22 @@ let exec_command_then_exit  command =
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit   ninja_args  =
+let ninja_command_exit cwd ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
-           path_ninja "-C" Bsb_config.lib_bs
+           path_ninja "-C" (cwd // Bsb_config.lib_bs)
        else   
          let args = 
            Array.append 
-             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             [| path_ninja ; "-C"; cwd // Bsb_config.lib_bs|]
              ninja_args in 
          Ext_string.concat_array Ext_string.single_space args)
   else
-    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let ninja_common_args = [|"ninja.exe"; "-C"; cwd // Bsb_config.lib_bs |] in 
     let args = 
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
@@ -160,6 +160,9 @@ let install_target config_opt =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
+  let getenv_opt env = try Some(Sys.getenv env)
+  with | Not_found -> None in
+  let () = Bsb_build_util.build_artifacts_dir := getenv_opt "cur__target_dir" in
   try begin 
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
@@ -167,7 +170,7 @@ let () =
         ~toplevel_package_specs:None 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
-      ninja_command_exit  [||] 
+      ninja_command_exit (Bsb_build_util.get_build_artifacts_location Bsb_global_paths.cwd) [||] 
 
     | argv -> 
       begin
@@ -208,7 +211,7 @@ let () =
                       [bsb -regen ]
                    *)
                  end else if make_world then begin
-                   ninja_command_exit [||] 
+                   ninja_command_exit (Bsb_build_util.get_build_artifacts_location Bsb_global_paths.cwd) [||] 
                  end else if do_install then begin
                    install_target config_opt
                  end)
@@ -228,7 +231,7 @@ let () =
             if !do_install then
               install_target config_opt;
             if !watch_mode then program_exit ()
-            else ninja_command_exit  ninja_args 
+            else ninja_command_exit (Bsb_build_util.get_build_artifacts_location Bsb_global_paths.cwd) ninja_args 
           end
       end
   end

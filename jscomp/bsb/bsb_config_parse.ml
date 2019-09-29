@@ -30,7 +30,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // Bsb_config.lib_ocaml
+    package_install_path = (Bsb_build_util.get_build_artifacts_location x) // Bsb_config.lib_ocaml
   }
 
 type json_map = Ext_json_types.t String_map.t

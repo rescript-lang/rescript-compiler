@@ -68,15 +68,17 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   in 
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
-        begin 
+        begin
+          let () = Bsb_log.info "@{<info>build_bs_deps proj_dir:@} %s @." proj_dir in
           let config_opt = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
               ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+          let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location proj_dir in
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = proj_dir // Bsb_config.lib_bs;
+             cwd = build_artifacts_dir // Bsb_config.lib_bs;
              args 
             } in     
           let eid =
@@ -89,7 +91,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          Ext_option.iter config_opt (install_targets proj_dir);
+          Ext_option.iter config_opt (install_targets build_artifacts_dir);
         end
     )
 

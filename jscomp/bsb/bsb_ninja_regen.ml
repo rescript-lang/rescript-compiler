@@ -34,9 +34,16 @@ let regenerate_ninja
     ~(toplevel_package_specs : Bsb_package_specs.t option)
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
+  let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location per_proj_dir in
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
+  let lib_bs_dir =  build_artifacts_dir // Bsb_config.lib_bs  in
   let output_deps = lib_bs_dir // bsdeps in
+  let () = Bsb_log.info
+    "@{<info>regenerate_ninja@} per_proj_dir : %s @." per_proj_dir in
+  let () = Bsb_log.info
+    "@{<info>regenerate_ninja@} lib_bs_dir : %s @." lib_bs_dir in
+  let () = Bsb_log.info
+    "@{<info>regenerate_ninja@} output_deps : %s @." output_deps in
   let check_result  =
     Bsb_ninja_check.check 
       ~per_proj_dir:per_proj_dir  
@@ -53,26 +60,32 @@ let regenerate_ninja
   | Other _ -> 
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self  per_proj_dir; 
-    end ; 
+      Bsb_clean.clean_self  build_artifacts_dir; 
+    end ;
     
     let config = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
         ~per_proj_dir in 
+        
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
-    Bsb_build_util.mkp lib_bs_dir;         
+    Bsb_build_util.mkp build_artifacts_dir;      
+   
     Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> 
+      (fun x ->
         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    if toplevel then       
-      Bsb_watcher_gen.generate_sourcedirs_meta
-        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
-        config.file_groups
+    if toplevel then
+      begin
+        Bsb_log.info "@{<info>toplevel@} %s @." (lib_bs_dir // Literals.sourcedirs_meta);
+        Bsb_watcher_gen.generate_sourcedirs_meta
+          ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+          config.file_groups
+      end
     ;
-    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-      (Bsb_global_paths.vendor_bsppx) config;       
+    
+    (*Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+      (Bsb_global_paths.vendor_bsppx) config;*)
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~toplevel config ;             
     
@@ -81,5 +94,3 @@ let regenerate_ninja
     Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
-
-

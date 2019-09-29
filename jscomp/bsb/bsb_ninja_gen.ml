@@ -120,10 +120,10 @@ let output_ninja_and_namespace_map
       number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
-  
-  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
+  let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location per_proj_dir in
+  let cwd_lib_bs = build_artifacts_dir // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
@@ -168,7 +168,8 @@ let output_ninja_and_namespace_map
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
-        Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
+        Bsb_build_schemas.bsb_dir_group, "0";  (*TODO: avoid name conflict in the future *)
+        Bsb_ninja_global_vars.build_artifacts_dir, build_artifacts_dir;
       |] oc 
   in        
   let  bs_groups, bsc_lib_dirs, static_resources =    
@@ -190,6 +191,7 @@ let output_ninja_and_namespace_map
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
+            let () = Bsb_log.info "@{<info>bs_file_groups dir:@} %s @." dir in
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
@@ -244,7 +246,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        per_proj_dir // Bsb_config.lib_bs  in
+        build_artifacts_dir // Bsb_config.lib_bs  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
