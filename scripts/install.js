@@ -201,39 +201,49 @@ function install(stdlib) {
  * @param {string} sys_extension
  *
  */
-function createCopyNinja(sys_extension) {
-  var output = "";
-  switch (sys_extension) {
-    case ".win32":
-      output += `
-rule cp
-    command = cmd /q /c copy $in $out 1>nul
-`;
-      break;
-    default:
-      output += `
+function copyPrebuiltCompilersForUnix(sys_extension) {
+    var output = `
 rule cp 
     command = cp $in $out
 `;
-      break;
-  }
-  output += ["bsc", "bsb", "bsb_helper", "bsppx", "refmt"]
-    .map(function(x) {
-      return `build ${x}.exe: cp ${x}${sys_extension}`;
-    })
-    .join("\n");
-  output += "\n";
-  return output;
+    output += preBuiltCompilerArtifacts
+        .map(function (x) {
+            return `build ${x}.exe: cp ${x}${sys_extension}`;
+        })
+        .join("\n");
+    output += "\n";
+
+    var filePath = path.join(lib_dir, "copy.ninja");
+    fs.writeFileSync(filePath, output, "ascii");
+    cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
+        cwd: lib_dir,
+        stdio: [0, 1, 2]
+    });
+    fs.unlinkSync(filePath);
+}
+
+/**
+ *
+ * @param {string} sys_extension
+ *
+ */
+function copyPrebuiltCompilersForWindows(sys_extension) {
+    preBuiltCompilerArtifacts
+        .forEach(function (x) {
+            fs.copyFileSync(path.join(lib_dir, `${x}${sys_extension}`), path.join((lib_dir), `${x}.exe`));
+        });
 }
 
 function copyPrebuiltCompilers() {
-  var filePath = path.join(lib_dir, "copy.ninja");
-  fs.writeFileSync(filePath, createCopyNinja(sys_extension), "ascii");
-  cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
-    cwd: lib_dir,
-    stdio: [0, 1, 2]
-  });
-  fs.unlinkSync(filePath);
+    switch (sys_extension) {
+        case ".win32":
+            copyPrebuiltCompilersForWindows(sys_extension);
+            break;
+
+        default:
+            copyPrebuiltCompilersForUnix(sys_extension);
+            break;
+    }
 }
 
 /**
