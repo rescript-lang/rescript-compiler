@@ -22,6 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if BS_NATIVE then
 type pack_t = PackBytecode | PackNative
 
-val pack : pack_t -> batch_files:string list -> includes:string list -> unit
+val pack : pack_t -> 
+  batch_files:string list ->
+  includes:string list ->
+  namespace:string option ->
+  warnings: string -> 
+  warn_error: string ->
+  verbose: bool ->
+  cwd:string ->
+  unit
+#end

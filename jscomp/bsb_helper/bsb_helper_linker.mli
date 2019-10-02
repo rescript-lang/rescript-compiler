@@ -22,6 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if BS_NATIVE then
 type link_t = LinkBytecode of string | LinkNative of string
 
-val link : link_t -> main_module:string -> batch_files:string list -> includes:string list -> unit
+val link : link_t ->
+  main_module:string ->
+  batch_files:string list ->
+  includes:string list ->
+  ocaml_dependencies:string list ->
+  namespace:string option ->
+  warnings:string ->
+  warn_error:string ->
+  verbose:bool ->
+  cwd: string ->
+  unit
+#end
+
