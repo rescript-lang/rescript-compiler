@@ -73,7 +73,7 @@ let regenerate_ninja
    
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x ->
-        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
+        let dir = build_artifacts_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     if toplevel then
       begin

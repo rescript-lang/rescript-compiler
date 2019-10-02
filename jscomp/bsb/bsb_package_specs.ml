@@ -126,8 +126,6 @@ let bs_package_output = "-bs-package-output"
     {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
 *)
 let package_flag ({format; in_source } : spec) dir =
-  let dir = Bsb_config.build_artifacts_dir (if in_source then dir else
-        prefix_of_format format // dir) in
   Ext_string.inter2
     bs_package_output 
     (Ext_string.concat3
