@@ -106,6 +106,22 @@ let pkg_name_as_variable package =
   |> fun s -> Ext_string.split s '-'
   |> String.concat "_"
 
+let rec find_dep_path ic package_name =
+  let line = input_line ic |> Ext_string.trim in
+  if Ext_string.starts_with line ("\"" ^ package_name ^ "@") then
+    input_line ic
+    |> Ext_string.trim
+    |> Ext_string.split_by (fun c -> c ='"')
+    |> List.hd
+  else
+    find_dep_path ic package_name  
+
+let get_dep_path_from_file ~cwd package =
+  (* We should find the correct file if we move 3 steps up because we're in _esy/<sandbox>/store/b/<build> *)
+  let ic = open_in_bin Ext_path.(cwd // ".." // ".." // ".." // "installation.json") in
+  let package_name = Bsb_pkg_types.to_string package in
+  find_dep_path ic package_name
+
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   if Lazy.force custom_resolution then
@@ -117,15 +133,17 @@ let resolve_bs_package ~cwd (package : t) =
     | exception Not_found ->
         begin
           Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist in var %s @}@."
+            "@{<error>Custom resolution@} of package @{<info>%s@} does not exist in var @{<info>%s@}, checking installation.json @."
             (Bsb_pkg_types.to_string package)
             custom_pkg_loc;
-          Bsb_exception.package_not_found ~pkg:package ~json:None
+
+          try get_dep_path_from_file ~cwd package 
+          with _ ->  Bsb_exception.package_not_found ~pkg:package ~json:None
         end
     | path when not (Sys.file_exists path) ->
         begin
           Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist on disk: %s=%s @}@."
+            "@{<error>Custom resolution@} of package @{<info>%s@} does not exist on disk: %s=%s @."
             (Bsb_pkg_types.to_string package)
             custom_pkg_loc
             path;
@@ -134,7 +152,7 @@ let resolve_bs_package ~cwd (package : t) =
     | path ->
       begin
         Bsb_log.info
-          "@{<info>Custom Resolution of package %s in var %s found at %s@}@."
+          "@{<info>Custom Resolution@} of package %s in var %s found at %s@."
           (Bsb_pkg_types.to_string package)
           custom_pkg_loc
           path;
