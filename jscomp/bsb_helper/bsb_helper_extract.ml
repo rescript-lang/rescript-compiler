@@ -27,13 +27,8 @@ let read_dependency_graph_from_mlast_file fn  =
   try
     let dep_size = input_binary_int ic in
     let dep_data = really_input_string ic dep_size in
-    let splitted_data = Ext_string.split dep_data '\t' in
-    let set = match splitted_data with
-    | final_length :: rest ->
-      let set = String_set.of_list rest in
-      assert (String_set.cardinal set = (int_of_string final_length));
-      set
-    | _ -> assert false in
+    let splitted_data = Ext_string.split dep_data '\n' in
+    let set = String_set.of_list splitted_data in
     close_in ic;
     set
   with exn ->

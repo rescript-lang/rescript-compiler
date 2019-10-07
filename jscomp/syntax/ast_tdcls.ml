@@ -44,7 +44,7 @@ let newTdcls
          else x )
       
 
-#if BS_NATIVE then
+#if BS_NATIVE_PPX then
 
 let turn_bs_optional_into_optional (tdcls : Parsetree.type_declaration list) =
    List.map (fun tdcl -> match tdcl.Parsetree.ptype_kind with
@@ -83,7 +83,7 @@ let handleTdclsInSigi
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
     let kind = Ast_derive_abstract.isAbstract actions in
     if kind <> Not_abstract then
-#if BS_NATIVE then
+#if BS_NATIVE_PPX then
       let  codes = Native_ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
 #else
       let  codes = Ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
@@ -95,7 +95,7 @@ let handleTdclsInSigi
                (Mty.typeof_ ~loc
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
-#if BS_NATIVE then
+#if BS_NATIVE_PPX then
                          Ast_compatible.rec_type_str ~loc (turn_bs_optional_into_optional newTdclsNewAttrs)
 #else
                          Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
@@ -137,7 +137,7 @@ let handleTdclsInStru
     in
     let kind = Ast_derive_abstract.isAbstract actions in 
     if kind <> Not_abstract then
-#if BS_NATIVE then
+#if BS_NATIVE_PPX then
       let (codes, codes_sig) = Native_ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) originalTdclsNewAttrs in
        (* the codes_sig will hide the implementation of the type that is a record. *)
        Ast_structure.constraint_ ~loc

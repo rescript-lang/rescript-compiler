@@ -22,11 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 #if BS_NATIVE then
+let verbose = ref false
+
+let warnings = ref ""
+
+let warn_error = ref ""
+
+let ocaml_dependencies = ref []
+
+let add_ocaml_dependencies s = 
+  ocaml_dependencies := s :: !ocaml_dependencies
 
 let main_module = ref None
 
 let set_main_module modulename =
-  main_module := Some modulename
+  main_module := Some (Ext_string.capitalize_ascii modulename)
 
 let includes :  _ list ref = ref []
 
@@ -36,6 +46,8 @@ let add_include =
   fun dir ->
     includes := (normalize (Sys.getcwd ()) dir) :: !includes
 #end
+let compilation_kind = ref Bsb_helper_depfile_gen.Js
+
 let hash : string ref = ref ""
 let batch_files = ref []
 let collect_file name =
@@ -52,14 +64,32 @@ let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
 #if BS_NATIVE then
 let link link_byte_or_native = 
   begin match !main_module with
-    | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
+    | None -> failwith "Linking needs a main module. Please add -bs-main MyMainModule to the invocation."
     | Some main_module ->
       Bsb_helper_linker.link 
         link_byte_or_native
         ~main_module:main_module
-        ~includes:!includes
-        ~batch_files:!batch_files
+        (* `includes` is not reversed here because it gets reversed inside when we fold_list and 
+         ~batch_files:!batch_files		           prepend a new list. *)
+       ~includes:!includes
+       ~batch_files:!batch_files
+       ~namespace:!namespace
+       ~ocaml_dependencies:(List.rev !ocaml_dependencies)
+       ~warnings:!warnings
+       ~warn_error:!warn_error
+       ~verbose:!verbose
+       ~cwd:Bsb_global_paths.cwd
   end
+let pack link_byte_or_native =
+   Bsb_helper_packer.pack
+     link_byte_or_native
+     ~includes:!includes
+     ~batch_files:!batch_files
+     ~namespace:!namespace
+     ~warnings:!warnings
+     ~warn_error:!warn_error
+     ~verbose:!verbose
+     ~cwd:Bsb_global_paths.cwd
 #end  
 let () =
   Bsb_helper_arg.parse_exn [
@@ -71,17 +101,12 @@ let () =
     "-hash",  Set_string hash,
     " Set hash(internal)";
 #if BS_NATIVE then    
-    "-MD-bytecode",  String (
-      fun x -> 
-        Bsb_helper_depfile_gen.make
-          Bytecode 
-          x (Bsb_dir_index.of_int !dev_group ) !namespace),          
+    "-MD-bytecode", Unit (fun () -> 
+      compilation_kind := Bsb_helper_depfile_gen.Bytecode
+    ),          
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-    "-MD-native",  String (fun x -> 
-        Bsb_helper_depfile_gen.make
-          Native 
-           x (Bsb_dir_index.of_int !dev_group )
-           !namespace
+    "-MD-native", Unit (fun () -> 
+        compilation_kind := Bsb_helper_depfile_gen.Native
            ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
 
@@ -111,11 +136,11 @@ let () =
     (* Both linking and packing arguments must come _after_ all of the other args and files have been listed.
        For example:
 
-          bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode 
+          bsb_helper -bs-main MyModule myFile.cmo myOtherFile.cmo -link-bytecode 
 
        In the following example, the file called `myIgnoredFile.cmo` is not linked nor is `myLibFolder/lib.cma`
 
-          bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode -I myLibFolder myIgnoredFile.cmo
+          bsb_helper -bs-main MyModule myFile.cmo myOtherFile.cmo -link-bytecode -I myLibFolder myIgnoredFile.cmo
 
     *)
     "-link-bytecode", ( String (fun x -> link (Bsb_helper_linker.LinkBytecode x))),
@@ -125,31 +150,39 @@ let () =
     " link native files into an executable";
 
     "-pack-native-library", ( Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackNative
-          ~includes:!includes
-          ~batch_files:!batch_files
+        pack Bsb_helper_packer.PackNative
       )),
     " pack native files (cmx) into a library file (cmxa)";
 
     "-pack-bytecode-library", ( Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackBytecode
-          ~includes:!includes
-          ~batch_files:!batch_files
+        pack Bsb_helper_packer.PackBytecode
       )),
     " pack bytecode files (cmo) into a library file (cma)";
+
+    "-add-ocaml-dependency", ( String add_ocaml_dependencies),
+    " Add a dependency on otherlibs or compiler-libs.";
+
+    "-w", ( String (fun w -> warnings := w )),
+    " Use warnings for packer/linker.";
+
+    "-warn-error", ( String (fun w -> warn_error := w )),
+    " Turn warnings into errors for packer/linker.";
+
+    "-verbose", ( Unit (fun v -> verbose := true)),
+    " Turn on verbose Maude.";
 #end    
   ] anonymous usage;
   (* arrange with mlast comes first *)
   match !batch_files with
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
+          !compilation_kind
           (Bsb_dir_index.of_int !dev_group )          
           !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
+      !compilation_kind
       (Bsb_dir_index.of_int !dev_group)
       !namespace x y
   | _ -> 

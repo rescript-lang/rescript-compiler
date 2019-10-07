@@ -243,6 +243,7 @@ let oc_intf
 
 
 let emit_d 
+  compilation_kind
   (index : Bsb_dir_index.t) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
@@ -251,9 +252,12 @@ let emit_d
   let buf = Ext_buffer.create 2048 in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
-  let lhs_suffix = Literals.suffix_cmj in   
-  let rhs_suffix = Literals.suffix_cmj in 
-  
+  let lhs_suffix, rhs_suffix =
+    match compilation_kind with
+    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
+    | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmo
+    | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
+  in   
   oc_impl 
     mlast
     index 
@@ -271,64 +275,3 @@ let emit_d
       buf        
   end;          
   write_file filename buf 
-
-
-
-
-
-
-#if BS_NATIVE then
-(* OPT: Don't touch the .d file if nothing changed *)
-let emit_dep_file
-    compilation_kind
-    (fn : string)
-    (index : Bsb_dir_index.t) 
-    (namespace : string option) : unit = 
-  let data  =
-    Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name
-  in 
-  let set = read_deps fn in 
-  match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
-  | Some  input_file -> 
-(* #if BS_NATIVE then    *)
-    let lhs_suffix, rhs_suffix =
-      match compilation_kind with
-      | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-      | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmi
-      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
-    in    
-(* #else     
-   let lhs_suffix = Literals.suffix_cmj in   
-   let rhs_suffix = Literals.suffix_cmj in 
-#end *)
-   let buf = Ext_buffer.create 64 in 
-   oc_impl 
-     set 
-     input_file 
-     index 
-     data
-     namespace
-     buf 
-     lhs_suffix 
-     rhs_suffix       
-     ;
-   write_file (input_file ^ Literals.suffix_d ) buf 
-    
-  | None -> 
-    begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
-      | Some input_file -> 
-        let filename = (input_file ^ Literals.suffix_d) in 
-        let buf = Ext_buffer.create 64 in 
-        oc_intf 
-          set 
-          input_file 
-          index 
-          data 
-          namespace 
-          buf; 
-        write_file filename buf 
-      | None -> 
-        raise (Arg.Bad ("don't know what to do with  " ^ fn))
-    end
-#end
