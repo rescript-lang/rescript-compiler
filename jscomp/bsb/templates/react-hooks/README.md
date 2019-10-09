@@ -1,36 +1,55 @@
-# ${bsb:name}
+# ReasonReact Template & Examples
 
-## Run Project
+This is:
+- A template for your new ReasonReact project.
+- A collection of thin examples illustrating ReasonReact usage.
+- Extra helper documentation for ReasonReact (full ReasonReact docs [here](https://reasonml.github.io/reason-react/)).
+
+`src` contains 4 sub-folders, each an independent, self-contained ReasonReact example. Feel free to delete any of them and shape this into your project! This template's more malleable than you might be used to =).
+
+The point of this template and examples is to let you understand and personally tweak the entirely of it. We **don't** give you an opaque, elaborate mega build setup just to put some boxes on the screen. It strikes to stay transparent, learnable, and simple. You're encouraged to read every file; it's a great feeling, having the full picture of what you're using and being able to touch any part.
+
+## Run
 
 ```sh
 npm install
+npm run server
+# in a new tab
 npm start
-# in another tab
-npm run webpack
 ```
 
-After you see the webpack compilation succeed (the `npm run webpack` step), open up `build/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.
+Open a new web page to `http://localhost:8000/`. Change any `.re` file in `src` to see the page auto-reload. **You don't need any bundler when you're developing**!
 
-**For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example
+**How come we don't need any bundler during development**? We highly encourage you to open up `index.html` to check for yourself!
 
-## Run Project with Server
+# Features Used
 
-To run with the webpack development server run `npm run server` and view in the browser at http://localhost:8000. Running in this environment provides hot reloading and support for routing; just edit and save the file and the browser will automatically refresh.
+|                           | Blinking Greeting | Reducer from ReactJS Docs | Fetch Dog Pictures | Reason Using JS Using Reason |
+|---------------------------|------------------|----------------------------|--------------------|------------------------------|
+| No props                  |                  | ✓                          |                    |                             |
+| Has props                 |                  |                            |                    | ✓                           |
+| Children props            | ✓                |                            |                    |                             |
+| No state                  |                  |                            |                    | ✓                           |
+| Has state                 | ✓                |                            |  ✓                 |                             |
+| Has state with useReducer |                  | ✓                          |                    |                             |
+| ReasonReact using ReactJS |                  |                            |                    | ✓                           |
+| ReactJS using ReasonReact |                  |                            |                    | ✓                           |
+| useEffect                 | ✓                |                            |  ✓                |                             |
+| Dom attribute             | ✓                | ✓                          |                   | ✓                           |
+| Styling                   | ✓                | ✓                          |  ✓                | ✓                           |
+| React.array               |                  |                            |  ✓                 |                             |
 
-Note that any hot reload on a route will fall back to the root (`/`), so `ReasonReact.Router.dangerouslyGetInitialUrl` will likely be needed alongside the `ReasonReact.Router.watchUrl` logic to handle routing correctly on hot reload refreshes or simply opening the app at a URL that is not the root.
+# Bundle for Production
 
-To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 npm run server`).
+We've included a convenience `UNUSED_webpack.config.js`, in case you want to ship your project to production. You can rename and/or remove that in favor of other bundlers, e.g. Rollup.
 
-## Build for Production
+We've also provided a barebone `indexProduction.html`, to serve your bundle.
 
 ```sh
-npm run clean
-npm run build
-npm run webpack:production
+npm install webpack webpack-cli
+# rename file
+mv UNUSED_webpack.config.js webpack.config.js
+# call webpack to bundle for production
+./node_modules/.bin/webpack
+open indexProduction.html
 ```
-
-This will replace the development artifact `build/Index.js` for an optimized version as well as copy `src/index.html` into `build/`. You can then deploy the contents of the `build` directory (`index.html` and `Index.js`).
-
-If you make use of routing (via `ReasonReact.Router` or similar logic) ensure that server-side routing handles your routes or that 404's are directed back to `index.html` (which is how the dev server is set up).
-
-**To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `"commonjs"` to `"es6"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.
