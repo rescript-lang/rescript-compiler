@@ -4156,13 +4156,14 @@ type kind = Js | Bytecode | Native
 val deps_of_channel : in_channel -> string list
 
 
-
-val emit_d:  
+val emit_d: 
+  kind -> 
   Bsb_dir_index.t ->  
   string  option ->
   string ->
   string -> (* empty string means no mliast *)
   unit
+
 end = struct
 #1 "bsb_helper_depfile_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4410,6 +4411,7 @@ let oc_intf
 
 
 let emit_d 
+  compilation_kind
   (index : Bsb_dir_index.t) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
@@ -4418,9 +4420,12 @@ let emit_d
   let buf = Ext_buffer.create 2048 in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
-  let lhs_suffix = Literals.suffix_cmj in   
-  let rhs_suffix = Literals.suffix_cmj in 
-  
+  let lhs_suffix, rhs_suffix =
+    match compilation_kind with
+    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
+    | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmo
+    | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
+  in   
   oc_impl 
     mlast
     index 
@@ -4438,12 +4443,6 @@ let emit_d
       buf        
   end;          
   write_file filename buf 
-
-
-
-
-
-
 
 end
 module Bsb_helper_main : sig 
@@ -4510,6 +4509,8 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let compilation_kind = ref Bsb_helper_depfile_gen.Js
+
 let hash : string ref = ref ""
 let batch_files = ref []
 let collect_file name =
@@ -4539,11 +4540,13 @@ let () =
   match !batch_files with
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
+          !compilation_kind
           (Bsb_dir_index.of_int !dev_group )          
           !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
+      !compilation_kind
       (Bsb_dir_index.of_int !dev_group)
       !namespace x y
   | _ -> 
