@@ -22,7 +22,7 @@ S outcome_printer
 B outcome_printer
 
 PKG compiler-libs.common
-# B +compiler-libs
+B +compiler-libs
 
 
 # S runtime
