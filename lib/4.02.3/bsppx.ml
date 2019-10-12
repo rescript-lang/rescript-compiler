@@ -21201,7 +21201,13 @@ let app_exp_mapper
          | 
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
-            | Pexp_constant (Const_string(name,None)))
+
+            | Pexp_constant (
+                            
+              Const_string              
+              
+              (name,None))
+            )
             ;
              pexp_loc}
            (* f##paint  *)
@@ -21231,7 +21237,11 @@ let app_exp_mapper
          | Some { args = [obj; {
              pexp_desc = 
                Pexp_ident {txt = Lident name}
-               | Pexp_constant (Const_string (name, None)); pexp_loc
+               | Pexp_constant (
+                            
+              Const_string              
+                         
+                  (name, None)); pexp_loc
            }
            ]
            }
