@@ -3398,7 +3398,7 @@ var Types_TypeOps = {
 };
 
 var Types_Variance = {
-  null: 0,
+  $$null: 0,
   full: 127,
   covariant: 25,
   may_inv: 7,
@@ -7688,7 +7688,7 @@ var Ast_helper_Exp = {
   pack: pack,
   open_: open_,
   extension: extension$2,
-  case: $$case
+  $$case: $$case
 };
 
 var Ast_helper_Ctf = {
@@ -17372,13 +17372,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, undefined, _3);
+      return Curry._3(Ast_helper_Exp.$$case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, _3, _5);
+      return Curry._3(Ast_helper_Exp.$$case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -58599,7 +58599,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                             /* pexp_desc : Pexp_match */Block.__(6, [
                                 match$8[/* pvb_expr */1],
                                 /* :: */[
-                                  Curry._3(Ast_helper_Exp.case, spat, undefined, match[2]),
+                                  Curry._3(Ast_helper_Exp.$$case, spat, undefined, match[2]),
                                   /* [] */0
                                 ]
                               ]),
@@ -58657,7 +58657,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 ];
           }
           var default_loc = $$default[/* pexp_loc */1];
-          var scases_000 = Curry._3(Ast_helper_Exp.case, construct(default_loc, undefined, /* record */[
+          var scases_000 = Curry._3(Ast_helper_Exp.$$case, construct(default_loc, undefined, /* record */[
                     /* txt : Ldot */Block.__(1, [
                         /* Lident */Block.__(0, ["*predef*"]),
                         "Some"
@@ -58671,7 +58671,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     /* loc */none
                   ]));
           var scases_001 = /* :: */[
-            Curry._3(Ast_helper_Exp.case, construct(default_loc, undefined, /* record */[
+            Curry._3(Ast_helper_Exp.$$case, construct(default_loc, undefined, /* record */[
                       /* txt : Ldot */Block.__(1, [
                           /* Lident */Block.__(0, ["*predef*"]),
                           "None"
@@ -64424,7 +64424,7 @@ function get_variance(ty, visited) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return Types_Variance.null;
+      return Types_Variance.$$null;
     } else {
       throw exn;
     }
@@ -64521,7 +64521,7 @@ function compute_variance(env, visited, vari, ty) {
                       } else if (match.tag) {
                         var upper = List.fold_left((function (s, f) {
                                 return Curry._3(Types_Variance.set, f, true, s);
-                              }), Types_Variance.null, /* :: */[
+                              }), Types_Variance.$$null, /* :: */[
                               /* May_pos */0,
                               /* :: */[
                                 /* May_neg */1,
@@ -64572,7 +64572,7 @@ function compute_variance(env, visited, vari, ty) {
 }
 
 function make(p, n, i) {
-  return Curry._3(Types_Variance.set, /* May_pos */0, p, Curry._3(Types_Variance.set, /* May_neg */1, n, Curry._3(Types_Variance.set, /* May_weak */2, n, Curry._3(Types_Variance.set, /* Inj */3, i, Types_Variance.null))));
+  return Curry._3(Types_Variance.set, /* May_pos */0, p, Curry._3(Types_Variance.set, /* May_neg */1, n, Curry._3(Types_Variance.set, /* May_weak */2, n, Curry._3(Types_Variance.set, /* Inj */3, i, Types_Variance.$$null))));
 }
 
 function compute_variance_type(env, check, param, decl, tyl) {
@@ -64673,7 +64673,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
                   } else {
                     return v;
                   }
-                }), tvl2[0], Types_Variance.null);
+                }), tvl2[0], Types_Variance.$$null);
           backtrack(snap);
           var match = Curry._1(Types_Variance.get_upper, v1);
           var n1 = match[1];
@@ -65022,7 +65022,7 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
 
 function init_variance(param) {
   return List.map((function (param) {
-                return Types_Variance.null;
+                return Types_Variance.$$null;
               }), param[1][/* type_params */0]);
 }
 
@@ -69303,7 +69303,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           if (match$5 !== undefined) {
             var $$default = match$5;
             var loc = $$default[/* pexp_loc */1];
-            var scases_000 = Curry._3(Ast_helper_Exp.case, construct(loc, undefined, /* record */[
+            var scases_000 = Curry._3(Ast_helper_Exp.$$case, construct(loc, undefined, /* record */[
                       /* txt : Ldot */Block.__(1, [
                           /* Lident */Block.__(0, ["*predef*"]),
                           "Some"
@@ -69317,7 +69317,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                       /* loc */none
                     ]));
             var scases_001 = /* :: */[
-              Curry._3(Ast_helper_Exp.case, construct(loc, undefined, /* record */[
+              Curry._3(Ast_helper_Exp.$$case, construct(loc, undefined, /* record */[
                         /* txt : Ldot */Block.__(1, [
                             /* Lident */Block.__(0, ["*predef*"]),
                             "None"
@@ -72000,7 +72000,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                                 var p = !match[1];
                                 var n = !match[0];
                                 var i = false;
-                                return Curry._3(Types_Variance.set, /* May_pos */0, p, Curry._3(Types_Variance.set, /* May_neg */1, n, Curry._3(Types_Variance.set, /* May_weak */2, n, Curry._3(Types_Variance.set, /* Inj */3, i, Types_Variance.null))));
+                                return Curry._3(Types_Variance.set, /* May_pos */0, p, Curry._3(Types_Variance.set, /* May_neg */1, n, Curry._3(Types_Variance.set, /* May_weak */2, n, Curry._3(Types_Variance.set, /* Inj */3, i, Types_Variance.$$null))));
                               }), sdecl[/* ptype_params */1]);
                         var decl_row_007 = /* type_loc */sdecl[/* ptype_loc */7];
                         var decl_row = /* record */[

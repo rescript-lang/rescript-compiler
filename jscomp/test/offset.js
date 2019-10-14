@@ -782,7 +782,7 @@ var $$Set = {
 
 var M = {
   x: 1,
-  Set: $$Set
+  $$Set: $$Set
 };
 
 var x = 1;

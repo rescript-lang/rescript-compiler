@@ -534,9 +534,9 @@ var Traverse = {
   field: field,
   get_variant: get_variant,
   field_list: field_list,
-  ">>=": $great$great$eq,
-  ">|=": $great$pipe$eq,
-  return: $$return,
+  $great$great$eq: $great$great$eq,
+  $great$pipe$eq: $great$pipe$eq,
+  $$return: $$return,
   get_exn: get_exn
 };
 

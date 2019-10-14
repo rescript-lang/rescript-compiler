@@ -1377,7 +1377,7 @@ function status(s) {
 }
 
 var Re_automata_Category = {
-  "++": $plus$plus,
+  $plus$plus: $plus$plus,
   from_char: from_char,
   inexistant: 1,
   letter: 2,
@@ -1411,7 +1411,7 @@ function category(re, c) {
   if (c === -1) {
     return Re_automata_Category.inexistant;
   } else if (c === re[/* lnl */5]) {
-    return Curry._2(Re_automata_Category["++"], Curry._2(Re_automata_Category["++"], Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
+    return Curry._2(Re_automata_Category.$plus$plus, Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
   } else {
     return Curry._1(Re_automata_Category.from_char, Caml_bytes.get(re[/* col_repr */3], c));
   }
@@ -2163,27 +2163,27 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
     if (typeof param === "number") {
       switch (param) {
         case /* Beg_of_line */0 :
-            var c$1 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.newline);
+            var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return /* tuple */[
                     mk_expr(ids, /* After */Block.__(7, [c$1])),
                     kind
                   ];
         case /* End_of_line */1 :
-            var c$2 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.newline);
+            var c$2 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return /* tuple */[
                     mk_expr(ids, /* Before */Block.__(6, [c$2])),
                     kind
                   ];
         case /* Beg_of_word */2 :
-            var c$3 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.not_letter);
-            var c$4 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.letter);
+            var c$3 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+            var c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             return /* tuple */[
                     seq$1(ids, /* First */332064784, mk_expr(ids, /* After */Block.__(7, [c$3])), mk_expr(ids, /* Before */Block.__(6, [c$4]))),
                     kind
                   ];
         case /* End_of_word */3 :
-            var c$5 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.letter);
-            var c$6 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+            var c$5 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
+            var c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             return /* tuple */[
                     seq$1(ids, /* First */332064784, mk_expr(ids, /* After */Block.__(7, [c$5])), mk_expr(ids, /* Before */Block.__(6, [c$6]))),
                     kind
@@ -2210,7 +2210,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
                     kind
                   ];
         case /* Last_end_of_line */7 :
-            var c$7 = Curry._2(Re_automata_Category["++"], Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
+            var c$7 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
             return /* tuple */[
                     mk_expr(ids, /* Before */Block.__(6, [c$7])),
                     kind
@@ -2900,14 +2900,14 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
     /* pos */pos$1,
     /* last */last
   ];
-  var initial_cat = pos$1 === 0 ? Curry._2(Re_automata_Category["++"], Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category["++"], Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, pos$1 - 1 | 0)));
+  var initial_cat = pos$1 === 0 ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, pos$1 - 1 | 0)));
   var initial_state = find_initial_state(re$1, initial_cat);
   var st = scan_str(info, s$1, initial_state, groups$1);
   var res;
   if (st[/* idx */0] === -3 || partial) {
     res = status(st[/* desc */4]);
   } else {
-    var final_cat = last === slen ? Curry._2(Re_automata_Category["++"], Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category["++"], Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, last)));
+    var final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, last)));
     var match = $$final(info, st, final_cat);
     if (groups$1) {
       Caml_array.caml_array_set(info[/* positions */2], match[0], last + 1 | 0);

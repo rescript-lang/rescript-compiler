@@ -2,7 +2,7 @@
 
 
 var React = {
-  null: /* () */0
+  $$null: /* () */0
 };
 
 function make(param, param$1) {

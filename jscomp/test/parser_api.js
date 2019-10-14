@@ -3731,7 +3731,7 @@ var $$Location = {
   absolute_path: absolute_path,
   show_filename: show_filename,
   absname: absname,
-  Error: $$Error,
+  $$Error: $$Error,
   print_error_prefix: print_error_prefix,
   error: error,
   pp_ksprintf: pp_ksprintf,
@@ -4463,7 +4463,7 @@ var Typ = {
   mk: mk,
   attr: attr,
   any: any,
-  var: $$var,
+  $$var: $$var,
   arrow: arrow,
   tuple: tuple,
   constr: constr,
@@ -4472,7 +4472,7 @@ var Typ = {
   alias: alias,
   variant: variant,
   poly: poly,
-  package: $$package,
+  $$package: $$package,
   extension: extension,
   force_poly: force_poly
 };
@@ -4591,7 +4591,7 @@ var Pat = {
   mk: mk$1,
   attr: attr$1,
   any: any$1,
-  var: $$var$1,
+  $$var: $$var$1,
   alias: alias$1,
   constant: constant,
   interval: interval,
@@ -5169,7 +5169,7 @@ function text$1(txt) {
 
 var Str = {
   mk: mk$6,
-  eval: $$eval,
+  $$eval: $$eval,
   value: value$1,
   primitive: primitive,
   type_: type_$2,
@@ -5783,7 +5783,7 @@ var Ast_helper_Exp = {
   pack: pack,
   open_: open_,
   extension: extension$2,
-  case: $$case
+  $$case: $$case
 };
 
 var Ast_helper_Ctf = {
@@ -6002,7 +6002,7 @@ function ill_formed_ast(loc, s) {
 }
 
 var Syntaxerr = {
-  Error: $$Error$1,
+  $$Error: $$Error$1,
   Escape_error: Escape_error,
   report_error: report_error$1,
   location_of_error: location_of_error,
@@ -9698,13 +9698,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, undefined, _3);
+      return Curry._3(Ast_helper_Exp.$$case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, _3, _5);
+      return Curry._3(Ast_helper_Exp.$$case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -12172,7 +12172,7 @@ function parse_pattern(lexfun, lexbuf) {
 
 var Parser = {
   implementation: implementation,
-  interface: $$interface,
+  $$interface: $$interface,
   toplevel_phrase: toplevel_phrase,
   use_file: use_file,
   parse_core_type: parse_core_type,
@@ -14784,7 +14784,7 @@ var Lexer = {
   init: init$2,
   token: token$1,
   skip_sharp_bang: skip_sharp_bang,
-  Error: $$Error$2,
+  $$Error: $$Error$2,
   report_error: report_error$2,
   in_comment: in_comment,
   in_string: in_string,
@@ -14923,7 +14923,7 @@ function pattern(param) {
 
 var Parse = {
   implementation: implementation$1,
-  interface: $$interface$1,
+  $$interface: $$interface$1,
   toplevel_phrase: toplevel_phrase$1,
   use_file: use_file$1,
   core_type: core_type,

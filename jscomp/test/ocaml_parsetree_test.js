@@ -3211,7 +3211,7 @@ var Ast_helper_Exp = {
   pack: pack,
   open_: open_,
   extension: extension,
-  case: $$case
+  $$case: $$case
 };
 
 var Ast_helper_Ctf = {
@@ -7072,13 +7072,13 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, undefined, _3);
+      return Curry._3(Ast_helper_Exp.$$case, _1, undefined, _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_Exp.case, _1, _3, _5);
+      return Curry._3(Ast_helper_Exp.$$case, _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
