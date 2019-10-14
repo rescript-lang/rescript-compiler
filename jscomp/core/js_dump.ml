@@ -854,7 +854,8 @@ and expression_desc cxt (level:int) f x : cxt  =
        else       
          E.runtime_call Js_runtime_modules.option "some" [e])
   | Caml_block(el,_, _, Blk_module fields) ->        
-      expression_desc cxt (level:int) f (Object (List.combine fields el))
+      expression_desc cxt (level:int) f (Object (
+        (Ext_list.map_combine fields el Ext_ident.convert)))
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
