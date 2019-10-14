@@ -788,7 +788,7 @@ function $$process(part) {
 var Particle = {
   make: make$1,
   make_score: make_score,
-  process: $$process
+  $$process: $$process
 };
 
 var id_counter = /* record */[/* contents */Pervasives.min_int];

@@ -163,6 +163,7 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
 
 
 let module_access (e : t) (name : string) (pos : int32) =    
+  let name = Ext_ident.convert name in  
   match e.expression_desc with 
   | Caml_block (l, _, _,_) when no_side_effect e -> 
     (match Ext_list.nth_opt l (Int32.to_int pos) with 

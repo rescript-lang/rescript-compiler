@@ -4911,10 +4911,18 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val map_combine :  
+  'a list -> 
+  'b list -> 
+  ('a -> 'c) -> 
+  ('c * 'b) list 
+  
 val has_string :   
   string list ->
   string -> 
   bool
+
+
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
@@ -5319,6 +5327,13 @@ let rec has_string l f =
   | x1 :: x2 :: x3 :: x4 ->
     x1 = f || x2 = f || x3 = f || has_string x4 f 
   
+let rec map_combine l1 l2 f =
+  match (l1, l2) with
+    ([], []) -> []
+  | (a1::l1, a2::l2) -> 
+    (f a1, a2) :: map_combine l1 l2 f 
+  | (_, _) -> 
+    invalid_arg "Ext_list.map_combine"
 
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
@@ -20091,7 +20106,7 @@ let set_attrs = [Ast_attributes.bs_set]
 
 let deprecated name = 
   Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead, or swith to the new [@bs.deriving {abstract: light}] for the type declaration (OCaml syntax: [@@bs.deriving {abstract = light}])")
+    ("use " ^ name ^ "Get instead, or switch to the new [@bs.deriving {abstract: light}] for the type declaration (OCaml syntax: [@@bs.deriving {abstract = light}])")
 
 
 let handleTdcl 

@@ -28,10 +28,18 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val map_combine :  
+  'a list -> 
+  'b list -> 
+  ('a -> 'c) -> 
+  ('c * 'b) list 
+  
 val has_string :   
   string list ->
   string -> 
   bool
+
+
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
