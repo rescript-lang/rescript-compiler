@@ -254,20 +254,17 @@ let compile
   |> Js_shake.shake_program
   |> _j "shake"
   |> ( fun (program:  J.program) -> 
-      let external_module_ids = 
-        Lam_compile_env.get_required_modules  
-          may_required_modules  
-          (Js_fold_basic.calculate_hard_dependencies program.block)
-        |>
-        (fun x ->
-           if !Js_config.sort_imports then
-             Ext_list.sort_via_array x
-               (fun id1 id2 ->
-                  Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-               ) 
-           else
-             x
-        )
+      let external_module_ids : Lam_module_ident.t list = 
+        let x = Lam_compile_env.get_required_modules  
+            may_required_modules  
+            (Js_fold_basic.calculate_hard_dependencies program.block) in 
+        if !Js_config.sort_imports then
+          Ext_list.sort_via_array x
+            (fun id1 id2 ->
+               Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+            ) 
+        else
+          x
       in
       Warnings.check_fatal ();  
       let effect = 
