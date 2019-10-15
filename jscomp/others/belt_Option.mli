@@ -27,6 +27,21 @@
     Utilities for option data type
 *)
 
+val forEachU : 'a option -> ('a -> unit [@bs]) -> unit
+(** Uncurried version of [forEach] *)
+
+val forEach : 'a option -> ('a -> unit) -> unit
+(**
+  [forEach optionValue f]
+  
+  If [optionValue] is [Some value], it calls [f value]; otherwise returns [()]
+  
+  @example {[
+    forEach (Some "thing")(fun x -> Js.log x);; (* logs "thing" *)
+    forEach None (fun x -> Js.log x);; (* returns () *)
+  ]}
+*)
+
 val getExn : 'a option -> 'a
 (** [getExn optionalValue]
   Returns [value] if [optionalValue] is [Some value], otherwise raises [getExn]
