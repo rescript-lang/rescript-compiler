@@ -104,3 +104,5 @@ val refmt : string option ref
 val is_reason : bool ref 
 
 val js_stdout : bool ref 
+
+val all_module_aliases : bool ref 

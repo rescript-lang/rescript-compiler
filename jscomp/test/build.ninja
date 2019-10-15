@@ -1,6 +1,6 @@
 
 bsc = ../lib/bsc.exe
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
 
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I test  $in
@@ -297,6 +297,10 @@ build test/gpr_3609_test.cmi test/gpr_3609_test.cmj : cc test/gpr_3609_test.ml |
 build test/gpr_3697_test.cmi test/gpr_3697_test.cmj : cc test/gpr_3697_test.ml | $stdlib
 build test/gpr_373_test.cmi test/gpr_373_test.cmj : cc test/gpr_373_test.ml | $stdlib
 build test/gpr_3770_test.cmi test/gpr_3770_test.cmj : cc test/gpr_3770_test.ml | $stdlib
+build test/gpr_3852_alias.cmi test/gpr_3852_alias.cmj : cc test/gpr_3852_alias.ml | test/gpr_3852_effect.cmj $stdlib
+build test/gpr_3852_alias_reify.cmj : cc_cmi test/gpr_3852_alias_reify.ml | test/gpr_3852_alias_reify.cmi test/gpr_3852_effect.cmj $stdlib
+build test/gpr_3852_alias_reify.cmi : cc test/gpr_3852_alias_reify.mli | $stdlib
+build test/gpr_3852_effect.cmi test/gpr_3852_effect.cmj : cc test/gpr_3852_effect.ml | $stdlib
 build test/gpr_3865.cmi test/gpr_3865.cmj : cc test/gpr_3865.re | test/gpr_3865_bar.cmj test/gpr_3865_foo.cmj $stdlib
 build test/gpr_3865_bar.cmi test/gpr_3865_bar.cmj : cc test/gpr_3865_bar.re | $stdlib
 build test/gpr_3865_foo.cmi test/gpr_3865_foo.cmj : cc test/gpr_3865_foo.re | $stdlib

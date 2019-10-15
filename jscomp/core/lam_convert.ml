@@ -161,7 +161,10 @@ let prim = Lam.prim
 type required_modules = Lam_module_ident.Hash_set.t
 
 
-(** drop Lseq (List! ) etc *)
+(** drop Lseq (List! ) etc 
+  see #3852, we drop all these required global modules
+  but added it back based on our own module analysis
+*)
 let rec drop_global_marker (lam : Lam.t) =
   match lam with
   | Lsequence (Lglobal_module id, rest) ->

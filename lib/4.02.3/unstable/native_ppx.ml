@@ -11687,6 +11687,8 @@ val refmt : string option ref
 val is_reason : bool ref 
 
 val js_stdout : bool ref 
+
+val all_module_aliases : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11801,6 +11803,8 @@ let refmt = ref None
 let is_reason = ref false
 
 let js_stdout = ref true
+
+let all_module_aliases = ref false
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
