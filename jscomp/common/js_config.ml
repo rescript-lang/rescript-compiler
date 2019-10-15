@@ -110,3 +110,5 @@ let refmt = ref None
 let is_reason = ref false
 
 let js_stdout = ref true
+
+let all_module_aliases = ref false

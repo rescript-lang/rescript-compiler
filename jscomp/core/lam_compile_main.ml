@@ -255,6 +255,8 @@ let compile
   |> _j "shake"
   |> ( fun (program:  J.program) -> 
       let external_module_ids : Lam_module_ident.t list = 
+        if !Js_config.all_module_aliases then []
+        else 
         let x = Lam_compile_env.get_required_modules  
             may_required_modules  
             (Js_fold_basic.calculate_hard_dependencies program.block) in 

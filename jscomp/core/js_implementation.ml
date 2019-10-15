@@ -126,8 +126,34 @@ let get_lambda = fun
               lambda
 #end              -> lambda 
 
+
+let all_module_alias (ast : Parsetree.structure)= 
+  Ext_list.for_all ast (fun {pstr_desc} -> 
+    match pstr_desc with 
+    | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _ }} 
+      -> true 
+    | Pstr_attribute _ -> true   
+    | Pstr_eval _ 
+    | Pstr_value _ 
+    | Pstr_primitive _ 
+    | Pstr_type _ 
+    | Pstr_typext  _ 
+    | Pstr_exception _ 
+    | Pstr_module _ 
+    | Pstr_recmodule _  
+    | Pstr_modtype _
+    | Pstr_open _
+    | Pstr_class _ 
+    | Pstr_class_type _ 
+    | Pstr_include _
+    | Pstr_extension _ -> false 
+   )
+
 let after_parsing_impl ppf  outputprefix ast =
-  
+  Js_config.all_module_aliases := 
+    !Clflags.assume_no_mli =  Mli_non_exists &&
+    all_module_alias ast 
+    ;
   if !Js_config.binary_ast then
     Binary_ast.write_ast ~sourcefile:!Location.input_name 
       Ml ~output:(outputprefix ^ 
