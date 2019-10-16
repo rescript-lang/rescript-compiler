@@ -623,6 +623,10 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
   | Var i,  Bin (And , l, ({expression_desc = Var j ; _} as r))
     when Js_op_util.same_vident  i j -> 
     { e2 with expression_desc = Bin(And, r,l)}
+  | Bin(NotEqEq, {expression_desc = Var i}, {expression_desc = Undefined } ),   
+    Bin(EqEqEq, {expression_desc = Var j}, {expression_desc = Str _ | Number _ | Unicode _})
+    when Js_op_util.same_vident i j
+    -> e2
   | _, _ ->     
     { expression_desc = Bin(And, e1,e2) ; comment }
 

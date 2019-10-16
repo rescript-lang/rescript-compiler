@@ -61,11 +61,11 @@ function f_opion(x) {
           var match$3 = match$2[1];
           if (match$3) {
             var match$4 = match$3[0];
-            if (match$4 !== undefined && match$4 === 2) {
+            if (match$4 === 2) {
               var match$5 = match$3[1];
               if (match$5) {
                 var match$6 = match$5[0];
-                if (match$6 !== undefined && match$6 === 1) {
+                if (match$6 === 1) {
                   var match$7 = match$5[1];
                   if (match$7 && match$7[0] !== undefined) {
                     return 2;
@@ -99,11 +99,11 @@ function f_opion(x) {
         var match$10 = match$9[1];
         if (match$10) {
           var match$11 = match$10[0];
-          if (match$11 !== undefined && match$11 === 2) {
+          if (match$11 === 2) {
             var match$12 = match$10[1];
             if (match$12) {
               var match$13 = match$12[0];
-              if (match$13 !== undefined && match$13 === 1) {
+              if (match$13 === 1) {
                 var match$14 = match$12[1];
                 if (match$14 && match$14[0] !== undefined) {
                   return 3;
