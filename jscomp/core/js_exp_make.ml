@@ -990,11 +990,11 @@ let rec is_out ?comment (e : t) (range : t) : t  =
       not (or_ (triple_equal e zero_int_literal) (triple_equal e one_int_literal))                  
     | Number (Int {i = 1l}), 
       (
-        Bin (Plus , {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
-      | Bin (Plus, {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) }))
+        Bin (Plus , {expression_desc = Number (Int {i ; _}) }, ({expression_desc = Var _; _} as x ))
+      | Bin (Plus, ({expression_desc = Var _; _} as x), {expression_desc = Number (Int {i ; _}) }))
 
       ->
-      not (or_ (triple_equal e (int (Int32.neg i ))) (triple_equal e (int (Int32.sub Int32.one  i))))        
+      not (or_ (triple_equal x (int (Int32.neg i ))) (triple_equal x (int (Int32.sub Int32.one  i))))        
     | Number (Int {i = 1l}), 
       Bin (Minus ,  ({expression_desc = Var _; _} as x), {expression_desc = Number (Int {i ; _}) })        
       ->           
