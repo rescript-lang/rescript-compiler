@@ -17,13 +17,13 @@ var Xx = {
 function compilerBug(a, b, c, f) {
   var exit = 0;
   var exit$1 = 0;
-  if (a !== undefined && a === "x") {
+  if (a === "x") {
     exit = 2;
   } else {
     exit$1 = 3;
   }
   if (exit$1 === 3) {
-    exit = b !== undefined && b === "x" ? 2 : 1;
+    exit = b === "x" ? 2 : 1;
   }
   switch (exit) {
     case 1 :
