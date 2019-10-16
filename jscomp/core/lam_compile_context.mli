@@ -106,6 +106,10 @@ type handler = {
   bindings : Ident.t list; 
 } 
 
+val no_static_raise_in_handler : 
+  handler -> 
+  bool 
+  
 val add_jmps :
   jmp_table -> 
   Ident.t ->
