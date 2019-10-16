@@ -760,7 +760,9 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
     let exit_id = Ext_ident.create_tmp ~name:"exit" () in
     match lambda_cxt.continuation, code_table with         
     | EffectCall (Maybe_tail_is_return (Tail_with_name ({in_staticcatch = false} as z))),
-      [ code_table ]  (* tail position and only one exit code *) 
+      [ code_table ]  
+      (* tail position and only one exit code *) 
+      when Lam_compile_context.no_static_raise_in_handler code_table
       ->
       let jmp_table, handler = 
           Lam_compile_context.add_pseudo_jmp

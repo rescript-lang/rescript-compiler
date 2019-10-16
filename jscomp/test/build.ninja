@@ -304,6 +304,7 @@ build test/gpr_3852_effect.cmi test/gpr_3852_effect.cmj : cc test/gpr_3852_effec
 build test/gpr_3865.cmi test/gpr_3865.cmj : cc test/gpr_3865.re | test/gpr_3865_bar.cmj test/gpr_3865_foo.cmj $stdlib
 build test/gpr_3865_bar.cmi test/gpr_3865_bar.cmj : cc test/gpr_3865_bar.re | $stdlib
 build test/gpr_3865_foo.cmi test/gpr_3865_foo.cmj : cc test/gpr_3865_foo.re | $stdlib
+build test/gpr_3875_test.cmi test/gpr_3875_test.cmj : cc test/gpr_3875_test.ml | test/mt.cmj $stdlib
 build test/gpr_405_test.cmj : cc_cmi test/gpr_405_test.ml | test/gpr_405_test.cmi $stdlib
 build test/gpr_405_test.cmi : cc test/gpr_405_test.mli | $stdlib
 build test/gpr_441.cmi test/gpr_441.cmj : cc test/gpr_441.ml | $stdlib

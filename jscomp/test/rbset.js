@@ -60,6 +60,7 @@ function balance_left(l, x, r) {
   var d;
   if (l && l[0]) {
     var a$1 = l[1];
+    var exit$1 = 0;
     if (a$1 && a$1[0]) {
       a = a$1[1];
       x$1 = a$1[2];
@@ -69,20 +70,25 @@ function balance_left(l, x, r) {
       z = x;
       d = r;
       exit = 2;
-    }
-    var match = l[3];
-    if (match && match[0]) {
-      a = a$1;
-      x$1 = l[2];
-      b = match[1];
-      y = match[2];
-      c = match[3];
-      z = x;
-      d = r;
-      exit = 2;
     } else {
-      exit = 1;
+      exit$1 = 3;
     }
+    if (exit$1 === 3) {
+      var match = l[3];
+      if (match && match[0]) {
+        a = a$1;
+        x$1 = l[2];
+        b = match[1];
+        y = match[2];
+        c = match[3];
+        z = x;
+        d = r;
+        exit = 2;
+      } else {
+        exit = 1;
+      }
+    }
+    
   } else {
     exit = 1;
   }
@@ -126,6 +132,7 @@ function balance_right(l, x, r) {
   var d;
   if (r && r[0]) {
     var b$1 = r[1];
+    var exit$1 = 0;
     if (b$1 && b$1[0]) {
       a = l;
       x$1 = x;
@@ -135,20 +142,25 @@ function balance_right(l, x, r) {
       z = r[2];
       d = r[3];
       exit = 2;
-    }
-    var match = r[3];
-    if (match && match[0]) {
-      a = l;
-      x$1 = x;
-      b = b$1;
-      y = r[2];
-      c = match[1];
-      z = match[2];
-      d = match[3];
-      exit = 2;
     } else {
-      exit = 1;
+      exit$1 = 3;
     }
+    if (exit$1 === 3) {
+      var match = r[3];
+      if (match && match[0]) {
+        a = l;
+        x$1 = x;
+        b = b$1;
+        y = r[2];
+        c = match[1];
+        z = match[2];
+        d = match[3];
+        exit = 2;
+      } else {
+        exit = 1;
+      }
+    }
+    
   } else {
     exit = 1;
   }
