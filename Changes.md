@@ -1,4 +1,26 @@
 `*` means  potential break changes
+
+# 5.2.1 (2019/10/16)
+
+Fixes
+
+- #3884  (not using temp file when creating cmt for ocaml 4.06 only)
+- #3877, #3881 Pattern match bug over list of integers
+- #3875, #3879 regression introduced in 5.2.0 over pattern match optimization
+- #3865 consistent name mangling when compiling modules into object 
+- #3852, #3870 for module with all module aliases and no interface file, always make it pure (treat it the same as namespace file)
+- #3874 internal bug fix for ocaml cmpiler    
+Codegen
+- #3880 optimize pattern match for (string|int) option 
+- #3866 update react-hooks template
+- #3843 mitigate windows anti-virius issue
+
+Libs
+- #3878 add Belt.Option.forEach
+
+
+
+
 # 5.2.0 (2019/09/23)
 
 Features
