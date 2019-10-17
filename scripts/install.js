@@ -29,6 +29,7 @@ var sys_extension = config.sys_extension;
 process.env.BS_RELEASE_BUILD = "true";
 
 var ninja_bin_output = path.join(root_dir, "lib", "ninja.exe");
+var preBuiltCompilerArtifacts = ["bsc", "bsb", "bsb_helper", "bsppx", "refmt"];
 
 /**
  * Make sure `ninja_bin_output` exists
