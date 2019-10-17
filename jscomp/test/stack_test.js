@@ -17,7 +17,10 @@ function to_list(v) {
 }
 
 function v(param) {
-  var v$1 = /* record */[/* c : [] */0];
+  var v$1 = /* record */[
+    /* c : [] */0,
+    /* len */0
+  ];
   Stack.push(3, v$1);
   Stack.push(4, v$1);
   Stack.push(1, v$1);

@@ -8,7 +8,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function height(param) {
   if (param) {
-    return param[4];
+    return param[/* h */4];
   } else {
     return 0;
   }
@@ -18,27 +18,27 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          /* l */l,
+          /* v */x,
+          /* d */d,
+          /* r */r,
+          /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l[4] : 0;
-  var hr = r ? r[4] : 0;
+  var hl = l ? l[/* h */4] : 0;
+  var hr = r ? r[/* h */4] : 0;
   if (hl > (hr + 2 | 0)) {
     if (l) {
-      var lr = l[3];
-      var ld = l[2];
-      var lv = l[1];
-      var ll = l[0];
+      var lr = l[/* r */3];
+      var ld = l[/* d */2];
+      var lv = l[/* v */1];
+      var ll = l[/* l */0];
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
       } else if (lr) {
-        return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
+        return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -53,14 +53,14 @@ function bal(l, x, d, r) {
     }
   } else if (hr > (hl + 2 | 0)) {
     if (r) {
-      var rr = r[3];
-      var rd = r[2];
-      var rv = r[1];
-      var rl = r[0];
+      var rr = r[/* r */3];
+      var rd = r[/* d */2];
+      var rv = r[/* v */1];
+      var rl = r[/* l */0];
       if (height(rr) >= height(rl)) {
         return create(create(l, x, d, rl), rv, rd, rr);
       } else if (rl) {
-        return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
+        return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -75,42 +75,56 @@ function bal(l, x, d, r) {
     }
   } else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            /* l */l,
+            /* v */x,
+            /* d */d,
+            /* r */r,
+            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
 
-function add(x, data, param) {
-  if (param) {
-    var r = param[3];
-    var d = param[2];
-    var v = param[1];
-    var l = param[0];
+function add(x, data, m) {
+  if (m) {
+    var r = m[/* r */3];
+    var d = m[/* d */2];
+    var v = m[/* v */1];
+    var l = m[/* l */0];
     var c = Caml_primitive.caml_int_compare(x, v);
     if (c === 0) {
-      return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
-            ];
+      if (d === data) {
+        return m;
+      } else {
+        return /* Node */[
+                /* l */l,
+                /* v */x,
+                /* d */data,
+                /* r */r,
+                /* h */m[/* h */4]
+              ];
+      }
     } else if (c < 0) {
-      return bal(add(x, data, l), v, d, r);
+      var ll = add(x, data, l);
+      if (l === ll) {
+        return m;
+      } else {
+        return bal(ll, v, d, r);
+      }
     } else {
-      return bal(l, v, d, add(x, data, r));
+      var rr = add(x, data, r);
+      if (r === rr) {
+        return m;
+      } else {
+        return bal(l, v, d, rr);
+      }
     }
   } else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* l : Empty */0,
+            /* v */x,
+            /* d */data,
+            /* r : Empty */0,
+            /* h */1
           ];
   }
 }
@@ -119,11 +133,11 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_primitive.caml_int_compare(x, param[1]);
+      var c = Caml_primitive.caml_int_compare(x, param[/* v */1]);
       if (c === 0) {
-        return param[2];
+        return param[/* d */2];
       } else {
-        _param = c < 0 ? param[0] : param[3];
+        _param = c < 0 ? param[/* l */0] : param[/* r */3];
         continue ;
       }
     } else {
@@ -162,7 +176,7 @@ var m = List.fold_left((function (acc, param) {
 
 function height$1(param) {
   if (param) {
-    return param[4];
+    return param[/* h */4];
   } else {
     return 0;
   }
@@ -172,27 +186,27 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          /* l */l,
+          /* v */x,
+          /* d */d,
+          /* r */r,
+          /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
 function bal$1(l, x, d, r) {
-  var hl = l ? l[4] : 0;
-  var hr = r ? r[4] : 0;
+  var hl = l ? l[/* h */4] : 0;
+  var hr = r ? r[/* h */4] : 0;
   if (hl > (hr + 2 | 0)) {
     if (l) {
-      var lr = l[3];
-      var ld = l[2];
-      var lv = l[1];
-      var ll = l[0];
+      var lr = l[/* r */3];
+      var ld = l[/* d */2];
+      var lv = l[/* v */1];
+      var ll = l[/* l */0];
       if (height$1(ll) >= height$1(lr)) {
         return create$1(ll, lv, ld, create$1(lr, x, d, r));
       } else if (lr) {
-        return create$1(create$1(ll, lv, ld, lr[0]), lr[1], lr[2], create$1(lr[3], x, d, r));
+        return create$1(create$1(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$1(lr[/* r */3], x, d, r));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -207,14 +221,14 @@ function bal$1(l, x, d, r) {
     }
   } else if (hr > (hl + 2 | 0)) {
     if (r) {
-      var rr = r[3];
-      var rd = r[2];
-      var rv = r[1];
-      var rl = r[0];
+      var rr = r[/* r */3];
+      var rd = r[/* d */2];
+      var rv = r[/* v */1];
+      var rl = r[/* l */0];
       if (height$1(rr) >= height$1(rl)) {
         return create$1(create$1(l, x, d, rl), rv, rd, rr);
       } else if (rl) {
-        return create$1(create$1(l, x, d, rl[0]), rl[1], rl[2], create$1(rl[3], rv, rd, rr));
+        return create$1(create$1(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$1(rl[/* r */3], rv, rd, rr));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -229,42 +243,56 @@ function bal$1(l, x, d, r) {
     }
   } else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            /* l */l,
+            /* v */x,
+            /* d */d,
+            /* r */r,
+            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
 
-function add$1(x, data, param) {
-  if (param) {
-    var r = param[3];
-    var d = param[2];
-    var v = param[1];
-    var l = param[0];
+function add$1(x, data, m) {
+  if (m) {
+    var r = m[/* r */3];
+    var d = m[/* d */2];
+    var v = m[/* v */1];
+    var l = m[/* l */0];
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
-      return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
-            ];
+      if (d === data) {
+        return m;
+      } else {
+        return /* Node */[
+                /* l */l,
+                /* v */x,
+                /* d */data,
+                /* r */r,
+                /* h */m[/* h */4]
+              ];
+      }
     } else if (c < 0) {
-      return bal$1(add$1(x, data, l), v, d, r);
+      var ll = add$1(x, data, l);
+      if (l === ll) {
+        return m;
+      } else {
+        return bal$1(ll, v, d, r);
+      }
     } else {
-      return bal$1(l, v, d, add$1(x, data, r));
+      var rr = add$1(x, data, r);
+      if (r === rr) {
+        return m;
+      } else {
+        return bal$1(l, v, d, rr);
+      }
     }
   } else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* l : Empty */0,
+            /* v */x,
+            /* d */data,
+            /* r : Empty */0,
+            /* h */1
           ];
   }
 }
@@ -273,11 +301,11 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_primitive.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[/* v */1]);
       if (c === 0) {
-        return param[2];
+        return param[/* d */2];
       } else {
-        _param = c < 0 ? param[0] : param[3];
+        _param = c < 0 ? param[/* l */0] : param[/* r */3];
         continue ;
       }
     } else {

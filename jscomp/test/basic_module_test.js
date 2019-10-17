@@ -3,17 +3,12 @@
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
 var Offset = require("./offset.js");
-var Pr6726 = require("./pr6726.js");
 var Mt_global = require("./mt_global.js");
 
 var count = /* record */[/* contents */0];
 
-var M = {
-  $$Set: Offset.M.$$Set
-};
-
 function test(set) {
-  count[0] = Curry._1(M.$$Set.cardinal, set) + count[0] | 0;
+  count[0] = Offset.$$Set.cardinal(set) + count[0] | 0;
   return /* () */0;
 }
 
