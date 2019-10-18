@@ -145,9 +145,10 @@ let handleTdcl
                         else get_optional_attrs) ~prim
                 (Ast_compatible.arrow ~loc  core_type optional_type)
                 ) in 
-                if not light then 
+                if  light then 
+                  aux true false pld_name :: acc                   
+                else  
                   aux true true pld_name :: aux false false pld_name  :: acc
-                else  aux true false pld_name :: acc                   
               )
             else
               Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
@@ -167,9 +168,9 @@ let handleTdcl
                   ))] )
                (Ast_compatible.arrow ~loc  core_type pld_type)
                in 
-               if not light then 
-                aux true true pld_name ::aux false false pld_name :: acc 
-               else aux true false pld_name :: acc 
+               if light then aux true false pld_name :: acc 
+               else aux true true pld_name ::aux false false pld_name :: acc 
+               
               )
           in
           let is_current_field_mutable = pld_mutable = Mutable in
