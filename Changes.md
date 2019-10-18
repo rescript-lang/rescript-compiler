@@ -1,5 +1,10 @@
 `*` means  potential break changes
 
+# current
+
+Libs
+- #3878 add Belt.Option.forEach
+
 # 5.2.1 (2019/10/16)
 
 Fixes
@@ -15,8 +20,6 @@ Codegen
 - #3866 update react-hooks template
 - #3843 mitigate windows anti-virius issue
 
-Libs
-- #3878 add Belt.Option.forEach
 
 
 
