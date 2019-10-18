@@ -39788,9 +39788,6 @@ let get_optional_attrs =
 let get_attrs = [ Ast_attributes.bs_get_arity]
 let set_attrs = [Ast_attributes.bs_set]
 
-let deprecated name = 
-  Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead, or switch to the new [@bs.deriving {abstract: light}] for the type declaration (OCaml syntax: [@@bs.deriving {abstract = light}])")
 
 
 let handleTdcl 
@@ -39850,39 +39847,30 @@ let handleTdcl
               
 
                 maker,
-              let aux light deprec pld_name : Parsetree.value_description = 
                 (Val.mk ~loc:pld_loc
                  (if light then pld_name else 
                   {pld_name with txt = pld_name.txt ^ "Get"})
-                ~attrs:(if deprec then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
-                        else get_optional_attrs) ~prim
+                ~attrs:get_optional_attrs ~prim
                 (Ast_compatible.arrow ~loc  core_type optional_type)
-                ) in 
-                if not light then 
-                  aux true true pld_name :: aux false false pld_name  :: acc
-                else  aux true false pld_name :: acc                   
-              )
+                ) :: acc                                   
+)
             else
               Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
-                let aux light deprec pld_name = 
-                  Val.mk ~loc:pld_loc 
-                    (if light then pld_name else 
-                       {pld_name with txt = pld_name.txt ^ "Get"}
-                    ) ~attrs:(if deprec then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
-                    ~prim:(
-                ["" ; (* Not needed actually*)
-                External_ffi_types.to_string 
-                (Ffi_bs (
-                  [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
-                  Return_identity,
-                  Js_get {js_get_name = prim_as_name; js_get_scopes = []}
-                  ))] )
-               (Ast_compatible.arrow ~loc  core_type pld_type)
-               in 
-               if not light then 
-                aux true true pld_name ::aux false false pld_name :: acc 
-               else aux true false pld_name :: acc 
+                (Val.mk ~loc:pld_loc 
+                   (if light then pld_name else 
+                      {pld_name with txt = pld_name.txt ^ "Get"}
+                   ) ~attrs:get_attrs
+                   ~prim:(
+                     ["" ; (* Not needed actually*)
+                      External_ffi_types.to_string 
+                        (Ffi_bs (
+                            [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
+                            Return_identity,
+                            Js_get {js_get_name = prim_as_name; js_get_scopes = []}
+                          ))] )
+                   (Ast_compatible.arrow ~loc  core_type pld_type))
+                :: acc                
               )
           in
           let is_current_field_mutable = pld_mutable = Mutable in

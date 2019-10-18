@@ -16,7 +16,7 @@ type t = {
 let v = t ~hi:3 ~low:2 ~x:2
 
 
-let (a,b,c) = (v |. hi, v |. low, v |. x)
+let (a,b,c) = (v |. hiGet, v |. lowGet, v |. xGet)
 
 (**
 
@@ -50,7 +50,7 @@ let h2 = a ~hi:2 ()
 
 let hh x =
   x |. lowSet "3";
-  x |. low
+  x |. lowGet
 
 (** should we make the type of
 
@@ -59,7 +59,7 @@ let hh x =
 *)
 
 let hh2 x =
-  match x |. low with
+  match x |. lowGet with
   | None -> 0
   | Some _ -> 1
 
@@ -105,6 +105,6 @@ type css =
 
 let u = css ~a9:3 ()
 let v =
-  match u |. a9 with
+  match u |. a9Get with
   | None -> 0
   | Some x -> x
