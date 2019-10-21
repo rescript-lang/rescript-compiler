@@ -12471,4 +12471,4 @@ if (match) {
 
 from_pair_suites("Ocaml_parsetree_test", suites[0]);
 
-/*  Not a pure module */
+/* bs_vscode Not a pure module */

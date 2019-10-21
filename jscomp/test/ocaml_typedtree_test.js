@@ -76283,4 +76283,4 @@ if (match$1) {
 
 from_pair_suites("Ocaml_typedtree_test", suites[0]);
 
-/*  Not a pure module */
+/* bs_vscode Not a pure module */

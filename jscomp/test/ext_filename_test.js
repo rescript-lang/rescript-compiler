@@ -389,10 +389,9 @@ if (Sys.unix) {
 } else if (Sys.win32 || Sys.cygwin) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
-  var s = "Unknown OS : Unix";
   throw [
         Caml_builtin_exceptions.failure,
-        s
+        "Unknown OS : Unix"
       ];
 }
 
