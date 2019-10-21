@@ -42,7 +42,7 @@ JavaScript specific optimization purposes.
 
 * [`jscomp/main/js_main.ml`](jscomp/main/js_main.ml)
 
-`jscomp/main/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main etry 
+`jscomp/main/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main entry 
 point of the underlying compiler.
 
 * [`jscomp/stdlib-402`](jscomp/stdlib-402) [`jscomp/stdlib-406`](jscomp/stdlib-406)
@@ -54,7 +54,7 @@ included with BuckleScript.
 
 `jscomp/test` is based on [`ocaml/testsuite`](ocaml/testsuite).
 
-BuckleScript unittest builds on parts of [OUnit](http://ounit.forge.ocamlcore.org/)
+BuckleScript unit test builds on parts of [OUnit](http://ounit.forge.ocamlcore.org/)
 
 * [`jscomp/ounit`](jscomp/ounit) is adapted from ounit, the unit test
   utilities are only used for dev purpose, they are not required for distribution
