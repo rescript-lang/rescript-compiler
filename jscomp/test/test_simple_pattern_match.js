@@ -12,4 +12,4 @@ var b = match[1];
 
 exports.a = a;
 exports.b = b;
-/* match Not a pure module */
+/* No side effect */

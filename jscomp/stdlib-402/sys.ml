@@ -25,7 +25,11 @@ external unix : unit -> bool = "%ostype_unix"
 external win32 : unit -> bool = "%ostype_win32"
 external cygwin : unit -> bool = "%ostype_cygwin"
 let (executable_name, argv) = get_argv()
+#if BS then
+external os_type : string = "#os_type"
+#else
 let (os_type, _, _) = get_config()
+#end
 let big_endian = big_endian ()
 let word_size = word_size ()
 let unix = unix ()

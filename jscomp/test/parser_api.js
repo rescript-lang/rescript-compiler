@@ -14950,4 +14950,4 @@ exports.Lexer = Lexer;
 exports.Parse = Parse;
 exports.from_string = from_string;
 exports.implementation = implementation$1;
-/* default_executable_name Not a pure module */
+/* bs_vscode Not a pure module */

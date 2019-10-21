@@ -17,7 +17,6 @@ var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
-var Filename = require("../../lib/js/filename.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");

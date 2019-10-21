@@ -36,7 +36,11 @@ external cygwin : unit -> bool = "%ostype_cygwin"
 external get_backend_type : unit -> backend_type = "%backend_type"
 
 let (executable_name, argv) = get_argv()
+#if BS then
+external os_type : string = "#os_type"
+#else
 let (os_type, _, _) = get_config()
+#end
 let backend_type = get_backend_type ()
 let big_endian = big_endian ()
 let word_size = word_size ()
