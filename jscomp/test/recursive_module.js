@@ -18,56 +18,6 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var Int32 = Caml_module.init_mod([
-      "recursive_module.ml",
-      14,
-      6
-    ], [[
-        [
-          0,
-          "buffer"
-        ],
-        [
-          0,
-          "get"
-        ],
-        [
-          0,
-          "set"
-        ],
-        [
-          0,
-          "create"
-        ],
-        [
-          0,
-          "of_buffer"
-        ]
-      ]]);
-
-Caml_module.update_mod([[
-        [
-          0,
-          "buffer"
-        ],
-        [
-          0,
-          "get"
-        ],
-        [
-          0,
-          "set"
-        ],
-        [
-          0,
-          "create"
-        ],
-        [
-          0,
-          "of_buffer"
-        ]
-      ]], Int32, Int32);
-
 var Xx = {
   f: (function (prim, prim$1) {
       return Caml_external_polyfill.resolve("hfiehi")(prim, prim$1);
@@ -207,6 +157,8 @@ eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 
 Mt.from_pair_suites("Recursive_module", suites[0]);
 
+var Int32 = /* () */0;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
@@ -217,4 +169,4 @@ exports.Int3 = Int3;
 exports.Inta = Inta;
 exports.Intb = Intb;
 exports.A = A;
-/* Int32 Not a pure module */
+/* Int3 Not a pure module */

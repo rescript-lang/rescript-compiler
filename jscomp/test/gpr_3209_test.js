@@ -3,20 +3,21 @@
 
 function f9(param) {
   if (typeof param === "number") {
-    if (param === /* T63 */3) {
-      return 3;
-    } else {
-      return 1;
+    switch (param) {
+      case /* T60 */0 :
+      case /* T61 */1 :
+      case /* T62 */2 :
+          return 1;
+      default:
+        return 3;
     }
   } else {
     switch (param.tag | 0) {
       case /* T64 */0 :
       case /* T65 */1 :
           return 2;
-      case /* T66 */2 :
-      case /* T68 */3 :
-          return 3;
-      
+      default:
+        return 3;
     }
   }
 }
