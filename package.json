@@ -33,7 +33,7 @@
     "postinstall": "node scripts/install.js"
   },
   "name": "bs-platform",
-  "version": "5.2.1",
+  "version": "6.2.1-flambda",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
