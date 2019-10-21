@@ -45,7 +45,7 @@ function buildCompiler() {
     `${path.join(__dirname,'..','vendor','ninja','snapshot')}${path.delimiter}${process.env.PATH}`
   let ninjaPath = `ninja${sys_extension}`
   cp.execSync(
-    `${ninjaPath} -C lib -f ${prebuilt} -t clean && ${ninjaPath} -C lib -f ${prebuilt}`,
+    `${ninjaPath} -C lib -f ${prebuilt} -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
     root_config
   );
 }
