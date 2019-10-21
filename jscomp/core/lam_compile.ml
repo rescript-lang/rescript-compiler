@@ -1400,9 +1400,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       -> (* should be before Lglobal_global *)
       begin match fld_info with 
       | Fld_module field -> 
-         if id.name = "Sys" && field = "os_type" then 
-          Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (E.str Sys.os_type)
-         else compile_external_field lambda_cxt id field 
+         compile_external_field lambda_cxt id field 
       | _ -> assert false  
       end
     | {primitive = Praise ; args =  [ e ]; _} ->      

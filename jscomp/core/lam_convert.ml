@@ -498,6 +498,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       prim ~primitive:Pdebugger ~args:[] loc
     | _ when s = "#null" ->
       Lam.const (Const_js_null)
+    | _ when s = "#os_type" ->    
+      Lam.const (Const_string Sys.os_type)
     | _ when s = "#undefined" ->
       Lam.const (Const_js_undefined)
     | _ when s = "#init_mod" ->
