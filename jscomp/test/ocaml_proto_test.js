@@ -4246,14 +4246,14 @@ function compile_enum_p1(file_name, file_options, scope, param) {
 
 function compile_message_p1(file_name, file_options, message_scope, param) {
   var message_name = param[/* message_name */1];
-  var sub_scope_000 = /* packages */message_scope[/* packages */0];
-  var sub_scope_001 = /* message_names */Pervasives.$at(message_scope[/* message_names */1], /* :: */[
+  var sub_scope_packages = /* packages */message_scope[/* packages */0];
+  var sub_scope_message_names = /* message_names */Pervasives.$at(message_scope[/* message_names */1], /* :: */[
         message_name,
         /* [] */0
       ]);
   var sub_scope = /* record */[
-    sub_scope_000,
-    sub_scope_001
+    sub_scope_packages,
+    sub_scope_message_names
   ];
   var match = List.fold_left((function (param, param$1) {
           var all_types = param[2];
@@ -4561,25 +4561,25 @@ function compile_message_p2(types, param, message) {
                 var field = param[0];
                 var field_name$1 = field_name(field);
                 var field_type$1 = field_type(field);
-                var field_000 = /* field_parsed */field[/* field_parsed */0];
-                var field_001 = /* field_type */compile_field_p2(field_name$1, field_type$1);
-                var field_002 = /* field_default */field[/* field_default */2];
-                var field_003 = /* field_options */field[/* field_options */3];
+                var field_field_parsed = /* field_parsed */field[/* field_parsed */0];
+                var field_field_type = /* field_type */compile_field_p2(field_name$1, field_type$1);
+                var field_field_default = /* field_default */field[/* field_default */2];
+                var field_field_options = /* field_options */field[/* field_options */3];
                 var field$1 = /* record */[
-                  field_000,
-                  field_001,
-                  field_002,
-                  field_003
+                  field_field_parsed,
+                  field_field_type,
+                  field_field_default,
+                  field_field_options
                 ];
-                var field_000$1 = field_000;
-                var field_001$1 = field_001;
-                var field_002$1 = /* field_default */compile_default_p2(types, field$1);
-                var field_003$1 = field_003;
+                var field_field_parsed$1 = field_field_parsed;
+                var field_field_type$1 = field_field_type;
+                var field_field_default$1 = /* field_default */compile_default_p2(types, field$1);
+                var field_field_options$1 = field_field_options;
                 var field$2 = /* record */[
-                  field_000$1,
-                  field_001$1,
-                  field_002$1,
-                  field_003$1
+                  field_field_parsed$1,
+                  field_field_type$1,
+                  field_field_default$1,
+                  field_field_options$1
                 ];
                 return /* :: */[
                         /* Message_field */Block.__(0, [field$2]),
@@ -6795,9 +6795,9 @@ function compile(proto_definition) {
                                                 field_default$1
                                               ]]);
                                         }
-                                        var record_field_000 = /* rf_label */label_name_of_field_name(field_name$1);
+                                        var record_field_rf_label = /* rf_label */label_name_of_field_name(field_name$1);
                                         var record_field = /* record */[
-                                          record_field_000,
+                                          record_field_rf_label,
                                           /* rf_field_type */record_field_type,
                                           /* rf_mutable */mutable_
                                         ];
@@ -6815,11 +6815,11 @@ function compile(proto_definition) {
                                               /* [] */0
                                             ]);
                                         var variant = variant_of_oneof(/* () */0, outer_message_names, all_types$1, file_options, file_name$1, field$1);
-                                        var record_field_000$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
-                                        var record_field_001 = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
+                                        var record_field_rf_label$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
+                                        var record_field_rf_field_type = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
                                         var record_field$1 = /* record */[
-                                          record_field_000$1,
-                                          record_field_001,
+                                          record_field_rf_label$1,
+                                          record_field_rf_field_type,
                                           /* rf_mutable */false
                                         ];
                                         var variants_000 = /* record */[
@@ -6906,12 +6906,12 @@ function compile(proto_definition) {
                                                 value_pk
                                               ]
                                             ]]);
-                                        var record_field_000$2 = /* rf_label */label_name_of_field_name(map_name);
-                                        var record_field_002 = /* rf_mutable */is_mutable(map_name, map_options);
+                                        var record_field_rf_label$2 = /* rf_label */label_name_of_field_name(map_name);
+                                        var record_field_rf_mutable = /* rf_mutable */is_mutable(map_name, map_options);
                                         var record_field$2 = /* record */[
-                                          record_field_000$2,
+                                          record_field_rf_label$2,
                                           /* rf_field_type */record_field_type$1,
-                                          record_field_002
+                                          record_field_rf_mutable
                                         ];
                                         return /* tuple */[
                                                 variants,
@@ -6926,16 +6926,16 @@ function compile(proto_definition) {
                                 /* [] */0,
                                 /* [] */0
                               ], message_body);
-                          var record_000 = /* r_name */type_name(message_names, message_name);
-                          var record_001 = /* r_fields */List.rev(match$2[1]);
+                          var record_r_name = /* r_name */type_name(message_names, message_name);
+                          var record_r_fields = /* r_fields */List.rev(match$2[1]);
                           var record = /* record */[
-                            record_000,
-                            record_001
+                            record_r_name,
+                            record_r_fields
                           ];
-                          var type__001 = /* spec : Record */Block.__(0, [record]);
+                          var type__spec = /* spec : Record */Block.__(0, [record]);
                           var type_ = /* record */[
                             /* module_ */module_,
-                            type__001
+                            type__spec
                           ];
                           return List.rev(/* :: */[
                                       type_,

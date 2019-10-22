@@ -11,16 +11,16 @@ var v = /* record */[
   ]
 ];
 
-var u_000 = /* a */2;
+var u_a = /* a */2;
 
-var u_001 = /* b : record */[
+var u_b = /* b : record */[
   /* xx */2,
   /* yy */3
 ];
 
 var u = /* record */[
-  u_000,
-  u_001
+  u_a,
+  u_b
 ];
 
 var A = Caml_exceptions.create("Record_debug_test.A");

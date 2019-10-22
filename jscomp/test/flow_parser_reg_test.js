@@ -2834,13 +2834,13 @@ function line_comment(env, buf, lexbuf) {
           var match = from_lb(env$1[/* lex_source */0], lexbuf$1);
           var match$1 = match[/* _end */2];
           Lexing.new_line(lexbuf$1);
-          var _end_000 = /* line */match$1[/* line */0];
-          var _end_001 = /* column */match$1[/* column */1] - 1 | 0;
-          var _end_002 = /* offset */match$1[/* offset */2] - 1 | 0;
+          var _end_line = /* line */match$1[/* line */0];
+          var _end_column = /* column */match$1[/* column */1] - 1 | 0;
+          var _end_offset = /* offset */match$1[/* offset */2] - 1 | 0;
           var _end = /* record */[
-            _end_000,
-            _end_001,
-            _end_002
+            _end_line,
+            _end_column,
+            _end_offset
           ];
           return /* tuple */[
                   env$1,

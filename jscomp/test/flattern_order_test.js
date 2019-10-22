@@ -28,18 +28,18 @@ function even2(n) {
 
 var v = /* record */[/* contents */0];
 
-function obj_000(param) {
+function obj_get(param) {
   return v[0];
 }
 
-function obj_001(i) {
+function obj_set(i) {
   v[0] = i;
   return /* () */0;
 }
 
 var obj = /* record */[
-  obj_000,
-  obj_001
+  obj_get,
+  obj_set
 ];
 
 exports.even = even;

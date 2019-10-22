@@ -99,3 +99,9 @@ val fold_left :
   'a -> 
   ('a -> 'b -> 'a) ->   
   'a
+
+val get_or :   
+  'a array -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a
