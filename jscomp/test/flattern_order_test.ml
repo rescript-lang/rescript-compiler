@@ -1,6 +1,6 @@
 
-#if OCAML_VERSION =~ "<4.03.0" then
-let rec xs = 
+#if OCAML_VERSION =~ "<4.03.0"  then
+let rec xs =  (* such recursive value not allowed in 4.06 *)
   let rec ys = 1 :: ys 
   and _zs () = (List.hd ys, List.hd (fst xs))  in
   (* and us = 3 in  *)
@@ -40,4 +40,4 @@ let v = ref 0
 let rec obj = 
     { get = (fun _ -> !v);
       set = (fun i -> v := i )
-    }    
+    }    (* should generate `obj_get`, obj_set` meaningful names*)

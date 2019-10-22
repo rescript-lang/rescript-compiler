@@ -88,7 +88,7 @@ let () =
 
 
 let () = 
-  let module V = (val  (xx () ) : S) in 
+  let module V = (val  (xx () ) : S) in (* xx () not inlined in 4.06 *) 
   eq __LOC__ (V.length [1;2;3]) 3 ;
   eq __LOC__ !v 15;
   let module H = (val (f ()) : S) in 
