@@ -421,6 +421,8 @@ let rec seq (a : t) b : t =
     {primitive = Pmakeblock(_); 
      args= x::xs} -> 
     seq (Ext_list.fold_left xs x seq ) b 
+  | Lprim {primitive = Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt; args = [a]} 
+    ->   seq a b 
   | _ -> 
   Lsequence (a, b)
 
