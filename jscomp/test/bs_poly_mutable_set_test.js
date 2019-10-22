@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Belt_Id = require("../../lib/js/belt_Id.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -186,9 +185,13 @@ var aa = match$1[0];
 
 b("File \"bs_poly_mutable_set_test.ml\", line 81, characters 4-11", match[1]);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 82, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), Caml_obj.caml_equal));
+b("File \"bs_poly_mutable_set_test.ml\", line 82, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 83, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
+b("File \"bs_poly_mutable_set_test.ml\", line 83, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 84, characters 5-12", Belt_MutableSet.subset(aa, v));
 
@@ -210,9 +213,13 @@ var aa$1 = match$3[0];
 
 b("File \"bs_poly_mutable_set_test.ml\", line 90, characters 4-11", !match$2[1]);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 91, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), Caml_obj.caml_equal));
+b("File \"bs_poly_mutable_set_test.ml\", line 91, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 92, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
+b("File \"bs_poly_mutable_set_test.ml\", line 92, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 93, characters 5-12", Belt_MutableSet.subset(aa$1, v));
 
