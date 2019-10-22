@@ -1,34 +1,5 @@
 'use strict';
 
-var List = require("../../lib/js/list.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
-
-var ys = [];
-
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
-
-function _zs(param) {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
-
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
-  ]
-];
-
-var xs = /* tuple */[
-  xs_000,
-  _zs
-];
 
 function even(_n) {
   while(true) {
@@ -71,9 +42,8 @@ var obj = /* record */[
   obj_001
 ];
 
-exports.xs = xs;
 exports.even = even;
 exports.even2 = even2;
 exports.v = v;
 exports.obj = obj;
-/* xs Not a pure module */
+/* No side effect */

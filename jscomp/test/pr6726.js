@@ -21,7 +21,7 @@ function test_endian_string(x) {
   return 33;
 }
 
-var v = test_endian_string(1);
+var v = 33;
 
 var Test = {
   test_endian_string: test_endian_string,
@@ -31,4 +31,4 @@ var Test = {
 exports.ExtUnixAll = ExtUnixAll;
 exports.ExtUnix = ExtUnix;
 exports.Test = Test;
-/* v Not a pure module */
+/* No side effect */

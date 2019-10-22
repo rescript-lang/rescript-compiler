@@ -27,10 +27,9 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  var L = List;
   console.log(x);
   console.log(List.length(x));
-  return L;
+  return List;
 }
 
 var h = f(/* [] */0);

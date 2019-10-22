@@ -1211,7 +1211,9 @@ b("File \"bs_array_test.ml\", line 273, characters 4-11", !Belt_Array.some(/* ar
 b("File \"bs_array_test.ml\", line 274, characters 4-11", !Belt_Array.eq(/* array */[
           0,
           1
-        ], /* array */[1], Caml_obj.caml_equal));
+        ], /* array */[1], (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 var c$1 = /* record */[/* contents */0];
 
@@ -1499,7 +1501,7 @@ b("File \"bs_array_test.ml\", line 327, characters 4-11", Belt_Array.cmp(/* arra
           1,
           2,
           3
-        ], Caml_obj.caml_compare) < 0);
+        ], Caml_primitive.caml_int_compare) < 0);
 
 b("File \"bs_array_test.ml\", line 328, characters 4-11", Belt_Array.cmp(/* array */[
           0,
@@ -1510,7 +1512,7 @@ b("File \"bs_array_test.ml\", line 328, characters 4-11", Belt_Array.cmp(/* arra
           1,
           2,
           3
-        ], Caml_obj.caml_compare) > 0);
+        ], Caml_primitive.caml_int_compare) > 0);
 
 b("File \"bs_array_test.ml\", line 329, characters 4-11", Belt_Array.cmp(/* array */[
           1,
