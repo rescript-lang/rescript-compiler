@@ -40,4 +40,4 @@ let v = ref 0
 let rec obj = 
     { get = (fun _ -> !v);
       set = (fun i -> v := i )
-    }    (* should generate `obj_get`, obj_set` meaningful names*)
+    }    
