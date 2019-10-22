@@ -4145,6 +4145,12 @@ val fold_left :
   'a -> 
   ('a -> 'b -> 'a) ->   
   'a
+
+val get_or :   
+  'a array -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4414,6 +4420,10 @@ let iter a f =
     done;
     !r
   
+let get_or arr i cb =     
+  if i >=0 && i < Array.length arr then 
+    Array.unsafe_get arr i 
+  else cb ()  
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
