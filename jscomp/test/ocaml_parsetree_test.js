@@ -185,7 +185,7 @@ function set_color_tag_handling(ppf) {
   var functions = Format.pp_get_formatter_tag_functions(ppf, /* () */0);
   var partial_arg = functions[/* mark_open_tag */0];
   var partial_arg$1 = functions[/* mark_close_tag */1];
-  var functions$prime_000 = function (param) {
+  var functions$prime_mark_open_tag = function (param) {
     var or_else = partial_arg;
     var s = param;
     try {
@@ -204,7 +204,7 @@ function set_color_tag_handling(ppf) {
       }
     }
   };
-  var functions$prime_001 = function (param) {
+  var functions$prime_mark_close_tag = function (param) {
     var or_else = partial_arg$1;
     var s = param;
     try {
@@ -226,13 +226,13 @@ function set_color_tag_handling(ppf) {
       }
     }
   };
-  var functions$prime_002 = /* print_open_tag */functions[/* print_open_tag */2];
-  var functions$prime_003 = /* print_close_tag */functions[/* print_close_tag */3];
+  var functions$prime_print_open_tag = /* print_open_tag */functions[/* print_open_tag */2];
+  var functions$prime_print_close_tag = /* print_close_tag */functions[/* print_close_tag */3];
   var functions$prime = /* record */[
-    functions$prime_000,
-    functions$prime_001,
-    functions$prime_002,
-    functions$prime_003
+    functions$prime_mark_open_tag,
+    functions$prime_mark_close_tag,
+    functions$prime_print_open_tag,
+    functions$prime_print_close_tag
   ];
   ppf[/* pp_mark_tags */22] = true;
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
@@ -2065,24 +2065,24 @@ var doc_loc = /* record */[
 ];
 
 function docs_attr(ds) {
-  var exp_000 = /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_string */Block.__(2, [
+  var exp_pexp_desc = /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_string */Block.__(2, [
           ds[/* ds_body */0],
           undefined
         ])]);
-  var exp_001 = /* pexp_loc */ds[/* ds_loc */1];
+  var exp_pexp_loc = /* pexp_loc */ds[/* ds_loc */1];
   var exp = /* record */[
-    exp_000,
-    exp_001,
+    exp_pexp_desc,
+    exp_pexp_loc,
     /* pexp_attributes : [] */0
   ];
-  var item_000 = /* pstr_desc : Pstr_eval */Block.__(0, [
+  var item_pstr_desc = /* pstr_desc : Pstr_eval */Block.__(0, [
       exp,
       /* [] */0
     ]);
-  var item_001 = exp_001;
+  var item_pstr_loc = exp_pexp_loc;
   var item = /* record */[
-    item_000,
-    item_001
+    item_pstr_desc,
+    item_pstr_loc
   ];
   return /* tuple */[
           doc_loc,
@@ -2127,24 +2127,24 @@ var text_loc = /* record */[
 ];
 
 function text_attr(ds) {
-  var exp_000 = /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_string */Block.__(2, [
+  var exp_pexp_desc = /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_string */Block.__(2, [
           ds[/* ds_body */0],
           undefined
         ])]);
-  var exp_001 = /* pexp_loc */ds[/* ds_loc */1];
+  var exp_pexp_loc = /* pexp_loc */ds[/* ds_loc */1];
   var exp = /* record */[
-    exp_000,
-    exp_001,
+    exp_pexp_desc,
+    exp_pexp_loc,
     /* pexp_attributes : [] */0
   ];
-  var item_000 = /* pstr_desc : Pstr_eval */Block.__(0, [
+  var item_pstr_desc = /* pstr_desc : Pstr_eval */Block.__(0, [
       exp,
       /* [] */0
     ]);
-  var item_001 = exp_001;
+  var item_pstr_loc = exp_pexp_loc;
   var item = /* record */[
-    item_000,
-    item_001
+    item_pstr_desc,
+    item_pstr_loc
   ];
   return /* tuple */[
           text_loc,
@@ -3430,11 +3430,11 @@ function mkcf(attrs, docs, d) {
 
 function mkoption(d) {
   var init = d[/* ptyp_loc */1];
-  var loc_000 = /* loc_start */init[/* loc_start */0];
-  var loc_001 = /* loc_end */init[/* loc_end */1];
+  var loc_loc_start = /* loc_start */init[/* loc_start */0];
+  var loc_loc_end = /* loc_end */init[/* loc_end */1];
   var loc = /* record */[
-    loc_000,
-    loc_001,
+    loc_loc_start,
+    loc_loc_end,
     /* loc_ghost */true
   ];
   return mk(loc, undefined, /* Ptyp_constr */Block.__(3, [
@@ -3546,11 +3546,11 @@ function mktailexp(nilloc, param) {
   if (param) {
     var e1 = param[0];
     var exp_el = mktailexp(nilloc, param[1]);
-    var loc_000 = /* loc_start */e1[/* pexp_loc */1][/* loc_start */0];
-    var loc_001 = /* loc_end */exp_el[/* pexp_loc */1][/* loc_end */1];
+    var loc_loc_start = /* loc_start */e1[/* pexp_loc */1][/* loc_start */0];
+    var loc_loc_end = /* loc_end */exp_el[/* pexp_loc */1][/* loc_end */1];
     var loc = /* record */[
-      loc_000,
-      loc_001,
+      loc_loc_start,
+      loc_loc_end,
       /* loc_ghost */true
     ];
     var arg = Curry._3(Ast_helper_Exp.mk, loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
@@ -3561,21 +3561,21 @@ function mktailexp(nilloc, param) {
               ]
             ]]));
     return mkexp_cons(/* record */[
-                loc_000,
-                loc_001,
+                loc_loc_start,
+                loc_loc_end,
                 /* loc_ghost */true
               ], arg, loc);
   } else {
-    var loc_000$1 = /* loc_start */nilloc[/* loc_start */0];
-    var loc_001$1 = /* loc_end */nilloc[/* loc_end */1];
+    var loc_loc_start$1 = /* loc_start */nilloc[/* loc_start */0];
+    var loc_loc_end$1 = /* loc_end */nilloc[/* loc_end */1];
     var loc$1 = /* record */[
-      loc_000$1,
-      loc_001$1,
+      loc_loc_start$1,
+      loc_loc_end$1,
       /* loc_ghost */true
     ];
-    var nil_000 = /* txt : Lident */Block.__(0, ["[]"]);
+    var nil_txt = /* txt : Lident */Block.__(0, ["[]"]);
     var nil = /* record */[
-      nil_000,
+      nil_txt,
       /* loc */loc$1
     ];
     return Curry._3(Ast_helper_Exp.mk, loc$1, undefined, /* Pexp_construct */Block.__(9, [
@@ -3589,11 +3589,11 @@ function mktailpat(nilloc, param) {
   if (param) {
     var p1 = param[0];
     var pat_pl = mktailpat(nilloc, param[1]);
-    var loc_000 = /* loc_start */p1[/* ppat_loc */1][/* loc_start */0];
-    var loc_001 = /* loc_end */pat_pl[/* ppat_loc */1][/* loc_end */1];
+    var loc_loc_start = /* loc_start */p1[/* ppat_loc */1][/* loc_start */0];
+    var loc_loc_end = /* loc_end */pat_pl[/* ppat_loc */1][/* loc_end */1];
     var loc = /* record */[
-      loc_000,
-      loc_001,
+      loc_loc_start,
+      loc_loc_end,
       /* loc_ghost */true
     ];
     var arg = mk$1(loc, undefined, /* Ppat_tuple */Block.__(4, [/* :: */[
@@ -3604,21 +3604,21 @@ function mktailpat(nilloc, param) {
               ]
             ]]));
     return mkpat_cons(/* record */[
-                loc_000,
-                loc_001,
+                loc_loc_start,
+                loc_loc_end,
                 /* loc_ghost */true
               ], arg, loc);
   } else {
-    var loc_000$1 = /* loc_start */nilloc[/* loc_start */0];
-    var loc_001$1 = /* loc_end */nilloc[/* loc_end */1];
+    var loc_loc_start$1 = /* loc_start */nilloc[/* loc_start */0];
+    var loc_loc_end$1 = /* loc_end */nilloc[/* loc_end */1];
     var loc$1 = /* record */[
-      loc_000$1,
-      loc_001$1,
+      loc_loc_start$1,
+      loc_loc_end$1,
       /* loc_ghost */true
     ];
-    var nil_000 = /* txt : Lident */Block.__(0, ["[]"]);
+    var nil_txt = /* txt : Lident */Block.__(0, ["[]"]);
     var nil = /* record */[
-      nil_000,
+      nil_txt,
       /* loc */loc$1
     ];
     return mk$1(loc$1, undefined, /* Ppat_construct */Block.__(5, [
@@ -3931,13 +3931,13 @@ function wrap_type_annotation(newtypes, core_type, body) {
 
 function wrap_exp_attrs(body, param) {
   var ext = param[0];
-  var body_000 = /* pexp_desc */body[/* pexp_desc */0];
-  var body_001 = /* pexp_loc */body[/* pexp_loc */1];
-  var body_002 = /* pexp_attributes */Pervasives.$at(param[1], body[/* pexp_attributes */2]);
+  var body_pexp_desc = /* pexp_desc */body[/* pexp_desc */0];
+  var body_pexp_loc = /* pexp_loc */body[/* pexp_loc */1];
+  var body_pexp_attributes = /* pexp_attributes */Pervasives.$at(param[1], body[/* pexp_attributes */2]);
   var body$1 = /* record */[
-    body_000,
-    body_001,
-    body_002
+    body_pexp_desc,
+    body_pexp_loc,
+    body_pexp_attributes
   ];
   if (ext !== undefined) {
     return ghexp(/* Pexp_extension */Block.__(33, [/* tuple */[
@@ -3985,10 +3985,10 @@ function add_nonrec(rf, attrs, pos) {
   if (rf) {
     return attrs;
   } else {
-    var name_001 = /* loc */rhs_loc(pos);
+    var name_loc = /* loc */rhs_loc(pos);
     var name = /* record */[
       /* txt */"nonrec",
-      name_001
+      name_loc
     ];
     return /* :: */[
             /* tuple */[
@@ -10617,13 +10617,13 @@ function with_comment_buffer(comment, lexbuf) {
   var end_loc = Curry._1(comment, lexbuf);
   var s = get_stored_string(/* () */0);
   reset_string_buffer(/* () */0);
-  var loc_000 = /* loc_start */start_loc[/* loc_start */0];
-  var loc_001 = /* loc_end */end_loc[/* loc_end */1];
-  var loc_002 = /* loc_ghost */start_loc[/* loc_ghost */2];
+  var loc_loc_start = /* loc_start */start_loc[/* loc_start */0];
+  var loc_loc_end = /* loc_end */end_loc[/* loc_end */1];
+  var loc_loc_ghost = /* loc_ghost */start_loc[/* loc_ghost */2];
   var loc = /* record */[
-    loc_000,
-    loc_001,
-    loc_002
+    loc_loc_start,
+    loc_loc_end,
+    loc_loc_ghost
   ];
   return /* tuple */[
           s,

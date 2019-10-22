@@ -1233,17 +1233,17 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
           }
       case /* Mark */4 :
           var i = match[0];
-          var marks_000 = /* marks : :: */[
+          var marks_marks = /* marks : :: */[
             /* tuple */[
               i,
               -1
             ],
             List.remove_assq(i, marks[/* marks */0])
           ];
-          var marks_001 = /* pmarks */marks[/* pmarks */1];
+          var marks_pmarks = /* pmarks */marks[/* pmarks */1];
           var marks$1 = /* record */[
-            marks_000,
-            marks_001
+            marks_marks,
+            marks_pmarks
           ];
           return /* :: */[
                   /* TMatch */Block.__(2, [marks$1]),
@@ -1273,11 +1273,11 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             return rem;
           }
       case /* Pmark */8 :
-          var marks_000$1 = /* marks */marks[/* marks */0];
-          var marks_001$1 = /* pmarks */add$1(match[0], marks[/* pmarks */1]);
+          var marks_marks$1 = /* marks */marks[/* marks */0];
+          var marks_pmarks$1 = /* pmarks */add$1(match[0], marks[/* pmarks */1]);
           var marks$2 = /* record */[
-            marks_000$1,
-            marks_001$1
+            marks_marks$1,
+            marks_pmarks$1
           ];
           return /* :: */[
                   /* TMatch */Block.__(2, [marks$2]),

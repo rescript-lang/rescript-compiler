@@ -265,3 +265,7 @@ let iter a f =
     done;
     !r
   
+let get_or arr i cb =     
+  if i >=0 && i < Array.length arr then 
+    Array.unsafe_get arr i 
+  else cb ()  
