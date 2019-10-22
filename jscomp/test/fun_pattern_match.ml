@@ -38,6 +38,7 @@ and ticker = {
 
 let f3  =     
   (fun {rank = lhs; _} {rank = rhs} -> 
+  (* generate curried version when pattern match against arguments *)
   match lhs, rhs with
   | Ranked x , Ranked y -> Pervasives.compare x y 
   | _ -> assert false

@@ -11,7 +11,7 @@ module  rec Int32 : sig
   external set : t -> int -> int -> unit = "" [@@js.set_index]
   external create : int array -> t = "Int32Array" [@@js.new]
   external of_buffer : buffer -> t = "Int32Array" [@@js.new]
-end = Int32
+end = Int32 (* Int32 is compiled away in 4.06 *)
 
 module Xx : sig
   val f : int -> int -> int 

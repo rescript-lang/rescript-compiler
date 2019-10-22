@@ -79,8 +79,7 @@ let suites = Mt.[
   );
   "t_lastIndex", (fun _ ->
     let re = [%re "/na/g"] in
-    let _ = re |. Js.Re.exec_ "banana" in
-
+    let _ = re |. Js.Re.exec_ "banana" in     (* Caml_option.null_to_opt post operation is not dropped in 4.06 which seems to be reduandant *)
     Eq(4,  re |. Js.Re.lastIndex)
   );
   "t_setLastIndex", (fun _ ->
