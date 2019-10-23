@@ -1,7 +1,7 @@
 {
   "name": "reason-react-examples",
   "reason": {
-    "react-jsx": 3,
+    "react-jsx": 3
   },
   "sources": {
     "dir" : "src",
