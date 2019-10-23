@@ -107,7 +107,7 @@ let div args =
     which is  a statement [var x = ... ; x ], it does not fit 
     current pipe-line fall back to a function call
 *)
-let bit_op  op runtime_call args = 
+let bit_op  (op : E.t -> E.t -> E.t) runtime_call args = 
   match args  with 
   | [l;r] -> 
     (* Int64 is a block in ocaml, a little more conservative in inlining *)
