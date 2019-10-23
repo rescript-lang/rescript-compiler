@@ -47,8 +47,7 @@ and ('a, 'b) bucketlist =
 *)
 
 let ongoing_traversal h =
-  Obj.size (Obj.repr h) < 4 (* compatibility with old hash tables *)
-  || h.initial_size < 0
+  h.initial_size < 0
 
 let flip_ongoing_traversal h =
   h.initial_size <- - h.initial_size
@@ -96,8 +95,7 @@ let clear h =
 
 let reset h =
   let len = Array.length h.data in
-  if Obj.size (Obj.repr h) < 4 (* compatibility with old hash tables *)
-    || len = abs h.initial_size then
+  if len = abs h.initial_size then
     clear h
   else begin
     h.size <- 0;
@@ -166,9 +164,8 @@ let resize indexfun h =
 
 let key_index h key =
   (* compatibility with old hash tables *)
-  if Obj.size (Obj.repr h) >= 3
-  then (seeded_hash_param 10 100 h.seed key) land (Array.length h.data - 1)
-  else (old_hash_param 10 100 key) mod (Array.length h.data)
+  (seeded_hash_param 10 100 h.seed key) land (Array.length h.data - 1)
+
 
 let add h key data =
   let i = key_index h key in
