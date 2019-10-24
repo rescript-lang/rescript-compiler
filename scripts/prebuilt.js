@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 //@ts-check
 var cp = require("child_process");
 var path = require("path");
