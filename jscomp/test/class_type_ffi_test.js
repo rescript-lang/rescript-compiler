@@ -5,7 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 function sum_float_array(arr) {
   var v = 0;
   for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
-    v += arr.case(i);
+    v = v + arr.case(i);
   }
   return v;
 }

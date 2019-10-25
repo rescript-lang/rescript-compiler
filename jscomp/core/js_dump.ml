@@ -219,10 +219,10 @@ let comma_idents (cxt: cxt) f ls =
   comma
 
 let pp_paren_params 
-  (inner_cxt : cxt) (f : Ext_pp.t) 
-  (lexical : Ident.t list) : unit =   
+    (inner_cxt : cxt) (f : Ext_pp.t) 
+    (lexical : Ident.t list) : unit =   
   P.string f L.lparen;
-  ignore @@ comma_idents inner_cxt f lexical;
+  let _ : cxt =  comma_idents inner_cxt f lexical in 
   P.string f L.rparen
 
 (** Print as underscore for unused vars, may not be 
@@ -344,7 +344,7 @@ let is_var (b : J.expression)  a =
 let rec
   try_optimize_curry cxt f len function_id =
   Curry_gen.pp_optimize_curry f len ; 
-  P.paren_group f 1 (fun _ -> expression 1 cxt f function_id  )
+  P.paren_group f 1 (fun _ -> expression ~level:1 cxt f function_id  )
 
 
 and  pp_function is_method
@@ -401,11 +401,7 @@ and  pp_function is_method
        if the function does not capture any variable, then the context is empty
     *)
     let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-
-
-    (* (if not @@ Js_fun_env.is_empty env then *)
-    (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
-    let param_body () =
+    let param_body () : unit =
       if is_method then
         match l with 
         | [] -> assert false 
@@ -414,7 +410,7 @@ and  pp_function is_method
               formal_parameter_list inner_cxt  f 1 arguments env )
           in
           P.space f ;
-          ignore @@ P.brace_vgroup f 1 (fun _ ->
+          P.brace_vgroup f 1 (fun _ ->
               let cxt =
                 if Js_fun_env.get_unused env 0 then cxt 
                 else  pp_var_assign_this cxt f this in
@@ -424,7 +420,8 @@ and  pp_function is_method
         let cxt = 
           P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt  f 0 l env ) in
         P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) in
+        P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) 
+    in
     let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
     let enclose  lexical  return =
       let handle lexical =
@@ -440,7 +437,7 @@ and  pp_function is_method
                  P.space f ;
                  param_body ())                
            | Name_non_top x  ->
-             ignore @@ pp_var_assign inner_cxt f x ; 
+             ignore (pp_var_assign inner_cxt f x : cxt ); 
              P.string f L.function_;
              P.space f ;
              param_body ();
@@ -448,7 +445,7 @@ and  pp_function is_method
            | Name_top x  ->
              P.string f L.function_;
              P.space f ;
-             ignore (Ext_pp_scope.ident inner_cxt f x);
+             ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
              param_body ())
         else
           (* print as
@@ -461,7 +458,7 @@ and  pp_function is_method
              match name with
              | No_name -> ()
              | Name_non_top name | Name_top name->
-               ignore @@ pp_var_assign inner_cxt f name              
+               ignore (pp_var_assign inner_cxt f name : cxt)
           )
           ;
           P.string f L.lparen;
@@ -544,12 +541,12 @@ and vident cxt f  (v : J.vident) =
     Js_dump_property.property_access f name ;
     cxt
 
-
-and expression l cxt  f (exp : J.expression) : cxt =
+(* The higher the level, the more likely that inner has to add parens *)
+and expression ~level:l cxt  f (exp : J.expression) : cxt =
   pp_comment_option f exp.comment ;
-  expression_desc cxt l f exp.expression_desc
+  expression_desc cxt ~level:l f exp.expression_desc
 
-and expression_desc cxt (level:int) f x : cxt  =
+and expression_desc cxt ~(level:int) f x : cxt  =
   match x with
   | Null ->
     P.string f L.null; cxt 
@@ -561,9 +558,9 @@ and expression_desc cxt (level:int) f x : cxt  =
     bool f b ; cxt
   | Seq (e1, e2) ->
     P.cond_paren_group f (level > 0) 1 (fun () ->
-      let cxt = expression 0 cxt f e1 in
+      let cxt = expression ~level:0 cxt f e1 in
       comma_sp f;
-      expression 0 cxt f e2 )
+      expression ~level:0 cxt f e2 )
   | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
     pp_function method_ cxt f false  l b env
   (* TODO:
@@ -582,7 +579,7 @@ and expression_desc cxt (level:int) f x : cxt  =
           match info, el  with
           | {arity  = Full }, _
           | _, [] ->
-            let cxt = expression 15 cxt f e in
+            let cxt = expression ~level:15 cxt f e in
             P.paren_group f 1 (fun _ -> arguments cxt  f el )
 
           | _ , _ ->
@@ -600,27 +597,27 @@ and expression_desc cxt (level:int) f x : cxt  =
               end))
   | FlatCall(e,el) ->
     P.group f 1 (fun _ ->
-        let cxt = expression 15 cxt f e in
+        let cxt = expression ~level:15 cxt f e in
         P.string f L.dot;
         P.string f L.apply;
         P.paren_group f 1 (fun _ ->
             P.string f L.null;
             comma_sp f ;
-            expression 1 cxt f el
+            expression ~level:1 cxt f el
           )
       )
   | Char_to_int e ->
     (match e.expression_desc with
      | String_index (a,b) ->
        P.group f 1 (fun _ ->
-           let cxt = expression 15 cxt f a in
+           let cxt = expression ~level:15 cxt f a in
            P.string f L.dot;
            P.string f L.char_code_at;
-           P.paren_group f 1 (fun _ -> expression 0 cxt f b);
+           P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b);
          )
      | _ ->
        P.group f 1 (fun _ ->
-           let cxt = expression 15 cxt f e in
+           let cxt = expression ~level:15 cxt f e in
            P.string f L.dot;
            P.string f L.char_code_at;
            P.string f "(0)";
@@ -692,7 +689,7 @@ and expression_desc cxt (level:int) f x : cxt  =
     cxt
   | Is_null_or_undefined e ->
     P.cond_paren_group f (level > 0) 1 (fun _ ->
-        let cxt = expression 1 cxt f e in
+        let cxt = expression ~level:1 cxt f e in
         P.space f ;
         P.string f "==";
         P.space f ;
@@ -701,54 +698,17 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Js_not e ->
     P.cond_paren_group f (level > 13) 1 (fun _ -> 
       P.string f "!" ;
-      expression 13 cxt f e
+      expression ~level:13 cxt f e
     )
   | Typeof e
     ->
     P.string f "typeof";
     P.space f;
-    expression 13 cxt f e
-  | Bin (Eq, {expression_desc = Var i },
-         {expression_desc =
-            (
-              Bin(
-                (Plus as op), {expression_desc = Var j}, delta)
-            | Bin(
-                (Plus as op), delta, {expression_desc = Var j})
-            | Bin(
-                (Minus as op), {expression_desc = Var j}, delta)
-            )
-         })
-    when Js_op_util.same_vident i j ->
-    (* TODO: parenthesize when necessary *)
-    begin match delta, op with
-      | {expression_desc = Number (Int { i =  1l; _})}, Plus
-      (* TODO: float 1. instead,
-           since in JS, ++ is a float operation
-      *)
-      | {expression_desc = Number (Int { i =  -1l; _})}, Minus
-        ->
-        P.string f L.plusplus;
-        P.space f ;
-        vident cxt f i
-
-      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
-      | {expression_desc = Number (Int { i =  1l; _})}, Minus
-        ->
-        P.string f L.minusminus;
-        P.space f ;
-        vident cxt f i;
-      | _, _ ->
-        let cxt = vident cxt f i in
-        P.space f ;
-        if op = Plus then P.string f "+="
-        else P.string f "-=";
-        P.space f ;
-        expression 13 cxt  f delta
-    end
-  | Bin (Eq, {expression_desc = Array_index({expression_desc = Var i; _},
+    expression ~level:13 cxt f e
+ 
+  | Bin (Eq, ({expression_desc = Array_index({expression_desc = Var i; _},
                                        {expression_desc = Number (Int {i = k0 })}
-                                      ) },
+                                      ) } as lhs),
          {expression_desc =
             (Bin((Plus as op),
                  {expression_desc = Array_index(
@@ -781,12 +741,6 @@ and expression_desc cxt (level:int) f x : cxt  =
        handle parens..
     *)
     ->
-    let aux cxt f vid i =
-      let cxt = vident cxt f vid in
-      P.string f "[";
-      P.string f (Int32.to_string  i);
-      P.string f"]";
-      cxt in
     (** TODO: parenthesize when necessary *)
     (match delta, op with
      | {expression_desc = Number (Int { i =  1l; _})}, Plus
@@ -794,20 +748,22 @@ and expression_desc cxt (level:int) f x : cxt  =
        ->
        P.string f L.plusplus;
        P.space f ;
-       aux cxt f i k0
+       expression ~level:13 cxt f lhs (* Static index level is 15*)
      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
      | {expression_desc = Number (Int { i =  1l; _})}, Minus
        ->
        P.string f L.minusminus;
        P.space f ;
-       aux cxt f  i k0
+       expression ~level:13 cxt f lhs
+       
      | _, _ ->
-       let cxt = aux cxt f i k0 in
+       let cxt = expression ~level:13 cxt f lhs in
        P.space f ;
-       if op = Plus then P.string f "+="
-       else P.string f "-=";
+       P.string f (if op = Plus then "+=" else "-=");
        P.space f ;
-       expression 13 cxt  f delta)
+       expression ~level:13 cxt  f delta) 
+
+
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e)
     (* TODO:
        Handle multiple cases like
@@ -818,7 +774,7 @@ and expression_desc cxt (level:int) f x : cxt  =
     ->
     P.cond_paren_group f (level > 13 ) 1 (fun _ -> 
       P.string f "-" ;
-      expression 13 cxt f e
+      expression ~level:13 cxt f e
     )
   | Bin (op, e1, e2) ->
     let (out, lft, rght) = Js_op_util.op_prec op in
@@ -827,34 +783,34 @@ and expression_desc cxt (level:int) f x : cxt  =
     (* We are more conservative here, to make the generated code more readable
           to the user *)
     P.cond_paren_group f need_paren 1  (fun _ -> 
-      let cxt = expression lft cxt  f e1 in
+      let cxt = expression ~level:lft cxt  f e1 in
       P.space f;
       P.string f (Js_op_util.op_str op);
       P.space f;
-      expression rght cxt   f e2)
+      expression ~level:rght cxt   f e2)
   | String_append (e1, e2) ->
     let op : Js_op.binop = Plus in
     let (out, lft, rght) = Js_op_util.op_prec op in
     let need_paren =
       level > out || (match op with Lsl | Lsr | Asr -> true | _ -> false) in
     P.cond_paren_group f need_paren 1 (fun _ -> 
-      let cxt = expression  lft cxt f e1 in
+      let cxt = expression  ~level:lft cxt f e1 in
       P.space f ;
       P.string f "+";
       P.space f;
-      expression rght  cxt   f e2)
+      expression  ~level:rght cxt   f e2)
   | Array (el,_) ->
     (** TODO: simplify for singleton list *)
       (match el with
-      | []| [ _ ] -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el
-      | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el)
+      | []| [ _ ] -> P.bracket_group f 1 (fun _ -> array_element_list  cxt f el)
+      | _ -> P.bracket_vgroup f 1 (fun _ -> array_element_list  cxt f el))
   | Optional_block (e,identity) -> 
-    expression level cxt f  
+    expression ~level cxt f  
       (if identity then e 
        else       
          E.runtime_call Js_runtime_modules.option "some" [e])
   | Caml_block(el,_, _, Blk_module fields) ->        
-      expression_desc cxt (level:int) f (Object (
+      expression_desc cxt ~level f (Object (
         (Ext_list.map_combine fields el Ext_ident.convert)))
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
@@ -870,7 +826,7 @@ and expression_desc cxt (level:int) f x : cxt  =
     *)
     if not !Js_config.debug then begin 
       if not (Js_block_runtime.needBlockRuntime tag tag_info) then 
-        expression_desc cxt level f  (Array (el, mutable_flag))
+        expression_desc cxt ~level f  (Array (el, mutable_flag))
       else  
         begin
           pp_block_create f;
@@ -879,7 +835,7 @@ and expression_desc cxt (level:int) f x : cxt  =
     end 
       else
         if not (Js_block_runtime.needChromeRuntime tag tag_info) then 
-          expression_desc cxt level f  (Array (el, mutable_flag))
+          expression_desc cxt ~level f  (Array (el, mutable_flag))
         else 
       (  
         match tag_info with 
@@ -938,7 +894,7 @@ and expression_desc cxt (level:int) f x : cxt  =
 
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->
-        let cxt = expression 15 cxt f  e in
+        let cxt = expression ~level:15 cxt f  e in
         P.string f L.dot ;
         P.string f L.tag ;
         cxt)
@@ -946,13 +902,13 @@ and expression_desc cxt (level:int) f x : cxt  =
   | String_index (e,p)
     ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
-        P.group f 1 @@ fun _ ->
-        let cxt = expression 15 cxt f e in
-        P.bracket_group f 1 @@ fun _ ->
-        expression 0 cxt f p )
+        P.group f 1  (fun _ ->
+        let cxt = expression ~level:15 cxt f e in
+        P.bracket_group f 1 (fun _ ->
+        expression ~level:0 cxt f p )))  
   | Static_index (e, s,_) ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
-        let cxt = expression 15 cxt f e in
+        let cxt = expression ~level:15 cxt f e in
         Js_dump_property.property_access f s ;
         (* See [ .obj_of_exports]
            maybe in the ast level we should have
@@ -963,24 +919,23 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Length (e, _) ->
     (** Todo: check parens *)
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
-      let cxt = expression 15 cxt f e in
+      let cxt = expression ~level:15 cxt f e in
       P.string f L.dot;
       P.string f L.length;
       cxt)
   | New (e,  el) ->
     P.cond_paren_group f (level > 15) 1 (fun _ ->
-      P.group f 1 @@ fun _ ->
-      P.string f L.new_;
-      P.space f;
-      let cxt = expression 16 cxt f e in
-      P.paren_group f 1 @@ fun _ ->
-      match el with
-      | Some el  -> arguments cxt f el
-      | None -> cxt)
+        P.group f 1 ( fun _ ->
+            P.string f L.new_;
+            P.space f;
+            let cxt = expression ~level:16 cxt f e in
+            P.paren_group f 1 (fun _ ->
+                match el with
+                | Some el  -> arguments cxt f el
+                | None -> cxt)))
   | Cond (e, e1, e2) ->
-    let action () =
-      (* P.group f 1 @@ fun _ ->  *)
-      let cxt =  expression 3 cxt f e in
+    let action () =      
+      let cxt =  expression ~level:3 cxt f e in
       P.space f;
       P.string f L.question;
       P.space f;
@@ -988,15 +943,13 @@ and expression_desc cxt (level:int) f x : cxt  =
             [level 1] is correct, however
             to make nice indentation , force nested conditional to be parenthesized
           *)
-      let cxt = P.group f 1 (fun _ -> expression 3 cxt f e1) in
-      (* let cxt = (P.group f 1 @@ fun _ -> expression 1 cxt f e1) in *)
+      let cxt = P.group f 1 (fun _ -> expression ~level:3 cxt f e1) in
+
       P.space f;
       P.string f L.colon;
       P.space f ;
-
       (* idem *)
-      P.group f 1 @@ fun _ -> expression 3 cxt f e2
-      (* P.group f 1 @@ fun _ -> expression 1 cxt f e2 *)
+      P.group f 1 (fun _ -> expression ~level:3 cxt f e2)
     in
     if level > 2 then P.paren_vgroup f 1 action else action ()
 
@@ -1005,8 +958,8 @@ and expression_desc cxt (level:int) f x : cxt  =
     | [] -> P.string f "{ }" ; cxt
     | _ ->
       let action () =
-        P.brace_vgroup f 1 @@ fun _ ->
-        property_name_and_value_list cxt f lst in
+        P.brace_vgroup f 1 (fun _ ->
+        property_name_and_value_list cxt f lst) in
       if level > 1 then
         (* #1946 object literal is easy to be
            interpreted as block statement
@@ -1018,18 +971,19 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.paren_group f 1 action
       else action ()
 
-and property_name_and_value_list cxt f l =     
+and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
     Js_dump_property.property_key f pn ;
     P.string f L.colon;
     P.space f;
-    expression 1 cxt f e
+    expression ~level:1 cxt f e
   ) comma_nl      
-and array_element_list cxt f el : cxt =
-  iter_lst cxt f el (fun cxt f e  -> expression 1 cxt f e ) comma_nl
+
+and array_element_list cxt f (el : E.t list) : cxt =
+  iter_lst cxt f el (expression ~level:1) comma_nl
  
-and arguments cxt f l : cxt =
-  iter_lst cxt f l (fun cxt f e  -> expression 1 cxt f e) comma_sp
+and arguments cxt f (l : E.t list) : cxt =
+  iter_lst cxt f l (expression ~level:1) comma_sp
   
 and variable_declaration top cxt f
     (variable : J.variable_declaration) : cxt =
@@ -1061,7 +1015,7 @@ and variable_declaration top cxt f
         acxt 
       | _, _ ->
         let cxt = pp_var_assign cxt f name in 
-        let cxt = expression 1 cxt f e in
+        let cxt = expression ~level:1 cxt f e in
         semi f;
         cxt
 
@@ -1108,7 +1062,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
         if exp_need_paren  e
         then P.paren_group f 1
         else P.group f 0
-      ) (fun _ -> expression 0 cxt f e ) in
+      ) (fun _ -> expression ~level:0 cxt f e ) in
     semi f;
     cxt
   | Block b -> (* No braces needed here *)
@@ -1122,7 +1076,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | If (e, s1,  s2) -> (* TODO: always brace those statements *)
     P.string f L.if_;
     P.space f;
-    let cxt = P.paren_group f 1 (fun _ -> expression 0 cxt f e) in
+    let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
     P.space f;
     let cxt = block cxt f s1 in
     (match s2 with
@@ -1160,7 +1114,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           cxt
         | _ ->
           P.string f L.while_;
-          let cxt = P.paren_group f 1 (fun _ ->  expression 0 cxt f e) in
+          let cxt = P.paren_group f 1 (fun _ ->  expression ~level:0 cxt f e) in
           P.space f ;
           cxt
       in
@@ -1170,59 +1124,59 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     end
   | ForRange (for_ident_expression, finish, id, direction, s, env) ->
     let action cxt  =
-      P.vgroup f 0 @@ fun _ ->
-      let cxt = P.group f 0 @@ fun _ ->
-        (* The only place that [semi] may have semantics here *)
-        P.string f L.for_ ;
-        P.paren_group f 1 @@ fun _ ->
-        let cxt, new_id =
-          match for_ident_expression, finish.expression_desc with
-          | Some ident_expression , (Number _ | Var _ ) ->
-            let cxt = pp_var_assign cxt f id in  
-            expression 0 cxt f ident_expression, None
-          | Some ident_expression, _ ->
-            let cxt = pp_var_assign cxt f id in 
-            let cxt = expression 1 cxt f ident_expression in
-            P.space f ;
-            comma f;  
-            let id = Ext_ident.create (Ident.name id ^ "_finish") in
-            let cxt = Ext_pp_scope.ident cxt f id in
-            P.space f ;
-            P.string f L.eq;
-            P.space f;
-            expression 1 cxt f finish, Some id
-          | None, (Number _ | Var _) ->
-            cxt, None
-          | None , _ ->
-            let id = Ext_ident.create (Ident.name id ^ "_finish") in
-            let cxt = pp_var_assign cxt f id in 
-            expression 15 cxt f finish, Some id in
-        semi f ;
-        P.space f;
-        let cxt = Ext_pp_scope.ident cxt f id in
-        P.space f;
-        let right_prec  =
-          match direction with
-          | Upto ->
-            let (_,_,right) = Js_op_util.op_prec Le  in
-            P.string f L.le;
-            right
-          | Downto ->
-            let (_,_,right) = Js_op_util.op_prec Ge in
-            P.string f L.ge ;
-            right
-        in
-        P.space f ;
-        let cxt  =
-          expression   right_prec cxt  f 
-            (match new_id with
-             | Some i -> E.var i
-             | None -> finish) in
-        semi f;
-        P.space f;
-        pp_direction f direction;
-        Ext_pp_scope.ident cxt f id in
-      block  cxt f s  in
+      P.vgroup f 0 ( fun _ ->
+          let cxt = P.group f 0 (fun _ ->
+              (* The only place that [semi] may have semantics here *)
+              P.string f L.for_ ;
+              P.paren_group f 1 ( fun _ ->
+                  let cxt, new_id =
+                    match for_ident_expression, finish.expression_desc with
+                    | Some ident_expression , (Number _ | Var _ ) ->
+                      let cxt = pp_var_assign cxt f id in  
+                      expression ~level:0 cxt f ident_expression, None
+                    | Some ident_expression, _ ->
+                      let cxt = pp_var_assign cxt f id in 
+                      let cxt = expression ~level:1 cxt f ident_expression in
+                      P.space f ;
+                      comma f;  
+                      let id = Ext_ident.create (Ident.name id ^ "_finish") in
+                      let cxt = Ext_pp_scope.ident cxt f id in
+                      P.space f ;
+                      P.string f L.eq;
+                      P.space f;
+                      expression ~level:1 cxt f finish, Some id
+                    | None, (Number _ | Var _) ->
+                      cxt, None
+                    | None , _ ->
+                      let id = Ext_ident.create (Ident.name id ^ "_finish") in
+                      let cxt = pp_var_assign cxt f id in 
+                      expression ~level:15 cxt f finish, Some id in
+                  semi f ;
+                  P.space f;
+                  let cxt = Ext_pp_scope.ident cxt f id in
+                  P.space f;
+                  let right_prec  =
+                    match direction with
+                    | Upto ->
+                      let (_,_,right) = Js_op_util.op_prec Le  in
+                      P.string f L.le;
+                      right
+                    | Downto ->
+                      let (_,_,right) = Js_op_util.op_prec Ge in
+                      P.string f L.ge ;
+                      right
+                  in
+                  P.space f ;
+                  let cxt  =
+                    expression   ~level:right_prec cxt  f 
+                      (match new_id with
+                       | Some i -> E.var i
+                       | None -> finish) in
+                  semi f;
+                  P.space f;
+                  pp_direction f direction;
+                  Ext_pp_scope.ident cxt f id)) in
+          block  cxt f s ) in
     let lexical = Js_closure.get_lexical_scope env in
     if Ident_set.is_empty lexical
     then action cxt
@@ -1263,7 +1217,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
         return_sp f ;
         (* P.string f "return ";(\* ASI -- when there is a comment*\) *)
         P.group f return_indent (fun _ ->
-            let cxt =  expression 0 cxt f e in
+            let cxt =  expression ~level:0 cxt f e in
             semi f;
             cxt)
         (* There MUST be a space between the return and its
@@ -1272,27 +1226,26 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Int_switch (e, cc, def) ->
     P.string f L.switch;
     P.space f;
-    let cxt = P.paren_group f 1 (fun _ ->  expression 0 cxt f e) in
+    let cxt = P.paren_group f 1 (fun _ ->  expression ~level:0 cxt f e) in
     P.space f;
-    P.brace_vgroup f 1 @@ fun _ ->
-    let cxt = loop_case_clauses cxt f (fun f i -> P.string f (string_of_int i) ) cc in
-    (match def with
-     | None -> cxt
-     | Some def ->
-       P.group f 1 @@ fun _ ->
-       P.string f L.default;
-       P.string f L.colon;
-       P.newline f;
-       statement_list  false cxt  f def
-    )
+    P.brace_vgroup f 1 (fun _ ->
+        let cxt = loop_case_clauses cxt f (fun f i -> P.string f (string_of_int i) ) cc in
+        match def with
+        | None -> cxt
+        | Some def ->
+          P.group f 1  (fun _ ->
+              P.string f L.default;
+              P.string f L.colon;
+              P.newline f;
+              statement_list  false cxt  f def))
 
   | String_switch (e, cc, def) ->
     P.string f L.switch;
     P.space f;
-    let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e in
+    let cxt = P.paren_group f 1 (fun _ ->  expression ~level:0 cxt f e) in
     P.space f;
     P.brace_vgroup f 1 (fun _ ->
-        let cxt = loop_case_clauses cxt f (fun f i -> Js_dump_string.pp_string f i ) cc in
+        let cxt = loop_case_clauses cxt f Js_dump_string.pp_string  cc in
         match def with
         | None -> cxt
         | Some def ->
@@ -1305,37 +1258,38 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     P.string f L.throw;
     P.space f ;
     P.group f throw_indent  (fun _ ->
-        let cxt = expression 0 cxt f e in
+        let cxt = expression ~level:0 cxt f e in
         semi f ; cxt)
 
   (* There must be a space between the return and its
      argument. A line return would not work *)
   | Try (b, ctch, fin) ->
-    P.vgroup f 0 @@ fun _->
-    P.string f L.try_;
-    P.space f ;
-    let cxt = block cxt f b in
-    let cxt =
-      match ctch with
-      | None ->
-        cxt
-      | Some (i, b) ->
-        P.newline f;
-        P.string f "catch (";
-        let cxt = Ext_pp_scope.ident cxt f i in
-        P.string f ")";
-        block cxt f b in
-    match fin with
-    | None -> cxt
-    | Some b ->
-      P.group f 1 (fun _ ->
-          P.string f L.finally;
-          P.space f;
-          block cxt f b)
+    P.vgroup f 0 (
+      fun _->
+        P.string f L.try_;
+        P.space f ;
+        let cxt = block cxt f b in
+        let cxt =
+          match ctch with
+          | None ->
+            cxt
+          | Some (i, b) ->
+            P.newline f;
+            P.string f "catch (";
+            let cxt = Ext_pp_scope.ident cxt f i in
+            P.string f ")";
+            block cxt f b in
+        match fin with
+        | None -> cxt
+        | Some b ->
+          P.group f 1 (fun _ ->
+              P.string f L.finally;
+              P.space f;
+              block cxt f b))
 
-and function_body cxt f b =
+and function_body (cxt : cxt) f (b : J.block) : unit =
   match b with
-  | []     -> cxt
+  | []     -> ()
   | [s]    ->
     begin match s.statement_desc with
     | If (bool,
@@ -1344,9 +1298,9 @@ and function_body cxt f b =
               statement_desc =
                 Return {return_value = {expression_desc = Undefined}} }])
         ->
-        statement false cxt f {s with statement_desc = If(bool,then_, [])}
+        ignore (statement false cxt f {s with statement_desc = If(bool,then_, [])} : cxt)
     | _ ->        
-      statement false  cxt f  s
+      ignore (statement false  cxt f  s : cxt)
     end
   | s :: r ->
     let cxt = statement false cxt f s in
@@ -1360,7 +1314,7 @@ and statement_list top cxt f  b =
       (fun f -> P.newline f ; P.force_newline f )
       else P.newline
     )
-    (* (fun f -> P.newline f ; if top then P.force_newline f ) *)
+
 
 and block cxt f b =
   (* This one is for '{' *)
@@ -1369,29 +1323,19 @@ and block cxt f b =
 
 
 
-(* let program f cxt   ( x : J.program ) =
-  let () = P.force_newline f in
-  let cxt =  statement_list true cxt f x.block  in
-  let () = P.force_newline f in
-  Js_dump_import_export.exports cxt f x.exports *)
-
-(* let dump_program (x : J.program) oc =
-  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x ) *)
-
-let string_of_block  block
-  =
+let string_of_block  (block : J.block) =
   let buffer  = Buffer.create 50 in
   let f = P.from_buffer buffer in
-  let _scope =  statement_list true Ext_pp_scope.empty  f block in
+  let _ : cxt =  statement_list true Ext_pp_scope.empty  f block in
   P.flush  f ();
   Buffer.contents buffer
 
 
 
-let string_of_expression e =
+let string_of_expression (e : J.expression) =
   let buffer  = Buffer.create 50 in
   let f = P.from_buffer buffer in
-  let _scope =  expression 0  Ext_pp_scope.empty  f e in
+  let _ : cxt =  expression ~level:0  Ext_pp_scope.empty  f e in
   P.flush  f ();
   Buffer.contents buffer
 

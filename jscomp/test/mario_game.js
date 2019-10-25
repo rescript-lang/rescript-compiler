@@ -1084,8 +1084,8 @@ function normalize_origin(pos, spr) {
   var p = spr[/* params */0];
   var match = p[/* bbox_offset */5];
   var match$1 = p[/* bbox_size */6];
-  pos[0] -= match[0];
-  pos[1] -= (match[1] + match$1[1]);
+  pos[/* x */0] -= match[0];
+  pos[/* y */1] -= (match[1] + match$1[1]);
   return /* () */0;
 }
 
