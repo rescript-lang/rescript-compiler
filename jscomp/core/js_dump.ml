@@ -1320,7 +1320,7 @@ and statement_list top cxt f  b =
       (fun f -> P.newline f ; P.force_newline f )
       else P.newline
     )
-    (* (fun f -> P.newline f ; if top then P.force_newline f ) *)
+
 
 and block cxt f b =
   (* This one is for '{' *)
@@ -1329,29 +1329,19 @@ and block cxt f b =
 
 
 
-(* let program f cxt   ( x : J.program ) =
-  let () = P.force_newline f in
-  let cxt =  statement_list true cxt f x.block  in
-  let () = P.force_newline f in
-  Js_dump_import_export.exports cxt f x.exports *)
-
-(* let dump_program (x : J.program) oc =
-  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x ) *)
-
-let string_of_block  block
-  =
+let string_of_block  (block : J.block) =
   let buffer  = Buffer.create 50 in
   let f = P.from_buffer buffer in
-  let _scope =  statement_list true Ext_pp_scope.empty  f block in
+  let _ : cxt =  statement_list true Ext_pp_scope.empty  f block in
   P.flush  f ();
   Buffer.contents buffer
 
 
 
-let string_of_expression e =
+let string_of_expression (e : J.expression) =
   let buffer  = Buffer.create 50 in
   let f = P.from_buffer buffer in
-  let _scope =  expression ~level:0  Ext_pp_scope.empty  f e in
+  let _ : cxt =  expression ~level:0  Ext_pp_scope.empty  f e in
   P.flush  f ();
   Buffer.contents buffer
 
