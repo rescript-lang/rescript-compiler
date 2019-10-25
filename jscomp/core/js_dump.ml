@@ -977,18 +977,19 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.paren_group f 1 action
       else action ()
 
-and property_name_and_value_list cxt f l =     
+and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
     Js_dump_property.property_key f pn ;
     P.string f L.colon;
     P.space f;
     expression 1 cxt f e
   ) comma_nl      
-and array_element_list cxt f el : cxt =
-  iter_lst cxt f el (fun cxt f e  -> expression 1 cxt f e ) comma_nl
+
+and array_element_list cxt f (el : E.t list) : cxt =
+  iter_lst cxt f el (expression 1) comma_nl
  
-and arguments cxt f l : cxt =
-  iter_lst cxt f l (fun cxt f e  -> expression 1 cxt f e) comma_sp
+and arguments cxt f (l : E.t list) : cxt =
+  iter_lst cxt f l (expression 1) comma_sp
   
 and variable_declaration top cxt f
     (variable : J.variable_declaration) : cxt =
