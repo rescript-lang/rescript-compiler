@@ -53,8 +53,8 @@ let make ~lo ~hi =
     ~comment:"int64" (E.zero_int_literal) 
     record_info [   hi; E.to_uint32 lo ]
     Immutable
-let get_lo x = E.array_index_by_int x 1l
-let get_hi x = E.array_index_by_int x 0l
+
+
 
 
 (* below should  not depend on layout *)
@@ -66,7 +66,9 @@ let of_const (v : Int64.t) =
     ~hi:(Int64.to_int32 (Int64.shift_right v 32))
 
 let to_int32 args = 
-  E.to_int32 @@ get_lo (Ext_list.singleton_exn args)
+  int64_call "to_int32" args
+(* let get_lo x = E.array_index_by_int x 1l   *)
+  (* E.to_int32 @@ get_lo (Ext_list.singleton_exn args) *)
   
 
 let of_int32 (args : J.expression list) = 
@@ -108,15 +110,19 @@ let div args =
     current pipe-line fall back to a function call
 *)
 let bit_op  (op : E.t -> E.t -> E.t) runtime_call args = 
-  match args  with 
+  int64_call runtime_call args 
+  (*disable optimizations relying on int64 representations
+    this maybe outdated when we switch to bigint
+  *)
+  (* match args  with 
   | [l;r] -> 
     (* Int64 is a block in ocaml, a little more conservative in inlining *)
     if Js_analyzer.is_okay_to_duplicate l  &&
        Js_analyzer.is_okay_to_duplicate r then 
       make ~lo:(op (get_lo l) (get_lo r))
         ~hi:(op (get_hi l) (get_hi r))
-    else int64_call runtime_call args 
-  | _ -> assert false
+    else 
+  | _ -> assert false *)
 
 let xor  = bit_op E.int32_bxor "xor"
 let or_ = bit_op E.int32_bor "or_"

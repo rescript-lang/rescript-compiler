@@ -1059,7 +1059,10 @@ var suites = Pervasives.$at(/* :: */[
                               (function (param) {
                                   return /* Eq */Block.__(0, [
                                             3,
-                                            3
+                                            Caml_int64.to_int32(/* int64 */[
+                                                  /* hi */0,
+                                                  /* lo */3
+                                                ])
                                           ]);
                                 })
                             ],
@@ -1069,7 +1072,10 @@ var suites = Pervasives.$at(/* :: */[
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               3,
-                                              3
+                                              Caml_int64.to_int32(/* int64 */[
+                                                    /* hi */0,
+                                                    /* lo */3
+                                                  ])
                                             ]);
                                   })
                               ],
@@ -2062,9 +2068,7 @@ var suites = Pervasives.$at(/* :: */[
                                                           "to_int32",
                                                           (function (param) {
                                                               return /* Eq */Block.__(0, [
-                                                                        $$Array.map((function (prim) {
-                                                                                return prim[1] | 0;
-                                                                              }), /* array */[
+                                                                        $$Array.map(Caml_int64.to_int32, /* array */[
                                                                               /* int64 */[
                                                                                 /* hi */0,
                                                                                 /* lo */0
