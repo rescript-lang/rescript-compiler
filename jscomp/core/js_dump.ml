@@ -1130,59 +1130,59 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     end
   | ForRange (for_ident_expression, finish, id, direction, s, env) ->
     let action cxt  =
-      P.vgroup f 0 @@ fun _ ->
-      let cxt = P.group f 0 @@ fun _ ->
-        (* The only place that [semi] may have semantics here *)
-        P.string f L.for_ ;
-        P.paren_group f 1 @@ fun _ ->
-        let cxt, new_id =
-          match for_ident_expression, finish.expression_desc with
-          | Some ident_expression , (Number _ | Var _ ) ->
-            let cxt = pp_var_assign cxt f id in  
-            expression ~level:0 cxt f ident_expression, None
-          | Some ident_expression, _ ->
-            let cxt = pp_var_assign cxt f id in 
-            let cxt = expression ~level:1 cxt f ident_expression in
-            P.space f ;
-            comma f;  
-            let id = Ext_ident.create (Ident.name id ^ "_finish") in
-            let cxt = Ext_pp_scope.ident cxt f id in
-            P.space f ;
-            P.string f L.eq;
-            P.space f;
-            expression ~level:1 cxt f finish, Some id
-          | None, (Number _ | Var _) ->
-            cxt, None
-          | None , _ ->
-            let id = Ext_ident.create (Ident.name id ^ "_finish") in
-            let cxt = pp_var_assign cxt f id in 
-            expression ~level:15 cxt f finish, Some id in
-        semi f ;
-        P.space f;
-        let cxt = Ext_pp_scope.ident cxt f id in
-        P.space f;
-        let right_prec  =
-          match direction with
-          | Upto ->
-            let (_,_,right) = Js_op_util.op_prec Le  in
-            P.string f L.le;
-            right
-          | Downto ->
-            let (_,_,right) = Js_op_util.op_prec Ge in
-            P.string f L.ge ;
-            right
-        in
-        P.space f ;
-        let cxt  =
-          expression   ~level:right_prec cxt  f 
-            (match new_id with
-             | Some i -> E.var i
-             | None -> finish) in
-        semi f;
-        P.space f;
-        pp_direction f direction;
-        Ext_pp_scope.ident cxt f id in
-      block  cxt f s  in
+      P.vgroup f 0 ( fun _ ->
+          let cxt = P.group f 0 (fun _ ->
+              (* The only place that [semi] may have semantics here *)
+              P.string f L.for_ ;
+              P.paren_group f 1 ( fun _ ->
+                  let cxt, new_id =
+                    match for_ident_expression, finish.expression_desc with
+                    | Some ident_expression , (Number _ | Var _ ) ->
+                      let cxt = pp_var_assign cxt f id in  
+                      expression ~level:0 cxt f ident_expression, None
+                    | Some ident_expression, _ ->
+                      let cxt = pp_var_assign cxt f id in 
+                      let cxt = expression ~level:1 cxt f ident_expression in
+                      P.space f ;
+                      comma f;  
+                      let id = Ext_ident.create (Ident.name id ^ "_finish") in
+                      let cxt = Ext_pp_scope.ident cxt f id in
+                      P.space f ;
+                      P.string f L.eq;
+                      P.space f;
+                      expression ~level:1 cxt f finish, Some id
+                    | None, (Number _ | Var _) ->
+                      cxt, None
+                    | None , _ ->
+                      let id = Ext_ident.create (Ident.name id ^ "_finish") in
+                      let cxt = pp_var_assign cxt f id in 
+                      expression ~level:15 cxt f finish, Some id in
+                  semi f ;
+                  P.space f;
+                  let cxt = Ext_pp_scope.ident cxt f id in
+                  P.space f;
+                  let right_prec  =
+                    match direction with
+                    | Upto ->
+                      let (_,_,right) = Js_op_util.op_prec Le  in
+                      P.string f L.le;
+                      right
+                    | Downto ->
+                      let (_,_,right) = Js_op_util.op_prec Ge in
+                      P.string f L.ge ;
+                      right
+                  in
+                  P.space f ;
+                  let cxt  =
+                    expression   ~level:right_prec cxt  f 
+                      (match new_id with
+                       | Some i -> E.var i
+                       | None -> finish) in
+                  semi f;
+                  P.space f;
+                  pp_direction f direction;
+                  Ext_pp_scope.ident cxt f id)) in
+          block  cxt f s ) in
     let lexical = Js_closure.get_lexical_scope env in
     if Ident_set.is_empty lexical
     then action cxt
@@ -1234,25 +1234,24 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     P.space f;
     let cxt = P.paren_group f 1 (fun _ ->  expression ~level:0 cxt f e) in
     P.space f;
-    P.brace_vgroup f 1 @@ fun _ ->
-    let cxt = loop_case_clauses cxt f (fun f i -> P.string f (string_of_int i) ) cc in
-    (match def with
-     | None -> cxt
-     | Some def ->
-       P.group f 1 @@ fun _ ->
-       P.string f L.default;
-       P.string f L.colon;
-       P.newline f;
-       statement_list  false cxt  f def
-    )
+    P.brace_vgroup f 1 (fun _ ->
+        let cxt = loop_case_clauses cxt f (fun f i -> P.string f (string_of_int i) ) cc in
+        match def with
+        | None -> cxt
+        | Some def ->
+          P.group f 1  (fun _ ->
+              P.string f L.default;
+              P.string f L.colon;
+              P.newline f;
+              statement_list  false cxt  f def))
 
   | String_switch (e, cc, def) ->
     P.string f L.switch;
     P.space f;
-    let cxt = P.paren_group f 1 @@ fun _ ->  expression ~level:0 cxt f e in
+    let cxt = P.paren_group f 1 (fun _ ->  expression ~level:0 cxt f e) in
     P.space f;
     P.brace_vgroup f 1 (fun _ ->
-        let cxt = loop_case_clauses cxt f (fun f i -> Js_dump_string.pp_string f i ) cc in
+        let cxt = loop_case_clauses cxt f Js_dump_string.pp_string  cc in
         match def with
         | None -> cxt
         | Some def ->
@@ -1271,29 +1270,30 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   (* There must be a space between the return and its
      argument. A line return would not work *)
   | Try (b, ctch, fin) ->
-    P.vgroup f 0 @@ fun _->
-    P.string f L.try_;
-    P.space f ;
-    let cxt = block cxt f b in
-    let cxt =
-      match ctch with
-      | None ->
-        cxt
-      | Some (i, b) ->
-        P.newline f;
-        P.string f "catch (";
-        let cxt = Ext_pp_scope.ident cxt f i in
-        P.string f ")";
-        block cxt f b in
-    match fin with
-    | None -> cxt
-    | Some b ->
-      P.group f 1 (fun _ ->
-          P.string f L.finally;
-          P.space f;
-          block cxt f b)
+    P.vgroup f 0 (
+      fun _->
+        P.string f L.try_;
+        P.space f ;
+        let cxt = block cxt f b in
+        let cxt =
+          match ctch with
+          | None ->
+            cxt
+          | Some (i, b) ->
+            P.newline f;
+            P.string f "catch (";
+            let cxt = Ext_pp_scope.ident cxt f i in
+            P.string f ")";
+            block cxt f b in
+        match fin with
+        | None -> cxt
+        | Some b ->
+          P.group f 1 (fun _ ->
+              P.string f L.finally;
+              P.space f;
+              block cxt f b))
 
-and function_body cxt f b =
+and function_body cxt f (b : J.block) =
   match b with
   | []     -> cxt
   | [s]    ->
