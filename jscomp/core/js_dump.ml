@@ -219,10 +219,10 @@ let comma_idents (cxt: cxt) f ls =
   comma
 
 let pp_paren_params 
-  (inner_cxt : cxt) (f : Ext_pp.t) 
-  (lexical : Ident.t list) : unit =   
+    (inner_cxt : cxt) (f : Ext_pp.t) 
+    (lexical : Ident.t list) : unit =   
   P.string f L.lparen;
-  ignore @@ comma_idents inner_cxt f lexical;
+  let _ : cxt =  comma_idents inner_cxt f lexical in 
   P.string f L.rparen
 
 (** Print as underscore for unused vars, may not be 
@@ -401,11 +401,7 @@ and  pp_function is_method
        if the function does not capture any variable, then the context is empty
     *)
     let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-
-
-    (* (if not @@ Js_fun_env.is_empty env then *)
-    (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
-    let param_body () =
+    let param_body () : unit =
       if is_method then
         match l with 
         | [] -> assert false 
@@ -414,7 +410,7 @@ and  pp_function is_method
               formal_parameter_list inner_cxt  f 1 arguments env )
           in
           P.space f ;
-          ignore @@ P.brace_vgroup f 1 (fun _ ->
+          P.brace_vgroup f 1 (fun _ ->
               let cxt =
                 if Js_fun_env.get_unused env 0 then cxt 
                 else  pp_var_assign_this cxt f this in
@@ -424,7 +420,8 @@ and  pp_function is_method
         let cxt = 
           P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt  f 0 l env ) in
         P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) in
+        P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) 
+    in
     let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
     let enclose  lexical  return =
       let handle lexical =
@@ -440,7 +437,7 @@ and  pp_function is_method
                  P.space f ;
                  param_body ())                
            | Name_non_top x  ->
-             ignore @@ pp_var_assign inner_cxt f x ; 
+             ignore (pp_var_assign inner_cxt f x : cxt ); 
              P.string f L.function_;
              P.space f ;
              param_body ();
@@ -448,7 +445,7 @@ and  pp_function is_method
            | Name_top x  ->
              P.string f L.function_;
              P.space f ;
-             ignore (Ext_pp_scope.ident inner_cxt f x);
+             ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
              param_body ())
         else
           (* print as
@@ -461,7 +458,7 @@ and  pp_function is_method
              match name with
              | No_name -> ()
              | Name_non_top name | Name_top name->
-               ignore @@ pp_var_assign inner_cxt f name              
+               ignore (pp_var_assign inner_cxt f name : cxt)
           )
           ;
           P.string f L.lparen;
@@ -805,8 +802,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | Array (el,_) ->
     (** TODO: simplify for singleton list *)
       (match el with
-      | []| [ _ ] -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el
-      | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el)
+      | []| [ _ ] -> P.bracket_group f 1 (fun _ -> array_element_list  cxt f el)
+      | _ -> P.bracket_vgroup f 1 (fun _ -> array_element_list  cxt f el))
   | Optional_block (e,identity) -> 
     expression ~level cxt f  
       (if identity then e 
@@ -905,10 +902,10 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | String_index (e,p)
     ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
-        P.group f 1 @@ fun _ ->
+        P.group f 1  (fun _ ->
         let cxt = expression ~level:15 cxt f e in
-        P.bracket_group f 1 @@ fun _ ->
-        expression ~level:0 cxt f p )  
+        P.bracket_group f 1 (fun _ ->
+        expression ~level:0 cxt f p )))  
   | Static_index (e, s,_) ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
         let cxt = expression ~level:15 cxt f e in
@@ -928,17 +925,16 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       cxt)
   | New (e,  el) ->
     P.cond_paren_group f (level > 15) 1 (fun _ ->
-      P.group f 1 @@ fun _ ->
-      P.string f L.new_;
-      P.space f;
-      let cxt = expression ~level:16 cxt f e in
-      P.paren_group f 1 @@ fun _ ->
-      match el with
-      | Some el  -> arguments cxt f el
-      | None -> cxt)
+        P.group f 1 ( fun _ ->
+            P.string f L.new_;
+            P.space f;
+            let cxt = expression ~level:16 cxt f e in
+            P.paren_group f 1 (fun _ ->
+                match el with
+                | Some el  -> arguments cxt f el
+                | None -> cxt)))
   | Cond (e, e1, e2) ->
-    let action () =
-      (* P.group f 1 @@ fun _ ->  *)
+    let action () =      
       let cxt =  expression ~level:3 cxt f e in
       P.space f;
       P.string f L.question;
@@ -948,14 +944,12 @@ and expression_desc cxt ~(level:int) f x : cxt  =
             to make nice indentation , force nested conditional to be parenthesized
           *)
       let cxt = P.group f 1 (fun _ -> expression ~level:3 cxt f e1) in
-      (* let cxt = (P.group f 1 @@ fun _ -> expression 1 cxt f e1) in *)
+
       P.space f;
       P.string f L.colon;
       P.space f ;
-
       (* idem *)
-      P.group f 1 @@ fun _ -> expression ~level:3 cxt f e2
-      (* P.group f 1 @@ fun _ -> expression 1 cxt f e2 *)
+      P.group f 1 (fun _ -> expression ~level:3 cxt f e2)
     in
     if level > 2 then P.paren_vgroup f 1 action else action ()
 
@@ -964,8 +958,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     | [] -> P.string f "{ }" ; cxt
     | _ ->
       let action () =
-        P.brace_vgroup f 1 @@ fun _ ->
-        property_name_and_value_list cxt f lst in
+        P.brace_vgroup f 1 (fun _ ->
+        property_name_and_value_list cxt f lst) in
       if level > 1 then
         (* #1946 object literal is easy to be
            interpreted as block statement
@@ -1293,9 +1287,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
               P.space f;
               block cxt f b))
 
-and function_body cxt f (b : J.block) =
+and function_body (cxt : cxt) f (b : J.block) : unit =
   match b with
-  | []     -> cxt
+  | []     -> ()
   | [s]    ->
     begin match s.statement_desc with
     | If (bool,
@@ -1304,9 +1298,9 @@ and function_body cxt f (b : J.block) =
               statement_desc =
                 Return {return_value = {expression_desc = Undefined}} }])
         ->
-        statement false cxt f {s with statement_desc = If(bool,then_, [])}
+        ignore (statement false cxt f {s with statement_desc = If(bool,then_, [])} : cxt)
     | _ ->        
-      statement false  cxt f  s
+      ignore (statement false  cxt f  s : cxt)
     end
   | s :: r ->
     let cxt = statement false cxt f s in
