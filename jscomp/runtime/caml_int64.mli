@@ -28,7 +28,7 @@
 
 (** *)
 
-type t (* = { lo : nativeint; hi : nativeint; } *)
+type t 
 val min_int : t
 val max_int : t
 val one : t
@@ -77,7 +77,10 @@ val compare : t -> t -> int
 
 
 val float_of_bits : t -> float 
+
+(** [bits_of_float fl] it is undefined behaivor when [f] is NaN*)
 val bits_of_float : float -> t 
+
 val get64 : string -> int -> t
 
 
