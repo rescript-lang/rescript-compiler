@@ -124,7 +124,14 @@ let suites :  Mt.pair_suites = Mt.[
                        ));
     "mul simple", (fun _ -> Eq (6L, mul 3L 2L ));
     "of_int32", (fun _ ->
-        Eq(Array.map Int64.of_int32 [|0l;(-2147483648l)|], [|0L; (-2147483648L)|]));
+        Eq(Array.map Int64.of_int32 [|0l;(-2147483648l)|], [|0L; (-2147483648L)|]);        
+        );
+    "of_int32_singleton",(fun _ -> 
+        Eq ( Int64.of_int32 (-3l), -3L )
+      ) ;  
+    __LOC__ , (fun _ ->
+        Eq (Int64.of_int32 3l , 3L)
+      );
     "to_int32", (fun _ -> 
         Eq(Array.map Int64.to_int32
              [|0L; 0x0000_0000_8000_0000L|], [|0l;-2147483648l|]));
