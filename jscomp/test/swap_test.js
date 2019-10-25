@@ -917,7 +917,7 @@ var suites_64 = List.map((function (param) {
                                 ])
                             ]),
                           "swap64 %d"
-                        ]), a[1] | 0),
+                        ]), Caml_int64.to_int32(a)),
                 (function (param) {
                     return /* Eq */Block.__(0, [
                               Caml_int64.swap(a),

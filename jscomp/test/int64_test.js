@@ -1059,7 +1059,10 @@ var suites = Pervasives.$at(/* :: */[
                               (function (param) {
                                   return /* Eq */Block.__(0, [
                                             3,
-                                            3
+                                            Caml_int64.to_int32(/* int64 */[
+                                                  /* hi */0,
+                                                  /* lo */3
+                                                ])
                                           ]);
                                 })
                             ],
@@ -1069,7 +1072,10 @@ var suites = Pervasives.$at(/* :: */[
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               3,
-                                              3
+                                              Caml_int64.to_int32(/* int64 */[
+                                                    /* hi */0,
+                                                    /* lo */3
+                                                  ])
                                             ]);
                                   })
                               ],
@@ -2059,122 +2065,120 @@ var suites = Pervasives.$at(/* :: */[
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "to_int32",
+                                                          "of_int32_singleton",
                                                           (function (param) {
                                                               return /* Eq */Block.__(0, [
-                                                                        $$Array.map((function (prim) {
-                                                                                return prim[1] | 0;
-                                                                              }), /* array */[
-                                                                              /* int64 */[
-                                                                                /* hi */0,
-                                                                                /* lo */0
-                                                                              ],
-                                                                              /* int64 */[
-                                                                                /* hi */0,
-                                                                                /* lo */2147483648
-                                                                              ]
-                                                                            ]),
-                                                                        /* array */[
-                                                                          0,
-                                                                          -2147483648
+                                                                        /* int64 */[
+                                                                          /* hi */-1,
+                                                                          /* lo */4294967293
+                                                                        ],
+                                                                        /* int64 */[
+                                                                          /* hi */-1,
+                                                                          /* lo */4294967293
                                                                         ]
                                                                       ]);
                                                             })
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "discard_sign",
+                                                            "File \"int64_test.ml\", line 132, characters 4-11",
                                                             (function (param) {
                                                                 return /* Eq */Block.__(0, [
-                                                                          Caml_int64.discard_sign(/* int64 */[
-                                                                                /* hi */-1,
-                                                                                /* lo */4294967295
-                                                                              ]),
                                                                           /* int64 */[
-                                                                            /* hi */2147483647,
-                                                                            /* lo */4294967295
+                                                                            /* hi */0,
+                                                                            /* lo */3
+                                                                          ],
+                                                                          /* int64 */[
+                                                                            /* hi */0,
+                                                                            /* lo */3
                                                                           ]
                                                                         ]);
                                                               })
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "div_mod",
+                                                              "to_int32",
                                                               (function (param) {
                                                                   return /* Eq */Block.__(0, [
-                                                                            Caml_int64.div_mod(/* int64 */[
-                                                                                  /* hi */0,
-                                                                                  /* lo */7
-                                                                                ], /* int64 */[
-                                                                                  /* hi */0,
-                                                                                  /* lo */3
+                                                                            $$Array.map(Caml_int64.to_int32, /* array */[
+                                                                                  /* int64 */[
+                                                                                    /* hi */0,
+                                                                                    /* lo */0
+                                                                                  ],
+                                                                                  /* int64 */[
+                                                                                    /* hi */0,
+                                                                                    /* lo */2147483648
+                                                                                  ]
                                                                                 ]),
-                                                                            /* tuple */[
-                                                                              /* int64 */[
-                                                                                /* hi */0,
-                                                                                /* lo */2
-                                                                              ],
-                                                                              /* int64 */[
-                                                                                /* hi */0,
-                                                                                /* lo */1
-                                                                              ]
+                                                                            /* array */[
+                                                                              0,
+                                                                              -2147483648
                                                                             ]
                                                                           ]);
                                                                 })
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "to_hex",
+                                                                "discard_sign",
                                                                 (function (param) {
                                                                     return /* Eq */Block.__(0, [
-                                                                              Caml_int64.to_hex(/* int64 */[
+                                                                              Caml_int64.discard_sign(/* int64 */[
                                                                                     /* hi */-1,
                                                                                     /* lo */4294967295
                                                                                   ]),
-                                                                              "ffffffffffffffff"
+                                                                              /* int64 */[
+                                                                                /* hi */2147483647,
+                                                                                /* lo */4294967295
+                                                                              ]
                                                                             ]);
                                                                   })
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "generic_compare",
+                                                                  "div_mod",
                                                                   (function (param) {
                                                                       return /* Eq */Block.__(0, [
-                                                                                Caml_obj.caml_compare(/* int64 */[
-                                                                                      /* hi */1,
-                                                                                      /* lo */0
+                                                                                Caml_int64.div_mod(/* int64 */[
+                                                                                      /* hi */0,
+                                                                                      /* lo */7
                                                                                     ], /* int64 */[
                                                                                       /* hi */0,
-                                                                                      /* lo */1
-                                                                                    ]) > 0,
-                                                                                true
+                                                                                      /* lo */3
+                                                                                    ]),
+                                                                                /* tuple */[
+                                                                                  /* int64 */[
+                                                                                    /* hi */0,
+                                                                                    /* lo */2
+                                                                                  ],
+                                                                                  /* int64 */[
+                                                                                    /* hi */0,
+                                                                                    /* lo */1
+                                                                                  ]
+                                                                                ]
                                                                               ]);
                                                                     })
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "test_compier_literal",
+                                                                    "to_hex",
                                                                     (function (param) {
                                                                         return /* Eq */Block.__(0, [
-                                                                                  /* int64 */[
-                                                                                    /* hi */0,
-                                                                                    /* lo */4294967295
-                                                                                  ],
-                                                                                  /* int64 */[
-                                                                                    /* hi */0,
-                                                                                    /* lo */4294967295
-                                                                                  ]
+                                                                                  Caml_int64.to_hex(/* int64 */[
+                                                                                        /* hi */-1,
+                                                                                        /* lo */4294967295
+                                                                                      ]),
+                                                                                  "ffffffffffffffff"
                                                                                 ]);
                                                                       })
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "generic_compare2",
+                                                                      "generic_compare",
                                                                       (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     Caml_obj.caml_compare(/* int64 */[
-                                                                                          /* hi */0,
-                                                                                          /* lo */2147483648
+                                                                                          /* hi */1,
+                                                                                          /* lo */0
                                                                                         ], /* int64 */[
                                                                                           /* hi */0,
                                                                                           /* lo */1
@@ -2185,66 +2189,100 @@ var suites = Pervasives.$at(/* :: */[
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "shift_left",
+                                                                        "test_compier_literal",
                                                                         (function (param) {
                                                                             return /* Eq */Block.__(0, [
                                                                                       /* int64 */[
                                                                                         /* hi */0,
-                                                                                        /* lo */4294967040
+                                                                                        /* lo */4294967295
                                                                                       ],
                                                                                       /* int64 */[
                                                                                         /* hi */0,
-                                                                                        /* lo */4294967040
+                                                                                        /* lo */4294967295
                                                                                       ]
                                                                                     ]);
                                                                           })
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "shift_right",
+                                                                          "generic_compare2",
                                                                           (function (param) {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        4294967295,
-                                                                                        4294967295
+                                                                                        Caml_obj.caml_compare(/* int64 */[
+                                                                                              /* hi */0,
+                                                                                              /* lo */2147483648
+                                                                                            ], /* int64 */[
+                                                                                              /* hi */0,
+                                                                                              /* lo */1
+                                                                                            ]) > 0,
+                                                                                        true
                                                                                       ]);
                                                                             })
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "fib_int64",
+                                                                            "shift_left",
                                                                             (function (param) {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          fib(1000, /* int64 */[
-                                                                                                /* hi */0,
-                                                                                                /* lo */1
-                                                                                              ], /* int64 */[
-                                                                                                /* hi */0,
-                                                                                                /* lo */2
-                                                                                              ]),
                                                                                           /* int64 */[
-                                                                                            /* hi */-1990564327,
-                                                                                            /* lo */2874523960
+                                                                                            /* hi */0,
+                                                                                            /* lo */4294967040
+                                                                                          ],
+                                                                                          /* int64 */[
+                                                                                            /* hi */0,
+                                                                                            /* lo */4294967040
                                                                                           ]
                                                                                         ]);
                                                                               })
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "fac_int64",
+                                                                              "shift_right",
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            fac(30, /* int64 */[
-                                                                                                  /* hi */0,
-                                                                                                  /* lo */1
-                                                                                                ]),
-                                                                                            /* int64 */[
-                                                                                              /* hi */-2040662563,
-                                                                                              /* lo */1409286144
-                                                                                            ]
+                                                                                            4294967295,
+                                                                                            4294967295
                                                                                           ]);
                                                                                 })
                                                                             ],
-                                                                            /* [] */0
+                                                                            /* :: */[
+                                                                              /* tuple */[
+                                                                                "fib_int64",
+                                                                                (function (param) {
+                                                                                    return /* Eq */Block.__(0, [
+                                                                                              fib(1000, /* int64 */[
+                                                                                                    /* hi */0,
+                                                                                                    /* lo */1
+                                                                                                  ], /* int64 */[
+                                                                                                    /* hi */0,
+                                                                                                    /* lo */2
+                                                                                                  ]),
+                                                                                              /* int64 */[
+                                                                                                /* hi */-1990564327,
+                                                                                                /* lo */2874523960
+                                                                                              ]
+                                                                                            ]);
+                                                                                  })
+                                                                              ],
+                                                                              /* :: */[
+                                                                                /* tuple */[
+                                                                                  "fac_int64",
+                                                                                  (function (param) {
+                                                                                      return /* Eq */Block.__(0, [
+                                                                                                fac(30, /* int64 */[
+                                                                                                      /* hi */0,
+                                                                                                      /* lo */1
+                                                                                                    ]),
+                                                                                                /* int64 */[
+                                                                                                  /* hi */-2040662563,
+                                                                                                  /* lo */1409286144
+                                                                                                ]
+                                                                                              ]);
+                                                                                    })
+                                                                                ],
+                                                                                /* [] */0
+                                                                              ]
+                                                                            ]
                                                                           ]
                                                                         ]
                                                                       ]
@@ -2363,37 +2401,37 @@ function id(loc, x) {
   }
 }
 
-eq("File \"int64_test.ml\", line 181, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
+eq("File \"int64_test.ml\", line 188, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
       /* hi */1070805811,
       /* lo */858993459
     ]);
 
-eq("File \"int64_test.ml\", line 182, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
+eq("File \"int64_test.ml\", line 189, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
           /* hi */1070805811,
           /* lo */858993459
         ]), 0.3);
 
-id("File \"int64_test.ml\", line 183, characters 5-12", /* int64 */[
+id("File \"int64_test.ml\", line 190, characters 5-12", /* int64 */[
       /* hi */-1,
       /* lo */4294967295
     ]);
 
-id("File \"int64_test.ml\", line 184, characters 5-12", /* int64 */[
+id("File \"int64_test.ml\", line 191, characters 5-12", /* int64 */[
       /* hi */-1,
       /* lo */4294967196
     ]);
 
-id("File \"int64_test.ml\", line 185, characters 5-12", /* int64 */[
+id("File \"int64_test.ml\", line 192, characters 5-12", /* int64 */[
       /* hi */0,
       /* lo */4294967295
     ]);
 
-id("File \"int64_test.ml\", line 186, characters 5-12", /* int64 */[
+id("File \"int64_test.ml\", line 193, characters 5-12", /* int64 */[
       /* hi */0,
       /* lo */536870911
     ]);
 
-id("File \"int64_test.ml\", line 187, characters 5-12", /* int64 */[
+id("File \"int64_test.ml\", line 194, characters 5-12", /* int64 */[
       /* hi */0,
       /* lo */536870655
     ]);
