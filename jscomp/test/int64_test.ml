@@ -171,13 +171,19 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 let id loc (x : int64) =  
-  eq loc (Int64.bits_of_float (Int64.float_of_bits x)) x 
+  (* This is not a round trip, since NaN is not distinguishable in JS*)
+  let float_value = (Int64.float_of_bits x) in 
+  match classify_float float_value  with
+  | FP_nan -> ()
+  | _  -> 
+     eq loc (Int64.bits_of_float float_value) x 
 let () = 
   eq __LOC__ (Int64.bits_of_float 0.3) 4599075939470750515L;
   eq __LOC__ (Int64.float_of_bits 4599075939470750515L) 0.3;
   id __LOC__ (-1L);
   id __LOC__ (-100L);
   id __LOC__ 0xff_ff_ff_ffL;
-  id __LOC__ 0x1f_ff_ff_ffL
+  id __LOC__ 0x1f_ff_ff_ffL;
+  id __LOC__ 0x1f_ff_fe_ffL
 
 ;; Mt.from_pair_suites __MODULE__ !suites

@@ -62,7 +62,7 @@ build stdlib-406/gc.cmj : cc_cmi stdlib-406/gc.ml | stdlib-406/gc.cmi stdlib-406
 build stdlib-406/gc.cmi : cc stdlib-406/gc.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/genlex.cmj : cc_cmi stdlib-406/genlex.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/genlex.cmi stdlib-406/hashtbl.cmj stdlib-406/list.cmj stdlib-406/stream.cmj stdlib-406/string.cmj others
 build stdlib-406/genlex.cmi : cc stdlib-406/genlex.mli | stdlib-406/pervasives.cmj stdlib-406/stream.cmi others
-build stdlib-406/hashtbl.cmj : cc_cmi stdlib-406/hashtbl.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+build stdlib-406/hashtbl.cmj : cc_cmi stdlib-406/hashtbl.ml | stdlib-406/array.cmj stdlib-406/hashtbl.cmi stdlib-406/lazy.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/hashtbl.cmi : cc stdlib-406/hashtbl.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/int32.cmj : cc_cmi stdlib-406/int32.ml | stdlib-406/int32.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/int32.cmi : cc stdlib-406/int32.mli | stdlib-406/pervasives.cmj others
