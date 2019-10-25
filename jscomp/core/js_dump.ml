@@ -544,7 +544,7 @@ and vident cxt f  (v : J.vident) =
     Js_dump_property.property_access f name ;
     cxt
 
-
+(* The higher the level, the more likely that inner has to add parens *)
 and expression l cxt  f (exp : J.expression) : cxt =
   pp_comment_option f exp.comment ;
   expression_desc cxt l f exp.expression_desc
@@ -708,47 +708,10 @@ and expression_desc cxt (level:int) f x : cxt  =
     P.string f "typeof";
     P.space f;
     expression 13 cxt f e
-  | Bin (Eq, {expression_desc = Var i },
-         {expression_desc =
-            (
-              Bin(
-                (Plus as op), {expression_desc = Var j}, delta)
-            | Bin(
-                (Plus as op), delta, {expression_desc = Var j})
-            | Bin(
-                (Minus as op), {expression_desc = Var j}, delta)
-            )
-         })
-    when Js_op_util.same_vident i j ->
-    (* TODO: parenthesize when necessary *)
-    begin match delta, op with
-      | {expression_desc = Number (Int { i =  1l; _})}, Plus
-      (* TODO: float 1. instead,
-           since in JS, ++ is a float operation
-      *)
-      | {expression_desc = Number (Int { i =  -1l; _})}, Minus
-        ->
-        P.string f L.plusplus;
-        P.space f ;
-        vident cxt f i
-
-      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
-      | {expression_desc = Number (Int { i =  1l; _})}, Minus
-        ->
-        P.string f L.minusminus;
-        P.space f ;
-        vident cxt f i;
-      | _, _ ->
-        let cxt = vident cxt f i in
-        P.space f ;
-        if op = Plus then P.string f "+="
-        else P.string f "-=";
-        P.space f ;
-        expression 13 cxt  f delta
-    end
-  | Bin (Eq, {expression_desc = Array_index({expression_desc = Var i; _},
+ 
+  | Bin (Eq, ({expression_desc = Array_index({expression_desc = Var i; _},
                                        {expression_desc = Number (Int {i = k0 })}
-                                      ) },
+                                      ) } as lhs),
          {expression_desc =
             (Bin((Plus as op),
                  {expression_desc = Array_index(
@@ -781,12 +744,6 @@ and expression_desc cxt (level:int) f x : cxt  =
        handle parens..
     *)
     ->
-    let aux cxt f vid i =
-      let cxt = vident cxt f vid in
-      P.string f "[";
-      P.string f (Int32.to_string  i);
-      P.string f"]";
-      cxt in
     (** TODO: parenthesize when necessary *)
     (match delta, op with
      | {expression_desc = Number (Int { i =  1l; _})}, Plus
@@ -794,20 +751,22 @@ and expression_desc cxt (level:int) f x : cxt  =
        ->
        P.string f L.plusplus;
        P.space f ;
-       aux cxt f i k0
+       expression 13 cxt f lhs (* Static index level is 15*)
      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
      | {expression_desc = Number (Int { i =  1l; _})}, Minus
        ->
        P.string f L.minusminus;
        P.space f ;
-       aux cxt f  i k0
+       expression 13 cxt f lhs
+       
      | _, _ ->
-       let cxt = aux cxt f i k0 in
+       let cxt = expression 13 cxt f lhs in
        P.space f ;
-       if op = Plus then P.string f "+="
-       else P.string f "-=";
+       P.string f (if op = Plus then "+=" else "-=");
        P.space f ;
-       expression 13 cxt  f delta)
+       expression 13 cxt  f delta) 
+
+
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e)
     (* TODO:
        Handle multiple cases like
@@ -949,7 +908,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.group f 1 @@ fun _ ->
         let cxt = expression 15 cxt f e in
         P.bracket_group f 1 @@ fun _ ->
-        expression 0 cxt f p )
+        expression 0 cxt f p )  
   | Static_index (e, s,_) ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
         let cxt = expression 15 cxt f e in
