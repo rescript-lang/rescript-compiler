@@ -63,7 +63,7 @@ function build(config) {
 
     if (config) {
       cp.execSync(
-        "./configure -prefix " +
+        "./configure -flambda -no-flat-float-array -prefix " +
           prefix +
           " -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && make clean",
         { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
