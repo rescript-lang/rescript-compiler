@@ -616,7 +616,6 @@ let translate  loc
      )
     
   | Pduprecord ((Record_regular 
-                | Record_float 
 #if OCAML_VERSION =~ ">4.03.0" then   
                 | Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
@@ -626,8 +625,6 @@ let translate  loc
     (* TODO: In debug mode, need switch to  *)
     Lam_dispatch_primitive.translate loc "caml_array_dup" args
 #if OCAML_VERSION =~ ">4.03.0" then
-  | Pduprecord (Record_unboxed _inlined,_) 
-    -> assert false
   | Pduprecord (Record_inlined _, _)
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args

@@ -91,13 +91,11 @@ let print_bigarray name unsafe (kind : Lam_compat.bigarray_kind) ppf
      | Pbigarray_c_layout -> "C"
      | Pbigarray_fortran_layout -> "Fortran")
 
-let record_rep ppf r =
+let record_rep ppf (r : Lam_primitive.record_representation) =
   match r with
   | Record_regular -> fprintf ppf "regular"
-  | Record_float -> fprintf ppf "float"
 #if OCAML_VERSION =~ ">4.03.0" then
   | Record_inlined {tag = i} -> fprintf ppf "inlined %d" i 
-  | Record_unboxed b -> fprintf ppf "unboxed %b" b
   | Record_extension -> fprintf ppf "ext"
 #end
 ;;

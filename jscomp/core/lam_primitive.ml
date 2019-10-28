@@ -26,11 +26,9 @@
 
 type ident = Ident.t
   
-type record_representation = Types.record_representation =  
+type record_representation = 
     | Record_regular
-    | Record_float
 #if OCAML_VERSION =~ ">4.03.0" then
-    | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
     | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 #end  
@@ -190,12 +188,8 @@ let eq_tag_info ( x : Lam_tag_info.t) y =
 
 let eq_record_representation ( p : record_representation) ( p1 : record_representation) = 
   match p with 
-  | Record_float -> p1 = Record_float
   | Record_regular -> p1 = Record_regular
 #if OCAML_VERSION =~ ">4.03.0" then 
-  | Record_unboxed b0 -> 
-    (match p1 with 
-    |Record_unboxed b1 -> b0 = b1 | _ -> false)
   | Record_inlined {tag = a0; name = a1; num_nonconsts = a2 } -> 
     (match p1 with 
     |Record_inlined {tag = b0; name = b1; num_nonconsts = b2} ->
