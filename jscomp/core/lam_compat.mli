@@ -92,6 +92,10 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_record_extension of string 
 #end  
   
+val str_of_field_info : 
+  field_dbg_info -> 
+  string option
+
 type set_field_dbg_info = Lambda.set_field_dbg_info = 
   | Fld_set_na
   | Fld_record_set of string 

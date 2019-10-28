@@ -191,6 +191,16 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_record_extension of string 
 #end  
 
+let str_of_field_info (x : field_dbg_info) : string option =  
+  match x with 
+  | Fld_na -> None 
+  | Fld_record s 
+  | Fld_module s 
+  | Fld_record_inline s 
+  | Fld_record_extension s 
+     -> 
+      Some s
+
 type set_field_dbg_info = Lambda.set_field_dbg_info = 
   | Fld_set_na
   | Fld_record_set of string 
@@ -198,3 +208,5 @@ type set_field_dbg_info = Lambda.set_field_dbg_info =
   | Fld_record_inline_set of string  
   | Fld_record_extension_set of string
 #end  
+
+
