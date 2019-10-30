@@ -1053,7 +1053,7 @@ eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.c
           30
         ], undefined));
 
-Mt.from_pair_suites("Caml_compare_test", suites[0]);
+Mt.from_pair_suites("Caml_compare_test", suites[/* contents */0]);
 
 exports.function_equal_test = function_equal_test;
 exports.suites = suites;

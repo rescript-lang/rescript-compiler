@@ -5,24 +5,24 @@ var Curry = require("../../lib/js/curry.js");
 var v = /* record */[/* contents */0];
 
 function reset(param) {
-  v[0] = 0;
+  v[/* contents */0] = 0;
   return /* () */0;
 }
 
 function incr(param) {
-  v[0] = v[0] + 1 | 0;
+  v[/* contents */0] = v[/* contents */0] + 1 | 0;
   return /* () */0;
 }
 
 var vv = /* record */[/* contents */0];
 
 function reset2(param) {
-  vv[0] = 0;
+  vv[/* contents */0] = 0;
   return /* () */0;
 }
 
 function incr2(param) {
-  v[0] = v[0] + 1 | 0;
+  v[/* contents */0] = v[/* contents */0] + 1 | 0;
   return /* () */0;
 }
 

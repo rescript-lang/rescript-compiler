@@ -94,7 +94,7 @@ b("File \"bs_hashmap_test.ml\", line 57, characters 4-11", Belt_Array.every(Arra
             return Belt_HashMap.has(v$1, x);
           })));
 
-Mt.from_pair_suites("Bs_hashmap_test", suites[0]);
+Mt.from_pair_suites("Bs_hashmap_test", suites[/* contents */0]);
 
 var N = 0;
 

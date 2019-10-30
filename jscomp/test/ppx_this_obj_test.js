@@ -10,10 +10,10 @@ var test_id = /* record */[/* contents */0];
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -21,7 +21,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -100,7 +100,7 @@ eq("File \"ppx_this_obj_test.ml\", line 60, characters 5-12", /* tuple */[
       v2.hi(3, 2)
     ]);
 
-Mt.from_pair_suites("Ppx_this_obj_test", suites[0]);
+Mt.from_pair_suites("Ppx_this_obj_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -90,7 +90,7 @@ function ui_layout(compile, lookup, appContext) {
   button.on("click", (function (_event) {
           try {
             var hot_function = Curry._1(compile, inputCode.text);
-            computeFunction[0] = (function (env) {
+            computeFunction[/* contents */0] = (function (env) {
                 return Curry._1(hot_function, (function (key) {
                               return Curry._2(lookup, env, key);
                             }));
@@ -106,7 +106,7 @@ function ui_layout(compile, lookup, appContext) {
                   var price = param[/* price */1];
                   var bid = price + 20 * Math.random();
                   var ask = price + 20 * Math.random();
-                  var result = Curry._1(computeFunction[0], {
+                  var result = Curry._1(computeFunction[/* contents */0], {
                         bid: bid,
                         ask: ask
                       });

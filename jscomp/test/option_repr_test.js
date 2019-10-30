@@ -75,7 +75,7 @@ var f11 = Caml_option.some(f10);
 var randomized = /* record */[/* contents */false];
 
 function create($staropt$star, param) {
-  var random = $staropt$star !== undefined ? $staropt$star : randomized[0];
+  var random = $staropt$star !== undefined ? $staropt$star : randomized[/* contents */0];
   if (random) {
     return 2;
   } else {
@@ -249,7 +249,7 @@ b("File \"option_repr_test.ml\", line 143, characters 5-12", Belt_List.every(xs$
             return x;
           })));
 
-Mt.from_pair_suites("Option_repr_test", suites[0]);
+Mt.from_pair_suites("Option_repr_test", suites[/* contents */0]);
 
 var f7 = undefined;
 

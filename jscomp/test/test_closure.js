@@ -14,7 +14,7 @@ function f(param) {
   for(var i = 0; i <= 9; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
         return function (param) {
-          v[0] = v[0] + i | 0;
+          v[/* contents */0] = v[/* contents */0] + i | 0;
           return /* () */0;
         }
         }(i)));
@@ -28,7 +28,7 @@ $$Array.iter((function (x) {
         return Curry._1(x, /* () */0);
       }), u);
 
-if (v[0] !== 45) {
+if (v[/* contents */0] !== 45) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

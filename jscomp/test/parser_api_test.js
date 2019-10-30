@@ -433,7 +433,7 @@ if (match) {
   eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
 }
 
-Mt.from_pair_suites("Parser_api_test", suites[0]);
+Mt.from_pair_suites("Parser_api_test", suites[/* contents */0]);
 
 var lex = Parser_api.from_string;
 

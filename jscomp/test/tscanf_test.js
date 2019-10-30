@@ -3750,7 +3750,7 @@ var count = /* record */[/* contents */0];
 
 function reader(ib, ob) {
   if (Scanf.Scanning.beginning_of_input(ib)) {
-    count[0] = 0;
+    count[/* contents */0] = 0;
     send_string(ob, "start");
     return writer(ib, ob);
   } else {
@@ -3770,10 +3770,10 @@ function reader(ib, ob) {
                     return writer(ib, ob);
                   } else {
                     var l = s.length;
-                    count[0] = l + count[0] | 0;
-                    if (count[0] >= 100) {
+                    count[/* contents */0] = l + count[/* contents */0] | 0;
+                    if (count[/* contents */0] >= 100) {
                       send_string(ob, "stop");
-                      send_string(ob, String(count[0]));
+                      send_string(ob, String(count[/* contents */0]));
                     } else {
                       send_string(ob, String(l));
                     }
@@ -4558,7 +4558,7 @@ function test60(param) {
 
 test("File \"tscanf_test.ml\", line 1414, characters 5-12", test60(/* () */0));
 
-Mt.from_pair_suites("Tscanf_test", suites[0]);
+Mt.from_pair_suites("Tscanf_test", suites[/* contents */0]);
 
 var tscanf_data_file_lines = /* :: */[
   /* tuple */[

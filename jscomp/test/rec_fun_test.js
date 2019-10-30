@@ -10,10 +10,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -21,7 +21,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -31,9 +31,9 @@ var called = /* record */[/* contents */0];
 function g(param) {
   var v = [];
   var next = function (i, b) {
-    called[0] = called[0] + 1 | 0;
+    called[/* contents */0] = called[/* contents */0] + 1 | 0;
     if (b) {
-      Curry._2(v[0], i, false);
+      Curry._2(v[/* contents */0], i, false);
     }
     return i + 1 | 0;
   };
@@ -58,9 +58,9 @@ Caml_obj.caml_update_dummy(y, /* :: */[
       x
     ]);
 
-eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
+eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[/* contents */0], 2);
 
-Mt.from_pair_suites("Rec_fun_test", suites[0]);
+Mt.from_pair_suites("Rec_fun_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

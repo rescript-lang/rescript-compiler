@@ -1548,9 +1548,9 @@ function eat(f) {
 function start(str) {
   var todo = /* record */[/* contents : [] */0];
   $$String.iter((function (c) {
-          todo[0] = /* :: */[
+          todo[/* contents */0] = /* :: */[
             c,
-            todo[0]
+            todo[/* contents */0]
           ];
           return /* () */0;
         }), str);
@@ -1559,7 +1559,7 @@ function start(str) {
           /* mantissa */0,
           /* exponent */0,
           /* decimal_exponent */undefined,
-          /* todo */List.rev(todo[0])
+          /* todo */List.rev(todo[/* contents */0])
         ];
 }
 
@@ -5105,12 +5105,12 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
 
 function error_at(env, param) {
   var e = param[1];
-  env[/* errors */0][0] = /* :: */[
+  env[/* errors */0][/* contents */0] = /* :: */[
     /* tuple */[
       param[0],
       e
     ],
-    env[/* errors */0][0]
+    env[/* errors */0][/* contents */0]
   ];
   var match = env[/* error_callback */15];
   if (match !== undefined) {
@@ -5123,9 +5123,9 @@ function error_at(env, param) {
 function comment_list(env) {
   return (function (param) {
       return List.iter((function (c) {
-                    env[/* comments */1][0] = /* :: */[
+                    env[/* comments */1][/* contents */0] = /* :: */[
                       c,
-                      env[/* comments */1][0]
+                      env[/* comments */1][/* contents */0]
                     ];
                     return /* () */0;
                   }), param);
@@ -5134,14 +5134,14 @@ function comment_list(env) {
 
 function record_export(env, param) {
   var export_name = param[1];
-  var $$exports = env[/* exports */3][0];
+  var $$exports = env[/* exports */3][/* contents */0];
   if (mem(export_name, $$exports)) {
     return error_at(env, /* tuple */[
                 param[0],
                 /* DuplicateExport */Block.__(7, [export_name])
               ]);
   } else {
-    env[/* exports */3][0] = add(export_name, env[/* exports */3][0]);
+    env[/* exports */3][/* contents */0] = add(export_name, env[/* exports */3][/* contents */0]);
     return /* () */0;
   }
 }
@@ -5158,7 +5158,7 @@ function lookahead($staropt$star, env) {
           ]
         ];
   }
-  var t = env[/* lookahead */18][0];
+  var t = env[/* lookahead */18][/* contents */0];
   var i$1 = i;
   lex_until(t, i$1);
   var match = Caml_array.caml_array_get(t[/* la_results */0], i$1);
@@ -5324,7 +5324,7 @@ function comments($staropt$star, env) {
 
 function lex_env($staropt$star, env) {
   var i = $staropt$star !== undefined ? $staropt$star : 0;
-  var t = env[/* lookahead */18][0];
+  var t = env[/* lookahead */18][/* contents */0];
   var i$1 = i;
   lex_until(t, i$1);
   var match = Caml_array.caml_array_get(t[/* la_results */0], i$1);
@@ -5339,7 +5339,7 @@ function lex_env($staropt$star, env) {
 }
 
 function is_line_terminator(env) {
-  var match = env[/* last_loc */4][0];
+  var match = env[/* last_loc */4][/* contents */0];
   if (match !== undefined) {
     return loc(undefined, env)[/* start */1][/* line */0] > match[/* start */1][/* line */0];
   } else {
@@ -5497,7 +5497,7 @@ function strict_error_at(env, param) {
 }
 
 function token$3(env) {
-  var match = env[/* token_sink */19][0];
+  var match = env[/* token_sink */19][/* contents */0];
   if (match !== undefined) {
     var token_loc = loc(undefined, env);
     var token$4 = token$2(undefined, env);
@@ -5505,15 +5505,15 @@ function token$3(env) {
     Curry._1(match, /* record */[
           /* token_loc */token_loc,
           /* token */token$4,
-          /* token_context */List.hd(env[/* lex_mode_stack */16][0]),
+          /* token_context */List.hd(env[/* lex_mode_stack */16][/* contents */0]),
           /* token_value */token_value
         ]);
   }
-  env[/* lex_env */17][0] = lex_env(undefined, env);
+  env[/* lex_env */17][/* contents */0] = lex_env(undefined, env);
   error_list(env)(errors(undefined, env));
   comment_list(env)(comments(undefined, env));
-  env[/* last_loc */4][0] = loc(undefined, env);
-  var t = env[/* lookahead */18][0];
+  env[/* last_loc */4][/* contents */0] = loc(undefined, env);
+  var t = env[/* lookahead */18][/* contents */0];
   lex_until(t, 0);
   if (t[/* la_num_lexed */1] > 1) {
     $$Array.blit(t[/* la_results */0], 1, t[/* la_results */0], 0, t[/* la_num_lexed */1] - 1 | 0);
@@ -5524,16 +5524,16 @@ function token$3(env) {
 }
 
 function push_lex_mode(env, mode) {
-  env[/* lex_mode_stack */16][0] = /* :: */[
+  env[/* lex_mode_stack */16][/* contents */0] = /* :: */[
     mode,
-    env[/* lex_mode_stack */16][0]
+    env[/* lex_mode_stack */16][/* contents */0]
   ];
-  env[/* lookahead */18][0] = create$1(env[/* lex_env */17][0], List.hd(env[/* lex_mode_stack */16][0]));
+  env[/* lookahead */18][/* contents */0] = create$1(env[/* lex_env */17][/* contents */0], List.hd(env[/* lex_mode_stack */16][/* contents */0]));
   return /* () */0;
 }
 
 function pop_lex_mode(env) {
-  var match = env[/* lex_mode_stack */16][0];
+  var match = env[/* lex_mode_stack */16][/* contents */0];
   var new_stack;
   if (match) {
     new_stack = match[1];
@@ -5543,13 +5543,13 @@ function pop_lex_mode(env) {
           "Popping lex mode from empty stack"
         ];
   }
-  env[/* lex_mode_stack */16][0] = new_stack;
-  env[/* lookahead */18][0] = create$1(env[/* lex_env */17][0], List.hd(env[/* lex_mode_stack */16][0]));
+  env[/* lex_mode_stack */16][/* contents */0] = new_stack;
+  env[/* lookahead */18][/* contents */0] = create$1(env[/* lex_env */17][/* contents */0], List.hd(env[/* lex_mode_stack */16][/* contents */0]));
   return /* () */0;
 }
 
 function double_pop_lex_mode(env) {
-  var match = env[/* lex_mode_stack */16][0];
+  var match = env[/* lex_mode_stack */16][/* contents */0];
   var new_stack;
   if (match) {
     var match$1 = match[1];
@@ -5567,8 +5567,8 @@ function double_pop_lex_mode(env) {
           "Popping lex mode from empty stack"
         ];
   }
-  env[/* lex_mode_stack */16][0] = new_stack;
-  env[/* lookahead */18][0] = create$1(env[/* lex_env */17][0], List.hd(env[/* lex_mode_stack */16][0]));
+  env[/* lex_mode_stack */16][/* contents */0] = new_stack;
+  env[/* lookahead */18][/* contents */0] = create$1(env[/* lex_env */17][/* contents */0], List.hd(env[/* lex_mode_stack */16][/* contents */0]));
   return /* () */0;
 }
 
@@ -5608,7 +5608,7 @@ function contextual(env, str) {
 var Rollback = Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
 
 function save_state(env) {
-  var match = env[/* token_sink */19][0];
+  var match = env[/* token_sink */19][/* contents */0];
   var token_buffer;
   if (match !== undefined) {
     var buffer = /* record */[
@@ -5616,7 +5616,7 @@ function save_state(env) {
       /* first : Nil */0,
       /* last : Nil */0
     ];
-    env[/* token_sink */19][0] = (function (token_data) {
+    env[/* token_sink */19][/* contents */0] = (function (token_data) {
         return Queue.add(token_data, buffer);
       });
     token_buffer = /* tuple */[
@@ -5627,11 +5627,11 @@ function save_state(env) {
     token_buffer = undefined;
   }
   return /* record */[
-          /* saved_errors */env[/* errors */0][0],
-          /* saved_comments */env[/* comments */1][0],
-          /* saved_last_loc */env[/* last_loc */4][0],
-          /* saved_lex_mode_stack */env[/* lex_mode_stack */16][0],
-          /* saved_lex_env */env[/* lex_env */17][0],
+          /* saved_errors */env[/* errors */0][/* contents */0],
+          /* saved_comments */env[/* comments */1][/* contents */0],
+          /* saved_last_loc */env[/* last_loc */4][/* contents */0],
+          /* saved_lex_mode_stack */env[/* lex_mode_stack */16][/* contents */0],
+          /* saved_lex_env */env[/* lex_env */17][/* contents */0],
           /* token_buffer */token_buffer
         ];
 }
@@ -5640,7 +5640,7 @@ function reset_token_sink(flush, env, token_buffer_info) {
   if (token_buffer_info !== undefined) {
     var match = token_buffer_info;
     var orig_token_sink = match[0];
-    env[/* token_sink */19][0] = orig_token_sink;
+    env[/* token_sink */19][/* contents */0] = orig_token_sink;
     if (flush) {
       return Queue.iter(orig_token_sink, match[1]);
     } else {
@@ -5665,12 +5665,12 @@ function to_parse(env, parse) {
       var env$2 = env;
       var saved_state$2 = saved_state;
       reset_token_sink(false, env$2, saved_state$2[/* token_buffer */5]);
-      env$2[/* errors */0][0] = saved_state$2[/* saved_errors */0];
-      env$2[/* comments */1][0] = saved_state$2[/* saved_comments */1];
-      env$2[/* last_loc */4][0] = saved_state$2[/* saved_last_loc */2];
-      env$2[/* lex_mode_stack */16][0] = saved_state$2[/* saved_lex_mode_stack */3];
-      env$2[/* lex_env */17][0] = saved_state$2[/* saved_lex_env */4];
-      env$2[/* lookahead */18][0] = create$1(env$2[/* lex_env */17][0], List.hd(env$2[/* lex_mode_stack */16][0]));
+      env$2[/* errors */0][/* contents */0] = saved_state$2[/* saved_errors */0];
+      env$2[/* comments */1][/* contents */0] = saved_state$2[/* saved_comments */1];
+      env$2[/* last_loc */4][/* contents */0] = saved_state$2[/* saved_last_loc */2];
+      env$2[/* lex_mode_stack */16][/* contents */0] = saved_state$2[/* saved_lex_mode_stack */3];
+      env$2[/* lex_env */17][/* contents */0] = saved_state$2[/* saved_lex_env */4];
+      env$2[/* lookahead */18][/* contents */0] = create$1(env$2[/* lex_env */17][/* contents */0], List.hd(env$2[/* lex_mode_stack */16][/* contents */0]));
       return /* FailedToParse */0;
     } else {
       throw exn;
@@ -6123,7 +6123,7 @@ function filter_duplicate_errors(errs) {
 function with_loc(fn, env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var result = Curry._1(fn, env);
-  var match = env[/* last_loc */4][0];
+  var match = env[/* last_loc */4][/* contents */0];
   var end_loc = match !== undefined ? match : (error$1(env, /* Assertion */Block.__(0, ["did not consume any tokens"])), Curry._2(Parser_env_Peek.loc, undefined, env));
   return /* tuple */[
           btwn(start_loc, end_loc),
@@ -7203,7 +7203,7 @@ function annotation(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_COLON */77);
   var typeAnnotation = union(env);
-  var match = env[/* last_loc */4][0];
+  var match = env[/* last_loc */4][/* contents */0];
   var end_loc;
   if (match !== undefined) {
     end_loc = match;
@@ -9033,7 +9033,7 @@ function binary(env) {
     var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
     var is_unary = peek_unary_op(env$1) !== undefined;
     var right = unary(with_no_in(false, env$1));
-    var match = env$1[/* last_loc */4][0];
+    var match = env$1[/* last_loc */4][/* contents */0];
     var end_loc = match !== undefined ? match : right[0];
     var right_loc = btwn(start_loc, end_loc);
     if (Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_LESS_THAN */89) {
@@ -13728,7 +13728,7 @@ function program(env) {
   var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_EOF */105);
   var loc = stmts ? btwn(List.hd(stmts)[0], List.hd(List.rev(stmts))[0]) : end_loc;
-  var comments = List.rev(env[/* comments */1][0]);
+  var comments = List.rev(env[/* comments */1][/* contents */0]);
   return /* tuple */[
           loc,
           stmts,
@@ -13985,7 +13985,7 @@ function program$1($staropt$star, $staropt$star$1, $staropt$star$2, content) {
   var parser = Parse.program;
   var fail$2 = fail$1;
   var ast = Curry._1(parser, env$1);
-  var error_list = filter_duplicate_errors(env$1[/* errors */0][0]);
+  var error_list = filter_duplicate_errors(env$1[/* errors */0][/* contents */0]);
   if (fail$2 && error_list !== /* [] */0) {
     throw [
           $$Error,
@@ -14017,12 +14017,12 @@ function regexp$1(loc, pattern, flags) {
     return new RegExp(pattern, flags);
   }
   catch (exn){
-    translation_errors[0] = /* :: */[
+    translation_errors[/* contents */0] = /* :: */[
       /* tuple */[
         loc,
         /* InvalidRegExp */12
       ],
-      translation_errors[0]
+      translation_errors[/* contents */0]
     ];
     return new RegExp("", flags);
   }
@@ -14031,7 +14031,7 @@ function regexp$1(loc, pattern, flags) {
 function parse(content, options) {
   try {
     var match = program$1(false, undefined, Caml_option.some(undefined), content);
-    translation_errors[0] = /* [] */0;
+    translation_errors[/* contents */0] = /* [] */0;
     var array_of_list = function (fn, list) {
       return Curry._1(array, $$Array.of_list(List.map(fn, list)));
     };
@@ -16416,7 +16416,7 @@ function parse(content, options) {
                 ]);
     };
     var ret = program$2(match[0]);
-    var translation_errors$1 = translation_errors[0];
+    var translation_errors$1 = translation_errors[/* contents */0];
     ret["errors"] = errors(Pervasives.$at(match[1], translation_errors$1));
     return ret;
   }
@@ -16438,10 +16438,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -16449,7 +16449,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -16474,6 +16474,6 @@ if (match !== undefined) {
       ];
 }
 
-Mt.from_pair_suites("Flow_parser_reg_test", suites[0]);
+Mt.from_pair_suites("Flow_parser_reg_test", suites[/* contents */0]);
 
 /* Literal Not a pure module */

@@ -156,7 +156,7 @@ catch (raw_exn){
 
 eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 
-Mt.from_pair_suites("Recursive_module", suites[0]);
+Mt.from_pair_suites("Recursive_module", suites[/* contents */0]);
 
 var Int32 = /* () */0;
 

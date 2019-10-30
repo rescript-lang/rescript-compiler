@@ -78,7 +78,7 @@ eq("File \"int_switch_test.ml\", line 39, characters 6-13", f((function (param) 
             return -1;
           })), /* "x" */120);
 
-Mt.from_pair_suites("Int_switch_test", suites[0]);
+Mt.from_pair_suites("Int_switch_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

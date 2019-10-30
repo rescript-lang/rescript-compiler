@@ -6,7 +6,7 @@ var Curry = require("../../lib/js/curry.js");
 var result = /* record */[/* contents */""];
 
 function log(x) {
-  result[0] = x;
+  result[/* contents */0] = x;
   return /* () */0;
 }
 
@@ -28,18 +28,18 @@ function compilerBug(a, b, c, f) {
   switch (exit) {
     case 1 :
         if (c) {
-          result[0] = "No x, c is true";
+          result[/* contents */0] = "No x, c is true";
           return /* () */0;
         } else {
-          result[0] = "No x, c is false";
+          result[/* contents */0] = "No x, c is false";
           return /* () */0;
         }
     case 2 :
         if (Curry._1(f, /* () */0)) {
-          result[0] = "Some x, f returns true";
+          result[/* contents */0] = "Some x, f returns true";
           return /* () */0;
         } else {
-          result[0] = "Some x, f returns false";
+          result[/* contents */0] = "Some x, f returns false";
           return /* () */0;
         }
     
@@ -58,9 +58,9 @@ compilerBug("x", undefined, true, (function (param) {
         return true;
       }));
 
-eq("File \"gpr_3875_test.ml\", line 36, characters 5-12", result[0], "Some x, f returns true");
+eq("File \"gpr_3875_test.ml\", line 36, characters 5-12", result[/* contents */0], "Some x, f returns true");
 
-Mt.from_pair_suites("gpr_3875_test.ml", suites[0]);
+Mt.from_pair_suites("gpr_3875_test.ml", suites[/* contents */0]);
 
 exports.result = result;
 exports.Xx = Xx;

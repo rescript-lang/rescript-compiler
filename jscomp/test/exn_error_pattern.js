@@ -72,7 +72,7 @@ catch (raw_e){
 
 eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
 
-Mt.from_pair_suites("Exn_error_pattern", suites[0]);
+Mt.from_pair_suites("Exn_error_pattern", suites[/* contents */0]);
 
 exports.f = f;
 exports.A = A;

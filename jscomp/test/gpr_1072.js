@@ -161,13 +161,13 @@ again4(/* () */0, /* () */0, 169);
 
 again4(undefined, /* () */0, 170);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), /* () */0, 171);
+again4((side_effect[/* contents */0] = side_effect[/* contents */0] + 1 | 0, /* () */0), /* () */0, 171);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), (side_effect[0] = side_effect[0] - 1 | 0, /* () */0), 172);
+again4((side_effect[/* contents */0] = side_effect[/* contents */0] + 1 | 0, /* () */0), (side_effect[/* contents */0] = side_effect[/* contents */0] - 1 | 0, /* () */0), 172);
 
-again4(undefined, (side_effect[0] = side_effect[0] - 1 | 0, /* () */0), 173);
+again4(undefined, (side_effect[/* contents */0] = side_effect[/* contents */0] - 1 | 0, /* () */0), 173);
 
-again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), /* () */0, 174);
+again4((side_effect[/* contents */0] = side_effect[/* contents */0] + 1 | 0, /* () */0), /* () */0, 174);
 
 exports.u = u;
 exports.v_ice_cream3 = v_ice_cream3;

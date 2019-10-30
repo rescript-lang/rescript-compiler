@@ -858,10 +858,10 @@ function parse_string(s) {
   var n = s.length;
   var stop = /* record */[/* contents */false];
   var refill = function (bytes, i, _len) {
-    if (stop[0]) {
+    if (stop[/* contents */0]) {
       return 0;
     } else {
-      stop[0] = true;
+      stop[/* contents */0] = true;
       Bytes.blit_string(s, 0, bytes, i, n);
       return n;
     }

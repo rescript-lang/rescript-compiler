@@ -8,7 +8,7 @@ var Mt_global = require("./mt_global.js");
 var count = /* record */[/* contents */0];
 
 function test(set) {
-  count[0] = Offset.$$Set.cardinal(set) + count[0] | 0;
+  count[/* contents */0] = Offset.$$Set.cardinal(set) + count[/* contents */0] | 0;
   return /* () */0;
 }
 
@@ -22,8 +22,8 @@ function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);
 }
 
-eq("File \"basic_module_test.ml\", line 39, characters 12-19", count[0], 1);
+eq("File \"basic_module_test.ml\", line 39, characters 12-19", count[/* contents */0], 1);
 
-Mt.from_pair_suites("Basic_module_test", suites[0]);
+Mt.from_pair_suites("Basic_module_test", suites[/* contents */0]);
 
 /*  Not a pure module */

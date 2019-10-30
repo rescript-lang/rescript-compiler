@@ -56,7 +56,7 @@ eq("File \"gpr_3142_test.ml\", line 33, characters 6-13", tFromJs("我"), /* c *
 
 eq("File \"gpr_3142_test.ml\", line 34, characters 6-13", tFromJs("xx"), undefined);
 
-Mt.from_pair_suites("Gpr_3142_test", suites[0]);
+Mt.from_pair_suites("Gpr_3142_test", suites[/* contents */0]);
 
 var v = tToJs;
 

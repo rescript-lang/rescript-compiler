@@ -250,7 +250,7 @@ eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.caml_int32_bit
 
 eq("File \"int32_test.ml\", line 48, characters 5-12", Caml_float.caml_int32_float_of_bits(1050253722), 0.300000011920928955);
 
-Mt.from_pair_suites("Int32_test", suites[0]);
+Mt.from_pair_suites("Int32_test", suites[/* contents */0]);
 
 var test_div = 30;
 

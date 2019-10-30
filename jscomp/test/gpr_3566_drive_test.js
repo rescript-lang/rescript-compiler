@@ -22,7 +22,7 @@ function f(x) {
   return Caml_option.some(x);
 }
 
-Mt.from_pair_suites("gpr_3566_drive_test.ml", suites[0]);
+Mt.from_pair_suites("gpr_3566_drive_test.ml", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -66,8 +66,8 @@ function point2_init($$class) {
       ]);
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      x0[0] = x0[0] + 1 | 0;
-      self$1[x] = x0[0];
+      x0[/* contents */0] = x0[/* contents */0] + 1 | 0;
+      self$1[x] = x0[/* contents */0];
       return self$1;
     });
 }

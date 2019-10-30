@@ -321,7 +321,7 @@ Belt_List.forEach(/* :: */[
         return Belt_internalAVLset.checkInvariantInternal(x.data);
       }));
 
-Mt.from_pair_suites("Bs_poly_mutable_set_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_mutable_set_test", suites[/* contents */0]);
 
 var N = 0;
 

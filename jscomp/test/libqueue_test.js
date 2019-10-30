@@ -769,7 +769,7 @@ for(var i$6 = 1; i$6 <= 10; ++i$6){
 var i$7 = /* record */[/* contents */1];
 
 Queue.iter((function (j) {
-        if (i$7[0] !== j) {
+        if (i$7[/* contents */0] !== j) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -779,7 +779,7 @@ Queue.iter((function (j) {
                 ]
               ];
         }
-        i$7[0] = i$7[0] + 1 | 0;
+        i$7[/* contents */0] = i$7[/* contents */0] + 1 | 0;
         return /* () */0;
       }), q$5);
 

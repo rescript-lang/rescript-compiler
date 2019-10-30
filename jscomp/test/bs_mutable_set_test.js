@@ -816,7 +816,7 @@ b("File \"bs_mutable_set_test.ml\", line 317, characters 4-11", Belt_MutableSetI
           data: Belt_internalSetInt.fromArray(xs$54)
         }));
 
-Mt.from_pair_suites("Bs_mutable_set_test", suites[0]);
+Mt.from_pair_suites("Bs_mutable_set_test", suites[/* contents */0]);
 
 var N = 0;
 

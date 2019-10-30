@@ -2436,7 +2436,7 @@ id("File \"int64_test.ml\", line 194, characters 5-12", /* int64 */[
       /* lo */536870655
     ]);
 
-Mt.from_pair_suites("Int64_test", suites$1[0]);
+Mt.from_pair_suites("Int64_test", suites$1[/* contents */0]);
 
 exports.f = f;
 exports.v = v;

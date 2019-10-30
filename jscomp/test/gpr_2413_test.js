@@ -23,8 +23,8 @@ function f(param) {
 }
 
 function ff(c) {
-  c[0] = c[0] + 1 | 0;
-  var match = (1 + c[0] | 0) + 1 | 0;
+  c[/* contents */0] = c[/* contents */0] + 1 | 0;
+  var match = (1 + c[/* contents */0] | 0) + 1 | 0;
   if (match > 3 || match < 0) {
     return 0;
   } else {

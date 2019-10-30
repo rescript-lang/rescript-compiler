@@ -50,7 +50,7 @@ var vvv = /* record */[/* contents */0];
 function fff(param) {
   console.log("x");
   console.log("x");
-  vvv[0] = vvv[0] + 1 | 0;
+  vvv[/* contents */0] = vvv[/* contents */0] + 1 | 0;
   return /* () */0;
 }
 

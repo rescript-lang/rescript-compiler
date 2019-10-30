@@ -11,14 +11,14 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 var u = /* record */[/* contents */3];
 
 var v = Caml_obj.caml_lazy_make((function (param) {
-        u[0] = 32;
+        u[/* contents */0] = 32;
         return /* () */0;
       }));
 
 function lazy_test(param) {
-  var h = u[0];
+  var h = u[/* contents */0];
   CamlinternalLazy.force(v);
-  var g = u[0];
+  var g = u[/* contents */0];
   return /* tuple */[
           h,
           g
@@ -51,12 +51,12 @@ function f(param) {
 var s = /* record */[/* contents */undefined];
 
 var set_true = Caml_obj.caml_lazy_make((function (param) {
-        s[0] = 1;
+        s[/* contents */0] = 1;
         return /* () */0;
       }));
 
 var set_false = Caml_obj.caml_lazy_make((function (param) {
-        s[0] = undefined;
+        s[/* contents */0] = undefined;
         return /* () */0;
       }));
 
@@ -81,7 +81,7 @@ catch (raw_exn){
 var u_v = /* record */[/* contents */0];
 
 var u$1 = Caml_obj.caml_lazy_make((function (param) {
-        u_v[0] = 2;
+        u_v[/* contents */0] = 2;
         return /* () */0;
       }));
 
@@ -146,7 +146,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
             "lazy_force",
             (function (param) {
                 return /* Eq */Block.__(0, [
-                          u_v[0],
+                          u_v[/* contents */0],
                           2
                         ]);
               })

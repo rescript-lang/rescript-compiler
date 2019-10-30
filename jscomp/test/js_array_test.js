@@ -888,12 +888,12 @@ var suites_001 = /* :: */[
                                                                                                               2,
                                                                                                               3
                                                                                                             ].forEach((function (n) {
-                                                                                                                  sum[0] = sum[0] + n | 0;
+                                                                                                                  sum[/* contents */0] = sum[/* contents */0] + n | 0;
                                                                                                                   return /* () */0;
                                                                                                                 }));
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     6,
-                                                                                                                    sum[0]
+                                                                                                                    sum[/* contents */0]
                                                                                                                   ]);
                                                                                                         })
                                                                                                     ],
@@ -907,12 +907,12 @@ var suites_001 = /* :: */[
                                                                                                                 2,
                                                                                                                 3
                                                                                                               ].forEach((function (param, i) {
-                                                                                                                    sum[0] = sum[0] + i | 0;
+                                                                                                                    sum[/* contents */0] = sum[/* contents */0] + i | 0;
                                                                                                                     return /* () */0;
                                                                                                                   }));
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       3,
-                                                                                                                      sum[0]
+                                                                                                                      sum[/* contents */0]
                                                                                                                     ]);
                                                                                                           })
                                                                                                       ],

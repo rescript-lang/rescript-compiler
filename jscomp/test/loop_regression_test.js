@@ -8,11 +8,11 @@ function f(param) {
   var acc = /* record */[/* contents */0];
   var n = 10;
   while(true) {
-    if (v[0] > n) {
-      return acc[0];
+    if (v[/* contents */0] > n) {
+      return acc[/* contents */0];
     } else {
-      acc[0] = acc[0] + v[0] | 0;
-      v[0] = v[0] + 1 | 0;
+      acc[/* contents */0] = acc[/* contents */0] + v[/* contents */0] | 0;
+      v[/* contents */0] = v[/* contents */0] + 1 | 0;
       continue ;
     }
   };

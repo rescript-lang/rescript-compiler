@@ -17,7 +17,7 @@ function f(param) {
     var j = n;
     Caml_array.caml_array_set(arr, j, (function(j){
         return function (param) {
-          v[0] = v[0] + j | 0;
+          v[/* contents */0] = v[/* contents */0] + j | 0;
           return /* () */0;
         }
         }(j)));
@@ -32,9 +32,9 @@ $$Array.iter((function (x) {
         return Curry._1(x, /* () */0);
       }), arr);
 
-console.log(String(v[0]));
+console.log(String(v[/* contents */0]));
 
-if (v[0] !== 45) {
+if (v[/* contents */0] !== 45) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

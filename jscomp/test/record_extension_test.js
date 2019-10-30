@@ -49,7 +49,7 @@ function f2_with(x) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.ml\", line 43, characters 22-29", suites[0]);
+Mt.from_pair_suites("File \"record_extension_test.ml\", line 43, characters 22-29", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

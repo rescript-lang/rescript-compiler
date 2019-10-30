@@ -405,7 +405,7 @@ eq("File \"bs_sort_test.ml\", line 143, characters 5-12", Belt_SortArray.strictl
           0
         ], lt), -5);
 
-Mt.from_pair_suites("Bs_sort_test", suites[0]);
+Mt.from_pair_suites("Bs_sort_test", suites[/* contents */0]);
 
 var I = 0;
 

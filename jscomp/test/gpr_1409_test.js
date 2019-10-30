@@ -12,10 +12,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -23,7 +23,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -118,7 +118,7 @@ function test6(f, x) {
   var tmp = {
     hi: 2
   };
-  var tmp$1 = (x$1[0] = x$1[0] + 1 | 0, x$1[0]);
+  var tmp$1 = (x$1[/* contents */0] = x$1[/* contents */0] + 1 | 0, x$1[/* contents */0]);
   if (tmp$1 !== undefined) {
     tmp.open = Caml_option.valFromOption(tmp$1);
   }
@@ -157,7 +157,7 @@ eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           ]
         ], Object.keys(test3(2, 2))), true);
 
-Mt.from_pair_suites("Gpr_1409_test", suites[0]);
+Mt.from_pair_suites("Gpr_1409_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

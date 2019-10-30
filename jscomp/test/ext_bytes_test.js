@@ -172,7 +172,7 @@ Bytes.blit_string(a$2, 10, b, 5, 10);
 
 eq("File \"ext_bytes_test.ml\", line 109, characters 7-14", b, Bytes.of_string("\0\0\0\0\0\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"));
 
-Mt.from_pair_suites("Ext_bytes_test", suites[0]);
+Mt.from_pair_suites("Ext_bytes_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

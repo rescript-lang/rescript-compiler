@@ -13,14 +13,14 @@ var suites = /* record */[/* contents : [] */0];
 var counter = /* record */[/* contents */0];
 
 function add_test(loc, test) {
-  counter[0] = counter[0] + 1 | 0;
-  var id = loc + (" id " + String(counter[0]));
-  suites[0] = /* :: */[
+  counter[/* contents */0] = counter[/* contents */0] + 1 | 0;
+  var id = loc + (" id " + String(counter[/* contents */0]));
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
       id,
       test
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -181,7 +181,7 @@ eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test((functi
                 ];
           })), /* Any */3257036);
 
-Mt.from_pair_suites("Js_exception_catch_test", suites[0]);
+Mt.from_pair_suites("Js_exception_catch_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.add_test = add_test;

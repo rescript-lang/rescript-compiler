@@ -670,17 +670,17 @@ function transform_enemy(enemy_typ, spr, dir) {
 }
 
 function update_animation(spr) {
-  var curr_ticks = spr[/* ticks */3][0];
+  var curr_ticks = spr[/* ticks */3][/* contents */0];
   if (curr_ticks >= spr[/* params */0][/* max_ticks */1]) {
-    spr[/* ticks */3][0] = 0;
+    spr[/* ticks */3][/* contents */0] = 0;
     if (spr[/* params */0][/* loop */7]) {
-      spr[/* frame */2][0] = Caml_int32.mod_(spr[/* frame */2][0] + 1 | 0, spr[/* params */0][/* max_frames */0]);
+      spr[/* frame */2][/* contents */0] = Caml_int32.mod_(spr[/* frame */2][/* contents */0] + 1 | 0, spr[/* params */0][/* max_frames */0]);
       return /* () */0;
     } else {
       return 0;
     }
   } else {
-    spr[/* ticks */3][0] = curr_ticks + 1 | 0;
+    spr[/* ticks */3][/* contents */0] = curr_ticks + 1 | 0;
     return /* () */0;
   }
 }
@@ -839,8 +839,8 @@ function make_type$2(param) {
 }
 
 function new_id(param) {
-  id_counter[0] = id_counter[0] + 1 | 0;
-  return id_counter[0];
+  id_counter[/* contents */0] = id_counter[/* contents */0] + 1 | 0;
+  return id_counter[/* contents */0];
 }
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
@@ -1429,7 +1429,7 @@ function render(sprite, param) {
   var match$1 = sprite[/* params */0][/* frame_size */3];
   var sw = match$1[0];
   var match$2 = sprite[/* params */0][/* frame_size */3];
-  var sx = match[0] + sprite[/* frame */2][0] * sw;
+  var sx = match[0] + sprite[/* frame */2][/* contents */0] * sw;
   return context.drawImage(sprite[/* img */4], sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
 }
 
@@ -2145,13 +2145,13 @@ function run_update_collid(state, collid, all_collids) {
     var obj = collid[2];
     var evolved = update_collidable(state, collid, all_collids);
     if (!obj[/* kill */8]) {
-      collid_objs[0] = /* :: */[
+      collid_objs[/* contents */0] = /* :: */[
         collid,
-        Pervasives.$at(collid_objs[0], evolved)
+        Pervasives.$at(collid_objs[/* contents */0], evolved)
       ];
     }
     var new_parts = obj[/* kill */8] ? kill(collid, state[/* ctx */1]) : /* [] */0;
-    particles[0] = Pervasives.$at(particles[0], new_parts);
+    particles[/* contents */0] = Pervasives.$at(particles[/* contents */0], new_parts);
     return collid;
   } else {
     var o = collid[2];
@@ -2172,7 +2172,7 @@ function run_update_collid(state, collid, all_collids) {
       player = collid;
     }
     var evolved$1 = update_collidable(state, player, all_collids);
-    collid_objs[0] = Pervasives.$at(collid_objs[0], evolved$1);
+    collid_objs[/* contents */0] = Pervasives.$at(collid_objs[/* contents */0], evolved$1);
     return player;
   }
 }
@@ -2201,10 +2201,10 @@ function update_loop(canvas, param, map_dim) {
     if (state[/* game_over */7] === true) {
       return game_win(state[/* ctx */1]);
     } else {
-      collid_objs[0] = /* [] */0;
-      particles[0] = /* [] */0;
-      var fps$1 = calc_fps(last_time[0], time);
-      last_time[0] = time;
+      collid_objs[/* contents */0] = /* [] */0;
+      particles[/* contents */0] = /* [] */0;
+      var fps$1 = calc_fps(last_time[/* contents */0], time);
+      last_time[/* contents */0] = time;
       clear_canvas(canvas);
       var vpos_x_int = state[/* vpt */2][/* pos */0][/* x */0] / 5 | 0;
       var bgd_width = state[/* bgd */0][/* params */0][/* frame_size */3][0] | 0;
@@ -2240,9 +2240,9 @@ function update_loop(canvas, param, map_dim) {
                 if (part$1[/* kill */5]) {
                   return 0;
                 } else {
-                  particles[0] = /* :: */[
+                  particles[/* contents */0] = /* :: */[
                     part$1,
-                    particles[0]
+                    particles[/* contents */0]
                   ];
                   return /* () */0;
                 }
@@ -2250,7 +2250,7 @@ function update_loop(canvas, param, map_dim) {
         fps(canvas, fps$1);
         hud(canvas, state$1[/* score */4], state$1[/* coins */5]);
         requestAnimationFrame((function (t) {
-                return update_helper(t, state$1, player$1, collid_objs[0], particles[0]);
+                return update_helper(t, state$1, player$1, collid_objs[/* contents */0], particles[/* contents */0]);
               }));
         return /* () */0;
       }
@@ -3265,8 +3265,8 @@ function load(param) {
 }
 
 function inc_counter(param) {
-  loadCount[0] = loadCount[0] + 1 | 0;
-  if (loadCount[0] === 4) {
+  loadCount[/* contents */0] = loadCount[/* contents */0] + 1 | 0;
+  if (loadCount[/* contents */0] === 4) {
     return load(/* () */0);
   } else {
     return /* () */0;

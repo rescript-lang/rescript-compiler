@@ -66,9 +66,9 @@ function extension_range_range(from, to_) {
 }
 
 function message(content, message_name) {
-  message_counter[0] = message_counter[0] + 1 | 0;
+  message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
   return /* record */[
-          /* id */message_counter[0],
+          /* id */message_counter[/* contents */0],
           /* message_name */message_name,
           /* message_body */content
         ];
@@ -82,9 +82,9 @@ function $$import($$public, file_name) {
 }
 
 function extend(extend_name, extend_body) {
-  message_counter[0] = message_counter[0] + 1 | 0;
+  message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
   return /* record */[
-          /* id */message_counter[0],
+          /* id */message_counter[/* contents */0],
           /* extend_name */extend_name,
           /* extend_body */extend_body
         ];
@@ -1266,9 +1266,9 @@ var yyact = /* array */[
       var $staropt$star = _4;
       var enum_name = _2[1];
       var enum_values = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-      message_counter[0] = message_counter[0] + 1 | 0;
+      message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
       return /* record */[
-              /* enum_id */message_counter[0],
+              /* enum_id */message_counter[/* contents */0],
               /* enum_name */enum_name,
               /* enum_values */enum_values
             ];
@@ -2929,7 +2929,7 @@ var Codegen_decode = {
 var __log__ = /* record */[/* contents */undefined];
 
 function log(x) {
-  var match = __log__[0];
+  var match = __log__[/* contents */0];
   if (match !== undefined) {
     return Printf.fprintf(Caml_option.valFromOption(match), x);
   } else {
@@ -7031,10 +7031,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -7042,7 +7042,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -7051,6 +7051,6 @@ eq("File \"ocaml_protc_test.ml\", line 10, characters 5-12", match[0], "(** tmp.
 
 eq("File \"ocaml_protc_test.ml\", line 46, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
 
-Mt.from_pair_suites("Ocaml_proto_test", suites[0]);
+Mt.from_pair_suites("Ocaml_proto_test", suites[/* contents */0]);
 
 /*  Not a pure module */

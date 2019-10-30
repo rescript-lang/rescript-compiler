@@ -34,7 +34,7 @@ d0["foo"] = undefined;
 
 eq("File \"gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
 
-Mt.from_pair_suites("Gpr_3154_test", suites[0]);
+Mt.from_pair_suites("Gpr_3154_test", suites[/* contents */0]);
 
 var J = 0;
 

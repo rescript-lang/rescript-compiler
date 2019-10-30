@@ -213,25 +213,25 @@ b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUnde
 function testIterToList(xs) {
   var v = /* record */[/* contents : [] */0];
   Belt_Set.forEach(xs, (function (x) {
-          v[0] = /* :: */[
+          v[/* contents */0] = /* :: */[
             x,
-            v[0]
+            v[/* contents */0]
           ];
           return /* () */0;
         }));
-  return Belt_List.reverse(v[0]);
+  return Belt_List.reverse(v[/* contents */0]);
 }
 
 function testIterToList2(xs) {
   var v = /* record */[/* contents : [] */0];
   Belt_SetDict.forEach(xs.data, (function (x) {
-          v[0] = /* :: */[
+          v[/* contents */0] = /* :: */[
             x,
-            v[0]
+            v[/* contents */0]
           ];
           return /* () */0;
         }));
-  return Belt_List.reverse(v[0]);
+  return Belt_List.reverse(v[/* contents */0]);
 }
 
 var u0$1 = Belt_Set.fromArray(Array_data_util.randomRange(0, 20), IntCmp);
@@ -406,7 +406,7 @@ b("File \"bs_poly_set_test.ml\", line 158, characters 4-11", Belt_SetDict.isEmpt
 
 b("File \"bs_poly_set_test.ml\", line 159, characters 4-11", !match$5[1]);
 
-Mt.from_pair_suites("Bs_poly_set_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_set_test", suites[/* contents */0]);
 
 var N = 0;
 

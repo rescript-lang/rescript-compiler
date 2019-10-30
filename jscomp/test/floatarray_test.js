@@ -29,7 +29,7 @@ eq("File \"floatarray_test.ml\", line 17, characters 5-12", /* tuple */[
       0
     ]);
 
-Mt.from_pair_suites("Floatarray_test", suites[0]);
+Mt.from_pair_suites("Floatarray_test", suites[/* contents */0]);
 
 var K = 0;
 

@@ -166,7 +166,7 @@ var param$8 = Hashtbl.hash(/* :: */[
 
 Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 39, characters 5-12", param$8, 100650590);
 
-Mt.from_pair_suites("Hash_test", suites[0]);
+Mt.from_pair_suites("Hash_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -14,9 +14,9 @@ var accum = /* record */[/* contents : [] */0];
 
 function record(fmt) {
   return Printf.kprintf((function (s) {
-                accum[0] = /* :: */[
+                accum[/* contents */0] = /* :: */[
                   s,
-                  accum[0]
+                  accum[/* contents */0]
                 ];
                 return /* () */0;
               }), fmt);
@@ -353,7 +353,7 @@ function error(s) {
 }
 
 function check(r, v, msg) {
-  if (Caml_obj.caml_notequal(r[0], v)) {
+  if (Caml_obj.caml_notequal(r[/* contents */0], v)) {
     return error(msg);
   } else {
     return 0;
@@ -361,15 +361,15 @@ function check(r, v, msg) {
 }
 
 function test(argv) {
-  current[0] = 0;
-  r_set[0] = false;
-  r_clear[0] = true;
-  r_string[0] = "";
-  r_int[0] = 0;
-  r_float[0] = 0.0;
-  accum[0] = /* [] */0;
+  current[/* contents */0] = 0;
+  r_set[/* contents */0] = false;
+  r_clear[/* contents */0] = true;
+  r_string[/* contents */0] = "";
+  r_int[/* contents */0] = 0;
+  r_float[/* contents */0] = 0.0;
+  accum[/* contents */0] = /* [] */0;
   Arg.parse_argv(current, argv, spec, f_anon, "usage");
-  var result = List.rev(accum[0]);
+  var result = List.rev(accum[/* contents */0]);
   var reference = /* :: */[
     "anon(anon1)",
     /* :: */[

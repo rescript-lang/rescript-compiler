@@ -21,10 +21,10 @@ function $$throw(loc, x) {
 }
 
 function neq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Neq */Block.__(1, [
                     x,
@@ -32,7 +32,7 @@ function neq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -81,7 +81,7 @@ eq("File \"bs_float_test.ml\", line 43, characters 5-12", 2.0 * 3.0, 6.0);
 
 eq("File \"bs_float_test.ml\", line 44, characters 5-12", 3.0 / 2.0, 1.5);
 
-Mt.from_pair_suites("File \"bs_float_test.ml\", line 46, characters 23-30", suites[0]);
+Mt.from_pair_suites("File \"bs_float_test.ml\", line 46, characters 23-30", suites[/* contents */0]);
 
 var F = 0;
 
