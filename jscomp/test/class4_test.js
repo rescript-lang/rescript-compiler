@@ -6,14 +6,14 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = [
+var shared = /* array */["x"];
+
+var shared$1 = /* array */[
   "move",
   "get_x"
 ];
 
-var shared$1 = ["x"];
-
-var shared$2 = [
+var shared$2 = /* array */[
   "bump",
   "get_x"
 ];
@@ -41,11 +41,11 @@ function eq(loc, x, y) {
 
 function restricted_point_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, [
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
         "move",
         "get_x",
         "bump"
-      ], shared$1);
+      ], shared);
   var move = ids[0];
   var get_x = ids[1];
   var bump = ids[2];
@@ -101,7 +101,7 @@ var Point = {
 
 function abstract_point_001($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.get_method_labels($$class, [
+  var ids = CamlinternalOO.get_method_labels($$class, /* array */[
         "move",
         "get_x",
         "get_offset"
@@ -118,7 +118,7 @@ function abstract_point_001($$class) {
     });
 }
 
-var abstract_point = [
+var abstract_point = /* class */[
   0,
   abstract_point_001,
   0,
@@ -127,11 +127,11 @@ var abstract_point = [
 
 function point_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  var inh = CamlinternalOO.inherits($$class, 0, shared, ["get_offset"], abstract_point, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, shared$1, /* array */["get_offset"], abstract_point, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
@@ -153,7 +153,7 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class([
+var point = CamlinternalOO.make_class(/* array */[
       "move",
       "get_offset",
       "get_x"
@@ -162,10 +162,10 @@ var point = CamlinternalOO.make_class([
 function colored_point_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var c = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, ["color"], ["c"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */["color"], /* array */["c"]);
   var color = ids[0];
   var c$1 = ids[1];
-  var inh = CamlinternalOO.inherits($$class, shared$1, 0, [
+  var inh = CamlinternalOO.inherits($$class, shared, 0, /* array */[
         "get_offset",
         "get_x",
         "move"
@@ -184,7 +184,7 @@ function colored_point_init($$class) {
     });
 }
 
-var colored_point = CamlinternalOO.make_class([
+var colored_point = CamlinternalOO.make_class(/* array */[
       "move",
       "color",
       "get_offset",

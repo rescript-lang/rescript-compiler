@@ -3,14 +3,14 @@
 var Curry = require("../../lib/js/curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = [
+var shared = /* array */[
   "move",
   "get_x"
 ];
 
 function point_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, ["x"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared, /* array */["x"]);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];

@@ -7,12 +7,12 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var shared = ["repr"];
-
-var shared$1 = [
+var shared = /* array */[
   "leq",
   "value"
 ];
+
+var shared$1 = /* array */["repr"];
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -29,7 +29,7 @@ function comparable_001($$class) {
     });
 }
 
-var comparable = [
+var comparable = /* class */[
   0,
   comparable_001,
   0,
@@ -38,14 +38,14 @@ var comparable = [
 
 function money_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, [
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
         "value",
         "leq"
-      ], shared);
+      ], shared$1);
   var value = ids[0];
   var leq = ids[1];
   var repr = ids[2];
-  var inh = CamlinternalOO.inherits($$class, 0, ["leq"], 0, comparable, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, /* array */["leq"], 0, comparable, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         value,
@@ -66,12 +66,12 @@ function money_init($$class) {
     });
 }
 
-var money = CamlinternalOO.make_class(shared$1, money_init);
+var money = CamlinternalOO.make_class(shared, money_init);
 
 function money2_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var times = CamlinternalOO.get_method_label($$class, "times");
-  var inh = CamlinternalOO.inherits($$class, shared, 0, shared$1, money, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$1, 0, shared, money, 1);
   var obj_init = inh[0];
   var repr = inh[1];
   CamlinternalOO.set_method($$class, times, (function (self$3, k) {
@@ -87,7 +87,7 @@ function money2_init($$class) {
     });
 }
 
-var money2 = CamlinternalOO.make_class([
+var money2 = CamlinternalOO.make_class(/* array */[
       "leq",
       "times",
       "value"

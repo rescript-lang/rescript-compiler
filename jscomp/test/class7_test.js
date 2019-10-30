@@ -10,28 +10,28 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var shared = [
-  "save",
-  "restore"
-];
+var shared = /* array */["window"];
 
-var shared$1 = [
-  "get",
-  "set"
-];
+var shared$1 = /* array */["top_widget"];
 
-var shared$2 = [
+var shared$2 = /* array */["x"];
+
+var shared$3 = /* array */["copy"];
+
+var shared$4 = /* array */[
   "move",
   "get_x"
 ];
 
-var shared$3 = ["top_widget"];
+var shared$5 = /* array */[
+  "save",
+  "restore"
+];
 
-var shared$4 = ["copy"];
-
-var shared$5 = ["x"];
-
-var shared$6 = ["window"];
+var shared$6 = /* array */[
+  "get",
+  "set"
+];
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -56,7 +56,7 @@ function eq(loc, x, y) {
 
 function point_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$5);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$4, shared$2);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -79,7 +79,7 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class(shared$2, point_init);
+var point = CamlinternalOO.make_class(shared$4, point_init);
 
 var p = Curry._2(point[0], 0, 55);
 
@@ -97,10 +97,10 @@ eq("File \"class7_test.ml\", line 22, characters 5-12", /* tuple */[
 
 function ref_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, [
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
         "set",
         "get"
-      ], shared$5);
+      ], shared$2);
   var set = ids[0];
   var get = ids[1];
   var x = ids[2];
@@ -123,10 +123,10 @@ function ref_init($$class) {
     });
 }
 
-var ref = CamlinternalOO.make_class(shared$1, ref_init);
+var ref = CamlinternalOO.make_class(shared$6, ref_init);
 
 function backup_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$4);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$5, shared$3);
   var save = ids[0];
   var restore = ids[1];
   var copy = ids[2];
@@ -154,13 +154,13 @@ function backup_init($$class) {
     });
 }
 
-var backup = CamlinternalOO.make_class(shared, backup_init);
+var backup = CamlinternalOO.make_class(shared$5, backup_init);
 
 function backup_ref_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var inh = CamlinternalOO.inherits($$class, shared$5, 0, shared$1, ref, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, 1);
   var obj_init = inh[0];
-  var inh$1 = CamlinternalOO.inherits($$class, shared$4, 0, [
+  var inh$1 = CamlinternalOO.inherits($$class, shared$3, 0, /* array */[
         "restore",
         "save"
       ], backup, 1);
@@ -174,7 +174,7 @@ function backup_ref_init($$class) {
     });
 }
 
-var backup_ref = CamlinternalOO.make_class([
+var backup_ref = CamlinternalOO.make_class(/* array */[
       "save",
       "restore",
       "get",
@@ -220,11 +220,11 @@ eq("File \"class7_test.ml\", line 47, characters 5-12", /* array */[
     ]);
 
 function backup2_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, [
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
         "save",
         "restore",
         "clear"
-      ], shared$4);
+      ], shared$3);
   var save = ids[0];
   var restore = ids[1];
   var clear = ids[2];
@@ -257,7 +257,7 @@ function backup2_init($$class) {
     });
 }
 
-var backup2 = CamlinternalOO.make_class([
+var backup2 = CamlinternalOO.make_class(/* array */[
       "clear",
       "save",
       "restore"
@@ -265,9 +265,9 @@ var backup2 = CamlinternalOO.make_class([
 
 function backup_ref2_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var inh = CamlinternalOO.inherits($$class, shared$5, 0, shared$1, ref, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, 1);
   var obj_init = inh[0];
-  var inh$1 = CamlinternalOO.inherits($$class, shared$4, 0, [
+  var inh$1 = CamlinternalOO.inherits($$class, shared$3, 0, /* array */[
         "clear",
         "restore",
         "save"
@@ -282,7 +282,7 @@ function backup_ref2_init($$class) {
     });
 }
 
-var backup_ref2 = CamlinternalOO.make_class([
+var backup_ref2 = CamlinternalOO.make_class(/* array */[
       "clear",
       "save",
       "restore",
@@ -315,7 +315,7 @@ eq("File \"class7_test.ml\", line 63, characters 5-12", /* array */[
     ]);
 
 function window_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$3, shared$3);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared$1);
   var top_widget = ids[0];
   var top_widget$1 = ids[1];
   CamlinternalOO.set_method($$class, top_widget, (function (self$7) {
@@ -328,11 +328,11 @@ function window_init($$class) {
     });
 }
 
-var $$window = CamlinternalOO.make_class(shared$3, window_init);
+var $$window = CamlinternalOO.make_class(shared$1, window_init);
 
 function widget_init($$class) {
   var w = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$6, shared$6);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared);
   var $$window = ids[0];
   var $$window$1 = ids[1];
   CamlinternalOO.set_method($$class, $$window, (function (self$8) {
@@ -346,7 +346,7 @@ function widget_init($$class) {
     });
 }
 
-var widget = CamlinternalOO.make_class(shared$6, widget_init);
+var widget = CamlinternalOO.make_class(shared, widget_init);
 
 Mt.from_pair_suites("Class7_test", suites[0]);
 

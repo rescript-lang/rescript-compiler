@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var class_tables = [
+var class_tables = /* Cons */[
   0,
   0,
   0
@@ -35,15 +35,15 @@ var class_tables = [
 
 function create(param) {
   if (!class_tables[0]) {
-    var $$class = CamlinternalOO.create_table([
+    var $$class = CamlinternalOO.create_table(/* array */[
           "add",
           "get"
         ]);
     var env = CamlinternalOO.new_variable($$class, "");
-    var ids = CamlinternalOO.new_methods_variables($$class, [
+    var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
           "get",
           "add"
-        ], ["data"]);
+        ], /* array */["data"]);
     var get = ids[0];
     var add = ids[1];
     var data = ids[2];

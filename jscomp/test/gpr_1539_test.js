@@ -1,20 +1,21 @@
 'use strict';
 
+var Block = require("../../lib/js/block.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
-var Point = Caml_module.init_mod([
+var Point = Caml_module.init_mod(/* tuple */[
       "gpr_1539_test.ml",
       10,
       6
-    ], [[[
-          0,
-          "add"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "add"
+          ]]]));
 
-Caml_module.update_mod([[[
-          0,
-          "add"
-        ]]], Point, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "add"
+          ]]]), Point, {
       add: (function (prim, prim$1) {
           return prim.add(prim$1);
         })

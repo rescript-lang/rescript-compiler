@@ -8,7 +8,7 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = ["calc"];
+var shared = /* array */["calc"];
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -48,7 +48,7 @@ function fib_init($$class) {
 var fib = CamlinternalOO.make_class(shared, fib_init);
 
 function memo_fib_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, ["cache"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared, /* array */["cache"]);
   var calc = ids[0];
   var cache = ids[1];
   var inh = CamlinternalOO.inherits($$class, 0, 0, shared, fib, 1);

@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
+var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_module = require("../../lib/js/caml_module.js");
@@ -26,46 +27,46 @@ var Xx = {
 
 var uuu = Xx.f;
 
-var Int3 = Caml_module.init_mod([
+var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       27,
       6
-    ], [[[
-          0,
-          "u"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "u"
+          ]]]));
 
-Caml_module.update_mod([[[
-          0,
-          "u"
-        ]]], Int3, Int3);
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "u"
+          ]]]), Int3, Int3);
 
-var Inta = Caml_module.init_mod([
+var Inta = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       31,
       6
-    ], [[[
-          1,
-          "a"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]));
 
-var Intb = Caml_module.init_mod([
+var Intb = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       36,
       6
-    ], [[[
-          1,
-          "a"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]));
 
 var a = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Intb.a);
       }));
 
-Caml_module.update_mod([[[
-          1,
-          "a"
-        ]]], Inta, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]), Inta, {
       a: a
     });
 
@@ -73,10 +74,10 @@ var a$1 = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Inta.a) + 1 | 0;
       }));
 
-Caml_module.update_mod([[[
-          1,
-          "a"
-        ]]], Intb, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]), Intb, {
       a: a$1
     });
 
@@ -95,39 +96,39 @@ catch (exn){
 
 eq("File \"recursive_module.ml\", line 41, characters 3-10", -1, tmp);
 
-var Inta$1 = Caml_module.init_mod([
+var Inta$1 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       48,
       8
-    ], [[[
-          1,
-          "a"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]));
 
-var Intb$1 = Caml_module.init_mod([
+var Intb$1 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       53,
       8
-    ], [[[
-          1,
-          "a"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]));
 
 var a$2 = Caml_obj.caml_lazy_make((function (param) {
         return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
       }));
 
-Caml_module.update_mod([[[
-          1,
-          "a"
-        ]]], Inta$1, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]), Inta$1, {
       a: a$2
     });
 
-Caml_module.update_mod([[[
-          1,
-          "a"
-        ]]], Intb$1, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            1,
+            "a"
+          ]]]), Intb$1, {
       a: 2
     });
 

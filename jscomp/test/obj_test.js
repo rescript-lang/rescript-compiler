@@ -6,19 +6,19 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = [
-  "hi",
-  "add"
-];
-
-var shared$1 = [
+var shared = /* array */[
   "hi",
   "hello"
 ];
 
-var $$class = CamlinternalOO.create_table(shared$1);
+var shared$1 = /* array */[
+  "hi",
+  "add"
+];
 
-var ids = CamlinternalOO.get_method_labels($$class, shared$1);
+var $$class = CamlinternalOO.create_table(shared);
+
+var ids = CamlinternalOO.get_method_labels($$class, shared);
 
 var hi = ids[0];
 
@@ -39,12 +39,12 @@ CamlinternalOO.init_class($$class);
 
 var vv = CamlinternalOO.create_object_opt(0, $$class);
 
-var $$class$1 = CamlinternalOO.create_table([
+var $$class$1 = CamlinternalOO.create_table(/* array */[
       "x",
       "y"
     ]);
 
-var ids$1 = CamlinternalOO.get_method_labels($$class$1, [
+var ids$1 = CamlinternalOO.get_method_labels($$class$1, /* array */[
       "y",
       "x"
     ]);
@@ -68,14 +68,14 @@ CamlinternalOO.init_class($$class$1);
 
 var v = CamlinternalOO.create_object_opt(0, $$class$1);
 
-var $$class$2 = CamlinternalOO.create_table([
+var $$class$2 = CamlinternalOO.create_table(/* array */[
       "hi",
       "id1",
       "id2",
       "hello"
     ]);
 
-var ids$2 = CamlinternalOO.get_method_labels($$class$2, [
+var ids$2 = CamlinternalOO.get_method_labels($$class$2, /* array */[
       "id2",
       "id1",
       "hi",
@@ -113,7 +113,7 @@ CamlinternalOO.init_class($$class$2);
 
 var u = CamlinternalOO.create_object_opt(0, $$class$2);
 
-var $$class$3 = CamlinternalOO.create_table(["id"]);
+var $$class$3 = CamlinternalOO.create_table(/* array */["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$3, "id");
 
@@ -125,7 +125,7 @@ CamlinternalOO.init_class($$class$3);
 
 var uu = CamlinternalOO.create_object_opt(0, $$class$3);
 
-var $$class$4 = CamlinternalOO.create_table(["add"]);
+var $$class$4 = CamlinternalOO.create_table(/* array */["add"]);
 
 var add = CamlinternalOO.get_method_label($$class$4, "add");
 
@@ -137,9 +137,9 @@ CamlinternalOO.init_class($$class$4);
 
 var uuu = CamlinternalOO.create_object_opt(0, $$class$4);
 
-var $$class$5 = CamlinternalOO.create_table(shared);
+var $$class$5 = CamlinternalOO.create_table(shared$1);
 
-var ids$3 = CamlinternalOO.get_method_labels($$class$5, shared);
+var ids$3 = CamlinternalOO.get_method_labels($$class$5, shared$1);
 
 var hi$2 = ids$3[0];
 
