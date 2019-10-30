@@ -1179,12 +1179,12 @@ type 'a ref = { mutable contents : 'a }
 external ref : 'a -> 'a ref = "%makemutable"
 (** Return a fresh reference containing the given value. *)
 
-external ( ! ) : 'a ref -> 'a = "%field0"
+external ( ! ) : 'a ref -> 'a = "%bs_ref_field0"
 (** [!r] returns the current contents of reference [r].
    Equivalent to [fun r -> r.contents].
    Unary operator at precedence level 11/11.*)
 
-external ( := ) : 'a ref -> 'a -> unit = "%setfield0"
+external ( := ) : 'a ref -> 'a -> unit = "%bs_ref_setfield0"
 (** [r := a] stores the value of [a] in reference [r].
    Equivalent to [fun r v -> r.contents <- v].
    Right-associative operator at precedence level 1/11. *)
