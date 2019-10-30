@@ -450,7 +450,7 @@ let translate  loc
   | Poffsetint n ->
     E.int32_add (Ext_list.singleton_exn args) (E.small_int  n)      
   | Poffsetref n ->
-    let v = (Js_of_lam_block.field Fld_na (Ext_list.singleton_exn args) 0l) in
+    let v = (Js_of_lam_block.field (Fld_record "contents") (Ext_list.singleton_exn args) 0l) in
     E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
   | Psequand -> (* TODO: rhs is possibly a tail call *)
     begin match args with
