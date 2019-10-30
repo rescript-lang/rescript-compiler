@@ -3058,7 +3058,7 @@ var dummy_table = /* record */[
 
 var table_count = /* record */[/* contents */0];
 
-var dummy_met = [];
+var dummy_met = /* obj_block */[];
 
 function fit_size(n) {
   if (n <= 2) {
