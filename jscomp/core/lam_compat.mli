@@ -91,6 +91,7 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_record_inline of string 
   | Fld_record_extension of string 
 #end  
+  | Fld_tuple
   
 val str_of_field_info : 
   field_dbg_info -> 

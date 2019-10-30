@@ -106,7 +106,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pfield_computed
       | Pval_from_option
       | Pval_from_option_not_nest
-      | Pfloatfield _ 
       | Pduprecord _ 
       (* Boolean operations *)
       | Psequand | Psequor | Pnot
@@ -212,7 +211,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Plazyforce 
       | Psetfield _ 
       | Psetfield_computed
-      | Psetfloatfield _
       (* | Psetglobal _  *)
         -> false 
     )

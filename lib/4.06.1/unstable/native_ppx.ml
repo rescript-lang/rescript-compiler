@@ -18148,11 +18148,13 @@ type t =
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension_slot
-  | Blk_na
+  | Blk_extension
+  | Blk_na of string (* for debugging *)
 
   | Blk_record_inlined of string array * string * int
   | Blk_record_ext of string array
 
+  | Blk_class
 end
 module Lam_constant : sig 
 #1 "lam_constant.mli"

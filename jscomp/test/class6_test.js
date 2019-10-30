@@ -9,14 +9,14 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = [
+var shared = /* array */["x"];
+
+var shared$1 = /* array */["m"];
+
+var shared$2 = /* array */[
   "move",
   "get_x"
 ];
-
-var shared$1 = ["m"];
-
-var shared$2 = ["x"];
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -41,7 +41,7 @@ function eq(loc, x, y) {
 
 function point_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$2);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -64,15 +64,15 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class(shared, point_init);
+var point = CamlinternalOO.make_class(shared$2, point_init);
 
 function colored_point_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var c = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, ["color"], ["c"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */["color"], /* array */["c"]);
   var color = ids[0];
   var c$1 = ids[1];
-  var inh = CamlinternalOO.inherits($$class, shared$2, 0, [
+  var inh = CamlinternalOO.inherits($$class, shared, 0, /* array */[
         "get_x",
         "move"
       ], point, 1);
@@ -90,7 +90,7 @@ function colored_point_init($$class) {
     });
 }
 
-var colored_point = CamlinternalOO.make_class([
+var colored_point = CamlinternalOO.make_class(/* array */[
       "move",
       "color",
       "get_x"
@@ -134,7 +134,7 @@ function c_init($$class) {
 var c = CamlinternalOO.make_class(shared$1, c_init);
 
 function d_init($$class) {
-  var ids = CamlinternalOO.get_method_labels($$class, [
+  var ids = CamlinternalOO.get_method_labels($$class, /* array */[
         "n",
         "as_c"
       ]);
@@ -159,7 +159,7 @@ function d_init($$class) {
     });
 }
 
-var table = CamlinternalOO.create_table([
+var table = CamlinternalOO.create_table(/* array */[
       "as_c",
       "m",
       "n"
@@ -171,7 +171,7 @@ CamlinternalOO.init_class(table);
 
 var d_000 = Curry._1(env_init, 0);
 
-var d = [
+var d = /* class */[
   d_000,
   d_init,
   env_init,
@@ -185,7 +185,7 @@ function c2$prime_001($$class) {
     });
 }
 
-var c2$prime = [
+var c2$prime = /* class */[
   0,
   c2$prime_001,
   0,
@@ -194,7 +194,7 @@ var c2$prime = [
 
 function functional_point_init($$class) {
   var y = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$2);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -218,7 +218,7 @@ function functional_point_init($$class) {
     });
 }
 
-var functional_point = CamlinternalOO.make_class(shared, functional_point_init);
+var functional_point = CamlinternalOO.make_class(shared$2, functional_point_init);
 
 var p$1 = Curry._2(functional_point[0], 0, 7);
 
@@ -236,7 +236,7 @@ eq("File \"class6_test.ml\", line 60, characters 5-12", /* tuple */[
 
 function bad_functional_point_init($$class) {
   var y = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$2);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -258,7 +258,7 @@ function bad_functional_point_init($$class) {
     });
 }
 
-var table$1 = CamlinternalOO.create_table(shared);
+var table$1 = CamlinternalOO.create_table(shared$2);
 
 var env_init$1 = bad_functional_point_init(table$1);
 
@@ -266,7 +266,7 @@ CamlinternalOO.init_class(table$1);
 
 var bad_functional_point_000 = Curry._1(env_init$1, 0);
 
-var bad_functional_point = [
+var bad_functional_point = /* class */[
   bad_functional_point_000,
   bad_functional_point_init,
   env_init$1,

@@ -190,10 +190,11 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_record_inline of string 
   | Fld_record_extension of string 
 #end  
-
+  | Fld_tuple
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
-  | Fld_na -> None 
+  | Fld_na 
+  | Fld_tuple -> None 
   | Fld_record s 
   | Fld_module s 
   | Fld_record_inline s 

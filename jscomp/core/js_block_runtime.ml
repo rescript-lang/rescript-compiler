@@ -40,12 +40,14 @@ let tag_is_zero (tag : J.expression) =
 #end  
   | Blk_module _ -> false
   | Blk_tuple 
+  | Blk_extension
+  | Blk_class
   | Blk_array   
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_ext _ -> false
 #end  
   | Blk_extension_slot -> false 
-  | Blk_na  ->  not (tag_is_zero tag )
+  | Blk_na _ ->  not (tag_is_zero tag )
 
 let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) = 
   match  tag_info with 
@@ -53,12 +55,14 @@ let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_module _
   | Blk_record _  
   | Blk_tuple 
+  | Blk_extension
+  | Blk_class
   | Blk_array -> false   
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined (_,_,1)  
 #end  
   | Blk_constructor (_, 1)      
-  | Blk_na -> not (tag_is_zero tag)
+  | Blk_na _ -> not (tag_is_zero tag)
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined _ 
 #end  

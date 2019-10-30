@@ -42,8 +42,6 @@ type t =
   | Pfield of int * Lam_compat.field_dbg_info
   | Psetfield of int * Lam_compat.set_field_dbg_info
   (* could have field info at least for record *)
-  | Pfloatfield of int * Lam_compat.field_dbg_info
-  | Psetfloatfield of int * Lam_compat.set_field_dbg_info
   | Pduprecord of record_representation * int
   (* Force lazy values *)
   | Plazyforce
@@ -271,12 +269,8 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
    | _ -> false )    
   | Pfield (n0, info0) ->  
     (match rhs with Pfield (n1, info1) ->  n0 = n1 && eq_field_dbg_info info0 info1 | _ -> false )    
-  | Pfloatfield (i0, info0) -> 
-    (match rhs with Pfloatfield (i1,info1) -> i0 = i1 && eq_field_dbg_info info0 info1  | _ -> false)
   | Psetfield(i0, info0) -> 
     (match rhs with Psetfield(i1, info1) ->  i0 = i1 && eq_set_field_dbg_info info0 info1 | _ -> false)  
-  | Psetfloatfield (i0, info0) ->  
-    (match rhs with Psetfloatfield(i1,info1) -> i0 = i1 && eq_set_field_dbg_info info0 info1 | _ -> false)
   | Pmakeblock (i0, info0, flag0) -> 
     (match rhs with Pmakeblock(i1,info1,flag1) ->  
       i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  

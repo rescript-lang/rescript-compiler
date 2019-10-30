@@ -35,28 +35,28 @@ function add(suite) {
   return /* () */0;
 }
 
-var Int3 = Caml_module.init_mod([
+var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       13,
       6
-    ], [[[
-          0,
-          "u"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "u"
+          ]]]));
 
-Caml_module.update_mod([[[
-          0,
-          "u"
-        ]]], Int3, Int3);
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "u"
+          ]]]), Int3, Int3);
 
-var M = Caml_module.init_mod([
+var M = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       20,
       20
-    ], [[[
-          0,
-          "fact"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "fact"
+          ]]]));
 
 function fact(n) {
   if (n <= 1) {
@@ -66,10 +66,10 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod([[[
-          0,
-          "fact"
-        ]]], M, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "fact"
+          ]]]), M, {
       fact: fact
     });
 

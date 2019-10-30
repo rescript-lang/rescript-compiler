@@ -225,6 +225,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_tuple  -> 
       let info : Lam_tag_info.t = Blk_tuple in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_extension  -> 
+      let info : Lam_tag_info.t = Blk_extension in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+    | Blk_class  -> 
+      let info : Lam_tag_info.t = Blk_class in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
     | Blk_array -> 
       let info : Lam_tag_info.t = Blk_array in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
@@ -265,9 +271,11 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
           ~primitive:(Pccall {prim_name="caml_lazy_make"; prim_arity = 1; prim_native_name = ""})
           ~args loc          
     | Blk_lazy_forward
-    
-    | Blk_na -> 
-      let info : Lam_tag_info.t = Blk_na in
+      -> 
+      let info : Lam_tag_info.t = Blk_na "" in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
+    | Blk_na s -> 
+      let info : Lam_tag_info.t = Blk_na s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
@@ -279,15 +287,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 #end
       info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
-
-  | Pfloatfield (id,info)
-    -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
-  | Psetfloatfield (id,
-#if OCAML_VERSION =~ ">4.03.0"  then 
-    _initialization_or_assignment,
-#end  
-      info)
-    -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
+  | Psetfloatfield _
+  | Pfloatfield _
+    -> assert false  
   | Pduprecord (repr,i)
     -> prim ~primitive:(Pduprecord(convert_record_repr repr,i)) ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc

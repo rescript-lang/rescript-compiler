@@ -9,23 +9,23 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var A = Caml_module.init_mod([
+var A = Caml_module.init_mod(/* tuple */[
       "rec_module_test.ml",
       3,
       6
-    ], [[[
-          0,
-          "even"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "even"
+          ]]]));
 
-var B = Caml_module.init_mod([
+var B = Caml_module.init_mod(/* tuple */[
       "rec_module_test.ml",
       11,
       6
-    ], [[[
-          0,
-          "odd"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "odd"
+          ]]]));
 
 function even(n) {
   if (n === 0) {
@@ -37,10 +37,10 @@ function even(n) {
   }
 }
 
-Caml_module.update_mod([[[
-          0,
-          "even"
-        ]]], A, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "even"
+          ]]]), A, {
       even: even
     });
 
@@ -54,42 +54,42 @@ function odd(n) {
   }
 }
 
-Caml_module.update_mod([[[
-          0,
-          "odd"
-        ]]], B, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "odd"
+          ]]]), B, {
       odd: odd
     });
 
-var AA = Caml_module.init_mod([
+var AA = Caml_module.init_mod(/* tuple */[
       "rec_module_test.ml",
       21,
       6
-    ], [[
-        [
-          0,
-          "even"
-        ],
-        [
-          0,
-          "x"
-        ]
-      ]]);
+    ], /* Module */Block.__(0, [/* array */[
+          /* tuple */[
+            0,
+            "even"
+          ],
+          /* tuple */[
+            0,
+            "x"
+          ]
+        ]]));
 
-var BB = Caml_module.init_mod([
+var BB = Caml_module.init_mod(/* tuple */[
       "rec_module_test.ml",
       31,
       6
-    ], [[
-        [
-          0,
-          "odd"
-        ],
-        [
-          0,
-          "y"
-        ]
-      ]]);
+    ], /* Module */Block.__(0, [/* array */[
+          /* tuple */[
+            0,
+            "odd"
+          ],
+          /* tuple */[
+            0,
+            "y"
+          ]
+        ]]));
 
 function even$1(n) {
   if (n === 0) {
@@ -105,16 +105,16 @@ function x(param) {
   return Curry._1(BB.y, /* () */0) + 3 | 0;
 }
 
-Caml_module.update_mod([[
-        [
-          0,
-          "even"
-        ],
-        [
-          0,
-          "x"
-        ]
-      ]], AA, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+          /* tuple */[
+            0,
+            "even"
+          ],
+          /* tuple */[
+            0,
+            "x"
+          ]
+        ]]), AA, {
       even: even$1,
       x: x
     });
@@ -133,28 +133,28 @@ function y(param) {
   return 32;
 }
 
-Caml_module.update_mod([[
-        [
-          0,
-          "odd"
-        ],
-        [
-          0,
-          "y"
-        ]
-      ]], BB, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+          /* tuple */[
+            0,
+            "odd"
+          ],
+          /* tuple */[
+            0,
+            "y"
+          ]
+        ]]), BB, {
       odd: odd$1,
       y: y
     });
 
-var AAA = Caml_module.init_mod([
+var AAA = Caml_module.init_mod(/* tuple */[
       "rec_module_test.ml",
       55,
       2
-    ], [[[
-          0,
-          "compare"
-        ]]]);
+    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "compare"
+          ]]]));
 
 function height(param) {
   if (param) {
@@ -1200,10 +1200,10 @@ function compare$1(t1, t2) {
   }
 }
 
-Caml_module.update_mod([[[
-          0,
-          "compare"
-        ]]], AAA, {
+Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+            0,
+            "compare"
+          ]]]), AAA, {
       compare: compare$1
     });
 

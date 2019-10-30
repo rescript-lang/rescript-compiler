@@ -705,7 +705,7 @@ let translate loc (prim_name : string)
       begin match args with 
         | [ tag; 
             {expression_desc = Number (Int { i ;_}); _} ] ->
-          E.make_block tag Blk_na 
+          E.make_block tag (Blk_na "")
             (Ext_list.init (Int32.to_int i) 
                (fun _ -> E.zero_int_literal)) NA
 

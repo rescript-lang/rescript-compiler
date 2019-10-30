@@ -35,8 +35,10 @@ type t =
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension_slot
-  | Blk_na
+  | Blk_extension
+  | Blk_na of string (* for debugging *)
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined of string array * string * int
   | Blk_record_ext of string array
 #end
+  | Blk_class

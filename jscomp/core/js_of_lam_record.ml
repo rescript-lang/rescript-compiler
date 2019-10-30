@@ -43,7 +43,9 @@ module E = Js_exp_make
 
 let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
-  | Fld_na -> 
+  | Fld_na 
+  | Fld_tuple 
+    -> 
     E.array_index_by_int e i 
 #if OCAML_VERSION =~ ">4.03.0" then
   | Fld_record_inline s
