@@ -881,12 +881,14 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
 #end
         | Blk_tuple
+        | Blk_extension
+        | Blk_class
         | Blk_array
 #if OCAML_VERSION =~ ">4.03.0" then     
         | Blk_record_ext _
 #end      
         | Blk_extension_slot
-        | Blk_na
+        | Blk_na _
            ->           
           dbg_block_create f;
           P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])

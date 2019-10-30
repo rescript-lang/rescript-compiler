@@ -554,16 +554,6 @@ let translate  loc
         (Js_of_lam_block.set_field_by_exp self index value)
     | _ -> assert false
     )
-  | Psetfloatfield (i,field_info)
-    -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
-    (match args with 
-     | [e;e0] -> 
-       ensure_value_unit cxt.continuation 
-         (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
-     | _ -> assert false)
-  | Pfloatfield (i, field_info) -> (** RUNTIME *)    
-      Js_of_lam_float_record.get_double_feild field_info (Ext_list.singleton_exn args)
-         (Int32.of_int i) 
   | Parrayrefu ->  
     (match args with
      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)

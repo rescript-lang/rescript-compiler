@@ -163,8 +163,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Psetfield(n,  _) ->
     let instr = "setfield " in
     fprintf ppf "%s%i" instr n
-  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
-  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
