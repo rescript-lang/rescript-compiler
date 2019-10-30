@@ -16,7 +16,7 @@ function for_3(x) {
     var j = (i << 1);
     Caml_array.caml_array_set(arr, i, (function(j){
         return function (param) {
-          v[0] = v[0] + j | 0;
+          v[/* contents */0] = v[/* contents */0] + j | 0;
           return /* () */0;
         }
         }(j)));
@@ -24,7 +24,7 @@ function for_3(x) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return v[0];
+  return v[/* contents */0];
 }
 
 function for_4(x) {
@@ -37,7 +37,7 @@ function for_4(x) {
     var k = (j << 1);
     Caml_array.caml_array_set(arr, i, (function(k){
         return function (param) {
-          v[0] = v[0] + k | 0;
+          v[/* contents */0] = v[/* contents */0] + k | 0;
           return /* () */0;
         }
         }(k)));
@@ -45,7 +45,7 @@ function for_4(x) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return v[0];
+  return v[/* contents */0];
 }
 
 function for_5(x, u) {
@@ -57,7 +57,7 @@ function for_5(x, u) {
     var k = Caml_int32.imul((u << 1), u);
     Caml_array.caml_array_set(arr, i, (function(k){
         return function (param) {
-          v[0] = v[0] + k | 0;
+          v[/* contents */0] = v[/* contents */0] + k | 0;
           return /* () */0;
         }
         }(k)));
@@ -65,7 +65,7 @@ function for_5(x, u) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return v[0];
+  return v[/* contents */0];
 }
 
 function for_6(x, u) {
@@ -76,32 +76,32 @@ function for_6(x, u) {
   var v4 = /* record */[/* contents */0];
   var v5 = /* record */[/* contents */0];
   var inspect_3 = -1;
-  v4[0] = v4[0] + 1 | 0;
+  v4[/* contents */0] = v4[/* contents */0] + 1 | 0;
   for(var j = 0; j <= 1; ++j){
-    v5[0] = v5[0] + 1 | 0;
+    v5[/* contents */0] = v5[/* contents */0] + 1 | 0;
     var v2 = /* record */[/* contents */0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
       var k = Caml_int32.imul((u << 1), u);
-      var h = (v5[0] << 1);
-      v2[0] = v2[0] + 1 | 0;
+      var h = (v5[/* contents */0] << 1);
+      v2[/* contents */0] = v2[/* contents */0] + 1 | 0;
       Caml_array.caml_array_set(arr, i, (function(k,h){
           return function (param) {
-            v[0] = (((((v[0] + k | 0) + v2[0] | 0) + v4[0] | 0) + v5[0] | 0) + h | 0) + u | 0;
+            v[/* contents */0] = (((((v[/* contents */0] + k | 0) + v2[/* contents */0] | 0) + v4[/* contents */0] | 0) + v5[/* contents */0] | 0) + h | 0) + u | 0;
             return /* () */0;
           }
           }(k,h)));
     }
     }(v2));
-    inspect_3 = v2[0];
+    inspect_3 = v2[/* contents */0];
   }
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
   return /* array */[
-          v[0],
-          v4[0],
-          v5[0],
+          v[/* contents */0],
+          v4[/* contents */0],
+          v5[/* contents */0],
           inspect_3
         ];
 }
@@ -116,7 +116,7 @@ function for_7(param) {
     for(var j = 0; j <= 2; ++j){
       Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j){
           return function (param) {
-            v[0] = (v[0] + i | 0) + j | 0;
+            v[/* contents */0] = (v[/* contents */0] + i | 0) + j | 0;
             return /* () */0;
           }
           }(j)));
@@ -126,7 +126,7 @@ function for_7(param) {
   $$Array.iter((function (f) {
           return Curry._1(f, /* () */0);
         }), arr);
-  return v[0];
+  return v[/* contents */0];
 }
 
 function for_8(param) {
@@ -141,7 +141,7 @@ function for_8(param) {
       var h = i + j | 0;
       Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j,h){
           return function (param) {
-            v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
+            v[/* contents */0] = (((v[/* contents */0] + i | 0) + j | 0) + h | 0) + k | 0;
             return /* () */0;
           }
           }(j,h)));
@@ -151,15 +151,15 @@ function for_8(param) {
   $$Array.iter((function (f) {
           return Curry._1(f, /* () */0);
         }), arr);
-  return v[0];
+  return v[/* contents */0];
 }
 
 function for_9(param) {
   var v = /* record */[/* contents : [] */0];
   var collect = function (x) {
-    v[0] = /* :: */[
+    v[/* contents */0] = /* :: */[
       x,
-      v[0]
+      v[/* contents */0]
     ];
     return /* () */0;
   };
@@ -173,20 +173,20 @@ function for_9(param) {
         }));
   for(var i = 0; i <= 1; ++i){
     var v$1 = /* record */[/* contents */0];
-    v$1[0] = v$1[0] + i | 0;
+    v$1[/* contents */0] = v$1[/* contents */0] + i | 0;
     (function(v$1){
     for(var j = 0; j <= 1; ++j){
-      v$1[0] = v$1[0] + 1 | 0;
-      collect(v$1[0]);
+      v$1[/* contents */0] = v$1[/* contents */0] + 1 | 0;
+      collect(v$1[/* contents */0]);
       Caml_array.caml_array_set(arr, (i << 1) + j | 0, (function (param) {
-              vv[0] = vv[0] + v$1[0] | 0;
+              vv[/* contents */0] = vv[/* contents */0] + v$1[/* contents */0] | 0;
               return /* () */0;
             }));
     }
     }(v$1));
     Caml_array.caml_array_set(arr2, i, (function(v$1){
         return function (param) {
-          vv2[0] = vv2[0] + v$1[0] | 0;
+          vv2[/* contents */0] = vv2[/* contents */0] + v$1[/* contents */0] | 0;
           return /* () */0;
         }
         }(v$1)));
@@ -198,9 +198,9 @@ function for_9(param) {
           return Curry._1(f, /* () */0);
         }), arr2);
   return /* array */[/* tuple */[
-            vv[0],
-            $$Array.of_list(List.rev(v[0])),
-            vv2[0]
+            vv[/* contents */0],
+            $$Array.of_list(List.rev(v[/* contents */0])),
+            vv2[/* contents */0]
           ]];
 }
 

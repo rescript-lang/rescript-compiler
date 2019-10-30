@@ -21,10 +21,10 @@ var test_id = /* record */[/* contents */0];
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -32,7 +32,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -108,13 +108,13 @@ eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
 
 var u = /* record */[/* contents */3];
 
-var side_effect_config = (u[0] = u[0] + 1 | 0, {
+var side_effect_config = (u[/* contents */0] = u[/* contents */0] + 1 | 0, {
     hi: 3,
     low: 32
   });
 
 eq("File \"ffi_js_test.ml\", line 54, characters 5-12", /* tuple */[
-      u[0],
+      u[/* contents */0],
       4
     ]);
 
@@ -173,7 +173,7 @@ function ffff(x) {
   return /* () */0;
 }
 
-Mt.from_pair_suites("Ffi_js_test", suites[0]);
+Mt.from_pair_suites("Ffi_js_test", suites[/* contents */0]);
 
 exports.keys = keys;
 exports.suites = suites;

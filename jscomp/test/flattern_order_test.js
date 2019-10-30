@@ -29,11 +29,11 @@ function even2(n) {
 var v = /* record */[/* contents */0];
 
 function obj_get(param) {
-  return v[0];
+  return v[/* contents */0];
 }
 
 function obj_set(i) {
-  v[0] = i;
+  v[/* contents */0] = i;
   return /* () */0;
 }
 

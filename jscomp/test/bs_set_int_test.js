@@ -366,7 +366,7 @@ eq("File \"bs_set_int_test.ml\", line 175, characters 5-12", Belt_SetInt.get(v$1
 
 eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
 
-Mt.from_pair_suites("Bs_set_int_test", suites[0]);
+Mt.from_pair_suites("Bs_set_int_test", suites[/* contents */0]);
 
 var N = 0;
 

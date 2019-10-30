@@ -164,7 +164,7 @@ eq("File \"large_record_duplication_test.ml\", line 261, characters 6-13", get_x
 
 eq("File \"large_record_duplication_test.ml\", line 262, characters 6-13", get_x0$2(Caml_builtin_exceptions.not_found), undefined);
 
-Mt.from_pair_suites("Large_record_duplication_test", suites[0]);
+Mt.from_pair_suites("Large_record_duplication_test", suites[/* contents */0]);
 
 var v0 = /* record */[
   /* x0 */9,

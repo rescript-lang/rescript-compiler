@@ -46,7 +46,7 @@ function f(param) {
   }
 }
 
-Mt.from_pair_suites("406_primitive_test", suites[0]);
+Mt.from_pair_suites("406_primitive_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

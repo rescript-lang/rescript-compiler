@@ -315,7 +315,7 @@ b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", Belt_Array.eq(Belt_
             return prim === prim$1;
           })));
 
-Mt.from_pair_suites("Bs_poly_map_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_map_test", suites[/* contents */0]);
 
 var M = 0;
 

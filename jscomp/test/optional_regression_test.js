@@ -41,7 +41,7 @@ eq("File \"optional_regression_test.ml\", line 23, characters 6-13", Caml_option
 
 console.log(hh);
 
-Mt.from_pair_suites("Optional_regression_test", suites[0]);
+Mt.from_pair_suites("Optional_regression_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

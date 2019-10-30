@@ -88,7 +88,7 @@ b("File \"bs_min_max_test.ml\", line 37, characters 4-11", true);
 
 b("File \"bs_min_max_test.ml\", line 38, characters 4-11", true);
 
-Mt.from_pair_suites("Bs_min_max_test", suites[0]);
+Mt.from_pair_suites("Bs_min_max_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

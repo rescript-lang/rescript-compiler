@@ -25,13 +25,13 @@ function assert_(loc, v) {
 function to_list(s) {
   var l = /* record */[/* contents : [] */0];
   List.iter((function (x) {
-          l[0] = /* :: */[
+          l[/* contents */0] = /* :: */[
             x,
-            l[0]
+            l[/* contents */0]
           ];
           return /* () */0;
         }), s[/* c */0]);
-  return l[0];
+  return l[/* contents */0];
 }
 
 var S = {
@@ -350,8 +350,8 @@ for(var i$6 = 10; i$6 >= 1; --i$6){
 var i$7 = /* record */[/* contents */1];
 
 List.iter((function (j) {
-        assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", i$7[0] === j);
-        i$7[0] = i$7[0] + 1 | 0;
+        assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", i$7[/* contents */0] === j);
+        i$7[/* contents */0] = i$7[/* contents */0] + 1 | 0;
         return /* () */0;
       }), s$5[/* c */0]);
 
@@ -433,7 +433,7 @@ assert_("File \"stack_comp_test.ml\", line 129, characters 45-52", Caml_obj.caml
           ]
         ]));
 
-Mt.from_pair_suites("Stack_comp_test", suites[0]);
+Mt.from_pair_suites("Stack_comp_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -71,7 +71,7 @@ eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
       "1 %s"
     ]);
 
-Mt.from_pair_suites("Sprintf_reg_test", suites[0]);
+Mt.from_pair_suites("Sprintf_reg_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

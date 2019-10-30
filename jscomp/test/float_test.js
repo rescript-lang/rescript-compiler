@@ -281,7 +281,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */[
               ]
             ]
           ]
-        ], Pervasives.$at(from_pairs(results), suites[0])));
+        ], Pervasives.$at(from_pairs(results), suites[/* contents */0])));
 
 exports.test_id = test_id;
 exports.suites = suites;

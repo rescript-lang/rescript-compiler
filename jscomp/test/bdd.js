@@ -35,7 +35,7 @@ var nodeC = /* record */[/* contents */1];
 
 var sz_1 = /* record */[/* contents */8191];
 
-var htab = /* record */[/* contents */Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
+var htab = /* record */[/* contents */Caml_array.caml_make_vect(sz_1[/* contents */0] + 1 | 0, /* [] */0)];
 
 var n_items = /* record */[/* contents */0];
 
@@ -44,7 +44,7 @@ function hashVal(x, y, v) {
 }
 
 function resize(newSize) {
-  var arr = htab[0];
+  var arr = htab[/* contents */0];
   var newSz_1 = newSize - 1 | 0;
   var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
@@ -74,37 +74,37 @@ function resize(newSize) {
       }
     };
   };
-  for(var n = 0 ,n_finish = sz_1[0]; n <= n_finish; ++n){
+  for(var n = 0 ,n_finish = sz_1[/* contents */0]; n <= n_finish; ++n){
     copyBucket(Caml_array.caml_array_get(arr, n));
   }
-  htab[0] = newArr;
-  sz_1[0] = newSz_1;
+  htab[/* contents */0] = newArr;
+  sz_1[/* contents */0] = newSz_1;
   return /* () */0;
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
-  if (n_items[0] <= sz_1[0]) {
-    Caml_array.caml_array_set(htab[0], ind, /* :: */[
+  if (n_items[/* contents */0] <= sz_1[/* contents */0]) {
+    Caml_array.caml_array_set(htab[/* contents */0], ind, /* :: */[
           newNode,
           bucket
         ]);
-    n_items[0] = n_items[0] + 1 | 0;
+    n_items[/* contents */0] = n_items[/* contents */0] + 1 | 0;
     return /* () */0;
   } else {
-    resize((sz_1[0] + sz_1[0] | 0) + 2 | 0);
-    var ind$1 = hashVal(idl, idh, v) & sz_1[0];
-    return Caml_array.caml_array_set(htab[0], ind$1, /* :: */[
+    resize((sz_1[/* contents */0] + sz_1[/* contents */0] | 0) + 2 | 0);
+    var ind$1 = hashVal(idl, idh, v) & sz_1[/* contents */0];
+    return Caml_array.caml_array_set(htab[/* contents */0], ind$1, /* :: */[
                 newNode,
-                Caml_array.caml_array_get(htab[0], ind$1)
+                Caml_array.caml_array_get(htab[/* contents */0], ind$1)
               ]);
   }
 }
 
 function resetUnique(param) {
-  sz_1[0] = 8191;
-  htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0);
-  n_items[0] = 0;
-  nodeC[0] = 1;
+  sz_1[/* contents */0] = 8191;
+  htab[/* contents */0] = Caml_array.caml_make_vect(sz_1[/* contents */0] + 1 | 0, /* [] */0);
+  n_items[/* contents */0] = 0;
+  nodeC[/* contents */0] = 1;
   return /* () */0;
 }
 
@@ -114,8 +114,8 @@ function mkNode(low, v, high) {
   if (idl === idh) {
     return low;
   } else {
-    var ind = hashVal(idl, idh, v) & sz_1[0];
-    var bucket = Caml_array.caml_array_get(htab[0], ind);
+    var ind = hashVal(idl, idh, v) & sz_1[/* contents */0];
+    var bucket = Caml_array.caml_array_get(htab[/* contents */0], ind);
     var _b = bucket;
     while(true) {
       var b = _b;
@@ -138,7 +138,7 @@ function mkNode(low, v, high) {
           continue ;
         }
       } else {
-        var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);
+        var n_002 = (nodeC[/* contents */0] = nodeC[/* contents */0] + 1 | 0, nodeC[/* contents */0]);
         var n$1 = /* Node */[
           low,
           v,
@@ -328,8 +328,8 @@ function hwb(n) {
 var seed = /* record */[/* contents */0];
 
 function random(param) {
-  seed[0] = Caml_int32.imul(seed[0], 25173) + 17431 | 0;
-  return (seed[0] & 1) > 0;
+  seed[/* contents */0] = Caml_int32.imul(seed[/* contents */0], 25173) + 17431 | 0;
+  return (seed[/* contents */0] & 1) > 0;
 }
 
 function random_vars(n) {

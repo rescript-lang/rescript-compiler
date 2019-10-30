@@ -48,7 +48,7 @@ function adapterFromJs(param) {
 
 eq("File \"re_first_test.re\", line 18, characters 3-10", adapterToJs(/* idb */5243943), "idb");
 
-Mt.from_pair_suites("Re_first_test", suites[0]);
+Mt.from_pair_suites("Re_first_test", suites[/* contents */0]);
 
 var u = 3;
 

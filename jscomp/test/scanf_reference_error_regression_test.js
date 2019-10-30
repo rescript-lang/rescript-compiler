@@ -99,6 +99,6 @@ eq("File \"scanf_reference_error_regression_test.ml\", line 36, characters 5-12"
       /* [] */0
     ]);
 
-Mt.from_pair_suites("Scanf_reference_error_regression_test", suites[0]);
+Mt.from_pair_suites("Scanf_reference_error_regression_test", suites[/* contents */0]);
 
 /*  Not a pure module */

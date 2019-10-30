@@ -85,12 +85,12 @@ var suites_001 = /* :: */[
                 (function (param) {
                     var hit = /* record */[/* contents */false];
                     Js_undefined.iter(undefined, (function (param) {
-                            hit[0] = true;
+                            hit[/* contents */0] = true;
                             return /* () */0;
                           }));
                     return /* Eq */Block.__(0, [
                               false,
-                              hit[0]
+                              hit[/* contents */0]
                             ]);
                   })
               ],
@@ -100,12 +100,12 @@ var suites_001 = /* :: */[
                   (function (param) {
                       var hit = /* record */[/* contents */0];
                       Js_undefined.iter(2, (function (v) {
-                              hit[0] = v;
+                              hit[/* contents */0] = v;
                               return /* () */0;
                             }));
                       return /* Eq */Block.__(0, [
                                 2,
-                                hit[0]
+                                hit[/* contents */0]
                               ]);
                     })
                 ],

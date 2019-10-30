@@ -26,19 +26,19 @@ function $$throw(loc, x) {
 function sum(xs) {
   var v = /* record */[/* contents */0];
   Belt_List.forEach(xs, (function (x) {
-          v[0] = v[0] + x | 0;
+          v[/* contents */0] = v[/* contents */0] + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v[/* contents */0];
 }
 
 function sum2(xs, ys) {
   var v = /* record */[/* contents */0];
   Belt_List.forEach2(xs, ys, (function (x, y) {
-          v[0] = (v[0] + x | 0) + y | 0;
+          v[/* contents */0] = (v[/* contents */0] + x | 0) + y | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v[/* contents */0];
 }
 
 var u = Belt_List.makeBy(5, (function (i) {
@@ -2507,7 +2507,7 @@ b("File \"bs_list_test.ml\", line 349, characters 4-11", Belt_List.keepMap(/* ::
             
           })) === /* [] */0);
 
-Mt.from_pair_suites("Bs_list_test", suites[0]);
+Mt.from_pair_suites("Bs_list_test", suites[/* contents */0]);
 
 var N = 0;
 

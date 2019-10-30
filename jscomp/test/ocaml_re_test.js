@@ -26,10 +26,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -37,7 +37,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -663,9 +663,9 @@ var eps_expr = /* record */[
 ];
 
 function mk_expr(ids, def) {
-  ids[0] = ids[0] + 1 | 0;
+  ids[/* contents */0] = ids[/* contents */0] + 1 | 0;
   return /* record */[
-          /* id */ids[0],
+          /* id */ids[/* contents */0],
           /* def */def
         ];
 }
@@ -997,13 +997,13 @@ function find_free(tbl, _idx, len) {
 }
 
 function free_index(tbl_ref, l) {
-  var tbl = tbl_ref[0];
+  var tbl = tbl_ref[/* contents */0];
   reset_table(tbl);
   mark_used_indices(tbl)(l);
   var len = tbl.length;
   var idx = find_free(tbl, 0, len);
   if (idx === len) {
-    tbl_ref[0] = Caml_array.caml_make_vect((len << 1), false);
+    tbl_ref[/* contents */0] = Caml_array.caml_make_vect((len << 1), false);
   }
   return idx;
 }
@@ -1686,7 +1686,7 @@ function trans_set(cache, cm, s) {
     ];
     try {
       var x = v;
-      var _param = cache[0];
+      var _param = cache[/* contents */0];
       while(true) {
         var param = _param;
         if (param) {
@@ -1707,7 +1707,7 @@ function trans_set(cache, cm, s) {
         var l = List.fold_right((function (param, l) {
                 return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
               }), s, /* [] */0);
-        cache[0] = add(v, l, cache[0]);
+        cache[/* contents */0] = add(v, l, cache[/* contents */0]);
         return l;
       } else {
         throw exn;
@@ -1826,7 +1826,7 @@ function colorize(c, regexp) {
           case /* Not_bound */4 :
               return split(cword, c);
           case /* Last_end_of_line */7 :
-              lnl[0] = true;
+              lnl[/* contents */0] = true;
               return /* () */0;
           case /* Beg_of_str */5 :
           case /* End_of_str */6 :
@@ -1867,7 +1867,7 @@ function colorize(c, regexp) {
     };
   };
   colorize$1(regexp);
-  return lnl[0];
+  return lnl[/* contents */0];
 }
 
 function flatten_cmap(cm) {
@@ -2339,8 +2339,8 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
               _param = r$prime;
               continue ;
             } else {
-              var p = pos[0];
-              pos[0] = pos[0] + 2 | 0;
+              var p = pos[/* contents */0];
+              pos[/* contents */0] = pos[/* contents */0] + 2 | 0;
               var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
               return /* tuple */[
                       seq$1(ids, /* First */332064784, mk_expr(ids, /* Mark */Block.__(4, [p])), seq$1(ids, /* First */332064784, match$3[0], mk_expr(ids, /* Mark */Block.__(4, [p + 1 | 0])))),
@@ -2352,11 +2352,11 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             _ign_group = true;
             continue ;
         case /* Nest */8 :
-            var b = pos[0];
+            var b = pos[/* contents */0];
             var match$4 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, param[0]);
             var kind$prime$2 = match$4[1];
             var cr$1 = match$4[0];
-            var e = pos[0] - 1 | 0;
+            var e = pos[/* contents */0] - 1 | 0;
             if (e < b) {
               return /* tuple */[
                       cr$1,
@@ -2868,7 +2868,7 @@ function compile(r) {
   var col_repr = match[1];
   var ncol$2 = ncol$1;
   var lnl$1 = lnl;
-  var group_count = pos[0] / 2 | 0;
+  var group_count = pos[/* contents */0] / 2 | 0;
   return /* record */[
           /* initial */init,
           /* initial_states : [] */0,
@@ -2901,7 +2901,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   var last = len$1 === -1 ? slen : pos$1 + len$1 | 0;
   var tmp;
   if (groups$1) {
-    var n = re$1[/* tbl */6][0].length + 1 | 0;
+    var n = re$1[/* tbl */6][/* contents */0].length + 1 | 0;
     tmp = n <= 10 ? /* array */[
         0,
         0,
@@ -3022,8 +3022,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var i = /* record */[/* contents */0];
   var l = s.length;
   var test = function (c) {
-    if (i[0] !== l) {
-      return Caml_string.get(s, i[0]) === c;
+    if (i[/* contents */0] !== l) {
+      return Caml_string.get(s, i[/* contents */0]) === c;
     } else {
       return false;
     }
@@ -3031,7 +3031,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var accept = function (c) {
     var r = test(c);
     if (r) {
-      i[0] = i[0] + 1 | 0;
+      i[/* contents */0] = i[/* contents */0] + 1 | 0;
     }
     return r;
   };
@@ -3040,7 +3040,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     try {
       for(var j = 0 ,j_finish = len - 1 | 0; j <= j_finish; ++j){
         try {
-          if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i[0] + j | 0)) {
+          if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i[/* contents */0] + j | 0)) {
             throw Pervasives.Exit;
           }
           
@@ -3049,7 +3049,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           throw Pervasives.Exit;
         }
       }
-      i[0] = i[0] + len | 0;
+      i[/* contents */0] = i[/* contents */0] + len | 0;
       return true;
     }
     catch (exn$1){
@@ -3061,8 +3061,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var get = function (param) {
-    var r = Caml_string.get(s, i[0]);
-    i[0] = i[0] + 1 | 0;
+    var r = Caml_string.get(s, i[/* contents */0]);
+    i[/* contents */0] = i[/* contents */0] + 1 | 0;
     return r;
   };
   var greedy_mod = function (r) {
@@ -3100,7 +3100,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var branch$prime = function (_left) {
     while(true) {
       var left = _left;
-      if (i[0] === l || test(/* "|" */124) || test(/* ")" */41)) {
+      if (i[/* contents */0] === l || test(/* "|" */124) || test(/* ")" */41)) {
         return seq$2(List.rev(left));
       } else {
         _left = /* :: */[
@@ -3200,7 +3200,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
         return greedy_mod(repn(r, i$1, j));
       } else {
-        i[0] = i[0] - 1 | 0;
+        i[/* contents */0] = i[/* contents */0] - 1 | 0;
         return r;
       }
     } else {
@@ -3208,7 +3208,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var $$char = function (param) {
-    if (i[0] === l) {
+    if (i[/* contents */0] === l) {
       throw Parse_error;
     }
     var c = get(/* () */0);
@@ -3280,7 +3280,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 re
               ];
       } else if (accept(/* "." */46)) {
-        if (i[0] === l) {
+        if (i[/* contents */0] === l) {
           throw Parse_error;
         }
         var c$1 = get(/* () */0);
@@ -3490,7 +3490,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             if (accept(/* ")" */41)) {
               return epsilon;
             } else {
-              i[0] = i[0] + 1 | 0;
+              i[/* contents */0] = i[/* contents */0] + 1 | 0;
               _param = /* () */0;
               continue ;
             }
@@ -3526,7 +3526,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return alt$1(bracket(/* [] */0));
       }
     } else if (accept(/* "\\" */92)) {
-      if (i[0] === l) {
+      if (i[/* contents */0] === l) {
         throw Parse_error;
       }
       var c = get(/* () */0);
@@ -3661,7 +3661,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           return /* Set */Block.__(0, [single(c)]);
       }
     } else {
-      if (i[0] === l) {
+      if (i[/* contents */0] === l) {
         throw Parse_error;
       }
       var c$1 = get(/* () */0);
@@ -3689,23 +3689,23 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var integer = function (param) {
-    if (i[0] === l) {
+    if (i[/* contents */0] === l) {
       return ;
     } else {
       var d = get(/* () */0);
       if (d > 57 || d < 48) {
-        i[0] = i[0] - 1 | 0;
+        i[/* contents */0] = i[/* contents */0] - 1 | 0;
         return ;
       } else {
         var _i = d - /* "0" */48 | 0;
         while(true) {
           var i$1 = _i;
-          if (i[0] === l) {
+          if (i[/* contents */0] === l) {
             return i$1;
           } else {
             var d$1 = get(/* () */0);
             if (d$1 > 57 || d$1 < 48) {
-              i[0] = i[0] - 1 | 0;
+              i[/* contents */0] = i[/* contents */0] - 1 | 0;
               return i$1;
             } else {
               var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
@@ -3721,7 +3721,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var res = regexp$prime(branch$prime(/* [] */0));
-  if (i[0] !== l) {
+  if (i[/* contents */0] !== l) {
     throw Parse_error;
   }
   return res;
@@ -3774,6 +3774,6 @@ var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
 eq("File \"xx.ml\", line 7, characters 3-10", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
 
-Mt.from_pair_suites("Ocaml_re_test", suites[0]);
+Mt.from_pair_suites("Ocaml_re_test", suites[/* contents */0]);
 
 /* Table Not a pure module */

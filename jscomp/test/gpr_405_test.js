@@ -52,8 +52,8 @@ function Make(funarg) {
             ];
       }
       Curry._3(H.add, on_the_stack, top, true);
-      Curry._3(H.add, n_labels, top, counter[0]);
-      counter[0] = counter[0] + 1 | 0;
+      Curry._3(H.add, n_labels, top, counter[/* contents */0]);
+      counter[/* contents */0] = counter[/* contents */0] + 1 | 0;
       Curry._3(H.add, l_labels, top, 0);
       Curry._3(H.add, already_processed, top, true);
       var _successors = Curry._2(funarg.succ, gr, top);
@@ -81,9 +81,9 @@ function Make(funarg) {
           }
         } else {
           if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
-            cut_set[0] = /* :: */[
+            cut_set[/* contents */0] = /* :: */[
               top$1,
-              cut_set[0]
+              cut_set[/* contents */0]
             ];
             Curry._3(H.add, l_labels, top$1, 0);
           }
@@ -103,7 +103,7 @@ function Make(funarg) {
             _successors = match[1];
             continue ;
           } else {
-            return cut_set[0];
+            return cut_set[/* contents */0];
           }
         }
       };

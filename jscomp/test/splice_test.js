@@ -117,7 +117,7 @@ eq("File \"splice_test.ml\", line 68, characters 6-13", Math.max(1), 1);
 
 eq("File \"splice_test.ml\", line 69, characters 6-13", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
 
-Mt.from_pair_suites("splice_test.ml", suites[0]);
+Mt.from_pair_suites("splice_test.ml", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

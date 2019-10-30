@@ -38,7 +38,7 @@ eq("File \"gpr_2608_test.ml\", line 23, characters 5-12", huntGrootCondition, fa
 
 eq("File \"gpr_2608_test.ml\", line 24, characters 5-12", huntGrootCondition2, true);
 
-Mt.from_pair_suites("Gpr_2608_test", suites[0]);
+Mt.from_pair_suites("Gpr_2608_test", suites[/* contents */0]);
 
 var nearestGroots = /* [] */0;
 

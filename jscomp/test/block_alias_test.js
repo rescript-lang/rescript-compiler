@@ -61,7 +61,7 @@ b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(
 
 eq("File \"block_alias_test.ml\", line 34, characters 6-13", v0, v1);
 
-Mt.from_pair_suites("Block_alias_test", suites[0]);
+Mt.from_pair_suites("Block_alias_test", suites[/* contents */0]);
 
 var h = List.length;
 

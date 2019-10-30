@@ -180,7 +180,7 @@ function ff1(x) {
   }
 }
 
-Mt.from_pair_suites("Inline_record_test", suites[0]);
+Mt.from_pair_suites("Inline_record_test", suites[/* contents */0]);
 
 var v2 = /* A0 */[
   /* lbl */3,

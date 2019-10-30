@@ -409,10 +409,10 @@ function unsafe_concat_with_length(len, sep, l) {
     var pos = /* record */[/* contents */hd_len];
     List.iter((function (s) {
             var s_len = s.length;
-            Caml_bytes.caml_blit_string(sep, 0, r, pos[0], sep_len);
-            pos[0] = pos[0] + sep_len | 0;
-            Caml_bytes.caml_blit_string(s, 0, r, pos[0], s_len);
-            pos[0] = pos[0] + s_len | 0;
+            Caml_bytes.caml_blit_string(sep, 0, r, pos[/* contents */0], sep_len);
+            pos[/* contents */0] = pos[/* contents */0] + sep_len | 0;
+            Caml_bytes.caml_blit_string(s, 0, r, pos[/* contents */0], s_len);
+            pos[/* contents */0] = pos[/* contents */0] + s_len | 0;
             return /* () */0;
           }), l[1]);
     return Caml_bytes.bytes_to_string(r);

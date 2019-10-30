@@ -22,7 +22,7 @@ var h = Caml_external_polyfill.resolve("caml_fancy_add")(1, 2);
 
 eq("File \"external_polyfill_test.ml\", line 19, characters 5-12", h, 12);
 
-Mt.from_pair_suites("External_polyfill_test", suites[0]);
+Mt.from_pair_suites("External_polyfill_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -11,10 +11,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -22,7 +22,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -39,19 +39,19 @@ function g(x) {
 var v = /* record */[/* contents */0];
 
 function f2(x) {
-  v[0] = v[0] + 1 | 0;
+  v[/* contents */0] = v[/* contents */0] + 1 | 0;
   return x;
 }
 
 function g2(x) {
-  return Caml_int64.or_(x, (v[0] = v[0] + 1 | 0, x));
+  return Caml_int64.or_(x, (v[/* contents */0] = v[/* contents */0] + 1 | 0, x));
 }
 
-var a = Caml_int64.or_(Int64.one, (v[0] = v[0] + 1 | 0, Int64.one));
+var a = Caml_int64.or_(Int64.one, (v[/* contents */0] = v[/* contents */0] + 1 | 0, Int64.one));
 
-eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v[0], 1);
+eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v[/* contents */0], 1);
 
-Mt.from_pair_suites("Gpr_1154_test", suites[0]);
+Mt.from_pair_suites("Gpr_1154_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

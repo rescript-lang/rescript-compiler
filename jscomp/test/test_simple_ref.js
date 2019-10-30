@@ -5,8 +5,8 @@ var Curry = require("../../lib/js/curry.js");
 var v = /* record */[/* contents */0];
 
 function gen(param) {
-  v[0] = v[0] + 1 | 0;
-  return v[0];
+  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  return v[/* contents */0];
 }
 
 var h = /* record */[/* contents */0];

@@ -36,7 +36,7 @@ eq("File \"inline_const_test.ml\", line 32, characters 5-12", true, true);
 
 eq("File \"inline_const_test.ml\", line 33, characters 5-12", 1, 1);
 
-Mt.from_pair_suites("File \"inline_const_test.ml\", line 36, characters 22-29", suites[0]);
+Mt.from_pair_suites("File \"inline_const_test.ml\", line 36, characters 22-29", suites[/* contents */0]);
 
 var f5 = true;
 

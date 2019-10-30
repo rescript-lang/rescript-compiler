@@ -29,10 +29,10 @@ function $$throw(loc, x) {
 }
 
 function neq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Neq */Block.__(1, [
                     x,
@@ -40,7 +40,7 @@ function neq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -1167,10 +1167,10 @@ eq("File \"bs_array_test.ml\", line 260, characters 5-12", Belt_Array.unzip(/* a
 function sumUsingForEach(xs) {
   var v = /* record */[/* contents */0];
   Belt_Array.forEach(xs, (function (x) {
-          v[0] = v[0] + x | 0;
+          v[/* contents */0] = v[/* contents */0] + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v[/* contents */0];
 }
 
 eq("File \"bs_array_test.ml\", line 270, characters 5-12", sumUsingForEach(/* array */[
@@ -1222,9 +1222,9 @@ b("File \"bs_array_test.ml\", line 275, characters 4-11", (Belt_Array.forEachWit
             1,
             1
           ], (function (i, v) {
-              c$1[0] = (c$1[0] + i | 0) + v | 0;
+              c$1[/* contents */0] = (c$1[/* contents */0] + i | 0) + v | 0;
               return /* () */0;
-            })), c$1[0] === 6));
+            })), c$1[/* contents */0] === 6));
 
 function id$1(loc, x) {
   var u = x.slice(0);
@@ -1576,7 +1576,7 @@ eq("File \"bs_array_test.ml\", line 339, characters 5-12", Belt_Array.getIndexBy
             return x > 3;
           })), undefined);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites[0]);
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites[/* contents */0]);
 
 var A = 0;
 

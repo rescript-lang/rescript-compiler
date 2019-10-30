@@ -227,7 +227,7 @@ function input_lines(ic, _acc) {
 
 eq("File \"exception_raise_test.ml\", line 150, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
 
-Mt.from_pair_suites("Exception_raise_test", suites[0]);
+Mt.from_pair_suites("Exception_raise_test", suites[/* contents */0]);
 
 exports.Local = Local;
 exports.B = B;

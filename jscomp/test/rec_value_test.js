@@ -69,13 +69,13 @@ var v = /* record */[/* contents */(function (param) {
 function fib(n) {
   switch (n) {
     case 0 :
-        return four[0];
+        return four[/* contents */0];
     case 1 :
         return 1;
     case 2 :
-        return three[0];
+        return three[/* contents */0];
     case 3 :
-        v[0] = CamlinternalLazy.force(fib);
+        v[/* contents */0] = CamlinternalLazy.force(fib);
         return 1;
     default:
       return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;

@@ -71,7 +71,7 @@ Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
 
-Mt.from_pair_suites("Bs_poly_mutable_map_test", suites[0]);
+Mt.from_pair_suites("Bs_poly_mutable_map_test", suites[/* contents */0]);
 
 var M = 0;
 

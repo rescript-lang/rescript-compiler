@@ -15,10 +15,10 @@ var suites = /* record */[/* contents : [] */0];
 var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  suites[/* contents */0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + String(test_id[/* contents */0])),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -26,7 +26,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[0]
+    suites[/* contents */0]
   ];
   return /* () */0;
 }
@@ -234,7 +234,7 @@ List.iter((function (param) {
         return scan_float("File \"format_test.ml\", line 121, characters 13-20", param[1], param[0]);
       }), literals);
 
-Mt.from_pair_suites("Format_test", suites[0]);
+Mt.from_pair_suites("Format_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

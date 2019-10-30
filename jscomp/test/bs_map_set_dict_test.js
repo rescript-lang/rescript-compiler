@@ -149,7 +149,7 @@ eq("File \"bs_map_set_dict_test.ml\", line 94, characters 4-11", Belt_Array.make
                   ];
           })), Belt_MapDict.toArray(u.data));
 
-Mt.from_pair_suites("Bs_map_set_dict_test", suites[0]);
+Mt.from_pair_suites("Bs_map_set_dict_test", suites[/* contents */0]);
 
 var M = 0;
 

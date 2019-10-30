@@ -27,10 +27,10 @@ function add(x, y) {
 function sum2(h) {
   var v = /* record */[/* contents */0];
   Belt_HashSetInt.forEach(h, (function (x) {
-          v[0] = v[0] + x | 0;
+          v[/* contents */0] = v[/* contents */0] + x | 0;
           return /* () */0;
         }));
-  return v[0];
+  return v[/* contents */0];
 }
 
 var u = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
@@ -97,7 +97,7 @@ var histo = Belt_HashSetInt.getBucketHistogram(h);
 
 b("File \"bs_hashset_int_test.ml\", line 62, characters 4-11", histo.length <= 10);
 
-Mt.from_pair_suites("Bs_hashset_int_test", suites[0]);
+Mt.from_pair_suites("Bs_hashset_int_test", suites[/* contents */0]);
 
 var N = 0;
 

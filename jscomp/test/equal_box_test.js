@@ -113,7 +113,7 @@ b("File \"equal_box_test.ml\", line 68, characters 4-11", undefined === undefine
 
 b("File \"equal_box_test.ml\", line 69, characters 4-11", !Caml_obj.caml_equal_undefined(3, undefined));
 
-Mt.from_pair_suites("File \"equal_box_test.ml\", line 74, characters 23-30", suites[0]);
+Mt.from_pair_suites("File \"equal_box_test.ml\", line 74, characters 23-30", suites[/* contents */0]);
 
 exports.aa = aa;
 exports.bb = bb;

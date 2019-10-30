@@ -55,7 +55,7 @@ eq("File \"scanf_test.ml\", line 7, characters 5-12", /* tuple */[
       ]
     ]);
 
-Mt.from_pair_suites("Scanf_test", suites[0]);
+Mt.from_pair_suites("Scanf_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

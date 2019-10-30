@@ -23,7 +23,7 @@ eq("File \"gpr_3492_test.ml\", line 14, characters 6-13", foo((function () {
             return 1;
           })), 1);
 
-Mt.from_pair_suites("gpr_3492_test.ml", suites[0]);
+Mt.from_pair_suites("gpr_3492_test.ml", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

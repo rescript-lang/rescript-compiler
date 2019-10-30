@@ -638,7 +638,7 @@ for(var i$6 = 1; i$6 <= 10; ++i$6){
 var i$7 = /* record */[/* contents */1];
 
 Belt_MutableQueue.forEach(q$5, (function (j) {
-        if (i$7[0] !== j) {
+        if (i$7[/* contents */0] !== j) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -648,7 +648,7 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
                 ]
               ];
         }
-        i$7[0] = i$7[0] + 1 | 0;
+        i$7[/* contents */0] = i$7[/* contents */0] + 1 | 0;
         return /* () */0;
       }));
 
@@ -1130,7 +1130,7 @@ var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray(/* array */[]), (fun
 
 b("File \"bs_queue_test.ml\", line 156, characters 4-11", q$8.length === 0);
 
-Mt.from_pair_suites("Bs_queue_test", suites[0]);
+Mt.from_pair_suites("Bs_queue_test", suites[/* contents */0]);
 
 var Q = 0;
 

@@ -34,7 +34,7 @@ eq("File \"gpr_3549_test.ml\", line 22, characters 5-12", others, /* tuple */[
       2e3
     ]);
 
-Mt.from_pair_suites("Gpr_3549_test", suites[0]);
+Mt.from_pair_suites("Gpr_3549_test", suites[/* contents */0]);
 
 var u = 32;
 
