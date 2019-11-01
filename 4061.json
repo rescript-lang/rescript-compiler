@@ -2,7 +2,7 @@
   "source": "./esy.json",
   "override": {
     "resolutions": {
-      "ocaml": "bucklescript/ocaml:package.json#4582c3fcce632aaa0f9794f5518bf5d9ad4a6385"
+      "ocaml": "ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b"
     }
   }
 }
