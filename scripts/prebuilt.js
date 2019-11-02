@@ -34,7 +34,7 @@ function buildCompiler() {
   var prebuilt = "prebuilt.ninja";
   var content = require("./ninjaFactory.js").libNinja({
     ocamlopt: is_windows
-      ? `ocamlopt.opt.exe`
+      ? `esy b ocamlopt.opt -verbose`
       : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
     ext: sys_extension,
     INCL: ocamlVersion,
@@ -58,10 +58,10 @@ var os = require("os");
 function createOCamlTar() {
   if (os.platform() === hostPlatform) {
     cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });
-    cp.execSync(
-      `git  -C ocaml archive --format=tar.gz HEAD -o ../vendor/ocaml.tar.gz`,
-      { cwd: root, stdio: [0, 1, 2] }
-    );
+    // cp.execSync(
+    //   `git  -C ocaml archive --format=tar.gz HEAD -o ../vendor/ocaml.tar.gz`,
+    //   { cwd: root, stdio: [0, 1, 2] }
+    // );
     // fs.copyFileSync(
     //   path.join(root, "ocaml", "VERSION"),
     //   path.join(root, "OCAML_VERSION")

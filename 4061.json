@@ -1,8 +1,0 @@
-{
-  "source": "./esy.json",
-  "override": {
-    "resolutions": {
-      "ocaml": "bucklescript/ocaml:package.json#4582c3fcce632aaa0f9794f5518bf5d9ad4a6385"
-    }
-  }
-}

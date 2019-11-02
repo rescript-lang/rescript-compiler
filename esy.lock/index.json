@@ -1,17 +1,15 @@
 {
-  "checksum": "a0f4fa67bcb1beac6cda121fffdda6bb",
+  "checksum": "62680885f80ef361d9673f75df49f278",
   "root": "bs-platform@link-dev:./esy.json",
   "node": {
-    "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9": {
-      "id":
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9",
+    "ocaml@4.6.1000@d41d8cd9": {
+      "id": "ocaml@4.6.1000@d41d8cd9",
       "name": "ocaml",
-      "version":
-        "github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb",
+      "version": "4.6.1000",
       "source": {
         "type": "install",
         "source": [
-          "github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb"
+          "archive:https://registry.npmjs.org/ocaml/-/ocaml-4.6.1000.tgz#sha1:99525ef559353481396454f9a072dedc96b52f44"
         ]
       },
       "overrides": [],
@@ -24,12 +22,8 @@
       "version": "link-dev:./esy.json",
       "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
       "overrides": [],
-      "dependencies": [
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9"
-      ],
-      "devDependencies": [
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9"
-      ]
+      "dependencies": [ "ocaml@4.6.1000@d41d8cd9" ],
+      "devDependencies": []
     }
   }
 }

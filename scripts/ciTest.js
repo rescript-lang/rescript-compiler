@@ -39,8 +39,8 @@ if (all){
     installGlobal = true
     ounitTest = true
     mochaTest = true
-    themeTest = true
-    bsbTest = true
+    // themeTest = true
+    // bsbTest = true
 }
 
 var os = require('os')
