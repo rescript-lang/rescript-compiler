@@ -1,7 +1,85 @@
 {
   "name": "bs-platform",
-  "version": "6.2.1",
+  "version": "5.2.0-dev.2",
   "dependencies": {
-    "ocaml": "~4.06.1"
-  }
+    "ocaml": "4.02.3000+BS"
+  },
+  "devDependencies": {
+    "ocaml": "4.02.3000+BS"
+  },
+  "resolutions": {
+    "ocaml": "ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b"
+  },
+  "scripts": {
+    "clean": "node ./scripts/ninja.js clean"
+  },
+  "esy": {
+    "buildsInSource": true,
+    "build": [
+      ["node", "./scripts/install.js"],
+      ["cp", "-r", "-f", "#{self.root / 'bsconfig.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'esy.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'package.json'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'jscomp'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'jscomp' / 'bin'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'lib'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"]
+    ],
+    "buildDev": [
+      ["echo", "config"],
+      ["node", "./scripts/ninja.js", "config"],
+      ["echo", "build"],
+      ["node", "./scripts/ninja.js", "build"]
+    ],
+    "buildEnv": {
+      "ESY": "true"
+    },
+    "exportedEnv": {
+      "OCAMLLIB": {
+        "val": "#{self.lib / 'ocaml' }",
+        "scope": "global"
+      },
+      "CAML_LD_LIBRARY_PATH": {
+        "val": "#{self.lib / 'ocaml'  / 'stublibs' : self.lib / 'ocaml'  : $CAML_LD_LIBRARY_PATH}",
+        "scope": "global"
+      },
+      "OCAML_TOPLEVEL_PATH": {
+        "val": "#{self.lib / 'ocaml' }",
+        "scope": "global"
+      },
+      "bs_custom_resolution": {
+        "val": "true",
+        "scope": "global"
+      },
+      "bs_platform__install": {
+        "val": "#{self.install}",
+        "scope": "global"
+      },
+      "PATH": {
+        "val": "#{self.lib : $PATH}",
+        "scope": "global"
+      }
+    }
+  },
+  "description": "bucklescript compiler for use in esy, ocaml standard libary by bucklescript and its required runtime support",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bucklescript/bucklescript.git"
+  },
+  "keywords": ["ocaml", "bucklescript", "stdlib", "functional programming"],
+  "author": {
+    "name": "Hongbo Zhang"
+  },
+  "maintainers": [
+    {
+      "name": "hongbo_zhang",
+      "email": "bobzhang1988@gmail.com"
+    }
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/bucklescript/bucklescript/issues"
+  },
+  "homepage": "https://github.com/bucklescript/bucklescript#readme"
 }

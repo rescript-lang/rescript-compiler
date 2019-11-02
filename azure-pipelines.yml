@@ -80,18 +80,18 @@ jobs:
       vmImage: vs2017-win2016
 
     steps:
-      - bash: |
-          echo "which x86_64-w64-mingw32-gcc"
-          which x86_64-w64-mingw32-gcc
-          "echo ls -l /c/ProgramData/Chocolatey/bin"
-          ls -l /c/ProgramData/Chocolatey/bin
-          echo "int main() { return 0; }" >test.c
-          echo "x86_64-w64-mingw32-gcc -v test.c"
-          x86_64-w64-mingw32-gcc -v test.c
-          # echo "esy b which x86_64-w64-mingw32-as"
-          # esy b which x86_64-w64-mingw32-as
+      # - bash: |
+      #     echo "which x86_64-w64-mingw32-gcc"
+      #     which x86_64-w64-mingw32-gcc
+      #     "echo ls -l /c/ProgramData/Chocolatey/bin"
+      #     ls -l /c/ProgramData/Chocolatey/bin
+      #     echo "int main() { return 0; }" >test.c
+      #     echo "x86_64-w64-mingw32-gcc -v test.c"
+      #     x86_64-w64-mingw32-gcc -v test.c
+      #     # echo "esy b which x86_64-w64-mingw32-as"
+      #     # esy b which x86_64-w64-mingw32-as
 
-        displayName: "find mingw"
+      #   displayName: "find mingw"
 
       - task: NodeTool@0
         inputs:
@@ -108,10 +108,10 @@ jobs:
       - bash: env
         displayName: "Print environment"
 
-      - script: |
-          git submodule init
-          git submodule update
-        displayName: "Pull Submodules"
+      # - script: |
+      #     git submodule init
+      #     git submodule update
+      #   displayName: "Pull Submodules"
 
       - script: npm install -g esy
         displayName: "install esy"
@@ -120,17 +120,17 @@ jobs:
       - script: esy build
         displayName: "esy build"
 
-      - bash: |
-          OCAMLOPT=`esy b which ocamlopt`
-          OCAMLBIN_UNIX=$(dirname "${OCAMLOPT}")
-          OCAMLBIN=$( cygpath --windows "$OCAMLBIN_UNIX")
-          echo "OCAMLBIN: $OCAMLBIN"
-          echo "##vso[task.setvariable variable=OCAMLBIN]$OCAMLBIN"
-          echo "##vso[task.prependpath]$OCAMLBIN"
-        displayName: "Set OCAMLBIN"
+      # - bash: |
+      #     OCAMLOPT=`esy b which ocamlopt`
+      #     OCAMLBIN_UNIX=$(dirname "${OCAMLOPT}")
+      #     OCAMLBIN=$( cygpath --windows "$OCAMLBIN_UNIX")
+      #     echo "OCAMLBIN: $OCAMLBIN"
+      #     echo "##vso[task.setvariable variable=OCAMLBIN]$OCAMLBIN"
+      #     echo "##vso[task.prependpath]$OCAMLBIN"
+      #   displayName: "Set OCAMLBIN"
 
-      - bash: env
-        displayName: "Print environment"
+      # - bash: env
+      #   displayName: "Print environment"
 
       # - bash: ls -lR "$OCAMLBIN"
       #   displayName: "ls -lR $OCAMLBIN"
@@ -138,18 +138,18 @@ jobs:
       # - bash: ls -lR "$OCAMLBIN/.."
       #   displayName: "ls -lR $OCAMLBIN/.."
 
-      - bash: |
-          echo "PATH"
-          echo $PATH
-          echo "ocamlopt -version"
-          ocamlopt -version
-          echo "looking for x86_64-w64-mingw32-as"
-          find ~/.esy -name "x86_64-w64-mingw32-as*"
-          echo "print_int 42;; print_newline();;" >testOcaml.ml
-          echo "build with esy"
-          esy b ocamlopt.opt -verbose testOcaml.ml -o testOcaml
-          ./testOcaml
-          echo "build without esy"
-          ocamlopt.opt testOcaml.ml -o testOcaml
-          node scripts/prebuilt.js
-        displayName: "try node scripts/prebuilt.js"
+      # - bash: |
+      #     echo "PATH"
+      #     echo $PATH
+      #     echo "ocamlopt -version"
+      #     ocamlopt -version
+      #     echo "looking for x86_64-w64-mingw32-as"
+      #     find ~/.esy -name "x86_64-w64-mingw32-as*"
+      #     echo "print_int 42;; print_newline();;" >testOcaml.ml
+      #     echo "build with esy"
+      #     esy b ocamlopt.opt -verbose testOcaml.ml -o testOcaml
+      #     ./testOcaml
+      #     echo "build without esy"
+      #     ocamlopt.opt testOcaml.ml -o testOcaml
+      #     node scripts/prebuilt.js
+      #   displayName: "try node scripts/prebuilt.js"
