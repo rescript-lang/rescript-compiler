@@ -50,10 +50,31 @@ eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */
             /* a5 */0
           ])[/* a0 */0]);
 
+var val0 = /* record */[
+  /* invalid_js_id' */3,
+  /* x */2
+];
+
+function fff(x) {
+  return /* record */[
+          /* invalid_js_id' */x[/* invalid_js_id' */0] + 2 | 0,
+          /* x */x[/* x */1]
+        ];
+}
+
+var val1 = fff(val0);
+
+eq("File \"update_record_test.ml\", line 42, characters 5-12", 3, 3);
+
+eq("File \"update_record_test.ml\", line 43, characters 5-12", val1[/* invalid_js_id' */0], 5);
+
 Mt.from_pair_suites("Update_record_test", suites[/* contents */0]);
 
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.f = f;
+exports.val0 = val0;
+exports.fff = fff;
+exports.val1 = val1;
 /*  Not a pure module */
