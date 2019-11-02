@@ -605,13 +605,11 @@ let translate  loc
 #end
      )
   | Pduprecord Record_regular -> 
-      Lam_dispatch_primitive.translate loc "caml_array_dup" args
+      Lam_dispatch_primitive.translate loc "caml_obj_dup" args
 #if OCAML_VERSION =~ ">4.03.0" then         
   | Pduprecord ((
-
-                | Record_inlined {tag = 0; num_nonconsts = 1}
+                 Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
-
                 )) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)

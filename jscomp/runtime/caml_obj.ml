@@ -32,6 +32,21 @@
 
 type t = Caml_obj_extern.t 
 
+module O = struct
+  external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
+  type key = string
+  let for_in : (Caml_obj_extern.t -> (key -> unit) -> unit)  = 
+    fun%raw o foo ->  {|
+        for (var x in o) { foo(x) }
+      |}
+    
+  let hasOwnProperty (o: Caml_obj_extern.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
+  external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
+  external shallowCopy :
+    (_ [@bs.as {json|{}|json}]) -> t -> t = "assign" 
+    [@@bs.scope "Object"] [@@bs.val]
+end
+
 
 (** Mainly used in camlinternalOO
     {[
@@ -78,6 +93,7 @@ let caml_obj_block tag size =
 *)
 
 let caml_obj_dup (x : Caml_obj_extern.t) =
+  if O.isArray x then 
   let len = Caml_obj_extern.length x in
   let v = Caml_array_extern.new_uninitialized  len in
   for i = 0 to len - 1 do
@@ -85,7 +101,7 @@ let caml_obj_dup (x : Caml_obj_extern.t) =
   done;
   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) (Caml_obj_extern.tag x );
   Caml_obj_extern.repr v
-
+  else O.shallowCopy x
 
 
 let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
@@ -139,17 +155,6 @@ let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
 
 type 'a selector = 'a -> 'a -> 'a 
 
-module O = struct
-  external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
-  type key = string
-  let for_in : (Caml_obj_extern.t -> (key -> unit) -> unit)  = 
-    fun%raw o foo ->  {|
-        for (var x in o) { foo(x) }
-      |}
-    
-  let hasOwnProperty (o: Caml_obj_extern.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
-  external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
-end
 
 (** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],
