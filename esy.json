@@ -1,14 +1,11 @@
 {
   "name": "bs-platform",
   "version": "5.2.0-dev.2",
-  "dependencies": {
-    "ocaml": "4.02.3000+BS"
-  },
   "devDependencies": {
-    "ocaml": "4.02.3000+BS"
+    "ocaml": "overridden below"
   },
   "resolutions": {
-    "ocaml": "ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b"
+    "ocaml": "ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2"
   },
   "scripts": {
     "clean": "node ./scripts/ninja.js clean"

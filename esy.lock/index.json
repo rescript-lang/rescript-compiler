@@ -1,17 +1,17 @@
 {
-  "checksum": "927e0056007e9ee1cea4deb3c760e964",
+  "checksum": "763e1d02a9cbdd20e67f848415121b41",
   "root": "bs-platform@link-dev:./esy.json",
   "node": {
-    "ocaml@github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b@d41d8cd9": {
+    "ocaml@github:ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2@d41d8cd9": {
       "id":
-        "ocaml@github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b@d41d8cd9",
+        "ocaml@github:ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2@d41d8cd9",
       "name": "ocaml",
       "version":
-        "github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b",
+        "github:ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2",
       "source": {
         "type": "install",
         "source": [
-          "github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b"
+          "github:ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2"
         ]
       },
       "overrides": [],
@@ -24,11 +24,9 @@
       "version": "link-dev:./esy.json",
       "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
       "overrides": [],
-      "dependencies": [
-        "ocaml@github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b@d41d8cd9"
-      ],
+      "dependencies": [],
       "devDependencies": [
-        "ocaml@github:ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b@d41d8cd9"
+        "ocaml@github:ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2@d41d8cd9"
       ]
     }
   }
