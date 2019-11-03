@@ -29,6 +29,19 @@ let () =
   let  v = {a0=0;a1=0;a2=0;a3=0;a4=0;a5=0} in
   eq __LOC__ (v.a0 + 1) (f v).a0
 
+type t0 = {
+  invalid_js_id' : int;
+  x : int 
+}
+let val0 = {invalid_js_id' = 3; x = 2}
+let fff x  = { x with invalid_js_id'  = x.invalid_js_id' +  2}
+
+let val1 = fff val0
+
+let () = 
+  eq __LOC__ val0.invalid_js_id' 3 ;
+  eq __LOC__ val1.invalid_js_id' 5
+
 let ()= 
   Mt.from_pair_suites __MODULE__   !suites
 

@@ -604,22 +604,20 @@ let translate  loc
         [E.str "BS"] Immutable
 #end
      )
-    
-  | Pduprecord ((Record_regular 
-#if OCAML_VERSION =~ ">4.03.0" then   
-                | Record_inlined {tag = 0; num_nonconsts = 1}
+  | Pduprecord Record_regular -> 
+      Lam_dispatch_primitive.translate loc "caml_obj_dup" args
+#if OCAML_VERSION =~ ">4.03.0" then         
+  | Pduprecord ((
+                 Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
-#end                
-                ),_) -> 
+                )) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
     Lam_dispatch_primitive.translate loc "caml_array_dup" args
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Pduprecord (Record_inlined _, _)
+  | Pduprecord (Record_inlined _)
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
-    (* check dubug mode *)
-  
+    (* check dubug mode *)  
 #end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 

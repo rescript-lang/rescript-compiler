@@ -42,7 +42,7 @@ type t =
   | Pfield of int * Lam_compat.field_dbg_info
   | Psetfield of int * Lam_compat.set_field_dbg_info
   (* could have field info at least for record *)
-  | Pduprecord of record_representation * int
+  | Pduprecord of record_representation 
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
@@ -276,7 +276,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
       i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  
   
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
-  | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
+  | Pduprecord record_repesentation0 -> (match rhs with Pduprecord record_repesentation1 ->  eq_record_representation record_repesentation0 record_repesentation1  | _ -> false)
   | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
   | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    

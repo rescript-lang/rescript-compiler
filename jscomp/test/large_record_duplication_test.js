@@ -16,7 +16,7 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  var newrecord = Caml_array.caml_array_dup(x);
+  var newrecord = Caml_obj.caml_obj_dup(x);
   newrecord[/* x0 */0] = 1;
   return newrecord;
 }
