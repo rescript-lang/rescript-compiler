@@ -5,7 +5,7 @@
     "ocaml": "overridden below"
   },
   "resolutions": {
-    "ocaml": "ulrikstrid/ocaml:package.json#ba2cbc39fb656f70b5516f648573da9fbc1e46e2"
+    "ocaml": "ulrikstrid/ocaml:package.json#6ff2cd84ddc7e8bbebd437a7695d04e4ba0900c2"
   },
   "scripts": {
     "clean": "node ./scripts/ninja.js clean"
