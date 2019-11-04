@@ -2,9 +2,9 @@
 
 var Mt = require("./mt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);

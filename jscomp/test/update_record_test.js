@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   console.log(/* tuple */[
@@ -31,7 +31,7 @@ function eq(loc, x, y) {
 
 function f(x) {
   var y = Caml_obj.caml_obj_dup(x);
-  return /* record */[
+  return [
           /* a0 */1,
           /* a1 */y[/* a1 */1],
           /* a2 */y[/* a2 */2],
@@ -41,7 +41,7 @@ function f(x) {
         ];
 }
 
-eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[
+eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f([
             /* a0 */0,
             /* a1 */0,
             /* a2 */0,
@@ -50,13 +50,13 @@ eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */
             /* a5 */0
           ])[/* a0 */0]);
 
-var val0 = /* record */[
+var val0 = [
   /* invalid_js_id' */3,
   /* x */2
 ];
 
 function fff(x) {
-  return /* record */[
+  return [
           /* invalid_js_id' */x[/* invalid_js_id' */0] + 2 | 0,
           /* x */x[/* x */1]
         ];

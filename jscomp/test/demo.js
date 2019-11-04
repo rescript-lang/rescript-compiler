@@ -6,15 +6,15 @@ var BUI = require("@blp/ui");
 var Runtime = require("@runtime");
 
 var data = /* array */[
-  /* record */[
+  [
     /* ticker */"GOOG",
     /* price */700.0
   ],
-  /* record */[
+  [
     /* ticker */"AAPL",
     /* price */500.0
   ],
-  /* record */[
+  [
     /* ticker */"MSFT",
     /* price */300.0
   ]
@@ -22,7 +22,7 @@ var data = /* array */[
 
 function ui_layout(compile, lookup, appContext) {
   var init = Curry._1(compile, "bid  - ask");
-  var computeFunction = /* record */[/* contents */(function (env) {
+  var computeFunction = [/* contents */(function (env) {
         return Curry._1(init, (function (key) {
                       return Curry._2(lookup, env, key);
                     }));

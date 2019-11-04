@@ -28,8 +28,8 @@ function Make(funarg) {
     var l_labels = Curry._1(H.create, 97);
     var already_processed = Curry._1(H.create, 97);
     var on_the_stack = Curry._1(H.create, 97);
-    var cut_set = /* record */[/* contents : [] */0];
-    var counter = /* record */[/* contents */1];
+    var cut_set = [/* contents : [] */0];
+    var counter = [/* contents */1];
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw [

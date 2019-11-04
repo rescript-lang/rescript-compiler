@@ -3,9 +3,9 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -24,7 +24,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var v = /* record */[/* contents */3];
+var v = [/* contents */3];
 
 function update(param) {
   v[/* contents */0] = v[/* contents */0] + 1 | 0;

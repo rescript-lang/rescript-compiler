@@ -6,9 +6,9 @@ var Curry = require("../../lib/js/curry.js");
 var Functor_def = require("./functor_def.js");
 var Functor_inst = require("./functor_inst.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

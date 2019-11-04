@@ -34,7 +34,7 @@ function print_newline(param) {
             ]);
 }
 
-var s = /* record */[/* f */1.0];
+var s = [/* f */1.0];
 
 print_float(1.0);
 
@@ -56,9 +56,9 @@ print_array(b[0]);
 
 print_array(c[0]);
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);

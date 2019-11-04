@@ -61,9 +61,9 @@ var shared$9 = /* array */[
   "len"
 ];
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -223,7 +223,7 @@ var p$1 = Curry._2(printable_point[0], 0, 7);
 
 eq("File \"class3_test.ml\", line 49, characters 11-18", Caml_oo_curry.js1(-930392019, 4, p$1), 7);
 
-var ints = /* record */[/* contents : [] */0];
+var ints = [/* contents : [] */0];
 
 var $$class = CamlinternalOO.create_table(shared$9);
 

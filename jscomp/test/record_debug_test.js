@@ -3,9 +3,9 @@
 var Format = require("../../lib/js/format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var v = /* record */[
+var v = [
   /* a */3,
-  /* b : record */[
+  /* b */[
     /* xx */2,
     /* yy */3
   ]
@@ -13,12 +13,12 @@ var v = /* record */[
 
 var u_a = /* a */2;
 
-var u_b = /* b : record */[
+var u_b = /* b */[
   /* xx */2,
   /* yy */3
 ];
 
-var u = /* record */[
+var u = [
   u_a,
   u_b
 ];

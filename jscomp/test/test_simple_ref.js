@@ -2,18 +2,18 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var v = /* record */[/* contents */0];
+var v = [/* contents */0];
 
 function gen(param) {
   v[/* contents */0] = v[/* contents */0] + 1 | 0;
   return v[/* contents */0];
 }
 
-var h = /* record */[/* contents */0];
+var h = [/* contents */0];
 
 var a = 0;
 
-var c = /* record */[/* contents */0];
+var c = [/* contents */0];
 
 var not_real_escape = a;
 

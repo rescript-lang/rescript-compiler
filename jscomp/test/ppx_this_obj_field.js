@@ -3,9 +3,9 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];
@@ -101,7 +101,7 @@ var test_type = /* :: */[
 ];
 
 var z = {
-  x: /* record */[/* contents */3],
+  x: [/* contents */3],
   setX: (function (x) {
       var self = this ;
       self.x[/* contents */0] = x;

@@ -17,7 +17,7 @@ function to_list(v) {
 }
 
 function v(param) {
-  var v$1 = /* record */[
+  var v$1 = [
     /* c : [] */0,
     /* len */0
   ];

@@ -51,11 +51,11 @@ function naive(n) {
   }
 }
 
-var four = /* record */[/* contents */2];
+var four = [/* contents */2];
 
-var three = /* record */[/* contents */3];
+var three = [/* contents */3];
 
-var v = /* record */[/* contents */(function (param) {
+var v = [/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[

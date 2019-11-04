@@ -69,9 +69,9 @@ function f2(param) {
 
 f2(/* () */0);
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -90,9 +90,9 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var v = /* record */[/* contents */0];
+var v = [/* contents */0];
 
-var all_v = /* record */[/* contents : [] */0];
+var all_v = [/* contents : [] */0];
 
 function add5(a0, a1, a2, a3, a4) {
   console.log(/* tuple */[

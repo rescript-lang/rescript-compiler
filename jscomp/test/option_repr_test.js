@@ -5,9 +5,9 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -72,7 +72,7 @@ var f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(un
 
 var f11 = Caml_option.some(f10);
 
-var randomized = /* record */[/* contents */false];
+var randomized = [/* contents */false];
 
 function create($staropt$star, param) {
   var random = $staropt$star !== undefined ? $staropt$star : randomized[/* contents */0];

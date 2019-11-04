@@ -31,7 +31,7 @@ function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, 
         0
       ]) ? frame_size : bbox_size;
   var img_src$1 = "./sprites/" + img_src;
-  return /* record */[
+  return [
           /* max_frames */max_frames,
           /* max_ticks */max_ticks,
           /* img_src */img_src$1,
@@ -627,11 +627,11 @@ function make_type(typ, dir) {
 function make_from_params(params, context) {
   var img = document.createElement("img");
   img.src = params[/* img_src */2];
-  return /* record */[
+  return [
           /* params */params,
           /* context */context,
-          /* frame : record */[/* contents */0],
-          /* ticks : record */[/* contents */0],
+          /* frame */[/* contents */0],
+          /* ticks */[/* contents */0],
           /* img */img
         ];
 }
@@ -695,7 +695,7 @@ var Sprite = {
 };
 
 function pair_to_xy(pair) {
-  return /* record */[
+  return [
           /* x */pair[0],
           /* y */pair[1]
         ];
@@ -703,13 +703,13 @@ function pair_to_xy(pair) {
 
 function make_type$1(typ, ctx) {
   if (typ === 2 || typ === 1) {
-    return /* record */[
+    return [
             /* sprite */make_particle$1(typ, ctx),
             /* rot */0,
             /* lifetime */300
           ];
   } else {
-    return /* record */[
+    return [
             /* sprite */make_particle$1(typ, ctx),
             /* rot */0,
             /* lifetime */30
@@ -730,7 +730,7 @@ function make$1($staropt$star, $staropt$star$1, part_type, pos, ctx) {
   var pos$1 = pair_to_xy(pos);
   var vel$1 = pair_to_xy(vel);
   var acc$1 = pair_to_xy(acc);
-  return /* record */[
+  return [
           /* params */params,
           /* part_type */part_type,
           /* pos */pos$1,
@@ -791,12 +791,12 @@ var Particle = {
   $$process: $$process
 };
 
-var id_counter = /* record */[/* contents */Pervasives.min_int];
+var id_counter = [/* contents */Pervasives.min_int];
 
 function setup_obj($staropt$star, $staropt$star$1, param) {
   var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
   var speed = $staropt$star$1 !== undefined ? $staropt$star$1 : 1;
-  return /* record */[
+  return [
           /* has_gravity */has_gravity,
           /* speed */speed
         ];
@@ -849,13 +849,13 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
   var id$1 = id !== undefined ? id : new_id(/* () */0);
-  var obj = /* record */[
+  var obj = [
     /* params */params,
-    /* pos : record */[
+    /* pos */[
       /* x */param[0],
       /* y */param[1]
     ],
-    /* vel : record */[
+    /* vel */[
       /* x */0.0,
       /* y */0.0
     ],
@@ -1216,12 +1216,12 @@ function get_aabb(obj) {
   var match$1 = spr[/* bbox_size */6];
   var sy = match$1[1];
   var sx = match$1[0];
-  return /* record */[
-          /* center : record */[
+  return [
+          /* center */[
             /* x */box + sx / 2,
             /* y */boy + sy / 2
           ],
-          /* half : record */[
+          /* half */[
             /* x */sx / 2,
             /* y */sy / 2
           ]
@@ -1507,16 +1507,16 @@ var Draw = {
 };
 
 function make$3(param, param$1) {
-  return /* record */[
-          /* pos : record */[
+  return [
+          /* pos */[
             /* x */0,
             /* y */0
           ],
-          /* v_dim : record */[
+          /* v_dim */[
             /* x */param[0],
             /* y */param[1]
           ],
-          /* m_dim : record */[
+          /* m_dim */[
             /* x */param$1[0],
             /* y */param$1[1]
           ]
@@ -1548,7 +1548,7 @@ function out_of_viewport_below(v, y) {
 }
 
 function coord_to_viewport(viewport, coord) {
-  return /* record */[
+  return [
           /* x */coord[/* x */0] - viewport[/* pos */0][/* x */0],
           /* y */coord[/* y */1] - viewport[/* pos */0][/* y */1]
         ];
@@ -1557,11 +1557,11 @@ function coord_to_viewport(viewport, coord) {
 function update(vpt, ctr) {
   var new_x = calc_viewport_point(ctr[/* x */0], vpt[/* v_dim */1][/* x */0], vpt[/* m_dim */2][/* x */0]);
   var new_y = calc_viewport_point(ctr[/* y */1], vpt[/* v_dim */1][/* y */1], vpt[/* m_dim */2][/* y */1]);
-  var pos = /* record */[
+  var pos = [
     /* x */new_x,
     /* y */new_y
   ];
-  return /* record */[
+  return [
           /* pos */pos,
           /* v_dim */vpt[/* v_dim */1],
           /* m_dim */vpt[/* m_dim */2]
@@ -1577,7 +1577,7 @@ var Viewport = {
   update: update
 };
 
-var pressed_keys = /* record */[
+var pressed_keys = [
   /* left */false,
   /* right */false,
   /* up */false,
@@ -1585,11 +1585,11 @@ var pressed_keys = /* record */[
   /* bbox */0
 ];
 
-var collid_objs = /* record */[/* contents : [] */0];
+var collid_objs = [/* contents : [] */0];
 
-var particles = /* record */[/* contents : [] */0];
+var particles = [/* contents : [] */0];
 
-var last_time = /* record */[/* contents */0];
+var last_time = [/* contents */0];
 
 function calc_fps(t0, t1) {
   var delta = (t1 - t0) / 1000;
@@ -2186,7 +2186,7 @@ function update_loop(canvas, param, map_dim) {
         cwidth,
         cheight
       ], map_dim);
-  var state = /* record */[
+  var state = [
     /* bgd */make_bgd(ctx),
     /* ctx */ctx,
     /* vpt */update(viewport, player[2][/* pos */1]),
@@ -2213,7 +2213,7 @@ function update_loop(canvas, param, map_dim) {
       if (player$1[2][/* kill */8] === true) {
         return game_loss(state[/* ctx */1]);
       } else {
-        var state$1 = /* record */[
+        var state$1 = [
           /* bgd */state[/* bgd */0],
           /* ctx */state[/* ctx */1],
           /* vpt */update(state[/* vpt */2], player$1[2][/* pos */1]),
@@ -3224,7 +3224,7 @@ var Procedural_generator = {
   generate: generate
 };
 
-var loadCount = /* record */[/* contents */0];
+var loadCount = [/* contents */0];
 
 function load(param) {
   Random.self_init(/* () */0);

@@ -1230,11 +1230,11 @@ function process_input_line(ticker_map, all_tickers, line) {
   var make_binary_op = function (ticker_name, lhs, rhs, op) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
-    return /* record */[
+    return [
             /* value */undefined,
             /* rank : Uninitialized */0,
             /* ticker_name */ticker_name,
-            /* type_ : Binary_op */[/* record */[
+            /* type_ : Binary_op */[[
                 /* op */op,
                 /* rhs */rhs$1,
                 /* lhs */lhs$1
@@ -1350,7 +1350,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                     }
                     return /* tuple */[
                             /* :: */[
-                              /* record */[
+                              [
                                 /* value */undefined,
                                 /* rank : Uninitialized */0,
                                 /* ticker_name */ticker_name,

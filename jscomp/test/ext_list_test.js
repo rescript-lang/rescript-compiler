@@ -29,7 +29,7 @@ function filter_map(f, _xs) {
 }
 
 function excludes(p, l) {
-  var excluded = /* record */[/* contents */false];
+  var excluded = [/* contents */false];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -69,7 +69,7 @@ function excludes(p, l) {
 }
 
 function exclude_with_fact(p, l) {
-  var excluded = /* record */[/* contents */undefined];
+  var excluded = [/* contents */undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -102,8 +102,8 @@ function exclude_with_fact(p, l) {
 }
 
 function exclude_with_fact2(p1, p2, l) {
-  var excluded1 = /* record */[/* contents */undefined];
-  var excluded2 = /* record */[/* contents */undefined];
+  var excluded1 = [/* contents */undefined];
+  var excluded2 = [/* contents */undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -792,7 +792,7 @@ function reduce_from_left(fn, lst) {
 }
 
 function create_ref_empty(param) {
-  return /* record */[/* contents : [] */0];
+  return [/* contents : [] */0];
 }
 
 function ref_top(x) {

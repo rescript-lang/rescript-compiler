@@ -109,7 +109,7 @@ var yyact = /* array */[
     })
 ];
 
-var yytables = /* record */[
+var yytables = [
   /* actions */yyact,
   /* transl_const */yytransl_const,
   /* transl_block */yytransl_block,

@@ -8,9 +8,9 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var counter = /* record */[/* contents */0];
+var counter = [/* contents */0];
 
 function add_test(loc, test) {
   counter[/* contents */0] = counter[/* contents */0] + 1 | 0;

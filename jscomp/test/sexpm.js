@@ -347,7 +347,7 @@ var ID_MONAD = {
 function make($staropt$star, refill) {
   var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
-  return /* record */[
+  return [
           /* buf */Caml_bytes.caml_create_bytes(bufsize$1),
           /* refill */refill,
           /* atom */$$Buffer.create(32),
@@ -856,7 +856,7 @@ function next(t) {
 
 function parse_string(s) {
   var n = s.length;
-  var stop = /* record */[/* contents */false];
+  var stop = [/* contents */false];
   var refill = function (bytes, i, _len) {
     if (stop[/* contents */0]) {
       return 0;
@@ -949,7 +949,7 @@ function MakeDecode(funarg) {
   var make = function ($staropt$star, refill) {
     var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
-    return /* record */[
+    return [
             /* buf */Caml_bytes.caml_create_bytes(bufsize$1),
             /* refill */refill,
             /* atom */$$Buffer.create(32),

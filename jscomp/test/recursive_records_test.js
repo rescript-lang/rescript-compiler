@@ -5,9 +5,9 @@ var List = require("../../lib/js/list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -15,7 +15,7 @@ function eq(loc, x, y) {
 
 var rec_cell = [];
 
-Caml_obj.caml_update_dummy(rec_cell, /* record */[
+Caml_obj.caml_update_dummy(rec_cell, [
       /* content */3,
       /* next */rec_cell
     ]);

@@ -269,7 +269,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
 }
 
 function dfs3(nodes, graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = [/* contents : [] */0];
   var aux = function (node, graph) {
     if (List.mem(node, visited[/* contents */0])) {
       return 0;
@@ -398,7 +398,7 @@ var grwork = /* :: */[
 ];
 
 function unsafe_topsort(graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = [/* contents : [] */0];
   var sort_node = function (node) {
     if (List.mem(node, visited[/* contents */0])) {
       return 0;
@@ -1480,7 +1480,7 @@ var String_set = {
 var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
 
 function pathsort(graph) {
-  var visited = /* record */[/* contents : [] */0];
+  var visited = [/* contents : [] */0];
   var empty_path = /* tuple */[
     /* Empty */0,
     /* [] */0

@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -29,9 +29,9 @@ var a = [];
 
 var b = [];
 
-Caml_obj.caml_update_dummy(a, /* record */[/* b */b]);
+Caml_obj.caml_update_dummy(a, [/* b */b]);
 
-Caml_obj.caml_update_dummy(b, /* record */[/* a */a]);
+Caml_obj.caml_update_dummy(b, [/* a */a]);
 
 function is_inifite(x) {
   return x[/* b */0][/* a */0] === x;

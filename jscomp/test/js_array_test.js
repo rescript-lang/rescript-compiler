@@ -882,7 +882,7 @@ var suites_001 = /* :: */[
                                                                                                     /* tuple */[
                                                                                                       "forEach",
                                                                                                       (function (param) {
-                                                                                                          var sum = /* record */[/* contents */0];
+                                                                                                          var sum = [/* contents */0];
                                                                                                           /* array */[
                                                                                                               1,
                                                                                                               2,
@@ -901,7 +901,7 @@ var suites_001 = /* :: */[
                                                                                                       /* tuple */[
                                                                                                         "forEachi",
                                                                                                         (function (param) {
-                                                                                                            var sum = /* record */[/* contents */0];
+                                                                                                            var sum = [/* contents */0];
                                                                                                             /* array */[
                                                                                                                 1,
                                                                                                                 2,

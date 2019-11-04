@@ -5,9 +5,9 @@ var Block = require("../../lib/js/block.js");
 var JoinClasses = require("./joinClasses");
 var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];

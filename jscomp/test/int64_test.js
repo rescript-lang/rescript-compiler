@@ -2383,9 +2383,9 @@ var suites = Pervasives.$at(/* :: */[
                               ];
                       }), shift_right_logical_suites_000, shift_right_logical_suites_001)))));
 
-var suites$1 = /* record */[/* contents */suites];
+var suites$1 = [/* contents */suites];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites$1, loc, x, y);
