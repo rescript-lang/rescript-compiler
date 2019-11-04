@@ -320,7 +320,10 @@ val or_ : ?comment:string -> t -> t -> t
 (** we don't expose a general interface, since a general interface is generally not safe *)
 
 (** used combined with [caml_update_dummy]*)
-val dummy_obj : ?comment:string ->  unit -> t 
+val dummy_obj : 
+  ?comment:string -> 
+  Lam_tag_info.t ->
+  t 
 
 (** convert a block to expresion by using IIFE *)    
 val of_block : ?comment:string -> ?e:J.expression -> J.statement list -> t
