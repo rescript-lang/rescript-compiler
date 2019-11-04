@@ -477,7 +477,8 @@ build test/printf_test.cmi test/printf_test.cmj : cc test/printf_test.ml | test/
 build test/promise.cmi test/promise.cmj : cc test/promise.ml | $stdlib
 build test/promise_catch_test.cmi test/promise_catch_test.cmj : cc test/promise_catch_test.ml | test/mt.cmj $stdlib
 build test/qcc.cmi test/qcc.cmj : cc test/qcc.ml | $stdlib
-build test/queue_test.cmi test/queue_test.cmj : cc test/queue_test.ml | test/mt.cmj $stdlib
+build test/queue_402.cmi test/queue_402.cmj : cc test/queue_402.ml | $stdlib
+build test/queue_test.cmi test/queue_test.cmj : cc test/queue_test.ml | test/mt.cmj test/queue_402.cmj $stdlib
 build test/random_test.cmi test/random_test.cmj : cc test/random_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 build test/raw_hash_tbl_bench.cmi test/raw_hash_tbl_bench.cmj : cc test/raw_hash_tbl_bench.ml | $stdlib
 build test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_test.ml | $stdlib
@@ -493,6 +494,7 @@ build test/record_extension_test.cmi test/record_extension_test.cmj : cc test/re
 build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $stdlib
 build test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $stdlib
 build test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.ml | test/mt.cmj $stdlib
+build test/recursive_records_test.cmi test/recursive_records_test.cmj : cc test/recursive_records_test.ml | test/mt.cmj $stdlib
 build test/recursive_unbound_module_test.cmi test/recursive_unbound_module_test.cmj : cc test/recursive_unbound_module_test.ml | $stdlib
 build test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.ml | $stdlib
 build test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $stdlib
