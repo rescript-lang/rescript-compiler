@@ -32,8 +32,8 @@ external ( mod ) : int -> int -> int = "%modint"
 
 type 'a ref = { mutable contents : 'a }
 external ref : 'a -> 'a ref = "%makemutable"
-external ( ! ) : 'a ref -> 'a = "%field0"
-external ( := ) : 'a ref -> 'a -> unit = "%setfield0"
+external ( ! ) : 'a ref -> 'a = "%bs_ref_field0"
+external ( := ) : 'a ref -> 'a -> unit = "%bs_ref_setfield0"
 external incr : int ref -> unit = "%incr"
 external decr : int ref -> unit = "%decr"
 
