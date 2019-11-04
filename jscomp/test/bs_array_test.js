@@ -12,9 +12,9 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -1165,7 +1165,7 @@ eq("File \"bs_array_test.ml\", line 260, characters 5-12", Belt_Array.unzip(/* a
     ]);
 
 function sumUsingForEach(xs) {
-  var v = /* record */[/* contents */0];
+  var v = [/* contents */0];
   Belt_Array.forEach(xs, (function (x) {
           v[/* contents */0] = v[/* contents */0] + x | 0;
           return /* () */0;
@@ -1215,7 +1215,7 @@ b("File \"bs_array_test.ml\", line 274, characters 4-11", !Belt_Array.eq(/* arra
             return prim === prim$1;
           })));
 
-var c$1 = /* record */[/* contents */0];
+var c$1 = [/* contents */0];
 
 b("File \"bs_array_test.ml\", line 275, characters 4-11", (Belt_Array.forEachWithIndex(/* array */[
             1,

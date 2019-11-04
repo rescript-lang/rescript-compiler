@@ -8,9 +8,9 @@ var Child_process = require("child_process");
 var App_root_finder = require("./app_root_finder.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

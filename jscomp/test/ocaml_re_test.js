@@ -21,9 +21,9 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -592,7 +592,7 @@ function hash_combine(h, accu) {
   return Caml_int32.imul(accu, 65599) + h | 0;
 }
 
-var empty = /* record */[
+var empty = [
   /* marks : [] */0,
   /* pmarks : Empty */0
 ];
@@ -634,7 +634,7 @@ function marks_set_idx(idx, marks) {
 }
 
 function marks_set_idx$1(marks, idx) {
-  return /* record */[
+  return [
           /* marks */marks_set_idx(idx, marks[/* marks */0]),
           /* pmarks */marks[/* pmarks */1]
         ];
@@ -657,14 +657,14 @@ function first(f, _param) {
   };
 }
 
-var eps_expr = /* record */[
+var eps_expr = [
   /* id */0,
   /* def : Eps */0
 ];
 
 function mk_expr(ids, def) {
   ids[/* contents */0] = ids[/* contents */0] + 1 | 0;
-  return /* record */[
+  return [
           /* id */ids[/* contents */0],
           /* def */def
         ];
@@ -908,7 +908,7 @@ function tseq(kind, x, y, rem) {
         ];
 }
 
-var dummy = /* record */[
+var dummy = [
   /* idx */-1,
   /* category */-1,
   /* desc : [] */0,
@@ -921,7 +921,7 @@ function hash$2(idx, cat, desc) {
 }
 
 function mk(idx, cat, desc) {
-  return /* record */[
+  return [
           /* idx */idx,
           /* category */cat,
           /* desc */desc,
@@ -1160,7 +1160,7 @@ function set_idx(idx, param) {
 }
 
 function filter_marks(b, e, marks) {
-  return /* record */[
+  return [
           /* marks */List.filter((function (param) {
                     var i = param[0];
                     if (i < b) {
@@ -1241,7 +1241,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             List.remove_assq(i, marks[/* marks */0])
           ];
           var marks_pmarks = /* pmarks */marks[/* pmarks */1];
-          var marks$1 = /* record */[
+          var marks$1 = [
             marks_marks,
             marks_pmarks
           ];
@@ -1275,7 +1275,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
       case /* Pmark */8 :
           var marks_marks$1 = /* marks */marks[/* marks */0];
           var marks_pmarks$1 = /* pmarks */add$1(match[0], marks[/* pmarks */1]);
-          var marks$2 = /* record */[
+          var marks$2 = [
             marks_marks$1,
             marks_pmarks$1
           ];
@@ -1443,7 +1443,7 @@ function category(re, c) {
 
 var dummy_next = /* array */[];
 
-var unknown_state = /* record */[
+var unknown_state = [
   /* idx */-2,
   /* real_idx */0,
   /* next */dummy_next,
@@ -1454,7 +1454,7 @@ var unknown_state = /* record */[
 function mk_state(ncol, desc) {
   var match = status(desc);
   var break_state = typeof match === "number" ? match === 0 : true;
-  return /* record */[
+  return [
           /* idx */break_state ? -3 : desc[/* idx */0],
           /* real_idx */desc[/* idx */0],
           /* next */break_state ? dummy_next : Caml_array.caml_make_vect(ncol, unknown_state),
@@ -1602,7 +1602,7 @@ function scan_str(info, s, initial_state, groups) {
   var pos = info[/* pos */3];
   var last = info[/* last */4];
   if (last === s.length && info[/* re */0][/* lnl */5] !== -1 && last > pos && Caml_string.get(s, last - 1 | 0) === /* "\n" */10) {
-    var info$1 = /* record */[
+    var info$1 = [
       /* re */info[/* re */0],
       /* i_cols */info[/* i_cols */1],
       /* positions */info[/* positions */2],
@@ -1806,7 +1806,7 @@ var cword = union(/* :: */[
     ], calnum);
 
 function colorize(c, regexp) {
-  var lnl = /* record */[/* contents */false];
+  var lnl = [/* contents */false];
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
@@ -2859,9 +2859,9 @@ function compile(r) {
   var col = match[0];
   var lnl = need_lnl ? ncol : -1;
   var ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
-  var ids = /* record */[/* contents */0];
-  var pos = /* record */[/* contents */0];
-  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, /* record */[/* contents : Empty */0], col, regexp$1);
+  var ids = [/* contents */0];
+  var pos = [/* contents */0];
+  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, [/* contents : Empty */0], col, regexp$1);
   var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
   var init = r$1;
   var cols = col;
@@ -2869,14 +2869,14 @@ function compile(r) {
   var ncol$2 = ncol$1;
   var lnl$1 = lnl;
   var group_count = pos[/* contents */0] / 2 | 0;
-  return /* record */[
+  return [
           /* initial */init,
           /* initial_states : [] */0,
           /* cols */cols,
           /* col_repr */col_repr,
           /* ncol */ncol$2,
           /* lnl */lnl$1,
-          /* tbl : record */[/* contents : array */[false]],
+          /* tbl */[/* contents : array */[false]],
           /* states */Curry._1(Re_automata_State.Table.create, 97),
           /* group_count */group_count
         ];
@@ -2917,7 +2917,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   } else {
     tmp = /* array */[];
   }
-  var info = /* record */[
+  var info = [
     /* re */re$1,
     /* i_cols */re$1[/* cols */2],
     /* positions */tmp,
@@ -2945,7 +2945,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
       return /* Failed */0;
     }
   } else {
-    return /* Match */[/* record */[
+    return /* Match */[[
               /* s */s$1,
               /* marks */res[0],
               /* pmarks */res[1],
@@ -3019,7 +3019,7 @@ function posix_class_of_string(class_) {
 }
 
 function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
-  var i = /* record */[/* contents */0];
+  var i = [/* contents */0];
   var l = s.length;
   var test = function (c) {
     if (i[/* contents */0] !== l) {

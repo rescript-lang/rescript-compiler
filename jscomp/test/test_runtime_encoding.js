@@ -10,14 +10,14 @@ function g(x) {
 }
 
 function ff(v, u) {
-  return /* record */[
+  return [
           /* v */v,
           /* u */u
         ];
 }
 
 function fff(vv, uu) {
-  return /* record */[
+  return [
           /* vv */vv,
           /* uu */uu
         ];

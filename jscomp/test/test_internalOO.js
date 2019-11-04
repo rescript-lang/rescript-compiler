@@ -19,7 +19,7 @@ function copy(o) {
   return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
 }
 
-var params = /* record */[
+var params = [
   /* compact_table */true,
   /* copy_parent */true,
   /* clean_when_copying */true,
@@ -3045,7 +3045,7 @@ var Labs = {
   mapi: mapi$2
 };
 
-var dummy_table = /* record */[
+var dummy_table = [
   /* size */0,
   /* methods : array */[/* () */0],
   /* methods_by_name : Empty */0,
@@ -3056,7 +3056,7 @@ var dummy_table = /* record */[
   /* initializers : [] */0
 ];
 
-var table_count = /* record */[/* contents */0];
+var table_count = [/* contents */0];
 
 var dummy_met = /* obj_block */[];
 
@@ -3077,7 +3077,7 @@ function new_table(pub_labels) {
   for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
     Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
   }
-  return /* record */[
+  return [
           /* size */2,
           /* methods */methods,
           /* methods_by_name : Empty */0,
@@ -3106,9 +3106,9 @@ function put(array, label, element) {
   return Caml_array.caml_array_set(array[/* methods */1], label, element);
 }
 
-var method_count = /* record */[/* contents */0];
+var method_count = [/* contents */0];
 
-var inst_var_count = /* record */[/* contents */0];
+var inst_var_count = [/* contents */0];
 
 function new_method(table) {
   var index = table[/* methods */1].length;
@@ -3203,8 +3203,8 @@ function narrow(table, vars, virt_meths, concr_meths) {
             return tvars;
           }
         }), table[/* vars */6], /* Empty */0);
-  var by_name = /* record */[/* contents : Empty */0];
-  var by_label = /* record */[/* contents : Empty */0];
+  var by_name = [/* contents : Empty */0];
+  var by_label = [/* contents : Empty */0];
   List.iter2((function (met, label) {
           by_name[/* contents */0] = add$1(met, label, by_name[/* contents */0]);
           var tmp;
@@ -3481,7 +3481,7 @@ function create_object_and_run_initializers(obj_0, table) {
 }
 
 function build_path(n, keys, tables) {
-  var res = /* record */[
+  var res = [
     /* key */0,
     /* data : Empty */0,
     /* next : Empty */0
@@ -3820,7 +3820,7 @@ function method_impl(table, i, arr) {
 
 function set_methods(table, methods) {
   var len = methods.length;
-  var i = /* record */[/* contents */0];
+  var i = [/* contents */0];
   while(i[/* contents */0] < len) {
     var label = Caml_array.caml_array_get(methods, i[/* contents */0]);
     var clo = method_impl(table, i, methods);
@@ -3831,7 +3831,7 @@ function set_methods(table, methods) {
 }
 
 function stats(param) {
-  return /* record */[
+  return [
           /* classes */table_count[/* contents */0],
           /* methods */method_count[/* contents */0],
           /* inst_vars */inst_var_count[/* contents */0]

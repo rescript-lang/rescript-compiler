@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -34,7 +34,7 @@ function tToJs(param) {
 }
 
 function tFromJs(param) {
-  return /* record */[
+  return [
           /* x */param.x,
           /* y */param.y,
           /* z */param.z

@@ -152,7 +152,7 @@ function timing(label, f) {
 }
 
 function assertion_test(param) {
-  var m = /* record */[/* contents : Empty */0];
+  var m = [/* contents : Empty */0];
   timing("building", (function (param) {
           for(var i = 0; i <= 1000000; ++i){
             m[/* contents */0] = add(String(i), String(i), m[/* contents */0]);

@@ -7,9 +7,9 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -24,7 +24,7 @@ function $$throw(loc, x) {
 }
 
 function sum(xs) {
-  var v = /* record */[/* contents */0];
+  var v = [/* contents */0];
   Belt_List.forEach(xs, (function (x) {
           v[/* contents */0] = v[/* contents */0] + x | 0;
           return /* () */0;
@@ -33,7 +33,7 @@ function sum(xs) {
 }
 
 function sum2(xs, ys) {
-  var v = /* record */[/* contents */0];
+  var v = [/* contents */0];
   Belt_List.forEach2(xs, ys, (function (x, y) {
           v[/* contents */0] = (v[/* contents */0] + x | 0) + y | 0;
           return /* () */0;

@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-var v = /* record */[
+var v = [
   /* syntax */undefined,
   /* imports */0,
   /* file_options */0,
@@ -14,7 +14,7 @@ var v = /* record */[
   /* extends */0
 ];
 
-var u_v = /* record */[
+var u_v = [
   /* syntax */undefined,
   /* imports */0,
   /* file_options */0,
@@ -26,7 +26,7 @@ var u_v = /* record */[
 
 function f(g, h) {
   var init = Curry._1(g, h);
-  return /* record */[
+  return [
           /* syntax */init[/* syntax */0],
           /* imports */0,
           /* file_options */init[/* file_options */2],
@@ -54,7 +54,7 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("Record_with_test", suites);
 
-var uv = /* record */[
+var uv = [
   /* syntax */undefined,
   /* imports */1,
   /* file_options */0,

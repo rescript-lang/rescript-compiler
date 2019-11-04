@@ -45,7 +45,7 @@ function u() {
   return 3;
 }
 
-var vvv = /* record */[/* contents */0];
+var vvv = [/* contents */0];
 
 function fff(param) {
   console.log("x");

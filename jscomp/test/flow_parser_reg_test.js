@@ -27,14 +27,14 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var none = /* record */[
+var none = [
   /* source */undefined,
-  /* start : record */[
+  /* start */[
     /* line */0,
     /* column */0,
     /* offset */0
   ],
-  /* _end : record */[
+  /* _end */[
     /* line */0,
     /* column */0,
     /* offset */0
@@ -42,14 +42,14 @@ var none = /* record */[
 ];
 
 function from_lb_p(source, start, _end) {
-  return /* record */[
+  return [
           /* source */source,
-          /* start : record */[
+          /* start */[
             /* line */start[/* pos_lnum */1],
             /* column */start[/* pos_cnum */3] - start[/* pos_bol */2] | 0,
             /* offset */start[/* pos_cnum */3]
           ],
-          /* _end : record */[
+          /* _end */[
             /* line */_end[/* pos_lnum */1],
             /* column */Caml_primitive.caml_int_max(0, _end[/* pos_cnum */3] - _end[/* pos_bol */2] | 0),
             /* offset */_end[/* pos_cnum */3]
@@ -69,7 +69,7 @@ function from_curr_lb(source, lb) {
 }
 
 function btwn(loc1, loc2) {
-  return /* record */[
+  return [
           /* source */loc1[/* source */0],
           /* start */loc1[/* start */1],
           /* _end */loc2[/* _end */2]
@@ -77,7 +77,7 @@ function btwn(loc1, loc2) {
 }
 
 function btwn_exclusive(loc1, loc2) {
-  return /* record */[
+  return [
           /* source */loc1[/* source */0],
           /* start */loc1[/* _end */2],
           /* _end */loc2[/* start */1]
@@ -1355,7 +1355,7 @@ function token_to_string(param) {
 function yyback(n, lexbuf) {
   lexbuf[/* lex_curr_pos */5] = lexbuf[/* lex_curr_pos */5] - n | 0;
   var currp = lexbuf[/* lex_curr_p */11];
-  lexbuf[/* lex_curr_p */11] = /* record */[
+  lexbuf[/* lex_curr_p */11] = [
     /* pos_fname */currp[/* pos_fname */0],
     /* pos_lnum */currp[/* pos_lnum */1],
     /* pos_bol */currp[/* pos_bol */2],
@@ -1369,13 +1369,13 @@ function back(lb) {
   return yyback(n, lb);
 }
 
-var empty_lex_state = /* record */[
+var empty_lex_state = [
   /* lex_errors_acc : [] */0,
   /* lex_comments_acc : [] */0
 ];
 
 function new_lex_env(lex_source, lex_lb, enable_types_in_comments) {
-  return /* record */[
+  return [
           /* lex_source */lex_source,
           /* lex_lb */lex_lb,
           /* lex_in_comment_syntax */false,
@@ -1386,7 +1386,7 @@ function new_lex_env(lex_source, lex_lb, enable_types_in_comments) {
 
 function get_and_clear_state(env) {
   var state = env[/* lex_state */4];
-  var env$1 = state !== empty_lex_state ? /* record */[
+  var env$1 = state !== empty_lex_state ? [
       /* lex_source */env[/* lex_source */0],
       /* lex_lb */env[/* lex_lb */1],
       /* lex_in_comment_syntax */env[/* lex_in_comment_syntax */2],
@@ -1400,7 +1400,7 @@ function get_and_clear_state(env) {
 }
 
 function with_lexbuf(lexbuf, env) {
-  return /* record */[
+  return [
           /* lex_source */env[/* lex_source */0],
           /* lex_lb */lexbuf,
           /* lex_in_comment_syntax */env[/* lex_in_comment_syntax */2],
@@ -1411,7 +1411,7 @@ function with_lexbuf(lexbuf, env) {
 
 function in_comment_syntax(is_in, env) {
   if (is_in !== env[/* lex_in_comment_syntax */2]) {
-    return /* record */[
+    return [
             /* lex_source */env[/* lex_source */0],
             /* lex_lb */env[/* lex_lb */1],
             /* lex_in_comment_syntax */is_in,
@@ -1474,7 +1474,7 @@ function get_result_and_clear_state(param) {
   }
   return /* tuple */[
           env,
-          /* record */[
+          [
             /* lex_token */lex_token,
             /* lex_loc */match$1[0],
             /* lex_value */match$1[1],
@@ -1495,12 +1495,12 @@ function lex_error(env, loc, err) {
     lex_errors_acc_001
   ];
   var init = env[/* lex_state */4];
-  return /* record */[
+  return [
           /* lex_source */env[/* lex_source */0],
           /* lex_lb */env[/* lex_lb */1],
           /* lex_in_comment_syntax */env[/* lex_in_comment_syntax */2],
           /* lex_enable_comment_syntax */env[/* lex_enable_comment_syntax */3],
-          /* lex_state : record */[
+          /* lex_state */[
             /* lex_errors_acc */lex_errors_acc,
             /* lex_comments_acc */init[/* lex_comments_acc */1]
           ]
@@ -1533,7 +1533,7 @@ var No_good = Caml_exceptions.create("Flow_parser_reg_test.Lexer_flow.FloatOfStr
 function eat(f) {
   var match = f[/* todo */4];
   if (match) {
-    return /* record */[
+    return [
             /* negative */f[/* negative */0],
             /* mantissa */f[/* mantissa */1],
             /* exponent */f[/* exponent */2],
@@ -1546,7 +1546,7 @@ function eat(f) {
 }
 
 function start(str) {
-  var todo = /* record */[/* contents : [] */0];
+  var todo = [/* contents : [] */0];
   $$String.iter((function (c) {
           todo[/* contents */0] = /* :: */[
             c,
@@ -1554,7 +1554,7 @@ function start(str) {
           ];
           return /* () */0;
         }), str);
-  return /* record */[
+  return [
           /* negative */false,
           /* mantissa */0,
           /* exponent */0,
@@ -1573,7 +1573,7 @@ function parse_sign(f) {
           return f;
       case 45 :
           var init = eat(f);
-          return /* record */[
+          return [
                   /* negative */true,
                   /* mantissa */init[/* mantissa */1],
                   /* exponent */init[/* exponent */2],
@@ -1626,7 +1626,7 @@ function parse_exponent(f) {
     }
     throw exn;
   }
-  return /* record */[
+  return [
           /* negative */f[/* negative */0],
           /* mantissa */f[/* mantissa */1],
           /* exponent */exponent,
@@ -1658,7 +1658,7 @@ function parse_body(_f) {
         
       } else if (f[/* decimal_exponent */3] === undefined) {
         var init = eat(f);
-        _f = /* record */[
+        _f = [
           /* negative */init[/* negative */0],
           /* mantissa */init[/* mantissa */1],
           /* exponent */init[/* exponent */2],
@@ -1684,7 +1684,7 @@ function parse_body(_f) {
       var decimal_exponent = match$1 !== undefined ? match$1 - 4 | 0 : undefined;
       var mantissa = (f[/* mantissa */1] << 4) + value | 0;
       var init$1 = eat(f);
-      _f = /* record */[
+      _f = [
         /* negative */init$1[/* negative */0],
         /* mantissa */mantissa,
         /* exponent */init$1[/* exponent */2],
@@ -1752,12 +1752,12 @@ function save_comment(env, start, _end, buf, multiline) {
     lex_comments_acc_001
   ];
   var init = env[/* lex_state */4];
-  return /* record */[
+  return [
           /* lex_source */env[/* lex_source */0],
           /* lex_lb */env[/* lex_lb */1],
           /* lex_in_comment_syntax */env[/* lex_in_comment_syntax */2],
           /* lex_enable_comment_syntax */env[/* lex_enable_comment_syntax */3],
-          /* lex_state : record */[
+          /* lex_state */[
             /* lex_errors_acc */init[/* lex_errors_acc */0],
             /* lex_comments_acc */lex_comments_acc
           ]
@@ -1783,7 +1783,7 @@ function unicode_fix_cols(lb) {
   var bytes = count(lb[/* lex_start_pos */4], lb[/* lex_curr_pos */5], 0);
   var new_bol = lb[/* lex_curr_p */11][/* pos_bol */2] + bytes | 0;
   var init = lb[/* lex_curr_p */11];
-  lb[/* lex_curr_p */11] = /* record */[
+  lb[/* lex_curr_p */11] = [
     /* pos_fname */init[/* pos_fname */0],
     /* pos_lnum */init[/* pos_lnum */1],
     /* pos_bol */new_bol,
@@ -2275,7 +2275,7 @@ List.iter((function (param) {
       ]
     ]);
 
-var __ocaml_lex_tables = /* record */[
+var __ocaml_lex_tables = [
   /* lex_base */"\0\0\xb2\xff\xb3\xff\xb9\xffB\0C\0T\0W\0F\0I\0J\0K\0M\0e\0\xdd\xff\xde\xff\xdf\xff\xe0\xff\xe3\xff\xe4\xff\xe5\xff\xe6\xff\xe7\xff\xe8\xff\xc0\0L\0e\0\x17\x01n\x01\xf6\xff\xf7\xffl\0u\0v\0\0\0\x0e\0\x0f\0\x07\x003\x01\xfe\xff\xff\xff\x01\0\x12\0(\0\f\0\x15\0*\0\f\0=\0-\0\t\0\xb6\xff\xf9\xff\xe0\x01B\0u\0\x0f\x000\x004\0\x17\0\xe5\x01(\x008\0\x1a\0K\0:\0\x17\0\xfb\xffh\0a\0\xac\0q\0m\0y\0q\0i\0{\0{\0\xa8\0\xca\xff\xfa\xff\xc9\xff\xf8\xff\x0b\x02\xa5\x02\xfc\x02S\x03\xaa\x03\x01\x04X\x04\xaf\x04\x06\x05]\x05\xb4\x05\x0b\x06b\x06\xb9\x06\xc3\x01\x10\x07g\x07\xbe\x07\x15\bl\b\xc3\b\x1a\tq\t\xc8\t\xb8\0\xe2\xffE\x02\xc7\xff\xdc\xff\xc6\xff\xdb\xff\xb7\xff\xaa\0\xda\xff\xab\0\xd9\xff\xac\0\xd8\xff\xd2\xff\xad\0\xd7\xff\xb0\0\xd0\xff\xcf\xff\xcc\xff\xd4\xff\xcb\xff\xd3\xff\xc8\xff\xc5\xff:\n\xcf\xff\xd0\xff\xd2\xff\xd6\xff\xd7\xff\xb0\0\xdc\xff\xdd\xff\xe0\xff\xe1\xff\xe2\xff\xe3\xff\xe6\xff\xe7\xff\xe8\xff\xe9\xff\xea\xff\xeb\xff\x94\n\xfa\n\xd6\x01Q\x0b\xa8\x0b\x1a\f\xf9\xff\xcc\0\xf1\0A\0}\0~\0\xa3\0\xc4\x0b\xff\xffa\0\x9d\0\xc1\0\xa4\0\x90\0\xc6\0\xb2\0\xcb\t\xd2\0\x95\0\xfa\xff\x1f\f\xe9\0\x1c\x01\x9c\0\xf2\0\xf3\0\xf9\0$\f\xe7\0\xf7\0\xf5\0\xdf\x0b\x15\x01\xd7\0\xfc\xff(\x01!\x01m\x012\x01/\x01E\x01=\x015\x01G\x01G\x01\xfb\xff\xf3\x01\xf2\0.\x01I\x01P\x01K\f=\x01L\x01/\x01\xec\x0bk\x010\x01x\f\xff\fV\r\xad\r\0\x02\x04\x0e[\x0e\xb2\x0e\t\x0f`\x0f\xb7\x0f\x0e\x10e\x10\xbc\x10\x13\x11j\x11\xc1\x11\x18\x12o\x12\xc6\x12\x1d\x13t\x13\xcb\x13\"\x14\xcf\x01\xe5\xffy\x14\xd0\x14'\x15~\x15\xd4\xff\x1b\f\xfc\xff\xfd\xff\xfe\xff\xff\xff\xcf\x15\xee\xff\x01\0\xef\xff\x18\x16\xf4\xff\xf5\xff\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xf1\x02H\x03>\x16\xfe\xff\xff\xffU\x16\xfd\xff\x9f\x03\xfc\xff{\x16\x92\x16\xb8\x16\xcf\x16\xf2\xff\xf5\x16\xf1\xff\xd7\x02\xfb\xff\xd2\x01\xfe\xff\xff\xff\xcf\x01\xfd\xff\xfc\xff;\x02\xfd\xff\xfe\xff\xff\xff\0\x17\xf9\xff\xe8\x01G\x01\x83\x01\x90\x01y\x01)\fC\x15\xfe\xff\xff\xff]\x01\x9b\x01\x9c\x01*\x02\x90\x01\xa0\x01\x82\x01\x87\x15\xad\x01o\x01\xfb\xff\xfc\xff\x0b\x16\xf8\xff\x04\0\xf9\xff\xfa\xff8\x17,\x03\xff\xff\xfd\xff\x05\0\xfe\xff\xc0\x17\x96\t\xfb\xff\xfc\xff\xeb\x01\xff\xff\xfd\xff\xfe\xff2\x18\xf1\xff\xf2\xff\x8a\x18\xf4\xff\xf5\xff\xf6\xff\xf7\xff\xf8\xff\xfa\xff<\x02\x7f\x01\xc9\x01\xe7\x01+\x02\x88\x167\x18\xfe\xff\xff\xff\x8f\x01 \x02!\x023\x02\x15\x02%\x02!\x02\xbd\x16L\x02\x0f\x02\xfb\xff\xfc\xff|\f\xfb\xff\xfc\xff\xfd\xff\xfe\xff\x06\0\xff\xff\xfc\x18\xf9\xff\xf8\x18\x07\0\xfd\xff\xfe\xff\xff\xffO\x19\xdf\n_\f\x84\x17\x9c\x19\xfc\xff\xfb\xff\xd3\x19\xfa\xff*\x1a\x81\x1a\xd8\x1a/\x1b\x86\x1b\x96\x02\xf8\x1b\xfa\xff\xfb\xff\xb5\x02%\x02b\x02\x82\x02\xf3\x02\x04\x19K\x1b\xff\xff(\x02e\x02\xa9\x02J\x03r\x02\x85\x02\x8c\x02\xc9\x16\xb7\x02y\x02\xfc\xff\xfd\xff\xc3\x16\xf9\xff\xfa\xff\b\0\xfc\xff\xbf\x02\xfe\xff\xff\xff\xfd\xff\xfb\xff",
   /* lex_backtrk */"\xff\xff\xff\xff\xff\xff\xff\xffD\0A\0>\0=\0<\0;\0E\0G\0B\0C\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x16\0K\0\x1e\0\x15\0\x15\0\xff\xff\xff\xffM\0?\0J\0M\0M\0M\0M\0\x02\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x03\0\xff\xff\x04\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff@\0\xff\xff\xff\xff\xff\xff\xff\xff\x14\0\x14\0\x15\0\x14\0\x0f\0\x14\0\x14\0\x0b\0\n\0\r\0\f\0\x0e\0\x0e\0\x0e\0\xff\xff\x0e\0\x0e\0\x13\0\x12\0\x11\0\x10\0\x15\0\x13\0\x12\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff)\0\xff\xff*\0\xff\xff.\0\xff\xff\xff\xff2\0\xff\xff1\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff$\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x13\0\x13\0\x1b\0\x12\0\x12\0.\0\xff\xff&\x000\x000\x000\x000\x000\0\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff\x03\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x12\0\x11\0\x11\0\x10\0\xff\xff\x10\0\x0f\0\x0f\0\x12\0\x11\0\f\0\x11\0\x11\0\b\0\x07\0\n\0\t\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0e\0\r\0\xff\xff\xff\xff\x13\0\x13\0\x13\0\x13\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x10\0\xff\xff\x0f\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\f\0\x05\0\x0f\0\xff\xff\xff\xff\xff\xff\xff\xff\x04\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x04\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x05\0\x06\0\x06\0\x06\0\x06\0\x02\0\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x06\0\xff\xff\xff\xff\x04\0\x07\0\xff\xff\xff\xff\x01\0\xff\xff\x03\0\xff\xff\xff\xff\xff\xff\x04\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\f\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x06\0\x0e\0\x0e\0\x0e\0\x0e\0\x02\0\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\x06\0\x02\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x05\0\x05\0\x05\0\x05\0\x05\0\x01\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x05\0\xff\xff\x06\0\xff\xff\xff\xff\xff\xff\xff\xff",
   /* lex_default */"\x01\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\xff\xff\0\0\xff\xff\0\0\xff\xff\0\0\0\0\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x86\0\0\0\0\0\0\0\0\0\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xf8\0\0\0\0\0\0\0\0\0\xfd\0\0\0\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\x18\x01\0\0\xff\xff\0\0\0\0\xff\xff\0\0\0\0 \x01\0\0\0\0\0\0$\x01\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0;\x01\0\0\xff\xff\0\0\0\0\xff\xffB\x01\0\0\0\0\xff\xff\0\0\xff\xffG\x01\0\0\0\0\xff\xff\0\0\0\0\0\0N\x01\0\0\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0m\x01\0\0\0\0\0\0\0\0\xff\xff\0\0t\x01\0\0\xff\xff\xff\xff\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x8a\x01\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xa1\x01\0\0\0\0\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0",
@@ -2397,7 +2397,7 @@ function token(env, lexbuf) {
                   match$5[0],
                   /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
                         match$5[1],
-                        /* record */[
+                        [
                           /* cooked */$$Buffer.contents(cooked),
                           /* raw */$$Buffer.contents(raw$1),
                           /* literal */$$Buffer.contents(literal)
@@ -2837,14 +2837,14 @@ function line_comment(env, buf, lexbuf) {
           var _end_line = /* line */match$1[/* line */0];
           var _end_column = /* column */match$1[/* column */1] - 1 | 0;
           var _end_offset = /* offset */match$1[/* offset */2] - 1 | 0;
-          var _end = /* record */[
+          var _end = [
             _end_line,
             _end_column,
             _end_offset
           ];
           return /* tuple */[
                   env$1,
-                  /* record */[
+                  [
                     /* source */match[/* source */0],
                     /* start */match[/* start */1],
                     /* _end */_end
@@ -2972,7 +2972,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
                   match$2[0],
                   /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
                         match$2[1],
-                        /* record */[
+                        [
                           /* cooked */$$Buffer.contents(cooked),
                           /* raw */$$Buffer.contents(raw),
                           /* literal */$$Buffer.contents(literal)
@@ -2986,7 +2986,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
                   env$3,
                   /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
                         from_lb(env$3[/* lex_source */0], lexbuf),
-                        /* record */[
+                        [
                           /* cooked */"",
                           /* raw */"",
                           /* literal */""
@@ -4932,7 +4932,7 @@ function mem(x, _param) {
 
 function create$1(lex_env, mode) {
   var lexbuf = lex_env[/* lex_lb */1];
-  var lexbuf$1 = /* record */[
+  var lexbuf$1 = [
     /* refill_buff */lexbuf[/* refill_buff */0],
     /* lex_buffer */lexbuf[/* lex_buffer */1],
     /* lex_buffer_len */lexbuf[/* lex_buffer_len */2],
@@ -4947,7 +4947,7 @@ function create$1(lex_env, mode) {
     /* lex_curr_p */lexbuf[/* lex_curr_p */11]
   ];
   var lex_env$1 = with_lexbuf(lexbuf$1, lex_env);
-  return /* record */[
+  return [
           /* la_results : array */[],
           /* la_num_lexed */0,
           /* la_lex_mode */mode,
@@ -5013,7 +5013,7 @@ function lex(t) {
   }
   var lex_env$1 = match$1[0];
   var lexbuf = lex_env$1[/* lex_lb */1];
-  var lexbuf$1 = /* record */[
+  var lexbuf$1 = [
     /* refill_buff */lexbuf[/* refill_buff */0],
     /* lex_buffer */lexbuf[/* lex_buffer */1],
     /* lex_buffer_len */lexbuf[/* lex_buffer_len */2],
@@ -5045,7 +5045,7 @@ function lex_until(t, i) {
   return /* () */0;
 }
 
-var default_parse_options = /* record */[
+var default_parse_options = [
   /* esproposal_class_instance_fields */false,
   /* esproposal_class_static_fields */false,
   /* esproposal_decorators */false,
@@ -5062,7 +5062,7 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
     var match = source;
     if (typeof match !== "number") {
       var init = lb[/* lex_curr_p */11];
-      lb[/* lex_curr_p */11] = /* record */[
+      lb[/* lex_curr_p */11] = [
         /* pos_fname */match[0],
         /* pos_lnum */init[/* pos_lnum */1],
         /* pos_bol */init[/* pos_bol */2],
@@ -5074,12 +5074,12 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
   var parse_options$1 = parse_options !== undefined ? parse_options : default_parse_options;
   var enable_types_in_comments = parse_options$1[/* types */4];
   var lex_env = new_lex_env(source, lb, enable_types_in_comments);
-  return /* record */[
-          /* errors : record */[/* contents : [] */0],
-          /* comments : record */[/* contents : [] */0],
+  return [
+          /* errors */[/* contents : [] */0],
+          /* comments */[/* contents : [] */0],
           /* labels : Empty */0,
-          /* exports : record */[/* contents : Empty */0],
-          /* last_loc : record */[/* contents */undefined],
+          /* exports */[/* contents : Empty */0],
+          /* last_loc */[/* contents */undefined],
           /* in_strict_mode */parse_options$1[/* use_strict */5],
           /* in_export */false,
           /* in_loop */false,
@@ -5091,13 +5091,13 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
           /* allow_yield */true,
           /* allow_await */false,
           /* error_callback */undefined,
-          /* lex_mode_stack : record */[/* contents : :: */[
+          /* lex_mode_stack */[/* contents : :: */[
               /* NORMAL */0,
               /* [] */0
             ]],
-          /* lex_env : record */[/* contents */lex_env],
-          /* lookahead : record */[/* contents */create$1(lex_env, /* NORMAL */0)],
-          /* token_sink : record */[/* contents */token_sink],
+          /* lex_env */[/* contents */lex_env],
+          /* lookahead */[/* contents */create$1(lex_env, /* NORMAL */0)],
+          /* token_sink */[/* contents */token_sink],
           /* parse_options */parse_options$1,
           /* source */source
         ];
@@ -5502,7 +5502,7 @@ function token$3(env) {
     var token_loc = loc(undefined, env);
     var token$4 = token$2(undefined, env);
     var token_value = value(undefined, env);
-    Curry._1(match, /* record */[
+    Curry._1(match, [
           /* token_loc */token_loc,
           /* token */token$4,
           /* token_context */List.hd(env[/* lex_mode_stack */16][/* contents */0]),
@@ -5611,7 +5611,7 @@ function save_state(env) {
   var match = env[/* token_sink */19][/* contents */0];
   var token_buffer;
   if (match !== undefined) {
-    var buffer = /* record */[
+    var buffer = [
       /* length */0,
       /* first : Nil */0,
       /* last : Nil */0
@@ -5626,7 +5626,7 @@ function save_state(env) {
   } else {
     token_buffer = undefined;
   }
-  return /* record */[
+  return [
           /* saved_errors */env[/* errors */0][/* contents */0],
           /* saved_comments */env[/* comments */1][/* contents */0],
           /* saved_last_loc */env[/* last_loc */4][/* contents */0],
@@ -6273,7 +6273,7 @@ function function_param_with_id(env, name) {
   var typeAnnotation = union(env);
   return /* tuple */[
           btwn(name[0], typeAnnotation[0]),
-          /* record */[
+          [
             /* name */name,
             /* typeAnnotation */typeAnnotation,
             /* optional */optional
@@ -6329,7 +6329,7 @@ function primary(env) {
             var end_loc = returnType[0];
             return /* tuple */[
                     btwn(start_loc, end_loc),
-                    /* Function */Block.__(1, [/* record */[
+                    /* Function */Block.__(1, [[
                           /* params */match$3[1],
                           /* returnType */returnType,
                           /* rest */match$3[0],
@@ -6370,7 +6370,7 @@ function primary(env) {
           var end_loc$2 = returnType$1[0];
           return /* tuple */[
                   btwn(start_loc$3, end_loc$2),
-                  /* Function */Block.__(1, [/* record */[
+                  /* Function */Block.__(1, [[
                         /* params */match$4[1],
                         /* returnType */returnType$1,
                         /* rest */match$4[0],
@@ -6405,7 +6405,7 @@ function primary(env) {
                   ]]));
           return /* tuple */[
                   loc$1,
-                  /* StringLiteral */Block.__(9, [/* record */[
+                  /* StringLiteral */Block.__(9, [[
                         /* value */value,
                         /* raw */raw
                       ]])
@@ -6423,7 +6423,7 @@ function primary(env) {
           }
           return /* tuple */[
                   loc,
-                  /* NumberLiteral */Block.__(10, [/* record */[
+                  /* NumberLiteral */Block.__(10, [[
                         /* value */value$1,
                         /* raw */raw$1
                       ]])
@@ -6454,7 +6454,7 @@ function primary(env) {
         var value$2 = token$5 === /* T_TRUE */29;
         return /* tuple */[
                 loc,
-                /* BooleanLiteral */Block.__(11, [/* record */[
+                /* BooleanLiteral */Block.__(11, [[
                       /* value */value$2,
                       /* raw */raw$2
                     ]])
@@ -6563,7 +6563,7 @@ function param_list_or_type(env) {
           token$4(env, /* T_COMMA */8);
         }
         var param_000 = btwn(name[0], typeAnnotation[0]);
-        var param_001 = /* record */[
+        var param_001 = [
           /* name */name,
           /* typeAnnotation */typeAnnotation,
           /* optional */optional
@@ -6755,7 +6755,7 @@ function identifier(env, _param) {
       var loc = btwn(q_loc, id[0]);
       var qualification$1 = /* Qualified */Block.__(1, [/* tuple */[
             loc,
-            /* record */[
+            [
               /* qualification */qualification,
               /* id */id
             ]
@@ -6787,7 +6787,7 @@ function raw_generic_with_identifier(env, id) {
   var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* id */match[1],
             /* typeParameters */typeParameters
           ]
@@ -6802,7 +6802,7 @@ function methodish(env, start_loc) {
   var loc = btwn(start_loc, returnType[0]);
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* params */match[1],
             /* returnType */returnType,
             /* rest */match[0],
@@ -6821,7 +6821,7 @@ function method_property(env, start_loc, $$static, key) {
   ];
   return /* tuple */[
           value_000,
-          /* record */[
+          [
             /* key */key,
             /* value */value$1,
             /* optional */false,
@@ -6835,7 +6835,7 @@ function call_property(env, start_loc, $$static) {
   var value = methodish(env, Curry._2(Parser_env_Peek.loc, undefined, env));
   return /* tuple */[
           btwn(start_loc, value[0]),
-          /* record */[
+          [
             /* value */value,
             /* static */$$static
           ]
@@ -6851,7 +6851,7 @@ function property(env, start_loc, $$static, key) {
   var value = union(env);
   return /* tuple */[
           btwn(start_loc, value[0]),
-          /* record */[
+          [
             /* key */key,
             /* value */value,
             /* optional */optional,
@@ -6871,7 +6871,7 @@ function indexer_property(env, start_loc, $$static) {
   var value = union(env);
   return /* tuple */[
           btwn(start_loc, value[0]),
-          /* record */[
+          [
             /* id */match[0],
             /* key */key,
             /* value */value,
@@ -6963,7 +6963,7 @@ function properties(allow_static, env, _param) {
                 ]);
             var static_key_001 = /* Identifier */Block.__(1, [/* tuple */[
                   start_loc,
-                  /* record */[
+                  [
                     /* name */"static",
                     /* typeAnnotation */undefined,
                     /* optional */false
@@ -7039,7 +7039,7 @@ function _object($staropt$star, env) {
   token$4(env, /* T_RCURLY */2);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[
+          [
             /* properties */match[0],
             /* indexers */match[1],
             /* callProperties */match[2]
@@ -7112,7 +7112,7 @@ function params(env, allow_default, _require_default, _acc) {
         false
       ];
     }
-    var param_001 = /* record */[
+    var param_001 = [
       /* name */id[/* name */0],
       /* bound */id[/* typeAnnotation */1],
       /* variance */variance,
@@ -7153,7 +7153,7 @@ function type_parameter_declaration(allow_default, env) {
     token$4(env, /* T_GREATER_THAN */90);
     return /* tuple */[
             loc,
-            /* record */[/* params */params$1]
+            [/* params */params$1]
           ];
   }
   
@@ -7188,7 +7188,7 @@ function type_parameter_instantiation(env) {
     token$4(env, /* T_GREATER_THAN */90);
     return /* tuple */[
             loc,
-            /* record */[/* params */params$2]
+            [/* params */params$2]
           ];
   }
   
@@ -7573,7 +7573,7 @@ function _function(env) {
     ];
   return /* tuple */[
           btwn(start_loc, match$5[0]),
-          /* FunctionDeclaration */Block.__(18, [/* record */[
+          /* FunctionDeclaration */Block.__(18, [[
                 /* id */id$2,
                 /* params */params,
                 /* defaults */defaults,
@@ -7618,7 +7618,7 @@ function variable_declaration(env) {
   return /* tuple */[
           /* tuple */[
             btwn(id[0], end_loc),
-            /* record */[
+            [
               /* id */id,
               /* init */init
             ]
@@ -7663,7 +7663,7 @@ function declarations(token$5, kind, env) {
   return /* tuple */[
           /* tuple */[
             btwn(start_loc, match[0]),
-            /* record */[
+            [
               /* declarations */match[1],
               /* kind */kind
             ]
@@ -7848,7 +7848,7 @@ function conditional(env) {
     var loc = btwn(start_loc, match[0]);
     return /* tuple */[
             loc,
-            /* Conditional */Block.__(10, [/* record */[
+            /* Conditional */Block.__(10, [[
                   /* test */expr,
                   /* consequent */consequent,
                   /* alternate */match[1]
@@ -7926,7 +7926,7 @@ function unary(env) {
     }
     return /* tuple */[
             loc,
-            /* Unary */Block.__(5, [/* record */[
+            /* Unary */Block.__(5, [[
                   /* operator */operator,
                   /* prefix */true,
                   /* argument */argument
@@ -7954,7 +7954,7 @@ function unary(env) {
       }
       return /* tuple */[
               btwn(begin_loc, argument$1[0]),
-              /* Update */Block.__(8, [/* record */[
+              /* Update */Block.__(8, [[
                     /* operator */op$1,
                     /* argument */argument$1,
                     /* prefix */true
@@ -7987,7 +7987,7 @@ function unary(env) {
           token$3(env$1);
           return /* tuple */[
                   btwn(argument$2[0], end_loc),
-                  /* Update */Block.__(8, [/* record */[
+                  /* Update */Block.__(8, [[
                         /* operator */op$2,
                         /* argument */argument$2,
                         /* prefix */false
@@ -8043,7 +8043,7 @@ function call(env, _left) {
               var match$1 = Curry._1($$arguments, env);
               _left = /* tuple */[
                 btwn(left[0], match$1[0]),
-                /* Call */Block.__(12, [/* record */[
+                /* Call */Block.__(12, [[
                       /* callee */left,
                       /* arguments */match$1[1]
                     ]])
@@ -8058,7 +8058,7 @@ function call(env, _left) {
             token$4(env, /* T_RBRACKET */6);
             _left = /* tuple */[
               loc,
-              /* Member */Block.__(13, [/* record */[
+              /* Member */Block.__(13, [[
                     /* _object */left,
                     /* property : PropertyExpression */Block.__(1, [expr]),
                     /* computed */true
@@ -8071,7 +8071,7 @@ function call(env, _left) {
             var id = match$2[0];
             _left = /* tuple */[
               btwn(left[0], id[0]),
-              /* Member */Block.__(13, [/* record */[
+              /* Member */Block.__(13, [[
                     /* _object */left,
                     /* property : PropertyIdentifier */Block.__(0, [id]),
                     /* computed */false
@@ -8112,7 +8112,7 @@ function _new(env, _finish_fn) {
           ];
         }
         var callee$prime_000 = btwn(start_loc, match[0]);
-        var callee$prime_001 = /* New */Block.__(11, [/* record */[
+        var callee$prime_001 = /* New */Block.__(11, [[
               /* callee */callee,
               /* arguments */match[1]
             ]]);
@@ -8150,7 +8150,7 @@ function member(env, left) {
         var id = match$1[0];
         return call(env, /* tuple */[
                     btwn(left[0], id[0]),
-                    /* Member */Block.__(13, [/* record */[
+                    /* Member */Block.__(13, [[
                           /* _object */left,
                           /* property : PropertyIdentifier */Block.__(0, [id]),
                           /* computed */false
@@ -8164,7 +8164,7 @@ function member(env, left) {
       token$4(env, /* T_RBRACKET */6);
       return call(env, /* tuple */[
                   btwn(left[0], last_loc),
-                  /* Member */Block.__(13, [/* record */[
+                  /* Member */Block.__(13, [[
                         /* _object */left,
                         /* property : PropertyExpression */Block.__(1, [expr]),
                         /* computed */true
@@ -8210,7 +8210,7 @@ function _function$1(env) {
   expression = body.tag ? true : false;
   return /* tuple */[
           btwn(start_loc, match$3[0]),
-          /* Function */Block.__(2, [/* record */[
+          /* Function */Block.__(2, [[
                 /* id */id$1,
                 /* params */params,
                 /* defaults */defaults,
@@ -8287,7 +8287,7 @@ function primary$1(env) {
                 var typeAnnotation = wrap(annotation, env$2);
                 ret = /* tuple */[
                   btwn(expression[0], typeAnnotation[0]),
-                  /* TypeCast */Block.__(24, [/* record */[
+                  /* TypeCast */Block.__(24, [[
                         /* expression */expression,
                         /* typeAnnotation */typeAnnotation
                       ]])
@@ -8321,7 +8321,7 @@ function primary$1(env) {
           token$4(env, /* T_NULL */27);
           return /* tuple */[
                   loc,
-                  /* Literal */Block.__(19, [/* record */[
+                  /* Literal */Block.__(19, [[
                         /* value : Null */0,
                         /* raw */raw
                       ]])
@@ -8335,7 +8335,7 @@ function primary$1(env) {
       case /* T_SUPER */49 :
           var loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
           token$4(env, /* T_SUPER */49);
-          var id_001 = /* record */[
+          var id_001 = [
             /* name */"super",
             /* typeAnnotation */undefined,
             /* optional */false
@@ -8420,13 +8420,13 @@ function primary$1(env) {
           if (flags !== raw_flags) {
             error$1(env$3, /* InvalidRegExpFlags */Block.__(3, [raw_flags]));
           }
-          var value = /* RegExp */Block.__(3, [/* record */[
+          var value = /* RegExp */Block.__(3, [[
                 /* pattern */match$5[1],
                 /* flags */flags
               ]]);
           return /* tuple */[
                   loc$2,
-                  /* Literal */Block.__(19, [/* record */[
+                  /* Literal */Block.__(19, [[
                         /* value */value,
                         /* raw */match$5[0]
                       ]])
@@ -8441,7 +8441,7 @@ function primary$1(env) {
           var value$1 = /* Number */Block.__(2, [number(env, token$5[0])]);
           return /* tuple */[
                   loc,
-                  /* Literal */Block.__(19, [/* record */[
+                  /* Literal */Block.__(19, [[
                         /* value */value$1,
                         /* raw */raw$2
                       ]])
@@ -8464,7 +8464,7 @@ function primary$1(env) {
           var value$3 = /* String */Block.__(0, [value$2]);
           return /* tuple */[
                   loc$3,
-                  /* Literal */Block.__(19, [/* record */[
+                  /* Literal */Block.__(19, [[
                         /* value */value$3,
                         /* raw */raw$3
                       ]])
@@ -8494,7 +8494,7 @@ function primary$1(env) {
           }
           return /* tuple */[
                   loc,
-                  /* Literal */Block.__(19, [/* record */[
+                  /* Literal */Block.__(19, [[
                         /* value : Null */0,
                         /* raw */"null"
                       ]])
@@ -8506,7 +8506,7 @@ function primary$1(env) {
         var value$4 = /* Boolean */Block.__(1, [token$5 === /* T_TRUE */29]);
         return /* tuple */[
                 loc,
-                /* Literal */Block.__(19, [/* record */[
+                /* Literal */Block.__(19, [[
                       /* value */value$4,
                       /* raw */raw$4
                     ]])
@@ -8519,7 +8519,7 @@ function tagged_template(env, tag, part) {
   var quasi = Curry._2(template_literal, env, part);
   return /* tuple */[
           btwn(tag[0], quasi[0]),
-          /* TaggedTemplate */Block.__(21, [/* record */[
+          /* TaggedTemplate */Block.__(21, [[
                 /* tag */tag,
                 /* quasi */quasi
               ]])
@@ -8544,7 +8544,7 @@ function sequence(env, _acc) {
     var first_loc = expressions ? expressions[0][0] : none;
     return /* tuple */[
             btwn(first_loc, last_loc),
-            /* Sequence */Block.__(4, [/* record */[/* expressions */expressions]])
+            /* Sequence */Block.__(4, [[/* expressions */expressions]])
           ];
   };
 }
@@ -8610,7 +8610,7 @@ function identifier_or_reserved_keyword(env) {
     return /* tuple */[
             /* tuple */[
               lex_loc,
-              /* record */[
+              [
                 /* name */lex_value,
                 /* typeAnnotation */undefined,
                 /* optional */false
@@ -8644,7 +8644,7 @@ function assignment_but_not_arrow_function(env) {
     var loc = btwn(left[0], right[0]);
     return /* tuple */[
             loc,
-            /* Assignment */Block.__(7, [/* record */[
+            /* Assignment */Block.__(7, [[
                   /* operator */match,
                   /* left */left,
                   /* right */right
@@ -8725,7 +8725,7 @@ function assignment(env) {
       }
       return /* tuple */[
               btwn(start_loc, end_loc),
-              /* Yield */Block.__(14, [/* record */[
+              /* Yield */Block.__(14, [[
                     /* argument */argument,
                     /* delegate */delegate
                   ]])
@@ -8753,7 +8753,7 @@ function assignment(env) {
 function make_logical(left, right, operator, loc) {
   return /* tuple */[
           loc,
-          /* Logical */Block.__(9, [/* record */[
+          /* Logical */Block.__(9, [[
                 /* operator */operator,
                 /* left */left,
                 /* right */right
@@ -8978,7 +8978,7 @@ function binary_op(env) {
 function make_binary(left, right, operator, loc) {
   return /* tuple */[
           loc,
-          /* Binary */Block.__(6, [/* record */[
+          /* Binary */Block.__(6, [[
                 /* operator */operator,
                 /* left */left,
                 /* right */right
@@ -9090,7 +9090,7 @@ function argument(env) {
     var loc = btwn(start_loc, argument$1[0]);
     return /* Spread */Block.__(1, [/* tuple */[
                 loc,
-                /* record */[/* argument */argument$1]
+                [/* argument */argument$1]
               ]]);
   } else {
     return /* Expression */Block.__(0, [Curry._1(assignment, env)]);
@@ -9159,8 +9159,8 @@ function template_parts(env, _quasis, _expressions) {
         token$3(env);
         match$2 = /* tuple */[
           match$3[0],
-          /* record */[
-            /* value : record */[
+          [
+            /* value */[
               /* raw */match$4[/* raw */1],
               /* cooked */match$4[/* cooked */0]
             ],
@@ -9202,8 +9202,8 @@ function template_parts(env, _quasis, _expressions) {
     }
     error_unexpected(env);
     var imaginary_quasi_000 = expr[0];
-    var imaginary_quasi_001 = /* record */[
-      /* value : record */[
+    var imaginary_quasi_001 = [
+      /* value */[
         /* raw */"",
         /* cooked */""
       ],
@@ -9229,8 +9229,8 @@ function template_literal(env, part) {
   var match = part[1];
   var start_loc = part[0];
   token$4(env, /* T_TEMPLATE_PART */Block.__(2, [part]));
-  var head_001 = /* record */[
-    /* value : record */[
+  var head_001 = [
+    /* value */[
       /* raw */match[/* raw */1],
       /* cooked */match[/* cooked */0]
     ],
@@ -9254,7 +9254,7 @@ function template_literal(env, part) {
   var loc = btwn(start_loc, match$1[0]);
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* quasis */match$1[1],
             /* expressions */match$1[2]
           ]
@@ -9295,7 +9295,7 @@ function elements(env, _acc) {
                 var loc = btwn(start_loc, argument[0]);
                 var elem = /* Spread */Block.__(1, [/* tuple */[
                       loc,
-                      /* record */[/* argument */argument]
+                      [/* argument */argument]
                     ]]);
                 _acc = /* :: */[
                   elem,
@@ -9330,7 +9330,7 @@ function array_initializer(env) {
   token$4(env, /* T_RBRACKET */6);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* elements */elements$1]
+          [/* elements */elements$1]
         ];
 }
 
@@ -9424,7 +9424,7 @@ function try_arrow_function(env) {
   var loc = btwn(start_loc, match$2[0]);
   return /* tuple */[
           loc,
-          /* ArrowFunction */Block.__(3, [/* record */[
+          /* ArrowFunction */Block.__(3, [[
                 /* id */undefined,
                 /* params */params,
                 /* defaults */defaults,
@@ -9491,7 +9491,7 @@ function key(env) {
                   loc,
                   /* Literal */Block.__(0, [/* tuple */[
                         loc,
-                        /* record */[
+                        [
                           /* value */value$1,
                           /* raw */raw
                         ]
@@ -9517,7 +9517,7 @@ function key(env) {
                   loc$1,
                   /* Literal */Block.__(0, [/* tuple */[
                         loc$1,
-                        /* record */[
+                        [
                           /* value */value$3,
                           /* raw */raw$1
                         ]
@@ -9581,7 +9581,7 @@ function _method(env, kind) {
       false
     ];
   var value_000 = match$2[0];
-  var value_001 = /* record */[
+  var value_001 = [
     /* id */undefined,
     /* params */params,
     /* defaults : [] */0,
@@ -9611,7 +9611,7 @@ function property$1(env) {
     var argument = Curry._1(Parse.assignment, env);
     return /* SpreadProperty */Block.__(1, [/* tuple */[
                 btwn(start_loc, argument[0]),
-                /* record */[/* argument */argument]
+                [/* argument */argument]
               ]]);
   } else {
     var async = Curry._2(Parser_env_Peek.is_identifier, 1, env) && maybe(env, /* T_ASYNC */61);
@@ -9681,7 +9681,7 @@ function get(env, start_loc) {
   ];
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[
+          [
             /* key */match[0],
             /* value */value,
             /* kind : Get */1,
@@ -9702,7 +9702,7 @@ function set(env, start_loc) {
   ];
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[
+          [
             /* key */match[0],
             /* value */value,
             /* kind : Set */2,
@@ -9803,7 +9803,7 @@ function init(env, start_loc, key, async, generator) {
             false
           ];
         var value_000 = match$4[0];
-        var value_001 = /* Function */Block.__(2, [/* record */[
+        var value_001 = /* Function */Block.__(2, [[
               /* id */undefined,
               /* params */params,
               /* defaults */defaults,
@@ -9831,7 +9831,7 @@ function init(env, start_loc, key, async, generator) {
   var value$1 = match$1[0];
   return /* tuple */[
           btwn(start_loc, value$1[0]),
-          /* record */[
+          [
             /* key */key,
             /* value */value$1,
             /* kind : Init */0,
@@ -10004,7 +10004,7 @@ function _initializer(env) {
   token$4(env, /* T_RCURLY */2);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* properties */props]
+          [/* properties */props]
         ];
 }
 
@@ -10014,7 +10014,7 @@ function class_implements(env, _acc) {
     var id = Curry._2(Parse.identifier, undefined, env);
     var typeParameters = wrap(type_parameter_instantiation, env);
     var loc = typeParameters !== undefined ? btwn(id[0], typeParameters[0]) : id[0];
-    var implement_001 = /* record */[
+    var implement_001 = [
       /* id */id,
       /* typeParameters */typeParameters
     ];
@@ -10066,7 +10066,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
     var loc = btwn(start_loc, end_loc);
     return /* Property */Block.__(1, [/* tuple */[
                 loc,
-                /* record */[
+                [
                   /* key */key,
                   /* value */value,
                   /* typeAnnotation */typeAnnotation,
@@ -10093,7 +10093,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
       false
     ];
   var end_loc$1 = match$3[0];
-  var value_001 = /* record */[
+  var value_001 = [
     /* id */undefined,
     /* params */params,
     /* defaults */defaults,
@@ -10126,7 +10126,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   }
   return /* Method */Block.__(0, [/* tuple */[
               btwn(start_loc, end_loc$1),
-              /* record */[
+              [
                 /* kind */kind,
                 /* key */key,
                 /* value */value$1,
@@ -10172,7 +10172,7 @@ function class_element(env) {
                       var value = match$2[1];
                       return /* Method */Block.__(0, [/* tuple */[
                                   btwn(start_loc$1, value[0]),
-                                  /* record */[
+                                  [
                                     /* kind : Get */2,
                                     /* key */match$2[0],
                                     /* value */value,
@@ -10209,7 +10209,7 @@ function class_element(env) {
                       var value$1 = match$4[1];
                       return /* Method */Block.__(0, [/* tuple */[
                                   btwn(start_loc$2, value$1[0]),
-                                  /* record */[
+                                  [
                                     /* kind : Set */3,
                                     /* key */match$4[0],
                                     /* value */value$1,
@@ -10268,7 +10268,7 @@ function class_body(env) {
   token$4(env, /* T_RCURLY */2);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* body */body]
+          [/* body */body]
         ];
 }
 
@@ -10322,7 +10322,7 @@ function class_declaration(env, decorators) {
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
-          /* ClassDeclaration */Block.__(20, [/* record */[
+          /* ClassDeclaration */Block.__(20, [[
                 /* id */id,
                 /* body */body,
                 /* superClass */match$2[1],
@@ -10376,7 +10376,7 @@ function class_expression(env) {
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
-          /* Class */Block.__(23, [/* record */[
+          /* Class */Block.__(23, [[
                 /* id */match$1[0],
                 /* body */body,
                 /* superClass */match$2[1],
@@ -10397,7 +10397,7 @@ function declare_var(env, start_loc) {
   semicolon(env);
   return /* tuple */[
           loc,
-          /* record */[/* id */id]
+          [/* id */id]
         ];
 }
 
@@ -10408,7 +10408,7 @@ function expression(env) {
   semicolon(env);
   return /* tuple */[
           btwn(expression$1[0], end_loc),
-          /* Expression */Block.__(1, [/* record */[/* expression */expression$1]])
+          /* Expression */Block.__(1, [[/* expression */expression$1]])
         ];
 }
 
@@ -10422,7 +10422,7 @@ function declare_function(env, start_loc) {
   var returnType = wrap(_type, env);
   var end_loc = returnType[0];
   var loc = btwn(start_sig_loc, end_loc);
-  var value_001 = /* Function */Block.__(1, [/* record */[
+  var value_001 = /* Function */Block.__(1, [[
         /* params */match[1],
         /* returnType */returnType,
         /* rest */match[0],
@@ -10438,7 +10438,7 @@ function declare_function(env, start_loc) {
   ];
   var init = id[1];
   var id_000 = btwn(id[0], end_loc);
-  var id_001 = /* record */[
+  var id_001 = [
     /* name */init[/* name */0],
     /* typeAnnotation */typeAnnotation,
     /* optional */init[/* optional */2]
@@ -10454,7 +10454,7 @@ function declare_function(env, start_loc) {
   var loc$1 = btwn(start_loc, end_loc$1);
   return /* tuple */[
           loc$1,
-          /* record */[
+          [
             /* id */id$1,
             /* predicate */predicate
           ]
@@ -10478,7 +10478,7 @@ function type_alias_helper(env) {
   pop_lex_mode(env);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[
+          [
             /* id */id,
             /* typeParameters */typeParameters,
             /* right */right
@@ -10546,7 +10546,7 @@ function declare_export_declaration($staropt$star, env) {
           semicolon(env$1);
           return /* tuple */[
                   btwn(start_loc, end_loc),
-                  /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                  /* DeclareExportDeclaration */Block.__(27, [[
                         /* default */false,
                         /* declaration */undefined,
                         /* specifiers */specifiers,
@@ -10560,7 +10560,7 @@ function declare_export_declaration($staropt$star, env) {
         var loc$1 = btwn(start_loc, alias_loc);
         return /* tuple */[
                 loc$1,
-                /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                /* DeclareExportDeclaration */Block.__(27, [[
                       /* default */false,
                       /* declaration *//* NamedType */Block.__(4, [/* tuple */[
                             alias_loc,
@@ -10580,7 +10580,7 @@ function declare_export_declaration($staropt$star, env) {
         var loc$2 = btwn(start_loc, iface_loc);
         return /* tuple */[
                 loc$2,
-                /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                /* DeclareExportDeclaration */Block.__(27, [[
                       /* default */false,
                       /* declaration *//* Interface */Block.__(5, [/* tuple */[
                             iface_loc,
@@ -10633,7 +10633,7 @@ function declare_export_declaration($staropt$star, env) {
             }
             return /* tuple */[
                     btwn(start_loc, match$5[0]),
-                    /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                    /* DeclareExportDeclaration */Block.__(27, [[
                           /* default */true,
                           /* declaration */match$5[1],
                           /* specifiers */undefined,
@@ -10706,7 +10706,7 @@ function declare_export_declaration($staropt$star, env) {
         semicolon(env$1);
         return /* tuple */[
                 btwn(start_loc, end_loc$3),
-                /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                /* DeclareExportDeclaration */Block.__(27, [[
                       /* default */false,
                       /* declaration */undefined,
                       /* specifiers */specifiers$1,
@@ -10776,7 +10776,7 @@ function declare_export_declaration($staropt$star, env) {
         }
         return /* tuple */[
                 btwn(start_loc, match$10[0]),
-                /* DeclareExportDeclaration */Block.__(27, [/* record */[
+                /* DeclareExportDeclaration */Block.__(27, [[
                       /* default */false,
                       /* declaration */match$10[1],
                       /* specifiers */undefined,
@@ -10844,7 +10844,7 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
     }
     var err = match$2[1];
     var loc$1 = btwn(id[0], match$2[2]);
-    var specifier_001 = /* record */[
+    var specifier_001 = [
       /* id */id,
       /* name */match$2[0]
     ];
@@ -10889,7 +10889,7 @@ function export_source(env) {
     var value$1 = /* String */Block.__(0, [value]);
     return /* tuple */[
             loc,
-            /* record */[
+            [
               /* value */value$1,
               /* raw */raw
             ]
@@ -10898,7 +10898,7 @@ function export_source(env) {
   var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
   var value$2 = /* String */Block.__(0, [raw$1]);
   var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_001 = /* record */[
+  var ret_001 = [
     /* value */value$2,
     /* raw */raw$1
   ];
@@ -11019,7 +11019,7 @@ function declare($staropt$star, env) {
             var value$1 = /* String */Block.__(0, [value]);
             id = /* Literal */Block.__(1, [/* tuple */[
                   loc$1,
-                  /* record */[
+                  [
                     /* value */value$1,
                     /* raw */raw
                   ]
@@ -11032,7 +11032,7 @@ function declare($staropt$star, env) {
           token$4(env$3, /* T_RCURLY */2);
           var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env$3);
           var body_loc = btwn(body_start_loc, body_end_loc);
-          var body_001 = /* record */[/* body */match$5[1]];
+          var body_001 = [/* body */match$5[1]];
           var body = /* tuple */[
             body_loc,
             body_001
@@ -11041,7 +11041,7 @@ function declare($staropt$star, env) {
           var kind = module_kind !== undefined ? module_kind : /* CommonJS */Block.__(0, [loc$2]);
           return /* tuple */[
                   loc$2,
-                  /* DeclareModule */Block.__(25, [/* record */[
+                  /* DeclareModule */Block.__(25, [[
                         /* id */id,
                         /* body */body,
                         /* kind */kind
@@ -11095,7 +11095,7 @@ function interface_helper(env) {
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* id */id,
             /* typeParameters */typeParameters,
             /* body */body,
@@ -11220,7 +11220,7 @@ function declare_class(env, start_loc) {
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* id */id,
             /* typeParameters */typeParameters,
             /* body */body,
@@ -11323,7 +11323,7 @@ function _if(env) {
   var end_loc = alternate !== undefined ? alternate[0] : consequent[0];
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* If */Block.__(2, [/* record */[
+          /* If */Block.__(2, [[
                 /* test */test,
                 /* consequent */consequent,
                 /* alternate */alternate
@@ -11381,7 +11381,7 @@ function case_list(env, _param) {
       var end_loc$1 = match$2 ? match$2[0][0] : end_loc;
       var acc_000 = /* tuple */[
         btwn(start_loc, end_loc$1),
-        /* record */[
+        [
           /* test */test,
           /* consequent */consequent
         ]
@@ -11437,7 +11437,7 @@ function source(env) {
     var value$1 = /* String */Block.__(0, [value]);
     return /* tuple */[
             loc,
-            /* record */[
+            [
               /* value */value$1,
               /* raw */raw
             ]
@@ -11446,7 +11446,7 @@ function source(env) {
   var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
   var value$2 = /* String */Block.__(0, [raw$1]);
   var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_001 = /* record */[
+  var ret_001 = [
     /* value */value$2,
     /* raw */raw$1
   ];
@@ -11472,7 +11472,7 @@ function specifier_list(env, _acc) {
     if (Curry._2(Parser_env_Peek.value, undefined, env) === "as") {
       contextual(env, "as");
       var local = Curry._2(Parse.identifier, undefined, env);
-      specifier = /* ImportNamedSpecifier */Block.__(0, [/* record */[
+      specifier = /* ImportNamedSpecifier */Block.__(0, [[
             /* local */local,
             /* remote */remote
           ]]);
@@ -11480,7 +11480,7 @@ function specifier_list(env, _acc) {
       if (err !== undefined) {
         error_at(env, err);
       }
-      specifier = /* ImportNamedSpecifier */Block.__(0, [/* record */[
+      specifier = /* ImportNamedSpecifier */Block.__(0, [[
             /* local */undefined,
             /* remote */remote
           ]]);
@@ -11538,7 +11538,7 @@ function from_expr(env, param) {
                       var argument = Curry._2(Parse.pattern_from_expr, env$2, match$1[1][/* argument */0]);
                       return /* Spread */Block.__(1, [/* tuple */[
                                   match$1[0],
-                                  /* record */[/* argument */argument]
+                                  [/* argument */argument]
                                 ]]);
                     } else {
                       var match$2 = match[0];
@@ -11552,7 +11552,7 @@ function from_expr(env, param) {
                 }), param$1[1][/* elements */0]);
           return /* tuple */[
                   param$1[0],
-                  /* Array */Block.__(1, [/* record */[
+                  /* Array */Block.__(1, [[
                         /* elements */elements,
                         /* typeAnnotation */undefined
                       ]])
@@ -11571,7 +11571,7 @@ function from_expr(env, param) {
                     var argument = Curry._2(Parse.pattern_from_expr, env$3, match[1][/* argument */0]);
                     return /* SpreadProperty */Block.__(1, [/* tuple */[
                                 match[0],
-                                /* record */[/* argument */argument]
+                                [/* argument */argument]
                               ]]);
                   } else {
                     var match$1 = prop[0];
@@ -11593,7 +11593,7 @@ function from_expr(env, param) {
                     var pattern = Curry._2(Parse.pattern_from_expr, env$3, match$2[/* value */1]);
                     return /* Property */Block.__(0, [/* tuple */[
                                 match$1[0],
-                                /* record */[
+                                [
                                   /* key */key$1,
                                   /* pattern */pattern,
                                   /* shorthand */match$2[/* shorthand */4]
@@ -11603,7 +11603,7 @@ function from_expr(env, param) {
                 }), param$2[1][/* properties */0]);
           return /* tuple */[
                   param$2[0],
-                  /* Object */Block.__(0, [/* record */[
+                  /* Object */Block.__(0, [[
                         /* properties */properties,
                         /* typeAnnotation */undefined
                       ]])
@@ -11613,7 +11613,7 @@ function from_expr(env, param) {
           if (match[/* operator */0] === 0) {
             return /* tuple */[
                     loc,
-                    /* Assignment */Block.__(2, [/* record */[
+                    /* Assignment */Block.__(2, [[
                           /* left */match[/* left */1],
                           /* right */match[/* right */2]
                         ]])
@@ -11646,7 +11646,7 @@ function _object$2(restricted_error) {
       var loc = btwn(start_loc, argument[0]);
       return /* SpreadProperty */Block.__(1, [/* tuple */[
                   loc,
-                  /* record */[/* argument */argument]
+                  [/* argument */argument]
                 ]]);
     } else {
       var match = Curry._1(Parse.object_key, env);
@@ -11710,7 +11710,7 @@ function _object$2(restricted_error) {
           var loc$1 = btwn(pattern$3[0], $$default[0]);
           pattern$4 = /* tuple */[
             loc$1,
-            /* Assignment */Block.__(2, [/* record */[
+            /* Assignment */Block.__(2, [[
                   /* left */pattern$3,
                   /* right */$$default
                 ]])
@@ -11721,7 +11721,7 @@ function _object$2(restricted_error) {
         var loc$2 = btwn(start_loc, pattern$4[0]);
         return /* Property */Block.__(0, [/* tuple */[
                     loc$2,
-                    /* record */[
+                    [
                       /* key */key,
                       /* pattern */pattern$4,
                       /* shorthand */match$3[1]
@@ -11775,7 +11775,7 @@ function _object$2(restricted_error) {
       }
       return /* tuple */[
               btwn(start_loc, match[0]),
-              /* Object */Block.__(0, [/* record */[
+              /* Object */Block.__(0, [[
                     /* properties */properties$1,
                     /* typeAnnotation */match[1]
                   ]])
@@ -11818,7 +11818,7 @@ function _array(restricted_error) {
                   var loc = btwn(start_loc, argument[0]);
                   var element = /* Spread */Block.__(1, [/* tuple */[
                         loc,
-                        /* record */[/* argument */argument]
+                        [/* argument */argument]
                       ]]);
                   _acc = /* :: */[
                     element,
@@ -11842,7 +11842,7 @@ function _array(restricted_error) {
         var loc$1 = btwn(pattern$2[0], $$default[0]);
         pattern$3 = /* tuple */[
           loc$1,
-          /* Assignment */Block.__(2, [/* record */[
+          /* Assignment */Block.__(2, [[
                 /* left */pattern$2,
                 /* right */$$default
               ]])
@@ -11882,7 +11882,7 @@ function _array(restricted_error) {
       }
       return /* tuple */[
               btwn(start_loc, match[0]),
-              /* Array */Block.__(1, [/* record */[
+              /* Array */Block.__(1, [[
                     /* elements */elements$1,
                     /* typeAnnotation */match[1]
                   ]])
@@ -11920,7 +11920,7 @@ function spread_attribute(env) {
   pop_lex_mode(env);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* argument */argument]
+          [/* argument */argument]
         ];
 }
 
@@ -11940,7 +11940,7 @@ function expression_container(env) {
   pop_lex_mode(env);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* expression */expression]
+          [/* expression */expression]
         ];
 }
 
@@ -11950,7 +11950,7 @@ function identifier$1(env) {
   token$4(env, /* T_JSX_IDENTIFIER */106);
   return /* tuple */[
           loc,
-          /* record */[/* name */name]
+          [/* name */name]
         ];
 }
 
@@ -11963,7 +11963,7 @@ function member_expression(env, _member) {
       token$4(env, /* T_PERIOD */9);
       var property = identifier$1(env);
       var loc = btwn(member[0], property[0]);
-      var member_001 = /* record */[
+      var member_001 = [
         /* _object */_object,
         /* property */property
       ];
@@ -11992,7 +11992,7 @@ function name(env) {
         var loc = btwn(name$1[0], name$2[0]);
         return /* NamespacedName */Block.__(1, [/* tuple */[
                     loc,
-                    /* record */[
+                    [
                       /* namespace */name$1,
                       /* name */name$2
                     ]
@@ -12003,7 +12003,7 @@ function name(env) {
       token$4(env, /* T_PERIOD */9);
       var property = identifier$1(env);
       var loc$1 = btwn(name$1[0], property[0]);
-      var member_001 = /* record */[
+      var member_001 = [
         /* _object */_object,
         /* property */property
       ];
@@ -12030,7 +12030,7 @@ function attribute(env) {
       loc,
       /* NamespacedName */Block.__(1, [/* tuple */[
             loc,
-            /* record */[
+            [
               /* namespace */name,
               /* name */name$1
             ]
@@ -12075,7 +12075,7 @@ function attribute(env) {
         loc$2,
         /* Literal */Block.__(0, [
             loc$2,
-            /* record */[
+            [
               /* value */value,
               /* raw */match$4[2]
             ]
@@ -12091,7 +12091,7 @@ function attribute(env) {
         loc$3,
         /* Literal */Block.__(0, [
             loc$3,
-            /* record */[
+            [
               /* value : String */Block.__(0, [""]),
               /* raw */""
             ]
@@ -12107,7 +12107,7 @@ function attribute(env) {
   }
   return /* tuple */[
           btwn(start_loc, match$1[0]),
-          /* record */[
+          [
             /* name */match[1],
             /* value */match$1[1]
           ]
@@ -12159,7 +12159,7 @@ function opening_element_without_lt(env, start_loc) {
   pop_lex_mode(env);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[
+          [
             /* name */name$1,
             /* selfClosing */selfClosing,
             /* attributes */attributes$1
@@ -12175,7 +12175,7 @@ function closing_element_without_lt(env, start_loc) {
   double_pop_lex_mode(env);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* name */name$1]
+          [/* name */name$1]
         ];
 }
 
@@ -12195,7 +12195,7 @@ function child(env) {
     token$4(env, token$5);
     return /* tuple */[
             match[0],
-            /* Text */Block.__(2, [/* record */[
+            /* Text */Block.__(2, [[
                   /* value */match[1],
                   /* raw */match[2]
                 ]])
@@ -12315,7 +12315,7 @@ function element_without_lt(env, start_loc) {
   }
   return /* tuple */[
           btwn(openingElement[0], end_loc),
-          /* record */[
+          [
             /* openingElement */openingElement,
             /* closingElement */closingElement,
             /* children */match[0]
@@ -12368,7 +12368,7 @@ function module_item(env) {
                         var end_loc = $$interface$1[0];
                         return /* tuple */[
                                 btwn(start_loc, end_loc),
-                                /* ExportDeclaration */Block.__(28, [/* record */[
+                                /* ExportDeclaration */Block.__(28, [[
                                       /* default */false,
                                       /* declaration *//* Declaration */Block.__(0, [$$interface$1]),
                                       /* specifiers */undefined,
@@ -12402,7 +12402,7 @@ function module_item(env) {
                           var end_loc$1 = type_alias$1[0];
                           return /* tuple */[
                                   btwn(start_loc, end_loc$1),
-                                  /* ExportDeclaration */Block.__(28, [/* record */[
+                                  /* ExportDeclaration */Block.__(28, [[
                                         /* default */false,
                                         /* declaration *//* Declaration */Block.__(0, [type_alias$1]),
                                         /* specifiers */undefined,
@@ -12446,7 +12446,7 @@ function module_item(env) {
                 semicolon(env$2);
                 return /* tuple */[
                         btwn(start_loc, end_loc$2),
-                        /* ExportDeclaration */Block.__(28, [/* record */[
+                        /* ExportDeclaration */Block.__(28, [[
                               /* default */false,
                               /* declaration */undefined,
                               /* specifiers */specifiers,
@@ -12495,7 +12495,7 @@ function module_item(env) {
                     }
                     return /* tuple */[
                             btwn(start_loc, match$6[0]),
-                            /* ExportDeclaration */Block.__(28, [/* record */[
+                            /* ExportDeclaration */Block.__(28, [[
                                   /* default */true,
                                   /* declaration */match$6[1],
                                   /* specifiers */undefined,
@@ -12559,7 +12559,7 @@ function module_item(env) {
                 semicolon(env$2);
                 return /* tuple */[
                         btwn(start_loc, end_loc$5),
-                        /* ExportDeclaration */Block.__(28, [/* record */[
+                        /* ExportDeclaration */Block.__(28, [[
                               /* default */false,
                               /* declaration */undefined,
                               /* specifiers */specifiers$1,
@@ -12639,7 +12639,7 @@ function module_item(env) {
                 var declaration = /* Declaration */Block.__(0, [stmt]);
                 return /* tuple */[
                         btwn(start_loc, stmt[0]),
-                        /* ExportDeclaration */Block.__(28, [/* record */[
+                        /* ExportDeclaration */Block.__(28, [[
                               /* default */false,
                               /* declaration */declaration,
                               /* specifiers */undefined,
@@ -12717,7 +12717,7 @@ function module_item(env) {
                       octal
                     ]]));
             var value$1 = /* String */Block.__(0, [value]);
-            var source_001 = /* record */[
+            var source_001 = [
               /* value */value$1,
               /* raw */raw
             ];
@@ -12730,7 +12730,7 @@ function module_item(env) {
             semicolon(env$4);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$6),
-                    /* ImportDeclaration */Block.__(29, [/* record */[
+                    /* ImportDeclaration */Block.__(29, [[
                           /* importKind */importKind,
                           /* source */source$4,
                           /* specifiers : [] */0
@@ -12750,7 +12750,7 @@ function module_item(env) {
               semicolon(env$4);
               return /* tuple */[
                       btwn(start_loc$1, end_loc$7),
-                      /* ImportDeclaration */Block.__(29, [/* record */[
+                      /* ImportDeclaration */Block.__(29, [[
                             /* importKind */importKind,
                             /* source */source$5,
                             /* specifiers */specifiers$2
@@ -12790,7 +12790,7 @@ function module_item(env) {
             semicolon(env$4);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$8),
-                    /* ImportDeclaration */Block.__(29, [/* record */[
+                    /* ImportDeclaration */Block.__(29, [[
                           /* importKind */match$23[0],
                           /* source */source$6,
                           /* specifiers : :: */[
@@ -12867,7 +12867,7 @@ function statement(env) {
                 semicolon(env$3);
                 return /* tuple */[
                         btwn(start_loc, end_loc),
-                        /* Return */Block.__(9, [/* record */[/* argument */argument]])
+                        /* Return */Block.__(9, [[/* argument */argument]])
                       ];
             case /* T_SWITCH */18 :
                 var env$4 = env;
@@ -12885,7 +12885,7 @@ function statement(env) {
                 token$4(env$4, /* T_RCURLY */2);
                 return /* tuple */[
                         btwn(start_loc$1, end_loc$1),
-                        /* Switch */Block.__(8, [/* record */[
+                        /* Switch */Block.__(8, [[
                               /* discriminant */discriminant,
                               /* cases */cases,
                               /* lexical */false
@@ -12907,7 +12907,7 @@ function statement(env) {
                 semicolon(env$5);
                 return /* tuple */[
                         btwn(start_loc$2, end_loc$2),
-                        /* Throw */Block.__(10, [/* record */[/* argument */argument$1]])
+                        /* Throw */Block.__(10, [[/* argument */argument$1]])
                       ];
             case /* T_TRY */21 :
                 var env$6 = env;
@@ -12932,7 +12932,7 @@ function statement(env) {
                   var loc$1 = btwn(start_loc$4, body[0]);
                   handler = /* tuple */[
                     loc$1,
-                    /* record */[
+                    [
                       /* param */param,
                       /* guard */undefined,
                       /* body */body
@@ -12951,7 +12951,7 @@ function statement(env) {
                   );
                 return /* tuple */[
                         btwn(start_loc$3, end_loc$3),
-                        /* Try */Block.__(11, [/* record */[
+                        /* Try */Block.__(11, [[
                               /* block */block,
                               /* handler */handler,
                               /* guardedHandlers : [] */0,
@@ -12970,7 +12970,7 @@ function statement(env) {
                 var body$1 = Curry._1(Parse.statement, with_in_loop(true, env$7));
                 return /* tuple */[
                         btwn(start_loc$5, body$1[0]),
-                        /* While */Block.__(12, [/* record */[
+                        /* While */Block.__(12, [[
                               /* test */test,
                               /* body */body$1
                             ]])
@@ -12990,7 +12990,7 @@ function statement(env) {
                     ]);
                 return /* tuple */[
                         loc$2,
-                        /* With */Block.__(6, [/* record */[
+                        /* With */Block.__(6, [[
                               /* _object */_object,
                               /* body */body$2
                             ]])
@@ -13024,7 +13024,7 @@ function statement(env) {
                 semicolon(env$9);
                 return /* tuple */[
                         loc$3,
-                        /* Break */Block.__(4, [/* record */[/* label */label]])
+                        /* Break */Block.__(4, [[/* label */label]])
                       ];
             case /* T_CONTINUE */33 :
                 var env$10 = env;
@@ -13055,7 +13055,7 @@ function statement(env) {
                 semicolon(env$10);
                 return /* tuple */[
                         loc$4,
-                        /* Continue */Block.__(5, [/* record */[/* label */label$2]])
+                        /* Continue */Block.__(5, [[/* label */label$2]])
                       ];
             case /* T_DO */35 :
                 var env$11 = env;
@@ -13074,7 +13074,7 @@ function statement(env) {
                 }
                 return /* tuple */[
                         btwn(start_loc$9, end_loc$7),
-                        /* DoWhile */Block.__(13, [/* record */[
+                        /* DoWhile */Block.__(13, [[
                               /* body */body$3,
                               /* test */test$1
                             ]])
@@ -13165,7 +13165,7 @@ function statement(env) {
                       var body$4 = Curry._1(Parse.statement, with_in_loop(true, env$12));
                       return /* tuple */[
                               btwn(start_loc$10, body$4[0]),
-                              /* ForOf */Block.__(16, [/* record */[
+                              /* ForOf */Block.__(16, [[
                                     /* left */left,
                                     /* right */right,
                                     /* body */body$4
@@ -13195,7 +13195,7 @@ function statement(env) {
                     var body$5 = Curry._1(Parse.statement, with_in_loop(true, env$12));
                     return /* tuple */[
                             btwn(start_loc$10, body$5[0]),
-                            /* ForIn */Block.__(15, [/* record */[
+                            /* ForIn */Block.__(15, [[
                                   /* left */left$1,
                                   /* right */right$1,
                                   /* body */body$5,
@@ -13219,7 +13219,7 @@ function statement(env) {
                 var body$6 = Curry._1(Parse.statement, with_in_loop(true, env$12));
                 return /* tuple */[
                         btwn(start_loc$10, body$6[0]),
-                        /* For */Block.__(14, [/* record */[
+                        /* For */Block.__(14, [[
                               /* init */init,
                               /* test */test$2,
                               /* update */update,
@@ -13320,7 +13320,7 @@ function statement(env) {
           var labeled_stmt = Curry._1(Parse.statement, env$15);
           return /* tuple */[
                   btwn(loc$5, labeled_stmt[0]),
-                  /* Labeled */Block.__(3, [/* record */[
+                  /* Labeled */Block.__(3, [[
                         /* label */label$4,
                         /* body */labeled_stmt
                       ]])
@@ -13331,7 +13331,7 @@ function statement(env) {
         semicolon(env$14);
         return /* tuple */[
                 btwn(expr$1[0], end_loc$9),
-                /* Expression */Block.__(1, [/* record */[/* expression */expr$1]])
+                /* Expression */Block.__(1, [[/* expression */expr$1]])
               ];
       } else if (typeof match === "number") {
         if (match !== 77) {
@@ -13423,7 +13423,7 @@ function statement_list_item($staropt$star, env) {
           var match$1 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
           var head = List.map((function (param) {
                   var match = param[1];
-                  return /* record */[
+                  return [
                           /* id */match[/* id */0],
                           /* init */match[/* init */1]
                         ];
@@ -13438,14 +13438,14 @@ function statement_list_item($staropt$star, env) {
                 }), match$1[2]);
           return /* tuple */[
                   btwn(start_loc, end_loc),
-                  /* Let */Block.__(17, [/* record */[
+                  /* Let */Block.__(17, [[
                         /* head */head,
                         /* body */body
                       ]])
                 ];
         } else {
           var match$3 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
-          var declaration = /* VariableDeclaration */Block.__(19, [/* record */[
+          var declaration = /* VariableDeclaration */Block.__(19, [[
                 /* declarations */match$3[1],
                 /* kind : Let */1
               ]]);
@@ -13684,7 +13684,7 @@ function identifier$2(restricted_error, env) {
   }
   return /* tuple */[
           loc,
-          /* record */[
+          [
             /* name */name,
             /* typeAnnotation */undefined,
             /* optional */false
@@ -13762,7 +13762,7 @@ function identifier_with_type(env, restricted_error) {
     token$4(env, /* T_PLING */76);
     match$1 = /* tuple */[
       loc$1,
-      /* record */[
+      [
         /* name */id[/* name */0],
         /* typeAnnotation */id[/* typeAnnotation */1],
         /* optional */true
@@ -13782,7 +13782,7 @@ function identifier_with_type(env, restricted_error) {
     var typeAnnotation$1 = typeAnnotation;
     return /* tuple */[
             loc$3,
-            /* record */[
+            [
               /* name */id$1[/* name */0],
               /* typeAnnotation */typeAnnotation$1,
               /* optional */id$1[/* optional */2]
@@ -13807,7 +13807,7 @@ function block_body(env) {
   token$4(env, /* T_RCURLY */2);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* body */body]
+          [/* body */body]
         ];
 }
 
@@ -13822,7 +13822,7 @@ function function_block_body(env) {
   token$4(env, /* T_RCURLY */2);
   return /* tuple */[
           btwn(start_loc, end_loc),
-          /* record */[/* body */match[0]],
+          [/* body */match[0]],
           match[1]
         ];
 }
@@ -13998,7 +13998,7 @@ function program$1($staropt$star, $staropt$star$1, $staropt$star$2, content) {
         ];
 }
 
-var translation_errors = /* record */[/* contents : [] */0];
+var translation_errors = [/* contents : [] */0];
 
 var string = (function (x) {return x;});
 
@@ -16433,9 +16433,9 @@ function parse(content, options) {
   }
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

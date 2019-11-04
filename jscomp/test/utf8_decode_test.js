@@ -100,7 +100,7 @@ function utf8_decode(strm) {
 }
 
 function to_list(xs) {
-  var v = /* record */[/* contents : [] */0];
+  var v = [/* contents : [] */0];
   Stream.iter((function (x) {
           v[/* contents */0] = /* :: */[
             x,
@@ -193,9 +193,9 @@ function eq_list(cmp, _xs, _ys) {
   };
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];

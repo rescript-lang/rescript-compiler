@@ -24,7 +24,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function field($staropt$star, label, number, type_, name) {
   var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return /* record */[
+  return [
           /* field_name */name,
           /* field_number */number,
           /* field_label */label,
@@ -35,7 +35,7 @@ function field($staropt$star, label, number, type_, name) {
 
 function map($staropt$star, number, key_type, value_type, name) {
   var map_options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return /* record */[
+  return [
           /* map_name */name,
           /* map_number */number,
           /* map_key_type */key_type,
@@ -46,7 +46,7 @@ function map($staropt$star, number, key_type, value_type, name) {
 
 function oneof_field($staropt$star, number, type_, name) {
   var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return /* record */[
+  return [
           /* field_name */name,
           /* field_number */number,
           /* field_label : Oneof */-978693923,
@@ -55,7 +55,7 @@ function oneof_field($staropt$star, number, type_, name) {
         ];
 }
 
-var message_counter = /* record */[/* contents */0];
+var message_counter = [/* contents */0];
 
 function extension_range_range(from, to_) {
   var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */[to_[1]];
@@ -67,7 +67,7 @@ function extension_range_range(from, to_) {
 
 function message(content, message_name) {
   message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-  return /* record */[
+  return [
           /* id */message_counter[/* contents */0],
           /* message_name */message_name,
           /* message_body */content
@@ -75,7 +75,7 @@ function message(content, message_name) {
 }
 
 function $$import($$public, file_name) {
-  return /* record */[
+  return [
           /* file_name */file_name,
           /* public */$$public !== undefined
         ];
@@ -83,7 +83,7 @@ function $$import($$public, file_name) {
 
 function extend(extend_name, extend_body) {
   message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-  return /* record */[
+  return [
           /* id */message_counter[/* contents */0],
           /* extend_name */extend_name,
           /* extend_body */extend_body
@@ -91,7 +91,7 @@ function extend(extend_name, extend_body) {
 }
 
 function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, param) {
-  var proto$2 = proto$1 !== undefined ? proto$1 : /* record */[
+  var proto$2 = proto$1 !== undefined ? proto$1 : [
       /* syntax */syntax,
       /* imports : [] */0,
       /* file_options : [] */0,
@@ -100,7 +100,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums : [] */0,
       /* extends : [] */0
     ];
-  var proto$3 = syntax !== undefined ? /* record */[
+  var proto$3 = syntax !== undefined ? [
       /* syntax */syntax,
       /* imports */proto$2[/* imports */1],
       /* file_options */proto$2[/* file_options */2],
@@ -109,7 +109,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$2[/* enums */5],
       /* extends */proto$2[/* extends */6]
     ] : proto$2;
-  var proto$4 = $$package !== undefined ? /* record */[
+  var proto$4 = $$package !== undefined ? [
       /* syntax */proto$3[/* syntax */0],
       /* imports */proto$3[/* imports */1],
       /* file_options */proto$3[/* file_options */2],
@@ -118,7 +118,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$3[/* enums */5],
       /* extends */proto$3[/* extends */6]
     ] : proto$3;
-  var proto$5 = message !== undefined ? /* record */[
+  var proto$5 = message !== undefined ? [
       /* syntax */proto$4[/* syntax */0],
       /* imports */proto$4[/* imports */1],
       /* file_options */proto$4[/* file_options */2],
@@ -130,7 +130,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$4[/* enums */5],
       /* extends */proto$4[/* extends */6]
     ] : proto$4;
-  var proto$6 = $$enum !== undefined ? /* record */[
+  var proto$6 = $$enum !== undefined ? [
       /* syntax */proto$5[/* syntax */0],
       /* imports */proto$5[/* imports */1],
       /* file_options */proto$5[/* file_options */2],
@@ -142,7 +142,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       ],
       /* extends */proto$5[/* extends */6]
     ] : proto$5;
-  var proto$7 = $$import !== undefined ? /* record */[
+  var proto$7 = $$import !== undefined ? [
       /* syntax */proto$6[/* syntax */0],
       /* imports : :: */[
         $$import,
@@ -154,7 +154,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$6[/* enums */5],
       /* extends */proto$6[/* extends */6]
     ] : proto$6;
-  var proto$8 = file_option !== undefined ? /* record */[
+  var proto$8 = file_option !== undefined ? [
       /* syntax */proto$7[/* syntax */0],
       /* imports */proto$7[/* imports */1],
       /* file_options : :: */[
@@ -167,7 +167,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* extends */proto$7[/* extends */6]
     ] : proto$7;
   if (extend !== undefined) {
-    return /* record */[
+    return [
             /* syntax */proto$8[/* syntax */0],
             /* imports */proto$8[/* imports */1],
             /* file_options */proto$8[/* file_options */2],
@@ -304,7 +304,7 @@ function from_lexbuf(lexbuf) {
   var x = lexbuf[/* lex_curr_p */11][/* pos_fname */0];
   var file_name = x === "" ? undefined : x;
   var line = lexbuf[/* lex_curr_p */11][/* pos_lnum */1];
-  return /* record */[
+  return [
           /* file_name */file_name,
           /* line */line
         ];
@@ -690,7 +690,7 @@ Printexc.register_printer((function (exn) {
 function invalid_default_value(field_name, info, param) {
   throw [
         Compilation_error,
-        /* Invalid_default_value */Block.__(2, [/* record */[
+        /* Invalid_default_value */Block.__(2, [[
               /* field_name */field_name,
               /* info */info
             ]])
@@ -700,7 +700,7 @@ function invalid_default_value(field_name, info, param) {
 function unsupported_field_type(field_name, field_type, backend_name, param) {
   throw [
         Compilation_error,
-        /* Unsupported_field_type */Block.__(3, [/* record */[
+        /* Unsupported_field_type */Block.__(3, [[
               /* field_name */field_name,
               /* field_type */field_type,
               /* backend_name */backend_name
@@ -1011,7 +1011,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* record */[
+      return [
               /* oneof_name */_2[1],
               /* oneof_fields */_4
             ];
@@ -1267,7 +1267,7 @@ var yyact = /* array */[
       var enum_name = _2[1];
       var enum_values = $staropt$star !== undefined ? $staropt$star : /* [] */0;
       message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-      return /* record */[
+      return [
               /* enum_id */message_counter[/* contents */0],
               /* enum_name */enum_name,
               /* enum_values */enum_values
@@ -1288,7 +1288,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* record */[
+      return [
               /* enum_value_name */_1[1],
               /* enum_value_int */_3
             ];
@@ -1411,7 +1411,7 @@ var yyact = /* array */[
     })
 ];
 
-var yytables = /* record */[
+var yytables = [
   /* actions */yyact,
   /* transl_const */yytransl_const,
   /* transl_block */yytransl_block,
@@ -1436,7 +1436,7 @@ function proto_(lexfun, lexbuf) {
 
 function update_loc(lexbuf) {
   var pos = lexbuf[/* lex_curr_p */11];
-  lexbuf[/* lex_curr_p */11] = /* record */[
+  lexbuf[/* lex_curr_p */11] = [
     /* pos_fname */pos[/* pos_fname */0],
     /* pos_lnum */pos[/* pos_lnum */1] + 1 | 0,
     /* pos_bol */pos[/* pos_cnum */3],
@@ -1445,7 +1445,7 @@ function update_loc(lexbuf) {
   return /* () */0;
 }
 
-var __ocaml_lex_tables = /* record */[
+var __ocaml_lex_tables = [
   /* lex_base */"\0\0\xea\xff\xeb\xffN\0\xed\xff\xee\xff\x01\0\xa0\0\xf0\0;\x01\x88\x01\x9e\x01\xf2\xff\x10\0\xf5\xff\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff\xfd\xff\xfe\xff\xff\xff\xf3\xff\xf4\xff\x1a\0\xbe\x01\xc8\x01\x92\x01\xa8\x01#\0\xef\xff\xed\x01:\x02\x87\x02\xd4\x02!\x03n\x03\x05\0\x12\x01\xfd\xff\xfe\xff\xff\xff\x06\0\x07\0!\x01\xfc\xff\xfd\xff\x11\0\xff\xff\x0b\0\f\0\xfe\xff\xc2\x01\xfc\xff\xfd\xff\xfe\xff\xc9\x03\xff\xff",
   /* lex_backtrk */"\x0f\0\xff\xff\xff\xff\x13\0\xff\xff\xff\xff\x15\0\x13\0\x13\0\x0f\0\x0e\0\x0f\0\xff\xff\x15\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x0f\0\x0f\0\xff\xff\xff\xff\xff\xff\xff\xff\x13\0\x0f\0\x13\0\x13\0\x10\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff\x02\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff",
   /* lex_default */"\x01\0\0\0\0\0\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff+\0\0\0\0\0\0\0\xff\xff\xff\xff1\0\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\0\x009\0\0\0\0\0\0\0\xff\xff\0\0",
@@ -1863,7 +1863,7 @@ function line$1(scope, s) {
 }
 
 function scope(scope$1, f) {
-  var sub_scope = /* record */[/* items : [] */0];
+  var sub_scope = [/* items : [] */0];
   Curry._1(f, sub_scope);
   scope$1[/* items */0] = /* :: */[
     /* Scope */Block.__(1, [sub_scope]),
@@ -2926,7 +2926,7 @@ var Codegen_decode = {
   ocamldoc_title: "Protobuf Decoding"
 };
 
-var __log__ = /* record */[/* contents */undefined];
+var __log__ = [/* contents */undefined];
 
 function log(x) {
   var match = __log__[/* contents */0];
@@ -3669,7 +3669,7 @@ function string_of_option(f, param) {
 
 function reset(g) {
   return map$1((function (core) {
-                return /* record */[
+                return [
                         /* core */core,
                         /* index */undefined,
                         /* lowlink */undefined,
@@ -3983,12 +3983,12 @@ function string_of_unresolved(param) {
 
 function scope_of_package(param) {
   if (param !== undefined) {
-    return /* record */[
+    return [
             /* packages */List.rev(rev_split_by_char(/* "." */46, param)),
             /* message_names : [] */0
           ];
   } else {
-    return /* record */[
+    return [
             /* packages : [] */0,
             /* message_names : [] */0
           ];
@@ -3998,7 +3998,7 @@ function scope_of_package(param) {
 function unresolved_of_string(s) {
   var match = rev_split_by_char(/* "." */46, s);
   if (match) {
-    return /* record */[
+    return [
             /* scope */List.rev(match[1]),
             /* type_name */match[0],
             /* from_root */Caml_string.get(s, 0) === /* "." */46
@@ -4165,7 +4165,7 @@ function compile_field_p1(field_parsed) {
   var field_options = field_parsed[/* field_options */4];
   var field_type = field_type_of_string(field_parsed[/* field_type */3]);
   var field_default = get_default(field_parsed[/* field_name */0], field_options, field_type);
-  return /* record */[
+  return [
           /* field_parsed */field_parsed,
           /* field_type */field_type,
           /* field_default */field_default,
@@ -4174,7 +4174,7 @@ function compile_field_p1(field_parsed) {
 }
 
 function compile_map_p1(param) {
-  return /* record */[
+  return [
           /* map_name */param[/* map_name */0],
           /* map_number */param[/* map_number */1],
           /* map_key_type */field_type_of_string(param[/* map_key_type */2]),
@@ -4184,7 +4184,7 @@ function compile_map_p1(param) {
 }
 
 function compile_oneof_p1(param) {
-  return /* record */[
+  return [
           /* oneof_name */param[/* oneof_name */0],
           /* oneof_fields */List.map(compile_field_p1, param[/* oneof_fields */1])
         ];
@@ -4222,7 +4222,7 @@ function list_assoc2(x, _param) {
 }
 
 function type_of_spec(file_name, file_options, id, scope, spec) {
-  return /* record */[
+  return [
           /* scope */scope,
           /* id */id,
           /* file_name */file_name,
@@ -4233,12 +4233,12 @@ function type_of_spec(file_name, file_options, id, scope, spec) {
 
 function compile_enum_p1(file_name, file_options, scope, param) {
   var enum_values = List.map((function (enum_value) {
-          return /* record */[
+          return [
                   /* enum_value_name */enum_value[/* enum_value_name */0],
                   /* enum_value_int */enum_value[/* enum_value_int */1]
                 ];
         }), param[/* enum_values */2]);
-  return type_of_spec(file_name, file_options, param[/* enum_id */0], scope, /* Enum */Block.__(0, [/* record */[
+  return type_of_spec(file_name, file_options, param[/* enum_id */0], scope, /* Enum */Block.__(0, [[
                   /* enum_name */param[/* enum_name */1],
                   /* enum_values */enum_values
                 ]]));
@@ -4251,7 +4251,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
         message_name,
         /* [] */0
       ]);
-  var sub_scope = /* record */[
+  var sub_scope = [
     sub_scope_packages,
     sub_scope_message_names
   ];
@@ -4343,7 +4343,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
       var message_name$1 = message_name;
       throw [
             Compilation_error,
-            /* Duplicated_field_number */Block.__(1, [/* record */[
+            /* Duplicated_field_number */Block.__(1, [[
                   /* field_name */field_name$1,
                   /* previous_field_name */previous_field_name,
                   /* message_name */message_name$1
@@ -4363,7 +4363,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
           }
         }), /* [] */0, message_body);
   return Pervasives.$at(match[2], /* :: */[
-              type_of_spec(file_name, file_options, param[/* id */0], message_scope, /* Message */Block.__(1, [/* record */[
+              type_of_spec(file_name, file_options, param[/* id */0], message_scope, /* Message */Block.__(1, [[
                         /* extensions */match[1],
                         /* message_name */message_name,
                         /* message_body */message_body
@@ -4546,7 +4546,7 @@ function compile_message_p2(types, param, message) {
         var message_name$1 = message_name;
         throw [
               Compilation_error,
-              /* Unresolved_type */Block.__(0, [/* record */[
+              /* Unresolved_type */Block.__(0, [[
                     /* field_name */field_name$1,
                     /* type_ */type_,
                     /* message_name */message_name$1
@@ -4565,7 +4565,7 @@ function compile_message_p2(types, param, message) {
                 var field_field_type = /* field_type */compile_field_p2(field_name$1, field_type$1);
                 var field_field_default = /* field_default */field[/* field_default */2];
                 var field_field_options = /* field_options */field[/* field_options */3];
-                var field$1 = /* record */[
+                var field$1 = [
                   field_field_parsed,
                   field_field_type,
                   field_field_default,
@@ -4575,7 +4575,7 @@ function compile_message_p2(types, param, message) {
                 var field_field_type$1 = field_field_type;
                 var field_field_default$1 = /* field_default */compile_default_p2(types, field$1);
                 var field_field_options$1 = field_field_options;
-                var field$2 = /* record */[
+                var field$2 = [
                   field_field_parsed$1,
                   field_field_type$1,
                   field_field_default$1,
@@ -4592,7 +4592,7 @@ function compile_message_p2(types, param, message) {
                         var field_type$2 = field_type(field);
                         var field_type$3 = compile_field_p2(field_name$2, field_type$2);
                         return /* :: */[
-                                /* record */[
+                                [
                                   /* field_parsed */field[/* field_parsed */0],
                                   /* field_type */field_type$3,
                                   /* field_default */field[/* field_default */2],
@@ -4603,7 +4603,7 @@ function compile_message_p2(types, param, message) {
                       }), /* [] */0, oneof[/* oneof_fields */1]);
                 var oneof_fields$1 = List.rev(oneof_fields);
                 return /* :: */[
-                        /* Message_oneof_field */Block.__(1, [/* record */[
+                        /* Message_oneof_field */Block.__(1, [[
                               /* oneof_name */oneof[/* oneof_name */0],
                               /* oneof_fields */oneof_fields$1
                             ]]),
@@ -4614,7 +4614,7 @@ function compile_message_p2(types, param, message) {
                 var map_name = map[/* map_name */0];
                 var map_key_type = compile_field_p2(map_name, map[/* map_key_type */2]);
                 var map_value_type = compile_field_p2(map_name, map[/* map_value_type */3]);
-                var resolved_map = /* Message_map_field */Block.__(2, [/* record */[
+                var resolved_map = /* Message_map_field */Block.__(2, [[
                       /* map_name */map_name,
                       /* map_number */map[/* map_number */1],
                       /* map_key_type */map_key_type,
@@ -4629,7 +4629,7 @@ function compile_message_p2(types, param, message) {
           }
         }), /* [] */0, message[/* message_body */2]);
   var message_body$1 = List.rev(message_body);
-  return /* record */[
+  return [
           /* extensions */message[/* extensions */0],
           /* message_name */message[/* message_name */1],
           /* message_body */message_body$1
@@ -4677,12 +4677,12 @@ function node_of_proto_type(param) {
                   
                 }
               }), match[0][/* message_body */2]));
-    return /* record */[
+    return [
             /* id */id,
             /* sub */sub
           ];
   } else {
-    return /* record */[
+    return [
             /* id */id,
             /* sub : [] */0
           ];
@@ -6556,13 +6556,13 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       var match$6 = type_scope_of_type(t);
       var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
       if (field_type_module === module_) {
-        return /* Ft_user_defined_type */Block.__(1, [/* record */[
+        return /* Ft_user_defined_type */Block.__(1, [[
                     /* udt_module */undefined,
                     /* udt_type_name */udt_type_name,
                     /* udt_nested */udt_nested
                   ]]);
       } else {
-        return /* Ft_user_defined_type */Block.__(1, [/* record */[
+        return /* Ft_user_defined_type */Block.__(1, [[
                     /* udt_module */field_type_module,
                     /* udt_type_name */udt_type_name,
                     /* udt_nested */udt_nested
@@ -6608,7 +6608,7 @@ function variant_of_oneof(include_oneof_name, outer_message_names, all_types, fi
           var field_type$1 = compile_field_type(field_name(field), all_types, file_options, field_options(field), file_name, pbtt_field_type);
           var match = encoding_of_field(all_types, field);
           var vc_constructor = constructor_name(field_name(field));
-          return /* record */[
+          return [
                   /* vc_constructor */vc_constructor,
                   /* vc_field_type */typeof field_type$1 === "number" ? /* Vct_nullary */0 : /* Vct_non_nullary_constructor */[field_type$1],
                   /* vc_encoding_number */match[1],
@@ -6616,7 +6616,7 @@ function variant_of_oneof(include_oneof_name, outer_message_names, all_types, fi
                 ];
         }), oneof_field[/* oneof_fields */1]);
   var v_name = include_oneof_name !== undefined ? type_name(outer_message_names, oneof_field[/* oneof_name */0]) : type_name(outer_message_names, "");
-  return /* record */[
+  return [
           /* v_name */v_name,
           /* v_constructors */v_constructors
         ];
@@ -6630,9 +6630,9 @@ function compile_enum(file_name, scope, param) {
                   param[/* enum_value_int */1]
                 ];
         }), param[/* enum_values */1]);
-  return /* record */[
+  return [
           /* module_ */module_,
-          /* spec : Const_variant */Block.__(2, [/* record */[
+          /* spec : Const_variant */Block.__(2, [[
                 /* cv_name */type_name(scope[/* message_names */1], param[/* enum_name */0]),
                 /* cv_constructors */cv_constructors
               ]])
@@ -6678,7 +6678,7 @@ function compile(proto_definition) {
           var id = t[/* id */1];
           var scope = t[/* scope */0];
           if (spec.tag) {
-            return /* record */[
+            return [
                     /* scope */scope,
                     /* id */id,
                     /* file_name */file_name,
@@ -6686,7 +6686,7 @@ function compile(proto_definition) {
                     /* spec : Message */Block.__(1, [compile_message_p2(all_types, scope, spec[0])])
                   ];
           } else {
-            return /* record */[
+            return [
                     /* scope */scope,
                     /* id */id,
                     /* file_name */file_name,
@@ -6724,7 +6724,7 @@ function compile(proto_definition) {
                                         ]);
                                     var variant = variant_of_oneof(undefined, outer_message_names, all_types$1, file_options, file_name$1, match$1[0]);
                                     return /* :: */[
-                                            /* record */[
+                                            [
                                               /* module_ */module_,
                                               /* spec : Variant */Block.__(1, [variant])
                                             ],
@@ -6796,7 +6796,7 @@ function compile(proto_definition) {
                                               ]]);
                                         }
                                         var record_field_rf_label = /* rf_label */label_name_of_field_name(field_name$1);
-                                        var record_field = /* record */[
+                                        var record_field = [
                                           record_field_rf_label,
                                           /* rf_field_type */record_field_type,
                                           /* rf_mutable */mutable_
@@ -6817,12 +6817,12 @@ function compile(proto_definition) {
                                         var variant = variant_of_oneof(/* () */0, outer_message_names, all_types$1, file_options, file_name$1, field$1);
                                         var record_field_rf_label$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
                                         var record_field_rf_field_type = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
-                                        var record_field$1 = /* record */[
+                                        var record_field$1 = [
                                           record_field_rf_label$1,
                                           record_field_rf_field_type,
                                           /* rf_mutable */false
                                         ];
-                                        var variants_000 = /* record */[
+                                        var variants_000 = [
                                           /* module_ */module_,
                                           /* spec : Variant */Block.__(1, [variant])
                                         ];
@@ -6908,7 +6908,7 @@ function compile(proto_definition) {
                                             ]]);
                                         var record_field_rf_label$2 = /* rf_label */label_name_of_field_name(map_name);
                                         var record_field_rf_mutable = /* rf_mutable */is_mutable(map_name, map_options);
-                                        var record_field$2 = /* record */[
+                                        var record_field$2 = [
                                           record_field_rf_label$2,
                                           /* rf_field_type */record_field_type$1,
                                           record_field_rf_mutable
@@ -6928,12 +6928,12 @@ function compile(proto_definition) {
                               ], message_body);
                           var record_r_name = /* r_name */type_name(message_names, message_name);
                           var record_r_fields = /* r_fields */List.rev(match$2[1]);
-                          var record = /* record */[
+                          var record = [
                             record_r_name,
                             record_r_fields
                           ];
                           var type__spec = /* spec : Record */Block.__(0, [record]);
-                          var type_ = /* record */[
+                          var type_ = [
                             /* module_ */module_,
                             type__spec
                           ];
@@ -6987,7 +6987,7 @@ function compile(proto_definition) {
                               }), otypes);
                 }), fs);
   };
-  var sc = /* record */[/* items : [] */0];
+  var sc = [/* items : [] */0];
   line$1(sc, "[@@@ocaml.warning \"-30\"]");
   line$1(sc, "");
   gen(otypes, sc, List.map((function (m) {
@@ -6997,7 +6997,7 @@ function compile(proto_definition) {
                     ];
             }), all_code_gen));
   var struct_string = print(sc);
-  var sc$1 = /* record */[/* items : [] */0];
+  var sc$1 = [/* items : [] */0];
   line$1(sc$1, Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "(** ",
@@ -7026,9 +7026,9 @@ function compile(proto_definition) {
 
 var match = compile("message T {required int32 j = 1; }");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

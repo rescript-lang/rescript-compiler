@@ -8,7 +8,7 @@ var suites_000 = /* tuple */[
   "basic_add",
   (function (param) {
       return /* Eq */Block.__(0, [
-                /* record */[
+                [
                   /* re */2,
                   /* im */2
                 ],

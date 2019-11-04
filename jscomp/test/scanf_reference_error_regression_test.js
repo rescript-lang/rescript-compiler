@@ -9,9 +9,9 @@ var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);

@@ -284,7 +284,11 @@ let method_
   }
 
 (** ATTENTION: This is coupuled with {!Caml_obj.caml_update_dummy} *)
-let dummy_obj ?comment ()  : t = 
+let dummy_obj ?comment (info : Lam_tag_info.t)  : t = 
+  (* TODO: 
+    for record it is [{}]
+    for other it is [[]]
+   *)
   {comment  ; expression_desc = Array ([],Mutable)}
 
 

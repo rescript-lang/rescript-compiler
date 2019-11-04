@@ -137,6 +137,11 @@ let names_from_construct_pattern (pat: Typedtree.pattern) =
 (** We drop the ability of cross-compiling
         the compiler has to be the same running
 *)
+
+type initialization 
+   =   
+  J.block
+
 (* since it's only for alias, there is no arguments,
    we should not inline function definition here, even though
    it is very small
@@ -289,7 +294,7 @@ and compile_external_field_apply
 and compile_recursive_let ~all_bindings
     (cxt : Lam_compile_context.t)
     (id : Ident.t)
-    (arg : Lam.t)   : Js_output.t * Ident.t list =
+    (arg : Lam.t)   : Js_output.t * initialization =
   match arg with
   |  Lfunction { params; body; _}  ->
 
@@ -343,12 +348,13 @@ and compile_recursive_let ~all_bindings
     Js_output.output_of_expression 
       (Declare (Alias, id))
        result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
-  | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
+  | Lprim {primitive = Pmakeblock (0, tag_info, _) ; args =  ls}
     when Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
           Ident.same pid id  ||
           (not @@ Ext_list.exists all_bindings (fun (other,_) -> Ident.same other pid ) )
+        | Lconst _ -> true  
         | _ -> false) 
     ->
     (* capture cases like for {!Queue}
@@ -356,18 +362,22 @@ and compile_recursive_let ~all_bindings
        #1716: be careful not to optimize such cases:
        {[ let rec a = { b} and b = { a} ]} they are indeed captured
        and need to be declared first
+       TODO: this should be inlined based on tag info
     *)
     Js_output.make (
-      S.define_variable ~kind:Variable id (E.array Mutable []) ::
+      S.define_variable ~kind:Variable id (E.dummy_obj tag_info) ::
       (Ext_list.mapi ls (fun i x ->
-           match x with
-           | Lvar lid
-             -> S.exp
-                  (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
-           | _ -> assert false))
+           S.exp
+             (Js_arr.set_array (E.var id) (E.int (Int32.of_int i))                     
+                (match x with 
+                 | Lvar lid  -> E.var lid
+                 | Lconst x -> Lam_compile_const.translate x
+                 | _ -> assert false)
+             )
+         ))
     ), []
 
-  | Lprim{primitive = Pmakeblock _ ; _}   ->
+  | Lprim{primitive = Pmakeblock (_, tag_info, _) ; _}   ->
     (* FIXME: also should fill tag *)
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,
@@ -386,8 +396,7 @@ and compile_recursive_let ~all_bindings
              [S.exp
                 (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy"
                    [ E.var id;  v])]),
-        [id]
-      (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
+        [S.define_variable ~kind:Variable id (E.dummy_obj tag_info)]
       | _ -> assert false
     end
   | Lvar _   ->
@@ -418,7 +427,7 @@ and compile_recursive_let ~all_bindings
     compile_lambda
       {cxt with continuation = Declare (Alias ,id)} arg, []
 
-and compile_recursive_lets_aux cxt id_args : Js_output.t =
+and compile_recursive_lets_aux cxt (id_args : Lam_scc.bindings) : Js_output.t =
   (* #1716 *)
   let output_code, ids  =
     Ext_list.fold_right id_args (Js_output.dummy, [])
@@ -431,11 +440,7 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
   match ids with
   | [] -> output_code
   | _ ->
-    Js_output.append_output
-      (Js_output.make
-         (Ext_list.map ids
-            (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ()))))
-      output_code
+    Js_output.append_output (Js_output.make ids) output_code
 and compile_recursive_lets cxt id_args : Js_output.t  =
   match id_args with
   | [ ] -> Js_output.dummy

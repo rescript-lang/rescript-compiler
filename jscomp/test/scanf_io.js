@@ -59,7 +59,7 @@ function write_tscanf_data_file(fname, lines) {
 
 function get_lines(fname) {
   var ib = Scanf.Scanning.from_file(fname);
-  var l = /* record */[/* contents : [] */0];
+  var l = [/* contents : [] */0];
   try {
     while(!Scanf.Scanning.end_of_input(ib)) {
       Curry._1(Scanf.bscanf(ib, /* Format */[

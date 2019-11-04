@@ -31,13 +31,13 @@ function getId(bdd) {
   }
 }
 
-var nodeC = /* record */[/* contents */1];
+var nodeC = [/* contents */1];
 
-var sz_1 = /* record */[/* contents */8191];
+var sz_1 = [/* contents */8191];
 
-var htab = /* record */[/* contents */Caml_array.caml_make_vect(sz_1[/* contents */0] + 1 | 0, /* [] */0)];
+var htab = [/* contents */Caml_array.caml_make_vect(sz_1[/* contents */0] + 1 | 0, /* [] */0)];
 
-var n_items = /* record */[/* contents */0];
+var n_items = [/* contents */0];
 
 function hashVal(x, y, v) {
   return ((x << 1) + y | 0) + (v << 2) | 0;
@@ -325,7 +325,7 @@ function hwb(n) {
   return h(0, n - 1 | 0);
 }
 
-var seed = /* record */[/* contents */0];
+var seed = [/* contents */0];
 
 function random(param) {
   seed[/* contents */0] = Caml_int32.imul(seed[/* contents */0], 25173) + 17431 | 0;

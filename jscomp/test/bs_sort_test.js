@@ -8,9 +8,9 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

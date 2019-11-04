@@ -48,7 +48,7 @@ function does_raise(f, q) {
   }
 }
 
-var q = /* record */[
+var q = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -264,7 +264,7 @@ if (!does_raise(Queue.take, q)) {
       ];
 }
 
-var q$1 = /* record */[
+var q$1 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -329,7 +329,7 @@ if (q$1[/* length */0] !== 0) {
       ];
 }
 
-var q$2 = /* record */[
+var q$2 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -462,7 +462,7 @@ if (!does_raise(Queue.peek, q$2)) {
       ];
 }
 
-var q$3 = /* record */[
+var q$3 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -496,7 +496,7 @@ if (!does_raise(Queue.take, q$3)) {
       ];
 }
 
-if (!Caml_obj.caml_equal(q$3, /* record */[
+if (!Caml_obj.caml_equal(q$3, [
         /* length */0,
         /* first : Nil */0,
         /* last : Nil */0
@@ -524,7 +524,7 @@ if (Queue.take(q$3) !== 42) {
       ];
 }
 
-var q1 = /* record */[
+var q1 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -668,7 +668,7 @@ for(var i$3 = 1; i$3 <= 10; ++i$3){
   
 }
 
-var q$4 = /* record */[
+var q$4 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -756,7 +756,7 @@ if (q$4[/* length */0] !== 0) {
       ];
 }
 
-var q$5 = /* record */[
+var q$5 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -766,7 +766,7 @@ for(var i$6 = 1; i$6 <= 10; ++i$6){
   Queue.add(i$6, q$5);
 }
 
-var i$7 = /* record */[/* contents */1];
+var i$7 = [/* contents */1];
 
 Queue.iter((function (j) {
         if (i$7[/* contents */0] !== j) {
@@ -783,13 +783,13 @@ Queue.iter((function (j) {
         return /* () */0;
       }), q$5);
 
-var q1$1 = /* record */[
+var q1$1 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
 ];
 
-var q2$1 = /* record */[
+var q2$1 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -885,13 +885,13 @@ if (to_list(q2$1) !== /* [] */0) {
       ];
 }
 
-var q1$2 = /* record */[
+var q1$2 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
 ];
 
-var q2$2 = /* record */[
+var q2$2 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -1015,13 +1015,13 @@ if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
       ];
 }
 
-var q1$3 = /* record */[
+var q1$3 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
 ];
 
-var q2$3 = /* record */[
+var q2$3 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
@@ -1145,13 +1145,13 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
       ];
 }
 
-var q1$4 = /* record */[
+var q1$4 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0
 ];
 
-var q2$4 = /* record */[
+var q2$4 = [
   /* length */0,
   /* first : Nil */0,
   /* last : Nil */0

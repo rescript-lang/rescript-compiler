@@ -19,12 +19,12 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var dbg = /* record */[/* contents */true];
+var dbg = [/* contents */true];
 
-var inch = /* record */[/* contents */Pervasives.stdin];
+var inch = [/* contents */Pervasives.stdin];
 
 function bufferize(f) {
-  var buf = /* record */[/* contents */undefined];
+  var buf = [/* contents */undefined];
   return /* tuple */[
           (function (param) {
               var match = buf[/* contents */0];
@@ -68,7 +68,7 @@ function peekch(param) {
 
 var symtab = Caml_array.caml_make_vect(100, "");
 
-var syms = /* record */[/* contents */0];
+var syms = [/* contents */0];
 
 function find(s, _n) {
   while(true) {
@@ -114,7 +114,7 @@ function symitr(f) {
 
 var glo = Bytes.make(4096, /* "\000" */0);
 
-var gpos = /* record */[/* contents */0];
+var gpos = [/* contents */0];
 
 var s = Caml_bytes.caml_create_bytes(100);
 
@@ -324,7 +324,7 @@ function nextis(t) {
 
 var obuf = Bytes.make(1048576, /* "\000" */0);
 
-var opos = /* record */[/* contents */0];
+var opos = [/* contents */0];
 
 function out(x) {
   if (x !== 0) {
@@ -426,7 +426,7 @@ function test(n, l) {
   return loc;
 }
 
-var align = /* record */[/* contents */0];
+var align = [/* contents */0];
 
 function push(r) {
   align[/* contents */0] = align[/* contents */0] + 1 | 0;
@@ -446,7 +446,7 @@ function pop(r) {
   }
 }
 
-var lval = /* record */[/* contents : tuple */[
+var lval = [/* contents : tuple */[
     /* Mov */Block.__(0, [0]),
     /* Int */0
   ]];
@@ -482,7 +482,7 @@ function read(param) {
   }
 }
 
-var globs = Caml_array.caml_make_vect(100, /* record */[
+var globs = Caml_array.caml_make_vect(100, [
       /* loc */0,
       /* va */-1
     ]);
@@ -946,7 +946,7 @@ function unary(stk) {
           var g = Caml_array.caml_array_get(globs, i);
           var loc = opos[/* contents */0];
           le(64, g[/* loc */0]);
-          Caml_array.caml_array_set(globs, i, /* record */[
+          Caml_array.caml_array_set(globs, i, [
                 /* loc */loc,
                 /* va */g[/* va */1]
               ]);
@@ -1129,7 +1129,7 @@ function decl(g, _n, _stk) {
                       ];
                 }
                 var va = (gpos[/* contents */0] + 232 | 0) + 4194304 | 0;
-                Caml_array.caml_array_set(globs, s, /* record */[
+                Caml_array.caml_array_set(globs, s, [
                       /* loc */glo[/* loc */0],
                       /* va */va
                     ]);
@@ -1215,7 +1215,7 @@ function decl(g, _n, _stk) {
   };
 }
 
-var retl = /* record */[/* contents */0];
+var retl = [/* contents */0];
 
 function stmt(brk, stk) {
   var pexpr = function (stk) {
@@ -1243,7 +1243,7 @@ function stmt(brk, stk) {
     }
     return patch(true, loc$1, opos[/* contents */0]);
   } else if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
-    var bl = /* record */[/* contents */0];
+    var bl = [/* contents */0];
     var ba = align[/* contents */0];
     var match;
     if (Caml_obj.caml_equal(t, tokwhile)) {
@@ -1375,7 +1375,7 @@ function top(_param) {
                 "symbol defined twice"
               ];
         }
-        Caml_array.caml_array_set(globs, f, /* record */[
+        Caml_array.caml_array_set(globs, f, [
               /* loc */g[/* loc */0],
               /* va */opos[/* contents */0]
             ]);
@@ -1451,7 +1451,7 @@ function top(_param) {
         };
         retl[/* contents */0] = 0;
         block(/* tuple */[
-              /* record */[/* contents */0],
+              [/* contents */0],
               0
             ], stk);
         patch(true, retl[/* contents */0], opos[/* contents */0]);
@@ -1549,7 +1549,7 @@ function elfgen(outf) {
   out(-1921768440);
   out(18616);
   le(64, gmain[/* loc */0]);
-  Caml_array.caml_array_set(globs, main, /* record */[
+  Caml_array.caml_array_set(globs, main, [
         /* loc */opos[/* contents */0] - 8 | 0,
         /* va */gmain[/* va */1]
       ]);
@@ -1593,7 +1593,7 @@ function elfgen(outf) {
         }));
   opos[/* contents */0] = opos[/* contents */0] + 7 & -8;
   var symtab = opos[/* contents */0];
-  var n = /* record */[/* contents */39];
+  var n = [/* contents */39];
   opos[/* contents */0] = opos[/* contents */0] + 24 | 0;
   itr((function (param, sl, param$1) {
           le(32, n[/* contents */0]);
@@ -1604,7 +1604,7 @@ function elfgen(outf) {
           return /* () */0;
         }));
   var rel = opos[/* contents */0];
-  var n$1 = /* record */[/* contents */1];
+  var n$1 = [/* contents */1];
   itr((function (param, param$1, l) {
           var genrel = function (_l) {
             while(true) {
@@ -1792,7 +1792,7 @@ function main(param) {
   var f = Sys.argv.length < 2 ? "-blk" : Caml_array.caml_array_get(Sys.argv, 1);
   switch (f) {
     case "-blk" :
-        var partial_arg_000 = /* record */[/* contents */0];
+        var partial_arg_000 = [/* contents */0];
         var partial_arg = /* tuple */[
           partial_arg_000,
           0

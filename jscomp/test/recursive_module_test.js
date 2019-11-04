@@ -6,9 +6,9 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

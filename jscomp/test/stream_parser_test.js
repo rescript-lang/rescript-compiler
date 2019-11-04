@@ -12,7 +12,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
 
 function parse(token) {
-  var look_ahead = /* record */[
+  var look_ahead = [
     /* length */0,
     /* first : Nil */0,
     /* last : Nil */0
@@ -140,7 +140,7 @@ function token(chars) {
 }
 
 function l_parse(token) {
-  var look_ahead = /* record */[
+  var look_ahead = [
     /* length */0,
     /* first : Nil */0,
     /* last : Nil */0
@@ -248,9 +248,9 @@ function l_parse(token) {
         ];
 }
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

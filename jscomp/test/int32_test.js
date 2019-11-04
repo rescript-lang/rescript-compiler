@@ -153,7 +153,7 @@ var shift_left_tests = /* tuple */[
 
 var $star$tilde = Caml_int32.imul;
 
-var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
+var suites = [/* contents */Pervasives.$at(/* :: */[
         /* tuple */[
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
@@ -240,7 +240,7 @@ var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
                                 ];
                         }), shift_left_tests_000, shift_left_tests_001)))))];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

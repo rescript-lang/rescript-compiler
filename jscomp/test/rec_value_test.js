@@ -10,10 +10,9 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var x = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
-      1,
-      x
-    ]);
+x[0] = 1;
+
+x[1] = x;
 
 var a = [];
 
@@ -38,10 +37,9 @@ Caml_obj.caml_update_dummy(c, /* :: */[
 
 var xx = [];
 
-Caml_obj.caml_update_dummy(xx, /* :: */[
-      1,
-      xx
-    ]);
+xx[0] = 1;
+
+xx[1] = xx;
 
 function naive(n) {
   if (n === 0 || n === 1) {
@@ -51,11 +49,11 @@ function naive(n) {
   }
 }
 
-var four = /* record */[/* contents */2];
+var four = [/* contents */2];
 
-var three = /* record */[/* contents */3];
+var three = [/* contents */3];
 
-var v = /* record */[/* contents */(function (param) {
+var v = [/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[

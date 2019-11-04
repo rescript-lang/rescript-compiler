@@ -7,9 +7,9 @@ var Curry = require("../../lib/js/curry.js");
 var String_set = require("./string_set.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -114,7 +114,7 @@ function test5(f, x) {
 
 function test6(f, x) {
   console.log("no inline");
-  var x$1 = /* record */[/* contents */3];
+  var x$1 = [/* contents */3];
   var tmp = {
     hi: 2
   };

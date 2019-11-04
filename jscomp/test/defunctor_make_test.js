@@ -130,14 +130,14 @@ function add(x, data, compare, param) {
 
 function add$1(x, data, v) {
   var X = v[/* compare */0];
-  return /* record */[
+  return [
           /* compare */v[/* compare */0],
           /* data */add(x, data, X.compare, v[/* data */1])
         ];
 }
 
 function empty(v) {
-  return /* record */[
+  return [
           /* compare */v,
           /* data : Empty */0
         ];
@@ -155,12 +155,12 @@ var V1 = {
   compare: compare$1
 };
 
-var v0 = /* record */[
+var v0 = [
   /* compare */V0,
   /* data : Empty */0
 ];
 
-var v1 = /* record */[
+var v1 = [
   /* compare */V1,
   /* data : Empty */0
 ];

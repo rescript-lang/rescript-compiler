@@ -6,9 +6,9 @@ var Int64 = require("../../lib/js/int64.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -36,7 +36,7 @@ function g(x) {
   return Caml_int64.or_(x, (Pervasives.print_string("f"), x));
 }
 
-var v = /* record */[/* contents */0];
+var v = [/* contents */0];
 
 function f2(x) {
   v[/* contents */0] = v[/* contents */0] + 1 | 0;

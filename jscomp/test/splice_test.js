@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

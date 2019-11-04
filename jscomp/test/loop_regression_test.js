@@ -4,8 +4,8 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 function f(param) {
-  var v = /* record */[/* contents */0];
-  var acc = /* record */[/* contents */0];
+  var v = [/* contents */0];
+  var acc = [/* contents */0];
   var n = 10;
   while(true) {
     if (v[/* contents */0] > n) {

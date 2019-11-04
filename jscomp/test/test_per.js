@@ -508,7 +508,7 @@ function $caret$caret(param, param$1) {
         ];
 }
 
-var exit_function = /* record */[/* contents */flush_all];
+var exit_function = [/* contents */flush_all];
 
 function at_exit(f) {
   var g = exit_function[0];

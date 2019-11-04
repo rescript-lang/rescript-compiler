@@ -20,7 +20,7 @@ catch (raw_exn){
   function_equal_test = exn[0] === Caml_builtin_exceptions.invalid_argument && exn[1] === "equal: functional value" ? true : false;
 }
 
-var suites = /* record */[/* contents : :: */[
+var suites = [/* contents : :: */[
     /* tuple */[
       "File \"caml_compare_test.ml\", line 9, characters 4-11",
       (function (param) {
@@ -1028,7 +1028,7 @@ var suites = /* record */[/* contents : :: */[
     ]
   ]];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

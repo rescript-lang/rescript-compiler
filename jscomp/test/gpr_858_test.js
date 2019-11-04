@@ -1,9 +1,9 @@
 'use strict';
 
 
-var direct = /* record */[/* contents : [] */0];
+var direct = [/* contents : [] */0];
 
-var indirect = /* record */[/* contents : [] */0];
+var indirect = [/* contents : [] */0];
 
 exports.direct = direct;
 exports.indirect = indirect;

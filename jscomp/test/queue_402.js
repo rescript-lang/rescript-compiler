@@ -7,7 +7,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Empty = Caml_exceptions.create("Queue_402.Empty");
 
 function create(param) {
-  return /* record */[
+  return [
           /* length */0,
           /* tail */undefined
         ];
@@ -30,7 +30,7 @@ function add(x, q) {
   } else {
     var tail = q[/* tail */1];
     var head = tail[/* next */1];
-    var cell$1 = /* record */[
+    var cell$1 = [
       /* content */x,
       /* next */head
     ];
@@ -65,14 +65,14 @@ function take(q) {
 
 function copy(q) {
   if (q[/* length */0] === 0) {
-    return /* record */[
+    return [
             /* length */0,
             /* tail */undefined
           ];
   } else {
     var tail = q[/* tail */1];
     var tail$prime = [];
-    Caml_obj.caml_update_dummy(tail$prime, /* record */[
+    Caml_obj.caml_update_dummy(tail$prime, [
           /* content */tail[/* content */0],
           /* next */tail$prime
         ]);
@@ -81,7 +81,7 @@ function copy(q) {
         var cell = _cell;
         var prev = _prev;
         if (cell !== tail) {
-          var res = /* record */[
+          var res = [
             /* content */cell[/* content */0],
             /* next */tail$prime
           ];
@@ -95,7 +95,7 @@ function copy(q) {
       };
     };
     copy$1(tail$prime, tail[/* next */1]);
-    return /* record */[
+    return [
             /* length */q[/* length */0],
             /* tail */tail$prime
           ];

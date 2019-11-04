@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-var v = /* record */[/* contents */3];
+var v = [/* contents */3];
 
 function f(h) {
   v[/* contents */0] = v[/* contents */0] + 1 | 0;
@@ -24,7 +24,7 @@ f((function (prim, prim$1) {
 
 var a = v[/* contents */0];
 
-var v$1 = /* record */[/* contents */3];
+var v$1 = [/* contents */3];
 
 function f$1(h) {
   v$1[/* contents */0] = v$1[/* contents */0] + 1 | 0;
@@ -44,7 +44,7 @@ f$1((function (prim, prim$1) {
 
 var b = v$1[/* contents */0];
 
-var v$2 = /* record */[/* contents */3];
+var v$2 = [/* contents */3];
 
 function f$2(h) {
   return Curry._2(h, 2, (v$2[/* contents */0] = v$2[/* contents */0] + 1 | 0, 3));
@@ -60,7 +60,7 @@ f$2((function (prim, prim$1) {
 
 var c = v$2[/* contents */0];
 
-var v$3 = /* record */[/* contents */3];
+var v$3 = [/* contents */3];
 
 function f$3(h, g) {
   v$3[/* contents */0] = v$3[/* contents */0] + 1 | 0;

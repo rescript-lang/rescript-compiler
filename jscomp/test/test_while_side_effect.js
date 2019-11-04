@@ -1,7 +1,7 @@
 'use strict';
 
 
-var v = /* record */[/* contents */0];
+var v = [/* contents */0];
 
 while(console.log(String(v[/* contents */0])), v[/* contents */0] = v[/* contents */0] + 1 | 0, v[/* contents */0] < 10) {
   
@@ -15,7 +15,7 @@ function fib(n) {
   }
 }
 
-var x = /* record */[/* contents */3];
+var x = [/* contents */3];
 
 while((function () {
         var y = 3;

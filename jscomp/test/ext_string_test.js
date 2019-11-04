@@ -406,7 +406,7 @@ function unsafe_concat_with_length(len, sep, l) {
     var hd_len = hd.length;
     var sep_len = sep.length;
     Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
-    var pos = /* record */[/* contents */hd_len];
+    var pos = [/* contents */hd_len];
     List.iter((function (s) {
             var s_len = s.length;
             Caml_bytes.caml_blit_string(sep, 0, r, pos[/* contents */0], sep_len);

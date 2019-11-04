@@ -8,7 +8,7 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var u = /* record */[/* contents */3];
+var u = [/* contents */3];
 
 var v = Caml_obj.caml_lazy_make((function (param) {
         u[/* contents */0] = 32;
@@ -48,7 +48,7 @@ function f(param) {
   }
 }
 
-var s = /* record */[/* contents */undefined];
+var s = [/* contents */undefined];
 
 var set_true = Caml_obj.caml_lazy_make((function (param) {
         s[/* contents */0] = 1;
@@ -78,7 +78,7 @@ catch (raw_exn){
   }
 }
 
-var u_v = /* record */[/* contents */0];
+var u_v = [/* contents */0];
 
 var u$1 = Caml_obj.caml_lazy_make((function (param) {
         u_v[/* contents */0] = 2;

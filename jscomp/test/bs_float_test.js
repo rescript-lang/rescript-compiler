@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Belt_Float = require("../../lib/js/belt_Float.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

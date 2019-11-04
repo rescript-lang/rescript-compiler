@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];
@@ -50,7 +50,7 @@ eq("File \"optional_ffi_test.ml\", line 23, characters 5-12", /* tuple */[
       ]
     ]);
 
-var counter = /* record */[/* contents */0];
+var counter = [/* contents */0];
 
 function side_effect(x) {
   x[/* contents */0] = x[/* contents */0] + 1 | 0;
@@ -65,7 +65,7 @@ function bug_to_fix2(f, x) {
   return hey(Caml_option.option_get(f(x)), 3);
 }
 
-var counter2 = /* record */[/* contents */0];
+var counter2 = [/* contents */0];
 
 function side_effect2(x) {
   x[/* contents */0] = x[/* contents */0] + 1 | 0;

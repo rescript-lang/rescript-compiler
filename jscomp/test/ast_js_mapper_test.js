@@ -11,14 +11,14 @@ function tToJs(param) {
 }
 
 function tFromJs(param) {
-  return /* record */[
+  return [
           /* xx */param.xx,
           /* yy */param.yy,
           /* zz */param.zz
         ];
 }
 
-var u = tToJs(/* record */[
+var u = tToJs([
       /* xx */3,
       /* yy */"x",
       /* zz : tuple */[

@@ -8,9 +8,9 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Mt_global = require("./mt_global.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(f) {
   return (function (param, param$1) {

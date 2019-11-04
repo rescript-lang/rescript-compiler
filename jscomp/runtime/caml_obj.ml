@@ -135,20 +135,13 @@ let caml_lazy_make (fn : _ -> _) =
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
-  (* let len = Caml_obj_extern.length y in   
-     for i = 0 to len - 1 do 
-     Array.unsafe_set x i (Caml_obj_extern.field y i)
-     done;
-     Caml_obj_extern.set_tag (Obj.magic x) (Caml_obj_extern.tag y)
-  *)
-  let len = Caml_obj_extern.length y in
-  for i = 0 to len - 1 do
-    Caml_obj_extern.set_field x i (Caml_obj_extern.field y i)
-  done ; 
-  let y_tag = Caml_obj_extern.tag y in 
-  if y_tag <> 0 then
-    Caml_obj_extern.set_tag x y_tag
+let caml_update_dummy : _ -> _ -> unit= fun%raw x y -> {|
+  for (var k in y){
+    x[k] = y[k]
+  }
+  return 0;
+|}
+  
 (* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)

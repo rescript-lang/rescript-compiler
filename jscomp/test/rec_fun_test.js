@@ -5,9 +5,9 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
@@ -26,7 +26,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var called = /* record */[/* contents */0];
+var called = [/* contents */0];
 
 function g(param) {
   var v = [];
@@ -37,7 +37,7 @@ function g(param) {
     }
     return i + 1 | 0;
   };
-  Caml_obj.caml_update_dummy(v, /* record */[/* contents */next]);
+  Caml_obj.caml_update_dummy(v, [/* contents */next]);
   console.log(String(next(0, true)));
   return /* () */0;
 }

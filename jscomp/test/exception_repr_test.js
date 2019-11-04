@@ -8,9 +8,9 @@ var Printexc = require("../../lib/js/printexc.js");
 var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var suites = /* record */[/* contents : [] */0];
+var suites = [/* contents : [] */0];
 
-var test_id = /* record */[/* contents */0];
+var test_id = [/* contents */0];
 
 function eq(loc, x, y) {
   test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;

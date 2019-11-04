@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var delayed = /* record */[/* contents */(function (param) {
+var delayed = [/* contents */(function (param) {
       return /* () */0;
     })];
 

@@ -40,7 +40,7 @@ function to_array(q) {
 }
 
 function queue_1(x) {
-  var q = /* record */[
+  var q = [
     /* length */0,
     /* first : Nil */0,
     /* last : Nil */0
@@ -66,7 +66,7 @@ function to_array$1(q) {
 }
 
 function queue_1$1(x) {
-  var q = /* record */[
+  var q = [
     /* length */0,
     /* tail */undefined
   ];
