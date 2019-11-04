@@ -88,7 +88,7 @@ var suites_001 = /* :: */[
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return /* Eq */Block.__(0, [
-                    tbl[/* size */0],
+                    tbl.size,
                     1
                   ]);
         })

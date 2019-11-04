@@ -12,13 +12,13 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
 
 function parse(token) {
-  var look_ahead = [
-    /* length */0,
-    /* first : Nil */0,
-    /* last : Nil */0
-  ];
+  var look_ahead = {
+    length: 0,
+    first: /* Nil */0,
+    last: /* Nil */0
+  };
   var token$1 = function (param) {
-    if (look_ahead[/* length */0] === 0) {
+    if (look_ahead.length === 0) {
       try {
         return Curry._1(token, /* () */0);
       }
@@ -140,13 +140,13 @@ function token(chars) {
 }
 
 function l_parse(token) {
-  var look_ahead = [
-    /* length */0,
-    /* first : Nil */0,
-    /* last : Nil */0
-  ];
+  var look_ahead = {
+    length: 0,
+    first: /* Nil */0,
+    last: /* Nil */0
+  };
   var token$1 = function (param) {
-    if (look_ahead[/* length */0] === 0) {
+    if (look_ahead.length === 0) {
       try {
         return Curry._1(token, /* () */0);
       }
@@ -248,15 +248,19 @@ function l_parse(token) {
         ];
 }
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -264,7 +268,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -298,7 +302,7 @@ eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
       ]
     ], l_parse(token(Stream.of_string("3 - 2  - 1"))));
 
-Mt.from_pair_suites("Stream_parser_test", suites[/* contents */0]);
+Mt.from_pair_suites("Stream_parser_test", suites.contents);
 
 exports.Parse_error = Parse_error;
 exports.parse = parse;

@@ -4,28 +4,28 @@ var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 function tToJs(param) {
   return {
-          xx: param[/* xx */0],
-          yy: param[/* yy */1],
-          zz: param[/* zz */2]
+          xx: param.xx,
+          yy: param.yy,
+          zz: param.zz
         };
 }
 
 function tFromJs(param) {
-  return [
-          /* xx */param.xx,
-          /* yy */param.yy,
-          /* zz */param.zz
-        ];
+  return {
+          xx: param.xx,
+          yy: param.yy,
+          zz: param.zz
+        };
 }
 
-var u = tToJs([
-      /* xx */3,
-      /* yy */"x",
-      /* zz : tuple */[
+var u = tToJs({
+      xx: 3,
+      yy: "x",
+      zz: /* tuple */[
         1,
         2
       ]
-    ]);
+    });
 
 tFromJs(u);
 

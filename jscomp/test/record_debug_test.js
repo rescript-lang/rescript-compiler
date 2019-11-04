@@ -3,25 +3,21 @@
 var Format = require("../../lib/js/format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var v = [
-  /* a */3,
-  /* b */[
-    /* xx */2,
-    /* yy */3
-  ]
-];
+var v = {
+  a: 3,
+  b: {
+    xx: 2,
+    yy: 3
+  }
+};
 
-var u_a = /* a */2;
-
-var u_b = /* b */[
-  /* xx */2,
-  /* yy */3
-];
-
-var u = [
-  u_a,
-  u_b
-];
+var u = {
+  a: 2,
+  b: {
+    xx: 2,
+    yy: 3
+  }
+};
 
 var A = Caml_exceptions.create("Record_debug_test.A");
 

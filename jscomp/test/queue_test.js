@@ -31,7 +31,7 @@ function Test(Queue) {
 }
 
 function to_array(q) {
-  var v = Caml_array.caml_make_vect(q[/* length */0], 0);
+  var v = Caml_array.caml_make_vect(q.length, 0);
   Queue.fold((function (i, e) {
           Caml_array.caml_array_set(v, i, e);
           return i + 1 | 0;
@@ -40,11 +40,11 @@ function to_array(q) {
 }
 
 function queue_1(x) {
-  var q = [
-    /* length */0,
-    /* first : Nil */0,
-    /* last : Nil */0
-  ];
+  var q = {
+    length: 0,
+    first: /* Nil */0,
+    last: /* Nil */0
+  };
   $$Array.iter((function (x) {
           return Queue.add(x, q);
         }), x);
@@ -57,7 +57,7 @@ var T1 = {
 };
 
 function to_array$1(q) {
-  var v = Caml_array.caml_make_vect(q[/* length */0], 0);
+  var v = Caml_array.caml_make_vect(q.length, 0);
   Queue_402.fold((function (i, e) {
           Caml_array.caml_array_set(v, i, e);
           return i + 1 | 0;
@@ -66,10 +66,10 @@ function to_array$1(q) {
 }
 
 function queue_1$1(x) {
-  var q = [
-    /* length */0,
-    /* tail */undefined
-  ];
+  var q = {
+    length: 0,
+    tail: undefined
+  };
   $$Array.iter((function (x) {
           return Queue_402.add(x, q);
         }), x);

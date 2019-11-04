@@ -4,20 +4,24 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function $$throw(loc, x) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* ThrowAny */Block.__(7, [x]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -85,7 +89,7 @@ $$throw("File \"ast_mapper_defensive_test.ml\", line 30, characters 15-22", (fun
         return /* () */0;
       }));
 
-Mt.from_pair_suites("Ast_mapper_defensive_test", suites[/* contents */0]);
+Mt.from_pair_suites("Ast_mapper_defensive_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

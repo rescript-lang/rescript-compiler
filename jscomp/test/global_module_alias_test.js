@@ -5,15 +5,19 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -21,17 +25,19 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
 function Make(U) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return {
           length: U.length,
           compare_lengths: U.compare_lengths,
@@ -89,12 +95,12 @@ function Make(U) {
 }
 
 function f(param) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return {
           length: List.length,
           compare_lengths: List.compare_lengths,
@@ -159,29 +165,29 @@ eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length
           ]
         ]), 2);
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
-v[/* contents */0] = v[/* contents */0] + 1 | 0;
+v.contents = v.contents + 1 | 0;
 
 var H = {
   length: List.length,
@@ -238,7 +244,7 @@ var H = {
   merge: List.merge
 };
 
-eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v[/* contents */0], 12);
+eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v.contents, 12);
 
 function g(param) {
   return List.length(/* :: */[
@@ -257,9 +263,9 @@ function g(param) {
 }
 
 function xx(param) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return {
           length: List.length,
           compare_lengths: List.compare_lengths,
@@ -331,7 +337,7 @@ eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.
           ]
         ]), 3);
 
-eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v[/* contents */0], 15);
+eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents, 15);
 
 var H$1 = f(/* () */0);
 
@@ -343,9 +349,9 @@ eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$
           ]
         ]), 2);
 
-eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v[/* contents */0], 21);
+eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v.contents, 21);
 
-Mt.from_pair_suites("Global_module_alias_test", suites[/* contents */0]);
+Mt.from_pair_suites("Global_module_alias_test", suites.contents);
 
 var A = 0;
 

@@ -5,6 +5,9 @@ let function_equal_test = try ((fun x -> x + 1) = (fun x -> x + 2)) with
                          | Invalid_argument "equal: functional value" -> true
                          | _ -> false
 
+let small64 = 44444444444L
+let big64 = 0x0800000000000000L
+
 let suites = ref Mt.[
     __LOC__ , (fun _ -> Eq(true, None < Some 1)); 
     "option2", (fun _ -> Eq(true, Some 1 < Some 2));
@@ -102,7 +105,12 @@ let suites = ref Mt.[
     __LOC__ , begin fun _ ->
         Eq(compare (Js.Nullable.return 0) Js.Nullable.undefined, 1)
     end;
-]
+
+    "cmp_int64a", (fun _ -> Eq(compare 1L 44444444444L, -1));
+    "cmp_int64b", (fun _ -> Eq(compare 44444444444L 1L, 1));
+    "cmp_int64c", (fun _ -> Eq(compare small64 big64, -1));
+    "cmp_int64d", (fun _ -> Eq(compare big64 small64, 1));
+    ]
 ;;
 
 
@@ -114,4 +122,5 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 ;; eq __LOC__ false (None > Some 1)
 ;; eq __LOC__ false (None > Some [|1;30|])
 ;; eq __LOC__ false (Some [|1;30|] < None)
+
 let () = Mt.from_pair_suites __MODULE__ !suites

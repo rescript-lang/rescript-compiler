@@ -129,7 +129,8 @@ catch (raw_e$1){
   a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);
 }
 
-var suites = [/* contents : :: */[
+var suites = {
+  contents: /* :: */[
     /* tuple */[
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
@@ -172,9 +173,12 @@ var suites = [/* contents : :: */[
       ],
       /* [] */0
     ]
-  ]];
+  ]
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -227,7 +231,7 @@ function input_lines(ic, _acc) {
 
 eq("File \"exception_raise_test.ml\", line 150, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
 
-Mt.from_pair_suites("Exception_raise_test", suites[/* contents */0]);
+Mt.from_pair_suites("Exception_raise_test", suites.contents);
 
 exports.Local = Local;
 exports.B = B;

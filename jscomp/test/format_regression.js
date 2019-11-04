@@ -49,15 +49,15 @@ function format_pp_token(param, param$1) {
 
 function advance_loop(state) {
   while(true) {
-    var match = peek_queue(state[/* pp_queue */3]);
-    var size = match[/* elem_size */0];
+    var match = peek_queue(state.pp_queue);
+    var size = match.elem_size;
     var size$1 = int_of_size(size);
-    if (size$1 < 0 && (state[/* pp_right_total */2] - state[/* pp_left_total */1] | 0) < state[/* pp_space_left */0]) {
+    if (size$1 < 0 && (state.pp_right_total - state.pp_left_total | 0) < state.pp_space_left) {
       return 0;
     } else {
-      take_queue(state[/* pp_queue */3]);
-      Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
-      state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1] | 0;
+      take_queue(state.pp_queue);
+      Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match.token);
+      state.pp_left_total = match.length + state.pp_left_total | 0;
       continue ;
     }
   };

@@ -9,9 +9,13 @@ var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -315,7 +319,7 @@ b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", Belt_Array.eq(Belt_
             return prim === prim$1;
           })));
 
-Mt.from_pair_suites("Bs_poly_map_test", suites[/* contents */0]);
+Mt.from_pair_suites("Bs_poly_map_test", suites.contents);
 
 var M = 0;
 

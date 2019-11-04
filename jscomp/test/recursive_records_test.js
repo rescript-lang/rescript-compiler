@@ -6,9 +6,13 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -16,21 +20,21 @@ function eq(loc, x, y) {
 
 var rec_cell = [];
 
-rec_cell[/* content */0] = 3;
+rec_cell.content = 3;
 
-rec_cell[/* next */1] = rec_cell;
+rec_cell.next = rec_cell;
 
 function f0(x) {
   var rec_cell = [];
-  Caml_obj.caml_update_dummy(rec_cell, [
-        /* content */Caml_int32.imul(x, x) - 6 | 0,
-        /* next */rec_cell
-      ]);
+  Caml_obj.caml_update_dummy(rec_cell, {
+        content: Caml_int32.imul(x, x) - 6 | 0,
+        next: rec_cell
+      });
   return rec_cell;
 }
 
 function a0(x) {
-  return (x[/* content */0] + x[/* next */1][/* content */0] | 0) + x[/* next */1][/* next */1][/* content */0] | 0;
+  return (x.content + x.next.content | 0) + x.next.next.content | 0;
 }
 
 eq("File \"recursive_records_test.ml\", line 29, characters 5-12", a0(rec_cell), 9);
@@ -102,7 +106,7 @@ var rec_cell3$1 = f3(3);
 
 eq("File \"recursive_records_test.ml\", line 77, characters 5-12", (List.hd(rec_cell3$1) + List.hd(List.tl(rec_cell3$1)) | 0) + List.hd(List.tl(List.tl(rec_cell3$1))) | 0, 9);
 
-Mt.from_pair_suites("recursive_records_test.ml", suites[/* contents */0]);
+Mt.from_pair_suites("recursive_records_test.ml", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

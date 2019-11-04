@@ -6,9 +6,13 @@ var Block = require("../../lib/js/block.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -74,10 +78,10 @@ eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
   if (x.tag) {
-    x[/* z */0] = x[/* z */0] + 2 | 0;
+    x[0] = x[/* z */0] + 2 | 0;
     return /* () */0;
   } else {
-    x[/* x */0] = x[/* x */0] + 1 | 0;
+    x[0] = x[/* x */0] + 1 | 0;
     return /* () */0;
   }
 }
@@ -140,8 +144,8 @@ var v6 = [
 
 function ff0(x) {
   if (x[0] === A4) {
-    x[/* x */1] = x[/* x */1] + 1 | 0;
-    x[/* z */3] = x[/* z */3] + 1 | 0;
+    x[1] = x[/* x */1] + 1 | 0;
+    x[3] = x[/* z */3] + 1 | 0;
     return /* () */0;
   } else {
     return /* () */0;
@@ -180,7 +184,7 @@ function ff1(x) {
   }
 }
 
-Mt.from_pair_suites("Inline_record_test", suites[/* contents */0]);
+Mt.from_pair_suites("Inline_record_test", suites.contents);
 
 var v2 = /* A0 */[
   /* lbl */3,

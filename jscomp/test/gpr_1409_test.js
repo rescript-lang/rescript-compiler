@@ -7,15 +7,19 @@ var Curry = require("../../lib/js/curry.js");
 var String_set = require("./string_set.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -23,7 +27,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -114,11 +118,13 @@ function test5(f, x) {
 
 function test6(f, x) {
   console.log("no inline");
-  var x$1 = [/* contents */3];
+  var x$1 = {
+    contents: 3
+  };
   var tmp = {
     hi: 2
   };
-  var tmp$1 = (x$1[/* contents */0] = x$1[/* contents */0] + 1 | 0, x$1[/* contents */0]);
+  var tmp$1 = (x$1.contents = x$1.contents + 1 | 0, x$1.contents);
   if (tmp$1 !== undefined) {
     tmp.open = Caml_option.valFromOption(tmp$1);
   }
@@ -157,7 +163,7 @@ eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           ]
         ], Object.keys(test3(2, 2))), true);
 
-Mt.from_pair_suites("Gpr_1409_test", suites[/* contents */0]);
+Mt.from_pair_suites("Gpr_1409_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

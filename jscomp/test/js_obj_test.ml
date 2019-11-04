@@ -1,4 +1,4 @@
-open Js_obj
+(* open Js_obj *)
 
 
 type  x = < say : int -> int >
@@ -18,9 +18,9 @@ let suites = Mt.[
   "js_obj2", (fun _ ->
     Eq(34,  [%obj { say = fun [@bs]  x -> x + 2 } #@say 32 ]));
   "empty", (fun _ ->
-    Eq(0, empty () |> keys |> Array.length));
+    Eq(0, Js_obj.empty () |> Js_obj.keys |> Array.length));
   "assign", (fun _ ->
-    Eq([%obj { a = 1 }], assign (empty ()) [%obj { a = 1 }]));
+    Eq([%obj { a = 1 }], Js_obj.assign (Js_obj.empty ()) [%obj { a = 1 }]));
     (*
   "assignMany", (fun _ ->
     let o1 = [%obj { a = 1; b = 1; c = 1 }] in

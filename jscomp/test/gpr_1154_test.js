@@ -6,15 +6,19 @@ var Int64 = require("../../lib/js/int64.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -22,7 +26,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -36,22 +40,24 @@ function g(x) {
   return Caml_int64.or_(x, (Pervasives.print_string("f"), x));
 }
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
 function f2(x) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return x;
 }
 
 function g2(x) {
-  return Caml_int64.or_(x, (v[/* contents */0] = v[/* contents */0] + 1 | 0, x));
+  return Caml_int64.or_(x, (v.contents = v.contents + 1 | 0, x));
 }
 
-var a = Caml_int64.or_(Int64.one, (v[/* contents */0] = v[/* contents */0] + 1 | 0, Int64.one));
+var a = Caml_int64.or_(Int64.one, (v.contents = v.contents + 1 | 0, Int64.one));
 
-eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v[/* contents */0], 1);
+eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v.contents, 1);
 
-Mt.from_pair_suites("Gpr_1154_test", suites[/* contents */0]);
+Mt.from_pair_suites("Gpr_1154_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
