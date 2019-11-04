@@ -14,9 +14,9 @@ function eq(loc, x, y) {
 
 var rec_cell = [];
 
-rec_cell[0] = 3;
+rec_cell[/* content */0] = 3;
 
-rec_cell[1] = rec_cell;
+rec_cell[/* next */1] = rec_cell;
 
 function a0(x) {
   return (x[/* content */0] + x[/* next */1][/* content */0] | 0) + x[/* next */1][/* next */1][/* content */0] | 0;
