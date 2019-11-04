@@ -354,6 +354,7 @@ and compile_recursive_let ~all_bindings
         | Lvar pid ->
           Ident.same pid id  ||
           (not @@ Ext_list.exists all_bindings (fun (other,_) -> Ident.same other pid ) )
+        | Lconst _ -> true  
         | _ -> false) 
     ->
     (* capture cases like for {!Queue}
@@ -396,7 +397,6 @@ and compile_recursive_let ~all_bindings
                 (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy"
                    [ E.var id;  v])]),
         [S.define_variable ~kind:Variable id (E.dummy_obj tag_info)]
-      (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false
     end
   | Lvar _   ->
