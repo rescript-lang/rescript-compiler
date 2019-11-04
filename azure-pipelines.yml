@@ -12,11 +12,6 @@ jobs:
       vmImage: ubuntu-16.04
 
     steps:
-      # - task: NodeTool@0
-      #   inputs:
-      #     versionSpec: "10.x"
-      #   displayName: "Install Node.js"
-
       - bash: |
           BS_TRAVIS_CI=1
           OCAMLRUNPARAM="b"
@@ -46,11 +41,6 @@ jobs:
       vmImage: macOS-10.13
 
     steps:
-      # - task: NodeTool@0
-      #   inputs:
-      #     versionSpec: "10.x"
-      #   displayName: "Install Node.js"
-
       - bash: |
           BS_TRAVIS_CI=1
           OCAMLRUNPARAM="b"
@@ -92,11 +82,6 @@ jobs:
       #     # esy b which x86_64-w64-mingw32-as
 
       #   displayName: "find mingw"
-
-      # - task: NodeTool@0
-      #   inputs:
-      #     versionSpec: "10.x"
-      #   displayName: "Install Node.js"
 
       - bash: |
           BS_TRAVIS_CI=1
@@ -153,3 +138,29 @@ jobs:
       #     ocamlopt.opt testOcaml.ml -o testOcaml
       #     node scripts/prebuilt.js
       #   displayName: "try node scripts/prebuilt.js"
+
+  - job: Linux_esy_build
+    pool:
+      vmImage: ubuntu-16.04
+    steps:
+      - bash: env
+        displayName: "Print environment"
+      - script: npm install -g esy
+        displayName: "install esy"
+      - script: esy install
+        displayName: "esy install"
+      - script: esy build
+        displayName: "esy build"
+
+  - job: macOS_esy_build
+    pool:
+      vmImage: macOS-10.13
+    steps:
+      - bash: env
+        displayName: "Print environment"
+      - script: npm install -g esy
+        displayName: "install esy"
+      - script: esy install
+        displayName: "esy install"
+      - script: esy build
+        displayName: "esy build"
