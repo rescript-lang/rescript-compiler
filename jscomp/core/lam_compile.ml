@@ -368,7 +368,10 @@ and compile_recursive_let ~all_bindings
       S.define_variable ~kind:Variable id (E.dummy_obj tag_info) ::
       (Ext_list.mapi ls (fun i x ->
            S.exp
-             (Js_arr.set_array (E.var id) (E.int (Int32.of_int i))                     
+             (Js_of_lam_block.set_field 
+              (match tag_info with 
+              | Blk_record xs -> Fld_record_set xs.(i)
+              | _ -> Fld_set_na) (E.var id)  (Int32.of_int i)                    
                 (match x with 
                  | Lvar lid  -> E.var lid
                  | Lconst x -> Lam_compile_const.translate x

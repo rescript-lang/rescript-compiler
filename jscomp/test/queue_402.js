@@ -22,8 +22,8 @@ function clear(q) {
 function add(x, q) {
   if (q[/* length */0] === 0) {
     var cell = [];
-    cell[0] = x;
-    cell[1] = cell;
+    cell[/* content */0] = x;
+    cell[/* next */1] = cell;
     q[/* length */0] = 1;
     q[/* tail */1] = cell;
     return /* () */0;
