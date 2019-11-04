@@ -1158,10 +1158,10 @@ and compile_send  (meth_kind : Lam_compat.meth_kind)
           cont2 obj_code (k cobj) in
       match meth_kind with
       | Self ->
-        (* TODO: horrible hack -- fixed later *)
+        (* TODO: horrible hack -- fixed later -- CHECK*)
         cont3 nobj (fun aobj -> E.call ~info:Js_call_info.dummy
                        (Js_of_lam_array.ref_array
-                          (Js_of_lam_record.field Fld_na aobj 0l) label )
+                          (E.array_index_by_int aobj 0l) label )
                        (aobj :: args))
       (* [E.small_int 1] is because we use array,
           when we change the runtime represenation, it needs to be adapted
