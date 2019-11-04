@@ -7,7 +7,7 @@ trigger:
   - master
 
 jobs:
-  - job: Linux
+  - job: Linux_npm_install
     pool:
       vmImage: ubuntu-16.04
 
@@ -41,7 +41,7 @@ jobs:
           npm test
         displayName: "test"
 
-  - job: macOS
+  - job: macOS_npm_install
     pool:
       vmImage: macOS-10.13
 
@@ -75,7 +75,7 @@ jobs:
           npm test
         displayName: "test"
 
-  - job: Windows
+  - job: Windows_esy_build
     pool:
       vmImage: vs2017-win2016
 
