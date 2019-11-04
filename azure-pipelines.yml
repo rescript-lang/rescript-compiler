@@ -12,10 +12,10 @@ jobs:
       vmImage: ubuntu-16.04
 
     steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: "10.x"
-        displayName: "Install Node.js"
+      # - task: NodeTool@0
+      #   inputs:
+      #     versionSpec: "10.x"
+      #   displayName: "Install Node.js"
 
       - bash: |
           BS_TRAVIS_CI=1
@@ -46,10 +46,10 @@ jobs:
       vmImage: macOS-10.13
 
     steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: "10.x"
-        displayName: "Install Node.js"
+      # - task: NodeTool@0
+      #   inputs:
+      #     versionSpec: "10.x"
+      #   displayName: "Install Node.js"
 
       - bash: |
           BS_TRAVIS_CI=1
@@ -93,10 +93,10 @@ jobs:
 
       #   displayName: "find mingw"
 
-      - task: NodeTool@0
-        inputs:
-          versionSpec: "10.x"
-        displayName: "Install Node.js"
+      # - task: NodeTool@0
+      #   inputs:
+      #     versionSpec: "10.x"
+      #   displayName: "Install Node.js"
 
       - bash: |
           BS_TRAVIS_CI=1
