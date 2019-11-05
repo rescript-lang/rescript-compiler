@@ -1413,6 +1413,11 @@ build all: phony runtime others $stdlib test
       `
 ${getVendorConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+native_ocaml_path = ${
+        process.env.ESY === "true"
+          ? path.join(process.env.OCAMLLIB, "/../..")
+          : "../ocaml/"
+      }
 snapshot_path = ${require("./buildocaml.js").getVersionPrefix()}
 subninja compiler.ninja
 subninja snapshot.ninja
