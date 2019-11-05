@@ -42,7 +42,13 @@ let v1 = new xx 3.
 let v2 = v1#incr 
 
 let () = assert (v1#get_money = 3.)
-let () = Js.log (v1#get_money, v2#get_money)
+
+    (* if Sys.backend_type = Other "BS" then *)
+#if BS then    
+let () = 
+    Js.log (v1#get_money, v2#get_money)
+#end    
+
 let () = assert (v2#get_money = 9.)
 (*
 {[
@@ -78,3 +84,16 @@ let () = assert (v2#get_money = 9.)
     ]
 ]}
 *)
+
+(* check dispatch of s#get_x*)
+class point = 
+object (s) 
+  val mutable x = 0 
+  method get_x = x 
+  method get_x5 = s#get_x + 5 
+end 
+
+let v = new point 
+
+let () = 
+  assert (v#get_x5 = 5)

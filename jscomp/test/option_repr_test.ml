@@ -149,4 +149,14 @@ let all_true xs = Belt.List.every xs (fun x -> x)
     neqx (Some (Some (Some None))) (Some (Some None))
   ]
   
+module N0 = struct   
+  type record = { x : int ; mutable y : string}
+  type t = 
+    | None 
+    | Some of record
+
+  let v (x : record) : t  = Some x
+  let v0 (x : record) : record option = Some x  
+  (* [v] and [v0] should be just an identity function *)
+end
 ;; Mt.from_pair_suites __MODULE__ !suites

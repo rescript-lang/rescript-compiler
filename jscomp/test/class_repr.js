@@ -8,9 +8,11 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = /* array */["get_x"];
+var shared = /* array */["x"];
 
-var shared$1 = /* array */[
+var shared$1 = /* array */["get_x"];
+
+var shared$2 = /* array */[
   "incr",
   "get_money"
 ];
@@ -30,7 +32,7 @@ var x0 = CamlinternalOO.make_class(0, x0_init);
 
 function x_init($$class) {
   var v = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, /* array */["x"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared);
   var get_x = ids[0];
   var x = ids[1];
   CamlinternalOO.set_method($$class, get_x, (function (self$2) {
@@ -44,7 +46,7 @@ function x_init($$class) {
     });
 }
 
-var x = CamlinternalOO.make_class(shared, x_init);
+var x = CamlinternalOO.make_class(shared$1, x_init);
 
 var v = Curry._2(x[0], 0, 3);
 
@@ -74,7 +76,7 @@ if (Caml_oo_curry.js1(291546447, 2, u) !== 3) {
 
 function xx_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, /* array */["money"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, /* array */["money"]);
   var incr = ids[0];
   var get_money = ids[1];
   var money = ids[2];
@@ -98,7 +100,7 @@ function xx_init($$class) {
     });
 }
 
-var xx = CamlinternalOO.make_class(shared$1, xx_init);
+var xx = CamlinternalOO.make_class(shared$2, xx_init);
 
 var v1 = Curry._2(xx[0], 0, 3);
 
@@ -125,17 +127,61 @@ if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
           "class_repr.ml",
-          46,
+          52,
           9
+        ]
+      ];
+}
+
+function point_init($$class) {
+  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
+        "get_x5",
+        "get_x"
+      ], shared);
+  var get_x5 = ids[0];
+  var get_x = ids[1];
+  var x = ids[2];
+  CamlinternalOO.set_methods($$class, /* array */[
+        get_x,
+        (function (self$4) {
+            return self$4[x];
+          }),
+        get_x5,
+        (function (self$4) {
+            return Curry._1(self$4[0][get_x], self$4) + 5 | 0;
+          })
+      ]);
+  return (function (env, self) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = 0;
+      return self$1;
+    });
+}
+
+var point = CamlinternalOO.make_class(/* array */[
+      "get_x",
+      "get_x5"
+    ], point_init);
+
+var v$1 = Curry._1(point[0], 0);
+
+if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "class_repr.ml",
+          99,
+          2
         ]
       ];
 }
 
 exports.x0 = x0;
 exports.x = x;
-exports.v = v;
 exports.u = u;
 exports.xx = xx;
 exports.v1 = v1;
 exports.v2 = v2;
+exports.point = point;
+exports.v = v$1;
 /* x0 Not a pure module */
