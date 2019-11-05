@@ -249,6 +249,19 @@ b("File \"option_repr_test.ml\", line 143, characters 5-12", Belt_List.every(xs$
             return x;
           })));
 
+function v(x) {
+  return x;
+}
+
+function v0(x) {
+  return x;
+}
+
+var N0 = {
+  v: v,
+  v0: v0
+};
+
 Mt.from_pair_suites("Option_repr_test", suites[/* contents */0]);
 
 var f7 = undefined;
@@ -292,4 +305,5 @@ exports.gtx = gtx;
 exports.eqx = eqx;
 exports.neqx = neqx;
 exports.all_true = all_true;
+exports.N0 = N0;
 /* ff Not a pure module */
