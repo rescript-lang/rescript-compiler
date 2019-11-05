@@ -429,7 +429,12 @@ let assign_by_int
   e0 (index : int32) value = 
   assign_by_exp ?comment e0 (int ?comment index) value
 
-
+let record_assign  
+  (e : t) 
+  (pos : int32) 
+  (name : string)
+  (value : t) = 
+  assign_by_int ~comment:name e pos value
 
 
 

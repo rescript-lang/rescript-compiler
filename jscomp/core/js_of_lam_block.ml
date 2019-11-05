@@ -78,8 +78,8 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
       -> (* see GPR#631*)
       E.assign_by_int ~comment e i e0 
 #end    
-    | Fld_record_set comment -> 
-      E.assign_by_int ~comment e i e0 
+    | Fld_record_set name -> 
+      E.record_assign e i name e0
   
   
   
