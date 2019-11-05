@@ -382,6 +382,9 @@ let array_index_by_int ?comment (e0 : t)  (e1 : int32) : t =
       { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
     )
   | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
+  
+let record_access (e : t) (name : string) (pos : int32) = 
+    array_index_by_int ~comment:name  e pos
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with

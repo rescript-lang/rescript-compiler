@@ -57,9 +57,11 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
 #if OCAML_VERSION =~ ">4.03.0" then 
   | Fld_record_inline comment
   | Fld_record_extension comment
+    -> 
+    E.array_index_by_int  ~comment e i 
 #end
-  | Fld_record comment
-    -> E.array_index_by_int ~comment e i
+  | Fld_record name
+    -> E.record_access e name i
   | Fld_module name
     -> E.module_access e name i
 let field_by_exp e i = 
