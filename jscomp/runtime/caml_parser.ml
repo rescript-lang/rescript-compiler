@@ -170,40 +170,40 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)C
     //var shift_recover = 9;
     //var reduce = 10;
     // Parsing.parser_env
-    var env_s_stack = 0; // array
-    var env_v_stack = 1; // array
-    var env_symb_start_stack = 2; // array
-    var env_symb_end_stack = 3; // array
-    var env_stacksize = 4;
-    var env_stackbase = 5;
-    var env_curr_char = 6;
-    var env_lval = 7; // Caml_obj_extern.t
-    var env_symb_start = 8; // position
-    var env_symb_end = 9; // position
-    var env_asp = 10;
-    var env_rule_len = 11;
-    var env_rule_number = 12;
-    var env_sp = 13;
-    var env_state = 14;
-    var env_errflag = 15;
+    var env_s_stack = 's_stack'; // array
+    var env_v_stack = 'v_stack'; // array
+    var env_symb_start_stack = 'symb_start_stack'; // array
+    var env_symb_end_stack = 'symb_end_stack'; // array
+    var env_stacksize = 'stacksize';
+    var env_stackbase = 'stackbase';
+    var env_curr_char = 'curr_char';
+    var env_lval = 'lval'; // Caml_obj_extern.t
+    var env_symb_start = 'symb_start'; // position
+    var env_symb_end = 'symb_end'; // position
+    var env_asp = 'asp';
+    var env_rule_len = 'rule_len';
+    var env_rule_number = 'rule_number';
+    var env_sp = 'sp';
+    var env_state = 'state';
+    var env_errflag = 'errflag';
     // Parsing.parse_tables
     // var _tbl_actions = 1;
-    var tbl_transl_const = 1; // array
-    var tbl_transl_block = 2; // array
-    var tbl_lhs = 3;
-    var tbl_len = 4;
-    var tbl_defred = 5;
-    var tbl_dgoto = 6;
-    var tbl_sindex = 7;
-    var tbl_rindex = 8;
-    var tbl_gindex = 9;
-    var tbl_tablesize = 10;
-    var tbl_table = 11;
-    var tbl_check = 12;
+    var tbl_transl_const = 'transl_const'; // array
+    var tbl_transl_block = 'transl_block'; // array
+    var tbl_lhs = 'lhs';
+    var tbl_len = 'len';
+    var tbl_defred = 'defred';
+    var tbl_dgoto = 'dgoto';
+    var tbl_sindex = 'sindex';
+    var tbl_rindex = 'rindex';
+    var tbl_gindex = 'gindex';
+    var tbl_tablesize = 'tablesize';
+    var tbl_table = 'table';
+    var tbl_check = 'check';
     // var _tbl_error_function = 14;
     // var _tbl_names_const = 15;
     // var _tbl_names_block = 16;
-    if (!tables.dgoto) {
+    if (!tables.preprocessed) {
         tables.defred = caml_lex_array(tables[tbl_defred]);
         tables.sindex = caml_lex_array(tables[tbl_sindex]);
         tables.check = caml_lex_array(tables[tbl_check]);
@@ -213,6 +213,7 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)C
         tables.lhs = caml_lex_array(tables[tbl_lhs]);
         tables.gindex = caml_lex_array(tables[tbl_gindex]);
         tables.dgoto = caml_lex_array(tables[tbl_dgoto]);
+        tables.preprocessed = true;
     }
     var res;
     var n, n1, n2, state1;
