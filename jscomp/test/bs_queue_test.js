@@ -7,9 +7,13 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -635,10 +639,12 @@ for(var i$6 = 1; i$6 <= 10; ++i$6){
   Belt_MutableQueue.add(q$5, i$6);
 }
 
-var i$7 = [/* contents */1];
+var i$7 = {
+  contents: 1
+};
 
 Belt_MutableQueue.forEach(q$5, (function (j) {
-        if (i$7[/* contents */0] !== j) {
+        if (i$7.contents !== j) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -648,7 +654,7 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
                 ]
               ];
         }
-        i$7[/* contents */0] = i$7[/* contents */0] + 1 | 0;
+        i$7.contents = i$7.contents + 1 | 0;
         return /* () */0;
       }));
 
@@ -1130,7 +1136,7 @@ var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray(/* array */[]), (fun
 
 b("File \"bs_queue_test.ml\", line 156, characters 4-11", q$8.length === 0);
 
-Mt.from_pair_suites("Bs_queue_test", suites[/* contents */0]);
+Mt.from_pair_suites("Bs_queue_test", suites.contents);
 
 var Q = 0;
 

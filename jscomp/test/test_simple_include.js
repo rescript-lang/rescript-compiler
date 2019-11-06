@@ -2,16 +2,20 @@
 
 var $$Array = require("../../lib/js/array.js");
 
-var v = [/* contents */32];
+var v = {
+  contents: 32
+};
 
-v[/* contents */0] = 0;
+v.contents = 0;
 
 var N = {
   a: 3,
   v: v
 };
 
-var v$1 = [/* contents */32];
+var v$1 = {
+  contents: 32
+};
 
 var NN = {
   a: 3,

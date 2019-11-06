@@ -6,15 +6,19 @@ var Printexc = require("../../lib/js/printexc.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -22,7 +26,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -40,7 +44,7 @@ eq("File \"gpr_1501_test.ml\", line 17, characters 7-14", "Gpr_1501_test.B(1)", 
           1
         ]));
 
-Mt.from_pair_suites("Gpr_1501_test", suites[/* contents */0]);
+Mt.from_pair_suites("Gpr_1501_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

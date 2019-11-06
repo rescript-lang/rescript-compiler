@@ -4,9 +4,13 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Belt_Int = require("../../lib/js/belt_Int.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -21,10 +25,10 @@ function $$throw(loc, x) {
 }
 
 function neq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Neq */Block.__(1, [
                     x,
@@ -32,7 +36,7 @@ function neq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -79,7 +83,7 @@ eq("File \"bs_int_test.ml\", line 42, characters 5-12", 6, 6);
 
 eq("File \"bs_int_test.ml\", line 43, characters 5-12", 0, 0);
 
-Mt.from_pair_suites("File \"bs_int_test.ml\", line 45, characters 23-30", suites[/* contents */0]);
+Mt.from_pair_suites("File \"bs_int_test.ml\", line 45, characters 23-30", suites.contents);
 
 var I = 0;
 

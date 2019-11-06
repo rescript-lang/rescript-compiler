@@ -6,11 +6,13 @@ var Curry = require("../../lib/js/curry.js");
 
 var g = 7;
 
-var h = [/* contents */0];
+var h = {
+  contents: 0
+};
 
 function g1(x, y) {
   var u = x + y | 0;
-  h[/* contents */0] = h[/* contents */0] + 1 | 0;
+  h.contents = h.contents + 1 | 0;
   return (function (xx, yy) {
       return (xx + yy | 0) + u | 0;
     });
@@ -63,7 +65,7 @@ var suites_001 = /* :: */[
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      h[/* contents */0],
+                      h.contents,
                       1
                     ]);
           })

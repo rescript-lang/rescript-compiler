@@ -46,7 +46,9 @@ Caml_oo_curry.js2(-933174511, 2, p, 3);
 
 var three = Caml_oo_curry.js1(291546447, 3, p);
 
-var x0 = [/* contents */0];
+var x0 = {
+  contents: 0
+};
 
 function point2_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared);
@@ -66,8 +68,8 @@ function point2_init($$class) {
       ]);
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      x0[/* contents */0] = x0[/* contents */0] + 1 | 0;
-      self$1[x] = x0[/* contents */0];
+      x0.contents = x0.contents + 1 | 0;
+      self$1[x] = x0.contents;
       return self$1;
     });
 }

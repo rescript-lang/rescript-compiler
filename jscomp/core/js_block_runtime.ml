@@ -32,12 +32,12 @@ let tag_is_zero (tag : J.expression) =
   (tag : J.expression)
   (tag_info : J.tag_info) = 
   match tag_info with 
-  | Blk_variant _   
-  | Blk_record _   
+  | Blk_variant _     
   | Blk_constructor _   -> true
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined _ -> true  
 #end  
+  | Blk_record _   
   | Blk_module _ -> false
   | Blk_tuple 
   | Blk_extension

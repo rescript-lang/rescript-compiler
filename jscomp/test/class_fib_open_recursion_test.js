@@ -10,15 +10,19 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var shared = /* array */["calc"];
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -26,7 +30,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -82,7 +86,7 @@ var tmp = Curry._1(memo_fib[0], 0);
 
 eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
 
-Mt.from_pair_suites("Class_fib_open_recursion_test", suites[/* contents */0]);
+Mt.from_pair_suites("Class_fib_open_recursion_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

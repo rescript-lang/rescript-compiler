@@ -34,11 +34,13 @@ function f(param) {
 }
 
 function from_tokens(lst) {
-  var l = [/* contents */lst];
+  var l = {
+    contents: lst
+  };
   return (function (param) {
-      var match = l[/* contents */0];
+      var match = l.contents;
       if (match) {
-        l[/* contents */0] = match[1];
+        l.contents = match[1];
         return match[0];
       } else {
         throw Caml_builtin_exceptions.end_of_file;
@@ -91,17 +93,19 @@ var lexer_suites_001 = /* :: */[
     /* tuple */[
       "number_lexer",
       (function (param) {
-          var v = [/* contents : [] */0];
+          var v = {
+            contents: /* [] */0
+          };
           var add = function (t) {
-            v[/* contents */0] = /* :: */[
+            v.contents = /* :: */[
               t,
-              v[/* contents */0]
+              v.contents
             ];
             return /* () */0;
           };
           Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
           return /* Eq */Block.__(0, [
-                    List.rev(v[/* contents */0]),
+                    List.rev(v.contents),
                     /* :: */[
                       "number",
                       /* :: */[

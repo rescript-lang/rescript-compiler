@@ -24,38 +24,40 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function field($staropt$star, label, number, type_, name) {
   var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return [
-          /* field_name */name,
-          /* field_number */number,
-          /* field_label */label,
-          /* field_type */type_,
-          /* field_options */options
-        ];
+  return {
+          field_name: name,
+          field_number: number,
+          field_label: label,
+          field_type: type_,
+          field_options: options
+        };
 }
 
 function map($staropt$star, number, key_type, value_type, name) {
   var map_options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return [
-          /* map_name */name,
-          /* map_number */number,
-          /* map_key_type */key_type,
-          /* map_value_type */value_type,
-          /* map_options */map_options
-        ];
+  return {
+          map_name: name,
+          map_number: number,
+          map_key_type: key_type,
+          map_value_type: value_type,
+          map_options: map_options
+        };
 }
 
 function oneof_field($staropt$star, number, type_, name) {
   var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  return [
-          /* field_name */name,
-          /* field_number */number,
-          /* field_label : Oneof */-978693923,
-          /* field_type */type_,
-          /* field_options */options
-        ];
+  return {
+          field_name: name,
+          field_number: number,
+          field_label: /* Oneof */-978693923,
+          field_type: type_,
+          field_options: options
+        };
 }
 
-var message_counter = [/* contents */0];
+var message_counter = {
+  contents: 0
+};
 
 function extension_range_range(from, to_) {
   var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */[to_[1]];
@@ -66,119 +68,119 @@ function extension_range_range(from, to_) {
 }
 
 function message(content, message_name) {
-  message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-  return [
-          /* id */message_counter[/* contents */0],
-          /* message_name */message_name,
-          /* message_body */content
-        ];
+  message_counter.contents = message_counter.contents + 1 | 0;
+  return {
+          id: message_counter.contents,
+          message_name: message_name,
+          message_body: content
+        };
 }
 
 function $$import($$public, file_name) {
-  return [
-          /* file_name */file_name,
-          /* public */$$public !== undefined
-        ];
+  return {
+          file_name: file_name,
+          $$public: $$public !== undefined
+        };
 }
 
 function extend(extend_name, extend_body) {
-  message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-  return [
-          /* id */message_counter[/* contents */0],
-          /* extend_name */extend_name,
-          /* extend_body */extend_body
-        ];
+  message_counter.contents = message_counter.contents + 1 | 0;
+  return {
+          id: message_counter.contents,
+          extend_name: extend_name,
+          extend_body: extend_body
+        };
 }
 
 function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, param) {
-  var proto$2 = proto$1 !== undefined ? proto$1 : [
-      /* syntax */syntax,
-      /* imports : [] */0,
-      /* file_options : [] */0,
-      /* package */undefined,
-      /* messages : [] */0,
-      /* enums : [] */0,
-      /* extends : [] */0
-    ];
-  var proto$3 = syntax !== undefined ? [
-      /* syntax */syntax,
-      /* imports */proto$2[/* imports */1],
-      /* file_options */proto$2[/* file_options */2],
-      /* package */proto$2[/* package */3],
-      /* messages */proto$2[/* messages */4],
-      /* enums */proto$2[/* enums */5],
-      /* extends */proto$2[/* extends */6]
-    ] : proto$2;
-  var proto$4 = $$package !== undefined ? [
-      /* syntax */proto$3[/* syntax */0],
-      /* imports */proto$3[/* imports */1],
-      /* file_options */proto$3[/* file_options */2],
-      /* package */$$package,
-      /* messages */proto$3[/* messages */4],
-      /* enums */proto$3[/* enums */5],
-      /* extends */proto$3[/* extends */6]
-    ] : proto$3;
-  var proto$5 = message !== undefined ? [
-      /* syntax */proto$4[/* syntax */0],
-      /* imports */proto$4[/* imports */1],
-      /* file_options */proto$4[/* file_options */2],
-      /* package */proto$4[/* package */3],
-      /* messages : :: */[
-        message,
-        proto$2[/* messages */4]
-      ],
-      /* enums */proto$4[/* enums */5],
-      /* extends */proto$4[/* extends */6]
-    ] : proto$4;
-  var proto$6 = $$enum !== undefined ? [
-      /* syntax */proto$5[/* syntax */0],
-      /* imports */proto$5[/* imports */1],
-      /* file_options */proto$5[/* file_options */2],
-      /* package */proto$5[/* package */3],
-      /* messages */proto$5[/* messages */4],
-      /* enums : :: */[
-        $$enum,
-        proto$2[/* enums */5]
-      ],
-      /* extends */proto$5[/* extends */6]
-    ] : proto$5;
-  var proto$7 = $$import !== undefined ? [
-      /* syntax */proto$6[/* syntax */0],
-      /* imports : :: */[
-        $$import,
-        proto$2[/* imports */1]
-      ],
-      /* file_options */proto$6[/* file_options */2],
-      /* package */proto$6[/* package */3],
-      /* messages */proto$6[/* messages */4],
-      /* enums */proto$6[/* enums */5],
-      /* extends */proto$6[/* extends */6]
-    ] : proto$6;
-  var proto$8 = file_option !== undefined ? [
-      /* syntax */proto$7[/* syntax */0],
-      /* imports */proto$7[/* imports */1],
-      /* file_options : :: */[
-        file_option,
-        proto$2[/* file_options */2]
-      ],
-      /* package */proto$7[/* package */3],
-      /* messages */proto$7[/* messages */4],
-      /* enums */proto$7[/* enums */5],
-      /* extends */proto$7[/* extends */6]
-    ] : proto$7;
+  var proto$2 = proto$1 !== undefined ? proto$1 : ({
+        syntax: syntax,
+        imports: /* [] */0,
+        file_options: /* [] */0,
+        $$package: undefined,
+        messages: /* [] */0,
+        enums: /* [] */0,
+        $$extends: /* [] */0
+      });
+  var proto$3 = syntax !== undefined ? ({
+        syntax: syntax,
+        imports: proto$2.imports,
+        file_options: proto$2.file_options,
+        $$package: proto$2.$$package,
+        messages: proto$2.messages,
+        enums: proto$2.enums,
+        $$extends: proto$2.$$extends
+      }) : proto$2;
+  var proto$4 = $$package !== undefined ? ({
+        syntax: proto$3.syntax,
+        imports: proto$3.imports,
+        file_options: proto$3.file_options,
+        $$package: $$package,
+        messages: proto$3.messages,
+        enums: proto$3.enums,
+        $$extends: proto$3.$$extends
+      }) : proto$3;
+  var proto$5 = message !== undefined ? ({
+        syntax: proto$4.syntax,
+        imports: proto$4.imports,
+        file_options: proto$4.file_options,
+        $$package: proto$4.$$package,
+        messages: /* :: */[
+          message,
+          proto$2.messages
+        ],
+        enums: proto$4.enums,
+        $$extends: proto$4.$$extends
+      }) : proto$4;
+  var proto$6 = $$enum !== undefined ? ({
+        syntax: proto$5.syntax,
+        imports: proto$5.imports,
+        file_options: proto$5.file_options,
+        $$package: proto$5.$$package,
+        messages: proto$5.messages,
+        enums: /* :: */[
+          $$enum,
+          proto$2.enums
+        ],
+        $$extends: proto$5.$$extends
+      }) : proto$5;
+  var proto$7 = $$import !== undefined ? ({
+        syntax: proto$6.syntax,
+        imports: /* :: */[
+          $$import,
+          proto$2.imports
+        ],
+        file_options: proto$6.file_options,
+        $$package: proto$6.$$package,
+        messages: proto$6.messages,
+        enums: proto$6.enums,
+        $$extends: proto$6.$$extends
+      }) : proto$6;
+  var proto$8 = file_option !== undefined ? ({
+        syntax: proto$7.syntax,
+        imports: proto$7.imports,
+        file_options: /* :: */[
+          file_option,
+          proto$2.file_options
+        ],
+        $$package: proto$7.$$package,
+        messages: proto$7.messages,
+        enums: proto$7.enums,
+        $$extends: proto$7.$$extends
+      }) : proto$7;
   if (extend !== undefined) {
-    return [
-            /* syntax */proto$8[/* syntax */0],
-            /* imports */proto$8[/* imports */1],
-            /* file_options */proto$8[/* file_options */2],
-            /* package */proto$8[/* package */3],
-            /* messages */proto$8[/* messages */4],
-            /* enums */proto$8[/* enums */5],
-            /* extends : :: */[
+    return {
+            syntax: proto$8.syntax,
+            imports: proto$8.imports,
+            file_options: proto$8.file_options,
+            $$package: proto$8.$$package,
+            messages: proto$8.messages,
+            enums: proto$8.enums,
+            $$extends: /* :: */[
               extend,
-              proto$2[/* extends */6]
+              proto$2.$$extends
             ]
-          ];
+          };
   } else {
     return proto$8;
   }
@@ -301,21 +303,21 @@ function option_default(x, param) {
 }
 
 function from_lexbuf(lexbuf) {
-  var x = lexbuf[/* lex_curr_p */11][/* pos_fname */0];
+  var x = lexbuf.lex_curr_p.pos_fname;
   var file_name = x === "" ? undefined : x;
-  var line = lexbuf[/* lex_curr_p */11][/* pos_lnum */1];
-  return [
-          /* file_name */file_name,
-          /* line */line
-        ];
+  var line = lexbuf.lex_curr_p.pos_lnum;
+  return {
+          file_name: file_name,
+          line: line
+        };
 }
 
 function file_name(param) {
-  return param[/* file_name */0];
+  return param.file_name;
 }
 
 function line(param) {
-  return param[/* line */1];
+  return param.line;
 }
 
 function to_string(param) {
@@ -339,7 +341,7 @@ function to_string(param) {
                         ])
                     ]),
                   "File %s, line %i:\n"
-                ]), option_default("", param[/* file_name */0]), param[/* line */1]);
+                ]), option_default("", param.file_name), param.line);
 }
 
 function string_of_programmatic_error(e) {
@@ -401,7 +403,7 @@ function prepare_error(param) {
                                 ])
                             ]),
                           "unresolved type for field name : %s (type:%s, in message: %s)"
-                        ]), match[/* field_name */0], match[/* type_ */1], match[/* message_name */2]);
+                        ]), match.field_name, match.type_, match.message_name);
       case /* Duplicated_field_number */1 :
           var match$1 = param[0];
           return Curry._3(Printf.sprintf(/* Format */[
@@ -428,7 +430,7 @@ function prepare_error(param) {
                                 ])
                             ]),
                           "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-                        ]), match$1[/* field_name */0], match$1[/* previous_field_name */1], match$1[/* message_name */2]);
+                        ]), match$1.field_name, match$1.previous_field_name, match$1.message_name);
       case /* Invalid_default_value */2 :
           var match$2 = param[0];
           return Curry._2(Printf.sprintf(/* Format */[
@@ -449,7 +451,7 @@ function prepare_error(param) {
                                 ])
                             ]),
                           "invalid default value for field name:%s (info: %s)"
-                        ]), option_default("", match$2[/* field_name */0]), match$2[/* info */1]);
+                        ]), option_default("", match$2.field_name), match$2.info);
       case /* Unsupported_field_type */3 :
           var match$3 = param[0];
           return Curry._3(Printf.sprintf(/* Format */[
@@ -473,7 +475,7 @@ function prepare_error(param) {
                                 ])
                             ]),
                           "unsupported field type for field name:%s with type:%s in bakend: %s"
-                        ]), option_default("", match$3[/* field_name */0]), match$3[/* field_type */1], match$3[/* backend_name */2]);
+                        ]), option_default("", match$3.field_name), match$3.field_type, match$3.backend_name);
       case /* Programatic_error */4 :
           return Curry._1(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
@@ -690,21 +692,21 @@ Printexc.register_printer((function (exn) {
 function invalid_default_value(field_name, info, param) {
   throw [
         Compilation_error,
-        /* Invalid_default_value */Block.__(2, [[
-              /* field_name */field_name,
-              /* info */info
-            ]])
+        /* Invalid_default_value */Block.__(2, [{
+              field_name: field_name,
+              info: info
+            }])
       ];
 }
 
 function unsupported_field_type(field_name, field_type, backend_name, param) {
   throw [
         Compilation_error,
-        /* Unsupported_field_type */Block.__(3, [[
-              /* field_name */field_name,
-              /* field_type */field_type,
-              /* backend_name */backend_name
-            ]])
+        /* Unsupported_field_type */Block.__(3, [{
+              field_name: field_name,
+              field_type: field_type,
+              backend_name: backend_name
+            }])
       ];
 }
 
@@ -1011,10 +1013,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return [
-              /* oneof_name */_2[1],
-              /* oneof_fields */_4
-            ];
+      return {
+              oneof_name: _2[1],
+              oneof_fields: _4
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
@@ -1266,12 +1268,12 @@ var yyact = /* array */[
       var $staropt$star = _4;
       var enum_name = _2[1];
       var enum_values = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-      message_counter[/* contents */0] = message_counter[/* contents */0] + 1 | 0;
-      return [
-              /* enum_id */message_counter[/* contents */0],
-              /* enum_name */enum_name,
-              /* enum_values */enum_values
-            ];
+      message_counter.contents = message_counter.contents + 1 | 0;
+      return {
+              enum_id: message_counter.contents,
+              enum_name: enum_name,
+              enum_values: enum_values
+            };
     }),
   (function (__caml_parser_env) {
       return /* [] */0;
@@ -1288,10 +1290,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return [
-              /* enum_value_name */_1[1],
-              /* enum_value_int */_3
-            ];
+      return {
+              enum_value_name: _1[1],
+              enum_value_int: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -1411,53 +1413,53 @@ var yyact = /* array */[
     })
 ];
 
-var yytables = [
-  /* actions */yyact,
-  /* transl_const */yytransl_const,
-  /* transl_block */yytransl_block,
-  /* lhs */"\xff\xff\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\b\0\t\0\n\0\x0b\0\f\0\x07\0\x18\0\x18\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x19\0\x13\0\x13\0\x13\0\x1b\0\x12\0\x12\0\x1d\0\x1d\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x17\0\x17\0!\0!\0\x16\0\x15\0\x15\0\"\0\"\0\"\0\x11\0\x11\0#\0#\0$\0$\0 \0 \0\x0e\0\x0e\0\x0e\0\x0e\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0&\0&\0&\0&\0\r\0\r\0'\0'\0(\0(\0*\0*\0+\0+\0\x14\0)\0)\0)\0)\0\x10\0,\0,\0\x0f\0\x0f\0\x0f\0\x0f\0\x0f\0\x0f\0\x1c\0\x1c\0\x1e\0\x1e\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-  /* len */"\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x04\0\x03\0\x04\0\x04\0\x03\0\x05\0\x04\0\x01\0\x02\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x05\0\x04\0\x01\0\x02\0\x03\0\x01\0\x03\0\x01\0\x03\0\x03\0\x05\0\x04\0\0\0\x02\0\x06\0\x05\0\n\0\x0b\0\x07\0\x06\0\x06\0\x05\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x03\0\x02\0\x01\0\x03\0\x03\0\x05\0\x01\0\x03\0\x01\0\x02\0\x05\0\x01\0\x01\0\x01\0\x01\0\x05\0\0\0\x02\0\x04\0\x03\0\x04\0\x02\0\x02\0\x01\0\x01\0\x02\0\x01\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0",
-  /* defred */"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0r\0\0\0R\0T\0S\0\0\0s\0\0\0\0\0\0\0t\0\0\0\0\0u\0\0\0\0\0v\0\0\0\0\0w\0\0\0\0\0\0\0\0\0\0\0\0\0x\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x0e\0\0\0y\0\0\0z\0\0\0\0\0{\0\0\0\0\0\0\0|\0\0\0}\0\0\0W\0\0\0\0\0\0\0\0\0\x01\0B\0C\0D\0E\0N\0F\0G\0H\0I\0J\0K\0L\0M\0O\0P\0Q\0A\0\0\0\x02\0\0\0\0\0l\0k\0\x03\0\0\0\x04\0\0\0\0\0\x05\0\0\0\x06\0\0\0\0\0\0\0\0\0\0\0\\\0^\0\0\0\0\0\0\0\x19\0\x18\0\x15\0\x16\0\x1a\0\f\0\r\0\x17\0\x07\0\b\0\0\0\t\0\0\0\0\0\n\0\x0b\0\0\0\0\0V\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0n\0\0\0\0\0\0\0\0\0\0\0\0\0_\0\0\0\0\x004\x003\x001\0\0\0\0\0d\0a\0b\0c\0Z\0Y\0\0\0\0\0j\0\0\0\0\0\0\0\0\0p\0\0\x008\0\0\0*\0\0\0$\0(\0&\0'\0)\0\0\0\0\0\0\0%\0o\0\0\0\0\0]\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0g\0\0\0\0\0q\0\0\0\0\0\0\0#\0\0\0.\0\0\0[\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-  /* dgoto */"\r\0\x0f\0\x15\0\x19\0\x1c\0\x1f\0\"\0)\x003\x005\x008\0<\0>\0\x10\0\xae\0\xa5\0*\0\xb0\0+\0,\0-\x009\0\xb2\0.\0/\x000\x001\x002\0\x8d\0\xb3\0\xa9\0\xb5\0\xb6\0\xbe\0:\0\x88\0\x89\0W\0\x17\0C\0D\0\x9f\0k\0l\0\xa6\0",
-  /* sindex */"\xd2\0\xf5\xfe\x13\xff\xed\xfe\n\xff\x1e\xff4\xff\x89\xff:\xffF\xff5\xffV\xff[\xff\0\0\x18\xff\0\0b\0\0\0\0\0\0\0\xe1\xff\0\0i\0K\xffB\xff\0\0k\0M\xff\0\0z\0\x06\xff\0\0{\0]\xff\0\0\x7f\0a\xff\xfe\xfe\r\xffd\xffl\xff\0\0\x89\xff\x89\xff\x89\xff\x89\xff\x89\xff\x86\0\xa0\xff\0\0\x89\xff\0\0\x88\0\0\0\x8b\0\x86\xff\0\0\x97\0}\xff5\xff\0\0\x9a\0\0\0\x9c\0\0\0~\xff\x97\xff\x9f\xff\x96\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x9a\xff\0\0\xe1\xff\x98\xff\0\0\0\0\0\0\xa4\xff\0\0\x9c\xff\xa7\xff\0\0\xaa\xff\0\0\xa5\xff\xa2\xff\xa5\xff\xb3\xff\xa1\xff\0\0\0\0\x05\xff\xbf\xff\xc3\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xfe\0\x005\xff\xa5\xff\0\0\0\0\xcb\xff9\xff\0\0\x1f\xff\xda\xff\xdf\xff,\xff\xed\xfe\xe1\xff\xe8\xff\x9c\xff\x9c\xffI\xff\0\0\xe2\xff\xa5\xff\xe2\xff\xa5\xff\xe6\xff9\xff\0\0\x10\xff\xa5\xff\0\0\0\0\0\0\xe2\xff\xe4\xff\0\0\0\0\0\0\0\0\0\0\0\0)\xff\xed\xff\0\0\xe2\xff\xed\xfe\xe8\xff\xe5\xff\0\0\xf5\xff\0\0\xe8\xff\0\0\xe7\xff\0\0\0\0\0\0\0\0\0\0\xe8\xff\xf5\xff\xc2\xff\0\0\0\0\xe2\xff\xe2\xff\0\0\xa5\xff\x13\xff\xf5\xff\xe8\xff\xe2\xff9\xff\xa5\xff\xe2\xff)\xff\0\0\xf5\xff\xf3\xff\0\0\xf5\xff\xf4\xff\xf5\xff\0\0\xe2\xff\0\0\xf5\xff\0\0\xe2\xff\xa5\xff\xe2\xff)\xff\xf9\xff\xe2\xff\xa5\xff\xe2\xff\xf6\xff\xe2\xff\x13\0\xe1\xff\xfd\xff\x0e\0)\xff\xa5\xff\xe2\xff\xe2\xff",
-  /* rindex */"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0,\x01<\x01F\x01G\x01H\x01\0\0\0\0\0\0N\x01\0\0\0\0\0\0\0\0\x0b\0\0\0\0\0\x0f\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0E\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0I\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0:\0L\0\0\0\0\0I\0I\0\0\0\0\0e\0\0\0w\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0L\0\0\0\0\0\0\0Q\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0N\0\0\0\0\0\x89\0\x9b\0\0\0\0\0O\0\xad\0\0\0\xc4\xff\0\0\0\0c\0\0\0\0\0\x17\0\0\0\0\0u\0\0\0-\0\0\0\xb8\0\0\0\xc1\0\0\0\x87\0\0\0\x99\0\0\0\0\0\xab\0\0\0\xfc\xfe\0\0\b\xff\0\0\0\0\0\0\0\0\0\0\0\0m\xff\x9e\xff",
-  /* gindex */"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0c\xff\xfe\xff\xbe\x01\xff\xff\xc7\x01\x02\0\xbb\x01\xc6\x01\xca\xff\xc5\x01\xc8\x01\xc8\0\0\0\xa1\x01\0\0\xa3\xff\x1d\x01\x95\xff\0\0\0\0\x17\x01\0\0\xd6\xff\0\0\xa9\xff\0\0S\x01\0\0t\xff\0\0\0\x001\x01",
-  /* tablesize */470,
-  /* table */"\x16\0!\0\x84\0\x1d\0\xc1\0|\0\xbb\0f\0#\0\x0e\0\x8f\x002\0\x18\0:\0\x96\x000\0\x1b\0\x11\0\x12\0\x13\0\x11\0\x12\0\x13\0e\0`\x009\0g\0:\0\x97\0h\0\x92\0\x99\0\xb4\0\xa8\0\x1e\0i\0\x93\0a\0\xd1\x009\0\xa4\0\xbd\0m\0@\0j\0 \0A\0\x14\0\xa7\0\xb8\0\x14\0\xb9\0\xcf\0A\0\xd6\0B\0\xbf\0!\0i\0\xc5\0h\0\x0e\0B\0/\0\xc8\0\xdf\0%\0\x8c\0\xc2\0\x98\0\x8c\0\xa3\0\xca\0\xac\0\x11\0\x12\0\x13\0\x1e\0!\0\x1b\0&\x006\x007\0\xce\0;\0\x9b\0\x9c\0\x9d\0\x9e\0\xad\0\xa8\0Z\0[\0\\\0\xcc\0\xaa\0\xab\0;\0E\0@\0\xd0\0\x1f\0\xd2\0'\0\x14\0X\0Y\0]\0^\0;\0;\0;\0;\0;\0;\0;\0\xd5\x005\0\xd7\0\x1c\0;\0\xd9\0_\0b\0c\0;\0;\0d\0e\0\xe0\0\xe1\0m\0\xdc\0n\0t\0?\0w\0\x1d\0\xaf\0x\0;\0\xb1\0!\0\x1b\0$\0%\0\xbc\0&\0y\0'\0(\0z\0{\0>\0}\0\x1e\0~\0\x7f\0<\0<\0<\0<\0<\0<\0<\0!\0\x1b\0$\0%\0<\0&\0=\0'\0,\0<\0<\0\x80\0\x82\0\x81\0\x83\0\xaf\0\x85\0\x86\0\xb1\0`\0\x8a\0\xbc\0\x87\0\x8b\0<\0\x8e\0\x8c\0\x91\0+\0\xac\0\x11\0\x12\0\x13\0\x1e\0!\0\x1b\0\x1b\0\x1b\0\x1b\0\x1b\0;\0\x1b\0\x90\0\x1b\0\x94\0\xad\0\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\x07\0\b\0\t\0\n\0\x0b\0\f\0\x95\0\x9a\0\x14\0F\0G\0H\0I\0J\0K\0L\0M\0N\0O\0P\0Q\0R\0S\0T\0U\0o\0p\0q\0r\0s\0\xa1\0\xa2\0\xa8\0v\0\xba\0\xb7\0\xc0\0\xc6\0\xc9\0V\0!\0!\0!\0!\0!\0!\0!\0!\0!\0\xc3\0!\0!\0!\0!\0\xc7\0\xd3\0!\0!\0\xd4\0\xd8\0\xda\0\xdd\0e\0e\0e\0e\0e\0e\0e\0e\0e\0!\0e\0e\0e\0e\x002\x002\0e\0e\x000\0\xdb\0\xde\0\x13\0 \0 \0 \0 \0 \0 \0 \0 \0 \0e\0 \0 \0 \0 \0m\0\x12\0 \0 \0/\0/\0/\0/\0/\0/\0/\0\x0f\0\x10\0\x14\0m\0/\0i\0 \0h\0\x11\0/\0/\x006\x006\x006\x006\x006\x006\x006\0X\0i\x007\0h\x006\0f\0/\0\"\0-\x006\x006\0@\0@\0@\0@\0@\0@\0@\0\x1f\0\x1f\0\x1f\0\x1f\0@\0\x1f\x006\0\x1f\0\x1f\0@\0@\x005\x005\x005\x005\x005\x005\x005\0\x1c\0\x1c\0\x1c\0\x1c\x005\0\x1c\0@\0\x1c\0\x1c\x005\x005\0?\0?\0?\0?\0?\0?\0?\0\x1d\0\x1d\0\x1d\0\x1d\0?\0\x1d\x005\0\x1d\0\x1d\0?\0?\0>\0>\0>\0>\0>\0>\0>\0\x1e\0\x1e\0\x1e\0\x1e\0>\0\x1e\0?\0\x1e\0\x1e\0>\0>\0=\0=\0=\0=\0=\0=\0=\0,\0,\0,\0,\0=\0,\0>\0,\0,\0=\0=\0`\0`\0`\0`\0\x1a\0`\x004\0`\0`\0+\0+\0+\0+\0=\0+\0 \0+\0+\x006\0=\0u\0\xcb\0\xcd\0?\0\xa0\0\xc4\0",
-  /* check */"\x02\0\0\0Y\0\x04\0\xa1\0;\0\x92\0\t\x01\x06\0\x14\x01g\0\0\0\x1f\x01\x11\x01\x0f\x01\0\0\x06\x01\x01\x01\x02\x01\x03\x01\x01\x01\x02\x01\x03\x01\0\0\x12\x01\x11\x01\x1c\x01\x1f\x01\x1d\x01\x1f\x01\x19\x01|\0\x8b\0\x11\x01\x04\x01\x16\x01\x1f\x01\x1f\x01\xc3\0\x1f\x01\x85\0\x94\0\0\0\x13\x01\x1f\x01\0\0\x16\x01\x1f\x01\x87\0\x8e\0\x1f\x01\x90\0\xc0\0\x16\x01\xd3\0\x1f\x01\x95\0\x05\x01\0\0\xa6\0\0\0\x14\x01\x1f\x01\0\0\xab\0\xde\0\b\x01\x1a\x01\xa1\0{\0\x1a\x01\x1b\x01\xb3\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\n\x01\0\0\x1d\x01\xbe\0\x0b\x01\x1c\x01\x1d\x01\x1e\x01\x1f\x01\x10\x01\x11\x01\x19\x01\x1a\x01\x1b\x01\xbb\0\x89\0\x8a\0\x0b\x01\0\0\0\0\xc1\0\0\0\xc3\0\f\x01\x1f\x01\0\0\x1f\x01\0\0\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\xd1\0\0\0\xd3\0\0\0\x0b\x01\xd6\0\0\0\0\0\x1f\x01\x10\x01\x11\x01\0\0\x1f\x01\xde\0\xdf\0\x1f\x01\xdb\0\x19\x01\0\0\0\0\0\0\0\0\x8b\0\0\0\x1f\x01\x8b\0\x05\x01\x06\x01\x07\x01\b\x01\x94\0\n\x01\x0e\x01\f\x01\r\x01\0\0\x1b\x01\0\0\0\0\0\0\0\0\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\0\0\f\x01\0\0\x10\x01\x11\x01\x19\x01\x1b\x01\x13\x01\x19\x01\xb5\0\x1d\x01\x12\x01\xb5\0\0\0\x12\x01\xbc\0\x1f\x01\x12\x01\x1f\x01\x1c\x01\x1a\x01\x1f\x01\0\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1c\x01\f\x01\x12\x01\x10\x01\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\x07\0\b\0\t\0\n\0\x0b\0\f\0\x1c\x01\x15\x01\x1f\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\t\x01\n\x01\x0b\x01\f\x01\r\x01\x0e\x01\x0f\x01\x10\x01*\0+\0,\0-\0.\0\x1d\x01\x19\x01\x11\x012\0\x15\x01\x1a\x01\x19\x01\x19\x01\x18\x01\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1d\x01\n\x01\x0b\x01\f\x01\r\x01\x1a\x01\x1d\x01\x10\x01\x11\x01\x1f\x01\x1b\x01\x1f\x01\x19\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x0b\x01\f\x01\r\x01\x1a\x01\x1b\x01\x10\x01\x11\x01\x1a\x01\x17\x01\x1d\x01\0\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x0b\x01\f\x01\r\x01\x11\x01\0\0\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\0\0\0\0\0\0\x1f\x01\x0b\x01\x11\x01\x1f\x01\x11\x01\0\0\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x13\x01\x1f\x01\x11\x01\x1f\x01\x0b\x01\x11\x01\x1f\x01\x11\x01\x11\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\x05\x01\x06\x01\x07\x01\b\x01\x03\0\n\x01\b\0\f\x01\r\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x05\0\f\x01\r\x01\t\0\x0b\x000\0\xb5\0\xbc\0\f\0\x82\0\xa5\0",
-  /* error_function */Parsing.parse_error,
-  /* names_const */"REQUIRED\0OPTIONAL\0REPEATED\0MESSAGE\0ENUM\0PACKAGE\0PUBLIC\0OPTION\0EXTENSIONS\0EXTEND\0SYNTAX\0TO\0MAX\0MAP\0RBRACE\0LBRACE\0RBRACKET\0LBRACKET\0RPAREN\0LPAREN\0RANGLEB\0LANGLEB\0EQUAL\0SEMICOLON\0COMMA\0EOF\0",
-  /* names_block */"ONE_OF\0IMPORT\0STRING\0INT\0FLOAT\0IDENT\0"
-];
+var yytables = {
+  actions: yyact,
+  transl_const: yytransl_const,
+  transl_block: yytransl_block,
+  lhs: "\xff\xff\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\b\0\t\0\n\0\x0b\0\f\0\x07\0\x18\0\x18\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x1a\0\x19\0\x13\0\x13\0\x13\0\x1b\0\x12\0\x12\0\x1d\0\x1d\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x17\0\x17\0!\0!\0\x16\0\x15\0\x15\0\"\0\"\0\"\0\x11\0\x11\0#\0#\0$\0$\0 \0 \0\x0e\0\x0e\0\x0e\0\x0e\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0&\0&\0&\0&\0\r\0\r\0'\0'\0(\0(\0*\0*\0+\0+\0\x14\0)\0)\0)\0)\0\x10\0,\0,\0\x0f\0\x0f\0\x0f\0\x0f\0\x0f\0\x0f\0\x1c\0\x1c\0\x1e\0\x1e\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+  len: "\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x04\0\x03\0\x04\0\x04\0\x03\0\x05\0\x04\0\x01\0\x02\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x05\0\x04\0\x01\0\x02\0\x03\0\x01\0\x03\0\x01\0\x03\0\x03\0\x05\0\x04\0\0\0\x02\0\x06\0\x05\0\n\0\x0b\0\x07\0\x06\0\x06\0\x05\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x01\0\x03\0\x02\0\x01\0\x03\0\x03\0\x05\0\x01\0\x03\0\x01\0\x02\0\x05\0\x01\0\x01\0\x01\0\x01\0\x05\0\0\0\x02\0\x04\0\x03\0\x04\0\x02\0\x02\0\x01\0\x01\0\x02\0\x01\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0\x02\0",
+  defred: "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0r\0\0\0R\0T\0S\0\0\0s\0\0\0\0\0\0\0t\0\0\0\0\0u\0\0\0\0\0v\0\0\0\0\0w\0\0\0\0\0\0\0\0\0\0\0\0\0x\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x0e\0\0\0y\0\0\0z\0\0\0\0\0{\0\0\0\0\0\0\0|\0\0\0}\0\0\0W\0\0\0\0\0\0\0\0\0\x01\0B\0C\0D\0E\0N\0F\0G\0H\0I\0J\0K\0L\0M\0O\0P\0Q\0A\0\0\0\x02\0\0\0\0\0l\0k\0\x03\0\0\0\x04\0\0\0\0\0\x05\0\0\0\x06\0\0\0\0\0\0\0\0\0\0\0\\\0^\0\0\0\0\0\0\0\x19\0\x18\0\x15\0\x16\0\x1a\0\f\0\r\0\x17\0\x07\0\b\0\0\0\t\0\0\0\0\0\n\0\x0b\0\0\0\0\0V\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0n\0\0\0\0\0\0\0\0\0\0\0\0\0_\0\0\0\0\x004\x003\x001\0\0\0\0\0d\0a\0b\0c\0Z\0Y\0\0\0\0\0j\0\0\0\0\0\0\0\0\0p\0\0\x008\0\0\0*\0\0\0$\0(\0&\0'\0)\0\0\0\0\0\0\0%\0o\0\0\0\0\0]\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0g\0\0\0\0\0q\0\0\0\0\0\0\0#\0\0\0.\0\0\0[\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+  dgoto: "\r\0\x0f\0\x15\0\x19\0\x1c\0\x1f\0\"\0)\x003\x005\x008\0<\0>\0\x10\0\xae\0\xa5\0*\0\xb0\0+\0,\0-\x009\0\xb2\0.\0/\x000\x001\x002\0\x8d\0\xb3\0\xa9\0\xb5\0\xb6\0\xbe\0:\0\x88\0\x89\0W\0\x17\0C\0D\0\x9f\0k\0l\0\xa6\0",
+  sindex: "\xd2\0\xf5\xfe\x13\xff\xed\xfe\n\xff\x1e\xff4\xff\x89\xff:\xffF\xff5\xffV\xff[\xff\0\0\x18\xff\0\0b\0\0\0\0\0\0\0\xe1\xff\0\0i\0K\xffB\xff\0\0k\0M\xff\0\0z\0\x06\xff\0\0{\0]\xff\0\0\x7f\0a\xff\xfe\xfe\r\xffd\xffl\xff\0\0\x89\xff\x89\xff\x89\xff\x89\xff\x89\xff\x86\0\xa0\xff\0\0\x89\xff\0\0\x88\0\0\0\x8b\0\x86\xff\0\0\x97\0}\xff5\xff\0\0\x9a\0\0\0\x9c\0\0\0~\xff\x97\xff\x9f\xff\x96\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x9a\xff\0\0\xe1\xff\x98\xff\0\0\0\0\0\0\xa4\xff\0\0\x9c\xff\xa7\xff\0\0\xaa\xff\0\0\xa5\xff\xa2\xff\xa5\xff\xb3\xff\xa1\xff\0\0\0\0\x05\xff\xbf\xff\xc3\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xfe\0\x005\xff\xa5\xff\0\0\0\0\xcb\xff9\xff\0\0\x1f\xff\xda\xff\xdf\xff,\xff\xed\xfe\xe1\xff\xe8\xff\x9c\xff\x9c\xffI\xff\0\0\xe2\xff\xa5\xff\xe2\xff\xa5\xff\xe6\xff9\xff\0\0\x10\xff\xa5\xff\0\0\0\0\0\0\xe2\xff\xe4\xff\0\0\0\0\0\0\0\0\0\0\0\0)\xff\xed\xff\0\0\xe2\xff\xed\xfe\xe8\xff\xe5\xff\0\0\xf5\xff\0\0\xe8\xff\0\0\xe7\xff\0\0\0\0\0\0\0\0\0\0\xe8\xff\xf5\xff\xc2\xff\0\0\0\0\xe2\xff\xe2\xff\0\0\xa5\xff\x13\xff\xf5\xff\xe8\xff\xe2\xff9\xff\xa5\xff\xe2\xff)\xff\0\0\xf5\xff\xf3\xff\0\0\xf5\xff\xf4\xff\xf5\xff\0\0\xe2\xff\0\0\xf5\xff\0\0\xe2\xff\xa5\xff\xe2\xff)\xff\xf9\xff\xe2\xff\xa5\xff\xe2\xff\xf6\xff\xe2\xff\x13\0\xe1\xff\xfd\xff\x0e\0)\xff\xa5\xff\xe2\xff\xe2\xff",
+  rindex: "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0,\x01<\x01F\x01G\x01H\x01\0\0\0\0\0\0N\x01\0\0\0\0\0\0\0\0\x0b\0\0\0\0\0\x0f\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0E\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0I\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0:\0L\0\0\0\0\0I\0I\0\0\0\0\0e\0\0\0w\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0L\0\0\0\0\0\0\0Q\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0N\0\0\0\0\0\x89\0\x9b\0\0\0\0\0O\0\xad\0\0\0\xc4\xff\0\0\0\0c\0\0\0\0\0\x17\0\0\0\0\0u\0\0\0-\0\0\0\xb8\0\0\0\xc1\0\0\0\x87\0\0\0\x99\0\0\0\0\0\xab\0\0\0\xfc\xfe\0\0\b\xff\0\0\0\0\0\0\0\0\0\0\0\0m\xff\x9e\xff",
+  gindex: "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0c\xff\xfe\xff\xbe\x01\xff\xff\xc7\x01\x02\0\xbb\x01\xc6\x01\xca\xff\xc5\x01\xc8\x01\xc8\0\0\0\xa1\x01\0\0\xa3\xff\x1d\x01\x95\xff\0\0\0\0\x17\x01\0\0\xd6\xff\0\0\xa9\xff\0\0S\x01\0\0t\xff\0\0\0\x001\x01",
+  tablesize: 470,
+  table: "\x16\0!\0\x84\0\x1d\0\xc1\0|\0\xbb\0f\0#\0\x0e\0\x8f\x002\0\x18\0:\0\x96\x000\0\x1b\0\x11\0\x12\0\x13\0\x11\0\x12\0\x13\0e\0`\x009\0g\0:\0\x97\0h\0\x92\0\x99\0\xb4\0\xa8\0\x1e\0i\0\x93\0a\0\xd1\x009\0\xa4\0\xbd\0m\0@\0j\0 \0A\0\x14\0\xa7\0\xb8\0\x14\0\xb9\0\xcf\0A\0\xd6\0B\0\xbf\0!\0i\0\xc5\0h\0\x0e\0B\0/\0\xc8\0\xdf\0%\0\x8c\0\xc2\0\x98\0\x8c\0\xa3\0\xca\0\xac\0\x11\0\x12\0\x13\0\x1e\0!\0\x1b\0&\x006\x007\0\xce\0;\0\x9b\0\x9c\0\x9d\0\x9e\0\xad\0\xa8\0Z\0[\0\\\0\xcc\0\xaa\0\xab\0;\0E\0@\0\xd0\0\x1f\0\xd2\0'\0\x14\0X\0Y\0]\0^\0;\0;\0;\0;\0;\0;\0;\0\xd5\x005\0\xd7\0\x1c\0;\0\xd9\0_\0b\0c\0;\0;\0d\0e\0\xe0\0\xe1\0m\0\xdc\0n\0t\0?\0w\0\x1d\0\xaf\0x\0;\0\xb1\0!\0\x1b\0$\0%\0\xbc\0&\0y\0'\0(\0z\0{\0>\0}\0\x1e\0~\0\x7f\0<\0<\0<\0<\0<\0<\0<\0!\0\x1b\0$\0%\0<\0&\0=\0'\0,\0<\0<\0\x80\0\x82\0\x81\0\x83\0\xaf\0\x85\0\x86\0\xb1\0`\0\x8a\0\xbc\0\x87\0\x8b\0<\0\x8e\0\x8c\0\x91\0+\0\xac\0\x11\0\x12\0\x13\0\x1e\0!\0\x1b\0\x1b\0\x1b\0\x1b\0\x1b\0;\0\x1b\0\x90\0\x1b\0\x94\0\xad\0\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\x07\0\b\0\t\0\n\0\x0b\0\f\0\x95\0\x9a\0\x14\0F\0G\0H\0I\0J\0K\0L\0M\0N\0O\0P\0Q\0R\0S\0T\0U\0o\0p\0q\0r\0s\0\xa1\0\xa2\0\xa8\0v\0\xba\0\xb7\0\xc0\0\xc6\0\xc9\0V\0!\0!\0!\0!\0!\0!\0!\0!\0!\0\xc3\0!\0!\0!\0!\0\xc7\0\xd3\0!\0!\0\xd4\0\xd8\0\xda\0\xdd\0e\0e\0e\0e\0e\0e\0e\0e\0e\0!\0e\0e\0e\0e\x002\x002\0e\0e\x000\0\xdb\0\xde\0\x13\0 \0 \0 \0 \0 \0 \0 \0 \0 \0e\0 \0 \0 \0 \0m\0\x12\0 \0 \0/\0/\0/\0/\0/\0/\0/\0\x0f\0\x10\0\x14\0m\0/\0i\0 \0h\0\x11\0/\0/\x006\x006\x006\x006\x006\x006\x006\0X\0i\x007\0h\x006\0f\0/\0\"\0-\x006\x006\0@\0@\0@\0@\0@\0@\0@\0\x1f\0\x1f\0\x1f\0\x1f\0@\0\x1f\x006\0\x1f\0\x1f\0@\0@\x005\x005\x005\x005\x005\x005\x005\0\x1c\0\x1c\0\x1c\0\x1c\x005\0\x1c\0@\0\x1c\0\x1c\x005\x005\0?\0?\0?\0?\0?\0?\0?\0\x1d\0\x1d\0\x1d\0\x1d\0?\0\x1d\x005\0\x1d\0\x1d\0?\0?\0>\0>\0>\0>\0>\0>\0>\0\x1e\0\x1e\0\x1e\0\x1e\0>\0\x1e\0?\0\x1e\0\x1e\0>\0>\0=\0=\0=\0=\0=\0=\0=\0,\0,\0,\0,\0=\0,\0>\0,\0,\0=\0=\0`\0`\0`\0`\0\x1a\0`\x004\0`\0`\0+\0+\0+\0+\0=\0+\0 \0+\0+\x006\0=\0u\0\xcb\0\xcd\0?\0\xa0\0\xc4\0",
+  check: "\x02\0\0\0Y\0\x04\0\xa1\0;\0\x92\0\t\x01\x06\0\x14\x01g\0\0\0\x1f\x01\x11\x01\x0f\x01\0\0\x06\x01\x01\x01\x02\x01\x03\x01\x01\x01\x02\x01\x03\x01\0\0\x12\x01\x11\x01\x1c\x01\x1f\x01\x1d\x01\x1f\x01\x19\x01|\0\x8b\0\x11\x01\x04\x01\x16\x01\x1f\x01\x1f\x01\xc3\0\x1f\x01\x85\0\x94\0\0\0\x13\x01\x1f\x01\0\0\x16\x01\x1f\x01\x87\0\x8e\0\x1f\x01\x90\0\xc0\0\x16\x01\xd3\0\x1f\x01\x95\0\x05\x01\0\0\xa6\0\0\0\x14\x01\x1f\x01\0\0\xab\0\xde\0\b\x01\x1a\x01\xa1\0{\0\x1a\x01\x1b\x01\xb3\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\n\x01\0\0\x1d\x01\xbe\0\x0b\x01\x1c\x01\x1d\x01\x1e\x01\x1f\x01\x10\x01\x11\x01\x19\x01\x1a\x01\x1b\x01\xbb\0\x89\0\x8a\0\x0b\x01\0\0\0\0\xc1\0\0\0\xc3\0\f\x01\x1f\x01\0\0\x1f\x01\0\0\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\xd1\0\0\0\xd3\0\0\0\x0b\x01\xd6\0\0\0\0\0\x1f\x01\x10\x01\x11\x01\0\0\x1f\x01\xde\0\xdf\0\x1f\x01\xdb\0\x19\x01\0\0\0\0\0\0\0\0\x8b\0\0\0\x1f\x01\x8b\0\x05\x01\x06\x01\x07\x01\b\x01\x94\0\n\x01\x0e\x01\f\x01\r\x01\0\0\x1b\x01\0\0\0\0\0\0\0\0\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\0\0\f\x01\0\0\x10\x01\x11\x01\x19\x01\x1b\x01\x13\x01\x19\x01\xb5\0\x1d\x01\x12\x01\xb5\0\0\0\x12\x01\xbc\0\x1f\x01\x12\x01\x1f\x01\x1c\x01\x1a\x01\x1f\x01\0\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1c\x01\f\x01\x12\x01\x10\x01\x01\0\x02\0\x03\0\x04\0\x05\0\x06\0\x07\0\b\0\t\0\n\0\x0b\0\f\0\x1c\x01\x15\x01\x1f\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\t\x01\n\x01\x0b\x01\f\x01\r\x01\x0e\x01\x0f\x01\x10\x01*\0+\0,\0-\0.\0\x1d\x01\x19\x01\x11\x012\0\x15\x01\x1a\x01\x19\x01\x19\x01\x18\x01\x1f\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1d\x01\n\x01\x0b\x01\f\x01\r\x01\x1a\x01\x1d\x01\x10\x01\x11\x01\x1f\x01\x1b\x01\x1f\x01\x19\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x0b\x01\f\x01\r\x01\x1a\x01\x1b\x01\x10\x01\x11\x01\x1a\x01\x17\x01\x1d\x01\0\0\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x0b\x01\f\x01\r\x01\x11\x01\0\0\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\0\0\0\0\0\0\x1f\x01\x0b\x01\x11\x01\x1f\x01\x11\x01\0\0\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x13\x01\x1f\x01\x11\x01\x1f\x01\x0b\x01\x11\x01\x1f\x01\x11\x01\x11\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\0\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06\x01\x05\x01\x06\x01\x07\x01\b\x01\x0b\x01\n\x01\x1f\x01\f\x01\r\x01\x10\x01\x11\x01\x05\x01\x06\x01\x07\x01\b\x01\x03\0\n\x01\b\0\f\x01\r\x01\x05\x01\x06\x01\x07\x01\b\x01\x1f\x01\n\x01\x05\0\f\x01\r\x01\t\0\x0b\x000\0\xb5\0\xbc\0\f\0\x82\0\xa5\0",
+  error_function: Parsing.parse_error,
+  names_const: "REQUIRED\0OPTIONAL\0REPEATED\0MESSAGE\0ENUM\0PACKAGE\0PUBLIC\0OPTION\0EXTENSIONS\0EXTEND\0SYNTAX\0TO\0MAX\0MAP\0RBRACE\0LBRACE\0RBRACKET\0LBRACKET\0RPAREN\0LPAREN\0RANGLEB\0LANGLEB\0EQUAL\0SEMICOLON\0COMMA\0EOF\0",
+  names_block: "ONE_OF\0IMPORT\0STRING\0INT\0FLOAT\0IDENT\0"
+};
 
 function proto_(lexfun, lexbuf) {
   return Parsing.yyparse(yytables, 7, lexfun, lexbuf);
 }
 
 function update_loc(lexbuf) {
-  var pos = lexbuf[/* lex_curr_p */11];
-  lexbuf[/* lex_curr_p */11] = [
-    /* pos_fname */pos[/* pos_fname */0],
-    /* pos_lnum */pos[/* pos_lnum */1] + 1 | 0,
-    /* pos_bol */pos[/* pos_cnum */3],
-    /* pos_cnum */pos[/* pos_cnum */3]
-  ];
+  var pos = lexbuf.lex_curr_p;
+  lexbuf.lex_curr_p = {
+    pos_fname: pos.pos_fname,
+    pos_lnum: pos.pos_lnum + 1 | 0,
+    pos_bol: pos.pos_cnum,
+    pos_cnum: pos.pos_cnum
+  };
   return /* () */0;
 }
 
-var __ocaml_lex_tables = [
-  /* lex_base */"\0\0\xea\xff\xeb\xffN\0\xed\xff\xee\xff\x01\0\xa0\0\xf0\0;\x01\x88\x01\x9e\x01\xf2\xff\x10\0\xf5\xff\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff\xfd\xff\xfe\xff\xff\xff\xf3\xff\xf4\xff\x1a\0\xbe\x01\xc8\x01\x92\x01\xa8\x01#\0\xef\xff\xed\x01:\x02\x87\x02\xd4\x02!\x03n\x03\x05\0\x12\x01\xfd\xff\xfe\xff\xff\xff\x06\0\x07\0!\x01\xfc\xff\xfd\xff\x11\0\xff\xff\x0b\0\f\0\xfe\xff\xc2\x01\xfc\xff\xfd\xff\xfe\xff\xc9\x03\xff\xff",
-  /* lex_backtrk */"\x0f\0\xff\xff\xff\xff\x13\0\xff\xff\xff\xff\x15\0\x13\0\x13\0\x0f\0\x0e\0\x0f\0\xff\xff\x15\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x0f\0\x0f\0\xff\xff\xff\xff\xff\xff\xff\xff\x13\0\x0f\0\x13\0\x13\0\x10\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff\x02\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff",
-  /* lex_default */"\x01\0\0\0\0\0\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff+\0\0\0\0\0\0\0\xff\xff\xff\xff1\0\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\0\x009\0\0\0\0\0\0\0\xff\xff\0\0",
-  /* lex_trans */"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\x05\0\x05\0\x04\0\x06\0(\0\x05\0,\0,\0(\0.\0.\x003\x003\0\0\x005\x005\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\0\0\f\0\0\0\0\0\0\0\0\0\0\0\x13\0\x14\0\0\0\x0b\0\x0e\0\x0b\0\t\0\r\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x19\0\x0f\0\x12\0\x10\0\x11\0\x1a\x006\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x16\0\0\0\x15\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x07\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x18\0\"\0\x17\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0 \0!\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\x02\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0&\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\x1f\0,\0\x1f\0\"\0-\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\0\x003\0\0\0\0\x004\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\x002\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x1d\0\0\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1d\0\x1c\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\0\0\x1c\0:\0\0\0\0\0\0\0\0\0\x1f\0\0\0\x1f\0\0\0\x1c\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\0\0\x1c\0\0\0\0\0\0\0\x1b\0\0\0\0\0\0\0\0\0\0\0\x1c\0\0\0\0\0\0\0\0\0*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\0\0;\0\0\0\0\x000\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x1c\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0\0\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\0\x008\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0%\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0'\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0<\0\0\0<\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0<\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-  /* lex_check */"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\x06\0\0\0\0\0\x06\0(\0-\0.\0(\0-\0.\x004\x005\0\xff\xff4\x005\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\r\0\0\0\0\0\0\0\0\0\r\x002\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\0\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x1b\0 \0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\xff\xff\xff\xff\xff\xff\xff\xff\x03\0\xff\xff\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\xff\xff\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\0\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\b\0)\0\b\0\b\0)\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\xff\xff/\0\xff\xff\xff\xff/\0\xff\xff\xff\xff\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0/\0\xff\xff\xff\xff\xff\xff\b\0\xff\xff\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\n\0\xff\xff\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x0b\0\n\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\xff\xff\x0b\x007\0\xff\xff\xff\xff\xff\xff\xff\xff\x1c\0\xff\xff\x1c\0\xff\xff\n\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\xff\xff\x0b\0\xff\xff\xff\xff\xff\xff\x0b\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1d\0\xff\xff\xff\xff\xff\xff\xff\xff)\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\"\0\xff\xff\xff\xff7\0\xff\xff\xff\xff/\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1d\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0#\0\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\xff\xff\xff\xff\xff\xff\xff\xff#\0\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0$\0\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\xff\xff7\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\xff\xff\xff\xff\xff\xff\xff\xff$\0\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0%\0\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\xff\xff\xff\xff\xff\xff\xff\xff%\0\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0&\0\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0\xff\xff\xff\xff\xff\xff\xff\xff&\0\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0'\0\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0\xff\xff\xff\xff\xff\xff\xff\xff'\0\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0;\0\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff;\0\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-  /* lex_base_code */"",
-  /* lex_backtrk_code */"",
-  /* lex_default_code */"",
-  /* lex_trans_code */"",
-  /* lex_check_code */"",
-  /* lex_code */""
-];
+var __ocaml_lex_tables = {
+  lex_base: "\0\0\xea\xff\xeb\xffN\0\xed\xff\xee\xff\x01\0\xa0\0\xf0\0;\x01\x88\x01\x9e\x01\xf2\xff\x10\0\xf5\xff\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff\xfd\xff\xfe\xff\xff\xff\xf3\xff\xf4\xff\x1a\0\xbe\x01\xc8\x01\x92\x01\xa8\x01#\0\xef\xff\xed\x01:\x02\x87\x02\xd4\x02!\x03n\x03\x05\0\x12\x01\xfd\xff\xfe\xff\xff\xff\x06\0\x07\0!\x01\xfc\xff\xfd\xff\x11\0\xff\xff\x0b\0\f\0\xfe\xff\xc2\x01\xfc\xff\xfd\xff\xfe\xff\xc9\x03\xff\xff",
+  lex_backtrk: "\x0f\0\xff\xff\xff\xff\x13\0\xff\xff\xff\xff\x15\0\x13\0\x13\0\x0f\0\x0e\0\x0f\0\xff\xff\x15\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x0f\0\x0f\0\xff\xff\xff\xff\xff\xff\xff\xff\x13\0\x0f\0\x13\0\x13\0\x10\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff\x02\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\xff\xff",
+  lex_default: "\x01\0\0\0\0\0\xff\xff\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff+\0\0\0\0\0\0\0\xff\xff\xff\xff1\0\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\0\x009\0\0\0\0\0\0\0\xff\xff\0\0",
+  lex_trans: "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\x05\0\x05\0\x04\0\x06\0(\0\x05\0,\0,\0(\0.\0.\x003\x003\0\0\x005\x005\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\0\0\f\0\0\0\0\0\0\0\0\0\0\0\x13\0\x14\0\0\0\x0b\0\x0e\0\x0b\0\t\0\r\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x19\0\x0f\0\x12\0\x10\0\x11\0\x1a\x006\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x16\0\0\0\x15\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x07\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x18\0\"\0\x17\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0 \0!\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\x02\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0&\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\x1f\0,\0\x1f\0\"\0-\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\0\x003\0\0\0\0\x004\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\x002\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x03\0\x03\0\x03\0\b\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x1d\0\0\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1d\0\x1c\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\0\0\x1c\0:\0\0\0\0\0\0\0\0\0\x1f\0\0\0\x1f\0\0\0\x1c\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\0\0\x1c\0\0\0\0\0\0\0\x1b\0\0\0\0\0\0\0\0\0\0\0\x1c\0\0\0\0\0\0\0\0\0*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\0\0;\0\0\0\0\x000\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x1c\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0\0\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\0\x008\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\x03\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\0\0\0\0\0\0\0\0%\0\0\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0'\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\"\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\0\0\0\0\0\0\0\0#\0\0\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0<\0\0\0<\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0<\0\0\0\0\0\0\0<\0\0\0<\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+  lex_check: "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\x06\0\0\0\0\0\x06\0(\0-\0.\0(\0-\0.\x004\x005\0\xff\xff4\x005\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\r\0\0\0\0\0\0\0\0\0\r\x002\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\0\0\xff\xff\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\0\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x1b\0 \0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\xff\xff\xff\xff\xff\xff\xff\xff\x03\0\xff\xff\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\x03\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\xff\xff\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\xff\xff\xff\xff\xff\xff\xff\xff\x07\0\0\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\x07\0\b\0)\0\b\0\b\0)\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\xff\xff/\0\xff\xff\xff\xff/\0\xff\xff\xff\xff\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0/\0\xff\xff\xff\xff\xff\xff\b\0\xff\xff\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\b\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\t\0\n\0\xff\xff\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\n\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x1e\0\x0b\0\n\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x0b\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\x1f\0\xff\xff\x0b\x007\0\xff\xff\xff\xff\xff\xff\xff\xff\x1c\0\xff\xff\x1c\0\xff\xff\n\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1c\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\x1d\0\xff\xff\x0b\0\xff\xff\xff\xff\xff\xff\x0b\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1d\0\xff\xff\xff\xff\xff\xff\xff\xff)\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\"\0\xff\xff\xff\xff7\0\xff\xff\xff\xff/\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1d\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0\"\0#\0\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0\xff\xff\xff\xff\xff\xff\xff\xff#\0\xff\xff#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0#\0$\0\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\xff\xff7\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0\xff\xff\xff\xff\xff\xff\xff\xff$\0\xff\xff$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0$\0%\0\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0\xff\xff\xff\xff\xff\xff\xff\xff%\0\xff\xff%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0%\0&\0\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0\xff\xff\xff\xff\xff\xff\xff\xff&\0\xff\xff&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0&\0'\0\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0\xff\xff\xff\xff\xff\xff\xff\xff'\0\xff\xff'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0'\0;\0\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff;\0\xff\xff\xff\xff\xff\xff;\0\xff\xff;\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+  lex_base_code: "",
+  lex_backtrk_code: "",
+  lex_default_code: "",
+  lex_trans_code: "",
+  lex_check_code: "",
+  lex_code: ""
+};
 
 function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
@@ -1485,7 +1487,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
       case 3 :
           return /* String_eof */0;
       default:
-        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -1511,7 +1513,7 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       case 2 :
           return /* Comment_eof */0;
       default:
-        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -1541,7 +1543,7 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       case 3 :
           return /* Comment_eof */0;
       default:
-        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -1673,7 +1675,7 @@ function lexer(lexbuf) {
                 s
               ];
       default:
-        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -1713,11 +1715,11 @@ function string_of_field_type(param) {
     return "unit";
   } else if (param.tag) {
     var param$1 = param[0];
-    var match = param$1[/* udt_module */0];
+    var match = param$1.udt_module;
     if (match !== undefined) {
-      return match + ("." + param$1[/* udt_type_name */1]);
+      return match + ("." + param$1.udt_type_name);
     } else {
-      return param$1[/* udt_type_name */1];
+      return param$1.udt_type_name;
     }
   } else {
     return string_of_basic_type(param[0]);
@@ -1785,13 +1787,13 @@ function string_of_record_field_type(param) {
                         ]), string_of_basic_type(match$1[2][0]), string_of_field_type(match$1[3][0]), "list");
         }
     case /* Rft_variant_field */4 :
-        return param[0][/* v_name */0];
+        return param[0].v_name;
     
   }
 }
 
 function function_name_of_user_defined(prefix, param) {
-  var match = param[/* udt_module */0];
+  var match = param.udt_module;
   if (match !== undefined) {
     return Curry._3(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -1811,7 +1813,7 @@ function function_name_of_user_defined(prefix, param) {
                           ])
                       ]),
                     "%s.%s_%s"
-                  ]), match, prefix, param[/* udt_type_name */1]);
+                  ]), match, prefix, param.udt_type_name);
   } else {
     return Curry._2(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -1825,7 +1827,7 @@ function function_name_of_user_defined(prefix, param) {
                           ])
                       ]),
                     "%s_%s"
-                  ]), prefix, param[/* udt_type_name */1]);
+                  ]), prefix, param.udt_type_name);
   }
 }
 
@@ -1855,19 +1857,21 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
 }
 
 function line$1(scope, s) {
-  scope[/* items */0] = /* :: */[
+  scope.items = /* :: */[
     /* Line */Block.__(0, [s]),
-    scope[/* items */0]
+    scope.items
   ];
   return /* () */0;
 }
 
 function scope(scope$1, f) {
-  var sub_scope = [/* items : [] */0];
+  var sub_scope = {
+    items: /* [] */0
+  };
   Curry._1(f, sub_scope);
-  scope$1[/* items */0] = /* :: */[
+  scope$1.items = /* :: */[
     /* Scope */Block.__(1, [sub_scope]),
-    scope$1[/* items */0]
+    scope$1.items
   ];
   return /* () */0;
 }
@@ -1905,7 +1909,7 @@ function print(scope) {
       if (param) {
         var match = param[0];
         if (match.tag) {
-          var items = match[0][/* items */0];
+          var items = match[0].items;
           var sub = loop(/* [] */0, i + 1 | 0, items);
           _param = param[1];
           _acc = Pervasives.$at(sub, acc);
@@ -1923,7 +1927,7 @@ function print(scope) {
       }
     };
   };
-  return $$String.concat("\n", loop(/* [] */0, 0, scope[/* items */0]));
+  return $$String.concat("\n", loop(/* [] */0, 0, scope.items));
 }
 
 function runtime_function(param) {
@@ -2139,7 +2143,7 @@ function decode_field_f(field_type, pk) {
   } else if (field_type.tag) {
     var t = field_type[0];
     var f_name = function_name_of_user_defined("decode", t);
-    if (t[/* udt_nested */2]) {
+    if (t.udt_nested) {
       return f_name + " (Pbrt.Decoder.nested d)";
     } else {
       return f_name + " d";
@@ -2150,10 +2154,10 @@ function decode_field_f(field_type, pk) {
 }
 
 function gen_decode_record(and_, param, sc) {
-  var r_fields = param[/* r_fields */1];
-  var r_name = param[/* r_name */0];
+  var r_fields = param.r_fields;
+  var r_name = param.r_name;
   var all_lists = List.fold_left((function (acc, param) {
-          var rf_field_type = param[/* rf_field_type */1];
+          var rf_field_type = param.rf_field_type;
           switch (rf_field_type.tag | 0) {
             case /* Rft_repeated_field */2 :
             case /* Rft_associative_field */3 :
@@ -2165,7 +2169,7 @@ function gen_decode_record(and_, param, sc) {
             return acc;
           } else {
             return /* :: */[
-                    param[/* rf_label */0],
+                    param.rf_label,
                     acc
                   ];
           }
@@ -2309,8 +2313,8 @@ function gen_decode_record(and_, param, sc) {
                               }));
                         line$1(sc, ")");
                         List.iter((function (param) {
-                                var rf_field_type = param[/* rf_field_type */1];
-                                var rf_label = param[/* rf_label */0];
+                                var rf_field_type = param.rf_field_type;
+                                var rf_label = param.rf_label;
                                 switch (rf_field_type.tag | 0) {
                                   case /* Rft_required */0 :
                                       var sc$1 = sc;
@@ -2571,10 +2575,10 @@ function gen_decode_record(and_, param, sc) {
                                       var rf_label$5 = rf_label;
                                       var param$5 = rf_field_type[0];
                                       return List.iter((function (param) {
-                                                    var pk = param[/* vc_payload_kind */3];
-                                                    var vc_field_type = param[/* vc_field_type */1];
-                                                    var vc_constructor = param[/* vc_constructor */0];
-                                                    return process_field_common(sc$5, param[/* vc_encoding_number */2], string_of_payload_kind(/* () */0, pk, false), (function (sc) {
+                                                    var pk = param.vc_payload_kind;
+                                                    var vc_field_type = param.vc_field_type;
+                                                    var vc_constructor = param.vc_constructor;
+                                                    return process_field_common(sc$5, param.vc_encoding_number, string_of_payload_kind(/* () */0, pk, false), (function (sc) {
                                                                   if (vc_field_type) {
                                                                     return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                                         /* String_literal */Block.__(11, [
@@ -2624,7 +2628,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                       ]), rf_label$5, vc_constructor));
                                                                   }
                                                                 }));
-                                                  }), param$5[/* v_constructors */1]);
+                                                  }), param$5.v_constructors);
                                   
                                 }
                               }), r_fields);
@@ -2650,8 +2654,8 @@ function gen_decode_record(and_, param, sc) {
 }
 
 function gen_decode_variant(and_, param, sc) {
-  var v_constructors = param[/* v_constructors */1];
-  var v_name = param[/* v_name */0];
+  var v_constructors = param.v_constructors;
+  var v_name = param.v_name;
   line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -2695,9 +2699,9 @@ function gen_decode_variant(and_, param, sc) {
                                 List.iter((function (ctor) {
                                         var sc$1 = sc;
                                         var param = ctor;
-                                        var vc_encoding_number = param[/* vc_encoding_number */2];
-                                        var vc_field_type = param[/* vc_field_type */1];
-                                        var vc_constructor = param[/* vc_constructor */0];
+                                        var vc_encoding_number = param.vc_encoding_number;
+                                        var vc_field_type = param.vc_field_type;
+                                        var vc_constructor = param.vc_constructor;
                                         if (vc_field_type) {
                                           return line$1(sc$1, Curry._3(Printf.sprintf(/* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -2725,7 +2729,7 @@ function gen_decode_variant(and_, param, sc) {
                                                                     ])
                                                                 ]),
                                                               "| Some (%i, _) -> %s (%s)"
-                                                            ]), vc_encoding_number, vc_constructor, decode_field_f(vc_field_type[0], param[/* vc_payload_kind */3])));
+                                                            ]), vc_encoding_number, vc_constructor, decode_field_f(vc_field_type[0], param.vc_payload_kind)));
                                         } else {
                                           return line$1(sc$1, Curry._2(Printf.sprintf(/* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -2764,8 +2768,8 @@ function gen_decode_variant(and_, param, sc) {
 }
 
 function gen_decode_const_variant(and_, param, sc) {
-  var cv_constructors = param[/* cv_constructors */1];
-  var cv_name = param[/* cv_name */0];
+  var cv_constructors = param.cv_constructors;
+  var cv_name = param.cv_name;
   line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -2830,7 +2834,7 @@ function gen_decode_const_variant(and_, param, sc) {
 }
 
 function gen_struct(and_, t, sc) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
@@ -2894,24 +2898,24 @@ function gen_sig(and_, t, sc) {
                         "(** [decode_%s decoder] decodes a [%s] value from [decoder] *)"
                       ]), type_name, type_name));
   };
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          f(match[0][/* r_name */0]),
+          f(match[0].r_name),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          f(match[0][/* v_name */0]),
+          f(match[0].v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          f(match[0][/* cv_name */0]),
+          f(match[0].cv_name),
           true
         ];
         break;
@@ -2926,10 +2930,12 @@ var Codegen_decode = {
   ocamldoc_title: "Protobuf Decoding"
 };
 
-var __log__ = [/* contents */undefined];
+var __log__ = {
+  contents: undefined
+};
 
 function log(x) {
-  var match = __log__[/* contents */0];
+  var match = __log__.contents;
   if (match !== undefined) {
     return Printf.fprintf(Caml_option.valFromOption(match), x);
   } else {
@@ -2967,8 +2973,8 @@ function gen_pp_field(field_type) {
 }
 
 function gen_pp_record(and_, param, sc) {
-  var r_fields = param[/* r_fields */1];
-  var r_name = param[/* r_name */0];
+  var r_fields = param.r_fields;
+  var r_name = param.r_name;
   Curry._1(log(/* Format */[
             /* String_literal */Block.__(11, [
                 "gen_pp, record_name: ",
@@ -3009,8 +3015,8 @@ function gen_pp_record(and_, param, sc) {
                 scope(sc, (function (sc) {
                         line$1(sc, "Format.pp_open_vbox fmt 1;");
                         List.iter((function (record_field) {
-                                var rf_field_type = record_field[/* rf_field_type */1];
-                                var rf_label = record_field[/* rf_label */0];
+                                var rf_field_type = record_field.rf_field_type;
+                                var rf_label = record_field.rf_label;
                                 var var_name = Curry._1(Printf.sprintf(/* Format */[
                                           /* String_literal */Block.__(11, [
                                               "v.",
@@ -3199,7 +3205,7 @@ function gen_pp_record(and_, param, sc) {
                                                                 ])
                                                             ]),
                                                           "Pbrt.Pp.pp_record_field \"%s\" %s fmt %s;"
-                                                        ]), rf_label, "pp_" + rf_field_type[0][/* v_name */0], var_name));
+                                                        ]), rf_label, "pp_" + rf_field_type[0].v_name, var_name));
                                   
                                 }
                               }), r_fields);
@@ -3211,8 +3217,8 @@ function gen_pp_record(and_, param, sc) {
 }
 
 function gen_pp_variant(and_, param, sc) {
-  var v_constructors = param[/* v_constructors */1];
-  var v_name = param[/* v_name */0];
+  var v_constructors = param.v_constructors;
+  var v_name = param.v_name;
   line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -3238,8 +3244,8 @@ function gen_pp_variant(and_, param, sc) {
   return scope(sc, (function (sc) {
                 line$1(sc, "match v with");
                 return List.iter((function (param) {
-                              var vc_field_type = param[/* vc_field_type */1];
-                              var vc_constructor = param[/* vc_constructor */0];
+                              var vc_field_type = param.vc_field_type;
+                              var vc_constructor = param.vc_constructor;
                               if (vc_field_type) {
                                 var field_string_of = gen_pp_field(vc_field_type[0]);
                                 return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
@@ -3311,8 +3317,8 @@ function gen_pp_variant(and_, param, sc) {
 }
 
 function gen_pp_const_variant(and_, param, sc) {
-  var cv_constructors = param[/* cv_constructors */1];
-  var cv_name = param[/* cv_name */0];
+  var cv_constructors = param.cv_constructors;
+  var cv_name = param.cv_name;
   line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -3363,7 +3369,7 @@ function gen_pp_const_variant(and_, param, sc) {
 }
 
 function gen_struct$1(and_, t, sc) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   switch (match.tag | 0) {
     case /* Record */0 :
         gen_pp_record(and_, match[0], sc);
@@ -3414,16 +3420,16 @@ function gen_sig$1(and_, t, sc) {
                         "(** [pp_%s v] formats v] *)"
                       ]), type_name));
   };
-  var match = t[/* spec */1];
+  var match = t.spec;
   switch (match.tag | 0) {
     case /* Record */0 :
-        f(match[0][/* r_name */0]);
+        f(match[0].r_name);
         break;
     case /* Variant */1 :
-        f(match[0][/* v_name */0]);
+        f(match[0].v_name);
         break;
     case /* Const_variant */2 :
-        f(match[0][/* cv_name */0]);
+        f(match[0].cv_name);
         break;
     
   }
@@ -3669,12 +3675,12 @@ function string_of_option(f, param) {
 
 function reset(g) {
   return map$1((function (core) {
-                return [
-                        /* core */core,
-                        /* index */undefined,
-                        /* lowlink */undefined,
-                        /* on_stack */false
-                      ];
+                return {
+                        core: core,
+                        index: undefined,
+                        lowlink: undefined,
+                        on_stack: false
+                      };
               }), g);
 }
 
@@ -3701,14 +3707,14 @@ function strong_connect(g, sccs, stack, index, v) {
                   ])
               ]),
             "[Graph] processing v [%i], index: %i\n"
-          ]), v[/* core */0][/* id */0], index);
-  v[/* index */1] = index;
-  v[/* lowlink */2] = index;
+          ]), v.core.id, index);
+  v.index = index;
+  v.lowlink = index;
   var stack$1 = /* :: */[
     v,
     stack
   ];
-  v[/* on_stack */3] = true;
+  v.on_stack = true;
   var match = List.fold_left((function (param, id) {
           var index = param[2];
           var stack = param[1];
@@ -3734,15 +3740,15 @@ function strong_connect(g, sccs, stack, index, v) {
                           ])
                       ]),
                     "[Graph] sub w [%i], w.index: %s\n"
-                  ]), w[/* core */0][/* id */0], string_of_option((function (prim) {
+                  ]), w.core.id, string_of_option((function (prim) {
                       return String(prim);
-                    }), w[/* index */1]));
-          var match = w[/* index */1];
+                    }), w.index));
+          var match = w.index;
           if (match !== undefined) {
-            if (w[/* on_stack */3]) {
-              v[/* lowlink */2] = min_value(/* tuple */[
-                    v[/* lowlink */2],
-                    w[/* index */1]
+            if (w.on_stack) {
+              v.lowlink = min_value(/* tuple */[
+                    v.lowlink,
+                    w.index
                   ]);
             }
             return /* tuple */[
@@ -3752,9 +3758,9 @@ function strong_connect(g, sccs, stack, index, v) {
                   ];
           } else {
             var match$1 = strong_connect(g, sccs, stack, index + 1 | 0, w);
-            v[/* lowlink */2] = min_value(/* tuple */[
-                  v[/* lowlink */2],
-                  w[/* lowlink */2]
+            v.lowlink = min_value(/* tuple */[
+                  v.lowlink,
+                  w.lowlink
                 ]);
             return /* tuple */[
                     match$1[0],
@@ -3766,7 +3772,7 @@ function strong_connect(g, sccs, stack, index, v) {
         sccs,
         stack$1,
         index
-      ], v[/* core */0][/* sub */1]);
+      ], v.core.sub);
   var index$1 = match[2];
   var stack$2 = match[1];
   var sccs$1 = match[0];
@@ -3796,11 +3802,11 @@ function strong_connect(g, sccs, stack, index, v) {
                   ])
               ]),
             "[Graph] after sub for v [%i], lowlink: %s, index: %s\n"
-          ]), v[/* core */0][/* id */0], string_of_option((function (prim) {
+          ]), v.core.id, string_of_option((function (prim) {
               return String(prim);
-            }), v[/* lowlink */2]), string_of_option((function (prim) {
+            }), v.lowlink), string_of_option((function (prim) {
               return String(prim);
-            }), v[/* index */1]));
+            }), v.index));
   Curry._1(log(/* Format */[
             /* String_literal */Block.__(11, [
                 "[Graph]   -> stack : ",
@@ -3814,11 +3820,11 @@ function strong_connect(g, sccs, stack, index, v) {
               ]),
             "[Graph]   -> stack : %s\n"
           ]), "[" + ($$String.concat(";", List.map((function (param) {
-                    return String(param[/* core */0][/* id */0]);
+                    return String(param.core.id);
                   }), stack$2)) + "]"));
   if (eq_value(/* tuple */[
-          v[/* lowlink */2],
-          v[/* index */1]
+          v.lowlink,
+          v.index
         ])) {
     var match$1 = List.fold_left((function (param, n) {
             var splitted = param[2];
@@ -3834,11 +3840,11 @@ function strong_connect(g, sccs, stack, index, v) {
                       splitted
                     ];
             } else {
-              n[/* on_stack */3] = false;
-              if (n[/* core */0][/* id */0] === v[/* core */0][/* id */0]) {
+              n.on_stack = false;
+              if (n.core.id === v.core.id) {
                 return /* tuple */[
                         /* :: */[
-                          n[/* core */0][/* id */0],
+                          n.core.id,
                           scc
                         ],
                         stack,
@@ -3847,7 +3853,7 @@ function strong_connect(g, sccs, stack, index, v) {
               } else {
                 return /* tuple */[
                         /* :: */[
-                          n[/* core */0][/* id */0],
+                          n.core.id,
                           scc
                         ],
                         stack,
@@ -3883,7 +3889,7 @@ function tarjan(g) {
                   var index = param$1[2];
                   var stack = param$1[1];
                   var sccs = param$1[0];
-                  var match = n[/* index */1];
+                  var match = n.index;
                   if (match !== undefined) {
                     return /* tuple */[
                             sccs,
@@ -3901,27 +3907,27 @@ function tarjan(g) {
 }
 
 function field_name(param) {
-  return param[/* field_parsed */0][/* field_name */0];
+  return param.field_parsed.field_name;
 }
 
 function field_number(param) {
-  return param[/* field_parsed */0][/* field_number */1];
+  return param.field_parsed.field_number;
 }
 
 function field_type(param) {
-  return param[/* field_type */1];
+  return param.field_type;
 }
 
 function field_label(param) {
-  return param[/* field_parsed */0][/* field_label */2];
+  return param.field_parsed.field_label;
 }
 
 function field_default(param) {
-  return param[/* field_default */2];
+  return param.field_default;
 }
 
 function field_options(param) {
-  return param[/* field_options */3];
+  return param.field_options;
 }
 
 function find_field_option(field_options, option_name) {
@@ -3940,11 +3946,11 @@ function find_field_option(field_options, option_name) {
 }
 
 function field_option(param, option_name) {
-  return find_field_option(param[/* field_options */3], option_name);
+  return find_field_option(param.field_options, option_name);
 }
 
 function type_id_of_type(param) {
-  return param[/* id */1];
+  return param.id;
 }
 
 function type_of_id(all_types, id) {
@@ -3978,31 +3984,31 @@ function string_of_unresolved(param) {
                         ])
                     ]),
                   "unresolved:{scope %s, type_name: %s, from_root: %b}"
-                ]), string_of_string_list(param[/* scope */0]), param[/* type_name */1], param[/* from_root */2]);
+                ]), string_of_string_list(param.scope), param.type_name, param.from_root);
 }
 
 function scope_of_package(param) {
   if (param !== undefined) {
-    return [
-            /* packages */List.rev(rev_split_by_char(/* "." */46, param)),
-            /* message_names : [] */0
-          ];
+    return {
+            packages: List.rev(rev_split_by_char(/* "." */46, param)),
+            message_names: /* [] */0
+          };
   } else {
-    return [
-            /* packages : [] */0,
-            /* message_names : [] */0
-          ];
+    return {
+            packages: /* [] */0,
+            message_names: /* [] */0
+          };
   }
 }
 
 function unresolved_of_string(s) {
   var match = rev_split_by_char(/* "." */46, s);
   if (match) {
-    return [
-            /* scope */List.rev(match[1]),
-            /* type_name */match[0],
-            /* from_root */Caml_string.get(s, 0) === /* "." */46
-          ];
+    return {
+            scope: List.rev(match[1]),
+            type_name: match[0],
+            from_root: Caml_string.get(s, 0) === /* "." */46
+          };
   } else {
     throw [
           Compilation_error,
@@ -4094,17 +4100,17 @@ function compile_default_p2(all_types, field) {
     } else if (constant.tag === /* Constant_litteral */4) {
       var default_enum_value = constant[0];
       var match = type_of_id(all_types, field_type$1[0]);
-      var spec = match[/* spec */4];
+      var spec = match.spec;
       if (spec.tag) {
         return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", /* () */0);
       } else {
         var default_enum_value$1 = apply_until((function (param) {
-                var enum_value_name = param[/* enum_value_name */0];
+                var enum_value_name = param.enum_value_name;
                 if (enum_value_name === default_enum_value) {
                   return enum_value_name;
                 }
                 
-              }), spec[0][/* enum_values */1]);
+              }), spec[0].enum_values);
         if (default_enum_value$1 !== undefined) {
           return constant;
         } else {
@@ -4162,32 +4168,32 @@ function get_default(field_name, field_options, field_type) {
 }
 
 function compile_field_p1(field_parsed) {
-  var field_options = field_parsed[/* field_options */4];
-  var field_type = field_type_of_string(field_parsed[/* field_type */3]);
-  var field_default = get_default(field_parsed[/* field_name */0], field_options, field_type);
-  return [
-          /* field_parsed */field_parsed,
-          /* field_type */field_type,
-          /* field_default */field_default,
-          /* field_options */field_options
-        ];
+  var field_options = field_parsed.field_options;
+  var field_type = field_type_of_string(field_parsed.field_type);
+  var field_default = get_default(field_parsed.field_name, field_options, field_type);
+  return {
+          field_parsed: field_parsed,
+          field_type: field_type,
+          field_default: field_default,
+          field_options: field_options
+        };
 }
 
 function compile_map_p1(param) {
-  return [
-          /* map_name */param[/* map_name */0],
-          /* map_number */param[/* map_number */1],
-          /* map_key_type */field_type_of_string(param[/* map_key_type */2]),
-          /* map_value_type */field_type_of_string(param[/* map_value_type */3]),
-          /* map_options */param[/* map_options */4]
-        ];
+  return {
+          map_name: param.map_name,
+          map_number: param.map_number,
+          map_key_type: field_type_of_string(param.map_key_type),
+          map_value_type: field_type_of_string(param.map_value_type),
+          map_options: param.map_options
+        };
 }
 
 function compile_oneof_p1(param) {
-  return [
-          /* oneof_name */param[/* oneof_name */0],
-          /* oneof_fields */List.map(compile_field_p1, param[/* oneof_fields */1])
-        ];
+  return {
+          oneof_name: param.oneof_name,
+          oneof_fields: List.map(compile_field_p1, param.oneof_fields)
+        };
 }
 
 function not_found(f) {
@@ -4222,39 +4228,39 @@ function list_assoc2(x, _param) {
 }
 
 function type_of_spec(file_name, file_options, id, scope, spec) {
-  return [
-          /* scope */scope,
-          /* id */id,
-          /* file_name */file_name,
-          /* file_options */file_options,
-          /* spec */spec
-        ];
+  return {
+          scope: scope,
+          id: id,
+          file_name: file_name,
+          file_options: file_options,
+          spec: spec
+        };
 }
 
 function compile_enum_p1(file_name, file_options, scope, param) {
   var enum_values = List.map((function (enum_value) {
-          return [
-                  /* enum_value_name */enum_value[/* enum_value_name */0],
-                  /* enum_value_int */enum_value[/* enum_value_int */1]
-                ];
-        }), param[/* enum_values */2]);
-  return type_of_spec(file_name, file_options, param[/* enum_id */0], scope, /* Enum */Block.__(0, [[
-                  /* enum_name */param[/* enum_name */1],
-                  /* enum_values */enum_values
-                ]]));
+          return {
+                  enum_value_name: enum_value.enum_value_name,
+                  enum_value_int: enum_value.enum_value_int
+                };
+        }), param.enum_values);
+  return type_of_spec(file_name, file_options, param.enum_id, scope, /* Enum */Block.__(0, [{
+                  enum_name: param.enum_name,
+                  enum_values: enum_values
+                }]));
 }
 
 function compile_message_p1(file_name, file_options, message_scope, param) {
-  var message_name = param[/* message_name */1];
-  var sub_scope_packages = /* packages */message_scope[/* packages */0];
-  var sub_scope_message_names = /* message_names */Pervasives.$at(message_scope[/* message_names */1], /* :: */[
+  var message_name = param.message_name;
+  var sub_scope_packages = message_scope.packages;
+  var sub_scope_message_names = Pervasives.$at(message_scope.message_names, /* :: */[
         message_name,
         /* [] */0
       ]);
-  var sub_scope = [
-    sub_scope_packages,
-    sub_scope_message_names
-  ];
+  var sub_scope = {
+    packages: sub_scope_packages,
+    message_names: sub_scope_message_names
+  };
   var match = List.fold_left((function (param, param$1) {
           var all_types = param[2];
           var extensions = param[1];
@@ -4318,7 +4324,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
         /* [] */0,
         /* [] */0,
         /* [] */0
-      ], param[/* message_body */2]);
+      ], param.message_body);
   var message_body = List.rev(match[0]);
   var validate_duplicate = function (number_index, field) {
     var number = field_number(field);
@@ -4343,11 +4349,11 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
       var message_name$1 = message_name;
       throw [
             Compilation_error,
-            /* Duplicated_field_number */Block.__(1, [[
-                  /* field_name */field_name$1,
-                  /* previous_field_name */previous_field_name,
-                  /* message_name */message_name$1
-                ]])
+            /* Duplicated_field_number */Block.__(1, [{
+                  field_name: field_name$1,
+                  previous_field_name: previous_field_name,
+                  message_name: message_name$1
+                }])
           ];
     }
   };
@@ -4356,69 +4362,69 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             case /* Message_field */0 :
                 return validate_duplicate(number_index, param[0]);
             case /* Message_oneof_field */1 :
-                return List.fold_left(validate_duplicate, number_index, param[0][/* oneof_fields */1]);
+                return List.fold_left(validate_duplicate, number_index, param[0].oneof_fields);
             case /* Message_map_field */2 :
                 return number_index;
             
           }
         }), /* [] */0, message_body);
   return Pervasives.$at(match[2], /* :: */[
-              type_of_spec(file_name, file_options, param[/* id */0], message_scope, /* Message */Block.__(1, [[
-                        /* extensions */match[1],
-                        /* message_name */message_name,
-                        /* message_body */message_body
-                      ]])),
+              type_of_spec(file_name, file_options, param.id, message_scope, /* Message */Block.__(1, [{
+                        extensions: match[1],
+                        message_name: message_name,
+                        message_body: message_body
+                      }])),
               /* [] */0
             ]);
 }
 
 function compile_proto_p1(file_name, param) {
-  var file_options = param[/* file_options */2];
-  var scope = scope_of_package(param[/* package */3]);
+  var file_options = param.file_options;
+  var scope = scope_of_package(param.$$package);
   var pbtt_msgs = List.fold_right((function (e, pbtt_msgs) {
           return /* :: */[
                   compile_enum_p1(file_name, file_options, scope, e),
                   pbtt_msgs
                 ];
-        }), param[/* enums */5], /* [] */0);
+        }), param.enums, /* [] */0);
   return List.fold_left((function (pbtt_msgs, pbpt_msg) {
                 return Pervasives.$at(pbtt_msgs, compile_message_p1(file_name, file_options, scope, pbpt_msg));
-              }), pbtt_msgs, param[/* messages */4]);
+              }), pbtt_msgs, param.messages);
 }
 
 function type_scope_of_type(param) {
-  return param[/* scope */0];
+  return param.scope;
 }
 
 function is_empty_message(param) {
-  var match = param[/* spec */4];
+  var match = param.spec;
   if (match.tag) {
-    return 0 === List.length(match[0][/* message_body */2]);
+    return 0 === List.length(match[0].message_body);
   } else {
     return false;
   }
 }
 
 function type_name_of_type(param) {
-  var match = param[/* spec */4];
+  var match = param.spec;
   if (match.tag) {
-    return match[0][/* message_name */1];
+    return match[0].message_name;
   } else {
-    return match[0][/* enum_name */0];
+    return match[0].enum_name;
   }
 }
 
 function find_all_types_in_field_scope(all_types, scope) {
   return List.filter((function (t) {
                   var match = type_scope_of_type(t);
-                  var dec_scope = Pervasives.$at(match[/* packages */0], match[/* message_names */1]);
+                  var dec_scope = Pervasives.$at(match.packages, match.message_names);
                   return Caml_obj.caml_equal(dec_scope, scope);
                 }))(all_types);
 }
 
 function compile_message_p2(types, param, message) {
-  var message_name = message[/* message_name */1];
-  var message_scope = Pervasives.$at(param[/* packages */0], Pervasives.$at(param[/* message_names */1], /* :: */[
+  var message_name = message.message_name;
+  var message_scope = Pervasives.$at(param.packages, Pervasives.$at(param.message_names, /* :: */[
             message_name,
             /* [] */0
           ]));
@@ -4477,9 +4483,9 @@ function compile_message_p2(types, param, message) {
       }
     } else {
       var unresolved = field_type[0];
-      var type_name = unresolved[/* type_name */1];
+      var type_name = unresolved.type_name;
       endline("[pbtt] " + string_of_unresolved(unresolved));
-      var search_scopes$1 = search_scopes(unresolved[/* scope */0], unresolved[/* from_root */2]);
+      var search_scopes$1 = search_scopes(unresolved.scope, unresolved.from_root);
       Curry._1(log(/* Format */[
                 /* String_literal */Block.__(11, [
                     "[pbtt] message scope: ",
@@ -4546,11 +4552,11 @@ function compile_message_p2(types, param, message) {
         var message_name$1 = message_name;
         throw [
               Compilation_error,
-              /* Unresolved_type */Block.__(0, [[
-                    /* field_name */field_name$1,
-                    /* type_ */type_,
-                    /* message_name */message_name$1
-                  ]])
+              /* Unresolved_type */Block.__(0, [{
+                    field_name: field_name$1,
+                    type_: type_,
+                    message_name: message_name$1
+                  }])
             ];
       }
     }
@@ -4561,26 +4567,26 @@ function compile_message_p2(types, param, message) {
                 var field = param[0];
                 var field_name$1 = field_name(field);
                 var field_type$1 = field_type(field);
-                var field_field_parsed = /* field_parsed */field[/* field_parsed */0];
-                var field_field_type = /* field_type */compile_field_p2(field_name$1, field_type$1);
-                var field_field_default = /* field_default */field[/* field_default */2];
-                var field_field_options = /* field_options */field[/* field_options */3];
-                var field$1 = [
-                  field_field_parsed,
-                  field_field_type,
-                  field_field_default,
-                  field_field_options
-                ];
+                var field_field_parsed = field.field_parsed;
+                var field_field_type = compile_field_p2(field_name$1, field_type$1);
+                var field_field_default = field.field_default;
+                var field_field_options = field.field_options;
+                var field$1 = {
+                  field_parsed: field_field_parsed,
+                  field_type: field_field_type,
+                  field_default: field_field_default,
+                  field_options: field_field_options
+                };
                 var field_field_parsed$1 = field_field_parsed;
                 var field_field_type$1 = field_field_type;
-                var field_field_default$1 = /* field_default */compile_default_p2(types, field$1);
+                var field_field_default$1 = compile_default_p2(types, field$1);
                 var field_field_options$1 = field_field_options;
-                var field$2 = [
-                  field_field_parsed$1,
-                  field_field_type$1,
-                  field_field_default$1,
-                  field_field_options$1
-                ];
+                var field$2 = {
+                  field_parsed: field_field_parsed$1,
+                  field_type: field_field_type$1,
+                  field_default: field_field_default$1,
+                  field_options: field_field_options$1
+                };
                 return /* :: */[
                         /* Message_field */Block.__(0, [field$2]),
                         message_body
@@ -4592,58 +4598,58 @@ function compile_message_p2(types, param, message) {
                         var field_type$2 = field_type(field);
                         var field_type$3 = compile_field_p2(field_name$2, field_type$2);
                         return /* :: */[
-                                [
-                                  /* field_parsed */field[/* field_parsed */0],
-                                  /* field_type */field_type$3,
-                                  /* field_default */field[/* field_default */2],
-                                  /* field_options */field[/* field_options */3]
-                                ],
+                                {
+                                  field_parsed: field.field_parsed,
+                                  field_type: field_type$3,
+                                  field_default: field.field_default,
+                                  field_options: field.field_options
+                                },
                                 oneof_fields
                               ];
-                      }), /* [] */0, oneof[/* oneof_fields */1]);
+                      }), /* [] */0, oneof.oneof_fields);
                 var oneof_fields$1 = List.rev(oneof_fields);
                 return /* :: */[
-                        /* Message_oneof_field */Block.__(1, [[
-                              /* oneof_name */oneof[/* oneof_name */0],
-                              /* oneof_fields */oneof_fields$1
-                            ]]),
+                        /* Message_oneof_field */Block.__(1, [{
+                              oneof_name: oneof.oneof_name,
+                              oneof_fields: oneof_fields$1
+                            }]),
                         message_body
                       ];
             case /* Message_map_field */2 :
                 var map = param[0];
-                var map_name = map[/* map_name */0];
-                var map_key_type = compile_field_p2(map_name, map[/* map_key_type */2]);
-                var map_value_type = compile_field_p2(map_name, map[/* map_value_type */3]);
-                var resolved_map = /* Message_map_field */Block.__(2, [[
-                      /* map_name */map_name,
-                      /* map_number */map[/* map_number */1],
-                      /* map_key_type */map_key_type,
-                      /* map_value_type */map_value_type,
-                      /* map_options */map[/* map_options */4]
-                    ]]);
+                var map_name = map.map_name;
+                var map_key_type = compile_field_p2(map_name, map.map_key_type);
+                var map_value_type = compile_field_p2(map_name, map.map_value_type);
+                var resolved_map = /* Message_map_field */Block.__(2, [{
+                      map_name: map_name,
+                      map_number: map.map_number,
+                      map_key_type: map_key_type,
+                      map_value_type: map_value_type,
+                      map_options: map.map_options
+                    }]);
                 return /* :: */[
                         resolved_map,
                         message_body
                       ];
             
           }
-        }), /* [] */0, message[/* message_body */2]);
+        }), /* [] */0, message.message_body);
   var message_body$1 = List.rev(message_body);
-  return [
-          /* extensions */message[/* extensions */0],
-          /* message_name */message[/* message_name */1],
-          /* message_body */message_body$1
-        ];
+  return {
+          extensions: message.extensions,
+          message_name: message.message_name,
+          message_body: message_body$1
+        };
 }
 
 function node_of_proto_type(param) {
-  var match = param[/* spec */4];
-  var id = param[/* id */1];
+  var match = param.spec;
+  var id = param.id;
   if (match.tag) {
     var sub = List.flatten(List.map((function (param) {
                 switch (param.tag | 0) {
                   case /* Message_field */0 :
-                      var field_type = param[0][/* field_type */1];
+                      var field_type = param[0].field_type;
                       if (typeof field_type === "number") {
                         return /* [] */0;
                       } else {
@@ -4654,7 +4660,7 @@ function node_of_proto_type(param) {
                       }
                   case /* Message_oneof_field */1 :
                       return List.flatten(List.map((function (param) {
-                                        var field_type = param[/* field_type */1];
+                                        var field_type = param.field_type;
                                         if (typeof field_type === "number") {
                                           return /* [] */0;
                                         } else {
@@ -4663,9 +4669,9 @@ function node_of_proto_type(param) {
                                                   /* [] */0
                                                 ];
                                         }
-                                      }), param[0][/* oneof_fields */1]));
+                                      }), param[0].oneof_fields));
                   case /* Message_map_field */2 :
-                      var map_value_type = param[0][/* map_value_type */3];
+                      var map_value_type = param[0].map_value_type;
                       if (typeof map_value_type === "number") {
                         return /* [] */0;
                       } else {
@@ -4676,16 +4682,16 @@ function node_of_proto_type(param) {
                       }
                   
                 }
-              }), match[0][/* message_body */2]));
-    return [
-            /* id */id,
-            /* sub */sub
-          ];
+              }), match[0].message_body));
+    return {
+            id: id,
+            sub: sub
+          };
   } else {
-    return [
-            /* id */id,
-            /* sub : [] */0
-          ];
+    return {
+            id: id,
+            sub: /* [] */0
+          };
   }
 }
 
@@ -4694,7 +4700,7 @@ function group(proto) {
   var g$1 = List.fold_left((function (m, n) {
           var n$1 = n;
           var g = m;
-          return add(n$1[/* id */0], n$1, g);
+          return add(n$1.id, n$1, g);
         }), /* Empty */0, g);
   var sccs = tarjan(g$1);
   return List.map((function (l) {
@@ -4702,7 +4708,7 @@ function group(proto) {
                               return List.find((function (param) {
                                             var input_id = id;
                                             var param$1 = param;
-                                            return input_id === param$1[/* id */1];
+                                            return input_id === param$1.id;
                                           }), proto);
                             }), l);
               }), sccs);
@@ -4717,8 +4723,8 @@ function type_decl_of_and(param) {
 }
 
 function gen_type_record(mutable_, and_, param, sc) {
-  var r_fields = param[/* r_fields */1];
-  var r_name = param[/* r_name */0];
+  var r_fields = param.r_fields;
+  var r_name = param.r_name;
   var mutable_$1 = mutable_ !== undefined;
   var is_imperative_type = function (param) {
     switch (param.tag | 0) {
@@ -4759,8 +4765,8 @@ function gen_type_record(mutable_, and_, param, sc) {
               ]), type_decl_of_and(and_), r_name$1));
   scope(sc, (function (sc) {
           return List.iter((function (param) {
-                        var rf_field_type = param[/* rf_field_type */1];
-                        var prefix = field_prefix(rf_field_type, param[/* rf_mutable */2]);
+                        var rf_field_type = param.rf_field_type;
+                        var prefix = field_prefix(rf_field_type, param.rf_mutable);
                         var type_string = string_of_record_field_type(rf_field_type);
                         return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                             /* String */Block.__(2, [
@@ -4780,14 +4786,14 @@ function gen_type_record(mutable_, and_, param, sc) {
                                                   ])
                                               ]),
                                             "%s%s : %s;"
-                                          ]), prefix, param[/* rf_label */0], type_string));
+                                          ]), prefix, param.rf_label, type_string));
                       }), r_fields);
         }));
   return line$1(sc, "}");
 }
 
 function gen_type_variant(and_, variant, sc) {
-  var v_constructors = variant[/* v_constructors */1];
+  var v_constructors = variant.v_constructors;
   line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -4803,11 +4809,11 @@ function gen_type_variant(and_, variant, sc) {
                       ])
                   ]),
                 "%s %s ="
-              ]), type_decl_of_and(and_), variant[/* v_name */0]));
+              ]), type_decl_of_and(and_), variant.v_name));
   return scope(sc, (function (sc) {
                 return List.iter((function (param) {
-                              var vc_field_type = param[/* vc_field_type */1];
-                              var vc_constructor = param[/* vc_constructor */0];
+                              var vc_field_type = param.vc_field_type;
+                              var vc_constructor = param.vc_constructor;
                               if (vc_field_type) {
                                 var type_string = string_of_field_type(vc_field_type[0]);
                                 return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
@@ -4843,7 +4849,7 @@ function gen_type_variant(and_, variant, sc) {
 }
 
 function gen_type_const_variant(and_, param, sc) {
-  var cv_constructors = param[/* cv_constructors */1];
+  var cv_constructors = param.cv_constructors;
   line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -4859,7 +4865,7 @@ function gen_type_const_variant(and_, param, sc) {
                       ])
                   ]),
                 "%s %s ="
-              ]), type_decl_of_and(and_), param[/* cv_name */0]));
+              ]), type_decl_of_and(and_), param.cv_name));
   return scope(sc, (function (sc) {
                 return List.iter((function (param) {
                               return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
@@ -4880,7 +4886,7 @@ function gen_type_const_variant(and_, param, sc) {
 }
 
 function gen_struct$2(and_, t, scope) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   switch (match.tag | 0) {
     case /* Record */0 :
         var r = match[0];
@@ -4900,7 +4906,7 @@ function gen_struct$2(and_, t, scope) {
 }
 
 function gen_sig$2(and_, t, scope) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   switch (match.tag | 0) {
     case /* Record */0 :
         gen_type_record(undefined, and_, match[0], scope);
@@ -4971,7 +4977,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
     var ud = field_type[0];
     encode_key(sc);
     var f_name = function_name_of_user_defined("encode", ud);
-    if (ud[/* udt_nested */2]) {
+    if (ud.udt_nested) {
       return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Pbrt.Encoder.nested (",
@@ -5032,8 +5038,8 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
 }
 
 function gen_encode_record(and_, param, sc) {
-  var r_fields = param[/* r_fields */1];
-  var r_name = param[/* r_name */0];
+  var r_fields = param.r_fields;
+  var r_name = param.r_name;
   Curry._1(log(/* Format */[
             /* String_literal */Block.__(11, [
                 "gen_encode_record record_name: ",
@@ -5071,8 +5077,8 @@ function gen_encode_record(and_, param, sc) {
               ]), let_decl_of_and(and_), r_name, r_name));
   return scope(sc, (function (sc) {
                 List.iter((function (record_field) {
-                        var rf_field_type = record_field[/* rf_field_type */1];
-                        var rf_label = record_field[/* rf_label */0];
+                        var rf_field_type = record_field.rf_field_type;
+                        var rf_label = record_field.rf_label;
                         switch (rf_field_type.tag | 0) {
                           case /* Rft_required */0 :
                               var match = rf_field_type[0];
@@ -5280,7 +5286,7 @@ function gen_encode_record(and_, param, sc) {
                                                   ") v.%s;"
                                                 ]), rf_label));
                           case /* Rft_variant_field */4 :
-                              var v_constructors = rf_field_type[0][/* v_constructors */1];
+                              var v_constructors = rf_field_type[0].v_constructors;
                               line$1(sc, "(");
                               scope(sc, (function (sc) {
                                       line$1(sc, Curry._1(Printf.sprintf(/* Format */[
@@ -5297,10 +5303,10 @@ function gen_encode_record(and_, param, sc) {
                                                     "match v.%s with"
                                                   ]), rf_label));
                                       return List.iter((function (param) {
-                                                    var vc_payload_kind = param[/* vc_payload_kind */3];
-                                                    var vc_encoding_number = param[/* vc_encoding_number */2];
-                                                    var vc_field_type = param[/* vc_field_type */1];
-                                                    var vc_constructor = param[/* vc_constructor */0];
+                                                    var vc_payload_kind = param.vc_payload_kind;
+                                                    var vc_encoding_number = param.vc_encoding_number;
+                                                    var vc_field_type = param.vc_field_type;
+                                                    var vc_constructor = param.vc_constructor;
                                                     if (vc_field_type) {
                                                       var field_type = vc_field_type[0];
                                                       line$1(sc, Curry._1(Printf.sprintf(/* Format */[
@@ -5351,8 +5357,8 @@ function gen_encode_record(and_, param, sc) {
 }
 
 function gen_encode_variant(and_, variant, sc) {
-  var v_constructors = variant[/* v_constructors */1];
-  var v_name = variant[/* v_name */0];
+  var v_constructors = variant.v_constructors;
+  var v_name = variant.v_name;
   line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -5378,10 +5384,10 @@ function gen_encode_variant(and_, variant, sc) {
   return scope(sc, (function (sc) {
                 line$1(sc, "match v with");
                 return List.iter((function (param) {
-                              var vc_payload_kind = param[/* vc_payload_kind */3];
-                              var vc_encoding_number = param[/* vc_encoding_number */2];
-                              var vc_field_type = param[/* vc_field_type */1];
-                              var vc_constructor = param[/* vc_constructor */0];
+                              var vc_payload_kind = param.vc_payload_kind;
+                              var vc_encoding_number = param.vc_encoding_number;
+                              var vc_field_type = param.vc_field_type;
+                              var vc_constructor = param.vc_constructor;
                               if (vc_field_type) {
                                 var field_type = vc_field_type[0];
                                 line$1(sc, Curry._1(Printf.sprintf(/* Format */[
@@ -5426,8 +5432,8 @@ function gen_encode_variant(and_, variant, sc) {
 }
 
 function gen_encode_const_variant(and_, param, sc) {
-  var cv_constructors = param[/* cv_constructors */1];
-  var cv_name = param[/* cv_name */0];
+  var cv_constructors = param.cv_constructors;
+  var cv_name = param.cv_name;
   line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -5501,7 +5507,7 @@ function gen_encode_const_variant(and_, param, sc) {
 }
 
 function gen_struct$3(and_, t, sc) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
@@ -5562,24 +5568,24 @@ function gen_sig$3(and_, t, sc) {
                         "(** [encode_%s v encoder] encodes [v] with the given [encoder] *)"
                       ]), type_name));
   };
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          f(match[0][/* r_name */0]),
+          f(match[0].r_name),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          f(match[0][/* v_name */0]),
+          f(match[0].v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          f(match[0][/* cv_name */0]),
+          f(match[0].cv_name),
           true
         ];
         break;
@@ -5738,8 +5744,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
 }
 
 function record_field_default_info(record_field) {
-  var rf_field_type = record_field[/* rf_field_type */1];
-  var rf_label = record_field[/* rf_label */0];
+  var rf_field_type = record_field.rf_field_type;
+  var rf_label = record_field.rf_label;
   var type_string = string_of_record_field_type(rf_field_type);
   var dfvft = function (field_type, defalut_value) {
     return default_value_of_field_type(rf_label, field_type, defalut_value);
@@ -5787,11 +5793,11 @@ function record_field_default_info(record_field) {
         default_value = rf_field_type[0][0] ? "Hashtbl.create 128" : "[]";
         break;
     case /* Rft_variant_field */4 :
-        var v_constructors = rf_field_type[0][/* v_constructors */1];
+        var v_constructors = rf_field_type[0].v_constructors;
         if (v_constructors) {
           var match$3 = v_constructors[0];
-          var vc_field_type = match$3[/* vc_field_type */1];
-          var vc_constructor = match$3[/* vc_constructor */0];
+          var vc_field_type = match$3.vc_field_type;
+          var vc_constructor = match$3.vc_constructor;
           default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */[
                       /* String */Block.__(2, [
                           /* No_padding */0,
@@ -5829,8 +5835,8 @@ function record_field_default_info(record_field) {
 }
 
 function gen_default_record(mutable_, and_, param, sc) {
-  var r_name = param[/* r_name */0];
-  var fields_default_info = List.map(record_field_default_info, param[/* r_fields */1]);
+  var r_name = param.r_name;
+  var fields_default_info = List.map(record_field_default_info, param.r_fields);
   if (mutable_ !== undefined) {
     var rn = r_name + "_mutable";
     line$1(sc, Curry._3(Printf.sprintf(/* Format */[
@@ -5960,12 +5966,12 @@ function gen_default_record(mutable_, and_, param, sc) {
 }
 
 function gen_default_variant(and_, param, sc) {
-  var v_constructors = param[/* v_constructors */1];
-  var v_name = param[/* v_name */0];
+  var v_constructors = param.v_constructors;
+  var v_name = param.v_name;
   if (v_constructors) {
     var match = v_constructors[0];
-    var vc_field_type = match[/* vc_field_type */1];
-    var vc_constructor = match[/* vc_constructor */0];
+    var vc_field_type = match.vc_field_type;
+    var vc_constructor = match.vc_constructor;
     var decl = let_decl_of_and(and_);
     if (vc_field_type) {
       var default_value = default_value_of_field_type(v_name, vc_field_type[0], undefined);
@@ -6039,8 +6045,8 @@ function gen_default_variant(and_, param, sc) {
 }
 
 function gen_default_const_variant(and_, param, sc) {
-  var cv_constructors = param[/* cv_constructors */1];
-  var cv_name = param[/* cv_name */0];
+  var cv_constructors = param.cv_constructors;
+  var cv_name = param.cv_name;
   var first_constructor_name;
   if (cv_constructors) {
     first_constructor_name = cv_constructors[0][0];
@@ -6081,7 +6087,7 @@ function gen_default_const_variant(and_, param, sc) {
 }
 
 function gen_struct$4(and_, t, sc) {
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
@@ -6109,7 +6115,7 @@ function gen_struct$4(and_, t, sc) {
 }
 
 function gen_sig_record(sc, param) {
-  var r_name = param[/* r_name */0];
+  var r_name = param.r_name;
   line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "val default_",
@@ -6123,7 +6129,7 @@ function gen_sig_record(sc, param) {
                   ]),
                 "val default_%s : "
               ]), r_name));
-  var fields_default_info = List.map(record_field_default_info, param[/* r_fields */1]);
+  var fields_default_info = List.map(record_field_default_info, param.r_fields);
   scope(sc, (function (sc) {
           List.iter((function (param) {
                   return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
@@ -6209,7 +6215,7 @@ function gen_sig$4(and_, t, sc) {
                         "(** [default_%s ()] is the default value for type [%s] *)"
                       ]), type_name, type_name));
   };
-  var match = t[/* spec */1];
+  var match = t.spec;
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
@@ -6220,13 +6226,13 @@ function gen_sig$4(and_, t, sc) {
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          f(match[0][/* v_name */0]),
+          f(match[0].v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          f(match[0][/* cv_name */0]),
+          f(match[0].cv_name),
           true
         ];
         break;
@@ -6435,7 +6441,7 @@ function encoding_info_of_field_type(all_types, field_type) {
     }
   } else {
     var match = type_of_id(all_types, field_type[0]);
-    if (match[/* spec */4].tag) {
+    if (match.spec.tag) {
       return /* Pk_bytes */2;
     } else {
       return /* Pk_varint */[false];
@@ -6551,22 +6557,22 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       return /* Ft_unit */0;
     } else {
       var udt_nested;
-      udt_nested = t[/* spec */4].tag ? true : false;
-      var field_type_module = module_of_file_name(t[/* file_name */2]);
+      udt_nested = t.spec.tag ? true : false;
+      var field_type_module = module_of_file_name(t.file_name);
       var match$6 = type_scope_of_type(t);
-      var udt_type_name = type_name(match$6[/* message_names */1], type_name_of_type(t));
+      var udt_type_name = type_name(match$6.message_names, type_name_of_type(t));
       if (field_type_module === module_) {
-        return /* Ft_user_defined_type */Block.__(1, [[
-                    /* udt_module */undefined,
-                    /* udt_type_name */udt_type_name,
-                    /* udt_nested */udt_nested
-                  ]]);
+        return /* Ft_user_defined_type */Block.__(1, [{
+                    udt_module: undefined,
+                    udt_type_name: udt_type_name,
+                    udt_nested: udt_nested
+                  }]);
       } else {
-        return /* Ft_user_defined_type */Block.__(1, [[
-                    /* udt_module */field_type_module,
-                    /* udt_type_name */udt_type_name,
-                    /* udt_nested */udt_nested
-                  ]]);
+        return /* Ft_user_defined_type */Block.__(1, [{
+                    udt_module: field_type_module,
+                    udt_type_name: udt_type_name,
+                    udt_nested: udt_nested
+                  }]);
       }
     }
   }
@@ -6608,35 +6614,35 @@ function variant_of_oneof(include_oneof_name, outer_message_names, all_types, fi
           var field_type$1 = compile_field_type(field_name(field), all_types, file_options, field_options(field), file_name, pbtt_field_type);
           var match = encoding_of_field(all_types, field);
           var vc_constructor = constructor_name(field_name(field));
-          return [
-                  /* vc_constructor */vc_constructor,
-                  /* vc_field_type */typeof field_type$1 === "number" ? /* Vct_nullary */0 : /* Vct_non_nullary_constructor */[field_type$1],
-                  /* vc_encoding_number */match[1],
-                  /* vc_payload_kind */match[0]
-                ];
-        }), oneof_field[/* oneof_fields */1]);
-  var v_name = include_oneof_name !== undefined ? type_name(outer_message_names, oneof_field[/* oneof_name */0]) : type_name(outer_message_names, "");
-  return [
-          /* v_name */v_name,
-          /* v_constructors */v_constructors
-        ];
+          return {
+                  vc_constructor: vc_constructor,
+                  vc_field_type: typeof field_type$1 === "number" ? /* Vct_nullary */0 : /* Vct_non_nullary_constructor */[field_type$1],
+                  vc_encoding_number: match[1],
+                  vc_payload_kind: match[0]
+                };
+        }), oneof_field.oneof_fields);
+  var v_name = include_oneof_name !== undefined ? type_name(outer_message_names, oneof_field.oneof_name) : type_name(outer_message_names, "");
+  return {
+          v_name: v_name,
+          v_constructors: v_constructors
+        };
 }
 
 function compile_enum(file_name, scope, param) {
   var module_ = module_of_file_name(file_name);
   var cv_constructors = List.map((function (param) {
           return /* tuple */[
-                  constructor_name(param[/* enum_value_name */0]),
-                  param[/* enum_value_int */1]
+                  constructor_name(param.enum_value_name),
+                  param.enum_value_int
                 ];
-        }), param[/* enum_values */1]);
-  return [
-          /* module_ */module_,
-          /* spec : Const_variant */Block.__(2, [[
-                /* cv_name */type_name(scope[/* message_names */1], param[/* enum_name */0]),
-                /* cv_constructors */cv_constructors
-              ]])
-        ];
+        }), param.enum_values);
+  return {
+          module_: module_,
+          spec: /* Const_variant */Block.__(2, [{
+                cv_name: type_name(scope.message_names, param.enum_name),
+                cv_constructors: cv_constructors
+              }])
+        };
 }
 
 var all_code_gen_001 = /* :: */[
@@ -6672,27 +6678,27 @@ function compile(proto_definition) {
   var all_pbtt_msgs$1 = List.map((function (param) {
           var all_types = all_pbtt_msgs;
           var t = param;
-          var spec = t[/* spec */4];
-          var file_options = t[/* file_options */3];
-          var file_name = t[/* file_name */2];
-          var id = t[/* id */1];
-          var scope = t[/* scope */0];
+          var spec = t.spec;
+          var file_options = t.file_options;
+          var file_name = t.file_name;
+          var id = t.id;
+          var scope = t.scope;
           if (spec.tag) {
-            return [
-                    /* scope */scope,
-                    /* id */id,
-                    /* file_name */file_name,
-                    /* file_options */file_options,
-                    /* spec : Message */Block.__(1, [compile_message_p2(all_types, scope, spec[0])])
-                  ];
+            return {
+                    scope: scope,
+                    id: id,
+                    file_name: file_name,
+                    file_options: file_options,
+                    spec: /* Message */Block.__(1, [compile_message_p2(all_types, scope, spec[0])])
+                  };
           } else {
-            return [
-                    /* scope */scope,
-                    /* id */id,
-                    /* file_name */file_name,
-                    /* file_options */file_options,
-                    /* spec */spec
-                  ];
+            return {
+                    scope: scope,
+                    id: id,
+                    file_name: file_name,
+                    file_options: file_options,
+                    spec: spec
+                  };
           }
         }), all_pbtt_msgs);
   var grouped_pbtt_msgs = List.rev(group(all_pbtt_msgs$1));
@@ -6700,19 +6706,19 @@ function compile(proto_definition) {
           return List.map((function (pbtt_msg) {
                         var all_types = all_pbtt_msgs$1;
                         var param = pbtt_msg;
-                        var match = param[/* spec */4];
-                        var file_name = param[/* file_name */2];
-                        var scope = param[/* scope */0];
+                        var match = param.spec;
+                        var file_name = param.file_name;
+                        var scope = param.scope;
                         if (match.tag) {
-                          var file_options = param[/* file_options */3];
+                          var file_options = param.file_options;
                           var all_types$1 = all_types;
                           var file_name$1 = file_name;
                           var scope$1 = scope;
                           var message = match[0];
                           var module_ = module_of_file_name(file_name$1);
-                          var message_names = scope$1[/* message_names */1];
-                          var message_body = message[/* message_body */2];
-                          var message_name = message[/* message_name */1];
+                          var message_names = scope$1.message_names;
+                          var message_body = message.message_body;
+                          var message_name = message.message_name;
                           if (message_body) {
                             var match$1 = message_body[0];
                             switch (match$1.tag | 0) {
@@ -6724,10 +6730,10 @@ function compile(proto_definition) {
                                         ]);
                                     var variant = variant_of_oneof(undefined, outer_message_names, all_types$1, file_options, file_name$1, match$1[0]);
                                     return /* :: */[
-                                            [
-                                              /* module_ */module_,
-                                              /* spec : Variant */Block.__(1, [variant])
-                                            ],
+                                            {
+                                              module_: module_,
+                                              spec: /* Variant */Block.__(1, [variant])
+                                            },
                                             /* [] */0
                                           ];
                                   }
@@ -6795,12 +6801,12 @@ function compile(proto_definition) {
                                                 field_default$1
                                               ]]);
                                         }
-                                        var record_field_rf_label = /* rf_label */label_name_of_field_name(field_name$1);
-                                        var record_field = [
-                                          record_field_rf_label,
-                                          /* rf_field_type */record_field_type,
-                                          /* rf_mutable */mutable_
-                                        ];
+                                        var record_field_rf_label = label_name_of_field_name(field_name$1);
+                                        var record_field = {
+                                          rf_label: record_field_rf_label,
+                                          rf_field_type: record_field_type,
+                                          rf_mutable: mutable_
+                                        };
                                         return /* tuple */[
                                                 variants,
                                                 /* :: */[
@@ -6815,17 +6821,17 @@ function compile(proto_definition) {
                                               /* [] */0
                                             ]);
                                         var variant = variant_of_oneof(/* () */0, outer_message_names, all_types$1, file_options, file_name$1, field$1);
-                                        var record_field_rf_label$1 = /* rf_label */label_name_of_field_name(field$1[/* oneof_name */0]);
-                                        var record_field_rf_field_type = /* rf_field_type : Rft_variant_field */Block.__(4, [variant]);
-                                        var record_field$1 = [
-                                          record_field_rf_label$1,
-                                          record_field_rf_field_type,
-                                          /* rf_mutable */false
-                                        ];
-                                        var variants_000 = [
-                                          /* module_ */module_,
-                                          /* spec : Variant */Block.__(1, [variant])
-                                        ];
+                                        var record_field_rf_label$1 = label_name_of_field_name(field$1.oneof_name);
+                                        var record_field_rf_field_type = /* Rft_variant_field */Block.__(4, [variant]);
+                                        var record_field$1 = {
+                                          rf_label: record_field_rf_label$1,
+                                          rf_field_type: record_field_rf_field_type,
+                                          rf_mutable: false
+                                        };
+                                        var variants_000 = {
+                                          module_: module_,
+                                          spec: /* Variant */Block.__(1, [variant])
+                                        };
                                         var variants$1 = /* :: */[
                                           variants_000,
                                           variants
@@ -6840,10 +6846,10 @@ function compile(proto_definition) {
                                               ];
                                     case /* Message_map_field */2 :
                                         var mf = param$1[0];
-                                        var map_options = mf[/* map_options */4];
-                                        var map_value_type = mf[/* map_value_type */3];
-                                        var map_key_type = mf[/* map_key_type */2];
-                                        var map_name = mf[/* map_name */0];
+                                        var map_options = mf.map_options;
+                                        var map_value_type = mf.map_value_type;
+                                        var map_key_type = mf.map_key_type;
+                                        var map_name = mf.map_name;
                                         var key_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
                                                       /* String_literal */Block.__(11, [
                                                           "key of ",
@@ -6896,7 +6902,7 @@ function compile(proto_definition) {
                                         }
                                         var record_field_type$1 = /* Rft_associative_field */Block.__(3, [/* tuple */[
                                               associative_type,
-                                              mf[/* map_number */1],
+                                              mf.map_number,
                                               /* tuple */[
                                                 key_type$1,
                                                 key_pk
@@ -6906,13 +6912,13 @@ function compile(proto_definition) {
                                                 value_pk
                                               ]
                                             ]]);
-                                        var record_field_rf_label$2 = /* rf_label */label_name_of_field_name(map_name);
-                                        var record_field_rf_mutable = /* rf_mutable */is_mutable(map_name, map_options);
-                                        var record_field$2 = [
-                                          record_field_rf_label$2,
-                                          /* rf_field_type */record_field_type$1,
-                                          record_field_rf_mutable
-                                        ];
+                                        var record_field_rf_label$2 = label_name_of_field_name(map_name);
+                                        var record_field_rf_mutable = is_mutable(map_name, map_options);
+                                        var record_field$2 = {
+                                          rf_label: record_field_rf_label$2,
+                                          rf_field_type: record_field_type$1,
+                                          rf_mutable: record_field_rf_mutable
+                                        };
                                         return /* tuple */[
                                                 variants,
                                                 /* :: */[
@@ -6926,17 +6932,17 @@ function compile(proto_definition) {
                                 /* [] */0,
                                 /* [] */0
                               ], message_body);
-                          var record_r_name = /* r_name */type_name(message_names, message_name);
-                          var record_r_fields = /* r_fields */List.rev(match$2[1]);
-                          var record = [
-                            record_r_name,
-                            record_r_fields
-                          ];
-                          var type__spec = /* spec : Record */Block.__(0, [record]);
-                          var type_ = [
-                            /* module_ */module_,
-                            type__spec
-                          ];
+                          var record_r_name = type_name(message_names, message_name);
+                          var record_r_fields = List.rev(match$2[1]);
+                          var record = {
+                            r_name: record_r_name,
+                            r_fields: record_r_fields
+                          };
+                          var type__spec = /* Record */Block.__(0, [record]);
+                          var type_ = {
+                            module_: module_,
+                            spec: type__spec
+                          };
                           return List.rev(/* :: */[
                                       type_,
                                       match$2[0]
@@ -6987,7 +6993,9 @@ function compile(proto_definition) {
                               }), otypes);
                 }), fs);
   };
-  var sc = [/* items : [] */0];
+  var sc = {
+    items: /* [] */0
+  };
   line$1(sc, "[@@@ocaml.warning \"-30\"]");
   line$1(sc, "");
   gen(otypes, sc, List.map((function (m) {
@@ -6997,7 +7005,9 @@ function compile(proto_definition) {
                     ];
             }), all_code_gen));
   var struct_string = print(sc);
-  var sc$1 = [/* items : [] */0];
+  var sc$1 = {
+    items: /* [] */0
+  };
   line$1(sc$1, Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "(** ",
@@ -7026,15 +7036,19 @@ function compile(proto_definition) {
 
 var match = compile("message T {required int32 j = 1; }");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -7042,7 +7056,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -7051,6 +7065,6 @@ eq("File \"ocaml_protc_test.ml\", line 10, characters 5-12", match[0], "(** tmp.
 
 eq("File \"ocaml_protc_test.ml\", line 46, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
 
-Mt.from_pair_suites("Ocaml_proto_test", suites[/* contents */0]);
+Mt.from_pair_suites("Ocaml_proto_test", suites.contents);
 
 /*  Not a pure module */

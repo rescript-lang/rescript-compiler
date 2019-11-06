@@ -2,27 +2,31 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
 function reset(param) {
-  v[/* contents */0] = 0;
+  v.contents = 0;
   return /* () */0;
 }
 
 function incr(param) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return /* () */0;
 }
 
-var vv = [/* contents */0];
+var vv = {
+  contents: 0
+};
 
 function reset2(param) {
-  vv[/* contents */0] = 0;
+  vv.contents = 0;
   return /* () */0;
 }
 
 function incr2(param) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return /* () */0;
 }
 

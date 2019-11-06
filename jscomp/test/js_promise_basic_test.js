@@ -8,15 +8,19 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -24,7 +28,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -279,11 +283,11 @@ Promise.all(/* tuple */[
         return Promise.resolve(/* () */0);
       }));
 
-console.log(List.length(suites[/* contents */0]));
+console.log(List.length(suites.contents));
 
 console.log("hey");
 
-Mt.from_pair_suites("Js_promise_basic_test", suites[/* contents */0]);
+Mt.from_pair_suites("Js_promise_basic_test", suites.contents);
 
 var twop = Promise.resolve(2);
 

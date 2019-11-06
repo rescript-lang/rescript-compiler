@@ -29,7 +29,9 @@ function filter_map(f, _xs) {
 }
 
 function excludes(p, l) {
-  var excluded = [/* contents */false];
+  var excluded = {
+    contents: false
+  };
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -38,7 +40,7 @@ function excludes(p, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p, x)) {
-          excluded[/* contents */0] = true;
+          excluded.contents = true;
           _param = l;
           continue ;
         } else {
@@ -55,7 +57,7 @@ function excludes(p, l) {
     };
   };
   var v = aux(/* [] */0, l);
-  if (excluded[/* contents */0]) {
+  if (excluded.contents) {
     return /* tuple */[
             true,
             v
@@ -69,7 +71,9 @@ function excludes(p, l) {
 }
 
 function exclude_with_fact(p, l) {
-  var excluded = [/* contents */undefined];
+  var excluded = {
+    contents: undefined
+  };
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -78,7 +82,7 @@ function exclude_with_fact(p, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p, x)) {
-          excluded[/* contents */0] = Caml_option.some(x);
+          excluded.contents = Caml_option.some(x);
           _param = l;
           continue ;
         } else {
@@ -96,14 +100,18 @@ function exclude_with_fact(p, l) {
   };
   var v = aux(/* [] */0, l);
   return /* tuple */[
-          excluded[/* contents */0],
-          excluded[/* contents */0] !== undefined ? v : l
+          excluded.contents,
+          excluded.contents !== undefined ? v : l
         ];
 }
 
 function exclude_with_fact2(p1, p2, l) {
-  var excluded1 = [/* contents */undefined];
-  var excluded2 = [/* contents */undefined];
+  var excluded1 = {
+    contents: undefined
+  };
+  var excluded2 = {
+    contents: undefined
+  };
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -112,11 +120,11 @@ function exclude_with_fact2(p1, p2, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p1, x)) {
-          excluded1[/* contents */0] = Caml_option.some(x);
+          excluded1.contents = Caml_option.some(x);
           _param = l;
           continue ;
         } else if (Curry._1(p2, x)) {
-          excluded2[/* contents */0] = Caml_option.some(x);
+          excluded2.contents = Caml_option.some(x);
           _param = l;
           continue ;
         } else {
@@ -134,9 +142,9 @@ function exclude_with_fact2(p1, p2, l) {
   };
   var v = aux(/* [] */0, l);
   return /* tuple */[
-          excluded1[/* contents */0],
-          excluded2[/* contents */0],
-          excluded1[/* contents */0] !== undefined && excluded2[/* contents */0] !== undefined ? v : l
+          excluded1.contents,
+          excluded2.contents,
+          excluded1.contents !== undefined && excluded2.contents !== undefined ? v : l
         ];
 }
 
@@ -792,11 +800,13 @@ function reduce_from_left(fn, lst) {
 }
 
 function create_ref_empty(param) {
-  return [/* contents : [] */0];
+  return {
+          contents: /* [] */0
+        };
 }
 
 function ref_top(x) {
-  var match = x[/* contents */0];
+  var match = x.contents;
   if (match) {
     return match[0];
   } else {
@@ -808,7 +818,7 @@ function ref_top(x) {
 }
 
 function ref_empty(x) {
-  var match = x[/* contents */0];
+  var match = x.contents;
   if (match) {
     return false;
   } else {
@@ -817,17 +827,17 @@ function ref_empty(x) {
 }
 
 function ref_push(x, refs) {
-  refs[/* contents */0] = /* :: */[
+  refs.contents = /* :: */[
     x,
-    refs[/* contents */0]
+    refs.contents
   ];
   return /* () */0;
 }
 
 function ref_pop(refs) {
-  var match = refs[/* contents */0];
+  var match = refs.contents;
   if (match) {
-    refs[/* contents */0] = match[1];
+    refs.contents = match[1];
     return match[0];
   } else {
     throw [

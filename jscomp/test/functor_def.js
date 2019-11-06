@@ -2,15 +2,17 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
 function f(x, x$1) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   return x$1 + x$1 | 0;
 }
 
 function $$return(param) {
-  return v[/* contents */0];
+  return v.contents;
 }
 
 function Make(U) {

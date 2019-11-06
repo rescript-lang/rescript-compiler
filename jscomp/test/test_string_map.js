@@ -152,16 +152,18 @@ function timing(label, f) {
 }
 
 function assertion_test(param) {
-  var m = [/* contents : Empty */0];
+  var m = {
+    contents: /* Empty */0
+  };
   timing("building", (function (param) {
           for(var i = 0; i <= 1000000; ++i){
-            m[/* contents */0] = add(String(i), String(i), m[/* contents */0]);
+            m.contents = add(String(i), String(i), m.contents);
           }
           return /* () */0;
         }));
   return timing("querying", (function (param) {
                 for(var i = 0; i <= 1000000; ++i){
-                  find(String(i), m[/* contents */0]);
+                  find(String(i), m.contents);
                 }
                 return /* () */0;
               }));

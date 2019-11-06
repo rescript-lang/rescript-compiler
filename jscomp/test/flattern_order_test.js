@@ -26,21 +26,23 @@ function even2(n) {
   }
 }
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
 function obj_get(param) {
-  return v[/* contents */0];
+  return v.contents;
 }
 
 function obj_set(i) {
-  v[/* contents */0] = i;
+  v.contents = i;
   return /* () */0;
 }
 
-var obj = [
-  obj_get,
-  obj_set
-];
+var obj = {
+  get: obj_get,
+  set: obj_set
+};
 
 exports.even = even;
 exports.even2 = even2;

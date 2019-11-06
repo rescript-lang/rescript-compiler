@@ -812,6 +812,10 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | Caml_block(el,_, _, Blk_module fields) ->        
       expression_desc cxt ~level f (Object (
         (Ext_list.map_combine fields el Ext_ident.convert)))
+  | Caml_block(el,_, _, Blk_record fields) ->        
+      expression_desc cxt ~level f (Object (
+        (Ext_list.map_combine (Array.to_list fields) el Ext_ident.convert)))      
+        (*FIXME: avoid allocaton *)
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
@@ -839,15 +843,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         else 
       (  
         match tag_info with 
-        | Blk_record labels ->
-          dbg_record f ;
-          P.paren_group f 1 (fun _ -> arguments cxt f 
-                                [E.array Immutable
-                                   (Ext_array.to_list_f labels E.str );
-                                 E.array mutable_flag 
-                                   (Ext_list.map el drop_comment) ]
-                            )
-        | Blk_module labels -> 
+        | Blk_record _ 
+        | Blk_module _ -> 
           assert false 
             (* 
               This can not happen, see the pattern match on previous branch 

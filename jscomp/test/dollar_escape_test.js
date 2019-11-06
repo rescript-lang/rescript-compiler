@@ -4,15 +4,19 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -20,7 +24,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -35,7 +39,7 @@ eq("File \"dollar_escape_test.ml\", line 20, characters 6-13", 3, 3);
 
 eq("File \"dollar_escape_test.ml\", line 21, characters 6-13", 3, 3);
 
-Mt.from_pair_suites("Dollar_escape_test", suites[/* contents */0]);
+Mt.from_pair_suites("Dollar_escape_test", suites.contents);
 
 var v = 3;
 

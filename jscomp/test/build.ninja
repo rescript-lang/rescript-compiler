@@ -62,6 +62,7 @@ build test/basic_module_test.cmj : cc_cmi test/basic_module_test.ml | test/basic
 build test/basic_module_test.cmi : cc test/basic_module_test.mli | $stdlib
 build test/bb.cmi test/bb.cmj : cc test/bb.ml | $stdlib
 build test/bdd.cmi test/bdd.cmj : cc test/bdd.ml | $stdlib
+build test/belt_internal_test.cmi test/belt_internal_test.cmj : cc test/belt_internal_test.ml | $stdlib
 build test/bench.cmi test/bench.cmj : cc test/bench.ml | $stdlib
 build test/big_enum.cmi test/big_enum.cmj : cc test/big_enum.ml | $stdlib
 build test/big_polyvar_test.cmi test/big_polyvar_test.cmj : cc test/big_polyvar_test.ml | $stdlib

@@ -4,9 +4,13 @@ var Mt = require("./mt.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -46,7 +50,7 @@ function f(param) {
   }
 }
 
-Mt.from_pair_suites("406_primitive_test", suites[/* contents */0]);
+Mt.from_pair_suites("406_primitive_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
