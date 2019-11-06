@@ -185,9 +185,7 @@ let make_block ?comment
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
     | _ -> comment in
   let es = 
-    match tag_info with 
-    | Blk_record des -> 
-      Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
+    match tag_info with       
 #if OCAML_VERSION =~ ">4.03.0" then   
     | Blk_record_inlined (des, _,_)
       -> 
@@ -198,6 +196,7 @@ let make_block ?comment
         if i <> 0 then merge_outer_comment des.(i-1) e else e) 
 #end         
     (* TODO: may overriden its previous comments *)
+    | Blk_record _ 
     | Blk_module _
     | Blk_tuple 
     | Blk_array
@@ -384,7 +383,18 @@ let array_index_by_int ?comment (e : t)  (pos : int32) : t =
   | _ -> { expression_desc = Array_index (e, int ?comment pos); comment = None} 
   
 let record_access (e : t) (name : string) (pos : int32) = 
-    array_index_by_int ~comment:name  e pos
+  let name = Ext_ident.convert name in 
+  match e.expression_desc with
+  | Array (l,_) (* Float i -- should not appear here *)
+  | Caml_block (l,_, _, _) when no_side_effect e
+     -> 
+    (match Ext_list.nth_opt l  (Int32.to_int pos)  with
+    | Some x-> x 
+    | None -> 
+      { expression_desc = Static_index (e, name, Some pos); comment = None}     
+    )
+  | _ -> { expression_desc = Static_index (e, name, Some pos); comment = None} 
+    
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -434,7 +444,20 @@ let record_assign
   (pos : int32) 
   (name : string)
   (value : t) = 
-  assign_by_int ~comment:name e pos value
+  match e.expression_desc with
+  | Array _  (*
+     Temporary block -- address not held
+     Optimize cases like this which is really 
+     rare {[
+      (ref x) :=  3
+     ]}
+      *)
+  | Caml_block _ when no_side_effect e  -> 
+    value
+  | _ ->  
+    assign { expression_desc = 
+        Static_index (e, name, Some pos); comment = None} value  
+
 
 
 
