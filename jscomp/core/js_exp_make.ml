@@ -371,17 +371,17 @@ let array_index ?comment (e0 : t)  (e1 : t) : t =
   | _ ->
     { expression_desc = Array_index (e0,e1); comment} 
 
-let array_index_by_int ?comment (e0 : t)  (e1 : int32) : t = 
-  match e0.expression_desc with
+let array_index_by_int ?comment (e : t)  (pos : int32) : t = 
+  match e.expression_desc with
   | Array (l,_) (* Float i -- should not appear here *)
-  | Caml_block (l,_, _, _) when no_side_effect e0
+  | Caml_block (l,_, _, _) when no_side_effect e
      -> 
-    (match Ext_list.nth_opt l  (Int32.to_int e1)  with
+    (match Ext_list.nth_opt l  (Int32.to_int pos)  with
     | Some x-> x 
     | None -> 
-      { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
+      { expression_desc = Array_index (e, int ?comment pos); comment = None}     
     )
-  | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
+  | _ -> { expression_desc = Array_index (e, int ?comment pos); comment = None} 
   
 let record_access (e : t) (name : string) (pos : int32) = 
     array_index_by_int ~comment:name  e pos
@@ -408,9 +408,9 @@ let assign ?comment e0 e1 : t =
     
 
 let assign_by_exp
-  ?comment (e0 : t)  index
-  assigned_value : t = 
-  match e0.expression_desc with
+  ?comment (e : t)  index
+  value : t = 
+  match e.expression_desc with
   | Array _  (*
      Temporary block -- address not held
      Optimize cases like this which is really 
@@ -418,11 +418,11 @@ let assign_by_exp
       (ref x) :=  3
      ]}
       *)
-  | Caml_block _ when no_side_effect e0 && no_side_effect index -> 
-    assigned_value
+  | Caml_block _ when no_side_effect e && no_side_effect index -> 
+    value
   | _ ->  
     assign { expression_desc = 
-        Array_index (e0, index); comment = None} assigned_value
+        Array_index (e, index); comment = None} value
 
 let assign_by_int
   ?comment
