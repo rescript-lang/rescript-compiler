@@ -1,9 +1,11 @@
 'use strict';
 
 
-var v = [/* contents */0];
+var v = {
+  contents: 0
+};
 
-while(console.log(String(v[/* contents */0])), v[/* contents */0] = v[/* contents */0] + 1 | 0, v[/* contents */0] < 10) {
+while(console.log(String(v.contents)), v.contents = v.contents + 1 | 0, v.contents < 10) {
   
 };
 
@@ -15,14 +17,16 @@ function fib(n) {
   }
 }
 
-var x = [/* contents */3];
+var x = {
+  contents: 3
+};
 
 while((function () {
         var y = 3;
-        console.log(String(x[/* contents */0]));
+        console.log(String(x.contents));
         y = y + 1 | 0;
-        x[/* contents */0] = x[/* contents */0] + 1 | 0;
-        return (fib(x[/* contents */0]) + fib(x[/* contents */0]) | 0) < 20;
+        x.contents = x.contents + 1 | 0;
+        return (fib(x.contents) + fib(x.contents) | 0) < 20;
       })()) {
   console.log(String(3));
 };

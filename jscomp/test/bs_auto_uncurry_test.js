@@ -3,15 +3,19 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -19,7 +23,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -32,25 +36,27 @@ function hi (cb){
 
 ;
 
-var xs = [/* contents : [] */0];
+var xs = {
+  contents: /* [] */0
+};
 
 hi((function () {
-        xs[/* contents */0] = /* :: */[
+        xs.contents = /* :: */[
           /* () */0,
-          xs[/* contents */0]
+          xs.contents
         ];
         return /* () */0;
       }));
 
 hi((function () {
-        xs[/* contents */0] = /* :: */[
+        xs.contents = /* :: */[
           /* () */0,
-          xs[/* contents */0]
+          xs.contents
         ];
         return /* () */0;
       }));
 
-eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs[/* contents */0], /* :: */[
+eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, /* :: */[
       /* () */0,
       /* :: */[
         /* () */0,
@@ -114,7 +120,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", /* array */[
             return x > 0;
           })), true);
 
-Mt.from_pair_suites("Bs_auto_uncurry_test", suites[/* contents */0]);
+Mt.from_pair_suites("Bs_auto_uncurry_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

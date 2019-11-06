@@ -6,9 +6,13 @@ var Block = require("../../lib/js/block.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -180,7 +184,7 @@ function ff1(x) {
   }
 }
 
-Mt.from_pair_suites("Inline_record_test", suites[/* contents */0]);
+Mt.from_pair_suites("Inline_record_test", suites.contents);
 
 var v2 = /* A0 */[
   /* lbl */3,

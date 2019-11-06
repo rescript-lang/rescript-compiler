@@ -3,10 +3,12 @@
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
 
-var result = [/* contents */""];
+var result = {
+  contents: ""
+};
 
 function log(x) {
-  result[/* contents */0] = x;
+  result.contents = x;
   return /* () */0;
 }
 
@@ -28,27 +30,31 @@ function compilerBug(a, b, c, f) {
   switch (exit) {
     case 1 :
         if (c) {
-          result[/* contents */0] = "No x, c is true";
+          result.contents = "No x, c is true";
           return /* () */0;
         } else {
-          result[/* contents */0] = "No x, c is false";
+          result.contents = "No x, c is false";
           return /* () */0;
         }
     case 2 :
         if (Curry._1(f, /* () */0)) {
-          result[/* contents */0] = "Some x, f returns true";
+          result.contents = "Some x, f returns true";
           return /* () */0;
         } else {
-          result[/* contents */0] = "Some x, f returns false";
+          result.contents = "Some x, f returns false";
           return /* () */0;
         }
     
   }
 }
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -58,9 +64,9 @@ compilerBug("x", undefined, true, (function (param) {
         return true;
       }));
 
-eq("File \"gpr_3875_test.ml\", line 36, characters 5-12", result[/* contents */0], "Some x, f returns true");
+eq("File \"gpr_3875_test.ml\", line 36, characters 5-12", result.contents, "Some x, f returns true");
 
-Mt.from_pair_suites("gpr_3875_test.ml", suites[/* contents */0]);
+Mt.from_pair_suites("gpr_3875_test.ml", suites.contents);
 
 exports.result = result;
 exports.Xx = Xx;

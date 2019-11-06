@@ -11,9 +11,13 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -156,7 +160,7 @@ catch (raw_exn){
 
 eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 
-Mt.from_pair_suites("Recursive_module", suites[/* contents */0]);
+Mt.from_pair_suites("Recursive_module", suites.contents);
 
 var Int32 = /* () */0;
 

@@ -3,15 +3,19 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
-  suites[/* contents */0] = /* :: */[
+  test_id.contents = test_id.contents + 1 | 0;
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -19,7 +23,7 @@ function eq(loc, x, y) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -47,7 +51,7 @@ eq("File \"js_nullable_test.ml\", line 30, characters 6-13", (null == null), tru
 
 eq("File \"js_nullable_test.ml\", line 34, characters 3-10", false, false);
 
-Mt.from_pair_suites("Js_nullable_test", suites[/* contents */0]);
+Mt.from_pair_suites("Js_nullable_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

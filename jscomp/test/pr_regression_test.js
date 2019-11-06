@@ -4,10 +4,12 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-var v = [/* contents */3];
+var v = {
+  contents: 3
+};
 
 function f(h) {
-  v[/* contents */0] = v[/* contents */0] + 1 | 0;
+  v.contents = v.contents + 1 | 0;
   var partial_arg = 3;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -22,12 +24,14 @@ f((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var a = v[/* contents */0];
+var a = v.contents;
 
-var v$1 = [/* contents */3];
+var v$1 = {
+  contents: 3
+};
 
 function f$1(h) {
-  v$1[/* contents */0] = v$1[/* contents */0] + 1 | 0;
+  v$1.contents = v$1.contents + 1 | 0;
   var partial_arg = 3;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -42,12 +46,14 @@ f$1((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var b = v$1[/* contents */0];
+var b = v$1.contents;
 
-var v$2 = [/* contents */3];
+var v$2 = {
+  contents: 3
+};
 
 function f$2(h) {
-  return Curry._2(h, 2, (v$2[/* contents */0] = v$2[/* contents */0] + 1 | 0, 3));
+  return Curry._2(h, 2, (v$2.contents = v$2.contents + 1 | 0, 3));
 }
 
 f$2((function (prim, prim$1) {
@@ -58,12 +64,14 @@ f$2((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }));
 
-var c = v$2[/* contents */0];
+var c = v$2.contents;
 
-var v$3 = [/* contents */3];
+var v$3 = {
+  contents: 3
+};
 
 function f$3(h, g) {
-  v$3[/* contents */0] = v$3[/* contents */0] + 1 | 0;
+  v$3.contents = v$3.contents + 1 | 0;
   var partial_arg = 9;
   return (function (param) {
       return Curry._2(h, partial_arg, param);
@@ -78,7 +86,7 @@ f$3((function (prim, prim$1) {
         return prim + prim$1 | 0;
       }), 3);
 
-var d = v$3[/* contents */0];
+var d = v$3.contents;
 
 Mt.from_pair_suites("Pr_regression_test", /* :: */[
       /* tuple */[

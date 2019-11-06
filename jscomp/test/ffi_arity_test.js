@@ -45,12 +45,14 @@ function u() {
   return 3;
 }
 
-var vvv = [/* contents */0];
+var vvv = {
+  contents: 0
+};
 
 function fff(param) {
   console.log("x");
   console.log("x");
-  vvv[/* contents */0] = vvv[/* contents */0] + 1 | 0;
+  vvv.contents = vvv.contents + 1 | 0;
   return /* () */0;
 }
 

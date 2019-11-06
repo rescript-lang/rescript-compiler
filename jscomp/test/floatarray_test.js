@@ -3,9 +3,13 @@
 var Mt = require("./mt.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -29,7 +33,7 @@ eq("File \"floatarray_test.ml\", line 17, characters 5-12", /* tuple */[
       0
     ]);
 
-Mt.from_pair_suites("Floatarray_test", suites[/* contents */0]);
+Mt.from_pair_suites("Floatarray_test", suites.contents);
 
 var K = 0;
 

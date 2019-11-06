@@ -100,15 +100,17 @@ function utf8_decode(strm) {
 }
 
 function to_list(xs) {
-  var v = [/* contents : [] */0];
+  var v = {
+    contents: /* [] */0
+  };
   Stream.iter((function (x) {
-          v[/* contents */0] = /* :: */[
+          v.contents = /* :: */[
             x,
-            v[/* contents */0]
+            v.contents
           ];
           return /* () */0;
         }), xs);
-  return List.rev(v[/* contents */0]);
+  return List.rev(v.contents);
 }
 
 function utf8_list(s) {
@@ -193,21 +195,25 @@ function eq_list(cmp, _xs, _ys) {
   };
 }
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, param) {
   var y = param[1];
   var x = param[0];
-  test_id[/* contents */0] = test_id[/* contents */0] + 1 | 0;
+  test_id.contents = test_id.contents + 1 | 0;
   console.log(/* tuple */[
         x,
         y
       ]);
-  suites[/* contents */0] = /* :: */[
+  suites.contents = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[/* contents */0])),
+      loc + (" id " + String(test_id.contents)),
       (function (param) {
           return /* Eq */Block.__(0, [
                     x,
@@ -215,7 +221,7 @@ function eq(loc, param) {
                   ]);
         })
     ],
-    suites[/* contents */0]
+    suites.contents
   ];
   return /* () */0;
 }
@@ -358,7 +364,7 @@ List.iter((function (param) {
       ]
     ]);
 
-Mt.from_pair_suites("Utf8_decode_test", suites[/* contents */0]);
+Mt.from_pair_suites("Utf8_decode_test", suites.contents);
 
 exports.classify = classify;
 exports.utf8_decode = utf8_decode;

@@ -7,9 +7,13 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -17,7 +21,7 @@ function eq(loc, x, y) {
 
 function f0(x) {
   var newrecord = Caml_obj.caml_obj_dup(x);
-  newrecord[/* x0 */0] = 1;
+  newrecord.x0 = 1;
   return newrecord;
 }
 
@@ -164,33 +168,33 @@ eq("File \"large_record_duplication_test.ml\", line 261, characters 6-13", get_x
 
 eq("File \"large_record_duplication_test.ml\", line 262, characters 6-13", get_x0$2(Caml_builtin_exceptions.not_found), undefined);
 
-Mt.from_pair_suites("Large_record_duplication_test", suites[/* contents */0]);
+Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 
-var v0 = [
-  /* x0 */9,
-  /* x1 */9,
-  /* x2 */9,
-  /* x3 */9,
-  /* x4 */9,
-  /* x5 */9,
-  /* x6 */9,
-  /* x7 */9,
-  /* x8 */9,
-  /* x9 */9,
-  /* x10 */9,
-  /* x11 */9,
-  /* x12 */9,
-  /* x13 */9,
-  /* x14 */9,
-  /* x15 */9,
-  /* x16 */9,
-  /* x17 */9,
-  /* x18 */9,
-  /* x19 */9,
-  /* x20 */9,
-  /* x21 */9,
-  /* x22 */9
-];
+var v0 = {
+  x0: 9,
+  x1: 9,
+  x2: 9,
+  x3: 9,
+  x4: 9,
+  x5: 9,
+  x6: 9,
+  x7: 9,
+  x8: 9,
+  x9: 9,
+  x10: 9,
+  x11: 9,
+  x12: 9,
+  x13: 9,
+  x14: 9,
+  x15: 9,
+  x16: 9,
+  x17: 9,
+  x18: 9,
+  x19: 9,
+  x20: 9,
+  x21: 9,
+  x22: 9
+};
 
 exports.suites = suites;
 exports.test_id = test_id;

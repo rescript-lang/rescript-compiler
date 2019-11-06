@@ -7,9 +7,13 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -172,7 +176,7 @@ Bytes.blit_string(a$2, 10, b, 5, 10);
 
 eq("File \"ext_bytes_test.ml\", line 109, characters 7-14", b, Bytes.of_string("\0\0\0\0\0\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"));
 
-Mt.from_pair_suites("Ext_bytes_test", suites[/* contents */0]);
+Mt.from_pair_suites("Ext_bytes_test", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

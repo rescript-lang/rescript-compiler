@@ -5,9 +5,13 @@ var Block = require("../../lib/js/block.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var suites = [/* contents : [] */0];
+var suites = {
+  contents: /* [] */0
+};
 
-var test_id = [/* contents */0];
+var test_id = {
+  contents: 0
+};
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -49,7 +53,7 @@ function f2_with(x) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.ml\", line 43, characters 22-29", suites[/* contents */0]);
+Mt.from_pair_suites("File \"record_extension_test.ml\", line 43, characters 22-29", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

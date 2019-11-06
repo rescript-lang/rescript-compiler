@@ -4,15 +4,19 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 function f(param) {
-  var v = [/* contents */0];
-  var acc = [/* contents */0];
+  var v = {
+    contents: 0
+  };
+  var acc = {
+    contents: 0
+  };
   var n = 10;
   while(true) {
-    if (v[/* contents */0] > n) {
-      return acc[/* contents */0];
+    if (v.contents > n) {
+      return acc.contents;
     } else {
-      acc[/* contents */0] = acc[/* contents */0] + v[/* contents */0] | 0;
-      v[/* contents */0] = v[/* contents */0] + 1 | 0;
+      acc.contents = acc.contents + v.contents | 0;
+      v.contents = v.contents + 1 | 0;
       continue ;
     }
   };
