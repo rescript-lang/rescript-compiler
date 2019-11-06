@@ -90,17 +90,6 @@ var variantCustomFormatter = function (data,recordVariant){
 
 };
 
-var recordPreview = function (recordLabels){
- var recordLastIndex = recordLabels.length - 1
- var preview = recordLabels.reduce(function (acc, cur, index) {
-     if (index === recordLastIndex) {
-         return acc + cur + "}"
-     }
-     return acc + cur + ", "
- }, "record {")
- return preview
-};
-
 var variantPreview = function (x, recordVariant){
  if(recordVariant === "::") {
    // show the length, just like for array
@@ -119,13 +108,10 @@ var isOCamlExceptionOrExtension = function(x){
 }
 var formatter = {
  header: function (x) {
-     var recordLabels
      var recordVariant
      var recordModule
      var recordPolyVar
-     if ((recordLabels = x[Symbol.for('BsRecord')]) !== undefined) {
-         return ['div', {}, recordPreview(recordLabels)]
-     } else if ((recordVariant =  x[Symbol.for('BsVariant')]) !== undefined){
+     if ((recordVariant =  x[Symbol.for('BsVariant')]) !== undefined){
          return variantPreview(x, recordVariant)
      } else if (isOCamlExceptionOrExtension(x)){
        return ['div',{}, `${x[0][0]}(…)`]     
@@ -135,13 +121,10 @@ var formatter = {
      return null
  },
  hasBody: function (x) {
-     var recordLabels
      var recordVariant
      var recordModule
      var recordPolyVar
-     if ((recordLabels = x[Symbol.for('BsRecord')]) !== undefined) {
-         return true
-     } else if ((recordVariant = x[Symbol.for('BsVariant')] ) !== undefined){
+     if ((recordVariant = x[Symbol.for('BsVariant')] ) !== undefined){
          return recordVariant
      } else if(isOCamlExceptionOrExtension(x)){
        return true
@@ -151,15 +134,10 @@ var formatter = {
      return false
  },
  body: function (x) {
-     var recordLabels
      var recordVariant
      var recordModule
      var recordPolyVar
-     if ( (recordLabels = x[Symbol.for('BsRecord')]) !== undefined
-       ) {
-         return recordCustomFormatter(x, recordLabels)
-     }
-     else if ((recordModule = x[Symbol.for('BsLocalModule')]) !== undefined){
+     if ((recordModule = x[Symbol.for('BsLocalModule')]) !== undefined){
          return recordCustomFormatter(x, recordModule)
      }
      else if ((recordVariant = x[Symbol.for('BsVariant')]) !== undefined) {
@@ -203,9 +181,6 @@ external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a =
 
 let __ = Block.__
 (* It won't affect [Object.keys] using [Object.defineProperty*)
-let record  meta xs =
-  setupOnce ();
-  xs |.addProp (cacheSymbol "BsRecord") [%obj {value = meta}]
 
 let variant meta tag xs =     
   setupOnce ();

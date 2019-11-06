@@ -111,9 +111,6 @@ let dbg_block_create f =
   dbg_block_dot f ;
   P.string f L.caml_block_create
 
-let dbg_record f =   
-  dbg_block_dot f ;
-  P.string f L.block_record
 
 
 let dbg_poly_var f =   
