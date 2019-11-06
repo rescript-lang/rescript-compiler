@@ -180,34 +180,34 @@ let make_block ?comment
   (tag_info : J.tag_info) 
   (es : t list) 
   (mutable_flag : J.mutable_flag) : t = 
-  match tag_info with 
-  | Blk_module _ -> 
-    {expression_desc = Caml_block(es,mutable_flag, tag,tag_info); comment}
-  | _ -> 
   let comment = 
     match comment with 
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
     | _ -> comment in
   let es = 
     match tag_info with 
-    | Blk_record des
+    | Blk_record des -> 
+      Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
 #if OCAML_VERSION =~ ">4.03.0" then   
     | Blk_record_inlined (des, _,_)
-#end    
-      when Array.length des <> 0 
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
-#if OCAML_VERSION =~ ">4.03.0" then         
     | Blk_record_ext des
-      when Array.length des <> 0 
       -> 
       Ext_list.mapi es (fun i e  -> 
         if i <> 0 then merge_outer_comment des.(i-1) e else e) 
 #end         
     (* TODO: may overriden its previous comments *)
-    | Blk_module des
-      ->  Ext_list.map2 des es merge_outer_comment             
-    | _ -> es 
+    | Blk_module _
+    | Blk_tuple 
+    | Blk_array
+    | Blk_extension_slot 
+    | Blk_extension 
+    | Blk_class 
+    | Blk_constructor _ 
+    | Blk_variant _ 
+    | Blk_na _
+      ->  es
   in
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
@@ -382,6 +382,9 @@ let array_index_by_int ?comment (e0 : t)  (e1 : int32) : t =
       { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
     )
   | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
+  
+let record_access (e : t) (name : string) (pos : int32) = 
+    array_index_by_int ~comment:name  e pos
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -408,7 +411,13 @@ let assign_by_exp
   ?comment (e0 : t)  index
   assigned_value : t = 
   match e0.expression_desc with
-  | Array _  (* Temporary block -- address not held *)
+  | Array _  (*
+     Temporary block -- address not held
+     Optimize cases like this which is really 
+     rare {[
+      (ref x) :=  3
+     ]}
+      *)
   | Caml_block _ when no_side_effect e0 && no_side_effect index -> 
     assigned_value
   | _ ->  
@@ -420,7 +429,12 @@ let assign_by_int
   e0 (index : int32) value = 
   assign_by_exp ?comment e0 (int ?comment index) value
 
-
+let record_assign  
+  (e : t) 
+  (pos : int32) 
+  (name : string)
+  (value : t) = 
+  assign_by_int ~comment:name e pos value
 
 
 

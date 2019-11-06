@@ -182,6 +182,18 @@ val array_index_by_int :
   Int32.t ->
    t
 
+val record_access :   
+  t ->
+  string -> 
+  Int32.t -> 
+  t 
+
+val record_assign :   
+  t -> 
+  int32 ->
+  string ->
+  t -> 
+  t 
 (** 
     [assign_by_int  e i v]
     if the expression [e] is a temporay block 
