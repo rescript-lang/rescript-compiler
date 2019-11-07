@@ -47,8 +47,8 @@ let transform_under_supply n loc status fn args =
         | Const_float _ | Const_int32 _ 
         | Const_int64 _ | Const_nativeint _ 
         | Const_pointer _ | Const_immstring _ | Const_js_true | Const_js_false | Const_js_undefined) 
-      | Lprim {primitive = Pfield _;
-               args =  [ Lglobal_module _ ]; _ }
+      | Lprim {primitive = Pfield (_, Fld_module _);
+                _ }
       | Lfunction _ 
         ->
         (lam :: acc, bind)
