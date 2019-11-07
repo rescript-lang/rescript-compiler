@@ -65348,12 +65348,9 @@ function compute_variance(env, visited, vari, ty) {
                   }
                   catch (exn){
                     if (exn === Caml_builtin_exceptions.not_found) {
-                      var partial_arg = Types_Variance.may_inv;
-                      return List.iter((function(partial_arg){
-                                return function (param) {
-                                  return compute_variance_rec(partial_arg, param);
-                                }
-                                }(partial_arg)), tl);
+                      return List.iter((function (param) {
+                                    return compute_variance_rec(Types_Variance.may_inv, param);
+                                  }), tl);
                     } else {
                       throw exn;
                     }
@@ -65780,9 +65777,8 @@ function compute_variance_decl(env, check, decl, rloc) {
                 return compute_variance_gadt(env, check, rloc, decl, param);
               }), tll$1);
         if (match$2) {
-          var partial_arg = Types_Variance.union;
           var varl = List.fold_left((function (param, param$1) {
-                  return List.map2(partial_arg, param, param$1);
+                  return List.map2(Types_Variance.union, param, param$1);
                 }), match$2[0], match$2[1]);
           return List.map((function (v) {
                         if (Curry._2(Types_Variance.mem, /* Pos */4, v) && Curry._2(Types_Variance.mem, /* Neg */5, v)) {
@@ -65853,12 +65849,9 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
             });
         }
         }(new_env)), new_decls, required);
-    var partial_arg = Types_Variance.union;
-    var new_variances$1 = List.map2((function(partial_arg){
-        return function (param, param$1) {
-          return List.map2(partial_arg, param, param$1);
-        }
-        }(partial_arg)), new_variances, variances);
+    var new_variances$1 = List.map2((function (param, param$1) {
+            return List.map2(Types_Variance.union, param, param$1);
+          }), new_variances, variances);
     if (Caml_obj.caml_notequal(new_variances$1, variances)) {
       _variances = new_variances$1;
       continue ;
