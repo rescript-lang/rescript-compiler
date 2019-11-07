@@ -238,7 +238,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             Ast_util.handle_external loc (strip name)  in
           let typ =
             Ast_core_type.lift_option_type  
-            @@                 
+            (
             if name = "_module" then
               Typ.constr ~loc
                 { txt = Ldot (Lident "Node", "node_module") ;
@@ -248,7 +248,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                  { txt = Ldot (Lident "Node", "node_require") ;
                    loc} [] )  
             else
-              Ast_literal.type_string ~loc () in                  
+              Ast_literal.type_string ~loc ()) in                  
           Exp.constraint_ ~loc exp typ                
         | Some _ | None ->
           begin match payload with 

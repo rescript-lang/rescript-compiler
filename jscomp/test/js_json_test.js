@@ -500,23 +500,23 @@ catch (exn){
         }));
 }
 
-eq("File \"js_json_test.ml\", line 295, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(/* array */[
-              1,
-              2,
-              3
-            ])), "[1,2,3]");
+eq("File \"js_json_test.ml\", line 295, characters 12-19", JSON.stringify(/* array */[
+          1,
+          2,
+          3
+        ]), "[1,2,3]");
 
-eq("File \"js_json_test.ml\", line 299, characters 2-9", Caml_option.undefined_to_opt(JSON.stringify({
-              foo: 1,
-              bar: "hello",
-              baz: {
-                baaz: 10
-              }
-            })), "{\"foo\":1,\"bar\":\"hello\",\"baz\":{\"baaz\":10}}");
+eq("File \"js_json_test.ml\", line 299, characters 2-9", JSON.stringify({
+          foo: 1,
+          bar: "hello",
+          baz: {
+            baaz: 10
+          }
+        }), "{\"foo\":1,\"bar\":\"hello\",\"baz\":{\"baaz\":10}}");
 
-eq("File \"js_json_test.ml\", line 303, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(null)), "null");
+eq("File \"js_json_test.ml\", line 303, characters 12-19", JSON.stringify(null), "null");
 
-eq("File \"js_json_test.ml\", line 305, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(undefined)), undefined);
+eq("File \"js_json_test.ml\", line 305, characters 12-19", JSON.stringify(undefined), undefined);
 
 eq("File \"js_json_test.ml\", line 308, characters 5-12", Js_json.decodeString("test"), "test");
 

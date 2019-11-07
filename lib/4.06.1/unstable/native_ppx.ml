@@ -21581,7 +21581,7 @@ let handle_raw ~check_js_regex loc payload =
       { exp with pexp_desc }
   end
 
-let handle_external loc x = 
+let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
     Ast_compatible.app1
     (Exp.ident ~loc 

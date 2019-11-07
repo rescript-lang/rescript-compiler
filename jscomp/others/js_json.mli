@@ -224,7 +224,7 @@ Js.log \@\@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
 
 
 external stringifyAny : 'a -> string option = "stringify" 
-  [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
+  [@@bs.val]  [@@bs.scope "JSON"]
 (** [stringifyAny value] formats any [value] into a JSON string
 
 @example {[

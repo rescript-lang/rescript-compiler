@@ -109,7 +109,7 @@ external parseExn : string -> t = "parse"
   [@@bs.val] [@@bs.scope "JSON"]
 
 external stringifyAny : 'a -> string option =
-"stringify" [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
+"stringify" [@@bs.val]  [@@bs.scope "JSON"]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 external null : t = "null" [@@bs.val]
