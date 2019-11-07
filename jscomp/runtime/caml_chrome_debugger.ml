@@ -109,7 +109,6 @@ var isOCamlExceptionOrExtension = function(x){
 var formatter = {
  header: function (x) {
      var recordVariant
-     var recordModule
      var recordPolyVar
      if ((recordVariant =  x[Symbol.for('BsVariant')]) !== undefined){
          return variantPreview(x, recordVariant)
@@ -122,7 +121,6 @@ var formatter = {
  },
  hasBody: function (x) {
      var recordVariant
-     var recordModule
      var recordPolyVar
      if ((recordVariant = x[Symbol.for('BsVariant')] ) !== undefined){
          return recordVariant
@@ -135,7 +133,6 @@ var formatter = {
  },
  body: function (x) {
      var recordVariant
-     var recordModule
      var recordPolyVar
      if ((recordVariant = x[Symbol.for('BsVariant')]) !== undefined) {
              return variantCustomFormatter(x,recordVariant)
