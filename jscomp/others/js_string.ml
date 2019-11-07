@@ -126,7 +126,7 @@ external charCodeAt : int -> float  = "charCodeAt" [@@bs.send.pipe: t]
   codePointAt 5 "abc" = None
 ]}
 *)
-external codePointAt : int -> int option = "codePointAt" [@@bs.send.pipe: t] [@@bs.return {undefined_to_opt}] (** ES2015 *)
+external codePointAt : int -> int option = "codePointAt" [@@bs.send.pipe: t] (** ES2015 *)
 
 (** [concat append original] returns a new string with [append] added after [original].
 

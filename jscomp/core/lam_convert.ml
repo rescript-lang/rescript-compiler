@@ -479,8 +479,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux ) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
+      let v = convert_aux (Ext_list.singleton_exn args) in 
       prim ~primitive:Pval_from_option_not_nest
-        ~args:[convert_aux (Ext_list.singleton_exn args)] loc
+        ~args:[v] loc 
     | _ when s = "#val_from_option" 
       -> 
       prim ~primitive:Pval_from_option

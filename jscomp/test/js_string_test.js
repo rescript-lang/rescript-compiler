@@ -100,7 +100,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   97,
-                                  Caml_option.undefined_to_opt("foobar".codePointAt(4))
+                                  "foobar".codePointAt(4)
                                 ]);
                       })
                   ],
@@ -110,7 +110,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     undefined,
-                                    Caml_option.undefined_to_opt("foobar".codePointAt(98))
+                                    "foobar".codePointAt(98)
                                   ]);
                         })
                     ],
