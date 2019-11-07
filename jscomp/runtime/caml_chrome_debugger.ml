@@ -137,10 +137,7 @@ var formatter = {
      var recordVariant
      var recordModule
      var recordPolyVar
-     if ((recordModule = x[Symbol.for('BsLocalModule')]) !== undefined){
-         return recordCustomFormatter(x, recordModule)
-     }
-     else if ((recordVariant = x[Symbol.for('BsVariant')]) !== undefined) {
+     if ((recordVariant = x[Symbol.for('BsVariant')]) !== undefined) {
              return variantCustomFormatter(x,recordVariant)
      }
      else if ((recordPolyVar = x [Symbol.for('BsPolyVar')]) !== undefined){
