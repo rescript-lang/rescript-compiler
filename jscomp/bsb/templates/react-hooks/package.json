@@ -5,7 +5,7 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w -ws _ ",
     "clean": "bsb -clean-world",
-    "server": "moduleserve ./ --port 8000",
+    "server": "moduleserve ./ --port 8000 --spa",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}",
-    "moduleserve": "^0.8.4"
+    "moduleserve": "^0.9.0"
   }
 }
