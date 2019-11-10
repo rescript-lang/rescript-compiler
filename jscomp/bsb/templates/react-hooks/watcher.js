@@ -6,7 +6,7 @@
 // _might_ not pick up the new version. If you're in Chrome, do Force Reload.
 
 var websocketReloader;
-var LAST_SUCCESS_BUILD_STAMP = localStorage.getItem('LAST_SUCCESS_BUILD_STAMP' || 0);
+var LAST_SUCCESS_BUILD_STAMP = localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0;
 // package.json's `start` script's `bsb -ws _` means it'll pipe build events
 // through a websocket connection to a default port of 9999. This is
 // configurable, e.g. `-ws 5000`
