@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}",
-    "moduleserve": "^0.8.4"
+    "moduleserve": "^0.9.0"
   }
 }

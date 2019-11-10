@@ -22,6 +22,8 @@ Open a new web page to `http://localhost:8000/`. Change any `.re` file in `src` 
 
 **How come we don't need any bundler during development**? We highly encourage you to open up `index.html` to check for yourself!
 
+If you start handling routes via `ReasonReactRouter` change the server script in package.json to `moduleserve ./ --port 8000 --spa` to make sure your routes don't result in a 404 not found error. With the added `--spa` flag your routes will return the index.html on page load and you can handle them client-side.
+
 # Features Used
 
 |                           | Blinking Greeting | Reducer from ReactJS Docs | Fetch Dog Pictures | Reason Using JS Using Reason |
