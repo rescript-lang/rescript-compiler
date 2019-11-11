@@ -423,6 +423,7 @@ external includes :
   *)
 external includesString :
   t -> 
+  string ->
   ?byteOffset:int ->
   ?encoding: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) ->
   unit -> bool = "includes"
