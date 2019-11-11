@@ -37,7 +37,7 @@ type t = Node.buffer
   *)
 external alloc : 
   int ->
-  ?fill:([ `String of string | `Integer of int | `Buffer of t | `UInt8Array of Js_typed_array2.Uint8Array.t ] [@bs.unwrap]) ->
+  ?fill:([ `String of string | `Integer of int | `Buffer of t | `Uint8Array of Js_typed_array2.Uint8Array.t ] [@bs.unwrap]) ->
   ?encoding: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) -> 
   unit -> t = "alloc"
 [@@bs.val] [@@bs.scope "Buffer"]
@@ -376,13 +376,13 @@ external readInt32LE : t -> ?offset:int -> unit -> int = "readInt32LE" [@@bs.sen
 external readIntBE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readIntBE" [@@bs.send]
 external readIntLE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readIntLE" [@@bs.send]
 
-external readUInt8 : t -> ?offset:int -> unit -> int = "readUInt8" [@@bs.send]
-external readUInt16BE : t -> ?offset:int -> unit -> int = "readUInt16BE" [@@bs.send]
-external readUInt16LE : t -> ?offset:int -> unit -> int = "readUInt16LE" [@@bs.send]
-external readUInt32BE : t -> ?offset:int -> unit -> int = "readUInt32BE" [@@bs.send]
-external readUInt32LE : t -> ?offset:int -> unit -> int = "readUInt32LE" [@@bs.send]
-external readUIntBE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntBE" [@@bs.send]
-external readUIntLE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntLE" [@@bs.send]
+external readUint8 : t -> ?offset:int -> unit -> int = "readUInt8" [@@bs.send]
+external readUint16BE : t -> ?offset:int -> unit -> int = "readUInt16BE" [@@bs.send]
+external readUint16LE : t -> ?offset:int -> unit -> int = "readUInt16LE" [@@bs.send]
+external readUint32BE : t -> ?offset:int -> unit -> int = "readUInt32BE" [@@bs.send]
+external readUint32LE : t -> ?offset:int -> unit -> int = "readUInt32LE" [@@bs.send]
+external readUintBE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntBE" [@@bs.send]
+external readUintLE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntLE" [@@bs.send]
 
 (** Returns a new [Buffer] that references the same memory as the original, 
     but offset and cropped by the [start] and [end_] indices.
@@ -491,13 +491,13 @@ external writeInt32LE : t -> int -> ?offset:int -> unit -> int = "writeInt32LE" 
 external writeIntBE : t -> int -> offset:int -> byteLength:int -> int = "writeIntBE" [@@bs.send]
 external writeIntLE : t -> int -> offset:int -> byteLength:int -> int = "writeIntLE" [@@bs.send]
 
-external writeUInt8 : t -> int -> ?offset:int -> unit -> int = "writeUInt8" [@@bs.send]
-external writeUInt16BE : t -> int -> ?offset:int -> unit -> int = "writeUInt16BE" [@@bs.send]
-external writeUInt16LE : t -> int -> ?offset:int -> unit -> int = "writeUInt16LE" [@@bs.send]
-external writeUInt32BE : t -> int -> ?offset:int -> unit -> int = "writeUInt32BE" [@@bs.send]
-external writeUInt32LE : t -> int -> ?offset:int -> unit -> int = "writeUInt32LE" [@@bs.send]
-external writeUIntBE : t -> int -> offset:int -> byteLength:int -> int = "writeUIntBE" [@@bs.send]
-external writeUIntLE : t -> int -> offset:int -> byteLength:int -> int = "writeUIntLE" [@@bs.send]
+external writeUint8 : t -> int -> ?offset:int -> unit -> int = "writeUInt8" [@@bs.send]
+external writeUint16BE : t -> int -> ?offset:int -> unit -> int = "writeUInt16BE" [@@bs.send]
+external writeUint16LE : t -> int -> ?offset:int -> unit -> int = "writeUInt16LE" [@@bs.send]
+external writeUint32BE : t -> int -> ?offset:int -> unit -> int = "writeUInt32BE" [@@bs.send]
+external writeUint32LE : t -> int -> ?offset:int -> unit -> int = "writeUInt32LE" [@@bs.send]
+external writeUintBE : t -> int -> offset:int -> byteLength:int -> int = "writeUIntBE" [@@bs.send]
+external writeUintLE : t -> int -> offset:int -> byteLength:int -> int = "writeUIntLE" [@@bs.send]
 
 (** Returns the maximum number of bytes that will be returned when [buf.inspect()] is called. 
 
@@ -519,7 +519,7 @@ external kMaxLength : int = "kMaxLength" [@@bs.module "buffer"]
     @since Node.js v7.1.0
   *)
 external transcode : 
-  ([ `Buffer of t | `UInt8Array of Js_typed_array2.Uint8Array.t ] [@bs.unwrap]) ->
+  ([ `Buffer of t | `Uint8Array of Js_typed_array2.Uint8Array.t ] [@bs.unwrap]) ->
   fromEnc: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) ->
   toEnc: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) ->
   t = "transcode"
