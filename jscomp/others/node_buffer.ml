@@ -520,8 +520,8 @@ external kMaxLength : int = "kMaxLength" [@@bs.module "buffer"]
   *)
 external transcode : 
   ([ `Buffer of t | `Uint8Array of Js_typed_array2.Uint8Array.t ] [@bs.unwrap]) ->
-  fromEnc: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) ->
-  toEnc: ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary | `hex ] [@bs.string]) ->
+  fromEnc: ([ `ascii | `utf8  | `utf16le  | `usc2  | `latin1 | `binary ] [@bs.string]) ->
+  toEnc: ([ `ascii | `utf8  | `utf16le  | `usc2  | `latin1 | `binary ] [@bs.string]) ->
   t = "transcode"
 [@@bs.module "buffer"]
 

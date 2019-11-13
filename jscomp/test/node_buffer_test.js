@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var $$Buffer = require("buffer");
 
 var suites_000 = /* tuple */[
   "alloc returns an object",
@@ -464,7 +465,357 @@ var suites_001 = /* :: */[
                                                                                               ]);
                                                                                     })
                                                                                 ],
-                                                                                /* [] */0
+                                                                                /* :: */[
+                                                                                  /* tuple */[
+                                                                                    "fillWithString fills existing buffer with provided string",
+                                                                                    (function (param) {
+                                                                                        var buf = Buffer.from("xxxxx");
+                                                                                        var buf$1 = buf.fill("YWJj", 2, 4, "base64");
+                                                                                        return /* Eq */Block.__(0, [
+                                                                                                  buf$1.toString(),
+                                                                                                  "xxabx"
+                                                                                                ]);
+                                                                                      })
+                                                                                  ],
+                                                                                  /* :: */[
+                                                                                    /* tuple */[
+                                                                                      "includes tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                      (function (param) {
+                                                                                          var buf = Buffer.from("aabcbb");
+                                                                                          return /* Ok */Block.__(4, [buf.includes(99, 3)]);
+                                                                                        })
+                                                                                    ],
+                                                                                    /* :: */[
+                                                                                      /* tuple */[
+                                                                                        "includes tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                        (function (param) {
+                                                                                            var buf = Buffer.from("aabcbb");
+                                                                                            return /* Ok */Block.__(4, [!buf.includes(99, 4)]);
+                                                                                          })
+                                                                                      ],
+                                                                                      /* :: */[
+                                                                                        /* tuple */[
+                                                                                          "includesString tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                          (function (param) {
+                                                                                              var buf = Buffer.from("aabcbb");
+                                                                                              return /* Ok */Block.__(4, [buf.includes("Yw==", 3, "base64")]);
+                                                                                            })
+                                                                                        ],
+                                                                                        /* :: */[
+                                                                                          /* tuple */[
+                                                                                            "includesString tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                            (function (param) {
+                                                                                                var buf = Buffer.from("aabcbb");
+                                                                                                return /* Ok */Block.__(4, [!buf.includes("Yw==", 4, "base64")]);
+                                                                                              })
+                                                                                          ],
+                                                                                          /* :: */[
+                                                                                            /* tuple */[
+                                                                                              "indexOf tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                              (function (param) {
+                                                                                                  var buf = Buffer.from("aabcbb");
+                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                            buf.indexOf(99, 3),
+                                                                                                            3
+                                                                                                          ]);
+                                                                                                })
+                                                                                            ],
+                                                                                            /* :: */[
+                                                                                              /* tuple */[
+                                                                                                "indexOf tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                                (function (param) {
+                                                                                                    var buf = Buffer.from("aabcbb");
+                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                              buf.indexOf(99, 4),
+                                                                                                              -1
+                                                                                                            ]);
+                                                                                                  })
+                                                                                              ],
+                                                                                              /* :: */[
+                                                                                                /* tuple */[
+                                                                                                  "indexOfString tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                                  (function (param) {
+                                                                                                      var buf = Buffer.from("aabcbb");
+                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                buf.indexOf("Yw==", 3, "base64"),
+                                                                                                                3
+                                                                                                              ]);
+                                                                                                    })
+                                                                                                ],
+                                                                                                /* :: */[
+                                                                                                  /* tuple */[
+                                                                                                    "indexOfString tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                                    (function (param) {
+                                                                                                        var buf = Buffer.from("aabcbb");
+                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                  buf.indexOf("Yw==", 4, "base64"),
+                                                                                                                  -1
+                                                                                                                ]);
+                                                                                                      })
+                                                                                                  ],
+                                                                                                  /* :: */[
+                                                                                                    /* tuple */[
+                                                                                                      "lastIndexOf tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                                      (function (param) {
+                                                                                                          var buf = Buffer.from("aabcbb");
+                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                    buf.lastIndexOf(99, 3),
+                                                                                                                    3
+                                                                                                                  ]);
+                                                                                                        })
+                                                                                                    ],
+                                                                                                    /* :: */[
+                                                                                                      /* tuple */[
+                                                                                                        "lastIndexOf tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                                        (function (param) {
+                                                                                                            var buf = Buffer.from("aabcbb");
+                                                                                                            return /* Eq */Block.__(0, [
+                                                                                                                      buf.lastIndexOf(99, 2),
+                                                                                                                      -1
+                                                                                                                    ]);
+                                                                                                          })
+                                                                                                      ],
+                                                                                                      /* :: */[
+                                                                                                        /* tuple */[
+                                                                                                          "lastIndexOfString tests for presence of value starting from 'byteOffset' (value included)",
+                                                                                                          (function (param) {
+                                                                                                              var buf = Buffer.from("aabcbb");
+                                                                                                              return /* Eq */Block.__(0, [
+                                                                                                                        buf.lastIndexOf("Yw==", 3, "base64"),
+                                                                                                                        3
+                                                                                                                      ]);
+                                                                                                            })
+                                                                                                        ],
+                                                                                                        /* :: */[
+                                                                                                          /* tuple */[
+                                                                                                            "lastIndexOfString tests for presence of value starting from 'byteOffset' (value included before offset)",
+                                                                                                            (function (param) {
+                                                                                                                var buf = Buffer.from("aabcbb");
+                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                          buf.lastIndexOf("Yw==", 2, "base64"),
+                                                                                                                          -1
+                                                                                                                        ]);
+                                                                                                              })
+                                                                                                          ],
+                                                                                                          /* :: */[
+                                                                                                            /* tuple */[
+                                                                                                              "length returns buffer length in bytes",
+                                                                                                              (function (param) {
+                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                            Buffer.from("abc").length,
+                                                                                                                            3
+                                                                                                                          ]);
+                                                                                                                })
+                                                                                                            ],
+                                                                                                            /* :: */[
+                                                                                                              /* tuple */[
+                                                                                                                "subarray returns piece of buffer",
+                                                                                                                (function (param) {
+                                                                                                                    var buf = Buffer.from("abcd");
+                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                              buf.subarray(1, 3).toString(),
+                                                                                                                              "bc"
+                                                                                                                            ]);
+                                                                                                                  })
+                                                                                                              ],
+                                                                                                              /* :: */[
+                                                                                                                /* tuple */[
+                                                                                                                  "slice returns piece of buffer",
+                                                                                                                  (function (param) {
+                                                                                                                      var buf = Buffer.from("abcd");
+                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                buf.slice(1, 3).toString(),
+                                                                                                                                "bc"
+                                                                                                                              ]);
+                                                                                                                    })
+                                                                                                                ],
+                                                                                                                /* :: */[
+                                                                                                                  /* tuple */[
+                                                                                                                    "swap16 swaps byte order as for int16",
+                                                                                                                    (function (param) {
+                                                                                                                        var buf = Buffer.from(/* array */[
+                                                                                                                                1,
+                                                                                                                                2,
+                                                                                                                                3,
+                                                                                                                                4
+                                                                                                                              ]).swap16();
+                                                                                                                        return /* Ok */Block.__(4, [buf[0] === 2 && buf[1] === 1 && buf[2] === 4 && buf[3] === 3]);
+                                                                                                                      })
+                                                                                                                  ],
+                                                                                                                  /* :: */[
+                                                                                                                    /* tuple */[
+                                                                                                                      "swap32 swaps byte order as for int32",
+                                                                                                                      (function (param) {
+                                                                                                                          var buf = Buffer.from(/* array */[
+                                                                                                                                  1,
+                                                                                                                                  2,
+                                                                                                                                  3,
+                                                                                                                                  4
+                                                                                                                                ]).swap32();
+                                                                                                                          return /* Ok */Block.__(4, [buf[0] === 4 && buf[1] === 3 && buf[2] === 2 && buf[3] === 1]);
+                                                                                                                        })
+                                                                                                                    ],
+                                                                                                                    /* :: */[
+                                                                                                                      /* tuple */[
+                                                                                                                        "swap64 swaps byte order as for int64",
+                                                                                                                        (function (param) {
+                                                                                                                            var buf = Buffer.from(/* array */[
+                                                                                                                                    1,
+                                                                                                                                    2,
+                                                                                                                                    3,
+                                                                                                                                    4,
+                                                                                                                                    5,
+                                                                                                                                    6,
+                                                                                                                                    7,
+                                                                                                                                    8
+                                                                                                                                  ]).swap64();
+                                                                                                                            return /* Ok */Block.__(4, [buf[0] === 8 && buf[1] === 7 && buf[2] === 6 && buf[3] === 5 && buf[4] === 4 && buf[5] === 3 && buf[6] === 2 && buf[7] === 1]);
+                                                                                                                          })
+                                                                                                                      ],
+                                                                                                                      /* :: */[
+                                                                                                                        /* tuple */[
+                                                                                                                          "toJSON",
+                                                                                                                          (function (param) {
+                                                                                                                              var json = Buffer.from(/* array */[
+                                                                                                                                      1,
+                                                                                                                                      2,
+                                                                                                                                      3
+                                                                                                                                    ]).toJSON();
+                                                                                                                              return /* Eq */Block.__(0, [
+                                                                                                                                        JSON.stringify(json),
+                                                                                                                                        "{\"type\":\"Buffer\",\"data\":[1,2,3]}"
+                                                                                                                                      ]);
+                                                                                                                            })
+                                                                                                                        ],
+                                                                                                                        /* :: */[
+                                                                                                                          /* tuple */[
+                                                                                                                            "toString converts buffer to string",
+                                                                                                                            (function (param) {
+                                                                                                                                var source = "abc";
+                                                                                                                                var target = Buffer.from(source).toString();
+                                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                                          source,
+                                                                                                                                          target
+                                                                                                                                        ]);
+                                                                                                                              })
+                                                                                                                          ],
+                                                                                                                          /* :: */[
+                                                                                                                            /* tuple */[
+                                                                                                                              "toString with encoding uses encoding for string conversion",
+                                                                                                                              (function (param) {
+                                                                                                                                  var target = Buffer.from("abc").toString("base64", undefined, undefined);
+                                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                                            target,
+                                                                                                                                            "YWJj"
+                                                                                                                                          ]);
+                                                                                                                                })
+                                                                                                                            ],
+                                                                                                                            /* :: */[
+                                                                                                                              /* tuple */[
+                                                                                                                                "write",
+                                                                                                                                (function (param) {
+                                                                                                                                    var buf = Buffer.from("xxxxxxxx");
+                                                                                                                                    buf.write("YWJj", 2, "base64");
+                                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                                              buf.toString(),
+                                                                                                                                              "xxabcxxx"
+                                                                                                                                            ]);
+                                                                                                                                  })
+                                                                                                                              ],
+                                                                                                                              /* :: */[
+                                                                                                                                /* tuple */[
+                                                                                                                                  "writeLength",
+                                                                                                                                  (function (param) {
+                                                                                                                                      var buf = Buffer.from("xxxxxxxx");
+                                                                                                                                      buf.write("YWJj", 2, 2, "base64");
+                                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                                buf.toString(),
+                                                                                                                                                "xxabxxxx"
+                                                                                                                                              ]);
+                                                                                                                                    })
+                                                                                                                                ],
+                                                                                                                                /* :: */[
+                                                                                                                                  /* tuple */[
+                                                                                                                                    "_INSPECT_MAX_BYTES",
+                                                                                                                                    (function (param) {
+                                                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                                                  typeof $$Buffer.INSPECT_MAX_BYTES,
+                                                                                                                                                  "number"
+                                                                                                                                                ]);
+                                                                                                                                      })
+                                                                                                                                  ],
+                                                                                                                                  /* :: */[
+                                                                                                                                    /* tuple */[
+                                                                                                                                      "kMaxLength",
+                                                                                                                                      (function (param) {
+                                                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                                                    typeof $$Buffer.kMaxLength,
+                                                                                                                                                    "number"
+                                                                                                                                                  ]);
+                                                                                                                                        })
+                                                                                                                                    ],
+                                                                                                                                    /* :: */[
+                                                                                                                                      /* tuple */[
+                                                                                                                                        "transcode",
+                                                                                                                                        (function (param) {
+                                                                                                                                            var buf = Buffer.from("€");
+                                                                                                                                            var buf2 = $$Buffer.transcode(buf, "utf8", "ascii");
+                                                                                                                                            return /* Eq */Block.__(0, [
+                                                                                                                                                      buf2.toString(),
+                                                                                                                                                      "?"
+                                                                                                                                                    ]);
+                                                                                                                                          })
+                                                                                                                                      ],
+                                                                                                                                      /* :: */[
+                                                                                                                                        /* tuple */[
+                                                                                                                                          "_MAX_LENGTH",
+                                                                                                                                          (function (param) {
+                                                                                                                                              return /* Eq */Block.__(0, [
+                                                                                                                                                        typeof $$Buffer.constants.MAX_LENGTH,
+                                                                                                                                                        "number"
+                                                                                                                                                      ]);
+                                                                                                                                            })
+                                                                                                                                        ],
+                                                                                                                                        /* :: */[
+                                                                                                                                          /* tuple */[
+                                                                                                                                            "_MAX_STRING_LENGTH",
+                                                                                                                                            (function (param) {
+                                                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                                                          typeof $$Buffer.constants.MAX_STRING_LENGTH,
+                                                                                                                                                          "number"
+                                                                                                                                                        ]);
+                                                                                                                                              })
+                                                                                                                                          ],
+                                                                                                                                          /* [] */0
+                                                                                                                                        ]
+                                                                                                                                      ]
+                                                                                                                                    ]
+                                                                                                                                  ]
+                                                                                                                                ]
+                                                                                                                              ]
+                                                                                                                            ]
+                                                                                                                          ]
+                                                                                                                        ]
+                                                                                                                      ]
+                                                                                                                    ]
+                                                                                                                  ]
+                                                                                                                ]
+                                                                                                              ]
+                                                                                                            ]
+                                                                                                          ]
+                                                                                                        ]
+                                                                                                      ]
+                                                                                                    ]
+                                                                                                  ]
+                                                                                                ]
+                                                                                              ]
+                                                                                            ]
+                                                                                          ]
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
+                                                                                  ]
+                                                                                ]
                                                                               ]
                                                                             ]
                                                                           ]

@@ -140,7 +140,7 @@ build others/belt_internalSetString.cmi others/belt_internalSetString.cmj : cc o
 build others/dom.cmi others/dom.cmj : cc others/dom.ml | others/dom_storage.cmj others/dom_storage2.cmj js_pkg runtime
 build others/dom_storage.cmi others/dom_storage.cmj : cc others/dom_storage.ml | others/dom_storage2.cmj js_pkg runtime
 build others/dom_storage2.cmi others/dom_storage2.cmj : cc others/dom_storage2.ml | runtime
-build others/node_buffer.cmi others/node_buffer.cmj : cc others/node_buffer.ml | others/node.cmi others/node.cmj js_pkg runtime
+build others/node_buffer.cmi others/node_buffer.cmj : cc others/node_buffer.ml | others/js_typed_array2.cmj others/node.cmi others/node.cmj js_pkg runtime
 build others/node_child_process.cmi others/node_child_process.cmj : cc others/node_child_process.ml | others/node.cmi others/node.cmj js_pkg runtime
 build others/node_fs.cmi others/node_fs.cmj : cc others/node_fs.ml | others/js_string.cmj others/node.cmi others/node.cmj js_pkg runtime
 build others/node_module.cmi others/node_module.cmj : cc others/node_module.ml | others/js_dict.cmj others/node.cmi others/node.cmj js_pkg runtime

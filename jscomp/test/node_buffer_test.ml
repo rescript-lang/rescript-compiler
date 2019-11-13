@@ -187,7 +187,7 @@ let suites = Mt.[
   "copy transfers one buffer region to another", (fun _ ->
     let buf = Node.Buffer.fromString "abc" in
     let buf2 = Node.Buffer.fromString "xxxxx" in
-    let () = ignore (Node.Buffer.copy buf ~target:buf2 ~targetStart:1 ~sourceStart:1 ~sourceEnd:3 ()) in
+    Node.Buffer.copy buf ~target:buf2 ~targetStart:1 ~sourceStart:1 ~sourceEnd:3 () |. ignore;
     Eq(Node.Buffer.toString buf2, "xbcxx")
   );
 
@@ -207,6 +207,183 @@ let suites = Mt.[
     let buf = Node.Buffer.fromString "aaaaa" in
     let buf = Node.Buffer.fill buf (`Integer 98) ~offset:2 ~end_:4 () in
     Eq(Node.Buffer.toString buf, "aabba")
+  );
+
+  "fillWithString fills existing buffer with provided string", (fun _ ->
+    let buf = Node.Buffer.fromString "xxxxx" in
+    let buf = Node.Buffer.fillWithString buf "YWJj" ~encoding:`base64 ~offset:2 ~end_:4 () in
+    Eq(Node.Buffer.toString buf, "xxabx")
+  );
+
+  "includes tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Ok(Node.Buffer.includes buf (`Integer 99) ~byteOffset:3 ())
+  );
+
+  "includes tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Ok(not (Node.Buffer.includes buf (`Integer 99) ~byteOffset:4 ()))
+  );
+
+  "includesString tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Ok(Node.Buffer.includesString buf "Yw==" ~byteOffset:3 ~encoding:`base64 ())
+  );
+
+  "includesString tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Ok(not (Node.Buffer.includesString buf "Yw==" ~byteOffset:4 ~encoding:`base64 ()))
+  );
+
+  "indexOf tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.indexOf buf (`Integer 99) ~byteOffset:3 (), 3)
+  );
+
+  "indexOf tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.indexOf buf (`Integer 99) ~byteOffset:4 (), -1)
+  );
+
+  "indexOfString tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.indexOfString buf "Yw==" ~byteOffset:3 ~encoding:`base64 (), 3)
+  );
+
+  "indexOfString tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.indexOfString buf "Yw==" ~byteOffset:4 ~encoding:`base64 (), -1)
+  );
+
+  "lastIndexOf tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.lastIndexOf buf (`Integer 99) ~byteOffset:3 (), 3)
+  );
+
+  "lastIndexOf tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.lastIndexOf buf (`Integer 99) ~byteOffset:2 (), -1)
+  );
+
+  "lastIndexOfString tests for presence of value starting from 'byteOffset' (value included)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.lastIndexOfString buf "Yw==" ~byteOffset:3 ~encoding:`base64 (), 3)
+  );
+
+  "lastIndexOfString tests for presence of value starting from 'byteOffset' (value included before offset)", (fun _ ->
+    let buf = Node.Buffer.fromString "aabcbb" in
+    Eq(Node.Buffer.lastIndexOfString buf "Yw==" ~byteOffset:2 ~encoding:`base64 (), -1)
+  );
+
+  "length returns buffer length in bytes", (fun _ -> 
+    Eq("abc" |. Node.Buffer.fromString |. Node.Buffer.length, 3)
+  );
+
+  "subarray returns piece of buffer", (fun _ ->
+    let buf = Node.Buffer.fromString "abcd" in
+    Eq(Node.Buffer.toString (Node.Buffer.subarray buf ~start:1 ~end_:3 ()), "bc")
+  );
+
+  "slice returns piece of buffer", (fun _ ->
+    let buf = Node.Buffer.fromString "abcd" in
+    Eq(Node.Buffer.toString (Node.Buffer.slice buf ~start:1 ~end_:3 ()), "bc")
+  );
+
+  "swap16 swaps byte order as for int16", (fun _ ->
+    let buf = [|1;2;3;4|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.swap16 
+    in
+    Ok(
+      (Node.Buffer.unsafe_get buf 0) = 2 &&
+      (Node.Buffer.unsafe_get buf 1) = 1 &&
+      (Node.Buffer.unsafe_get buf 2) = 4 &&
+      (Node.Buffer.unsafe_get buf 3) = 3 
+    )
+  );
+
+  "swap32 swaps byte order as for int32", (fun _ ->
+    let buf = [|1;2;3;4|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.swap32 
+    in
+    Ok(
+      (Node.Buffer.unsafe_get buf 0) = 4 &&
+      (Node.Buffer.unsafe_get buf 1) = 3 &&
+      (Node.Buffer.unsafe_get buf 2) = 2 &&
+      (Node.Buffer.unsafe_get buf 3) = 1 
+    )
+  );
+
+  "swap64 swaps byte order as for int64", (fun _ ->
+    let buf = [|1;2;3;4;5;6;7;8|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.swap64
+    in
+    Ok(
+      (Node.Buffer.unsafe_get buf 0) = 8 &&
+      (Node.Buffer.unsafe_get buf 1) = 7 &&
+      (Node.Buffer.unsafe_get buf 2) = 6 &&
+      (Node.Buffer.unsafe_get buf 3) = 5 &&
+      (Node.Buffer.unsafe_get buf 4) = 4 &&
+      (Node.Buffer.unsafe_get buf 5) = 3 &&
+      (Node.Buffer.unsafe_get buf 6) = 2 &&
+      (Node.Buffer.unsafe_get buf 7) = 1 
+    )
+  );
+  
+  "toJSON", (fun _ ->
+    let json = 
+      [|1;2;3|]
+      |. Node.Buffer.fromArray 
+      |. Node.Buffer.toJSON in
+    Eq(Js.Json.stringify json, "{\"type\":\"Buffer\",\"data\":[1,2,3]}")
+  );
+
+  "toString converts buffer to string", (fun _ -> 
+    let source = "abc" in
+    let target = source |. Node.Buffer.fromString |. Node.Buffer.toString in
+    Eq(source, target)
+  );
+
+  "toString with encoding uses encoding for string conversion", (fun _ ->
+    let source = "abc" in
+    let target = source |. Node.Buffer.fromString |. Node.Buffer.toStringWithEncoding ~encoding:`base64 () in
+    Eq(target, "YWJj")
+  );
+
+  "write", (fun _ -> 
+    let buf = Node.Buffer.fromString "xxxxxxxx" in
+    Node.Buffer.write buf "YWJj" ~encoding:`base64 ~offset:2 () |. ignore;
+    Eq(Node.Buffer.toString buf, "xxabcxxx")
+  );
+
+  "writeLength", (fun _ -> 
+    let buf = Node.Buffer.fromString "xxxxxxxx" in
+    Node.Buffer.writeLength buf "YWJj" ~offset:2 ~encoding:`base64 ~length:2 () |. ignore;
+    Eq(Node.Buffer.toString buf, "xxabxxxx")
+  );
+
+  "_INSPECT_MAX_BYTES", (fun _ ->
+    Eq(Node.Buffer._INSPECT_MAX_BYTES |. Js.typeof, "number")
+  );
+
+  "kMaxLength", (fun _ ->
+    Eq(Node.Buffer.kMaxLength |. Js.typeof, "number")
+  );
+
+  "transcode", (fun _ ->
+    let buf = Node.Buffer.fromString {j|€|j} in
+    let buf2 = Node.Buffer.transcode (`Buffer buf) ~fromEnc:`utf8 ~toEnc:`ascii in
+    Eq(Node.Buffer.toString buf2, "?")
+  );
+
+  "_MAX_LENGTH", (fun _ -> 
+    Eq(Node.Buffer._MAX_LENGTH |. Js.typeof, "number")
+  );
+
+  "_MAX_STRING_LENGTH", (fun _ -> 
+    Eq(Node.Buffer._MAX_STRING_LENGTH |. Js.typeof, "number")
   );
 
 ]
