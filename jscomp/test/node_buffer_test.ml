@@ -279,6 +279,170 @@ let suites = Mt.[
     Eq("abc" |. Node.Buffer.fromString |. Node.Buffer.length, 3)
   );
 
+  "readDoubleBE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readDoubleBE ~offset:1 ()
+      |. Belt.Float.toString,
+      "5.678932010640861e-299"     
+    ) 
+  );
+  "readDoubleLE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readDoubleLE ~offset:1 ()
+      |. Belt.Float.toString,
+      "3.7258146895053074e-265"
+    ) 
+  );
+  "readFloatBE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readFloatBE ~offset:1 ()
+      |. Belt.Float.toString,
+      "9.625513546253311e-38"
+    ) 
+  );
+  "readFloatLE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readFloatLE ~offset:1 ()
+      |. Belt.Float.toString,
+      "6.207162620248253e-36"
+    )
+  );
+
+  "readInt8", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readInt8 ~offset:1 ()
+      |. Belt.Int.toString,
+      "2"
+    )
+  );
+  "readInt16BE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readInt16BE ~offset:1 ()
+      |. Belt.Int.toString,
+      "515"
+    )
+  );
+  "readInt16LE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readInt16LE ~offset:1 ()
+      |. Belt.Int.toString,
+      "770"
+    )
+  );
+  "readInt32BE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readInt32BE ~offset:1 ()
+      |. Belt.Int.toString,
+      "33752069"
+    )
+  );
+  "readInt32LE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readInt32LE ~offset:1 ()
+      |. Belt.Int.toString,
+      "84148994"
+    )
+  );
+  "readIntBE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readIntBE ~offset:1 ~byteLength:4
+      |. Belt.Int.toString,
+      "33752069"
+    )
+  );
+  "readIntLE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readIntLE ~offset:1 ~byteLength:4
+      |. Belt.Int.toString,
+      "84148994"
+    )
+  );
+  "readUint8", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUint8 ~offset:1 ()
+      |. Belt.Int.toString,
+      "2"
+    )
+  );
+  "readUint16BE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUint16BE ~offset:1 ()
+      |. Belt.Int.toString,
+      "515"
+    )
+  );
+  "readUint16LE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUint16LE ~offset:1 ()
+      |. Belt.Int.toString,
+      "770"
+    )
+  );
+  "readUint32BE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUint32BE ~offset:1 ()
+      |. Belt.Int.toString,
+      "33752069"
+    )
+  );
+  "readUint32LE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUint32LE ~offset:1 ()
+      |. Belt.Int.toString,
+      "84148994"
+    )
+  );
+  "readUintBE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUintBE ~offset:1 ~byteLength:4
+      |. Belt.Int.toString,
+      "33752069"
+    )
+  );
+  "readUintLE", (fun _ ->
+    Eq(
+      [|1;2;3;4;5;6;7;8;9;10;11;12;13;14;15|]
+      |. Node.Buffer.fromArray
+      |. Node.Buffer.readUintLE ~offset:1 ~byteLength:4
+      |. Belt.Int.toString,
+      "84148994"
+    )
+  );
+
   "subarray returns piece of buffer", (fun _ ->
     let buf = Node.Buffer.fromString "abcd" in
     Eq(Node.Buffer.toString (Node.Buffer.subarray buf ~start:1 ~end_:3 ()), "bc")
@@ -385,6 +549,8 @@ let suites = Mt.[
   "_MAX_STRING_LENGTH", (fun _ -> 
     Eq(Node.Buffer._MAX_STRING_LENGTH |. Js.typeof, "number")
   );
+
+
 
 ]
 

@@ -609,184 +609,670 @@ var suites_001 = /* :: */[
                                                                                                             ],
                                                                                                             /* :: */[
                                                                                                               /* tuple */[
-                                                                                                                "subarray returns piece of buffer",
+                                                                                                                "readDoubleBE",
                                                                                                                 (function (param) {
-                                                                                                                    var buf = Buffer.from("abcd");
                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                              buf.subarray(1, 3).toString(),
-                                                                                                                              "bc"
+                                                                                                                              String(Buffer.from(/* array */[
+                                                                                                                                          1,
+                                                                                                                                          2,
+                                                                                                                                          3,
+                                                                                                                                          4,
+                                                                                                                                          5,
+                                                                                                                                          6,
+                                                                                                                                          7,
+                                                                                                                                          8,
+                                                                                                                                          9,
+                                                                                                                                          10,
+                                                                                                                                          11,
+                                                                                                                                          12,
+                                                                                                                                          13,
+                                                                                                                                          14,
+                                                                                                                                          15
+                                                                                                                                        ]).readDoubleBE(1)),
+                                                                                                                              "5.678932010640861e-299"
                                                                                                                             ]);
                                                                                                                   })
                                                                                                               ],
                                                                                                               /* :: */[
                                                                                                                 /* tuple */[
-                                                                                                                  "slice returns piece of buffer",
+                                                                                                                  "readDoubleLE",
                                                                                                                   (function (param) {
-                                                                                                                      var buf = Buffer.from("abcd");
                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                buf.slice(1, 3).toString(),
-                                                                                                                                "bc"
+                                                                                                                                String(Buffer.from(/* array */[
+                                                                                                                                            1,
+                                                                                                                                            2,
+                                                                                                                                            3,
+                                                                                                                                            4,
+                                                                                                                                            5,
+                                                                                                                                            6,
+                                                                                                                                            7,
+                                                                                                                                            8,
+                                                                                                                                            9,
+                                                                                                                                            10,
+                                                                                                                                            11,
+                                                                                                                                            12,
+                                                                                                                                            13,
+                                                                                                                                            14,
+                                                                                                                                            15
+                                                                                                                                          ]).readDoubleLE(1)),
+                                                                                                                                "3.7258146895053074e-265"
                                                                                                                               ]);
                                                                                                                     })
                                                                                                                 ],
                                                                                                                 /* :: */[
                                                                                                                   /* tuple */[
-                                                                                                                    "swap16 swaps byte order as for int16",
+                                                                                                                    "readFloatBE",
                                                                                                                     (function (param) {
-                                                                                                                        var buf = Buffer.from(/* array */[
-                                                                                                                                1,
-                                                                                                                                2,
-                                                                                                                                3,
-                                                                                                                                4
-                                                                                                                              ]).swap16();
-                                                                                                                        return /* Ok */Block.__(4, [buf[0] === 2 && buf[1] === 1 && buf[2] === 4 && buf[3] === 3]);
+                                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                                  String(Buffer.from(/* array */[
+                                                                                                                                              1,
+                                                                                                                                              2,
+                                                                                                                                              3,
+                                                                                                                                              4,
+                                                                                                                                              5,
+                                                                                                                                              6,
+                                                                                                                                              7,
+                                                                                                                                              8,
+                                                                                                                                              9,
+                                                                                                                                              10,
+                                                                                                                                              11,
+                                                                                                                                              12,
+                                                                                                                                              13,
+                                                                                                                                              14,
+                                                                                                                                              15
+                                                                                                                                            ]).readFloatBE(1)),
+                                                                                                                                  "9.625513546253311e-38"
+                                                                                                                                ]);
                                                                                                                       })
                                                                                                                   ],
                                                                                                                   /* :: */[
                                                                                                                     /* tuple */[
-                                                                                                                      "swap32 swaps byte order as for int32",
+                                                                                                                      "readFloatLE",
                                                                                                                       (function (param) {
-                                                                                                                          var buf = Buffer.from(/* array */[
-                                                                                                                                  1,
-                                                                                                                                  2,
-                                                                                                                                  3,
-                                                                                                                                  4
-                                                                                                                                ]).swap32();
-                                                                                                                          return /* Ok */Block.__(4, [buf[0] === 4 && buf[1] === 3 && buf[2] === 2 && buf[3] === 1]);
+                                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                                    String(Buffer.from(/* array */[
+                                                                                                                                                1,
+                                                                                                                                                2,
+                                                                                                                                                3,
+                                                                                                                                                4,
+                                                                                                                                                5,
+                                                                                                                                                6,
+                                                                                                                                                7,
+                                                                                                                                                8,
+                                                                                                                                                9,
+                                                                                                                                                10,
+                                                                                                                                                11,
+                                                                                                                                                12,
+                                                                                                                                                13,
+                                                                                                                                                14,
+                                                                                                                                                15
+                                                                                                                                              ]).readFloatLE(1)),
+                                                                                                                                    "6.207162620248253e-36"
+                                                                                                                                  ]);
                                                                                                                         })
                                                                                                                     ],
                                                                                                                     /* :: */[
                                                                                                                       /* tuple */[
-                                                                                                                        "swap64 swaps byte order as for int64",
+                                                                                                                        "readInt8",
                                                                                                                         (function (param) {
-                                                                                                                            var buf = Buffer.from(/* array */[
-                                                                                                                                    1,
-                                                                                                                                    2,
-                                                                                                                                    3,
-                                                                                                                                    4,
-                                                                                                                                    5,
-                                                                                                                                    6,
-                                                                                                                                    7,
-                                                                                                                                    8
-                                                                                                                                  ]).swap64();
-                                                                                                                            return /* Ok */Block.__(4, [buf[0] === 8 && buf[1] === 7 && buf[2] === 6 && buf[3] === 5 && buf[4] === 4 && buf[5] === 3 && buf[6] === 2 && buf[7] === 1]);
+                                                                                                                            return /* Eq */Block.__(0, [
+                                                                                                                                      String(Buffer.from(/* array */[
+                                                                                                                                                  1,
+                                                                                                                                                  2,
+                                                                                                                                                  3,
+                                                                                                                                                  4,
+                                                                                                                                                  5,
+                                                                                                                                                  6,
+                                                                                                                                                  7,
+                                                                                                                                                  8,
+                                                                                                                                                  9,
+                                                                                                                                                  10,
+                                                                                                                                                  11,
+                                                                                                                                                  12,
+                                                                                                                                                  13,
+                                                                                                                                                  14,
+                                                                                                                                                  15
+                                                                                                                                                ]).readInt8(1)),
+                                                                                                                                      "2"
+                                                                                                                                    ]);
                                                                                                                           })
                                                                                                                       ],
                                                                                                                       /* :: */[
                                                                                                                         /* tuple */[
-                                                                                                                          "toJSON",
+                                                                                                                          "readInt16BE",
                                                                                                                           (function (param) {
-                                                                                                                              var json = Buffer.from(/* array */[
-                                                                                                                                      1,
-                                                                                                                                      2,
-                                                                                                                                      3
-                                                                                                                                    ]).toJSON();
                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                        JSON.stringify(json),
-                                                                                                                                        "{\"type\":\"Buffer\",\"data\":[1,2,3]}"
+                                                                                                                                        String(Buffer.from(/* array */[
+                                                                                                                                                    1,
+                                                                                                                                                    2,
+                                                                                                                                                    3,
+                                                                                                                                                    4,
+                                                                                                                                                    5,
+                                                                                                                                                    6,
+                                                                                                                                                    7,
+                                                                                                                                                    8,
+                                                                                                                                                    9,
+                                                                                                                                                    10,
+                                                                                                                                                    11,
+                                                                                                                                                    12,
+                                                                                                                                                    13,
+                                                                                                                                                    14,
+                                                                                                                                                    15
+                                                                                                                                                  ]).readInt16BE(1)),
+                                                                                                                                        "515"
                                                                                                                                       ]);
                                                                                                                             })
                                                                                                                         ],
                                                                                                                         /* :: */[
                                                                                                                           /* tuple */[
-                                                                                                                            "toString converts buffer to string",
+                                                                                                                            "readInt16LE",
                                                                                                                             (function (param) {
-                                                                                                                                var source = "abc";
-                                                                                                                                var target = Buffer.from(source).toString();
                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                          source,
-                                                                                                                                          target
+                                                                                                                                          String(Buffer.from(/* array */[
+                                                                                                                                                      1,
+                                                                                                                                                      2,
+                                                                                                                                                      3,
+                                                                                                                                                      4,
+                                                                                                                                                      5,
+                                                                                                                                                      6,
+                                                                                                                                                      7,
+                                                                                                                                                      8,
+                                                                                                                                                      9,
+                                                                                                                                                      10,
+                                                                                                                                                      11,
+                                                                                                                                                      12,
+                                                                                                                                                      13,
+                                                                                                                                                      14,
+                                                                                                                                                      15
+                                                                                                                                                    ]).readInt16LE(1)),
+                                                                                                                                          "770"
                                                                                                                                         ]);
                                                                                                                               })
                                                                                                                           ],
                                                                                                                           /* :: */[
                                                                                                                             /* tuple */[
-                                                                                                                              "toString with encoding uses encoding for string conversion",
+                                                                                                                              "readInt32BE",
                                                                                                                               (function (param) {
-                                                                                                                                  var target = Buffer.from("abc").toString("base64", undefined, undefined);
                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                            target,
-                                                                                                                                            "YWJj"
+                                                                                                                                            String(Buffer.from(/* array */[
+                                                                                                                                                        1,
+                                                                                                                                                        2,
+                                                                                                                                                        3,
+                                                                                                                                                        4,
+                                                                                                                                                        5,
+                                                                                                                                                        6,
+                                                                                                                                                        7,
+                                                                                                                                                        8,
+                                                                                                                                                        9,
+                                                                                                                                                        10,
+                                                                                                                                                        11,
+                                                                                                                                                        12,
+                                                                                                                                                        13,
+                                                                                                                                                        14,
+                                                                                                                                                        15
+                                                                                                                                                      ]).readInt32BE(1)),
+                                                                                                                                            "33752069"
                                                                                                                                           ]);
                                                                                                                                 })
                                                                                                                             ],
                                                                                                                             /* :: */[
                                                                                                                               /* tuple */[
-                                                                                                                                "write",
+                                                                                                                                "readInt32LE",
                                                                                                                                 (function (param) {
-                                                                                                                                    var buf = Buffer.from("xxxxxxxx");
-                                                                                                                                    buf.write("YWJj", 2, "base64");
                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                              buf.toString(),
-                                                                                                                                              "xxabcxxx"
+                                                                                                                                              String(Buffer.from(/* array */[
+                                                                                                                                                          1,
+                                                                                                                                                          2,
+                                                                                                                                                          3,
+                                                                                                                                                          4,
+                                                                                                                                                          5,
+                                                                                                                                                          6,
+                                                                                                                                                          7,
+                                                                                                                                                          8,
+                                                                                                                                                          9,
+                                                                                                                                                          10,
+                                                                                                                                                          11,
+                                                                                                                                                          12,
+                                                                                                                                                          13,
+                                                                                                                                                          14,
+                                                                                                                                                          15
+                                                                                                                                                        ]).readInt32LE(1)),
+                                                                                                                                              "84148994"
                                                                                                                                             ]);
                                                                                                                                   })
                                                                                                                               ],
                                                                                                                               /* :: */[
                                                                                                                                 /* tuple */[
-                                                                                                                                  "writeLength",
+                                                                                                                                  "readIntBE",
                                                                                                                                   (function (param) {
-                                                                                                                                      var buf = Buffer.from("xxxxxxxx");
-                                                                                                                                      buf.write("YWJj", 2, 2, "base64");
                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                buf.toString(),
-                                                                                                                                                "xxabxxxx"
+                                                                                                                                                String(Buffer.from(/* array */[
+                                                                                                                                                            1,
+                                                                                                                                                            2,
+                                                                                                                                                            3,
+                                                                                                                                                            4,
+                                                                                                                                                            5,
+                                                                                                                                                            6,
+                                                                                                                                                            7,
+                                                                                                                                                            8,
+                                                                                                                                                            9,
+                                                                                                                                                            10,
+                                                                                                                                                            11,
+                                                                                                                                                            12,
+                                                                                                                                                            13,
+                                                                                                                                                            14,
+                                                                                                                                                            15
+                                                                                                                                                          ]).readIntBE(1, 4)),
+                                                                                                                                                "33752069"
                                                                                                                                               ]);
                                                                                                                                     })
                                                                                                                                 ],
                                                                                                                                 /* :: */[
                                                                                                                                   /* tuple */[
-                                                                                                                                    "_INSPECT_MAX_BYTES",
+                                                                                                                                    "readIntLE",
                                                                                                                                     (function (param) {
                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                  typeof $$Buffer.INSPECT_MAX_BYTES,
-                                                                                                                                                  "number"
+                                                                                                                                                  String(Buffer.from(/* array */[
+                                                                                                                                                              1,
+                                                                                                                                                              2,
+                                                                                                                                                              3,
+                                                                                                                                                              4,
+                                                                                                                                                              5,
+                                                                                                                                                              6,
+                                                                                                                                                              7,
+                                                                                                                                                              8,
+                                                                                                                                                              9,
+                                                                                                                                                              10,
+                                                                                                                                                              11,
+                                                                                                                                                              12,
+                                                                                                                                                              13,
+                                                                                                                                                              14,
+                                                                                                                                                              15
+                                                                                                                                                            ]).readIntLE(1, 4)),
+                                                                                                                                                  "84148994"
                                                                                                                                                 ]);
                                                                                                                                       })
                                                                                                                                   ],
                                                                                                                                   /* :: */[
                                                                                                                                     /* tuple */[
-                                                                                                                                      "kMaxLength",
+                                                                                                                                      "readUint8",
                                                                                                                                       (function (param) {
                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                    typeof $$Buffer.kMaxLength,
-                                                                                                                                                    "number"
+                                                                                                                                                    String(Buffer.from(/* array */[
+                                                                                                                                                                1,
+                                                                                                                                                                2,
+                                                                                                                                                                3,
+                                                                                                                                                                4,
+                                                                                                                                                                5,
+                                                                                                                                                                6,
+                                                                                                                                                                7,
+                                                                                                                                                                8,
+                                                                                                                                                                9,
+                                                                                                                                                                10,
+                                                                                                                                                                11,
+                                                                                                                                                                12,
+                                                                                                                                                                13,
+                                                                                                                                                                14,
+                                                                                                                                                                15
+                                                                                                                                                              ]).readUInt8(1)),
+                                                                                                                                                    "2"
                                                                                                                                                   ]);
                                                                                                                                         })
                                                                                                                                     ],
                                                                                                                                     /* :: */[
                                                                                                                                       /* tuple */[
-                                                                                                                                        "transcode",
+                                                                                                                                        "readUint16BE",
                                                                                                                                         (function (param) {
-                                                                                                                                            var buf = Buffer.from("€");
-                                                                                                                                            var buf2 = $$Buffer.transcode(buf, "utf8", "ascii");
                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                      buf2.toString(),
-                                                                                                                                                      "?"
+                                                                                                                                                      String(Buffer.from(/* array */[
+                                                                                                                                                                  1,
+                                                                                                                                                                  2,
+                                                                                                                                                                  3,
+                                                                                                                                                                  4,
+                                                                                                                                                                  5,
+                                                                                                                                                                  6,
+                                                                                                                                                                  7,
+                                                                                                                                                                  8,
+                                                                                                                                                                  9,
+                                                                                                                                                                  10,
+                                                                                                                                                                  11,
+                                                                                                                                                                  12,
+                                                                                                                                                                  13,
+                                                                                                                                                                  14,
+                                                                                                                                                                  15
+                                                                                                                                                                ]).readUInt16BE(1)),
+                                                                                                                                                      "515"
                                                                                                                                                     ]);
                                                                                                                                           })
                                                                                                                                       ],
                                                                                                                                       /* :: */[
                                                                                                                                         /* tuple */[
-                                                                                                                                          "_MAX_LENGTH",
+                                                                                                                                          "readUint16LE",
                                                                                                                                           (function (param) {
                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                        typeof $$Buffer.constants.MAX_LENGTH,
-                                                                                                                                                        "number"
+                                                                                                                                                        String(Buffer.from(/* array */[
+                                                                                                                                                                    1,
+                                                                                                                                                                    2,
+                                                                                                                                                                    3,
+                                                                                                                                                                    4,
+                                                                                                                                                                    5,
+                                                                                                                                                                    6,
+                                                                                                                                                                    7,
+                                                                                                                                                                    8,
+                                                                                                                                                                    9,
+                                                                                                                                                                    10,
+                                                                                                                                                                    11,
+                                                                                                                                                                    12,
+                                                                                                                                                                    13,
+                                                                                                                                                                    14,
+                                                                                                                                                                    15
+                                                                                                                                                                  ]).readUInt16LE(1)),
+                                                                                                                                                        "770"
                                                                                                                                                       ]);
                                                                                                                                             })
                                                                                                                                         ],
                                                                                                                                         /* :: */[
                                                                                                                                           /* tuple */[
-                                                                                                                                            "_MAX_STRING_LENGTH",
+                                                                                                                                            "readUint32BE",
                                                                                                                                             (function (param) {
                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                          typeof $$Buffer.constants.MAX_STRING_LENGTH,
-                                                                                                                                                          "number"
+                                                                                                                                                          String(Buffer.from(/* array */[
+                                                                                                                                                                      1,
+                                                                                                                                                                      2,
+                                                                                                                                                                      3,
+                                                                                                                                                                      4,
+                                                                                                                                                                      5,
+                                                                                                                                                                      6,
+                                                                                                                                                                      7,
+                                                                                                                                                                      8,
+                                                                                                                                                                      9,
+                                                                                                                                                                      10,
+                                                                                                                                                                      11,
+                                                                                                                                                                      12,
+                                                                                                                                                                      13,
+                                                                                                                                                                      14,
+                                                                                                                                                                      15
+                                                                                                                                                                    ]).readUInt32BE(1)),
+                                                                                                                                                          "33752069"
                                                                                                                                                         ]);
                                                                                                                                               })
                                                                                                                                           ],
-                                                                                                                                          /* [] */0
+                                                                                                                                          /* :: */[
+                                                                                                                                            /* tuple */[
+                                                                                                                                              "readUint32LE",
+                                                                                                                                              (function (param) {
+                                                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                                                            String(Buffer.from(/* array */[
+                                                                                                                                                                        1,
+                                                                                                                                                                        2,
+                                                                                                                                                                        3,
+                                                                                                                                                                        4,
+                                                                                                                                                                        5,
+                                                                                                                                                                        6,
+                                                                                                                                                                        7,
+                                                                                                                                                                        8,
+                                                                                                                                                                        9,
+                                                                                                                                                                        10,
+                                                                                                                                                                        11,
+                                                                                                                                                                        12,
+                                                                                                                                                                        13,
+                                                                                                                                                                        14,
+                                                                                                                                                                        15
+                                                                                                                                                                      ]).readUInt32LE(1)),
+                                                                                                                                                            "84148994"
+                                                                                                                                                          ]);
+                                                                                                                                                })
+                                                                                                                                            ],
+                                                                                                                                            /* :: */[
+                                                                                                                                              /* tuple */[
+                                                                                                                                                "readUintBE",
+                                                                                                                                                (function (param) {
+                                                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                                                              String(Buffer.from(/* array */[
+                                                                                                                                                                          1,
+                                                                                                                                                                          2,
+                                                                                                                                                                          3,
+                                                                                                                                                                          4,
+                                                                                                                                                                          5,
+                                                                                                                                                                          6,
+                                                                                                                                                                          7,
+                                                                                                                                                                          8,
+                                                                                                                                                                          9,
+                                                                                                                                                                          10,
+                                                                                                                                                                          11,
+                                                                                                                                                                          12,
+                                                                                                                                                                          13,
+                                                                                                                                                                          14,
+                                                                                                                                                                          15
+                                                                                                                                                                        ]).readUIntBE(1, 4)),
+                                                                                                                                                              "33752069"
+                                                                                                                                                            ]);
+                                                                                                                                                  })
+                                                                                                                                              ],
+                                                                                                                                              /* :: */[
+                                                                                                                                                /* tuple */[
+                                                                                                                                                  "readUintLE",
+                                                                                                                                                  (function (param) {
+                                                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                                                String(Buffer.from(/* array */[
+                                                                                                                                                                            1,
+                                                                                                                                                                            2,
+                                                                                                                                                                            3,
+                                                                                                                                                                            4,
+                                                                                                                                                                            5,
+                                                                                                                                                                            6,
+                                                                                                                                                                            7,
+                                                                                                                                                                            8,
+                                                                                                                                                                            9,
+                                                                                                                                                                            10,
+                                                                                                                                                                            11,
+                                                                                                                                                                            12,
+                                                                                                                                                                            13,
+                                                                                                                                                                            14,
+                                                                                                                                                                            15
+                                                                                                                                                                          ]).readUIntLE(1, 4)),
+                                                                                                                                                                "84148994"
+                                                                                                                                                              ]);
+                                                                                                                                                    })
+                                                                                                                                                ],
+                                                                                                                                                /* :: */[
+                                                                                                                                                  /* tuple */[
+                                                                                                                                                    "subarray returns piece of buffer",
+                                                                                                                                                    (function (param) {
+                                                                                                                                                        var buf = Buffer.from("abcd");
+                                                                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                                                                  buf.subarray(1, 3).toString(),
+                                                                                                                                                                  "bc"
+                                                                                                                                                                ]);
+                                                                                                                                                      })
+                                                                                                                                                  ],
+                                                                                                                                                  /* :: */[
+                                                                                                                                                    /* tuple */[
+                                                                                                                                                      "slice returns piece of buffer",
+                                                                                                                                                      (function (param) {
+                                                                                                                                                          var buf = Buffer.from("abcd");
+                                                                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                                                                    buf.slice(1, 3).toString(),
+                                                                                                                                                                    "bc"
+                                                                                                                                                                  ]);
+                                                                                                                                                        })
+                                                                                                                                                    ],
+                                                                                                                                                    /* :: */[
+                                                                                                                                                      /* tuple */[
+                                                                                                                                                        "swap16 swaps byte order as for int16",
+                                                                                                                                                        (function (param) {
+                                                                                                                                                            var buf = Buffer.from(/* array */[
+                                                                                                                                                                    1,
+                                                                                                                                                                    2,
+                                                                                                                                                                    3,
+                                                                                                                                                                    4
+                                                                                                                                                                  ]).swap16();
+                                                                                                                                                            return /* Ok */Block.__(4, [buf[0] === 2 && buf[1] === 1 && buf[2] === 4 && buf[3] === 3]);
+                                                                                                                                                          })
+                                                                                                                                                      ],
+                                                                                                                                                      /* :: */[
+                                                                                                                                                        /* tuple */[
+                                                                                                                                                          "swap32 swaps byte order as for int32",
+                                                                                                                                                          (function (param) {
+                                                                                                                                                              var buf = Buffer.from(/* array */[
+                                                                                                                                                                      1,
+                                                                                                                                                                      2,
+                                                                                                                                                                      3,
+                                                                                                                                                                      4
+                                                                                                                                                                    ]).swap32();
+                                                                                                                                                              return /* Ok */Block.__(4, [buf[0] === 4 && buf[1] === 3 && buf[2] === 2 && buf[3] === 1]);
+                                                                                                                                                            })
+                                                                                                                                                        ],
+                                                                                                                                                        /* :: */[
+                                                                                                                                                          /* tuple */[
+                                                                                                                                                            "swap64 swaps byte order as for int64",
+                                                                                                                                                            (function (param) {
+                                                                                                                                                                var buf = Buffer.from(/* array */[
+                                                                                                                                                                        1,
+                                                                                                                                                                        2,
+                                                                                                                                                                        3,
+                                                                                                                                                                        4,
+                                                                                                                                                                        5,
+                                                                                                                                                                        6,
+                                                                                                                                                                        7,
+                                                                                                                                                                        8
+                                                                                                                                                                      ]).swap64();
+                                                                                                                                                                return /* Ok */Block.__(4, [buf[0] === 8 && buf[1] === 7 && buf[2] === 6 && buf[3] === 5 && buf[4] === 4 && buf[5] === 3 && buf[6] === 2 && buf[7] === 1]);
+                                                                                                                                                              })
+                                                                                                                                                          ],
+                                                                                                                                                          /* :: */[
+                                                                                                                                                            /* tuple */[
+                                                                                                                                                              "toJSON",
+                                                                                                                                                              (function (param) {
+                                                                                                                                                                  var json = Buffer.from(/* array */[
+                                                                                                                                                                          1,
+                                                                                                                                                                          2,
+                                                                                                                                                                          3
+                                                                                                                                                                        ]).toJSON();
+                                                                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                                                                            JSON.stringify(json),
+                                                                                                                                                                            "{\"type\":\"Buffer\",\"data\":[1,2,3]}"
+                                                                                                                                                                          ]);
+                                                                                                                                                                })
+                                                                                                                                                            ],
+                                                                                                                                                            /* :: */[
+                                                                                                                                                              /* tuple */[
+                                                                                                                                                                "toString converts buffer to string",
+                                                                                                                                                                (function (param) {
+                                                                                                                                                                    var source = "abc";
+                                                                                                                                                                    var target = Buffer.from(source).toString();
+                                                                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                                                                              source,
+                                                                                                                                                                              target
+                                                                                                                                                                            ]);
+                                                                                                                                                                  })
+                                                                                                                                                              ],
+                                                                                                                                                              /* :: */[
+                                                                                                                                                                /* tuple */[
+                                                                                                                                                                  "toString with encoding uses encoding for string conversion",
+                                                                                                                                                                  (function (param) {
+                                                                                                                                                                      var target = Buffer.from("abc").toString("base64", undefined, undefined);
+                                                                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                                                                target,
+                                                                                                                                                                                "YWJj"
+                                                                                                                                                                              ]);
+                                                                                                                                                                    })
+                                                                                                                                                                ],
+                                                                                                                                                                /* :: */[
+                                                                                                                                                                  /* tuple */[
+                                                                                                                                                                    "write",
+                                                                                                                                                                    (function (param) {
+                                                                                                                                                                        var buf = Buffer.from("xxxxxxxx");
+                                                                                                                                                                        buf.write("YWJj", 2, "base64");
+                                                                                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                                                                                  buf.toString(),
+                                                                                                                                                                                  "xxabcxxx"
+                                                                                                                                                                                ]);
+                                                                                                                                                                      })
+                                                                                                                                                                  ],
+                                                                                                                                                                  /* :: */[
+                                                                                                                                                                    /* tuple */[
+                                                                                                                                                                      "writeLength",
+                                                                                                                                                                      (function (param) {
+                                                                                                                                                                          var buf = Buffer.from("xxxxxxxx");
+                                                                                                                                                                          buf.write("YWJj", 2, 2, "base64");
+                                                                                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                                                                                    buf.toString(),
+                                                                                                                                                                                    "xxabxxxx"
+                                                                                                                                                                                  ]);
+                                                                                                                                                                        })
+                                                                                                                                                                    ],
+                                                                                                                                                                    /* :: */[
+                                                                                                                                                                      /* tuple */[
+                                                                                                                                                                        "_INSPECT_MAX_BYTES",
+                                                                                                                                                                        (function (param) {
+                                                                                                                                                                            return /* Eq */Block.__(0, [
+                                                                                                                                                                                      typeof $$Buffer.INSPECT_MAX_BYTES,
+                                                                                                                                                                                      "number"
+                                                                                                                                                                                    ]);
+                                                                                                                                                                          })
+                                                                                                                                                                      ],
+                                                                                                                                                                      /* :: */[
+                                                                                                                                                                        /* tuple */[
+                                                                                                                                                                          "kMaxLength",
+                                                                                                                                                                          (function (param) {
+                                                                                                                                                                              return /* Eq */Block.__(0, [
+                                                                                                                                                                                        typeof $$Buffer.kMaxLength,
+                                                                                                                                                                                        "number"
+                                                                                                                                                                                      ]);
+                                                                                                                                                                            })
+                                                                                                                                                                        ],
+                                                                                                                                                                        /* :: */[
+                                                                                                                                                                          /* tuple */[
+                                                                                                                                                                            "transcode",
+                                                                                                                                                                            (function (param) {
+                                                                                                                                                                                var buf = Buffer.from("€");
+                                                                                                                                                                                var buf2 = $$Buffer.transcode(buf, "utf8", "ascii");
+                                                                                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                                                                                          buf2.toString(),
+                                                                                                                                                                                          "?"
+                                                                                                                                                                                        ]);
+                                                                                                                                                                              })
+                                                                                                                                                                          ],
+                                                                                                                                                                          /* :: */[
+                                                                                                                                                                            /* tuple */[
+                                                                                                                                                                              "_MAX_LENGTH",
+                                                                                                                                                                              (function (param) {
+                                                                                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                                                                                            typeof $$Buffer.constants.MAX_LENGTH,
+                                                                                                                                                                                            "number"
+                                                                                                                                                                                          ]);
+                                                                                                                                                                                })
+                                                                                                                                                                            ],
+                                                                                                                                                                            /* :: */[
+                                                                                                                                                                              /* tuple */[
+                                                                                                                                                                                "_MAX_STRING_LENGTH",
+                                                                                                                                                                                (function (param) {
+                                                                                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                                                                                              typeof $$Buffer.constants.MAX_STRING_LENGTH,
+                                                                                                                                                                                              "number"
+                                                                                                                                                                                            ]);
+                                                                                                                                                                                  })
+                                                                                                                                                                              ],
+                                                                                                                                                                              /* [] */0
+                                                                                                                                                                            ]
+                                                                                                                                                                          ]
+                                                                                                                                                                        ]
+                                                                                                                                                                      ]
+                                                                                                                                                                    ]
+                                                                                                                                                                  ]
+                                                                                                                                                                ]
+                                                                                                                                                              ]
+                                                                                                                                                            ]
+                                                                                                                                                          ]
+                                                                                                                                                        ]
+                                                                                                                                                      ]
+                                                                                                                                                    ]
+                                                                                                                                                  ]
+                                                                                                                                                ]
+                                                                                                                                              ]
+                                                                                                                                            ]
+                                                                                                                                          ]
                                                                                                                                         ]
                                                                                                                                       ]
                                                                                                                                     ]

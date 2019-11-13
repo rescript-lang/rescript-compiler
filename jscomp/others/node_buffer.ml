@@ -373,16 +373,16 @@ external readInt16BE : t -> ?offset:int -> unit -> int = "readInt16BE" [@@bs.sen
 external readInt16LE : t -> ?offset:int -> unit -> int = "readInt16LE" [@@bs.send]
 external readInt32BE : t -> ?offset:int -> unit -> int = "readInt32BE" [@@bs.send]
 external readInt32LE : t -> ?offset:int -> unit -> int = "readInt32LE" [@@bs.send]
-external readIntBE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readIntBE" [@@bs.send]
-external readIntLE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readIntLE" [@@bs.send]
+external readIntBE : t -> offset:int -> byteLength:int -> int = "readIntBE" [@@bs.send]
+external readIntLE : t -> offset:int -> byteLength:int -> int = "readIntLE" [@@bs.send]
 
 external readUint8 : t -> ?offset:int -> unit -> int = "readUInt8" [@@bs.send]
 external readUint16BE : t -> ?offset:int -> unit -> int = "readUInt16BE" [@@bs.send]
 external readUint16LE : t -> ?offset:int -> unit -> int = "readUInt16LE" [@@bs.send]
 external readUint32BE : t -> ?offset:int -> unit -> int = "readUInt32BE" [@@bs.send]
 external readUint32LE : t -> ?offset:int -> unit -> int = "readUInt32LE" [@@bs.send]
-external readUintBE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntBE" [@@bs.send]
-external readUintLE : t -> offset:int -> byteLength:int -> ?offset:int -> unit = "readUIntLE" [@@bs.send]
+external readUintBE : t -> offset:int -> byteLength:int -> int = "readUIntBE" [@@bs.send]
+external readUintLE : t -> offset:int -> byteLength:int -> int = "readUIntLE" [@@bs.send]
 
 (** Returns a new [Buffer] that references the same memory as the original, 
     but offset and cropped by the [start] and [end_] indices.
