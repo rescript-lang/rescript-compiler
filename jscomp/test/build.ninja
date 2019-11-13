@@ -433,6 +433,7 @@ build test/nested_obj_literal.cmi test/nested_obj_literal.cmj : cc test/nested_o
 build test/nested_obj_test.cmi test/nested_obj_test.cmj : cc test/nested_obj_test.ml | $stdlib
 build test/nested_pattern_match_test.cmi test/nested_pattern_match_test.cmj : cc test/nested_pattern_match_test.ml | $stdlib
 build test/noassert.cmi test/noassert.cmj : cc test/noassert.ml | $stdlib
+build test/node_buffer_test.cmi test/node_buffer_test.cmj : cc test/node_buffer_test.ml | test/mt.cmj $stdlib
 build test/node_fs_test.cmi test/node_fs_test.cmj : cc test/node_fs_test.ml | $stdlib
 build test/node_path_test.cmi test/node_path_test.cmj : cc test/node_path_test.ml | $stdlib
 build test/number_lexer.cmi test/number_lexer.cmj : cc test/number_lexer.ml | $stdlib
