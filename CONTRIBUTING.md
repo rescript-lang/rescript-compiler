@@ -133,19 +133,20 @@ cd ocaml && make -j9 world.opt && make install && cd ..
 ## Contributing to the runtime
 
 BuckleScript runtime implementation is currently a mix of OCaml and JavaScript.
-(`jscomp/runtime` directory). The JavaScript code is defined in the `.ml` file
-using the `bs.raw` syntax extension.
+(`jscomp/runtime` directory).
 
-The goal is to implement the runtime **purely in OCaml** and you can help!
+The goal is to implement the runtime **purely in OCaml**, and you can help!
 
 Each new PR should include appropriate testing.
 
-Currently all tests are in `jscomp/test` directory and you should either
-add/modify a test file which covers the part of the compiler you modified.
+Currently all tests are located in the `jscomp/test` directory and you should
+either add / update test files according to your changes to the compiler. 
 
 There are currently two formats for test files:
 1. Proper mocha test files with executed javascript test code
 2. Plain `.ml` files which are only supposed to be compiled to JS (without any logic validation)
+
+Below we will discuss on how to write, build and run these test files.
 
 ### 1) Writing a mocha test file
 
