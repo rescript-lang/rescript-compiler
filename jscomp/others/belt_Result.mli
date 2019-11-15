@@ -42,9 +42,7 @@
   ]}
 *)
 
-type ('a, 'b) t =
-  | Ok of 'a
-  | Error of 'b
+type ('a,'b) t = Ok of 'a | Error of 'b
 
 val getExn : ('a, 'b) t -> 'a
 (**
