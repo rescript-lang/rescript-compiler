@@ -1200,7 +1200,9 @@ external decr : int ref -> unit = "%decr"
 (** {1 Result type} *)
 
 (** @since 4.03.0 *)
-type ('a,'b) result = Ok of 'a | Error of 'b
+type ('a, 'b) result = ('a, 'b) Belt.Result.t =
+  | Ok of 'a
+  | Error of 'b
 
 (** {1 Operations on format strings} *)
 

@@ -295,7 +295,9 @@ external decr : int ref -> unit = "%decr"
 
 (* Result type *)
 
-type ('a,'b) result = Ok of 'a | Error of 'b
+type ('a, 'b) result = ('a, 'b) Belt.Result.t =
+  | Ok of 'a
+  | Error of 'b
 
 (* String conversion functions *)
 #if BS then
