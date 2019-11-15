@@ -24,6 +24,15 @@ git submodule update --init && node scripts/buildocaml.js
 
 `scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory which will be invoked by `./scripts/ninja.js build`.
 
+### Install JS tools
+
+This is required to have all the necessary tools installed, such as `mocha` and
+`istanbul` etc.
+
+```
+npm install
+```
+
 ### Editor support
 
 Use this deprecated [VSCode extension](https://marketplace.visualstudio.com/items?itemName=hackwaly.ocaml).
@@ -123,35 +132,64 @@ cd ocaml && make -j9 world.opt && make install && cd ..
 
 ## Contributing to the runtime
 
-BuckleScript runtime implementation is currently a mix of OCaml and JavaScript. (`jscomp/runtime` directory). The JavaScript code is defined in the `.ml` file using the `bs.raw` syntax extension.
+BuckleScript runtime implementation is currently a mix of OCaml and JavaScript.
+(`jscomp/runtime` directory). The JavaScript code is defined in the `.ml` file
+using the `bs.raw` syntax extension.
 
 The goal is to implement the runtime **purely in OCaml** and you can help!
 
 Each new PR should include appropriate testing.
 
-Currently all tests are in `jscomp/test` directory and you should either add/modify a test file which covers the part of the compiler you modified.
+Currently all tests are in `jscomp/test` directory and you should either
+add/modify a test file which covers the part of the compiler you modified.
 
-- Add the filename in `jscomp/test/test.mllib`
-- Add a test suite. The specification is in `jscomp/test/mt.ml`. For example some simple tests would be like:
+There are currently two formats for test files:
+1. Proper mocha test files with executed javascript test code
+2. Plain `.ml` files which are only supposed to be compiled to JS (without any logic validation)
+
+### 1) Writing a mocha test file
+
+- Create a file `jscomp/test/feature_abc_test.ml`. Make sure to end the file name with `_test.ml`.
+- Inside the file, add a mocha test suite. The mocha bindings are defined in
+  `jscomp/test/mt.ml`. To get you started, here is a simple scaffold for a test
+  suite with multiple test cases:
 
   ```ocaml
   let suites : _ Mt.pair_suites =
      ["hey", (fun _ -> Eq(true, 3 > 2));
-         "hi", (fun _ -> Neq(2,3));
-         "hello", (fun _ -> Approx(3.0, 3.0));
-         "throw", (fun _ -> ThrowAny(fun _ -> raise 3))
-         ]
+      "hi", (fun _ -> Neq(2,3));
+      "hello", (fun _ -> Approx(3.0, 3.0));
+      "throw", (fun _ -> ThrowAny(fun _ -> raise 3))
+     ]
   let () = Mt.from_pair_suites __FILE__ suites
   ```
 
+- Build the test files:
+  `node scripts/ninja.js clean && node scripts/ninja.js build`
 - Run the tests:
-  `mocha -R list jscomp/test/your_test_file.js`
-  To build libs, tests and run all tests:
-  `make libs && make -C jscomp/test all && npm test`
-
+  `npx mocha jscomp/test/**/*test.js`
 - See the coverage: `npm run cover`
 
-## Contributing to Documentation
+### 2) Writing a plain `.ml` test file
+
+This is usually the file you want to create to test certain compile behavior
+without running the JS code formally as a test, i.e. if you add a new type
+alias to a specific module and you just want to make sure the compiler handles
+the types correctly (see
+[`jscomp/test/empty_obj.ml`](jscomp/test/empty_obj.ml) as an example). 
+
+- Create your test file `jscomp/test/my_file_test.ml`. Make sure to end the
+  file name with `_test.ml`.
+
+- Build the `.js` artifact: `node scripts/ninja.js config && node
+  scripts/ninja.js build`
+- Verify the output, check in the `jscomp/test/my_file_test.ml` and `jscomp/test/my_file_test.js` to
+  version control. The checked in `.js` file is essential for verifying
+  regressions later on.
+- Eventually check in other relevant files changed during the rebuild (depends on
+  your compiler changes)
+
+## Contributing to the Documentation
 
 See https://github.com/BuckleScript/bucklescript.github.io
 
