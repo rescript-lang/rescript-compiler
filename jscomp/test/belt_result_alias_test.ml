@@ -3,7 +3,6 @@
 let _ =
   Ok "Test"
   |. Belt.Result.map (fun r -> "Value: " ^ r)
-  |. Js.log
 
 let _ =
   Belt.Result.(
