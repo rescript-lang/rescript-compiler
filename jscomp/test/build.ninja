@@ -218,6 +218,7 @@ build test/functor_app_test.cmi test/functor_app_test.cmj : cc test/functor_app_
 build test/functor_def.cmi test/functor_def.cmj : cc test/functor_def.ml | $stdlib
 build test/functor_ffi.cmi test/functor_ffi.cmj : cc test/functor_ffi.ml | $stdlib
 build test/functor_inst.cmi test/functor_inst.cmj : cc test/functor_inst.ml | $stdlib
+build test/functors.cmi test/functors.cmj : cc test/functors.ml | $stdlib
 build test/gbk.cmi test/gbk.cmj : cc test/gbk.ml | $stdlib
 build test/genlex_test.cmi test/genlex_test.cmj : cc test/genlex_test.ml | test/mt.cmj $stdlib
 build test/gentTypeReTest.cmi test/gentTypeReTest.cmj : cc test/gentTypeReTest.re | $stdlib
