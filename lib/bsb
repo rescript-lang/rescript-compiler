@@ -14,6 +14,8 @@ var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
 
 var LAST_SUCCESS_BUILD_STAMP = 0
+process.env.BSB_PROJECT_ROOT=process.cwd()
+// console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
 
 // All clients of type MiniWebSocket
 /**
