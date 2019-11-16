@@ -126,6 +126,8 @@ let _d  = fun  s lam ->
 #end
     lam
 
+let _j = Js_pass_debug.dump 
+
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
@@ -144,7 +146,7 @@ let compile
   in 
   let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
 
-  let _j = Js_pass_debug.dump in
+  
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
   let lam = _d  "flatten0" lam in
