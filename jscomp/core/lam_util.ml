@@ -124,7 +124,6 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
-  begin 
     match v_kind with 
     | NA ->
       begin 
@@ -133,7 +132,7 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
         | Some ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
       end
     | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
-  end ;
+  
   (* share -- it is safe to share most properties,
       for arity, we might be careful, only [Alias] can share,
       since two values have same type, can have different arities
@@ -146,14 +145,7 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
       reference specially. or maybe we should track any 
       mutable reference
   *)
-  begin match let_kind with 
-    | Alias ->  ()
-    
-    (** For [export_idents], we don't want to do such simplification
-        if we do substitution, then it will affect exports...
-    *)
-    | Strict | StrictOpt(*can discard but not be substitued *) | Variable  -> ()
-  end
+  
 
 
 
