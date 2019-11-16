@@ -138,12 +138,24 @@ var versionString = undefined;
 var getVersionString = () => {
   if (versionString === undefined) {
     var searcher = "version";
-    var output = cp.execSync(`${getOcamldepFile()} -version`, {
-      encoding: "ascii"
-    });
-    versionString = output
-      .substring(output.indexOf(searcher) + searcher.length)
-      .trim();
+    try {
+      var output = cp.execSync(`${getOcamldepFile()} -version`, {
+        encoding: "ascii"
+      });
+      versionString = output
+        .substring(output.indexOf(searcher) + searcher.length)
+        .trim();
+    } catch (err) {
+      //
+      console.error(`This error  probably came from that you don't have our vendored ocaml installed
+      If this is the first time you clone the repo
+      try this
+      git submodule init && git submodule update
+      node ./scripts/buildocaml.js
+      `)
+      console.error(err.message)
+      process.exit(err.status)
+    }
   }
   return versionString;
 };
