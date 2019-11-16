@@ -184,7 +184,7 @@ let count_alias_globals
     (export_sets  : Ident_set.t)
     (lam : Lam.t) : Lam_stats.t =
   let meta : Lam_stats.t = 
-    {alias_tbl = Ident_hashtbl.create 31 ; 
+    {
      ident_tbl = Ident_hashtbl.create 31;
      exports =  export_idents;
      export_idents = export_sets;

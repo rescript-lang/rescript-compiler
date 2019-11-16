@@ -147,10 +147,8 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
       mutable reference
   *)
   begin match let_kind with 
-    | Alias -> 
-      if not (Ident_set.mem meta.export_idents k)
-      then
-        Ident_hashtbl.add meta.alias_tbl k v 
+    | Alias ->  ()
+    
     (** For [export_idents], we don't want to do such simplification
         if we do substitution, then it will affect exports...
     *)
