@@ -45,42 +45,7 @@ let simplify_alias
 
   let rec simpl  (lam : Lam.t) : Lam.t = 
     match lam with 
-    | Lvar v ->
-      begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
-        | None -> lam
-        | Some v ->
-          if Ident.persistent v then 
-            Lam.global_module v 
-          else 
-            Lam.var v 
-            (* This is wrong
-                currently alias table has info 
-                include -> Array
-
-                however, (field id Array/xx) 
-                does not result in a reduction, so we 
-                still pick the old one (field id include)
-                which makes dead code elimination wrong
-            *)
-      end
-    (* GLOBAL module needs to be propogated *)
-    | Llet (kind, k, (Lglobal_module i as g), l )
-      -> 
-      (* This is detection of global MODULE inclusion
-          we need track all global module aliases, when it's
-          passed as a parameter(escaped), we need do the expansion
-          since global module access is not the same as local module
-          TODO: 
-          since we aliased k, so it's safe to remove it?
-          no, we should not shake away code just by [Ident_set.mem k meta.export_idents ]
-          in that case, we should provide strong guarantee that all [k] will be substitued
-      *)
-      let v = simpl l in
-      Lam.let_ kind k g v
-    (* in this case it is preserved, but will still be simplified 
-        for the inner expression
-    *)
-
+    | Lvar _ -> lam
     | Lprim {primitive = (Pfield (i,info) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)

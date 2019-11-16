@@ -56,7 +56,6 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 type t = {
   export_idents : Ident_set.t ;
   exports : Ident.t list ; (*It is kept since order matters? *)
-  alias_tbl : alias_tbl; 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
@@ -78,7 +77,6 @@ let pp_ident_tbl fmt (ident_tbl : ident_tbl) =
     
 
 let print fmt (v : t) = 
-    pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
     pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
     pp fmt "@[exports:@ @[%a@]@]"
         (Format.pp_print_list 

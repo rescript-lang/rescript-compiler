@@ -31,7 +31,7 @@
 
 (** Types defined for lambda analysis *)
 
-type alias_tbl =  Ident.t Ident_hashtbl.t
+
 
 (** Keep track of which identifiers are aliased
   *)
@@ -44,8 +44,7 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 type t = {
   export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-  alias_tbl : alias_tbl;   
+  exports : Ident.t list ;  
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
