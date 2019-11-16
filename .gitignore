@@ -142,3 +142,4 @@ jscomp/bin/all_ounit_tests.ml
 native/
 vendor/ocaml
 jscomp/.lsp
+.vscode/launch.json
