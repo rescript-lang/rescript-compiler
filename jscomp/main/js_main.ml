@@ -345,7 +345,13 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 
 
 let _ = 
-
+  (* (
+    print_endline 
+      ("BSB_PROJECT_ROOT :" ^ 
+       match Sys.getenv_opt "BSB_PROJECT_ROOT" with 
+       | None ->  "None"
+       | Some s -> s 
+      )); *)
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
