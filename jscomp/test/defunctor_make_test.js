@@ -8,9 +8,8 @@ function getcompare(x) {
 }
 
 function Make(M) {
-  var compare = M.compare;
   return {
-          compare: compare
+          compare: M.compare
         };
 }
 

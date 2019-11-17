@@ -276,13 +276,13 @@ let rec size (lam : Lam.t) =
     | Lconst c -> size_constant c
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
-    | Lprim{primitive = Pfield _; 
-            args =  [ Lglobal_module _]
+    | Lprim{primitive = Pfield (_, Fld_module _); 
+            args =  [ Lglobal_module _ | Lvar _ ]
            ;  _}
       -> 1
     | Lprim {primitive = Praise | Pis_not_none ; args =  [l ];  _} 
       -> size l
-    | Lam.Lglobal_module _ -> 1       
+    | Lglobal_module _ -> 1       
     | Lprim {primitive = 
         Praw_js_code_stmt _ 
       | Praw_js_function _ 

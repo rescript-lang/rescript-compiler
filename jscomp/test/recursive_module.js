@@ -29,8 +29,6 @@ var Xx = {
     })
 };
 
-var uuu = Xx.f;
-
 var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       27,
@@ -163,6 +161,8 @@ eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 Mt.from_pair_suites("Recursive_module", suites.contents);
 
 var Int32 = /* () */0;
+
+var uuu = Xx.f;
 
 exports.suites = suites;
 exports.test_id = test_id;

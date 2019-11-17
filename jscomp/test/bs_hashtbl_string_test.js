@@ -45,7 +45,7 @@ var Int = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
         return x === y;
       }));
 
-var empty = Belt_HashMap.make(500000, Int);
+var empty = Belt_internalBucketsType.make(Int.hash, Int.eq, 500000);
 
 function bench(param) {
   for(var i = 0; i <= 1000000; ++i){
@@ -68,7 +68,7 @@ function bench(param) {
 }
 
 function bench2(m) {
-  var empty = Belt_HashMap.make(1000000, m);
+  var empty = Belt_internalBucketsType.make(m.hash, m.eq, 1000000);
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(empty, String(i), i);
   }
@@ -180,7 +180,7 @@ function bench4(param) {
 }
 
 function bench5(param) {
-  var table = Belt_HashMap.make(1000000, Int);
+  var table = Belt_internalBucketsType.make(Int.hash, Int.eq, 1000000);
   console.time("test/bs_hashtbl_string_test.ml 133");
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(table, i, i);

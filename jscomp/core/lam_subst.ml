@@ -47,7 +47,7 @@
       Lam.letrec (Ext_list.map decl subst_decl ) (subst_aux body)
     | Lprim { primitive ; args; loc} -> 
       Lam.prim ~primitive ~args:(Ext_list.map args subst_aux ) loc
-    | Lam.Lglobal_module _ -> x  
+    | Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst_aux arg)
         {sw with sw_consts = Ext_list.map sw.sw_consts subst_case ;

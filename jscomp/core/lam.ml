@@ -647,7 +647,30 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       | _ -> default ()
     end
 
-  | _ -> default ()
+  | _ -> 
+
+#if 0 then  
+    match prim with 
+    | Pmakeblock(size,Blk_module fields,_)->
+      let rec aux fields args (var : Ident.t) =
+        match fields, args with 
+        | [], [] -> true 
+        | f :: fields, Lprim {primitive = Pfield (_, Fld_module f1); args = [Lglobal_module v1 | Lvar v1]} :: args 
+          -> f = f1 && Ident.same var v1 && aux fields args var 
+        | _, _ -> false in   
+      begin match fields, args with   
+      | field1 :: rest, 
+          Lprim{primitive = Pfield (_, Fld_module f1); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
+          ->
+          if field1 = f1 && aux rest args1 v1 then 
+            lam
+          else 
+            default ()
+        | _ -> default ()                    
+      end
+    | _ ->    
+#end          
+      default ()
 
 let not_ loc x  : t =
   prim ~primitive:Pnot ~args:[x] loc
