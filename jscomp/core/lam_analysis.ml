@@ -38,7 +38,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lvar _ 
   | Lconst _ 
   | Lfunction _ -> true
-  | Lam.Lglobal_module _ -> true 
+  | Lglobal_module _ -> true 
     (* we record side effect in the global level, 
       this expression itself is side effect free
     *)

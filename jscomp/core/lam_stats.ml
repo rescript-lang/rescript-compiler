@@ -83,3 +83,9 @@ let print fmt (v : t) =
             ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
             Ident.print
         ) v.exports
+
+let make ~export_idents ~export_ident_sets : t = {
+  ident_tbl = Ident_hashtbl.create 31;
+  exports =  export_idents;
+  export_idents = export_ident_sets;
+}
