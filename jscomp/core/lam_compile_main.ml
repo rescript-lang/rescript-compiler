@@ -150,9 +150,11 @@ let compile
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
   let lam = _d  "flatten0" lam in
-  let meta = 
-    Lam_pass_collect.count_alias_globals 
-      export_idents export_ident_sets lam in
+  let meta  : Lam_stats.t = 
+    Lam_stats.make 
+      ~export_idents
+        ~export_ident_sets in 
+  let () = Lam_pass_collect.collect_helper meta lam in 
   let lam = 
     let lam =  
       lam

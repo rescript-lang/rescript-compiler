@@ -55,3 +55,8 @@ type t = {
 
 
 val print : Format.formatter -> t -> unit 
+
+val make : 
+  export_idents:Ident.t list ->
+  export_ident_sets:Ident_set.t ->
+  t
