@@ -171,8 +171,8 @@ let element_of_lambda (lam : Lam.t) : Lam_id_kind.element =
   match lam with 
   | Lvar _ 
   | Lconst _ 
-  | Lprim {primitive = Pfield _ ; 
-           args =  [ Lglobal_module _ ];
+  | Lprim {primitive = Pfield (_, Fld_module _) ; 
+           args =  [ Lglobal_module _  | Lvar _ ];
            _} -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
