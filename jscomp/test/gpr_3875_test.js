@@ -18,17 +18,12 @@ var Xx = {
 
 function compilerBug(a, b, c, f) {
   var exit = 0;
-  var exit$1 = 0;
-  if (a === "x") {
+  if (a !== "x") {
     exit = 2;
-  } else {
-    exit$1 = 3;
   }
-  if (exit$1 === 3) {
-    exit = b === "x" ? 2 : 1;
-  }
-  switch (exit) {
-    case 1 :
+  if (exit === 2) {
+    if (b !== undefined) {
+      if (b !== "x") {
         if (c) {
           result.contents = "No x, c is true";
           return /* () */0;
@@ -36,15 +31,22 @@ function compilerBug(a, b, c, f) {
           result.contents = "No x, c is false";
           return /* () */0;
         }
-    case 2 :
-        if (Curry._1(f, /* () */0)) {
-          result.contents = "Some x, f returns true";
-          return /* () */0;
-        } else {
-          result.contents = "Some x, f returns false";
-          return /* () */0;
-        }
-    
+      }
+      
+    } else if (c) {
+      result.contents = "No x, c is true";
+      return /* () */0;
+    } else {
+      result.contents = "No x, c is false";
+      return /* () */0;
+    }
+  }
+  if (Curry._1(f, /* () */0)) {
+    result.contents = "Some x, f returns true";
+    return /* () */0;
+  } else {
+    result.contents = "Some x, f returns false";
+    return /* () */0;
   }
 }
 

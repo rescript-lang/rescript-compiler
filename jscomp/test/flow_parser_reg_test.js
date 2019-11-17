@@ -11379,66 +11379,56 @@ function case_list(env, _param) {
     var acc = param[1];
     var seen_default = param[0];
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    var exit = 0;
     if (typeof match === "number" && !(match !== 2 && match !== 105)) {
       return List.rev(acc);
+    }
+    var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+    var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var test;
+    if (typeof match$1 === "number" && match$1 === 34) {
+      if (seen_default) {
+        error$1(env, /* MultipleDefaultsInSwitch */19);
+      }
+      token$4(env, /* T_DEFAULT */34);
+      test = undefined;
     } else {
-      exit = 1;
+      token$4(env, /* T_CASE */31);
+      test = Curry._1(Parse.expression, env);
     }
-    if (exit === 1) {
-      var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-      var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-      var test;
-      var exit$1 = 0;
-      if (typeof match$1 === "number" && match$1 === 34) {
-        if (seen_default) {
-          error$1(env, /* MultipleDefaultsInSwitch */19);
-        }
-        token$4(env, /* T_DEFAULT */34);
-        test = undefined;
-      } else {
-        exit$1 = 2;
-      }
-      if (exit$1 === 2) {
-        token$4(env, /* T_CASE */31);
-        test = Curry._1(Parse.expression, env);
-      }
-      var seen_default$1 = seen_default || test === undefined;
-      var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-      token$4(env, /* T_COLON */77);
-      var term_fn = function (param) {
-        if (typeof param === "number") {
-          var switcher = param - 2 | 0;
-          if (switcher > 29 || switcher < 0) {
-            return switcher === 32;
-          } else {
-            return switcher > 28 || switcher < 1;
-          }
+    var seen_default$1 = seen_default || test === undefined;
+    var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+    token$4(env, /* T_COLON */77);
+    var term_fn = function (param) {
+      if (typeof param === "number") {
+        var switcher = param - 2 | 0;
+        if (switcher > 29 || switcher < 0) {
+          return switcher === 32;
         } else {
-          return false;
+          return switcher > 28 || switcher < 1;
         }
-      };
-      var consequent = Curry._2(Parse.statement_list, term_fn, with_in_switch(true, env));
-      var match$2 = List.rev(consequent);
-      var end_loc$1 = match$2 ? match$2[0][0] : end_loc;
-      var acc_000 = /* tuple */[
-        btwn(start_loc, end_loc$1),
-        {
-          test: test,
-          consequent: consequent
-        }
-      ];
-      var acc$1 = /* :: */[
-        acc_000,
-        acc
-      ];
-      _param = /* tuple */[
-        seen_default$1,
-        acc$1
-      ];
-      continue ;
-    }
-    
+      } else {
+        return false;
+      }
+    };
+    var consequent = Curry._2(Parse.statement_list, term_fn, with_in_switch(true, env));
+    var match$2 = List.rev(consequent);
+    var end_loc$1 = match$2 ? match$2[0][0] : end_loc;
+    var acc_000 = /* tuple */[
+      btwn(start_loc, end_loc$1),
+      {
+        test: test,
+        consequent: consequent
+      }
+    ];
+    var acc$1 = /* :: */[
+      acc_000,
+      acc
+    ];
+    _param = /* tuple */[
+      seen_default$1,
+      acc$1
+    ];
+    continue ;
   };
 }
 

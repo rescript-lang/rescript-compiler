@@ -20,7 +20,7 @@ function F(X, Y) {
     return Curry._1(Y.foo, Curry._1(X.foo, x));
   };
   var sheep = function (x) {
-    return 1 + cow(x) | 0;
+    return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
   };
   return {
           cow: cow,
@@ -29,11 +29,8 @@ function F(X, Y) {
 }
 
 function F1(X, Y) {
-  var cow = function (x) {
-    return Curry._1(Y.foo, Curry._1(X.foo, x));
-  };
   var sheep = function (x) {
-    return 1 + cow(x) | 0;
+    return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
   };
   return {
           sheep: sheep
@@ -47,11 +44,8 @@ function F2(X, Y) {
   var Y$1 = {
     foo: Y.foo
   };
-  var cow = function (x) {
-    return Curry._1(Y$1.foo, Curry._1(X$1.foo, x));
-  };
   var sheep = function (x) {
-    return 1 + cow(x) | 0;
+    return 1 + Curry._1(Y$1.foo, Curry._1(X$1.foo, x)) | 0;
   };
   return {
           sheep: sheep
@@ -66,11 +60,8 @@ var M = {
       var X = {
         foo: funarg.foo
       };
-      var cow = function (x) {
-        return Curry._1(Y.foo, Curry._1(X.foo, x));
-      };
       var sheep = function (x) {
-        return 1 + cow(x) | 0;
+        return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
       };
       return {
               sheep: sheep

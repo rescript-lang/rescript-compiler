@@ -8,6 +8,7 @@ var Belt_HashMap = require("../../lib/js/belt_HashMap.js");
 var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
+var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 var suites = {
   contents: /* [] */0
@@ -35,7 +36,7 @@ var cmp = Caml_primitive.caml_int_compare;
 
 var Y = Belt_Id.hashable(hash, eq);
 
-var empty = Belt_HashMap.make(30, Y);
+var empty = Belt_internalBucketsType.make(Y.hash, Y.eq, 30);
 
 function add(prim, prim$1) {
   return prim + prim$1 | 0;
@@ -76,7 +77,7 @@ eqx("File \"bs_hashmap_test.ml\", line 42, characters 6-13", Belt_SortArray.stab
 
 var u$1 = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-var v$1 = Belt_HashMap.make(40, Y);
+var v$1 = Belt_internalBucketsType.make(Y.hash, Y.eq, 40);
 
 Belt_HashMap.mergeMany(v$1, Belt_Array.zip(u$1, u$1));
 

@@ -1524,12 +1524,8 @@ function get_pos_info(pos) {
         ];
 }
 
-function setup_colors(param) {
-  return Curry._1(Misc_Color.setup, color.contents);
-}
-
 function print_loc(ppf, loc) {
-  setup_colors(/* () */0);
+  Curry._1(Misc_Color.setup, color.contents);
   var match = get_pos_info(loc.loc_start);
   var startchar = match[2];
   var file = match[0];
@@ -1621,7 +1617,7 @@ function print_loc(ppf, loc) {
 }
 
 function print$1(ppf, loc) {
-  setup_colors(/* () */0);
+  Curry._1(Misc_Color.setup, color.contents);
   if (loc.loc_start.pos_fname === "//toplevel//" && highlight_locations(ppf, /* :: */[
           loc,
           /* [] */0
@@ -1658,7 +1654,7 @@ var error_prefix = "Error";
 function print_error(ppf, loc) {
   print$1(ppf, loc);
   var ppf$1 = ppf;
-  setup_colors(/* () */0);
+  Curry._1(Misc_Color.setup, color.contents);
   Curry._1(Format.fprintf(ppf$1, /* Format */[
             /* Formatting_gen */Block.__(18, [
                 /* Open_tag */Block.__(0, [/* Format */[
@@ -1686,7 +1682,7 @@ function print_error(ppf, loc) {
 
 function default_warning_printer(loc, ppf, w) {
   if (is_active(w)) {
-    setup_colors(/* () */0);
+    Curry._1(Misc_Color.setup, color.contents);
     print$1(ppf, loc);
     return Curry._3(Format.fprintf(ppf, /* Format */[
                     /* Formatting_gen */Block.__(18, [
@@ -3988,14 +3984,6 @@ function wrap_exp_attrs(body, param) {
   }
 }
 
-function text_cstr(pos) {
-  return Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(pos)));
-}
-
-function text_csig(pos) {
-  return Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(pos)));
-}
-
 function text_def(pos) {
   return /* :: */[
           /* Ptop_def */Block.__(0, [text$1(get_text(Parsing.rhs_start_pos(pos)))]),
@@ -5156,7 +5144,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return Pervasives.$at(/* :: */[
                   _2,
-                  text_cstr(2)
+                  Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(2)))
                 ], _1);
     }),
   (function (__caml_parser_env) {
@@ -5470,7 +5458,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return Pervasives.$at(/* :: */[
                   _2,
-                  text_csig(2)
+                  Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(2)))
                 ], _1);
     }),
   (function (__caml_parser_env) {

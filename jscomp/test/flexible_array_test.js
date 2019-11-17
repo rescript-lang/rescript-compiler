@@ -309,14 +309,16 @@ var u = of_array(/* array */[
       6
     ]);
 
-if (!$eq$tilde(sort(u), /* array */[
-        1,
-        2,
-        2,
-        3,
-        5,
-        6
-      ])) {
+var x = sort(u);
+
+if (!Caml_obj.caml_equal(x, of_array(/* array */[
+            1,
+            2,
+            2,
+            3,
+            5,
+            6
+          ]))) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -331,9 +333,13 @@ var v = $$Array.init(500, (function (i) {
         return 500 - i | 0;
       }));
 
-$eq$tilde(sort(of_array(v)), $$Array.init(500, (function (i) {
-            return i + 1 | 0;
-          })));
+var y = $$Array.init(500, (function (i) {
+        return i + 1 | 0;
+      }));
+
+var x$1 = sort(of_array(v));
+
+Caml_obj.caml_equal(x$1, of_array(y));
 
 exports.sub = sub;
 exports.update = update;
