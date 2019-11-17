@@ -53,8 +53,8 @@ let check file lam =
       Ext_list.iter_snd  xs (fun x -> check_staticfails x cxt)
     and check_staticfails (l : Lam.t) (cxt : Set_int.t)=
       match l with
-      | Lvar _ -> ()
-      | Lconst _ -> ()
+      | Lvar _ 
+      | Lconst _ 
       | Lglobal_module _ -> ()
       | Lprim {args; _} ->
         check_list args cxt       
