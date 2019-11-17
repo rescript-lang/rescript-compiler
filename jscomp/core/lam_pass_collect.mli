@@ -77,5 +77,5 @@
  *)
 
 (** Modify existing [meta] *)
-val collect_helper : Lam_stats.t -> Lam.t -> unit
+val collect_info : Lam_stats.t -> Lam.t -> unit
 

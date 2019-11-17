@@ -154,31 +154,31 @@ let compile
     Lam_stats.make 
       ~export_idents
         ~export_ident_sets in 
-  let () = Lam_pass_collect.collect_helper meta lam in 
+  let () = Lam_pass_collect.collect_info meta lam in 
   let lam = 
     let lam =  
       lam
       |> _d "flattern1"
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
-      |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
+      |> (fun lam -> Lam_pass_collect.collect_info meta lam; lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
       |> _d  "flatten2"
     in  (* Inling happens*)
 
-    let ()  = Lam_pass_collect.collect_helper meta lam in
+    let ()  = Lam_pass_collect.collect_info meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_pass_deep_flatten.deep_flatten lam in
-    let ()  = Lam_pass_collect.collect_helper meta lam in
+    let ()  = Lam_pass_collect.collect_info meta lam in
     let lam = 
       lam
       |> _d "alpha_before"
       |> Lam_pass_alpha_conversion.alpha_conversion meta
       |> _d "alpha_after"
       |> Lam_pass_exits.simplify_exits in    
-    let () = Lam_pass_collect.collect_helper meta lam in
+    let () = Lam_pass_collect.collect_info meta lam in
 
 
     lam
@@ -191,7 +191,7 @@ let compile
     |> Lam_pass_lets_dce.simplify_lets 
 
     |> _d "before-simplify-exits"
-    (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
+    (* |> (fun lam -> Lam_pass_collect.collect_info meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
        |> _d "scc" *)

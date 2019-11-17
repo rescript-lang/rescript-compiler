@@ -61,7 +61,7 @@ let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) l
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
 *)
-let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
+let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lam_compat.let_kind) 
       (ident : Ident.t)
@@ -128,13 +128,6 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 
   and collect  (lam : Lam.t)  =
     match lam with 
-
-    (** TODO: 
-        how about module aliases..
-        record dependency
-        --- tricky -- if we inlining, 
-        is it safe to remove it? probably not...
-    *)
     | Lconst _ -> ()
     | Lvar _ -> ()
     | Lapply{fn = l1; args =  ll; _} ->
