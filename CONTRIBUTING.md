@@ -26,8 +26,8 @@ git submodule update --init && node scripts/buildocaml.js
 
 ### Install JS tools
 
-This is required to have all the necessary tools installed, such as `mocha` and
-`istanbul` etc.
+This is required to have all the necessary tools installed, such as the `mocha`
+JS testing framework, etc.
 
 ```
 npm install
@@ -132,10 +132,12 @@ cd ocaml && make -j9 world.opt && make install && cd ..
 
 ## Contributing to the runtime
 
-BuckleScript runtime implementation is currently a mix of OCaml and JavaScript.
-(`jscomp/runtime` directory).
+BuckleScript runtime implementation is written in pure OCaml with some raw JS
+code embedded (`jscomp/runtime` directory).
 
-The goal is to implement the runtime **purely in OCaml**, and you can help!
+The goal is to implement the runtime **purely in OCaml**. This includes
+removing all existing occurrences of embedded raw JS code as well, and you can
+help!
 
 Each new PR should include appropriate testing.
 
@@ -169,7 +171,6 @@ Below we will discuss on how to write, build and run these test files.
   `node scripts/ninja.js clean && node scripts/ninja.js build`
 - Run the tests:
   `npx mocha jscomp/test/**/*test.js`
-- See the coverage: `npm run cover`
 
 ### 2) Writing a plain `.ml` test file
 
