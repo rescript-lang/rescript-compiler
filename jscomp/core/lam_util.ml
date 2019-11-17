@@ -82,8 +82,8 @@ let refine_let
     Lam.apply fn [arg] loc status
   | (Strict | StrictOpt ),
     ( Lvar _    | Lconst  _ | 
-      Lprim {primitive = Pfield _ ;  
-             args = [ Lglobal_module _ ]; _}) , _ ->
+      Lprim {primitive = Pfield (_ , Fld_module _) ;  
+             args = [ Lglobal_module _ | Lvar _ ]; _}) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
