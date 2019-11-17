@@ -67,7 +67,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.letrec
       (Ext_list.map idel (fun (v, e) -> (v, eliminate_ref id e)))
       (eliminate_ref id e2)
-  | Lam.Lglobal_module _ -> lam     
+  | Lglobal_module _ -> lam     
   | Lprim {primitive ; args ; loc} ->
     Lam.prim  ~primitive ~args:(Ext_list.map args (eliminate_ref id)) loc
   | Lswitch(e, sw) ->

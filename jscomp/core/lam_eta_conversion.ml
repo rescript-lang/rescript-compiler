@@ -142,7 +142,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
           let wrapper, new_fn  = 
             match fn with 
             | Lvar _ 
-            | Lprim{primitive = Pfield _ ; args = [Lglobal_module _]; _ }
+            | Lprim{primitive = Pfield (_,Fld_module _) ; args = [Lglobal_module _ | Lvar _]; _ }
               -> 
               None, fn 
             | _ -> 
@@ -178,7 +178,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
           let wrapper, new_fn = 
             match fn with 
             | Lvar _ 
-            | Lprim {primitive = Pfield _ ; args = [ Lglobal_module _] ; _}  -> 
+            | Lprim {primitive = Pfield (_,Fld_module _) ; args = [ Lglobal_module _ | Lvar _] ; _}  -> 
               None, fn
             | _ -> 
               let partial_arg = Ext_ident.create Literals.partial_arg in 
@@ -227,7 +227,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             let wrapper, new_fn = 
               match fn with 
               | Lvar _ 
-              | Lprim {primitive = Pfield _ ; args = [ Lglobal_module _] ; _}  -> 
+              | Lprim {primitive = Pfield (_, Fld_module _) ; args = [ Lglobal_module _ | Lvar _] ; _}  -> 
                 None, fn
               | _ -> 
                 let partial_arg = Ext_ident.create Literals.partial_arg in 
@@ -258,7 +258,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
         let wrapper, new_fn  = 
           match fn with 
           | Lvar _ 
-          | Lprim{primitive = Pfield _ ; args = [Lglobal_module _]; _ }
+          | Lprim{primitive = Pfield (_, Fld_module _) ; args = [Lglobal_module _ | Lvar _]; _ }
             -> 
             None, fn 
           | _ -> 

@@ -403,7 +403,7 @@ let lambda ppf v  =
   let rec lam ppf (l : Lam.t) = match l with 
     | Lvar id ->
       Ident.print ppf id
-    | Lam.Lglobal_module id -> 
+    | Lglobal_module id -> 
       fprintf ppf "global %a" Ident.print id
     | Lconst cst ->
       struct_const ppf cst
