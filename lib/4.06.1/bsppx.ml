@@ -595,6 +595,9 @@ module Misc : sig
 
 (* Miscellaneous useful types and functions *)
 
+val array_of_list_rev : 'a list -> 'a array
+
+
 val fatal_error: string -> 'a
 val fatal_errorf: ('a, Format.formatter, unit, 'b) format4 -> 'a
 exception Fatal_error
@@ -954,6 +957,18 @@ end = struct
 (* Errors *)
 
 exception Fatal_error
+
+
+let array_of_list_rev = function
+    [] -> [||]
+  | hd::tl ->
+      let len =  List.length tl in 
+      let a = Array.make (len + 1) hd in
+      let rec fill i = function
+          [] -> a
+        | hd::tl -> Array.unsafe_set a i hd; fill (i-1) tl in
+      fill (len - 1) tl
+
 
 let fatal_error msg =
   prerr_string ">> Fatal error: "; prerr_endline msg; raise Fatal_error
@@ -19090,6 +19105,7 @@ type t =
   | Blk_record_ext of string array
 
   | Blk_class
+  | Blk_module_export
 end
 module Lam_constant : sig 
 #1 "lam_constant.mli"
