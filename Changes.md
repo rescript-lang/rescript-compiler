@@ -2,8 +2,43 @@
 
 # current
 
-Libs
+# 7.0.0 
+
+
+Docs
+- #3890 Fix typo in bucklescript readme
+- #3898 #3900 #3911 #3913 #3915 #3925 #3928 #3929 #3932 #3936 #3934 OCaml record as Js object
+- #3945 sync refmt 3.5.3
+- #3916 add large ocaml object test
+- #3935 #3931 partial fix for recursive values inside recursive modules
+- #3917 #3926 speicalize all ref handling (prepare for js object interaction)
+- #3918 use folders from esy ocaml for snapshots
+- #3920 remove size field which is never used
+- #3921 add queue_402 for testing recursive values
+- #3912 add -bs-noloc opton for easy debugging (when using -dparsetree -dtypedtree)
+- #3927 more tests for records
+- #3901 internal rewrite float_of_bits to not rely on int64 representation
+- #3903 Fix invalid json in hooks template
+- #3905 Fix int64 test specification
+- #3906 remove optimizations relying on int64 internals which is fragile when changing into bigint
+- #3907 remove some transformations in printer
+- #3893 specialize code generation for Sys.os_type better code for stdlib
+- #3899 add missing optimization `let _ = xx in yy`
+
 - #3878 add Belt.Option.forEach
+- #3941 remove null_to_undefined since type is specialized
+- #3943 fix SPA mode regression for hooks template
+- #3944 #3956 add spacing to variant formatter
+- #3950 fix react-hooks watcher websocket support
+- #3954 alias result type using stdlib `result`
+- #3955 update ¨CONTRIBUTING file
+- #3959 internal, remove alias_table which is not needed
+- #3960 add test case for functor coercion
+- #3962 #3960 set env var `BSB_PROJECT_ROOT` for bsb
+- #3965 better inline heruistics 
+- #3966 #3897 improve module coercion code gen in strict subtyping
+Deprecations
+- #3889 remove deprecated light names in bs.deriving abstract
 
 # 5.2.1 (2019/10/16)
 
