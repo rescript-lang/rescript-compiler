@@ -32,16 +32,8 @@ function prepare() {
   e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 2.8.4 (although not with the buckelscript switch) and put it on your path."; exit 1; }
 `);
 
-  e(
-    `hash ocp-ocamlres 2>/dev/null || { echo >&2 "ocp-ocamlres not installed. Please install: opam install ocp-ocamlres"; exit 1; }`
-  );
-
-  e(
-    `hash camlp4 2>/dev/null || { echo >&2 "camlp4 not installed. Please install: opam install camlp4"; exit 1; }`
-  );
-
   e(`./bin/cmjbrowser.exe`);
-  var js_compiler_path = `../lib/4.02.3/unstable`;
+  var js_compiler_path = `../lib/4.06.1/unstable`;
   e(
     `ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_compiler.mli ${js_compiler_path}/js_compiler.ml -o jsc.byte`
   );
@@ -54,7 +46,7 @@ prepare();
 
 console.log(`playground : ${playground}`);
 
-var includes = [`stdlib-402`, `runtime`, `others`]
+var includes = [`stdlib-406`, `runtime`, `others`]
   .map(x => path.join(jscompDir, x))
   .map(x => `-I ${x}`)
   .join(` `);
@@ -90,20 +82,25 @@ var cmi_files = [
   `js_float`,
   `js_json`,
 
-  `arrayLabels`,
-  `bytesLabels`,
-  `complex`,
-  `gc`,
-  `genlex`,
-  `listLabels`,
-  `moreLabels`,
-  `queue`,
-  `scanf`,
-  `sort`,
-  `stack`,
-  `stdLabels`,
-  `stream`,
-  `stringLabels`,
+  /*
+  These files cause troubles when compiled with JSOO (v3.4.0)
+  Be aware, if those are included you will get an error stating something like "/static/cmis/scanf.cmi : file already exists"
+  */
+  // `arrayLabels`,
+  // `bytesLabels`,
+  // `complex`,
+  // `gc`,
+  // `genlex`,
+  // `listLabels`,
+  // `moreLabels`,
+  // `queue`,
+  // `scanf`,
+  // `sort`,
+  // `stack`,
+  // `stdLabels`,
+  // `stream`,
+  // `stringLabels`,
+
   `dom`,
   `belt`,
   `belt_Id`,
