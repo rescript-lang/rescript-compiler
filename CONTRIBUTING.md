@@ -142,9 +142,10 @@ help!
 Each new PR should include appropriate testing.
 
 Currently all tests are located in the `jscomp/test` directory and you should
-either add / update test files according to your changes to the compiler. 
+either add / update test files according to your changes to the compiler.
 
 There are currently two formats for test files:
+
 1. Proper mocha test files with executed javascript test code
 2. Plain `.ml` files which are only supposed to be compiled to JS (without any logic validation)
 
@@ -178,13 +179,12 @@ This is usually the file you want to create to test certain compile behavior
 without running the JS code formally as a test, i.e. if you add a new type
 alias to a specific module and you just want to make sure the compiler handles
 the types correctly (see
-[`jscomp/test/empty_obj.ml`](jscomp/test/empty_obj.ml) as an example). 
+[`jscomp/test/empty_obj.ml`](jscomp/test/empty_obj.ml) as an example).
 
 - Create your test file `jscomp/test/my_file_test.ml`. Make sure to end the
   file name with `_test.ml`.
 
-- Build the `.js` artifact: `node scripts/ninja.js config && node
-  scripts/ninja.js build`
+- Build the `.js` artifact: `node scripts/ninja.js config && node scripts/ninja.js build`
 - Verify the output, check in the `jscomp/test/my_file_test.ml` and `jscomp/test/my_file_test.js` to
   version control. The checked in `.js` file is essential for verifying
   regressions later on.
@@ -210,7 +210,7 @@ eval `opam config env`
 opam install js_of_ocaml.3.4.0
 ```
 
-**Building the bundle:**
+### Building the bundle
 
 The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and the script for running JSOO can be found in `scripts/repl.js`.
 A full clean build can be done like this:
@@ -227,10 +227,76 @@ BS_PLAYGROUND=../playground node scripts/repl.js
 ```
 
 **You should now find following files:**
+
 - `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object
 - `playground/stdlib/*.js` -> All the BuckleScript runtime files
 
 You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, or use a bundler infrastructure to optimize it.
+
+### Playground JS bundle API
+
+As soon as the bundle is loaded, you will get access to following functions (as seen in [`jsoo_main.ml`](jscomp/main/jsoo_main.ml)):
+
+- `window.ocaml`:
+  - `compile(code: string)`: Compiles given code
+  - `shake_compile(code: string)`: Compiles given code with tree-shaking
+  - `compile_super_errors(code: string)`: Compiles given code and outputs `super_errors` related messages on `console.error`
+  - `compile_super_errors_ppx_v2(code: string)`: Compiles given code with the React v2 syntax
+  - `compile_super_errors_ppx_v3(code: string)`: Compiles given code with the React v3 syntax
+  - `load_module(cmi_path: string, cmi_content: string, cmj_name: string, cmj_content: string)`: Loads a module into the compiler (see notes on `cmj` / `cmi` below) 
+
+For each compile every successful operation will return `{js_code: string}`.
+On compile errors, the returned object will be `{js_error_msg: string}`.
+
+### Working on the Playground JS API
+
+Whenever you are modifying any files in the BuckleScript compiler, or in the `jsoo_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
+
+```
+node scripts/ninja.js config && node scripts/ninja.js build
+BS_PLAYGROUND=../playground node scripts/repl.js
+```
+
+**.cmj files in the Web**
+
+A `.cmj` file contains compile information and JS package information of
+BuckleScript build artifacts (your `.re / .ml` modules) and are generated on
+build (`scripts/ninja.js build`).
+
+A `.cmi` file is an [OCaml originated file
+extension](https://waleedkhan.name/blog/ocaml-file-extensions/) and contains all
+interface information of a certain module without any implementation.
+
+In this repo, these files usually sit right next to each compiled `.ml` / `.re`
+file. The structure of a `.cmj` file is defined in
+[js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called
+`./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given
+`.cmj` file.
+
+`.cmj` files are required for making BuckleScript compile modules (this includes
+modules like ReasonReact). BuckleScript includes a subset of modules by default,
+which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find
+those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably
+noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` /
+`cmi` files embedded?
+
+`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a
+compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj`
+/ `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml` and
+`jscomp/core/js_cmi_datasets.ml`. These files are only linked for the browser
+target, where BuckleScript doesn't have access to the filesystem. When working
+on BS, you'll see diffs on those files whenever there are changes on core
+modules, e.g. stdlib modules or when the ocaml version was changed. We usually
+check in these files to keep it in sync with the most recent compiler
+implementation. JSOO will pick up those files to encode them into the `exports.js`
+bundle.
+
+For any other dependency needed in the playground, such as `ReasonReact`, you
+will be required to serialize your `.cmi` / `.cmt` files accordingly so that
+JSOO's `ocaml.load` function can load the data. Right now we don't provide any
+instructions inside here yet, but [here's how the official ReasonML playground did
+it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
+
 
 ## Contributing to the Documentation
 
@@ -322,7 +388,7 @@ Since BuckleScript is distributed under the terms of the [LGPL Version 3](LICENS
 are licensed under the same terms. In order for us to be able to accept your contributions,
 we will need explicit confirmation from you that you are able and willing to provide them under
 these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin
-[DCO](DCO.md).  This is very similar to the process used by the Linux(R) kernel, Samba, and many
+[DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many
 other major open source projects.
 
 To participate under these terms, all that you must do is include a line like the following as the
