@@ -191,6 +191,47 @@ the types correctly (see
 - Eventually check in other relevant files changed during the rebuild (depends on
   your compiler changes)
 
+## Contributing to the BS Playground Bundle
+
+> Note: These instructions are designed for building the 4.06 based version of BuckleScript (BS v6)
+
+The "BuckleScript Playground bundle" is the BS compiler compiled to JavaScript, including all necessary dependency files (stdlib / belt etc).
+It is useful for building tools where you want to compile and execute arbitrary Reason / OCaml in the browser.
+
+The BuckleScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.5.1/manual/overview), which uses OCaml
+bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Before we can compile anything, we need to install the required
+tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
+
+```
+# Makes sure to be on the right switch
+opam switch 4.06.1
+eval `opam config env`
+
+opam install js_of_ocaml.3.4.0
+```
+
+**Building the bundle:**
+
+The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and the script for running JSOO can be found in `scripts/repl.js`.
+A full clean build can be done like this:
+
+```
+# We create a target directory for storing the bundle / stdlib files
+mkdir playground && mkdir playground/stdlib
+
+# We build the BuckleScript source code and also the bytecode for jsoo_main.ml
+node scripts/ninja.js config && node scripts/ninja.js build
+
+# Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
+BS_PLAYGROUND=../playground node scripts/repl.js
+```
+
+**You should now find following files:**
+- `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object
+- `playground/stdlib/*.js` -> All the BuckleScript runtime files
+
+You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, or use a bundler infrastructure to optimize it.
+
 ## Contributing to the Documentation
 
 See https://github.com/BuckleScript/bucklescript.github.io
