@@ -203,11 +203,14 @@ bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Bef
 tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
 
 ```
+# Create the right switch, if not created yet (first install)
+opam switch create 4.06.1
+
 # Makes sure to be on the right switch
 opam switch 4.06.1
 eval `opam config env`
 
-opam install js_of_ocaml.3.4.0
+opam install js_of_ocaml.3.5.1
 ```
 
 ### Building the bundle
@@ -231,7 +234,18 @@ BS_PLAYGROUND=../playground node scripts/repl.js
 - `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object
 - `playground/stdlib/*.js` -> All the BuckleScript runtime files
 
-You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, or use a bundler infrastructure to optimize it.
+You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
+
+```
+$ node
+> require("./exports.js");
+undefined
+> let compile_result = ocaml.compile(`Js.log Sys.ocaml_version`); // You can change the code here
+undefined
+> eval(compile_result);
+4.06.2+BS
+undefined
+```
 
 ### Playground JS bundle API
 
@@ -292,9 +306,10 @@ implementation. JSOO will pick up those files to encode them into the `exports.j
 bundle.
 
 For any other dependency needed in the playground, such as `ReasonReact`, you
-will be required to serialize your `.cmi` / `.cmt` files accordingly so that
-JSOO's `ocaml.load` function can load the data. Right now we don't provide any
-instructions inside here yet, but [here's how the official ReasonML playground did
+will be required to serialize your `.cmi` / `.cmt` files accordingly from binary
+to hex encoded strings so that BS Playground's `ocaml.load` function can
+load the data. Right now we don't provide any instructions inside here yet, but
+[here's how the official ReasonML playground did
 it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
 
 
