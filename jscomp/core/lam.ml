@@ -646,30 +646,35 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         end
       | _ -> default ()
     end
-
   | _ -> 
-
-#if 0 then  
     match prim with 
     | Pmakeblock(size,Blk_module fields,_)->
-      let rec aux fields args (var : Ident.t) =
+      let rec aux fields args (var : Ident.t) i =
         match fields, args with 
         | [], [] -> true 
-        | f :: fields, Lprim {primitive = Pfield (_, Fld_module f1); args = [Lglobal_module v1 | Lvar v1]} :: args 
-          -> f = f1 && Ident.same var v1 && aux fields args var 
+        | f :: fields, Lprim {primitive = Pfield (pos, Fld_module f1); args = [Lglobal_module v1 | Lvar v1]} :: args 
+          -> 
+            pos = i && 
+            f = f1 &&
+            Ident.same var v1 && aux fields args var (i + 1)
         | _, _ -> false in   
       begin match fields, args with   
       | field1 :: rest, 
-          Lprim{primitive = Pfield (_, Fld_module f1); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
+          Lprim{primitive = Pfield (pos, Fld_module f1); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
           ->
-          if field1 = f1 && aux rest args1 v1 then 
+          if pos = 0 && field1 = f1 && aux rest args1 v1 1 then 
             lam
           else 
             default ()
         | _ -> default ()                    
-      end
+      end 
+      (* In this level, include is already expanded, so that 
+        {[
+          { x0 : y0 ; x1 : y1 }
+        ]}
+        such module x can indeed be replaced by module y
+      *)
     | _ ->    
-#end          
       default ()
 
 let not_ loc x  : t =

@@ -252,6 +252,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_module s -> 
       let info : Lam_tag_info.t = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_module_export _ -> 
+      let info : Lam_tag_info.t = Blk_module_export in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
     | Blk_extension_slot -> 
       let info : Lam_tag_info.t = Blk_extension_slot in
       ( 

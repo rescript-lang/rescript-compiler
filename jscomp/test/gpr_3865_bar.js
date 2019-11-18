@@ -2,9 +2,7 @@
 
 
 function Make(M) {
-  return {
-          $$return: M.$$return
-        };
+  return M;
 }
 
 exports.Make = Make;

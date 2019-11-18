@@ -3505,7 +3505,7 @@ var Types_Variance = {
   get_lower: get_lower
 };
 
-var $$let = Types_TypeOps;
+var funarg = Types_TypeOps;
 
 function height$2(param) {
   if (param) {
@@ -3586,7 +3586,7 @@ function add$3(x, t) {
     var r = t[/* r */2];
     var v = t[/* v */1];
     var l = t[/* l */0];
-    var c = Curry._2($$let.compare, x, v);
+    var c = Curry._2(funarg.compare, x, v);
     if (c === 0) {
       return t;
     } else if (c < 0) {
@@ -3709,7 +3709,7 @@ function split$1(x, param) {
     var r = param[/* r */2];
     var v = param[/* v */1];
     var l = param[/* l */0];
-    var c = Curry._2($$let.compare, x, v);
+    var c = Curry._2(funarg.compare, x, v);
     if (c === 0) {
       return /* tuple */[
               l,
@@ -3744,7 +3744,7 @@ function mem$3(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Curry._2($$let.compare, x, param[/* v */1]);
+      var c = Curry._2(funarg.compare, x, param[/* v */1]);
       if (c === 0) {
         return true;
       } else {
@@ -3834,7 +3834,7 @@ function subset$1(_s1, _s2) {
         var r1 = s1[/* r */2];
         var v1 = s1[/* v */1];
         var l1 = s1[/* l */0];
-        var c = Curry._2($$let.compare, v1, s2[/* v */1]);
+        var c = Curry._2(funarg.compare, v1, s2[/* v */1]);
         if (c === 0) {
           if (subset$1(l1, l2)) {
             _s2 = r2;
@@ -3922,7 +3922,7 @@ function elements_aux$1(_accu, _param) {
   };
 }
 
-var $$let$1 = Types_TypeOps;
+var funarg$1 = Types_TypeOps;
 
 function height$3(param) {
   if (param) {
@@ -4008,7 +4008,7 @@ function add$4(x, data, m) {
     var d = m[/* d */2];
     var v = m[/* v */1];
     var l = m[/* l */0];
-    var c = Curry._2($$let$1.compare, x, v);
+    var c = Curry._2(funarg$1.compare, x, v);
     if (c === 0) {
       if (d === data) {
         return m;
@@ -4051,7 +4051,7 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Curry._2($$let$1.compare, x, param[/* v */1]);
+      var c = Curry._2(funarg$1.compare, x, param[/* v */1]);
       if (c === 0) {
         return param[/* d */2];
       } else {
@@ -4078,11 +4078,11 @@ function fold$3(f, _m, _accu) {
   };
 }
 
-var $$let$2 = Types_TypeOps;
+var $$let = Types_TypeOps;
 
 var TypeHash = Hashtbl.Make({
-      equal: $$let$2.equal,
-      hash: $$let$2.hash
+      equal: $$let.equal,
+      hash: $$let.hash
     });
 
 function print_raw(param) {

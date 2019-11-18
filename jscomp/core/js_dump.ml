@@ -841,7 +841,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       (  
         match tag_info with 
         | Blk_record _ 
-        | Blk_module _ -> 
+        | Blk_module _ 
+        | Blk_module_export -> 
           assert false 
             (* 
               This can not happen, see the pattern match on previous branch 
