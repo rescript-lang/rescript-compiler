@@ -38,6 +38,7 @@ let tag_is_zero (tag : J.expression) =
   | Blk_record_inlined _ -> true  
 #end  
   | Blk_record _   
+  | Blk_module_export
   | Blk_module _ -> false
   | Blk_tuple 
   | Blk_extension
@@ -53,6 +54,7 @@ let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) =
   match  tag_info with 
   | Blk_variant _ 
   | Blk_module _
+  | Blk_module_export
   | Blk_record _  
   | Blk_tuple 
   | Blk_extension

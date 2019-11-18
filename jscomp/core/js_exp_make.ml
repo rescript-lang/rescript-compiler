@@ -198,6 +198,7 @@ let make_block ?comment
     (* TODO: may overriden its previous comments *)
     | Blk_record _ 
     | Blk_module _
+    | Blk_module_export
     | Blk_tuple 
     | Blk_array
     | Blk_extension_slot 

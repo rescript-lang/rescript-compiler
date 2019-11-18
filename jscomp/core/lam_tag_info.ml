@@ -42,3 +42,4 @@ type t =
   | Blk_record_ext of string array
 #end
   | Blk_class
+  | Blk_module_export
