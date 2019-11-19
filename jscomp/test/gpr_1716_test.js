@@ -29,9 +29,9 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var a = [];
+var a = { };
 
-var b = [];
+var b = { };
 
 Caml_obj.caml_update_dummy(a, {
       b: b

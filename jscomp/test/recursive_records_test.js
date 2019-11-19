@@ -18,14 +18,14 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var rec_cell = [];
+var rec_cell = { };
 
 rec_cell.content = 3;
 
 rec_cell.next = rec_cell;
 
 function f0(x) {
-  var rec_cell = [];
+  var rec_cell = { };
   Caml_obj.caml_update_dummy(rec_cell, {
         content: Caml_int32.imul(x, x) - 6 | 0,
         next: rec_cell
