@@ -114,13 +114,15 @@ let rec find_dep_path ic package_name =
     |> Ext_string.split_by (fun c -> c ='"')
     |> List.hd
   else
-    find_dep_path ic package_name  
+    find_dep_path ic package_name
 
 let get_dep_path_from_file ~cwd package =
   (* We should find the correct file if we move 3 steps up because we're in _esy/<sandbox>/store/b/<build> *)
-  let ic = open_in_bin Ext_path.(cwd // ".." // ".." // ".." // "installation.json") in
-  let package_name = Bsb_pkg_types.to_string package in
-  find_dep_path ic package_name
+  try
+    let ic = open_in_bin Ext_path.(cwd // ".." // ".." // ".." // "installation.json") in
+    let package_name = Bsb_pkg_types.to_string package in
+    Some(find_dep_path ic package_name)
+  with _ -> None
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
@@ -137,8 +139,9 @@ let resolve_bs_package ~cwd (package : t) =
             (Bsb_pkg_types.to_string package)
             custom_pkg_loc;
 
-          try get_dep_path_from_file ~cwd package 
-          with _ ->  Bsb_exception.package_not_found ~pkg:package ~json:None
+          match get_dep_path_from_file ~cwd package with
+          | Some dep_path -> dep_path
+          | None -> Bsb_exception.package_not_found ~pkg:package ~json:None
         end
     | path when not (Sys.file_exists path) ->
         begin
