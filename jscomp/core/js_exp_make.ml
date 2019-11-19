@@ -289,7 +289,20 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
     for record it is [{}]
     for other it is [[]]
    *)
-  {comment  ; expression_desc = Array ([],Mutable)}
+  match info with
+  | Blk_record _ 
+  | Blk_module _ 
+    -> 
+    {comment ; expression_desc = Object ([])}
+  | Blk_constructor _ 
+  | Blk_tuple | Blk_array
+  | Blk_variant _ | Blk_extension_slot 
+  | Blk_extension | Blk_na _ 
+  | Blk_record_inlined _ 
+  | Blk_record_ext _ 
+  | Blk_class | Blk_module_export 
+    ->
+    {comment  ; expression_desc = Array ([],Mutable)}
 
 
 (* TODO: complete 

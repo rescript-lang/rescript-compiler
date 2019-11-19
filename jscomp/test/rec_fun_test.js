@@ -35,7 +35,7 @@ var called = {
 };
 
 function g(param) {
-  var v = [];
+  var v = { };
   var next = function (i, b) {
     called.contents = called.contents + 1 | 0;
     if (b) {
