@@ -180,6 +180,14 @@ let dir_directory d =
 let () =
   dir_directory "/static/cmis"
 
+let () =
+  dir_directory "/static"
+
+module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
+
+let reason_parse lexbuf = 
+  Refmt_api.Reason_toolchain.RE.implementation lexbuf |> Converter.copy_structure;;
+
 let make_compiler name impl =
   export name
     (Js.Unsafe.(obj
@@ -212,7 +220,7 @@ let make_compiler name impl =
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code -> (shake_compile impl ~use_super_errors:true (Js.to_string code)));
-                    "version", Js.Unsafe.inject (Js.string (Bs_version.version));
+                    "version", Js.Unsafe.inject (Js.string (match name with | "reason" -> Refmt_api.version | _ -> Bs_version.version));
                     "load_module",
                     inject @@
                     Js.wrap_meth_callback
@@ -223,7 +231,9 @@ let make_compiler name impl =
                         Js.Unsafe.set cmj_bytestring "t" 9;
                         load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
                   |]))
+
 let () = make_compiler "ocaml" Parse.implementation
+let () = make_compiler "reason" reason_parse
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
