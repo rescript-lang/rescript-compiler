@@ -56,6 +56,22 @@ end
      *    type: "error" // or "warning" or "info"
      *  }
 *)
+let mk_js_error loc msg = 
+  let (file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
+  let (file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
+  Js.Unsafe.(obj
+      [|
+        "js_error_msg",
+          inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
+            "row"    , inject (line - 1);
+            "column" , inject startchar;
+            "endRow" , inject (endline - 1);
+            "endColumn" , inject endchar;
+            "text" , inject @@ Js.string msg;
+            "type" , inject @@ Js.string "error"
+      |]
+    )
+
 let () =  
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false
@@ -125,29 +141,21 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) ?prefix impl str  :
       (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
   with
   | e ->
-      begin match error_of_exn  e with
+      begin match error_of_exn e with
       | Some error ->
-          Location.report_error Format.err_formatter  error;
-          let (file,line,startchar) = Location.get_pos_info error.loc.loc_start in
-          let (file,endline,endchar) = Location.get_pos_info error.loc.loc_end in
-          Js.Unsafe.(obj
-          [|
-            "js_error_msg",
-              inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar error.msg);
-               "row"    , inject (line - 1);
-               "column" , inject startchar;
-               "endRow" , inject (endline - 1);
-               "endColumn" , inject endchar;
-               "text" , inject @@ Js.string error.msg;
-               "type" , inject @@ Js.string "error"
-          |]
-          );
-
+        Location.report_error Format.err_formatter  error;
+        mk_js_error error.loc error.msg
       | None ->
-        Js.Unsafe.(obj [|
-        "js_error_msg" , inject @@ Js.string (Printexc.to_string e)
-        |])
-
+        let msg = Printexc.to_string e in
+        match e with
+        | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
+        | Refmt_api.Reason_errors.Reason_error (_,loc) ->
+          mk_js_error loc msg
+        | _ -> 
+          Js.Unsafe.(obj [|
+            "js_error_msg" , inject @@ Js.string msg;
+            "type" , inject @@ Js.string "error"
+          |])
       end
 
 
