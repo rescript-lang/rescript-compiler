@@ -26,52 +26,52 @@ type 'a cell = {
   content : 'a ; 
   mutable next : 'a cell_opt
 }  
-and 'a cell_opt = 'a cell Caml_undefined_extern.t 
+and 'a cell_opt = 'a cell option
 and 'a t = {
   mutable length : int ;
   mutable first : 'a cell_opt;
   mutable last : 'a cell_opt
 }
-[@@bs.deriving abstract]
+
 
 let create_queue () = 
-  t
-  ~length:0 
-  ~first:Caml_undefined_extern.empty 
-  ~last:Caml_undefined_extern.empty
+  {
+    length=0 ;
+    first = None;
+    last= None}
 
 (* Added to tail *)
 let push_back (q :'a t) (v : 'a) = 
    let cell = 
-      Caml_undefined_extern.return @@ 
-      cell  
-        ~content:v ~next:Caml_undefined_extern.empty 
+      Some
+        {content=v ; next=None}
    in 
-   match q |. lastGet |. Caml_undefined_extern.toOption with 
+   match q.last with 
    | None ->
-     q |. lengthSet 1 ;
-     q |. firstSet cell;
-     q |. lastSet cell
+     q . length<- 1 ;
+     q . first <- cell;
+     q . last <- cell
    | Some last -> 
-     q |. lengthSet ((q |. lengthGet) + 1);
-     last |. nextSet cell;
-     q |. lastSet cell
+     q . length <- q . length + 1;
+    last . next <- cell;
+     q . last <- cell
 
-let is_empty_queue q = q |. lengthGet  = 0     
+let is_empty_queue q = q . length  = 0     
 
 (* pop from front *)
+
 let unsafe_pop (q : 'a t) =        
-  let cell = (Obj.magic (q |. firstGet) : 'a cell) in 
-  let content, next_cell = cell |. (contentGet, nextGet) in 
-  match Caml_undefined_extern.toOption next_cell with 
+  let cell = (Obj.magic (q . first) : 'a cell) in 
+  let  content, next_cell = cell.content , cell.next in 
+  match next_cell with 
   | None -> 
-    q |. lengthSet 0 ; 
-    q |. firstSet Caml_undefined_extern.empty;
-    q |. lastSet Caml_undefined_extern.empty;
+    q . length <- 0 ; 
+    q . first <- None;
+    q . last<- None;
     content
   | Some next -> 
-    q |. lengthSet ((q |. lengthGet) - 1);
-    q |. firstSet next_cell ;
+    q . length <- q . length - 1;
+    q . first <- next_cell ;
     content
 
 
