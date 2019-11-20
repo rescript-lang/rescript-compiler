@@ -246,7 +246,7 @@ let concatShared t1 t2 =
   | (_, Some t2n) ->
     let v = ref (valueGet t2n ) in
     let t2r = removeMinAuxWithRef t2n v in
-    joinShared t1 !v t2r
+    joinShared t1 v.contents t2r
 
 
 
@@ -644,16 +644,16 @@ let fromArray (xs : _ array) ~cmp =
     let next = ref (S.strictlySortedLengthU xs
       (fun [@bs] x y -> (Belt_Id.getCmpInternal cmp) x y [@bs] < 0)) in
     let result =
-      ref (if !next >= 0 then
-        fromSortedArrayAux xs 0 !next
+      ref (if next.contents >= 0 then
+        fromSortedArrayAux xs 0 next.contents
       else begin
-        next .contents<- - !next ;
-        fromSortedArrayRevAux xs (!next - 1) !next
+        next .contents<- - next.contents ;
+        fromSortedArrayRevAux xs (next.contents - 1) next.contents
       end)  in
-    for i = !next to len - 1 do
-      result .contents<- addMutate ~cmp !result (A.getUnsafe xs i)
+    for i = next.contents to len - 1 do
+      result .contents<- addMutate ~cmp result.contents (A.getUnsafe xs i)
     done ;
-    !result
+    result.contents
 
 let rec removeMinAuxWithRootMutate nt n =
   let rn, ln = n |. (rightGet , leftGet ) in

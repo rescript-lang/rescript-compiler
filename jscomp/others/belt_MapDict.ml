@@ -111,7 +111,7 @@ let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
         | _, Some rn ->
           let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in
           let r = N.removeMinAuxWithRef rn kr vr in
-          N.bal l !kr !vr r 
+          N.bal l kr.contents vr.contents r 
         end
       | Some newD -> N.return (N.updateValue n newD)
     else 
@@ -156,7 +156,7 @@ let rec removeAux0  n x ~cmp =
     | _, Some rn -> 
       let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
       let r = N.removeMinAuxWithRef rn kr vr in 
-      N.bal l !kr !vr r
+      N.bal l kr.contents vr.contents r
   else if c < 0 then
     match N.toOpt l with 
     | None -> N.return n (* Nothing to remove *)
@@ -183,9 +183,9 @@ let mergeMany   h arr ~cmp =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key,value = A.getUnsafe arr i in 
-    v .contents<- set !v  ~cmp key value
+    v .contents<- set v.contents  ~cmp key value
   done ;
-  !v 
+  v.contents 
 
 let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(leftGet n , keyGet n, valueGet n, rightGet n) in  
@@ -218,7 +218,7 @@ let split  n x ~cmp =
   | Some n  ->
     let pres = ref None in
     let v = splitAuxPivot ~cmp n x pres in 
-    v, !pres
+    v, pres.contents
 
 let findFirstByU = N.findFirstByU
 let findFirstBy = N.findFirstBy 
@@ -239,7 +239,7 @@ let rec mergeU s1 s2 f ~cmp =
       let l1, v1, d1, r1 = N.(leftGet s1n, keyGet s1n, valueGet s1n, rightGet s1n) in 
       let d2 = ref None in 
       let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in
-      let d2 = !d2 in 
+      let d2 = d2.contents in 
       let newLeft = mergeU ~cmp l1 l2 f in 
       let newD = f v1 (Some d1) d2 [@bs] in 
       let newRight = mergeU ~cmp r1 r2 f in 
@@ -248,7 +248,7 @@ let rec mergeU s1 s2 f ~cmp =
       let l2,v2,d2,r2 = N.(leftGet s2n, keyGet s2n, valueGet s2n, rightGet s2n) in 
       let d1 = ref None in 
       let (l1,  r1) = splitAuxPivot ~cmp s1n v2 d1 in
-      let d1 = !d1 in 
+      let d1 = d1.contents in 
       let newLeft = mergeU ~cmp l1 l2 f in 
       let newD = (f v2 d1 (Some d2) [@bs]) in 
       let newRight = (mergeU ~cmp r1 r2 f) in 

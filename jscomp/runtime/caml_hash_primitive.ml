@@ -40,20 +40,20 @@ let rotl32 (x : nativeint) n  =
 
 let caml_hash_mix_int h  d = 
   let d = ref d in 
-  d.contents <- !d *~ 0xcc9e2d51n ;
-  d.contents <- rotl32 !d 15 ;
-  d.contents <- !d *~ 0x1b873593n ;
-  let h = ref (h ^ !d) in
-  h.contents <- rotl32 !h 13 ;
-  !h +~ (!h << 2)  +~ 0xe6546b64n  
+  d.contents <- d.contents *~ 0xcc9e2d51n ;
+  d.contents <- rotl32 d.contents 15 ;
+  d.contents <- d.contents *~ 0x1b873593n ;
+  let h = ref (h ^ d.contents) in
+  h.contents <- rotl32 h.contents 13 ;
+  h.contents +~ (h.contents << 2)  +~ 0xe6546b64n  
 
 let caml_hash_final_mix h = 
   let h = ref (h ^ (h >>> 16)) in
-  h.contents <- !h *~ 0x85ebca6bn ;
-  h.contents <- !h ^ (!h >>> 13);
-  h.contents <- !h *~ 0xc2b2ae35n ;
-  !h ^ (!h >>> 16)
-  (* Caml_nativeint_extern.logand  (!h ^ (!h >>> 16)) 0x3FFFFFFFn *)
+  h.contents <- h.contents *~ 0x85ebca6bn ;
+  h.contents <- h.contents ^ (h.contents >>> 13);
+  h.contents <- h.contents *~ 0xc2b2ae35n ;
+  h.contents ^ (h.contents >>> 16)
+  (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
   let module String = Caml_string_extern in 
@@ -68,7 +68,7 @@ let caml_hash_mix_string h  s =
       (Caml_char.code s.[j+2] lsl 16) lor 
       (Caml_char.code s.[j+3] lsl 24)
     in
-    hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int w)
+    hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
   done ;
   let modulo =  len land 0b11 in 
   if modulo <> 0 then 
@@ -83,9 +83,9 @@ let caml_hash_mix_string h  s =
           Caml_char.code s.[len -2]
         else Caml_char.code s.[len - 1] 
       in 
-      hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int w)
+      hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
     end;
-  hash.contents <- !hash ^ (Caml_nativeint_extern.of_int len) ;
-  !hash 
+  hash.contents <- hash.contents ^ (Caml_nativeint_extern.of_int len) ;
+  hash.contents 
 
  

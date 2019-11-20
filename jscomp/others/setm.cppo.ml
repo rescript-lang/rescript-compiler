@@ -140,7 +140,7 @@ let removeCheck  (d :  t) v =
     let newRoot = removeCheck0  oldRoot2 v removed in 
     if newRoot != oldRoot then  
       dataSet d newRoot ;   
-    !removed
+    removed.contents
 
     
 let rec addCheck0  t (x : value) added  =   
@@ -167,7 +167,7 @@ let addCheck (m :  t) e =
   let newRoot = addCheck0 oldRoot e added in 
   if newRoot != oldRoot then 
     dataSet m newRoot;
-  !added        
+  added.contents
 
 let add d k = 
   let oldRoot = dataGet d in 
@@ -179,9 +179,9 @@ let add d k =
 let addArrayMutate t  xs =       
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v .contents<- I.addMutate !v (A.getUnsafe xs i)
+    v.contents<- I.addMutate v.contents (A.getUnsafe xs i)
   done ;
-  !v    
+  v.contents    
 
 let mergeMany d arr = 
   dataSet d (addArrayMutate (dataGet d) arr)

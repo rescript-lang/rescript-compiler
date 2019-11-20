@@ -55,9 +55,9 @@ let mergeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v .contents<- add !v  key 
+    v .contents<- add v.contents  key 
   done ;
-  !v 
+  v.contents 
 
 
 let rec remove (t : t) (x : value) : t = 
@@ -72,7 +72,7 @@ let rec remove (t : t) (x : value) : t =
       | _, Some rn -> 
         let v = ref (N.valueGet rn) in 
         let r = N.removeMinAuxWithRef rn v in 
-        N.bal l !v r
+        N.bal l v.contents r
     else
     if x < v then 
       let ll = remove l x in  
@@ -88,9 +88,9 @@ let removeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v .contents<- remove !v  key 
+    v .contents<- remove v.contents  key 
   done ;
-  !v 
+  v.contents 
           
 let fromArray = I.fromArray
 let cmp = I.cmp 
@@ -149,7 +149,7 @@ let split  (t : t) (x : value) =
   | Some n  ->    
     let pres = ref false in 
     let v = splitAuxPivot n  x pres  in 
-    v, !pres
+    v, pres.contents
 
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -180,7 +180,7 @@ let  rec intersect (s1 : t) (s2 : t) =
     let l2,r2 =  splitAuxPivot n2 v1 pres in 
     let ll = intersect l1 l2 in 
     let rr = intersect r1 r2 in 
-    if !pres then N.joinShared ll v1 rr 
+    if pres.contents then N.joinShared ll v1 rr 
     else N.concatShared ll rr 
 
 let rec diff (s1 : t) (s2 : t) =
@@ -193,7 +193,7 @@ let rec diff (s1 : t) (s2 : t) =
     let l2, r2 = splitAuxPivot  n2 v1 pres in 
     let ll = diff  l1 l2 in 
     let rr = diff  r1 r2 in 
-    if !pres then N.concatShared ll rr 
+    if pres.contents then N.concatShared ll rr 
     else N.joinShared ll v1 rr 
 
 

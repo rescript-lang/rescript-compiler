@@ -90,13 +90,13 @@ let caml_hash (count : int) _limit (seed : nativeint)
   if Js.typeof obj = "number" then
     begin 
       let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-      hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
-      caml_hash_final_mix !hash
+      hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+      caml_hash_final_mix hash.contents
     end
   else if Js.typeof obj = "string" then 
     begin 
-      hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
-      caml_hash_final_mix !hash
+      hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
+      caml_hash_final_mix hash.contents
     end
     (* TODO: hash [null] [undefined] as well *)
   else 
@@ -105,20 +105,20 @@ let caml_hash (count : int) _limit (seed : nativeint)
     let num = ref count in 
     let () = 
        push_back  queue obj; 
-      decr num 
+       num.contents <- num.contents - 1
     in 
-    while not ( is_empty_queue queue) && !num > 0 do
+    while not ( is_empty_queue queue) && num.contents > 0 do
       let obj =  unsafe_pop queue in 
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-          hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
-          decr num ;
-        end
+          hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+          num.contents <- num.contents - 1;
+        end 
       else if Js.typeof obj = "string" then 
         begin 
-          hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
-          decr num 
+          hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
+          num.contents <- num.contents - 1 
         end
       else if Js.typeof obj = "boolean" then 
         ()
@@ -136,16 +136,16 @@ let caml_hash (count : int) _limit (seed : nativeint)
           let obj_tag = Caml_obj_extern.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int (oo_id  obj))
+            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int (oo_id  obj))
           else 
             begin 
-              hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int tag) ;
+              hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;
               let block = 
-                let v = size - 1 in if v <  !num then v else !num in 
+                let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
                  push_back queue (Caml_obj_extern.field obj i ) 
               done 
             end
     done;
-    caml_hash_final_mix !hash 
+    caml_hash_final_mix hash.contents
     

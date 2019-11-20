@@ -68,25 +68,25 @@ let parse_sign_and_base (s : string) =
   let sign = ref 1n in
   let base = ref Dec in
   let i  = ref 0 in
-  (match s.[!i] with 
+  (match s.[i.contents] with 
    | '-' -> 
      sign .contents<-  -1n;
-     incr i
+     i.contents <- i.contents + 1
    | '+' -> 
-     incr i 
+     i.contents <- i.contents + 1
    | _ -> ());
-  if s.[!i] = '0' then 
-    (match  s.[!i + 1] with 
+  if s.[i.contents] = '0' then 
+    (match  s.[i.contents + 1] with 
      |  ('x' | 'X')
-       -> base .contents<- Hex; i.contents<- !i + 2 
+       -> base .contents<- Hex; i.contents<- i.contents + 2 
      |  ( 'o' | 'O')
-       -> base .contents<- Oct; i .contents<- !i + 2
+       -> base .contents<- Oct; i .contents<- i.contents + 2
      |  ('b' | 'B' )
-       -> base .contents<- Bin; i .contents<- !i + 2 
+       -> base .contents<- Bin; i .contents<- i.contents + 2 
      |  ('u' | 'U')  
-       -> i .contents<- !i + 2 
+       -> i .contents<- i.contents + 2 
      |  _ -> ()); 
-  (!i, !sign, !base)
+  (i.contents, sign.contents, base.contents)
 
 
 let caml_int_of_string s = 
@@ -224,21 +224,21 @@ let parse_format fmt =
           f.width <- 0;
           let j = ref i in 
 
-          while (let w = Caml_char.code fmt.[!j] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
-            f.width <- f.width * 10 + Caml_char.code fmt.[!j] - Caml_char.code '0';
-            incr j
+          while (let w = Caml_char.code fmt.[j.contents] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
+            f.width <- f.width * 10 + Caml_char.code fmt.[j.contents] - Caml_char.code '0';
+            j.contents <- j.contents + 1
           done;
-          aux f !j
+          aux f j.contents
         end
       | '.' 
         -> 
         f.prec <- 0;
         let j = ref (i + 1 ) in 
-        while (let w = Caml_char.code fmt.[!j] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
-          f.prec <- f.prec * 10 + Caml_char.code fmt.[!j] - Caml_char.code '0';
-          incr j;
+        while (let w = Caml_char.code fmt.[j.contents] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
+          f.prec <- f.prec * 10 + Caml_char.code fmt.[j.contents] - Caml_char.code '0';
+          j.contents <- j.contents + 1;
         done;
-        aux f !j 
+        aux f j.contents 
       | 'd' 
       | 'i' -> 
         f.signedconv <- true;
@@ -302,51 +302,51 @@ let finish_formatting (config : fmt) rawbuffer =
   } = config in  
   let len = ref (Caml_string_extern.length rawbuffer) in 
   if signedconv && (sign < 0 || signstyle <> "-") then 
-    incr len;
+    len.contents <- len.contents + 1;
   if alternate then 
     begin 
       if base = Oct then
-        incr len 
+         len.contents <- len.contents + 1
       else
       if base = Hex then 
-        len .contents<- !len + 2
+        len.contents<- len.contents + 2
       else ()
     end ; 
   let buffer = ref "" in 
-  (* let (+=) buffer s = buffer .contents<- !buffer ^ s in 
+  (* let (+=) buffer s = buffer .contents<- buffer.contents ^ s in 
      FIXME: should get inlined
   *)
-  (* let (+:) s = buffer .contents<- !buffer ^ s in *)
+  (* let (+:) s = buffer .contents<- buffer.contents ^ s in *)
   if justify = "+" && filter = " " then
-    for i = !len to width - 1 do 
-      buffer .contents<- !buffer ^ filter
+    for i = len.contents to width - 1 do 
+      buffer.contents<- buffer.contents ^ filter
     done;
   if signedconv then 
     if sign < 0 then 
-      buffer .contents<- !buffer ^ "-"
+      buffer .contents<- buffer.contents ^ "-"
     else if signstyle <> "-" then 
-      buffer .contents<- !buffer ^ signstyle
+      buffer .contents<- buffer.contents ^ signstyle
     else ()  ;
   if alternate && base = Oct then 
-    buffer .contents<- !buffer ^ "0";
+    buffer .contents<- buffer.contents ^ "0";
   if alternate && base == Hex then
-    buffer .contents<- !buffer ^ "0x";
+    buffer .contents<- buffer.contents ^ "0x";
 
   if justify = "+" && filter = "0" then 
-    for i = !len to width - 1 do 
-      buffer .contents<- !buffer ^ filter;
+    for i = len.contents to width - 1 do 
+      buffer .contents<- buffer.contents ^ filter;
     done;
   begin 
     if uppercase then 
-      buffer .contents<- !buffer ^ Caml_string_extern.toUpperCase rawbuffer
+      buffer .contents<- buffer.contents ^ Caml_string_extern.toUpperCase rawbuffer
     else
-      buffer .contents<- !buffer ^ rawbuffer
+      buffer .contents<- buffer.contents ^ rawbuffer
   end;
   if justify = "-" then 
-    for i = !len to width - 1 do 
-      buffer .contents<- !buffer ^ " ";
+    for i = len.contents to width - 1 do 
+      buffer .contents<- buffer.contents ^ " ";
     done;
-  !buffer
+  buffer.contents
 
 
 
@@ -365,11 +365,11 @@ let aux f (i : nativeint)  =
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
-      let n = f.prec -Caml_string_extern.length !s in 
+      let n = f.prec -Caml_string_extern.length s.contents in 
       if n > 0 then
-        s .contents<-  repeat n "0"  ^ !s
+        s .contents<-  repeat n "0"  ^ s.contents
     end ;
-  finish_formatting f !s
+  finish_formatting f s.contents
 
 let caml_format_int fmt i = 
   if fmt = "%d" then Caml_nativeint_extern.to_string i 
@@ -396,7 +396,7 @@ let caml_int64_format fmt x =
 
   begin match f.base with
     | Hex ->
-      s .contents<- Caml_int64.to_hex x ^ !s       
+      s .contents<- Caml_int64.to_hex x ^ s.contents       
     | Oct ->
       let wbase  = 8L  in
       let  cvtbl = "01234567" in
@@ -419,13 +419,13 @@ let caml_int64_format fmt x =
           let modulus = ref d in
           s .contents<-
             Caml_string_extern.of_char 
-              cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
+              cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
 
-          while  !quotient <> 0L do
-            let a, b = Caml_int64.div_mod (!quotient) wbase in
+          while  quotient.contents <> 0L do
+            let a, b = Caml_int64.div_mod quotient.contents wbase in
             quotient .contents<- a;
             modulus .contents<- b;
-            s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
+            s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
           done;
         end
       else
@@ -434,13 +434,13 @@ let caml_int64_format fmt x =
         let modulus = ref b in
         s .contents<-
           Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
+            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
 
-        while  !quotient <> 0L do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while  quotient.contents <> 0L do
+          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
+          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
         done
 
     | Dec ->
@@ -467,13 +467,13 @@ let caml_int64_format fmt x =
         let modulus = ref f in
         s .contents<-
           Caml_string_extern.of_char 
-            cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
+            cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
 
-        while !quotient <> 0L do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while quotient.contents <> 0L do
+          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
+          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
         done;
 
       else
@@ -482,24 +482,24 @@ let caml_int64_format fmt x =
         let modulus = ref b in
         s .contents<-
           Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
+            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
 
-        while  !quotient <> 0L do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while  quotient.contents <> 0L do
+          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
+          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
         done;
   end;
   if f.prec >= 0 then
     begin
       f.filter <- " ";
-      let n = f.prec -Caml_string_extern.length !s in
+      let n = f.prec -Caml_string_extern.length s.contents in
       if n > 0 then
-        s .contents<- repeat n "0" ^ !s
+        s .contents<- repeat n "0" ^ s.contents
     end;
 
-  finish_formatting f !s
+  finish_formatting f s.contents
 
 let caml_format_float fmt x = 
   let module String = Caml_string_extern in 
@@ -530,10 +530,10 @@ let caml_format_float fmt x =
                3.3e+00
            ]}
         *)
-        let  i =Caml_string_extern.length !s in 
-        if !s.[i-3] = 'e' then
+        let  i =Caml_string_extern.length s.contents in 
+        if s.contents.[i-3] = 'e' then
           begin 
-            s .contents<- Caml_string_extern.slice !s 0 (i - 1) ^ "0" ^ Caml_string_extern.slice_rest !s (i - 1)
+            s .contents<- Caml_string_extern.slice s.contents 0 (i - 1) ^ "0" ^ Caml_string_extern.slice_rest s.contents (i - 1)
           end
       | "f"
         -> 
@@ -543,43 +543,43 @@ let caml_format_float fmt x =
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
         s .contents<- Caml_float_extern.toExponentialWithPrecision x ~digits:(prec - 1);
-        let j = Caml_string_extern.index_of !s "e" in 
-        let  exp = Caml_float.int_of_float (Caml_float_extern.fromString (Caml_string_extern.slice_rest !s (j + 1)))  in 
+        let j = Caml_string_extern.index_of s.contents "e" in 
+        let  exp = Caml_float.int_of_float (Caml_float_extern.fromString (Caml_string_extern.slice_rest s.contents (j + 1)))  in 
         if exp < -4 || x >= 1e21 ||Caml_string_extern.length (Caml_float_extern.toFixed x) > prec then 
           let i = ref (j - 1)  in
-          while !s.[!i] = '0' do 
-            decr i 
+          while s.contents.[i.contents] = '0' do 
+             i.contents <- i.contents - 1 
           done;
-          if !s.[!i] = '.' then 
-            decr i ;
-          s .contents<- Caml_string_extern.slice !s 0 (!i+1) ^ Caml_string_extern.slice_rest !s j ;
-          let i =Caml_string_extern.length !s in 
-          if !s.[i - 3] = 'e' then 
-            s .contents<- Caml_string_extern.slice !s 0 (i - 1) ^ "0" ^ Caml_string_extern.slice_rest !s (i - 1) 
+          if s.contents.[i.contents] = '.' then 
+            i.contents <- i.contents - 1 ;
+          s .contents<- Caml_string_extern.slice s.contents 0 (i.contents+1) ^ Caml_string_extern.slice_rest s.contents j ;
+          let i =Caml_string_extern.length s.contents in 
+          if s.contents.[i - 3] = 'e' then 
+            s .contents<- Caml_string_extern.slice s.contents 0 (i - 1) ^ "0" ^ Caml_string_extern.slice_rest s.contents (i - 1) 
           else ()
         else 
           let p = ref prec in 
           if exp < 0 then 
             begin 
-              p .contents<- !p - (exp + 1);
-              s .contents<- Caml_float_extern.toFixedWithPrecision x ~digits:!p 
+              p.contents<- p.contents - (exp + 1);
+              s.contents<- Caml_float_extern.toFixedWithPrecision x ~digits:p.contents 
             end
           else 
-            while (s .contents<- Caml_float_extern.toFixedWithPrecision x ~digits:!p;Caml_string_extern.length !s > prec + 1) do 
-              decr p
+            while (s .contents<- Caml_float_extern.toFixedWithPrecision x ~digits:p.contents;Caml_string_extern.length s.contents > prec + 1) do 
+              p.contents <- p.contents - 1
             done ;
-          if !p <> 0 then 
-            let k = ref (Caml_string_extern.length !s - 1) in 
-            while !s.[!k] = '0' do 
-              decr k
+          if p.contents <> 0 then 
+            let k = ref (Caml_string_extern.length s.contents - 1) in 
+            while s.contents.[k.contents] = '0' do 
+              k.contents <- k.contents - 1
             done ;
-            if !s.[!k] = '.' then 
-              decr k ;
-            s .contents<- Caml_string_extern.slice !s 0 (!k + 1) 
+            if s.contents.[k.contents] = '.' then 
+              k.contents <- k.contents - 1 ;
+            s .contents<- Caml_string_extern.slice s.contents 0 (k.contents + 1) 
 
       | _ -> ()
     end;
-  finish_formatting f !s
+  finish_formatting f s.contents
 
 let caml_hexstring_of_float : float -> int -> char -> string =    
   fun%raw x prec style -> {| 

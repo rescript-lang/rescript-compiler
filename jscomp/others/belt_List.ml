@@ -366,11 +366,11 @@ let makeByU n f =
     let headX = mutableCell (f 0 [@bs]) [] in
     let cur = ref headX in
     let i = ref 1 in
-    while !i < n do
-      let v = mutableCell (f !i [@bs]) [] in
-      unsafeMutateTail !cur v ;
-      cur .contents<- v ;
-      incr i ;
+    while i.contents < n do
+      let v = mutableCell (f i.contents [@bs]) [] in
+      unsafeMutateTail cur.contents v ;
+      cur.contents<- v ;
+      i.contents <- i.contents + 1 ;
     done
     ;
     headX
@@ -383,11 +383,11 @@ let make n v =
     let headX = mutableCell v [] in
     let cur = ref headX in
     let i = ref 1 in
-    while !i < n do
+    while i.contents < n do
       let v = mutableCell v [] in
-      unsafeMutateTail !cur v ;
-      cur .contents<- v ;
-      incr i ;
+      unsafeMutateTail cur.contents v ;
+      cur.contents<- v ;
+      i.contents <- i.contents + 1 ;
     done
     ;
     headX
@@ -492,9 +492,9 @@ let concatMany xs =
     let len = A.length xs in
     let v = ref (A.getUnsafe xs (len - 1)) in
     for i = len - 2 downto 0 do
-      v .contents<- concat (A.getUnsafe xs i) !v
+      v .contents<- concat (A.getUnsafe xs i) v.contents
     done ;
-    !v
+    v.contents
 
 let rec mapRevAux f accu xs =
   match xs with

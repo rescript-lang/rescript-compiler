@@ -92,8 +92,8 @@ let forEach s f = forEachU s (fun [@bs] x -> f x)
     
 let dynamicPopIterU s f =    
   let cursor = ref (rootGet s) in 
-  while !cursor != Js.null do 
-    let v = Js_null.getUnsafe !cursor in 
+  while cursor.contents != Js.null do 
+    let v = Js_null.getUnsafe cursor.contents in 
     rootSet s (tailGet v);
     f (headGet v) [@bs];
     cursor .contents<- rootGet s (* using root, [f] may change it*)

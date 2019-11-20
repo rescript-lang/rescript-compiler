@@ -81,7 +81,7 @@ let rec remove n (x : key) =
       | _, Some rn -> 
         let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
         let r = N.removeMinAuxWithRef rn kr vr in 
-        N.bal l !kr !vr r 
+        N.bal l kr.contents vr.contents r 
     else if x < v then
       N.(bal (remove l x ) v (valueGet n) r)
     else
@@ -210,18 +210,18 @@ let fromArray (xs : (key * _) array) =
         ))
       in 
     let result  = ref (
-      if !next >= 0 then 
-        N.fromSortedArrayAux xs 0 !next 
+      if next.contents >= 0 then 
+        N.fromSortedArrayAux xs 0 next.contents 
       else begin   
-        next .contents<- - !next; 
-        N.fromSortedArrayRevAux xs (!next - 1) (!next)
+        next .contents<- - next.contents; 
+        N.fromSortedArrayRevAux xs (next.contents - 1) (next.contents)
       end  
     ) in 
-    for i = !next to len - 1 do 
+    for i = next.contents to len - 1 do 
       let k, v = (A.getUnsafe xs i)  in 
-      result .contents<- addMutate  !result k v 
+      result .contents<- addMutate  result.contents k v 
     done ;
-    !result         
+    result.contents         
 
 
 

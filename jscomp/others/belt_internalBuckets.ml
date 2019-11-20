@@ -103,9 +103,9 @@ let reduceU  h init f =
   let d = C.bucketsGet h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
-    accu .contents<- do_bucket_fold ~f (A.getUnsafe d i) !accu
+    accu .contents<- do_bucket_fold ~f (A.getUnsafe d i) accu.contents
   done;
-  !accu
+  accu.contents
 
 let reduce h init f = reduceU h init (fun [@bs] a b c -> f a b c)
 
@@ -186,7 +186,7 @@ let toArray h =
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
-      current .contents<- fillArray !current arr cell
+      current .contents<- fillArray current.contents arr cell
   done;
   arr 
 
@@ -205,7 +205,7 @@ let linear h f =
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
-      current .contents<- fillArrayMap !current arr cell f
+      current .contents<- fillArrayMap current.contents arr cell f
   done;
   arr 
 

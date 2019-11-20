@@ -113,17 +113,17 @@ let fromArray (xs : value array) =
     let next =  ref (S.strictlySortedLength xs ) in 
     let result  = 
         ref (
-          if !next >= 0 then 
-            N.fromSortedArrayAux xs 0 !next
+          if next.contents >= 0 then 
+            N.fromSortedArrayAux xs 0 next.contents
           else begin 
-            next .contents<- - !next ;  
-            N.fromSortedArrayRevAux xs (!next - 1) !next
+            next .contents<- - next.contents ;  
+            N.fromSortedArrayRevAux xs (next.contents - 1) next.contents
           end
           ) in 
-    for i = !next to len - 1 do 
-      result .contents<- addMutate !result (A.getUnsafe xs i) 
+    for i = next.contents to len - 1 do 
+      result .contents<- addMutate result.contents (A.getUnsafe xs i) 
     done ;
-    !result 
+    result.contents 
 
 
 
