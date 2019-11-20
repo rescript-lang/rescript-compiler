@@ -921,8 +921,6 @@ let root = OCamlRes.Res.([
        \n\
        **How come we don't need any bundler during development**? We highly encourage you to open up `index.html` to check for yourself!\n\
        \n\
-       If you start handling routes via `ReasonReactRouter` change the server script in package.json to `moduleserve ./ --port 8000 --spa` to make sure your routes don't result in a 404 not found error. With the added `--spa` flag your routes will return the index.html on page load and you can handle them client-side.\n\
-       \n\
        # Features Used\n\
        \n\
        |                           | Blinking Greeting | Reducer from ReactJS Docs | Fetch Dog Pictures | Reason Using JS Using Reason |\n\
@@ -954,6 +952,12 @@ let root = OCamlRes.Res.([
        ./node_modules/.bin/webpack\n\
        open indexProduction.html\n\
        ```\n\
+       \n\
+       # Handle Routing Yourself\n\
+       \n\
+       To serve the files, this template uses a minimal dependency called `moduleserve`. A URL such as `localhost:8000/scores/john` resolves to the file `scores/john.html`. If you'd like to override this and handle URL resolution yourself, change the `server` command in `package.json` from `moduleserve ./ --port 8000` to `moduleserve ./ --port 8000 --spa` (for \"single page application\"). This will make `moduleserve` serve the default `index.html` for any URL. Since `index.html` loads `Index.bs.js`, you can grab hold of the URL in the corresponding `Index.re` and do whatever you want.\n\
+       \n\
+       By the way, ReasonReact comes with a small [router](https://reasonml.github.io/reason-react/docs/en/router) you might be interested in.\n\
        ") ;
     File  ("indexProduction.html",
       "<!DOCTYPE html>\n\
