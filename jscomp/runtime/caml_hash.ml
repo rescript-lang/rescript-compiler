@@ -60,19 +60,19 @@ let is_empty_queue q = q . length  = 0
 
 (* pop from front *)
 
+
 let unsafe_pop (q : 'a t) =        
   let cell = (Obj.magic (q . first) : 'a cell) in 
-  let  content, next_cell = cell.content , cell.next in 
-  match next_cell with 
-  | None -> 
+  let next =cell.next in 
+  if next = None then (
     q . length <- 0 ; 
     q . first <- None;
     q . last<- None;
-    content
-  | Some next -> 
+  ) else (
     q . length <- q . length - 1;
-    q . first <- next_cell ;
-    content
+    q . first <- next;
+  );
+  cell.content
 
 
 
