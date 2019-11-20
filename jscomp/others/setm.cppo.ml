@@ -105,7 +105,7 @@ let removeMany  (d : t) xs =
 let rec removeCheck0  nt (x : value) removed = 
   let k = N.valueGet nt in 
   if x = k then 
-    let () = removed := true in  
+    let () = removed .contents<- true in  
     let l,r = N.(leftGet nt, rightGet nt) in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
@@ -146,7 +146,7 @@ let removeCheck  (d :  t) v =
 let rec addCheck0  t (x : value) added  =   
   match N.toOpt t with 
   | None -> 
-    added := true;
+    added .contents<- true;
     N.singleton x 
   | Some nt -> 
     let k = N.valueGet nt in 
@@ -179,7 +179,7 @@ let add d k =
 let addArrayMutate t  xs =       
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v := I.addMutate !v (A.getUnsafe xs i)
+    v .contents<- I.addMutate !v (A.getUnsafe xs i)
   done ;
   !v    
 

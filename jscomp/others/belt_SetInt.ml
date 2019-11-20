@@ -55,7 +55,7 @@ let mergeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v := add !v  key 
+    v .contents<- add !v  key 
   done ;
   !v 
 
@@ -88,7 +88,7 @@ let removeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v := remove !v  key 
+    v .contents<- remove !v  key 
   done ;
   !v 
           
@@ -123,7 +123,7 @@ let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =
 let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =   
   let l,v,r = N.(leftGet n , valueGet n, rightGet n) in  
   if x = v then begin 
-    pres := true;
+    pres .contents<- true;
     (l, r)
   end
   else if x < v then

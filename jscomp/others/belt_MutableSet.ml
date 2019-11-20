@@ -106,7 +106,7 @@ let rec removeCheck0  nt x removed ~cmp=
   let k = N.valueGet nt in 
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
-    let () = removed := true in  
+    let () = removed .contents<- true in  
     let l,r = N.(leftGet nt, rightGet nt) in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
@@ -148,7 +148,7 @@ let removeCheck d v =
 let rec addCheck0  t x added ~cmp  =   
   match N.toOpt t with 
   | None -> 
-    added := true;
+    added .contents<- true;
     N.singleton x 
   | Some nt -> 
     let k = N.valueGet nt in 
@@ -181,7 +181,7 @@ let add m e =
 let addArrayMutate t xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
+    v .contents<- N.addMutate !v (A.getUnsafe xs i)  ~cmp
   done; 
   !v
     

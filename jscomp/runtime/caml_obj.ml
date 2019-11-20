@@ -270,9 +270,9 @@ and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
        caml_compare (O.get_value a key) (O.get_value b key) > 0
     then
       match !min_key with
-      | None -> min_key := Some key
+      | None -> min_key .contents<- Some key
       | Some mk ->
-        if key < mk then min_key := Some key in
+        if key < mk then min_key .contents<- Some key in
   let do_key_a = do_key (a, b, min_key_rhs) in
   let do_key_b = do_key (b, a, min_key_lhs) in
   O.for_in a do_key_a;
@@ -347,11 +347,11 @@ and aux_obj_equal (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let result = ref true in
   let do_key_a key =
     if not (O.hasOwnProperty b key)
-    then result := false in
+    then result .contents<- false in
   let do_key_b key =
     if not (O.hasOwnProperty a key) ||
        not (caml_equal (O.get_value b key) (O.get_value a key))
-    then result := false in
+    then result .contents<- false in
   O.for_in a do_key_a ;
   if !result then O.for_in b do_key_b;
   !result

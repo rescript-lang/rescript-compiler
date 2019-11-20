@@ -108,7 +108,7 @@ let toArray h =
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
-      current := fillArray !current arr cell
+      current .contents<- fillArray !current arr cell
   done;
   arr 
 
@@ -125,7 +125,7 @@ let reduceU h init f =
   let d = C.bucketsGet h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
-    accu := doBucketFold ~f (A.getUnsafe d i) !accu
+    accu .contents<- doBucketFold ~f (A.getUnsafe d i) !accu
   done;
   !accu
 

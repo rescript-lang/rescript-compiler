@@ -81,7 +81,7 @@ let mergeMany   h arr ~cmp =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v := add !v  ~cmp key 
+    v .contents<- add !v  ~cmp key 
   done ;
   !v 
 
@@ -90,7 +90,7 @@ let removeMany h arr ~cmp =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v := remove !v  ~cmp key 
+    v .contents<- remove !v  ~cmp key 
   done ;
   !v 
 
@@ -119,7 +119,7 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then 
     begin
-      pres := true;
+      pres .contents<- true;
       l, r
     end
   else 

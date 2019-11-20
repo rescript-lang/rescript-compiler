@@ -96,7 +96,7 @@ let dynamicPopIterU s f =
     let v = Js_null.getUnsafe !cursor in 
     rootSet s (tailGet v);
     f (headGet v) [@bs];
-    cursor := rootGet s (* using root, [f] may change it*)
+    cursor .contents<- rootGet s (* using root, [f] may change it*)
   done
 
 let dynamicPopIter s f = dynamicPopIterU s (fun [@bs] x -> f x)

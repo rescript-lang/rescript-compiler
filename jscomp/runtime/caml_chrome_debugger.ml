@@ -149,7 +149,7 @@ let setup = ref false
 let setupOnce () = 
   if not !setup then 
     begin 
-      setup := true;
+      setup.contents<- true;
       setupChromeDebugger ()
     end 
 

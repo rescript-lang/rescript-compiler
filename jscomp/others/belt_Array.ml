@@ -124,7 +124,7 @@ let rangeBy start finish ~step =
     let cur = ref start in
     for i = 0 to nb - 1 do
       setUnsafe arr i !cur;
-      cur := !cur + step ;
+      cur .contents<- !cur + step ;
     done;
     arr
 
@@ -164,10 +164,10 @@ let concatMany arrs =
   let lenArrs = length arrs in
   let totalLen = ref 0 in
   for i = 0 to lenArrs - 1 do
-    totalLen := !totalLen + length (getUnsafe arrs i)
+    totalLen .contents<- !totalLen + length (getUnsafe arrs i)
   done;
   let result = makeUninitializedUnsafe !totalLen in
-  totalLen := 0 ;
+  totalLen .contents<- 0 ;
   for j = 0 to lenArrs - 1 do
     let cur = getUnsafe arrs j in
     for k = 0 to length cur - 1 do
@@ -273,7 +273,7 @@ let getByU a p =
     let v = (getUnsafe a !i) in
     if p v [@bs] then
       begin
-        r := Some v;
+        r .contents<- Some v;
       end;
     incr i
   done;
@@ -289,7 +289,7 @@ let getIndexByU a p =
     let v = (getUnsafe a !i) in
     if p v [@bs] then
       begin
-        r := Some !i;
+        r .contents<- Some !i;
       end;
     incr i
   done;
@@ -368,7 +368,7 @@ let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
 let reduceU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
-    r := f !r (getUnsafe a i) [@bs]
+    r .contents<- f !r (getUnsafe a i) [@bs]
   done;
   !r
 
@@ -377,7 +377,7 @@ let reduce a x f = reduceU a x (fun[@bs] a b -> f a b)
 let reduceReverseU a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
-    r := f  !r (getUnsafe a i) [@bs]
+    r .contents<- f  !r (getUnsafe a i) [@bs]
   done;
   !r
 
@@ -387,7 +387,7 @@ let reduceReverse2U a b x f =
   let r = ref x in
   let len = Pervasives.min (length a) (length b) in
   for i = len - 1 downto  0 do
-    r := f !r (getUnsafe a i) (getUnsafe b i) [@bs]
+    r .contents<- f !r (getUnsafe a i) (getUnsafe b i) [@bs]
   done;
   !r
 
@@ -397,7 +397,7 @@ let reduceReverse2 a b x f =
 let reduceWithIndexU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
-    r := f !r (getUnsafe a i) i [@bs]
+    r .contents<- f !r (getUnsafe a i) i [@bs]
   done;
   !r
 
