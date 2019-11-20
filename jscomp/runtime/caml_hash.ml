@@ -89,13 +89,13 @@ let caml_hash (count : int) _limit (seed : nativeint)
   let hash = ref seed in 
   if Js.typeof obj = "number" then
     begin 
-      let u = (Caml_nativeint_extern.of_float (Obj.magic obj)) in
-      hash := caml_hash_mix_int !hash (u +~ u +~ 1n) ;
+      let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
+      hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
       caml_hash_final_mix !hash
     end
   else if Js.typeof obj = "string" then 
     begin 
-      hash := caml_hash_mix_string !hash (Obj.magic obj : string);
+      hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
       caml_hash_final_mix !hash
     end
     (* TODO: hash [null] [undefined] as well *)
@@ -112,12 +112,12 @@ let caml_hash (count : int) _limit (seed : nativeint)
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-          hash := caml_hash_mix_int !hash (u +~ u +~ 1n) ;
+          hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
           decr num ;
         end
       else if Js.typeof obj = "string" then 
         begin 
-          hash := caml_hash_mix_string !hash (Obj.magic obj : string);
+          hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
           decr num 
         end
       else if Js.typeof obj = "boolean" then 
@@ -136,10 +136,10 @@ let caml_hash (count : int) _limit (seed : nativeint)
           let obj_tag = Caml_obj_extern.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash := caml_hash_mix_int !hash (Caml_nativeint_extern.of_int (oo_id  obj))
+            hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int (oo_id  obj))
           else 
             begin 
-              hash := caml_hash_mix_int !hash (Caml_nativeint_extern.of_int tag) ;
+              hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int tag) ;
               let block = 
                 let v = size - 1 in if v <  !num then v else !num in 
               for i = 0 to block do

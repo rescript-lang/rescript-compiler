@@ -146,7 +146,7 @@ let maxUndefined n =
 let rec removeMinAuxWithRef n v =
   let ln, rn, kn = n |. (leftGet , rightGet , valueGet) in
   match toOpt ln with
-  | None ->  v:= kn ; rn
+  | None ->  v.contents<- kn ; rn
   | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
 
 
@@ -647,11 +647,11 @@ let fromArray (xs : _ array) ~cmp =
       ref (if !next >= 0 then
         fromSortedArrayAux xs 0 !next
       else begin
-        next := - !next ;
+        next .contents<- - !next ;
         fromSortedArrayRevAux xs (!next - 1) !next
       end)  in
     for i = !next to len - 1 do
-      result := addMutate ~cmp !result (A.getUnsafe xs i)
+      result .contents<- addMutate ~cmp !result (A.getUnsafe xs i)
     done ;
     !result
 

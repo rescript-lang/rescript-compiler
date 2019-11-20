@@ -113,7 +113,7 @@ let map f a =
 let foldLeft f x a =
   let r = ref x in
   for i = 0 to length a - 1 do
-    r := f !r (unsafe_get a i) [@bs]
+    r .contents<- f !r (unsafe_get a i) [@bs]
   done;
   !r
 
@@ -121,7 +121,7 @@ let foldLeft f x a =
 let foldRight f a x =
   let r = ref x in
   for i = length a - 1 downto 0 do
-    r := f (unsafe_get a i) !r [@bs]
+    r .contents<- f (unsafe_get a i) !r [@bs]
   done;
   !r
 

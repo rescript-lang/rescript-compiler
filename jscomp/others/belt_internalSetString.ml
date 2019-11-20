@@ -116,12 +116,12 @@ let fromArray (xs : value array) =
           if !next >= 0 then 
             N.fromSortedArrayAux xs 0 !next
           else begin 
-            next := - !next ;  
+            next .contents<- - !next ;  
             N.fromSortedArrayRevAux xs (!next - 1) !next
           end
           ) in 
     for i = !next to len - 1 do 
-      result := addMutate !result (A.getUnsafe xs i) 
+      result .contents<- addMutate !result (A.getUnsafe xs i) 
     done ;
     !result 
 

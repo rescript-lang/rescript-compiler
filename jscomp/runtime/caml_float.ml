@@ -66,16 +66,16 @@ let caml_modf_float (x : float) : float * float =
 let caml_ldexp_float (x: float) (exp: int) : float =
   let x', exp' = ref x, ref (float_of_int exp) in
   if !exp' > 1023. then begin
-    exp' := !exp' -. 1023.;
-    x' := !x' *. pow_float ~base:2. ~exp:1023.;
+    exp' .contents <- !exp' -. 1023.;
+    x' .contents <- !x' *. pow_float ~base:2. ~exp:1023.;
     if !exp' > 1023. then begin (* in case x is subnormal *)
-      exp' := !exp' -. 1023.;
-      x' := !x' *. pow_float ~base:2. ~exp:1023.;
+      exp'.contents <- !exp' -. 1023.;
+      x' .contents <- !x' *. pow_float ~base:2. ~exp:1023.;
     end
   end
   else if !exp' < (-1023.) then begin
-    exp' := !exp' +. 1023.;
-    x' := !x' *. pow_float ~base:2. ~exp:(-1023.);
+    exp'.contents <- !exp' +. 1023.;
+    x'.contents <- !x' *. pow_float ~base:2. ~exp:(-1023.);
   end;
   !x' *. pow_float ~base:2. ~exp:!exp'
 
@@ -88,12 +88,12 @@ let caml_frexp_float (x: float): float * int =
     let x' = ref (abs_float x) in
     let exp = ref (floor (_LOG2E *. log !x') +. 1.) in
     begin
-      x' := !x' *. pow_float ~base:2. ~exp:(-.(!exp));
+      x' .contents <- !x' *. pow_float ~base:2. ~exp:(-.(!exp));
       if !x' < 0.5 then begin
-        x' := !x' *. 2.;
-        exp := !exp -. 1.;
+        x' .contents <- !x' *. 2.;
+        exp .contents <- !exp -. 1.;
       end;
-      if neg then x' := (-.(!x'));
+      if neg then x' .contents <- (-.(!x'));
       (!x', int_of_float (!exp))
     end
   end

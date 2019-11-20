@@ -198,17 +198,17 @@ let rec mul this
       let c16 = ref 0n in
       begin
         let c00 =  a00 *~ b00  in
-        c16 :=  (c00 >>> 16) +~   a16 *~ b00 ;
-        c32 :=  !c16 >>> 16;
-        c16 :=  ( !c16 & 0xffffn) +~ a00 *~ b16;
-        c32 :=  (!c32 +~  ( !c16 >>> 16)) +~  a32 *~ b00;
-        c48 :=  !c32 >>>  16;
-        c32 :=  (!c32 & 0xffffn) +~  a16 *~ b16;
-        c48 :=  !c48 +~  ( !c32 >>> 16);
-        c32 :=  (!c32 & 0xffffn) +~  a00 *~ b32;
-        c48 :=  !c48 +~  (!c32 >>> 16);
-        c32 :=  !c32 & 0xffffn;
-        c48 :=  (!c48  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
+        c16.contents <-  (c00 >>> 16) +~   a16 *~ b00 ;
+        c32.contents <-  !c16 >>> 16;
+        c16.contents <-  ( !c16 & 0xffffn) +~ a00 *~ b16;
+        c32.contents <-  (!c32 +~  ( !c16 >>> 16)) +~  a32 *~ b00;
+        c48.contents <-  !c32 >>>  16;
+        c32.contents <-  (!c32 & 0xffffn) +~  a16 *~ b16;
+        c48.contents <-  !c48 +~  ( !c32 >>> 16);
+        c32.contents <-  (!c32 & 0xffffn) +~  a00 *~ b32;
+        c48.contents <-  !c48 +~  (!c32 >>> 16);
+        c32.contents <-  !c32 & 0xffffn;
+        c48.contents <-  (!c48  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
         mk ~lo:
            (Caml_nativeint_extern.logor
              (c00 & 0xffffn)
@@ -363,14 +363,14 @@ let rec div self other =
         let approxRes = ref (of_float !approx) in
         let approxRem = ref (mul !approxRes other) in
         while !approxRem.hi < 0n || gt !approxRem !rem do
-          approx := !approx -. delta;
-          approxRes := of_float !approx;
-          approxRem := mul !approxRes other
+          approx.contents <- !approx -. delta;
+          approxRes.contents <- of_float !approx;
+          approxRem.contents <- mul !approxRes other
         done;
         (if is_zero !approxRes then
-          approxRes := one);
-        res := add !res !approxRes;
-        rem := sub !rem !approxRem
+          approxRes.contents <- one);
+        res.contents <- add !res !approxRes;
+        rem.contents <- sub !rem !approxRem
       done;
       !res
 

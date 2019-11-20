@@ -148,7 +148,7 @@ let mergeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key,value = A.getUnsafe arr i in 
-    v := set !v key value
+    v .contents<- set !v key value
   done ;
   !v 
 

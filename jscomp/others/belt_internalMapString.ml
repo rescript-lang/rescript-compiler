@@ -209,13 +209,13 @@ let fromArray (xs : (key * _) array) =
       if !next >= 0 then 
         N.fromSortedArrayAux xs 0 !next 
       else begin   
-        next := - !next; 
+        next .contents<- - !next; 
         N.fromSortedArrayRevAux xs (!next - 1) (!next)
       end  
     ) in 
     for i = !next to len - 1 do 
       let k, v = (A.getUnsafe xs i)  in 
-      result := addMutate  !result k v 
+      result .contents<- addMutate  !result k v 
     done ;
     !result         
 

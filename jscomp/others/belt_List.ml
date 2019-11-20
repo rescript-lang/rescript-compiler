@@ -369,7 +369,7 @@ let makeByU n f =
     while !i < n do
       let v = mutableCell (f !i [@bs]) [] in
       unsafeMutateTail !cur v ;
-      cur := v ;
+      cur .contents<- v ;
       incr i ;
     done
     ;
@@ -386,7 +386,7 @@ let make n v =
     while !i < n do
       let v = mutableCell v [] in
       unsafeMutateTail !cur v ;
-      cur := v ;
+      cur .contents<- v ;
       incr i ;
     done
     ;
@@ -456,7 +456,7 @@ let rec fillAuxMap arr i x f =
 (*       for i = 1 to len - 1 do    *)
 (*         let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in  *)
 (*         unsafeMutateTail !cell next ; *)
-(*         cell := next  *)
+(*         cell .contents<- next  *)
 (*       done ; *)
 (*       head *)
 (*   | None -> *)
@@ -492,7 +492,7 @@ let concatMany xs =
     let len = A.length xs in
     let v = ref (A.getUnsafe xs (len - 1)) in
     for i = len - 2 downto 0 do
-      v := concat (A.getUnsafe xs i) !v
+      v .contents<- concat (A.getUnsafe xs i) !v
     done ;
     !v
 

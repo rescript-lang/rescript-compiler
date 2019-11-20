@@ -231,7 +231,7 @@ let mergeManyAux t  xs ~cmp =
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     let key,value = A.getUnsafe xs i in 
-    v := N.updateMutate !v key value ~cmp
+    v .contents<- N.updateMutate !v key value ~cmp
   done; 
   !v 
 
