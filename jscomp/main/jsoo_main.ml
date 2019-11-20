@@ -72,7 +72,7 @@ let error_of_exn e =
 
 type react_ppx_version = V2 | V3
 
-let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : Js.Unsafe.obj =
+let implementation ~use_super_errors ?(react_ppx_version=V3) ?prefix impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -91,9 +91,10 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
   Warnings.parse_options false Bsb_warning.default_warning;
 
   try
-    let ast = impl 
-      (Lexing.from_string
-        (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str )) in 
+    let code = match prefix with
+      | None -> str
+      | Some(prefix) -> prefix ^ str in
+    let ast = impl (Lexing.from_string code) in
     let ast = match react_ppx_version with
     | V2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast
     | V3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
@@ -151,11 +152,10 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
 
 
 let compile impl ~use_super_errors ?react_ppx_version =
-    implementation ~use_super_errors ?react_ppx_version false impl
+    implementation ~use_super_errors ?react_ppx_version impl
 
-(** TODO: add `[@@bs.config{no_export}]\n# 1 "repl.ml"`*)
-let shake_compile impl ~use_super_errors ?react_ppx_version =
-   implementation ~use_super_errors ?react_ppx_version true impl
+let shake_compile impl ~use_super_errors ?react_ppx_version prefix =
+   implementation ~use_super_errors ?react_ppx_version ~prefix impl
 
 
 
@@ -185,7 +185,7 @@ module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetr
 let reason_parse lexbuf = 
   Refmt_api.Reason_toolchain.RE.implementation lexbuf |> Converter.copy_structure;;
 
-let make_compiler name impl =
+let make_compiler name impl prefix =
   export name
     (Js.Unsafe.(obj
                   [|"compile",
@@ -197,7 +197,7 @@ let make_compiler name impl =
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (shake_compile impl ~use_super_errors:false (Js.to_string code)));
+                         (shake_compile impl ~use_super_errors:false (Js.to_string code) prefix));
                     "compile_super_errors",
                     inject @@
                     Js.wrap_meth_callback
@@ -216,7 +216,7 @@ let make_compiler name impl =
                     "shake_compile_super_errors",
                     inject @@
                     Js.wrap_meth_callback
-                      (fun _ code -> (shake_compile impl ~use_super_errors:true (Js.to_string code)));
+                      (fun _ code -> (shake_compile impl ~use_super_errors:true (Js.to_string code) prefix));
                     "version", Js.Unsafe.inject (Js.string (match name with | "reason" -> Refmt_api.version | _ -> Bs_version.version));
                     "load_module",
                     inject @@
@@ -229,8 +229,8 @@ let make_compiler name impl =
                         load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
                   |]))
 
-let () = make_compiler "ocaml" Parse.implementation
-let () = make_compiler "reason" reason_parse
+let () = make_compiler "ocaml" Parse.implementation "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"
+let () = make_compiler "reason" reason_parse "[@bs.config {no_export: no_export}];\n#1 \"repl.re\";\n"
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
