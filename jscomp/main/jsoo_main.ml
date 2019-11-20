@@ -180,9 +180,6 @@ let dir_directory d =
 let () =
   dir_directory "/static/cmis"
 
-let () =
-  dir_directory "/static"
-
 module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
 
 let reason_parse lexbuf = 
