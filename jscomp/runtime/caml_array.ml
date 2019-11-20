@@ -28,11 +28,11 @@ external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array =
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = Caml_array_extern.new_uninitialized len  in
-  let j = ref 0 and i = ref offset in
-  while !j < len do
-    Caml_array_extern.unsafe_set result !j (Caml_array_extern.unsafe_get x !i);
-    incr j; 
-    incr i;
+  let j = {contents = 0} and i =  {contents = offset} in
+  while j.contents < len do
+    Caml_array_extern.unsafe_set result j.contents (Caml_array_extern.unsafe_get x i.contents);
+    j.contents <- j.contents + 1; 
+    i.contents <- i.contents + 1;
   done;
   result
 
@@ -47,14 +47,14 @@ let rec fill arr i l =
   | [] -> ()
   | x :: xs -> 
       let l = Caml_array_extern.length x in
-      let k = ref i in
-      let j = ref 0 in
-      while !j < l do 
-        Caml_array_extern.unsafe_set arr !k (Caml_array_extern.unsafe_get  x !j);
-        incr k; 
-        incr j;
+      let k = {contents =  i} in
+      let j = {contents = 0} in
+      while j.contents < l do 
+        Caml_array_extern.unsafe_set arr k.contents (Caml_array_extern.unsafe_get  x j.contents);
+        k.contents <- k.contents + 1; 
+        j.contents <- j.contents + 1;
       done;
-      fill arr !k  xs 
+      fill arr k.contents  xs 
 
 let  caml_array_concat (l : 'a array list) : 'a array =
   let v = len 0 l in

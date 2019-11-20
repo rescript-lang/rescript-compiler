@@ -231,9 +231,9 @@ let mergeManyAux t  xs ~cmp =
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     let key,value = A.getUnsafe xs i in 
-    v .contents<- N.updateMutate !v key value ~cmp
+    v .contents<- N.updateMutate v.contents key value ~cmp
   done; 
-  !v 
+  v.contents 
 
 let mergeMany d xs =   
   let oldRoot = S.dataGet d in 

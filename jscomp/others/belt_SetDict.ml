@@ -65,7 +65,7 @@ let rec remove (t : _ t) x  ~cmp : _ t =
       | (_, Some rn) -> 
         let v = ref (N.valueGet rn) in 
         let r = N.removeMinAuxWithRef rn v in 
-        N.bal l !v r 
+        N.bal l v.contents r 
     else
     if c < 0 then 
       let ll = remove ~cmp  l x in 
@@ -81,18 +81,18 @@ let mergeMany   h arr ~cmp =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v .contents<- add !v  ~cmp key 
+    v .contents<- add v.contents  ~cmp key 
   done ;
-  !v 
+  v.contents 
 
 let removeMany h arr ~cmp = 
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key = A.getUnsafe arr i in 
-    v .contents<- remove !v  ~cmp key 
+    v .contents<- remove v.contents  ~cmp key 
   done ;
-  !v 
+  v.contents 
 
 let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
   let l,v,r = N.(leftGet n , valueGet n, rightGet n) in  
@@ -145,7 +145,7 @@ let split  (t : _ t) x  ~cmp  =
   | Some n ->
     let pres = ref false in 
     let v = splitAuxPivot ~cmp n x  pres in 
-    v, !pres
+    v, pres.contents
 
 (* [union s1 s2]
    Use the pivot to split the smaller collection
@@ -181,7 +181,7 @@ let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
     let l2,r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = intersect ~cmp l1 l2 in 
     let rr = intersect ~cmp r1 r2 in 
-    if !pres then N.joinShared ll v1 rr 
+    if pres.contents then N.joinShared ll v1 rr 
     else N.concatShared ll rr 
 
 let rec diff s1 s2 ~cmp  =
@@ -194,7 +194,7 @@ let rec diff s1 s2 ~cmp  =
     let l2, r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = diff ~cmp l1 l2 in 
     let rr = diff ~cmp r1 r2 in 
-    if !pres then N.concatShared ll rr 
+    if pres.contents then N.concatShared ll rr 
     else N.joinShared ll v1 rr 
 
 

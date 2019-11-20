@@ -123,8 +123,8 @@ let rangeBy start finish ~step =
     let arr = makeUninitializedUnsafe  nb in
     let cur = ref start in
     for i = 0 to nb - 1 do
-      setUnsafe arr i !cur;
-      cur .contents<- !cur + step ;
+      setUnsafe arr i cur.contents;
+      cur.contents<- cur.contents + step ;
     done;
     arr
 
@@ -164,15 +164,15 @@ let concatMany arrs =
   let lenArrs = length arrs in
   let totalLen = ref 0 in
   for i = 0 to lenArrs - 1 do
-    totalLen .contents<- !totalLen + length (getUnsafe arrs i)
+    totalLen .contents<- totalLen.contents + length (getUnsafe arrs i)
   done;
-  let result = makeUninitializedUnsafe !totalLen in
-  totalLen .contents<- 0 ;
+  let result = makeUninitializedUnsafe totalLen.contents in
+  totalLen.contents<- 0 ;
   for j = 0 to lenArrs - 1 do
     let cur = getUnsafe arrs j in
     for k = 0 to length cur - 1 do
-      setUnsafe result !totalLen (getUnsafe cur k);
-      incr totalLen
+      setUnsafe result totalLen.contents (getUnsafe cur k);
+      totalLen.contents <- totalLen.contents + 1
     done
   done ;
   result
@@ -269,15 +269,15 @@ let getByU a p =
   let l = length a in
   let i = ref 0 in
   let r = ref None in
-  while !r = None && !i < l do
-    let v = (getUnsafe a !i) in
+  while r.contents = None && i.contents < l do
+    let v = getUnsafe a i.contents in
     if p v [@bs] then
       begin
-        r .contents<- Some v;
+        r.contents<- Some v;
       end;
-    incr i
+    i.contents <- i.contents + 1
   done;
-  !r
+  r.contents
 
 let getBy a p = getByU a (fun[@bs] a -> p a)
 
@@ -285,15 +285,15 @@ let getIndexByU a p =
   let l = length a in
   let i = ref 0 in
   let r = ref None in
-  while !r = None && !i < l do
-    let v = (getUnsafe a !i) in
+  while r.contents = None && i.contents < l do
+    let v = getUnsafe a i.contents in
     if p v [@bs] then
       begin
-        r .contents<- Some !i;
+        r .contents<- Some i.contents;
       end;
-    incr i
+    i.contents <- i.contents + 1
   done;
-  !r
+  r.contents
 
 let getIndexBy a p = getIndexByU a (fun[@bs] a -> p a)
 
@@ -305,11 +305,11 @@ let keepU a f =
     let v = (getUnsafe a i) in
     if f v [@bs] then
       begin
-        setUnsafe r !j v;
-        incr j
+        setUnsafe r j.contents v;
+        j.contents <- j.contents + 1
       end
   done;
-  truncateToLengthUnsafe r !j;
+  truncateToLengthUnsafe r j.contents;
   r
 
 let keep a f = keepU a (fun [@bs] a -> f a)
@@ -322,11 +322,11 @@ let keepWithIndexU a f =
     let v = (getUnsafe a i) in
     if f v i [@bs] then
       begin
-        setUnsafe r !j v;
-        incr j
+        setUnsafe r j.contents v;
+        j.contents <- j.contents + 1
       end
   done;
-  truncateToLengthUnsafe r !j;
+  truncateToLengthUnsafe r j.contents;
   r
 
 let keepWithIndex a f = keepWithIndexU a (fun [@bs] a i -> f a i)
@@ -341,11 +341,11 @@ let keepMapU a f =
     | None -> ()
     | Some v ->
       begin
-        setUnsafe r !j v;
-        incr j
+        setUnsafe r j.contents v;
+        j.contents <- j.contents + 1
       end
   done;
-  truncateToLengthUnsafe r !j;
+  truncateToLengthUnsafe r j.contents;
   r
 
 let keepMap a f = keepMapU a (fun[@bs] a -> f a)
@@ -368,18 +368,18 @@ let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
 let reduceU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
-    r .contents<- f !r (getUnsafe a i) [@bs]
+    r .contents<- f r.contents (getUnsafe a i) [@bs]
   done;
-  !r
+  r.contents
 
 let reduce a x f = reduceU a x (fun[@bs] a b -> f a b)
 
 let reduceReverseU a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
-    r .contents<- f  !r (getUnsafe a i) [@bs]
+    r .contents<- f  r.contents (getUnsafe a i) [@bs]
   done;
-  !r
+  r.contents
 
 let reduceReverse a x f = reduceReverseU a x (fun[@bs] a b -> f a b)
 
@@ -387,9 +387,9 @@ let reduceReverse2U a b x f =
   let r = ref x in
   let len = Pervasives.min (length a) (length b) in
   for i = len - 1 downto  0 do
-    r .contents<- f !r (getUnsafe a i) (getUnsafe b i) [@bs]
+    r .contents<- f r.contents (getUnsafe a i) (getUnsafe b i) [@bs]
   done;
-  !r
+  r.contents
 
 let reduceReverse2 a b x f =
   reduceReverse2U a b x (fun [@bs] a b c -> f a b c)
@@ -397,9 +397,9 @@ let reduceReverse2 a b x f =
 let reduceWithIndexU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
-    r .contents<- f !r (getUnsafe a i) i [@bs]
+    r .contents<- f r.contents (getUnsafe a i) i [@bs]
   done;
-  !r
+  r.contents
 
 let reduceWithIndex a x f =
   reduceWithIndexU a x (fun[@bs] a b c -> f a b c)
@@ -485,16 +485,16 @@ let partitionU a f =
   for ii = 0 to l - 1 do
     let v = getUnsafe a ii in
     if f v [@bs] then (
-      setUnsafe a1 !i v;
-      incr i
+      setUnsafe a1 i.contents v;
+      i.contents <- i.contents + 1 
     )
     else (
-      setUnsafe a2 !j v;
-      incr j
+      setUnsafe a2 j.contents v;
+      j.contents <- j.contents + 1
     )
   done;
-  truncateToLengthUnsafe a1 !i;
-  truncateToLengthUnsafe a2 !j;
+  truncateToLengthUnsafe a1 i.contents;
+  truncateToLengthUnsafe a2 j.contents;
   (a1, a2)
 
 let partition a f = partitionU a (fun [@bs] x -> f x)

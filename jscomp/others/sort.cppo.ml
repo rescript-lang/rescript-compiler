@@ -205,11 +205,11 @@ let insertionSort (src : element array) srcofs dst dstofs len  =
   for i = 0 to len - 1 do
     let e = (A.getUnsafe src (srcofs + i)) in
     let j = ref (dstofs + i - 1) in
-    while (!j >= dstofs &&  (A.getUnsafe dst !j) > e  ) do
-      A.setUnsafe dst (!j + 1) (A.getUnsafe dst !j);
-      decr j;
+    while j.contents >= dstofs &&  A.getUnsafe dst j.contents > e   do
+      A.setUnsafe dst (j.contents + 1) (A.getUnsafe dst j.contents);
+      j.contents <- j.contents - 1;
     done;
-    A.setUnsafe dst (!j + 1) e;
+    A.setUnsafe dst (j.contents + 1) e;
   done    
 
 let rec sortTo (src : element array) srcofs dst dstofs len  =

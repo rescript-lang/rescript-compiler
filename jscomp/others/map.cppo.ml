@@ -83,7 +83,7 @@ let rec updateU  t (x : key) f  =
           | _, Some rn ->
             let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in
             let r = N.removeMinAuxWithRef rn kr vr in
-            N.bal l !kr !vr r 
+            N.bal l kr.contents vr.contents r 
         end
       | Some data -> N.return (N.updateValue n data )
       end 
@@ -109,7 +109,7 @@ let rec removeAux n (x : key) =
       | _, Some rn -> 
         let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
         let r = N.removeMinAuxWithRef rn kr vr in 
-        N.bal l !kr !vr r 
+        N.bal l kr.contents vr.contents r 
     else if x < v then
       match N.toOpt l with 
       | None -> N.return n
@@ -153,9 +153,9 @@ let mergeMany h arr =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key,value = A.getUnsafe arr i in 
-    v .contents<- set !v key value
+    v.contents<- set v.contents key value
   done ;
-  !v 
+  v.contents 
 
 let mergeArray = mergeMany
 

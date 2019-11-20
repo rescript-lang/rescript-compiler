@@ -141,7 +141,7 @@ let removeCheck d v =
     let newRoot = removeCheck0 ~cmp:(S.cmpGet d) oldRoot2 v removed in 
     if newRoot != oldRoot then  
       S.dataSet d newRoot ;   
-    !removed
+    removed.contents
 
 
 
@@ -170,7 +170,7 @@ let addCheck m e =
   let newRoot = addCheck0 ~cmp:(Belt_Id.getCmpInternal (S.cmpGet m)) oldRoot e added in 
   if newRoot != oldRoot then 
     S.dataSet m newRoot;
-  !added    
+  added.contents
 
 let add m e = 
   let oldRoot = S.dataGet m in 
@@ -181,9 +181,9 @@ let add m e =
 let addArrayMutate t xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v .contents<- N.addMutate !v (A.getUnsafe xs i)  ~cmp
+    v .contents<- N.addMutate v.contents (A.getUnsafe xs i)  ~cmp
   done; 
-  !v
+  v.contents
     
 let mergeMany d xs =   
   S.dataSet d (addArrayMutate (S.dataGet d) xs ~cmp:(S.cmpGet d))

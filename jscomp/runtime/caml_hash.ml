@@ -26,53 +26,53 @@ type 'a cell = {
   content : 'a ; 
   mutable next : 'a cell_opt
 }  
-and 'a cell_opt = 'a cell Caml_undefined_extern.t 
+and 'a cell_opt = 'a cell option
 and 'a t = {
   mutable length : int ;
   mutable first : 'a cell_opt;
   mutable last : 'a cell_opt
 }
-[@@bs.deriving abstract]
+
 
 let create_queue () = 
-  t
-  ~length:0 
-  ~first:Caml_undefined_extern.empty 
-  ~last:Caml_undefined_extern.empty
+  {
+    length=0 ;
+    first = None;
+    last= None}
 
 (* Added to tail *)
 let push_back (q :'a t) (v : 'a) = 
    let cell = 
-      Caml_undefined_extern.return @@ 
-      cell  
-        ~content:v ~next:Caml_undefined_extern.empty 
+      Some
+        {content=v ; next=None}
    in 
-   match q |. lastGet |. Caml_undefined_extern.toOption with 
+   match q.last with 
    | None ->
-     q |. lengthSet 1 ;
-     q |. firstSet cell;
-     q |. lastSet cell
+     q . length<- 1 ;
+     q . first <- cell;
+     q . last <- cell
    | Some last -> 
-     q |. lengthSet ((q |. lengthGet) + 1);
-     last |. nextSet cell;
-     q |. lastSet cell
+     q . length <- q . length + 1;
+    last . next <- cell;
+     q . last <- cell
 
-let is_empty_queue q = q |. lengthGet  = 0     
+let is_empty_queue q = q . length  = 0     
 
 (* pop from front *)
+
+
 let unsafe_pop (q : 'a t) =        
-  let cell = (Obj.magic (q |. firstGet) : 'a cell) in 
-  let content, next_cell = cell |. (contentGet, nextGet) in 
-  match Caml_undefined_extern.toOption next_cell with 
-  | None -> 
-    q |. lengthSet 0 ; 
-    q |. firstSet Caml_undefined_extern.empty;
-    q |. lastSet Caml_undefined_extern.empty;
-    content
-  | Some next -> 
-    q |. lengthSet ((q |. lengthGet) - 1);
-    q |. firstSet next_cell ;
-    content
+  let cell = (Obj.magic (q . first) : 'a cell) in 
+  let next =cell.next in 
+  if next = None then (
+    q . length <- 0 ; 
+    q . first <- None;
+    q . last<- None;
+  ) else (
+    q . length <- q . length - 1;
+    q . first <- next;
+  );
+  cell.content
 
 
 
@@ -90,13 +90,13 @@ let caml_hash (count : int) _limit (seed : nativeint)
   if Js.typeof obj = "number" then
     begin 
       let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-      hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
-      caml_hash_final_mix !hash
+      hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+      caml_hash_final_mix hash.contents
     end
   else if Js.typeof obj = "string" then 
     begin 
-      hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
-      caml_hash_final_mix !hash
+      hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
+      caml_hash_final_mix hash.contents
     end
     (* TODO: hash [null] [undefined] as well *)
   else 
@@ -105,20 +105,20 @@ let caml_hash (count : int) _limit (seed : nativeint)
     let num = ref count in 
     let () = 
        push_back  queue obj; 
-      decr num 
+       num.contents <- num.contents - 1
     in 
-    while not ( is_empty_queue queue) && !num > 0 do
+    while not ( is_empty_queue queue) && num.contents > 0 do
       let obj =  unsafe_pop queue in 
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-          hash.contents <- caml_hash_mix_int !hash (u +~ u +~ 1n) ;
-          decr num ;
-        end
+          hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+          num.contents <- num.contents - 1;
+        end 
       else if Js.typeof obj = "string" then 
         begin 
-          hash.contents <- caml_hash_mix_string !hash (Obj.magic obj : string);
-          decr num 
+          hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
+          num.contents <- num.contents - 1 
         end
       else if Js.typeof obj = "boolean" then 
         ()
@@ -136,16 +136,16 @@ let caml_hash (count : int) _limit (seed : nativeint)
           let obj_tag = Caml_obj_extern.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int (oo_id  obj))
+            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int (oo_id  obj))
           else 
             begin 
-              hash.contents <- caml_hash_mix_int !hash (Caml_nativeint_extern.of_int tag) ;
+              hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;
               let block = 
-                let v = size - 1 in if v <  !num then v else !num in 
+                let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
                  push_back queue (Caml_obj_extern.field obj i ) 
               done 
             end
     done;
-    caml_hash_final_mix !hash 
+    caml_hash_final_mix hash.contents
     

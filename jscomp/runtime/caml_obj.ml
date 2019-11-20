@@ -269,7 +269,7 @@ and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
     if not (O.hasOwnProperty b key) ||
        caml_compare (O.get_value a key) (O.get_value b key) > 0
     then
-      match !min_key with
+      match min_key.contents with
       | None -> min_key .contents<- Some key
       | Some mk ->
         if key < mk then min_key .contents<- Some key in
@@ -277,7 +277,7 @@ and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let do_key_b = do_key (b, a, min_key_lhs) in
   O.for_in a do_key_a;
   O.for_in b do_key_b;
-  let res = match !min_key_lhs, !min_key_rhs with
+  let res = match min_key_lhs.contents, min_key_rhs.contents with
     | None, None -> 0
     | (Some _), None -> -1
     | None, (Some _) -> 1
@@ -353,8 +353,8 @@ and aux_obj_equal (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
        not (caml_equal (O.get_value b key) (O.get_value a key))
     then result .contents<- false in
   O.for_in a do_key_a ;
-  if !result then O.for_in b do_key_b;
-  !result
+  if result.contents then O.for_in b do_key_b;
+  result.contents
 
 let caml_equal_null (x : Caml_obj_extern.t) (y : Caml_obj_extern.t Js.null) = 
   match Js.nullToOption y with    

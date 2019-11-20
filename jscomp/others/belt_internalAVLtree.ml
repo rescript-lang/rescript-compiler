@@ -296,7 +296,7 @@ let concat t1 t2 =
   | (_, Some t2n) ->
     let kr, vr = ref (keyGet t2n), ref (valueGet t2n) in
     let t2r = removeMinAuxWithRef t2n kr vr in
-    join t1 !kr !vr t2r
+    join t1 kr.contents vr.contents t2r
 
 let concatOrJoin t1 v d t2 =
   match d with
@@ -745,18 +745,18 @@ let fromArray (xs : _ array) ~cmp =
              ))
     in
     let result  = ref (
-        if !next >= 0 then
-          fromSortedArrayAux xs 0 !next
+        if next.contents >= 0 then
+          fromSortedArrayAux xs 0 next.contents
         else begin
-          next .contents<- - !next;
-          fromSortedArrayRevAux xs (!next - 1) (!next)
+          next .contents<- - next.contents;
+          fromSortedArrayRevAux xs (next.contents - 1) (next.contents)
         end
       ) in
-    for i = !next to len - 1 do
+    for i = next.contents to len - 1 do
       let k, v = (A.getUnsafe xs i)  in
-      result .contents<- updateMutate ~cmp !result k v
+      result .contents<- updateMutate ~cmp result.contents k v
     done ;
-    !result
+    result.contents
 
 
 let rec removeMinAuxWithRootMutate nt n =

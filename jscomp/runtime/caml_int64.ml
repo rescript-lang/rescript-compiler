@@ -199,23 +199,23 @@ let rec mul this
       begin
         let c00 =  a00 *~ b00  in
         c16.contents <-  (c00 >>> 16) +~   a16 *~ b00 ;
-        c32.contents <-  !c16 >>> 16;
-        c16.contents <-  ( !c16 & 0xffffn) +~ a00 *~ b16;
-        c32.contents <-  (!c32 +~  ( !c16 >>> 16)) +~  a32 *~ b00;
-        c48.contents <-  !c32 >>>  16;
-        c32.contents <-  (!c32 & 0xffffn) +~  a16 *~ b16;
-        c48.contents <-  !c48 +~  ( !c32 >>> 16);
-        c32.contents <-  (!c32 & 0xffffn) +~  a00 *~ b32;
-        c48.contents <-  !c48 +~  (!c32 >>> 16);
-        c32.contents <-  !c32 & 0xffffn;
-        c48.contents <-  (!c48  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
+        c32.contents <-  c16.contents >>> 16;
+        c16.contents <-  ( c16.contents & 0xffffn) +~ a00 *~ b16;
+        c32.contents <-  (c32.contents +~  ( c16.contents >>> 16)) +~  a32 *~ b00;
+        c48.contents <-  c32.contents >>>  16;
+        c32.contents <-  (c32.contents & 0xffffn) +~  a16 *~ b16;
+        c48.contents <-  c48.contents +~  ( c32.contents >>> 16);
+        c32.contents <-  (c32.contents & 0xffffn) +~  a00 *~ b32;
+        c48.contents <-  c48.contents +~  (c32.contents >>> 16);
+        c32.contents <-  c32.contents & 0xffffn;
+        c48.contents <-  (c48.contents  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
         mk ~lo:
            (Caml_nativeint_extern.logor
              (c00 & 0xffffn)
-             ( (!c16 & 0xffffn) << 16))
+             ( (c16.contents & 0xffffn) << 16))
          ~hi:( Caml_nativeint_extern.logor
-             !c32
-             ( !c48 << 16))
+             c32.contents
+             ( c48.contents << 16))
 
       end
 
@@ -353,26 +353,26 @@ let rec div self other =
       let res = ref zero in
       let rem = ref self in
       (* assert false *)
-      while ge !rem other  do
+      while ge rem.contents other  do
         let approx = ref ( Pervasives.max 1.
-             (Caml_float.floor (to_float !rem /. to_float other) )) in
-        let log2 = ceil (log !approx /. log2) in
+             (Caml_float.floor (to_float rem.contents /. to_float other) )) in
+        let log2 = ceil (log approx.contents /. log2) in
         let delta =
           if log2 <= 48. then 1.
           else 2. ** (log2 -. 48.) in
-        let approxRes = ref (of_float !approx) in
-        let approxRem = ref (mul !approxRes other) in
-        while !approxRem.hi < 0n || gt !approxRem !rem do
-          approx.contents <- !approx -. delta;
-          approxRes.contents <- of_float !approx;
-          approxRem.contents <- mul !approxRes other
+        let approxRes = ref (of_float approx.contents) in
+        let approxRem = ref (mul approxRes.contents other) in
+        while approxRem.contents.hi < 0n || gt approxRem.contents rem.contents do
+          approx.contents <- approx.contents -. delta;
+          approxRes.contents <- of_float approx.contents;
+          approxRem.contents <- mul approxRes.contents other
         done;
-        (if is_zero !approxRes then
+        (if is_zero approxRes.contents then
           approxRes.contents <- one);
-        res.contents <- add !res !approxRes;
-        rem.contents <- sub !rem !approxRem
+        res.contents <- add res.contents approxRes.contents;
+        rem.contents <- sub rem.contents approxRem.contents
       done;
-      !res
+      res.contents
 
 let mod_ self other =
   sub self (mul (div self other) other)

@@ -96,15 +96,15 @@ let string_of_large_bytes bytes i len =
   else 
     begin
       let offset = ref 0 in
-      while !s_len > 0 do 
-        let next = if !s_len < 1024 then !s_len else seg in
+      while s_len.contents > 0 do 
+        let next = if s_len.contents < 1024 then s_len.contents else seg in
         let tmp_bytes = new_uninitialized next in
-        let () = caml_blit_bytes bytes !offset tmp_bytes 0 next in 
-        s .contents <- !s ^ (Caml_string_extern.of_small_int_array (to_int_array tmp_bytes));
-        s_len.contents <- !s_len - next ; 
-        offset.contents <- !offset + next;
+        let () = caml_blit_bytes bytes offset.contents tmp_bytes 0 next in 
+        s .contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
+        s_len.contents <- s_len.contents - next ; 
+        offset.contents <- offset.contents + next;
       done;
-      !s
+      s.contents
     end
 
 let bytes_to_string a  = 

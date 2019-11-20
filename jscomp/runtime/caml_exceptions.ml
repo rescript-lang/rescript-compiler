@@ -48,13 +48,13 @@ let id = ref 0n
 
    ]}*)
 let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
-  Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr !id);
-  id .contents <- Caml_nativeint_extern.add !id  1n; 
+  Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr id.contents);
+  id .contents <- Caml_nativeint_extern.add id.contents  1n; 
   b
 
 
 let caml_fresh_oo_id () = 
-  id .contents <- Caml_nativeint_extern.add !id 1n; !id
+  id .contents <- Caml_nativeint_extern.add id.contents 1n; id.contents
 
 let object_tag = 248
 
