@@ -7756,7 +7756,13 @@ val find_opt :
   ('a -> 'b option) -> 
   'b option 
 
+val find_def : 
+    'a list -> 
+    ('a -> 'b option) ->
+    'b ->
+    'b 
 
+    
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
@@ -8456,7 +8462,13 @@ let rec find_opt xs p =
     | Some _ as v  ->  v
     | None -> find_opt l p
 
-
+let rec find_def xs p def =
+  match xs with 
+  | [] -> def
+  | x::l -> 
+    match p x with 
+    | Some v -> v 
+    | None -> find_def l p def   
 
 let rec split_map l f = 
   match l with
@@ -15135,6 +15147,16 @@ let emit_external_warnings : iterator=
 
         | _ -> default_iterator.expr self a 
       );
+    label_declaration = (fun self lbl ->
+     
+      Ext_list.iter lbl.pld_attributes 
+        (fun attr -> 
+          match attr with 
+          | {txt = "bs.as"}, _ -> mark_used_bs_attribute attr
+          | _ -> ()
+          );
+      default_iterator.label_declaration self lbl      
+    );  
     value_description =
       (fun self v -> 
          match v with 
