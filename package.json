@@ -1,20 +1,6 @@
 {
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "colors": "^1.1.2",
-    "coveralls": "^2.13.1",
-    "diff": "^3.2.0",
-    "glob": "^7.1.2",
-    "immutable": "^3.8.2",
-    "istanbul": "^0.4.5",
-    "jasmine-core": "^2.6.2",
-    "karma": "^1.7.0",
-    "karma-jasmine-html-reporter": "^0.2.2",
-    "mocha": "^3.5.3",
-    "mocha-lcov-reporter": "^1.3.0",
-    "should": "^11.2.1",
-    "should-equal": "^1.0.1",
-    "uglify-js": "^3.0.10"
+    "mocha": "^6.2.2"
   },
   "bin": {
     "bsb": "lib/bsb",
@@ -27,9 +13,6 @@
     "test-theme": "node scripts/ciTest.js -theme",
     "test-bsb": "node scripts/ciTest.js -bsb",
     "test-ocaml": "node scripts/ciTest.js -ounit",
-    "cover": "istanbul cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js && open coverage/index.html",
-    "coverage": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js'",
-    "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
     "postinstall": "node scripts/install.js"
   },
   "name": "bs-platform",
