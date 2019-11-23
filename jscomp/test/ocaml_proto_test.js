@@ -79,7 +79,7 @@ function message(content, message_name) {
 function $$import($$public, file_name) {
   return {
           file_name: file_name,
-          $$public: $$public !== undefined
+          public: $$public !== undefined
         };
 }
 
@@ -97,52 +97,52 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
         syntax: syntax,
         imports: /* [] */0,
         file_options: /* [] */0,
-        $$package: undefined,
+        package: undefined,
         messages: /* [] */0,
         enums: /* [] */0,
-        $$extends: /* [] */0
+        extends: /* [] */0
       });
   var proto$3 = syntax !== undefined ? ({
         syntax: syntax,
         imports: proto$2.imports,
         file_options: proto$2.file_options,
-        $$package: proto$2.$$package,
+        package: proto$2.package,
         messages: proto$2.messages,
         enums: proto$2.enums,
-        $$extends: proto$2.$$extends
+        extends: proto$2.extends
       }) : proto$2;
   var proto$4 = $$package !== undefined ? ({
         syntax: proto$3.syntax,
         imports: proto$3.imports,
         file_options: proto$3.file_options,
-        $$package: $$package,
+        package: $$package,
         messages: proto$3.messages,
         enums: proto$3.enums,
-        $$extends: proto$3.$$extends
+        extends: proto$3.extends
       }) : proto$3;
   var proto$5 = message !== undefined ? ({
         syntax: proto$4.syntax,
         imports: proto$4.imports,
         file_options: proto$4.file_options,
-        $$package: proto$4.$$package,
+        package: proto$4.package,
         messages: /* :: */[
           message,
           proto$2.messages
         ],
         enums: proto$4.enums,
-        $$extends: proto$4.$$extends
+        extends: proto$4.extends
       }) : proto$4;
   var proto$6 = $$enum !== undefined ? ({
         syntax: proto$5.syntax,
         imports: proto$5.imports,
         file_options: proto$5.file_options,
-        $$package: proto$5.$$package,
+        package: proto$5.package,
         messages: proto$5.messages,
         enums: /* :: */[
           $$enum,
           proto$2.enums
         ],
-        $$extends: proto$5.$$extends
+        extends: proto$5.extends
       }) : proto$5;
   var proto$7 = $$import !== undefined ? ({
         syntax: proto$6.syntax,
@@ -151,10 +151,10 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
           proto$2.imports
         ],
         file_options: proto$6.file_options,
-        $$package: proto$6.$$package,
+        package: proto$6.package,
         messages: proto$6.messages,
         enums: proto$6.enums,
-        $$extends: proto$6.$$extends
+        extends: proto$6.extends
       }) : proto$6;
   var proto$8 = file_option !== undefined ? ({
         syntax: proto$7.syntax,
@@ -163,22 +163,22 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
           file_option,
           proto$2.file_options
         ],
-        $$package: proto$7.$$package,
+        package: proto$7.package,
         messages: proto$7.messages,
         enums: proto$7.enums,
-        $$extends: proto$7.$$extends
+        extends: proto$7.extends
       }) : proto$7;
   if (extend !== undefined) {
     return {
             syntax: proto$8.syntax,
             imports: proto$8.imports,
             file_options: proto$8.file_options,
-            $$package: proto$8.$$package,
+            package: proto$8.package,
             messages: proto$8.messages,
             enums: proto$8.enums,
-            $$extends: /* :: */[
+            extends: /* :: */[
               extend,
-              proto$2.$$extends
+              proto$2.extends
             ]
           };
   } else {
@@ -4380,7 +4380,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
 
 function compile_proto_p1(file_name, param) {
   var file_options = param.file_options;
-  var scope = scope_of_package(param.$$package);
+  var scope = scope_of_package(param.package);
   var pbtt_msgs = List.fold_right((function (e, pbtt_msgs) {
           return /* :: */[
                   compile_enum_p1(file_name, file_options, scope, e),

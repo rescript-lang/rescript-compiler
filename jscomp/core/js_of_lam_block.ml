@@ -60,7 +60,7 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
     -> 
     E.array_index_by_int  ~comment e i 
 #end
-  | Fld_record name
+  | Fld_record {name}
     -> E.record_access e name i
   | Fld_module name
     -> E.module_access e name i

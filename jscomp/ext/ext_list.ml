@@ -583,7 +583,13 @@ let rec find_opt xs p =
     | Some _ as v  ->  v
     | None -> find_opt l p
 
-
+let rec find_def xs p def =
+  match xs with 
+  | [] -> def
+  | x::l -> 
+    match p x with 
+    | Some v -> v 
+    | None -> find_def l p def   
 
 let rec split_map l f = 
   match l with

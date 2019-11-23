@@ -6026,6 +6026,10 @@ val check_deprecated_mutable_inclusion:
   def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
   Parsetree.attributes -> string -> unit
 
+val check_bs_attributes_inclusion:
+  (Parsetree.attributes ->
+  Parsetree.attributes -> string -> (string*string) option ) ref
+
 val error_of_extension: Parsetree.extension -> Location.error
 
 val warning_attribute: ?ppwarning:bool -> Parsetree.attribute -> unit
@@ -6165,6 +6169,11 @@ let check_deprecated_mutable_inclusion ~def ~use loc attrs1 attrs2 s =
   | Some txt, None ->
       Location.deprecated ~def ~use loc
         (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_bs_attributes_inclusion = 
+  ref (fun _attrs1 _attrs2 _s -> 
+      None
+    )  
 
 let rec deprecated_of_sig = function
   | {psig_desc = Psig_attribute a} :: tl ->
@@ -7607,7 +7616,13 @@ val find_opt :
   ('a -> 'b option) -> 
   'b option 
 
+val find_def : 
+    'a list -> 
+    ('a -> 'b option) ->
+    'b ->
+    'b 
 
+    
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
@@ -8307,7 +8322,13 @@ let rec find_opt xs p =
     | Some _ as v  ->  v
     | None -> find_opt l p
 
-
+let rec find_def xs p def =
+  match xs with 
+  | [] -> def
+  | x::l -> 
+    match p x with 
+    | Some v -> v 
+    | None -> find_def l p def   
 
 let rec split_map l f = 
   match l with

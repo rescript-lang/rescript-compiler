@@ -397,7 +397,7 @@ let array_index_by_int ?comment (e : t)  (pos : int32) : t =
   | _ -> { expression_desc = Array_index (e, int ?comment pos); comment = None} 
   
 let record_access (e : t) (name : string) (pos : int32) = 
-  let name = Ext_ident.convert name in 
+  (* let name = Ext_ident.convert name in  *)
   match e.expression_desc with
   | Array (l,_) (* Float i -- should not appear here *)
   | Caml_block (l,_, _, _) when no_side_effect e

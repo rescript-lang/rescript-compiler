@@ -5084,7 +5084,7 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
             contents: /* [] */0
           },
           labels: /* Empty */0,
-          $$exports: {
+          exports: {
             contents: /* Empty */0
           },
           last_loc: {
@@ -5152,14 +5152,14 @@ function comment_list(env) {
 
 function record_export(env, param) {
   var export_name = param[1];
-  var $$exports = env.$$exports.contents;
+  var $$exports = env.exports.contents;
   if (mem(export_name, $$exports)) {
     return error_at(env, /* tuple */[
                 param[0],
                 /* DuplicateExport */Block.__(7, [export_name])
               ]);
   } else {
-    env.$$exports.contents = add(export_name, env.$$exports.contents);
+    env.exports.contents = add(export_name, env.exports.contents);
     return /* () */0;
   }
 }
@@ -6843,7 +6843,7 @@ function method_property(env, start_loc, $$static, key) {
             key: key,
             value: value$1,
             optional: false,
-            $$static: $$static,
+            static: $$static,
             _method: true
           }
         ];
@@ -6855,7 +6855,7 @@ function call_property(env, start_loc, $$static) {
           btwn(start_loc, value[0]),
           {
             value: value,
-            $$static: $$static
+            static: $$static
           }
         ];
 }
@@ -6873,7 +6873,7 @@ function property(env, start_loc, $$static, key) {
             key: key,
             value: value,
             optional: optional,
-            $$static: $$static,
+            static: $$static,
             _method: false
           }
         ];
@@ -6893,7 +6893,7 @@ function indexer_property(env, start_loc, $$static) {
             id: match[0],
             key: key,
             value: value,
-            $$static: $$static
+            static: $$static
           }
         ];
 }
@@ -7134,7 +7134,7 @@ function params(env, allow_default, _require_default, _acc) {
       name: id.name,
       bound: id.typeAnnotation,
       variance: variance,
-      $$default: match$3[0]
+      default: match$3[0]
     };
     var param = /* tuple */[
       loc,
@@ -8067,7 +8067,7 @@ function call(env, _left) {
                 btwn(left[0], match$1[0]),
                 /* Call */Block.__(12, [{
                       callee: left,
-                      $$arguments: match$1[1]
+                      arguments: match$1[1]
                     }])
               ];
               continue ;
@@ -8136,7 +8136,7 @@ function _new(env, _finish_fn) {
         var callee$prime_000 = btwn(start_loc, match[0]);
         var callee$prime_001 = /* New */Block.__(11, [{
               callee: callee,
-              $$arguments: match[1]
+              arguments: match[1]
             }]);
         var callee$prime = /* tuple */[
           callee$prime_000,
@@ -10104,7 +10104,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
                   key: key,
                   value: value,
                   typeAnnotation: typeAnnotation,
-                  $$static: $$static
+                  static: $$static
                 }
               ]]);
   }
@@ -10164,7 +10164,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
                 kind: kind,
                 key: key,
                 value: value$1,
-                $$static: $$static,
+                static: $$static,
                 decorators: decorators
               }
             ]]);
@@ -10210,7 +10210,7 @@ function class_element(env) {
                                     kind: /* Get */2,
                                     key: match$2[0],
                                     value: value,
-                                    $$static: $$static$1,
+                                    static: $$static$1,
                                     decorators: decorators$1
                                   }
                                 ]]);
@@ -10247,7 +10247,7 @@ function class_element(env) {
                                     kind: /* Set */3,
                                     key: match$4[0],
                                     value: value$1,
-                                    $$static: $$static$2,
+                                    static: $$static$2,
                                     decorators: decorators$2
                                   }
                                 ]]);
@@ -10364,7 +10364,7 @@ function class_declaration(env, decorators) {
                 superClass: match$2[1],
                 typeParameters: typeParameters,
                 superTypeParameters: match$2[2],
-                $$implements: match$2[3],
+                implements: match$2[3],
                 classDecorators: decorators$1
               }])
         ];
@@ -10418,7 +10418,7 @@ function class_expression(env) {
                 superClass: match$2[1],
                 typeParameters: match$1[1],
                 superTypeParameters: match$2[2],
-                $$implements: match$2[3],
+                implements: match$2[3],
                 classDecorators: decorators
               }])
         ];
@@ -10587,7 +10587,7 @@ function declare_export_declaration($staropt$star, env) {
           return /* tuple */[
                   btwn(start_loc, end_loc),
                   /* DeclareExportDeclaration */Block.__(27, [{
-                        $$default: false,
+                        default: false,
                         declaration: undefined,
                         specifiers: specifiers,
                         source: source$1
@@ -10601,7 +10601,7 @@ function declare_export_declaration($staropt$star, env) {
         return /* tuple */[
                 loc$1,
                 /* DeclareExportDeclaration */Block.__(27, [{
-                      $$default: false,
+                      default: false,
                       declaration: /* NamedType */Block.__(4, [/* tuple */[
                             alias_loc,
                             match$2[1]
@@ -10621,7 +10621,7 @@ function declare_export_declaration($staropt$star, env) {
         return /* tuple */[
                 loc$2,
                 /* DeclareExportDeclaration */Block.__(27, [{
-                      $$default: false,
+                      default: false,
                       declaration: /* Interface */Block.__(5, [/* tuple */[
                             iface_loc,
                             match$3[1]
@@ -10674,7 +10674,7 @@ function declare_export_declaration($staropt$star, env) {
             return /* tuple */[
                     btwn(start_loc, match$5[0]),
                     /* DeclareExportDeclaration */Block.__(27, [{
-                          $$default: true,
+                          default: true,
                           declaration: match$5[1],
                           specifiers: undefined,
                           source: undefined
@@ -10747,7 +10747,7 @@ function declare_export_declaration($staropt$star, env) {
         return /* tuple */[
                 btwn(start_loc, end_loc$3),
                 /* DeclareExportDeclaration */Block.__(27, [{
-                      $$default: false,
+                      default: false,
                       declaration: undefined,
                       specifiers: specifiers$1,
                       source: source$2
@@ -10817,7 +10817,7 @@ function declare_export_declaration($staropt$star, env) {
         return /* tuple */[
                 btwn(start_loc, match$10[0]),
                 /* DeclareExportDeclaration */Block.__(27, [{
-                      $$default: false,
+                      default: false,
                       declaration: match$10[1],
                       specifiers: undefined,
                       source: undefined
@@ -11141,7 +11141,7 @@ function interface_helper(env) {
             id: id,
             typeParameters: typeParameters,
             body: body,
-            $$extends: $$extends,
+            extends: $$extends,
             mixins: /* [] */0
           }
         ];
@@ -11266,7 +11266,7 @@ function declare_class(env, start_loc) {
             id: id,
             typeParameters: typeParameters,
             body: body,
-            $$extends: $$extends,
+            extends: $$extends,
             mixins: mixins
           }
         ];
@@ -12417,7 +12417,7 @@ function module_item(env) {
                         return /* tuple */[
                                 btwn(start_loc, end_loc),
                                 /* ExportDeclaration */Block.__(28, [{
-                                      $$default: false,
+                                      default: false,
                                       declaration: /* Declaration */Block.__(0, [$$interface$1]),
                                       specifiers: undefined,
                                       source: undefined,
@@ -12451,7 +12451,7 @@ function module_item(env) {
                           return /* tuple */[
                                   btwn(start_loc, end_loc$1),
                                   /* ExportDeclaration */Block.__(28, [{
-                                        $$default: false,
+                                        default: false,
                                         declaration: /* Declaration */Block.__(0, [type_alias$1]),
                                         specifiers: undefined,
                                         source: undefined,
@@ -12495,7 +12495,7 @@ function module_item(env) {
                 return /* tuple */[
                         btwn(start_loc, end_loc$2),
                         /* ExportDeclaration */Block.__(28, [{
-                              $$default: false,
+                              default: false,
                               declaration: undefined,
                               specifiers: specifiers,
                               source: source$2,
@@ -12544,7 +12544,7 @@ function module_item(env) {
                     return /* tuple */[
                             btwn(start_loc, match$6[0]),
                             /* ExportDeclaration */Block.__(28, [{
-                                  $$default: true,
+                                  default: true,
                                   declaration: match$6[1],
                                   specifiers: undefined,
                                   source: undefined,
@@ -12608,7 +12608,7 @@ function module_item(env) {
                 return /* tuple */[
                         btwn(start_loc, end_loc$5),
                         /* ExportDeclaration */Block.__(28, [{
-                              $$default: false,
+                              default: false,
                               declaration: undefined,
                               specifiers: specifiers$1,
                               source: source$3,
@@ -12688,7 +12688,7 @@ function module_item(env) {
                 return /* tuple */[
                         btwn(start_loc, stmt[0]),
                         /* ExportDeclaration */Block.__(28, [{
-                              $$default: false,
+                              default: false,
                               declaration: declaration,
                               specifiers: undefined,
                               source: undefined,
@@ -14751,7 +14751,7 @@ function parse(content, options) {
                           ],
                           /* tuple */[
                             "arguments",
-                            array_of_list(expression_or_spread, _new.$$arguments)
+                            array_of_list(expression_or_spread, _new.arguments)
                           ]
                         ]);
           case /* Call */12 :
@@ -14763,7 +14763,7 @@ function parse(content, options) {
                           ],
                           /* tuple */[
                             "arguments",
-                            array_of_list(expression_or_spread, call.$$arguments)
+                            array_of_list(expression_or_spread, call.arguments)
                           ]
                         ]);
           case /* Member */13 :
@@ -14895,7 +14895,7 @@ function parse(content, options) {
                           ],
                           /* tuple */[
                             "implements",
-                            array_of_list(class_implements, c.$$implements)
+                            array_of_list(class_implements, c.implements)
                           ],
                           /* tuple */[
                             "decorators",
@@ -15438,7 +15438,7 @@ function parse(content, options) {
                           ],
                           /* tuple */[
                             "implements",
-                            array_of_list(class_implements, c.$$implements)
+                            array_of_list(class_implements, c.implements)
                           ],
                           /* tuple */[
                             "decorators",
@@ -15525,7 +15525,7 @@ function parse(content, options) {
               return node("DeclareExportDeclaration", loc, /* array */[
                           /* tuple */[
                             "default",
-                            Curry._1(bool, $$export.$$default)
+                            Curry._1(bool, $$export.default)
                           ],
                           /* tuple */[
                             "declaration",
@@ -15553,7 +15553,7 @@ function parse(content, options) {
               return node("ExportDeclaration", loc, /* array */[
                           /* tuple */[
                             "default",
-                            Curry._1(bool, $$export$1.$$default)
+                            Curry._1(bool, $$export$1.default)
                           ],
                           /* tuple */[
                             "declaration",
@@ -15661,7 +15661,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "extends",
-                    array_of_list(interface_extends, i.$$extends)
+                    array_of_list(interface_extends, i.extends)
                   ]
                 ]);
     };
@@ -15738,7 +15738,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "extends",
-                    array_of_list(interface_extends, d.$$extends)
+                    array_of_list(interface_extends, d.extends)
                   ]
                 ]);
     };
@@ -15766,7 +15766,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "default",
-                    option(_type, tp.$$default)
+                    option(_type, tp.default)
                   ]
                 ]);
     };
@@ -16164,7 +16164,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "static",
-                    Curry._1(bool, prop.$$static)
+                    Curry._1(bool, prop.static)
                   ]
                 ]);
     };
@@ -16177,7 +16177,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "static",
-                    Curry._1(bool, callProperty.$$static)
+                    Curry._1(bool, callProperty.static)
                   ]
                 ]);
     };
@@ -16198,7 +16198,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "static",
-                    Curry._1(bool, indexer.$$static)
+                    Curry._1(bool, indexer.static)
                   ]
                 ]);
     };
@@ -16297,7 +16297,7 @@ function parse(content, options) {
                     ],
                     /* tuple */[
                       "static",
-                      Curry._1(bool, prop.$$static)
+                      Curry._1(bool, prop.static)
                     ]
                   ]);
       } else {
@@ -16357,7 +16357,7 @@ function parse(content, options) {
                     ],
                     /* tuple */[
                       "static",
-                      Curry._1(bool, method_.$$static)
+                      Curry._1(bool, method_.static)
                     ],
                     /* tuple */[
                       "computed",

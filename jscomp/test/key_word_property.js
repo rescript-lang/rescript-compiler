@@ -17,8 +17,8 @@ function mk($$window, $$default) {
 function mk2($$window, $$default) {
   return /* :: */[
           {
-            $$window: $$window,
-            $$default: $$default
+            window: $$window,
+            default: $$default
           },
           /* [] */0
         ];

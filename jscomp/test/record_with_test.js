@@ -8,20 +8,20 @@ var v = {
   syntax: undefined,
   imports: 0,
   file_options: 0,
-  $$package: 0,
+  package: 0,
   messages: 0,
   enums: 0,
-  $$extends: 0
+  extends: 0
 };
 
 var u_v = {
   syntax: undefined,
   imports: 0,
   file_options: 0,
-  $$package: 0,
+  package: 0,
   messages: 0,
   enums: 0,
-  $$extends: 0
+  extends: 0
 };
 
 function f(g, h) {
@@ -30,10 +30,10 @@ function f(g, h) {
           syntax: init.syntax,
           imports: 0,
           file_options: init.file_options,
-          $$package: init.$$package,
+          package: init.package,
           messages: init.messages,
           enums: init.enums,
-          $$extends: init.$$extends
+          extends: init.extends
         };
 }
 
@@ -58,10 +58,10 @@ var uv = {
   syntax: undefined,
   imports: 1,
   file_options: 0,
-  $$package: 0,
+  package: 0,
   messages: 0,
   enums: 0,
-  $$extends: 0
+  extends: 0
 };
 
 exports.v = v;

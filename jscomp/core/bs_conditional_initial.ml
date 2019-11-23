@@ -37,7 +37,10 @@ let setup_env () =
   Clflags.binary_annotations := true; 
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
-
+  Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
+  Lambda.fld_record := Record_attributes_check.fld_record;
+  Lambda.fld_record_set := Record_attributes_check.fld_record_set;
+  Lambda.blk_record := Record_attributes_check.blk_record;
 #if undefined BS_RELEASE_BUILD then
     Printexc.record_backtrace true;
     (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 

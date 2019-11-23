@@ -184,7 +184,7 @@ type meth_kind = Lambda.meth_kind
 
 type field_dbg_info = Lambda.field_dbg_info =
   | Fld_na
-  | Fld_record of string
+  | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of string 
 #if OCAML_VERSION =~ ">4.03.0"  then 
   | Fld_record_inline of string 
@@ -195,7 +195,7 @@ let str_of_field_info (x : field_dbg_info) : string option =
   match x with 
   | Fld_na 
   | Fld_tuple -> None 
-  | Fld_record s 
+  | Fld_record {name = s} 
   | Fld_module s 
   | Fld_record_inline s 
   | Fld_record_extension s 

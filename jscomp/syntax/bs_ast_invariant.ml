@@ -117,6 +117,16 @@ let emit_external_warnings : iterator=
 #end
         | _ -> default_iterator.expr self a 
       );
+    label_declaration = (fun self lbl ->
+     
+      Ext_list.iter lbl.pld_attributes 
+        (fun attr -> 
+          match attr with 
+          | {txt = "bs.as"}, _ -> mark_used_bs_attribute attr
+          | _ -> ()
+          );
+      default_iterator.label_declaration self lbl      
+    );  
     value_description =
       (fun self v -> 
          match v with 
