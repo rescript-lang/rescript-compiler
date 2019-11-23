@@ -5954,6 +5954,10 @@ val check_deprecated_mutable_inclusion:
   def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
   Parsetree.attributes -> string -> unit
 
+val check_bs_attributes_inclusion:
+  (Parsetree.attributes ->
+  Parsetree.attributes -> string -> (string*string) option ) ref
+
 val error_of_extension: Parsetree.extension -> Location.error
 
 val warning_attribute: ?ppwarning:bool -> Parsetree.attribute -> unit
@@ -6093,6 +6097,11 @@ let check_deprecated_mutable_inclusion ~def ~use loc attrs1 attrs2 s =
   | Some txt, None ->
       Location.deprecated ~def ~use loc
         (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_bs_attributes_inclusion = 
+  ref (fun _attrs1 _attrs2 _s -> 
+      None
+    )  
 
 let rec deprecated_of_sig = function
   | {psig_desc = Psig_attribute a} :: tl ->
