@@ -259,7 +259,13 @@ val find_opt :
   ('a -> 'b option) -> 
   'b option 
 
+val find_def : 
+    'a list -> 
+    ('a -> 'b option) ->
+    'b ->
+    'b 
 
+    
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
