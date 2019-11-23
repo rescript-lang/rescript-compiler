@@ -23,8 +23,31 @@ type x = t = private {
 
 type t0 = { x: t0 ; y : int}
 
-let f2 u = 
+let f1 u = 
 match u with 
 | {x = { x = {x={y}}}}   ->     y
 
+type t1 = {
+  mutable x' : int
+}
 
+
+let f2 (x : t1) = 
+  x.x' <- x.x' + 3;
+  {x' = x.x' + 3}  
+
+type t2 = {
+  mutable x' : int [@bs.as "open"]
+}  
+
+let f3 (x : t2) = 
+  x.x' <- x.x' + 3;
+  {x' = x.x' + 3}  
+
+type t3 = {
+    mutable x' : int [@bs.as "in"]
+  }  
+  
+let f3 (x : t3) = 
+  x.x' <- x.x' + 3;
+  {x' = x.x' + 3}  

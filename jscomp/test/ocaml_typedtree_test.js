@@ -7928,13 +7928,13 @@ function map_opt(f, param) {
 function map_loc(sub, param) {
   return {
           txt: param.txt,
-          loc: Curry._2(sub.$$location, sub, param.loc)
+          loc: Curry._2(sub.location, sub, param.loc)
         };
 }
 
 function map$1(sub, param) {
   var desc = param.ptyp_desc;
-  var loc = Curry._2(sub.$$location, sub, param.ptyp_loc);
+  var loc = Curry._2(sub.location, sub, param.ptyp_loc);
   var attrs = Curry._2(sub.attributes, sub, param.ptyp_attributes);
   if (typeof desc === "number") {
     return mk(loc, attrs, /* Ptyp_any */0);
@@ -7995,10 +7995,10 @@ function map$1(sub, param) {
 
 function map_type_declaration(sub, param) {
   var partial_arg = Curry._1(sub.typ, sub);
-  var partial_arg$1 = Curry._1(sub.$$location, sub);
+  var partial_arg$1 = Curry._1(sub.location, sub);
   var partial_arg$2 = Curry._1(sub.typ, sub);
   var partial_arg$3 = Curry._1(sub.typ, sub);
-  return mk$19(Curry._2(sub.$$location, sub, param.ptype_loc), Curry._2(sub.attributes, sub, param.ptype_attributes), undefined, undefined, List.map((function (param) {
+  return mk$19(Curry._2(sub.location, sub, param.ptype_loc), Curry._2(sub.attributes, sub, param.ptype_attributes), undefined, undefined, List.map((function (param) {
                     return map_fst(partial_arg, param);
                   }), param.ptype_params), List.map((function (param) {
                     var f1 = partial_arg$3;
@@ -8046,12 +8046,12 @@ function map_extension_constructor_kind(sub, param) {
 }
 
 function map_extension_constructor(sub, param) {
-  return constructor$1(Curry._2(sub.$$location, sub, param.pext_loc), Curry._2(sub.attributes, sub, param.pext_attributes), undefined, undefined, map_loc(sub, param.pext_name), map_extension_constructor_kind(sub, param.pext_kind));
+  return constructor$1(Curry._2(sub.location, sub, param.pext_loc), Curry._2(sub.attributes, sub, param.pext_attributes), undefined, undefined, map_loc(sub, param.pext_name), map_extension_constructor_kind(sub, param.pext_kind));
 }
 
 function map$2(sub, param) {
   var desc = param.pcty_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pcty_loc);
+  var loc = Curry._2(sub.location, sub, param.pcty_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pcty_attributes);
   switch (desc.tag | 0) {
     case /* Pcty_constr */0 :
@@ -8068,7 +8068,7 @@ function map$2(sub, param) {
 
 function map_field(sub, param) {
   var desc = param.pctf_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pctf_loc);
+  var loc = Curry._2(sub.location, sub, param.pctf_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pctf_attributes);
   switch (desc.tag | 0) {
     case /* Pctf_inherit */0 :
@@ -8099,7 +8099,7 @@ function map_signature(sub, param) {
 
 function map$3(sub, param) {
   var desc = param.pmty_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pmty_loc);
+  var loc = Curry._2(sub.location, sub, param.pmty_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pmty_attributes);
   switch (desc.tag | 0) {
     case /* Pmty_ident */0 :
@@ -8145,7 +8145,7 @@ function map_with_constraint(sub, param) {
 
 function map_signature_item(sub, param) {
   var desc = param.psig_desc;
-  var loc = Curry._2(sub.$$location, sub, param.psig_loc);
+  var loc = Curry._2(sub.location, sub, param.psig_loc);
   switch (desc.tag | 0) {
     case /* Psig_value */0 :
         var a = Curry._2(sub.value_description, sub, desc[0]);
@@ -8191,7 +8191,7 @@ function map_signature_item(sub, param) {
 
 function map$4(sub, param) {
   var desc = param.pmod_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pmod_loc);
+  var loc = Curry._2(sub.location, sub, param.pmod_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pmod_attributes);
   switch (desc.tag | 0) {
     case /* Pmod_ident */0 :
@@ -8214,7 +8214,7 @@ function map$4(sub, param) {
 
 function map_structure_item(sub, param) {
   var desc = param.pstr_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pstr_loc);
+  var loc = Curry._2(sub.location, sub, param.pstr_loc);
   switch (desc.tag | 0) {
     case /* Pstr_eval */0 :
         return $$eval(loc, Curry._2(sub.attributes, sub, desc[1]), Curry._2(sub.expr, sub, desc[0]));
@@ -8264,7 +8264,7 @@ function map_structure_item(sub, param) {
 
 function map$5(sub, param) {
   var desc = param.pexp_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pexp_loc);
+  var loc = Curry._2(sub.location, sub, param.pexp_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pexp_attributes);
   switch (desc.tag | 0) {
     case /* Pexp_ident */0 :
@@ -8354,7 +8354,7 @@ function map$5(sub, param) {
 
 function map$6(sub, param) {
   var desc = param.ppat_desc;
-  var loc = Curry._2(sub.$$location, sub, param.ppat_loc);
+  var loc = Curry._2(sub.location, sub, param.ppat_loc);
   var attrs = Curry._2(sub.attributes, sub, param.ppat_attributes);
   if (typeof desc === "number") {
     return mk$1(loc, attrs, /* Ppat_any */0);
@@ -8404,7 +8404,7 @@ function map$6(sub, param) {
 
 function map$7(sub, param) {
   var desc = param.pcl_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pcl_loc);
+  var loc = Curry._2(sub.location, sub, param.pcl_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pcl_attributes);
   switch (desc.tag | 0) {
     case /* Pcl_constr */0 :
@@ -8441,7 +8441,7 @@ function map_kind(sub, param) {
 
 function map_field$1(sub, param) {
   var desc = param.pcf_desc;
-  var loc = Curry._2(sub.$$location, sub, param.pcf_loc);
+  var loc = Curry._2(sub.location, sub, param.pcf_loc);
   var attrs = Curry._2(sub.attributes, sub, param.pcf_attributes);
   switch (desc.tag | 0) {
     case /* Pcf_inherit */0 :
@@ -8474,7 +8474,7 @@ function map_structure(sub, param) {
 
 function class_infos(sub, f, param) {
   var partial_arg = Curry._1(sub.typ, sub);
-  return mk$18(Curry._2(sub.$$location, sub, param.pci_loc), Curry._2(sub.attributes, sub, param.pci_attributes), undefined, undefined, param.pci_virt, List.map((function (param) {
+  return mk$18(Curry._2(sub.location, sub, param.pci_loc), Curry._2(sub.attributes, sub, param.pci_attributes), undefined, undefined, param.pci_virt, List.map((function (param) {
                     return map_fst(partial_arg, param);
                   }), param.pci_params), map_loc(sub, param.pci_name), Curry._1(f, param.pci_expr));
 }
@@ -8499,7 +8499,7 @@ function default_mapper_case($$this, param) {
 }
 
 function default_mapper_cases($$this, l) {
-  return List.map(Curry._1($$this.$$case, $$this), l);
+  return List.map(Curry._1($$this.case, $$this), l);
 }
 
 function default_mapper_class_declaration($$this) {
@@ -8524,7 +8524,7 @@ function default_mapper_class_type_declaration($$this) {
 }
 
 function default_mapper_constructor_declaration($$this, param) {
-  return constructor(Curry._2($$this.$$location, $$this, param.pcd_loc), Curry._2($$this.attributes, $$this, param.pcd_attributes), undefined, List.map(Curry._1($$this.typ, $$this), param.pcd_args), map_opt(Curry._1($$this.typ, $$this), param.pcd_res), map_loc($$this, param.pcd_name));
+  return constructor(Curry._2($$this.location, $$this, param.pcd_loc), Curry._2($$this.attributes, $$this, param.pcd_attributes), undefined, List.map(Curry._1($$this.typ, $$this), param.pcd_args), map_opt(Curry._1($$this.typ, $$this), param.pcd_res), map_loc($$this, param.pcd_name));
 }
 
 function default_mapper_extension($$this, param) {
@@ -8535,15 +8535,15 @@ function default_mapper_extension($$this, param) {
 }
 
 function default_mapper_include_declaration($$this, param) {
-  return mk$16(Curry._2($$this.$$location, $$this, param.pincl_loc), Curry._2($$this.attributes, $$this, param.pincl_attributes), undefined, Curry._2($$this.module_expr, $$this, param.pincl_mod));
+  return mk$16(Curry._2($$this.location, $$this, param.pincl_loc), Curry._2($$this.attributes, $$this, param.pincl_attributes), undefined, Curry._2($$this.module_expr, $$this, param.pincl_mod));
 }
 
 function default_mapper_include_description($$this, param) {
-  return mk$16(Curry._2($$this.$$location, $$this, param.pincl_loc), Curry._2($$this.attributes, $$this, param.pincl_attributes), undefined, Curry._2($$this.module_type, $$this, param.pincl_mod));
+  return mk$16(Curry._2($$this.location, $$this, param.pincl_loc), Curry._2($$this.attributes, $$this, param.pincl_attributes), undefined, Curry._2($$this.module_type, $$this, param.pincl_mod));
 }
 
 function default_mapper_label_declaration($$this, param) {
-  return field$1(Curry._2($$this.$$location, $$this, param.pld_loc), Curry._2($$this.attributes, $$this, param.pld_attributes), undefined, param.pld_mutable, map_loc($$this, param.pld_name), Curry._2($$this.typ, $$this, param.pld_type));
+  return field$1(Curry._2($$this.location, $$this, param.pld_loc), Curry._2($$this.attributes, $$this, param.pld_attributes), undefined, param.pld_mutable, map_loc($$this, param.pld_name), Curry._2($$this.typ, $$this, param.pld_type));
 }
 
 function default_mapper_location($$this, l) {
@@ -8551,19 +8551,19 @@ function default_mapper_location($$this, l) {
 }
 
 function default_mapper_module_binding($$this, param) {
-  return mk$14(Curry._2($$this.$$location, $$this, param.pmb_loc), Curry._2($$this.attributes, $$this, param.pmb_attributes), undefined, undefined, map_loc($$this, param.pmb_name), Curry._2($$this.module_expr, $$this, param.pmb_expr));
+  return mk$14(Curry._2($$this.location, $$this, param.pmb_loc), Curry._2($$this.attributes, $$this, param.pmb_attributes), undefined, undefined, map_loc($$this, param.pmb_name), Curry._2($$this.module_expr, $$this, param.pmb_expr));
 }
 
 function default_mapper_module_declaration($$this, param) {
-  return mk$12(Curry._2($$this.$$location, $$this, param.pmd_loc), Curry._2($$this.attributes, $$this, param.pmd_attributes), undefined, undefined, map_loc($$this, param.pmd_name), Curry._2($$this.module_type, $$this, param.pmd_type));
+  return mk$12(Curry._2($$this.location, $$this, param.pmd_loc), Curry._2($$this.attributes, $$this, param.pmd_attributes), undefined, undefined, map_loc($$this, param.pmd_name), Curry._2($$this.module_type, $$this, param.pmd_type));
 }
 
 function default_mapper_module_type_declaration($$this, param) {
-  return mk$13(Curry._2($$this.$$location, $$this, param.pmtd_loc), Curry._2($$this.attributes, $$this, param.pmtd_attributes), undefined, undefined, map_opt(Curry._1($$this.module_type, $$this), param.pmtd_type), map_loc($$this, param.pmtd_name));
+  return mk$13(Curry._2($$this.location, $$this, param.pmtd_loc), Curry._2($$this.attributes, $$this, param.pmtd_attributes), undefined, undefined, map_opt(Curry._1($$this.module_type, $$this), param.pmtd_type), map_loc($$this, param.pmtd_name));
 }
 
 function default_mapper_open_description($$this, param) {
-  return mk$15(Curry._2($$this.$$location, $$this, param.popen_loc), Curry._2($$this.attributes, $$this, param.popen_attributes), undefined, param.popen_override, map_loc($$this, param.popen_lid));
+  return mk$15(Curry._2($$this.location, $$this, param.popen_loc), Curry._2($$this.attributes, $$this, param.popen_attributes), undefined, param.popen_override, map_loc($$this, param.popen_lid));
 }
 
 function default_mapper_payload($$this, param) {
@@ -8590,17 +8590,17 @@ function default_mapper_structure($$this, l) {
 }
 
 function default_mapper_value_binding($$this, param) {
-  return mk$17(Curry._2($$this.$$location, $$this, param.pvb_loc), Curry._2($$this.attributes, $$this, param.pvb_attributes), undefined, undefined, Curry._2($$this.pat, $$this, param.pvb_pat), Curry._2($$this.expr, $$this, param.pvb_expr));
+  return mk$17(Curry._2($$this.location, $$this, param.pvb_loc), Curry._2($$this.attributes, $$this, param.pvb_attributes), undefined, undefined, Curry._2($$this.pat, $$this, param.pvb_pat), Curry._2($$this.expr, $$this, param.pvb_expr));
 }
 
 function default_mapper_value_description($$this, param) {
-  return mk$11(Curry._2($$this.$$location, $$this, param.pval_loc), Curry._2($$this.attributes, $$this, param.pval_attributes), undefined, param.pval_prim, map_loc($$this, param.pval_name), Curry._2($$this.typ, $$this, param.pval_type));
+  return mk$11(Curry._2($$this.location, $$this, param.pval_loc), Curry._2($$this.attributes, $$this, param.pval_attributes), undefined, param.pval_prim, map_loc($$this, param.pval_name), Curry._2($$this.typ, $$this, param.pval_type));
 }
 
 var default_mapper = {
   attribute: default_mapper_attribute,
   attributes: default_mapper_attributes,
-  $$case: default_mapper_case,
+  case: default_mapper_case,
   cases: default_mapper_cases,
   class_declaration: default_mapper_class_declaration,
   class_description: default_mapper_class_description,
@@ -8618,7 +8618,7 @@ var default_mapper = {
   include_declaration: default_mapper_include_declaration,
   include_description: default_mapper_include_description,
   label_declaration: default_mapper_label_declaration,
-  $$location: default_mapper_location,
+  location: default_mapper_location,
   module_binding: default_mapper_module_binding,
   module_declaration: default_mapper_module_declaration,
   module_expr: map$4,

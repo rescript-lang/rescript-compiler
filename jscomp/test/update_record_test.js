@@ -55,13 +55,13 @@ eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f({
         }).a0);
 
 var val0 = {
-  invalid_js_id$prime: 3,
+  "invalid_js_id'": 3,
   x: 2
 };
 
 function fff(x) {
   return {
-          invalid_js_id$prime: x.invalid_js_id$prime + 2 | 0,
+          "invalid_js_id'": x["invalid_js_id'"] + 2 | 0,
           x: x.x
         };
 }
@@ -70,7 +70,7 @@ var val1 = fff(val0);
 
 eq("File \"update_record_test.ml\", line 42, characters 5-12", 3, 3);
 
-eq("File \"update_record_test.ml\", line 43, characters 5-12", val1.invalid_js_id$prime, 5);
+eq("File \"update_record_test.ml\", line 43, characters 5-12", val1["invalid_js_id'"], 5);
 
 Mt.from_pair_suites("Update_record_test", suites.contents);
 

@@ -811,8 +811,9 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (Ext_list.map_combine fields el Ext_ident.convert)))
   | Caml_block(el,_, _, Blk_record fields) ->        
       expression_desc cxt ~level f (Object (
-        (Ext_list.map_combine (Array.to_list fields) el Ext_ident.convert)))      
-        (*FIXME: avoid allocaton *)
+        (List.combine (Array.to_list fields) el )))      
+        (* name convention of Record is slight different from modules 
+        *)
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information

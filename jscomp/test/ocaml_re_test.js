@@ -1451,7 +1451,7 @@ var unknown_state = {
   idx: -2,
   real_idx: 0,
   next: dummy_next,
-  $$final: /* [] */0,
+  final: /* [] */0,
   desc: Re_automata_State.dummy
 };
 
@@ -1462,7 +1462,7 @@ function mk_state(ncol, desc) {
           idx: break_state ? -3 : desc.idx,
           real_idx: desc.idx,
           next: break_state ? dummy_next : Caml_array.caml_make_vect(ncol, unknown_state),
-          $$final: /* [] */0,
+          final: /* [] */0,
           desc: desc
         };
 }
@@ -1541,7 +1541,7 @@ function loop(info, s, pos, st) {
 
 function $$final(info, st, cat) {
   try {
-    return List.assq(cat, st.$$final);
+    return List.assq(cat, st.final);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -1557,7 +1557,7 @@ function $$final(info, st, cat) {
           cat,
           res
         ],
-        st.$$final
+        st.final
       ];
       return res;
     } else {
