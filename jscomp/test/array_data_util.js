@@ -16,7 +16,7 @@ function randomRange(i, j) {
   return v;
 }
 
-var A = 0;
+var A = /* alias */0;
 
 exports.A = A;
 exports.range = range;

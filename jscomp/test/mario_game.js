@@ -3318,8 +3318,8 @@ window.onload = (function (param) {
   });
 
 var Main = {
-  Html: 0,
-  Pg: 0,
+  Html: /* alias */0,
+  Pg: /* alias */0,
   loadCount: loadCount,
   imgsToLoad: 4,
   level_width: 2400,

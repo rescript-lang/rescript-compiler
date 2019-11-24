@@ -87,7 +87,7 @@ eq("File \"bs_float_test.ml\", line 44, characters 5-12", 3.0 / 2.0, 1.5);
 
 Mt.from_pair_suites("File \"bs_float_test.ml\", line 46, characters 23-30", suites.contents);
 
-var F = 0;
+var F = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

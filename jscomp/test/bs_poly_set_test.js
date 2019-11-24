@@ -416,17 +416,17 @@ b("File \"bs_poly_set_test.ml\", line 159, characters 4-11", !match$5[1]);
 
 Mt.from_pair_suites("Bs_poly_set_test", suites.contents);
 
-var N = 0;
+var N = /* alias */0;
 
-var D = 0;
+var D = /* alias */0;
 
-var I = 0;
+var I = /* alias */0;
 
-var A = 0;
+var A = /* alias */0;
 
-var S = 0;
+var S = /* alias */0;
 
-var L = 0;
+var L = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

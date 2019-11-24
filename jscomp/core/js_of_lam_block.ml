@@ -51,15 +51,14 @@ let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  =
 let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
   | Fld_na 
-  | Fld_tuple ->
-    (* let comment = "NA" in *)
-    E.array_index_by_int (* ~comment *) e i 
-#if OCAML_VERSION =~ ">4.03.0" then 
-  | Fld_record_inline comment
-  | Fld_record_extension comment
+  | Fld_tuple
+  | Fld_poly_var_tag 
+  | Fld_poly_var_content 
+  | Fld_record_inline _
+  | Fld_record_extension _
     -> 
-    E.array_index_by_int  ~comment e i 
-#end
+    E.array_index_by_int  
+      ?comment:(Lam_compat.str_of_field_info field_info) e i 
   | Fld_record {name}
     -> E.record_access e name i
   | Fld_module name

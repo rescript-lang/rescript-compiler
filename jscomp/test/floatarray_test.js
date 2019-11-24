@@ -35,7 +35,7 @@ eq("File \"floatarray_test.ml\", line 17, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("Floatarray_test", suites.contents);
 
-var K = 0;
+var K = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -411,15 +411,15 @@ eq("File \"bs_sort_test.ml\", line 143, characters 5-12", Belt_SortArray.strictl
 
 Mt.from_pair_suites("Bs_sort_test", suites.contents);
 
-var I = 0;
+var I = /* alias */0;
 
-var S = 0;
+var S = /* alias */0;
 
-var R = 0;
+var R = /* alias */0;
 
-var A = 0;
+var A = /* alias */0;
 
-var SI = 0;
+var SI = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

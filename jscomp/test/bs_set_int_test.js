@@ -372,11 +372,11 @@ eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Belt_SetInt.get(v$1
 
 Mt.from_pair_suites("Bs_set_int_test", suites.contents);
 
-var N = 0;
+var N = /* alias */0;
 
-var I = 0;
+var I = /* alias */0;
 
-var A = 0;
+var A = /* alias */0;
 
 var ofA = Belt_SetInt.fromArray;
 

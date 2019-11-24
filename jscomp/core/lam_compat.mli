@@ -92,6 +92,9 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_record_extension of string 
 #end  
   | Fld_tuple
+  | Fld_poly_var_tag
+  | Fld_poly_var_content
+
   
 val str_of_field_info : 
   field_dbg_info -> 

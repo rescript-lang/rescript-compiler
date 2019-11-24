@@ -9,7 +9,7 @@ function v(x) {
         ];
 }
 
-var L = 0;
+var L = /* alias */0;
 
 exports.L = L;
 exports.v = v;

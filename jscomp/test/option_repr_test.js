@@ -276,7 +276,7 @@ var f8 = Caml_option.some(undefined);
 
 var f9 = Caml_option.some(Caml_option.some(undefined));
 
-var N = 0;
+var N = /* alias */0;
 
 var none_arg = undefined;
 

@@ -101,17 +101,17 @@ b("File \"bs_hashmap_test.ml\", line 57, characters 4-11", Belt_Array.every(Arra
 
 Mt.from_pair_suites("Bs_hashmap_test", suites.contents);
 
-var N = 0;
+var N = /* alias */0;
 
-var S = 0;
+var S = /* alias */0;
 
-var I = 0;
+var I = /* alias */0;
 
 var $plus$plus = Belt_Array.concat;
 
-var A = 0;
+var A = /* alias */0;
 
-var So = 0;
+var So = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

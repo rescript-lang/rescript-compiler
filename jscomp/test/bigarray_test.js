@@ -35,7 +35,7 @@ function init3(v) {
   return /* () */0;
 }
 
-var BA1 = 0;
+var BA1 = /* alias */0;
 
 exports.BA1 = BA1;
 exports.sum = sum;

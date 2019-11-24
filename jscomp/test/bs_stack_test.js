@@ -106,9 +106,9 @@ console.log(inOrder(test1));
 
 console.log(inOrder3(test1));
 
-var S = 0;
+var S = /* alias */0;
 
-var Q = 0;
+var Q = /* alias */0;
 
 exports.S = S;
 exports.Q = Q;

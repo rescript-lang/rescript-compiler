@@ -297,25 +297,25 @@ bench7(/* () */0);
 
 console.timeEnd("test/bs_hashtbl_string_test.ml 203");
 
-var N = 0;
+var N = /* alias */0;
 
 var count = 1000000;
 
 var initial_size = 1000000;
 
-var M = 0;
+var M = /* alias */0;
 
-var Md = 0;
+var Md = /* alias */0;
 
-var Md0 = 0;
+var Md0 = /* alias */0;
 
-var H = 0;
+var H = /* alias */0;
 
-var H0 = 0;
+var H0 = /* alias */0;
 
-var HI = 0;
+var HI = /* alias */0;
 
-var S = 0;
+var S = /* alias */0;
 
 exports.hash_string = hash_string;
 exports.hashString = hashString;

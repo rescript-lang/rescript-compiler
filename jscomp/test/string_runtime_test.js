@@ -69,9 +69,9 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("String_runtime_test", suites);
 
-var S = 0;
+var S = /* alias */0;
 
-var B = 0;
+var B = /* alias */0;
 
 exports.S = S;
 exports.B = B;

@@ -1586,9 +1586,9 @@ eq("File \"bs_array_test.ml\", line 339, characters 5-12", Belt_Array.getIndexBy
 
 Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites.contents);
 
-var A = 0;
+var A = /* alias */0;
 
-var L = 0;
+var L = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -58,11 +58,11 @@ test2(/* () */0);
 
 console.timeEnd("test/imm_map_bench.ml 45");
 
-var A = 0;
+var A = /* alias */0;
 
 var count = 1000000;
 
-var M = 0;
+var M = /* alias */0;
 
 exports.A = A;
 exports.empty = empty;
