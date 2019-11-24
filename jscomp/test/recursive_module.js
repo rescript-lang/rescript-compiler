@@ -34,12 +34,12 @@ var Int3 = Caml_module.init_mod(/* tuple */[
       27,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "u"
           ]]]));
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "u"
           ]]]), Int3, Int3);
 
@@ -48,7 +48,7 @@ var Inta = Caml_module.init_mod(/* tuple */[
       31,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]));
 
@@ -57,7 +57,7 @@ var Intb = Caml_module.init_mod(/* tuple */[
       36,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]));
 
@@ -66,7 +66,7 @@ var a = Caml_obj.caml_lazy_make((function (param) {
       }));
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]), Inta, {
       a: a
@@ -77,7 +77,7 @@ var a$1 = Caml_obj.caml_lazy_make((function (param) {
       }));
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]), Intb, {
       a: a$1
@@ -103,7 +103,7 @@ var Inta$1 = Caml_module.init_mod(/* tuple */[
       48,
       8
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]));
 
@@ -112,7 +112,7 @@ var Intb$1 = Caml_module.init_mod(/* tuple */[
       53,
       8
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]));
 
@@ -121,14 +121,14 @@ var a$2 = Caml_obj.caml_lazy_make((function (param) {
       }));
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]), Inta$1, {
       a: a$2
     });
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            1,
+            /* Lazy */1,
             "a"
           ]]]), Intb$1, {
       a: 2

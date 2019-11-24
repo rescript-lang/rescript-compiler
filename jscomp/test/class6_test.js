@@ -79,7 +79,7 @@ function colored_point_init($$class) {
   var inh = CamlinternalOO.inherits($$class, shared, 0, /* array */[
         "get_x",
         "move"
-      ], point, 1);
+      ], point, true);
   var obj_init = inh[0];
   CamlinternalOO.set_method($$class, color, (function (self$2) {
           return self$2[c$1];
@@ -144,7 +144,7 @@ function d_init($$class) {
       ]);
   var n = ids[0];
   var as_c = ids[1];
-  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$1, c, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$1, c, true);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         n,

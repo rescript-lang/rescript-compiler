@@ -12,3 +12,6 @@ let f3 x =
   match x with    
   | Some (A as y) -> y
   | None -> A
+
+
+let v0 = ()  

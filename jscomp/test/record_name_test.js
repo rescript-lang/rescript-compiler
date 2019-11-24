@@ -30,9 +30,14 @@ function f3(x) {
         };
 }
 
+function f4(param) {
+  return (((param.EXACT_MAPPING_TO_JS_LABEL + param.EXACT_2 | 0) + param.z.hello | 0) << 1);
+}
+
 exports.f = f;
 exports.set = set;
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
+exports.f4 = f4;
 /* No side effect */

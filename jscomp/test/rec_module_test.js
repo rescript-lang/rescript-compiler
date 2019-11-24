@@ -14,7 +14,7 @@ var A = Caml_module.init_mod(/* tuple */[
       3,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "even"
           ]]]));
 
@@ -23,7 +23,7 @@ var B = Caml_module.init_mod(/* tuple */[
       11,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "odd"
           ]]]));
 
@@ -38,7 +38,7 @@ function even(n) {
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "even"
           ]]]), A, {
       even: even
@@ -55,7 +55,7 @@ function odd(n) {
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "odd"
           ]]]), B, {
       odd: odd
@@ -67,11 +67,11 @@ var AA = Caml_module.init_mod(/* tuple */[
       6
     ], /* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "even"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "x"
           ]
         ]]));
@@ -82,11 +82,11 @@ var BB = Caml_module.init_mod(/* tuple */[
       6
     ], /* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "odd"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "y"
           ]
         ]]));
@@ -107,11 +107,11 @@ function x(param) {
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "even"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "x"
           ]
         ]]), AA, {
@@ -135,11 +135,11 @@ function y(param) {
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "odd"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "y"
           ]
         ]]), BB, {
@@ -152,7 +152,7 @@ var AAA = Caml_module.init_mod(/* tuple */[
       55,
       2
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "compare"
           ]]]));
 
@@ -1201,7 +1201,7 @@ function compare$1(t1, t2) {
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "compare"
           ]]]), AAA, {
       compare: compare$1

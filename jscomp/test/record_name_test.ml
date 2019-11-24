@@ -51,3 +51,17 @@ type t3 = {
 let f3 (x : t3) = 
   x.x' <- x.x' + 3;
   {x' = x.x' + 3}  
+
+type entry  = {
+  x : int  ; [@bs.as "EXACT_MAPPING_TO_JS_LABEL"]
+  y : int ; [@bs.as "EXACT_2"]
+  z : obj
+} 
+and obj = {
+  hi : int ; [@bs.as "hello"]  
+}    
+
+
+let f4  ({ x; y; z = {hi }}: entry) = 
+  (x + y + hi) * 2
+  

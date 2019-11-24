@@ -61,7 +61,7 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_na s -> if s = "" then None else Some s
 let comment_of_pointer_info (x :  Lam_pointer_info.t)= 
   match x with 
-  | Pt_constructor x -> Some x 
-  | Pt_variant x -> Some x 
+  | Pt_constructor {name}
+  | Pt_variant {name} -> Some name
   | Pt_module_alias -> None (* FIXME *)
   | Pt_na -> None

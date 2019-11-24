@@ -55,7 +55,7 @@ function memo_fib_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared, /* array */["cache"]);
   var calc = ids[0];
   var cache = ids[1];
-  var inh = CamlinternalOO.inherits($$class, 0, 0, shared, fib, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, 0, shared, fib, true);
   var obj_init = inh[0];
   var calc$1 = inh[1];
   CamlinternalOO.set_method($$class, calc, (function (self$2, x) {

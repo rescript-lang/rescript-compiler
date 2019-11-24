@@ -49,7 +49,7 @@ function money_init($$class) {
   var value = ids[0];
   var leq = ids[1];
   var repr = ids[2];
-  var inh = CamlinternalOO.inherits($$class, 0, /* array */["leq"], 0, comparable, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, /* array */["leq"], 0, comparable, true);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         value,
@@ -75,7 +75,7 @@ var money = CamlinternalOO.make_class(shared, money_init);
 function money2_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var times = CamlinternalOO.get_method_label($$class, "times");
-  var inh = CamlinternalOO.inherits($$class, shared$1, 0, shared, money, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$1, 0, shared, money, true);
   var obj_init = inh[0];
   var repr = inh[1];
   CamlinternalOO.set_method($$class, times, (function (self$3, k) {

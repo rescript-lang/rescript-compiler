@@ -526,6 +526,7 @@ build test/simple_derive_use.cmi : cc test/simple_derive_use.mli | $stdlib
 build test/simple_lexer_test.cmi test/simple_lexer_test.cmj : cc test/simple_lexer_test.ml | test/mt.cmj $stdlib
 build test/simplify_lambda_632o.cmi test/simplify_lambda_632o.cmj : cc test/simplify_lambda_632o.ml | $stdlib
 build test/single_module_alias.cmi test/single_module_alias.cmj : cc test/single_module_alias.ml | $stdlib
+build test/singular_unit_test.cmi test/singular_unit_test.cmj : cc test/singular_unit_test.ml | $stdlib
 build test/small_inline_test.cmi test/small_inline_test.cmj : cc test/small_inline_test.ml | $stdlib
 build test/splice_test.cmi test/splice_test.cmj : cc test/splice_test.ml | test/mt.cmj $stdlib
 build test/sprintf_reg_test.cmi test/sprintf_reg_test.cmj : cc test/sprintf_reg_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
