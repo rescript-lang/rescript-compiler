@@ -80,7 +80,7 @@ function restricted_point_init($$class) {
 var restricted_point = CamlinternalOO.make_class(shared$2, restricted_point_init);
 
 function restricted_point$prime_init($$class) {
-  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, true);
   var obj_init = inh[0];
   return (function (env, self, x) {
       return Curry._2(obj_init, self, x);
@@ -90,7 +90,7 @@ function restricted_point$prime_init($$class) {
 var restricted_point$prime = CamlinternalOO.make_class(shared$2, restricted_point$prime_init);
 
 function restricted_point2$prime_init($$class) {
-  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, true);
   var obj_init = inh[0];
   return (function (env, self, x) {
       return Curry._2(obj_init, self, x);
@@ -135,7 +135,7 @@ function point_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  var inh = CamlinternalOO.inherits($$class, 0, shared$1, /* array */["get_offset"], abstract_point, 1);
+  var inh = CamlinternalOO.inherits($$class, 0, shared$1, /* array */["get_offset"], abstract_point, true);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
@@ -173,7 +173,7 @@ function colored_point_init($$class) {
         "get_offset",
         "get_x",
         "move"
-      ], point, 1);
+      ], point, true);
   var obj_init = inh[0];
   CamlinternalOO.set_method($$class, color, (function (self$7) {
           return self$7[c$1];

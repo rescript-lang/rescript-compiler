@@ -10,7 +10,7 @@ var PA = Caml_module.init_mod(/* tuple */[
       3,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "print"
           ]]]));
 
@@ -19,7 +19,7 @@ var P = Caml_module.init_mod(/* tuple */[
       11,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "print"
           ]]]));
 
@@ -28,7 +28,7 @@ function print(a) {
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "print"
           ]]]), PA, {
       print: print
@@ -40,7 +40,7 @@ function print$1(i) {
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "print"
           ]]]), P, {
       print: print$1

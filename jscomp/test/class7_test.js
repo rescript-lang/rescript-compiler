@@ -162,12 +162,12 @@ var backup = CamlinternalOO.make_class(shared$5, backup_init);
 
 function backup_ref_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, true);
   var obj_init = inh[0];
   var inh$1 = CamlinternalOO.inherits($$class, shared$3, 0, /* array */[
         "restore",
         "save"
-      ], backup, 1);
+      ], backup, true);
   var obj_init$1 = inh$1[0];
   return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -269,13 +269,13 @@ var backup2 = CamlinternalOO.make_class(/* array */[
 
 function backup_ref2_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, 1);
+  var inh = CamlinternalOO.inherits($$class, shared$2, 0, shared$6, ref, true);
   var obj_init = inh[0];
   var inh$1 = CamlinternalOO.inherits($$class, shared$3, 0, /* array */[
         "clear",
         "restore",
         "save"
-      ], backup2, 1);
+      ], backup2, true);
   var obj_init$1 = inh$1[0];
   return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);

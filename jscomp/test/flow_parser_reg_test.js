@@ -6155,95 +6155,95 @@ var Parse = Caml_module.init_mod(/* tuple */[
       6
     ], /* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "program"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list_item"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list_with_directives"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "module_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "expression"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "assignment"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "object_initializer"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "array_initializer"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier_or_reserved_keyword"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier_with_type"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "block_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "function_block_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "jsx_element"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "pattern"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "pattern_from_expr"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "object_key"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "class_declaration"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "class_expression"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "is_assignable_lhs"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "predicate"
           ]
         ]]));
@@ -13914,95 +13914,95 @@ function predicate(env) {
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
           /* tuple */[
-            0,
+            /* Function */0,
             "program"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list_item"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "statement_list_with_directives"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "module_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "expression"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "assignment"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "object_initializer"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "array_initializer"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier_or_reserved_keyword"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "identifier_with_type"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "block_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "function_block_body"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "jsx_element"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "pattern"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "pattern_from_expr"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "object_key"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "class_declaration"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "class_expression"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "is_assignable_lhs"
           ],
           /* tuple */[
-            0,
+            /* Function */0,
             "predicate"
           ]
         ]]), Parse, {

@@ -40,8 +40,8 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
   | Const_base (Const_nativeint i) -> (Const_nativeint i)
   | Const_pointer(i,p) ->
     begin match p with 
-    | Pt_constructor p -> Const_pointer(i, Pt_constructor p)
-    | Pt_variant p -> Const_pointer(i,Pt_variant p)
+    | Pt_constructor {name;cstrs} -> Const_pointer(i, Pt_constructor {name; cstrs})
+    | Pt_variant {name} -> Const_pointer(i,Pt_variant {name})
     | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
     | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
     | Pt_shape_none ->

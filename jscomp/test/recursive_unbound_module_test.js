@@ -21,7 +21,7 @@ var B = Caml_module.init_mod(/* tuple */[
       0
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
             /* Module */Block.__(0, [/* array */[/* tuple */[
-                    0,
+                    /* Function */0,
                     "f"
                   ]]]),
             "M"
@@ -37,7 +37,7 @@ var M = {
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
             /* Module */Block.__(0, [/* array */[/* tuple */[
-                    0,
+                    /* Function */0,
                     "f"
                   ]]]),
             "M"

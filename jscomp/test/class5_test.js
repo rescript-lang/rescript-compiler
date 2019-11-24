@@ -102,7 +102,7 @@ function printable_colored_point_init($$class) {
         "get_x",
         "move",
         "print"
-      ], printable_point, 1);
+      ], printable_point, true);
   var obj_init = inh[0];
   var print$1 = inh[4];
   CamlinternalOO.set_method($$class, print, (function (self$2) {
@@ -289,7 +289,7 @@ function distance_point_init($$class) {
   var inh = CamlinternalOO.inherits($$class, shared$1, 0, /* array */[
         "get_x",
         "move"
-      ], point, 1);
+      ], point, true);
   var obj_init = inh[0];
   var x$1 = inh[1];
   CamlinternalOO.set_method($$class, distance, (function (self$7, other) {

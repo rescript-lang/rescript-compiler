@@ -8,12 +8,12 @@ var Point = Caml_module.init_mod(/* tuple */[
       10,
       6
     ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "add"
           ]]]));
 
 Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            0,
+            /* Function */0,
             "add"
           ]]]), Point, {
       add: (function (prim, prim$1) {
