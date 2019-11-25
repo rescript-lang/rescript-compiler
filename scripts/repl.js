@@ -35,7 +35,7 @@ function prepare() {
   e(`./bin/cmjbrowser.exe`);
   var js_compiler_path = `../lib/4.06.1/unstable`;
   e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_compiler.mli ${js_compiler_path}/js_compiler.ml -o jsc.byte`
+    `ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_refmt_compiler.mli ${js_compiler_path}/js_refmt_compiler.ml -o jsc.byte`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
