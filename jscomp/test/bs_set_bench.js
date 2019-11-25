@@ -52,7 +52,7 @@ console.timeEnd("test/bs_set_bench.ml 21");
 
 var count = 1000000;
 
-var N = 0;
+var N = /* alias */0;
 
 exports.count = count;
 exports.N = N;

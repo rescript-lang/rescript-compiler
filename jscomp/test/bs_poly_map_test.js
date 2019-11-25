@@ -321,13 +321,13 @@ b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", Belt_Array.eq(Belt_
 
 Mt.from_pair_suites("Bs_poly_map_test", suites.contents);
 
-var M = 0;
+var M = /* alias */0;
 
-var N = 0;
+var N = /* alias */0;
 
-var A = 0;
+var A = /* alias */0;
 
-var I = 0;
+var I = /* alias */0;
 
 exports.suites = suites;
 exports.test_id = test_id;

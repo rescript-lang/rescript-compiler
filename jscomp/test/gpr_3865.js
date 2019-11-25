@@ -8,7 +8,7 @@ console.log(Gpr_3865_foo.$$return);
 
 console.log(Gpr_3865_foo.$$return);
 
-var F = 0;
+var F = /* alias */0;
 
 exports.F = F;
 exports.B = B;
