@@ -171,6 +171,7 @@ let exp_need_paren  (e : J.expression) =
   | Raw_js_code (_, Exp)
   | Fun _ 
   | Raw_js_function _ 
+  | Caml_block (_,_,_, (Blk_record _ | Blk_module _))
   | Object _ -> true
   | Raw_js_code (_,Stmt)
   | Length _

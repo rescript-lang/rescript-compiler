@@ -2,12 +2,13 @@
 var cp = require("child_process");
 var path = require("path");
 
-var file = process.argv[2]
-console.log(file)
+var file = process.argv[2];
+console.log(file);
 var fmt = path.parse(file);
 
 process.env.BS_DEBUG_FILE = file;
-
-cp.execSync(`touch ${file} && ninja ${fmt.dir}/${fmt.name}.cmj`, {
+var ninja = path.join(__dirname, "..", "vendor", "ninja", "snapshot", 
+  `ninja${require('./config.js').sys_extension}`);
+cp.execSync(`touch ${file} && ${ninja} ${fmt.dir}/${fmt.name}.cmj`, {
   stdio: [0, 1, 2]
 });
