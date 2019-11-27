@@ -38,6 +38,8 @@ let setup_env () =
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
+  Builtin_attributes.check_duplicated_labels :=
+    Record_attributes_check.check_duplicated_labels;
   Lambda.fld_record := Record_attributes_check.fld_record;
   Lambda.fld_record_set := Record_attributes_check.fld_record_set;
   Lambda.blk_record := Record_attributes_check.blk_record;

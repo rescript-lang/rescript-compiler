@@ -65,3 +65,12 @@ and obj = {
 let f4  ({ x; y; z = {hi }}: entry) = 
   (x + y + hi) * 2
   
+#if 0 then
+type t5 = {
+  x : int ;
+  y : int [@bs.as "x"] 
+  (* either x or y is a mistake *)
+}   
+
+let v5  = {x = 3 ; y = 2}
+#end
