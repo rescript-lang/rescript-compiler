@@ -4,8 +4,17 @@
 
 # 7.0.0 
 
-
-Docs
+- #3982 bs.as for record support (language level feature)
+- #3989 #3993 check renamed label is unique when using bs.as 
+- #3985 more precise runtime information passed down from upstream, fix a corner case of compiling ocaml class
+- #3986 more precise runtime information passed down from upstream, add module alias comments in generated code
+- #3991 #3980 fix a corner case when printing js object in statement position
+- #3977 #3978 not relying on ref internal for bucklescript runtime
+- #3976 add bs js playground reason support
+- #3974 bsb tweak react hooks template README
+- #3971 docs about format of lib/bs/.bsbuild
+- #3967 #3973 fix recursive value initialization
+- #3972 upgrade repl.js to 4.06.1
 - #3890 Fix typo in bucklescript readme
 - #3898 #3900 #3911 #3913 #3915 #3925 #3928 #3929 #3932 #3936 #3934 OCaml record as Js object
 - #3945 sync refmt 3.5.3
