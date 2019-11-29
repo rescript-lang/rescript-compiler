@@ -234,8 +234,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_array -> 
       let info : Lam_tag_info.t = Blk_array in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_variant s -> 
-      let info : Lam_tag_info.t = Blk_variant s in
+    | Blk_poly_var s -> 
+      let info : Lam_tag_info.t = Blk_poly_var s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_record s -> 
       let info : Lam_tag_info.t = Blk_record s in

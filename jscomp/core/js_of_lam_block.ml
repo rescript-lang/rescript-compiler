@@ -56,12 +56,13 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   | Fld_poly_var_content 
   | Fld_record_inline _
   | Fld_record_extension _
+  | Fld_extension_slot
     -> 
     E.array_index_by_int  
       ?comment:(Lam_compat.str_of_field_info field_info) e i 
   | Fld_record {name}
     -> E.record_access e name i
-  | Fld_module name
+  | Fld_module {name}
     -> E.module_access e name i
 let field_by_exp e i = 
   E.array_index e i 

@@ -45,7 +45,7 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_constructor (n, _) -> Some n 
   | Blk_tuple -> Some "tuple"
   | Blk_class -> Some "class"
-  | Blk_variant x -> Some ("`" ^  x)
+  | Blk_poly_var x -> Some ("`" ^  x)
   | Blk_record _ -> None
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined (_,ctor,_) -> Some ctor

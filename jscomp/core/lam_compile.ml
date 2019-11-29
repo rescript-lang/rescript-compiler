@@ -1338,7 +1338,7 @@ and compile_apply
          this information, we should fix [get_exp_with_args]
       *)
       begin match fld_info with 
-        | Fld_module fld_name -> 
+        | Fld_module {name = fld_name} -> 
           compile_external_field_apply  args id fld_name  lambda_cxt
         | _ -> assert false
       end     
@@ -1407,7 +1407,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
     | {primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
       begin match fld_info with 
-      | Fld_module field -> 
+      | Fld_module {name = field} -> 
          compile_external_field lambda_cxt id field 
       | _ -> assert false  
       end

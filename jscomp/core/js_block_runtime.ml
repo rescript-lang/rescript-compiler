@@ -32,7 +32,7 @@ let tag_is_zero (tag : J.expression) =
   (tag : J.expression)
   (tag_info : J.tag_info) = 
   match tag_info with 
-  | Blk_variant _     
+  | Blk_poly_var _     
   | Blk_constructor _   -> true
 #if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined _ -> true  
@@ -52,7 +52,7 @@ let tag_is_zero (tag : J.expression) =
 
 let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) = 
   match  tag_info with 
-  | Blk_variant _ 
+  | Blk_poly_var _ 
   | Blk_module _
   | Blk_module_export
   | Blk_record _  

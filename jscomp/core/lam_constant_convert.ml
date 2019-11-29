@@ -68,8 +68,8 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Blk_array -> 
       let t : Lam_tag_info.t = Blk_array in 
       Const_block (i,t, Ext_list.map xs convert_constant )
-    | Blk_variant s -> 
-      let t : Lam_tag_info.t = Blk_variant s in 
+    | Blk_poly_var s -> 
+      let t : Lam_tag_info.t = Blk_poly_var s in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
     | Blk_record s -> 
       let t : Lam_tag_info.t = Blk_record s in 
