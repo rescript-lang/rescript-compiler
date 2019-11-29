@@ -64,7 +64,8 @@ and obj = {
 
 let f4  ({ x; y; z = {hi }}: entry) = 
   (x + y + hi) * 2
-  
+
+
 #if 0 then
 type t5 = {
   x : int ;
@@ -74,3 +75,9 @@ type t5 = {
 
 let v5  = {x = 3 ; y = 2}
 #end
+
+type t6 = {
+  x : int [@bs.as "x"];
+  y : int [@bs.as "y"]
+}
+(* allow this case *)
