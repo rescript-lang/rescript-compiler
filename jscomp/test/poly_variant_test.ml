@@ -130,4 +130,16 @@ let register readline =
 let test readline x  = 
   on readline x 
 
+
+let p_is_int_test x = 
+  match x with 
+  | `a -> 2 
+  | `b _ -> 3 
+
+let u = `b 2  
+
+let () = 
+  eq __LOC__ 2 (p_is_int_test `a);
+  eq __LOC__ 3 (p_is_int_test u)
+
 let () = Mt.from_pair_suites __MODULE__ !suites

@@ -120,6 +120,21 @@ function test(readline, x) {
   return /* () */0;
 }
 
+function p_is_int_test(x) {
+  if (typeof x === "number") {
+    return 2;
+  } else {
+    return 3;
+  }
+}
+
+eq("File \"poly_variant_test.ml\", line 142, characters 5-12", 2, 2);
+
+eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test(/* `b */[
+          98,
+          2
+        ]));
+
 Mt.from_pair_suites("Poly_variant_test", suites.contents);
 
 function on2(prim, prim$1) {
@@ -144,4 +159,5 @@ exports.test = test;
 exports.on2 = on2;
 exports.read = read;
 exports.readN = readN;
+exports.p_is_int_test = p_is_int_test;
 /*  Not a pure module */
