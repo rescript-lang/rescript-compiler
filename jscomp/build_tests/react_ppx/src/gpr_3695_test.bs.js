@@ -4,9 +4,9 @@
 var Foo = require("Foo");
 var Curry = require("bs-platform/lib/js/curry.js");
 
-var React = /* module */[];
+var React = { };
 
-var Test = /* module */[];
+var Test = { };
 
 function test(className) {
   return Curry._1(Foo, {
