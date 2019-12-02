@@ -652,7 +652,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       let rec aux fields args (var : Ident.t) i =
         match fields, args with 
         | [], [] -> true 
-        | f :: fields, Lprim {primitive = Pfield (pos, Fld_module f1); args = [Lglobal_module v1 | Lvar v1]} :: args 
+        | f :: fields, Lprim {primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1]} :: args 
           -> 
             pos = i && 
             f = f1 &&
@@ -660,7 +660,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         | _, _ -> false in   
       begin match fields, args with   
       | field1 :: rest, 
-          Lprim{primitive = Pfield (pos, Fld_module f1); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
+          Lprim{primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
           ->
           if pos = 0 && field1 = f1 && aux rest args1 v1 1 then 
             lam

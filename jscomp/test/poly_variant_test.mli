@@ -37,3 +37,6 @@ val on2 :
 
 val read : string -> string
 val readN : string -> string
+
+val p_is_int_test 
+  : [`a | `b of int] -> int

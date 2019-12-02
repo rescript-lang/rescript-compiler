@@ -438,7 +438,7 @@ let lambda ppf v  =
         "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
       fprintf ppf ")@ %a)@]"  lam body
     | Lprim { 
-        primitive = Pfield (n,Fld_module s); 
+        primitive = Pfield (n,Fld_module {name = s}); 
         args = [ Lglobal_module id ]
         ;  _} ->
       fprintf ppf "%s.%s/%d" id.name s n

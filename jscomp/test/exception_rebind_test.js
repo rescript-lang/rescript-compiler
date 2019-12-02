@@ -13,9 +13,12 @@ var B = {
   F: E
 };
 
+var A0 = Caml_exceptions.create("Exception_rebind_test.A0");
+
 var H = Exception_def.A;
 
 exports.A = A;
 exports.B = B;
 exports.H = H;
+exports.A0 = A0;
 /* Exception_def Not a pure module */

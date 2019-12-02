@@ -44,14 +44,14 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   | Lvar v -> arity_of_var meta v 
   | Lconst _ -> Lam_arity.non_function_arity_info
   | Llet(_,_,_, l ) -> get_arity meta l 
-  | Lprim {primitive = Pfield (_, Fld_module fld_name); 
+  | Lprim {primitive = Pfield (_, Fld_module {name = fld_name}); 
            args =  [ Lglobal_module id  ]; _} -> 
     begin match (Lam_compile_env.query_external_id_info id fld_name).arity with 
       | Single x -> x 
       | Submodule _ -> Lam_arity.na
     end
   | Lprim {primitive = Pfield (m,_); 
-           args =  [ Lprim{primitive = Pfield(n,Fld_module fld_name); 
+           args =  [ Lprim{primitive = Pfield(n,Fld_module {name = fld_name}); 
                            args = [ Lglobal_module id]}  ]
           ; _} ->
     begin match (Lam_compile_env.query_external_id_info id fld_name ).arity with 

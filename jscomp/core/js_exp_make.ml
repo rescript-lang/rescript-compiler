@@ -205,7 +205,7 @@ let make_block ?comment
     | Blk_extension 
     | Blk_class 
     | Blk_constructor _ 
-    | Blk_variant _ 
+    | Blk_poly_var _ 
     | Blk_na _
       ->  es
   in
@@ -296,7 +296,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
     {comment ; expression_desc = Object ([])}
   | Blk_constructor _ 
   | Blk_tuple | Blk_array
-  | Blk_variant _ | Blk_extension_slot 
+  | Blk_poly_var _ | Blk_extension_slot 
   | Blk_extension | Blk_na _ 
   | Blk_record_inlined _ 
   | Blk_record_ext _ 

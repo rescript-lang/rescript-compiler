@@ -86,15 +86,15 @@ type meth_kind = Lambda.meth_kind
 type field_dbg_info = Lambda.field_dbg_info =
   | Fld_na
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
-  | Fld_module of string 
+  | Fld_module of {name : string }
 #if OCAML_VERSION =~ ">4.03.0"  then 
-  | Fld_record_inline of string 
-  | Fld_record_extension of string 
+  | Fld_record_inline of {name : string}
+  | Fld_record_extension of {name : string}
 #end  
   | Fld_tuple
   | Fld_poly_var_tag
   | Fld_poly_var_content
-
+  | Fld_extension_slot
   
 val str_of_field_info : 
   field_dbg_info -> 

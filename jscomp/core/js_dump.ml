@@ -851,7 +851,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
               TODO: we still need clean up local module compilation 
               to make it more obvious
             *)
-        | Blk_variant name ->  
+        | Blk_poly_var name ->  
           dbg_poly_var f;
           P.paren_group f 1 (fun _ -> arguments cxt f [ 
               E.str name;

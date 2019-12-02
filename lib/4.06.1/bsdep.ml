@@ -28010,14 +28010,17 @@ let rec check_duplicated_labels_aux
     | {pld_name= ({txt} as pld_name); pld_attributes}::rest ->
         if String_set.mem coll txt then Some            pld_name
         else 
-          let coll = String_set.add coll txt in
+          let coll_with_lbl = String_set.add coll txt in
           match Ext_list.find_opt pld_attributes find_name_with_loc with 
-          | None -> check_duplicated_labels_aux rest coll
+          | None -> check_duplicated_labels_aux rest coll_with_lbl
           | Some ({txt = s;} as l) -> 
-            if String_set.mem coll s then  
+            if String_set.mem coll s  
+              (*use coll to make check a bit looser
+                allow cases like [ x : int [@bs.as "x"]]
+               *) then  
               Some l
             else 
-              check_duplicated_labels_aux rest (String_set.add coll s)
+              check_duplicated_labels_aux rest (String_set.add coll_with_lbl s)
 
 let check_duplicated_labels lbls = 
     check_duplicated_labels_aux lbls String_set.empty             
@@ -40831,7 +40834,7 @@ type t =
   | Blk_constructor of string * int
   | Blk_tuple
   | Blk_array
-  | Blk_variant of string 
+  | Blk_poly_var of string 
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension_slot
