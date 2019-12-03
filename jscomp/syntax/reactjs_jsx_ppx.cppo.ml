@@ -355,9 +355,8 @@ let makePropsName ~loc name =
   }
 
 #if OCAML_VERSION >= (4,3,0)
-let makeObjectField loc (str, _attrs, type_) =
-  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
-  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
+let makeObjectField loc (str, attrs, type_) =
+  Otag ({ loc; txt = str }, attrs, type_)
 #endif
 
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
