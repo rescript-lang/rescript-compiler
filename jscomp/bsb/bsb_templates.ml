@@ -995,6 +995,206 @@ let root = OCamlRes.Res.([
        </body>\n\
        </html>\n\
        ")]) ;
+  Dir  ("react-starter", [
+    Dir  ("src", [
+      File  ("Index.re",
+        "[%bs.raw {|require(\"./index.css\")|}];\n\
+         \n\
+         ReactDOMRe.renderToElementWithId(<App />, \"root\");\n\
+         ") ;
+      File  ("index.css",
+        "body {\n\
+        \  margin: 0;\n\
+        \  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n\
+        \    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n\
+        \    sans-serif;\n\
+        \  -webkit-font-smoothing: antialiased;\n\
+        \  -moz-osx-font-smoothing: grayscale;\n\
+         }\n\
+         \n\
+         main {\n\
+        \  padding: 20px;\n\
+         }\n\
+         ") ;
+      File  ("App.re",
+        "type state = {count: int};\n\
+         \n\
+         type action =\n\
+        \  | Increment\n\
+        \  | Decrement;\n\
+         \n\
+         let initialState = {count: 0};\n\
+         \n\
+         let reducer = (state, action) =>\n\
+        \  switch (action) {\n\
+        \  | Increment => {count: state.count + 1}\n\
+        \  | Decrement => {count: state.count - 1}\n\
+        \  };\n\
+         \n\
+         [@react.component]\n\
+         let make = () => {\n\
+        \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
+         \n\
+        \  <main>\n\
+        \    {React.string(\"Simple counter with reducer\")}\n\
+        \    <div>\n\
+        \      <button onClick={_ => dispatch(Decrement)}>\n\
+        \        {React.string(\"Decrement\")}\n\
+        \      </button>\n\
+        \      <span> {state.count |> string_of_int |> React.string} </span>\n\
+        \      <button onClick={_ => dispatch(Increment)}>\n\
+        \        {React.string(\"Increment\")}\n\
+        \      </button>\n\
+        \    </div>\n\
+        \  </main>;\n\
+         };\n\
+         ") ;
+      File  ("index.html",
+        "<!DOCTYPE html>\n\
+         <html lang=\"en\">\n\
+        \  <head>\n\
+        \    <meta charset=\"UTF-8\" />\n\
+        \    <title>Reason react starter</title>\n\
+        \  </head>\n\
+        \  <body>\n\
+        \    <div id=\"root\"></div>\n\
+        \    <script src=\"/Index.js\"></script>\n\
+        \  </body>\n\
+         </html>\n\
+         ")]) ;
+    File  ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"reason-react-starter\",\n\
+      \  \"reason\": {\n\
+      \    \"react-jsx\": 3\n\
+      \  },\n\
+      \  \"sources\": {\n\
+      \    \"dir\": \"src\",\n\
+      \    \"subdirs\": true\n\
+      \  },\n\
+      \  \"bsc-flags\": [\"-bs-super-errors\", \"-bs-no-version-header\"],\n\
+      \  \"package-specs\": [\n\
+      \    {\n\
+      \      \"module\": \"commonjs\",\n\
+      \      \"in-source\": true\n\
+      \    }\n\
+      \  ],\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"namespace\": true,\n\
+      \  \"bs-dependencies\": [\"reason-react\"],\n\
+      \  \"refmt\": 3\n\
+       }\n\
+       ") ;
+    File  ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w -ws _ \",\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"webpack\": \"webpack -w\",\n\
+      \    \"webpack:production\": \"NODE_ENV=production webpack\",\n\
+      \    \"server\": \"webpack-dev-server\",\n\
+      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\",\n\
+      \    \"ReasonReact\",\n\
+      \    \"reason-react\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"dependencies\": {\n\
+      \    \"react\": \"^16.8.1\",\n\
+      \    \"react-dom\": \"^16.8.1\",\n\
+      \    \"reason-react\": \">=0.7.0\"\n\
+      \  },\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+      \    \"webpack\": \"^4.0.1\",\n\
+      \    \"webpack-cli\": \"^3.1.1\",\n\
+      \    \"webpack-dev-server\": \"^3.1.8\",\n\
+      \    \"html-webpack-plugin\": \"^3.2.0\",\n\
+      \    \"style-loader\": \"^1.0.0\",\n\
+      \    \"css-loader\": \"^3.2.0\"\n\
+      \  }\n\
+       }\n\
+       ") ;
+    File  (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
+       *.bs.js\n\
+       ") ;
+    File  ("README.md",
+      "# Reason react starter\n\
+       \n\
+       ## Run Project\n\
+       \n\
+       ```sh\n\
+       npm install\n\
+       npm start\n\
+       # in another tab\n\
+       npm run server\n\
+       ```\n\
+       \n\
+       View the app in the browser at http://localhost:8000. Running in this environment provides hot reloading and support for routing; just edit and save the file and the browser will automatically refresh.\n\
+       \n\
+       To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 npm run server`).\n\
+       \n\
+       ## Build for Production\n\
+       \n\
+       ```sh\n\
+       npm run clean\n\
+       npm run build\n\
+       npm run webpack:production\n\
+       ```\n\
+       \n\
+       This will replace the development artifact `build/Index.js` for an optimized version as well as copy `src/index.html` into `build/`. You can then deploy the contents of the `build` directory (`index.html` and `Index.js`).\n\
+       \n\
+       **To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `\"commonjs\"` to `\"es6\"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.\n\
+       ") ;
+    File  ("webpack.config.js",
+      "const path = require(\"path\")\n\
+       const HtmlWebpackPlugin = require(\"html-webpack-plugin\")\n\
+       const outputDir = path.join(__dirname, \"build/\")\n\
+       \n\
+       const isProd = process.env.NODE_ENV === \"production\"\n\
+       \n\
+       module.exports = {\n\
+      \  entry: \"./src/Index.bs.js\",\n\
+      \  mode: isProd ? \"production\" : \"development\",\n\
+      \  devtool: \"source-map\",\n\
+      \  output: {\n\
+      \    path: outputDir,\n\
+      \    filename: \"Index.js\"\n\
+      \  },\n\
+      \  plugins: [\n\
+      \    new HtmlWebpackPlugin({\n\
+      \      template: \"src/index.html\",\n\
+      \      inject: false\n\
+      \    })\n\
+      \  ],\n\
+      \  devServer: {\n\
+      \    compress: true,\n\
+      \    contentBase: outputDir,\n\
+      \    port: process.env.PORT || 8000,\n\
+      \    historyApiFallback: true\n\
+      \  },\n\
+      \  module: {\n\
+      \    rules: [\n\
+      \      {\n\
+      \        test: /\\.css$/,\n\
+      \        use: [\"style-loader\", \"css-loader\"]\n\
+      \      }\n\
+      \    ]\n\
+      \  }\n\
+       }\n\
+       ")]) ;
   Dir  ("tea", [
     Dir  ("src", [
       File  ("main.ml",
