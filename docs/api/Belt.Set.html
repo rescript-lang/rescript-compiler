@@ -99,17 +99,14 @@
 </div>
 <h1>Module <a href="type_Belt.Set.html">Belt.Set</a></h1>
 
-<pre><span class="keyword">module</span> Set: <code class="type"><a href="Belt_Set.html">Belt_Set</a></code></pre><div class="info module top">
+<pre><span id="MODULESet"><span class="keyword">module</span> Set</span>: <code class="type"><a href="Belt_Set.html">Belt_Set</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.Set.html"><code class="code">Belt.Set</code></a>
-<p>
 
     The top level provides generic <b>immutable</b> set operations.
-<p>
 
     It also has three specialized inner modules
     <code class="code">Belt.Set.Int</code>, <code class="code">Belt.Set.String</code> and
-<p>
 
     <code class="code">Belt.Set.Dict</code>: This module separates data from function
     which is more verbose but slightly more efficient<br>
@@ -120,37 +117,34 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_Set.Int.html">Int</a>: <code class="type"><a href="Belt_SetInt.html">Belt_SetInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_Set.Int.html">Int</a></span>: <code class="type"><a href="Belt_SetInt.html">Belt_SetInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when value type is <code class="code">int</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_Set.String.html">String</a>: <code class="type"><a href="Belt_SetString.html">Belt_SetString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_Set.String.html">String</a></span>: <code class="type"><a href="Belt_SetString.html">Belt_SetString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when value type is <code class="code">string</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_Set.Dict.html">Dict</a>: <code class="type"><a href="Belt_SetDict.html">Belt_SetDict</a></code></pre> <div class="info">                     
+<pre><span id="MODULEDict"><span class="keyword">module</span> <a href="Belt_Set.Dict.html">Dict</a></span>: <code class="type"><a href="Belt_SetDict.html">Belt_SetDict</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation<br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('value, 'identity)</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     <code class="code">('value, 'identity) t</code>
-<p>
 
     <code class="code">'value</code> is the element type
-<p>
 
     <code class="code">'identity</code> the identity of the collection<br>
  
@@ -159,9 +153,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('value, 'id)</code> id</span> = <code class="type">('value, 'id) <a href="Belt_Id.html#TYPEcomparable">Belt_Id.comparable</a></code> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The identity needed for making a set from scratch<br>
@@ -199,10 +192,8 @@
 <pre><span id="VALfromSortedArrayUnsafe"><span class="keyword">val</span> fromSortedArrayUnsafe</span> : <code class="type">'value array -> id:('value, 'id) <a href="Belt_Set.html#TYPEid">id</a> -> ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">fromSortedArrayUnsafe xs ~id</code>
-<p>
 
     The same as <a href="Belt_Set.html#VALfromArray"><code class="code">Belt_Set.fromArray</code></a> except it is after assuming the input array <code class="code">x</code> is already sorted
-<p>
 
     <b>Unsafe</b><br>
  
@@ -259,7 +250,6 @@
 <pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value array -> ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mergeMany s xs</code>
-<p>
 
     Adding each of <code class="code">xs</code> to <code class="code">s</code>, note unlike <a href="Belt_Set.html#VALadd"><code class="code">Belt_Set.add</code></a>,
     the reference of return value might be changed even if all values in <code class="code">xs</code>
@@ -292,7 +282,6 @@
 <pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value array -> ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">removeMany s xs</code>
-<p>
 
     Removing each of <code class="code">xs</code> to <code class="code">s</code>, note unlike <a href="Belt_Set.html#VALremove"><code class="code">Belt_Set.remove</code></a>,
     the reference of return value might be changed even if none in <code class="code">xs</code>
@@ -378,7 +367,7 @@
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq s0 s1</code><br>
-<div class="tag"> <b>Returns</b> true if <code class="code">toArray s0 = toArray s1</code><br>
+<div class="tag"> <li><b>Returns</b> true if <code class="code">toArray s0 = toArray s1</code></li>
  </div> 
                     </div>
                     
@@ -491,7 +480,6 @@
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order
-<p>
 
     <b>See</b> <a href="Belt_Set.html#VALtoArray"><code class="code">Belt_Set.toArray</code></a><br>
  
@@ -503,7 +491,7 @@
 <pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minimum s0</code><br>
-<div class="tag"> <b>Returns</b> the minimum element of the collection, <code class="code">None</code> if it is empty<br>
+<div class="tag"> <li><b>Returns</b> the minimum element of the collection, <code class="code">None</code> if it is empty</li>
  </div> 
                     </div>
                     
@@ -513,7 +501,7 @@
 <pre><span id="VALminUndefined"><span class="keyword">val</span> minUndefined</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minUndefined s0</code><br>
-<div class="tag"> <b>Returns</b> the minimum element of the collection, <code class="code">undefined</code> if it is empty<br>
+<div class="tag"> <li><b>Returns</b> the minimum element of the collection, <code class="code">undefined</code> if it is empty</li>
  </div> 
                     </div>
                     
@@ -523,7 +511,7 @@
 <pre><span id="VALmaximum"><span class="keyword">val</span> maximum</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maximum s0</code><br>
-<div class="tag"> <b>Returns</b> the maximum element of the collection, <code class="code">None</code> if it is empty<br>
+<div class="tag"> <li><b>Returns</b> the maximum element of the collection, <code class="code">None</code> if it is empty</li>
  </div> 
                     </div>
                     
@@ -533,7 +521,7 @@
 <pre><span id="VALmaxUndefined"><span class="keyword">val</span> maxUndefined</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maxUndefined s0</code><br>
-<div class="tag"> <b>Returns</b> the maximum element of the collection, <code class="code">undefined</code> if it is empty<br>
+<div class="tag"> <li><b>Returns</b> the maximum element of the collection, <code class="code">undefined</code> if it is empty</li>
  </div> 
                     </div>
                     
@@ -543,9 +531,9 @@
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value -> 'value option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">get s0 k</code><br>
-<div class="tag"> <b>Returns</b> the reference of the value <code class="code">k'</code> which is equivalent to <code class="code">k</code>
+<div class="tag"> <li><b>Returns</b> the reference of the value <code class="code">k'</code> which is equivalent to <code class="code">k</code>
     using  the comparator specifiecd by this collection, <code class="code">None</code>
-    if it does not exist<br>
+    if it does not exist</li>
  </div> 
                     </div>
                     
@@ -564,7 +552,6 @@
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> 'value -> 'value</code></pre><div class="info ">
                     <div class="not-examples">
                     <b>See</b> <a href="Belt_Set.html#VALget"><code class="code">Belt_Set.get</code></a>
-<p>
 
     <b>raise</b> if not exist<br>
  
@@ -576,23 +563,25 @@
 <pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -><br>       'value -> (('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a>) * bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">split set ele</code><br>
-<div class="tag"> <b>Returns</b> a tuple <code class="code">((smaller, larger), present)</code>,
-    <code class="code">present</code> is true when <code class="code">ele</code> exist in <code class="code">set</code><br>
+<div class="tag"> <li><b>Returns</b> a tuple <code class="code">((smaller, larger), present)</code>,
+    <code class="code">present</code> is true when <code class="code">ele</code> exist in <code class="code">set</code></li>
  </div> 
                     </div>
                     
                     </div>
 
-                  
+                  <p>Below are operations only when better performance needed,
+    it is still safe API but more verbose.
+    More API will be exposed by needs</p>
+
 <pre><span id="VALgetData"><span class="keyword">val</span> getData</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">Belt_SetDict.t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getData s0</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the raw data (detached from comparator),
+<div class="tag"> <li><b>Returns</b> the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
-    without boxing<br>
+    without boxing</li>
  </div> 
                     </div>
                     
@@ -602,10 +591,9 @@
 <pre><span id="VALgetId"><span class="keyword">val</span> getId</span> : <code class="type">('value, 'id) <a href="Belt_Set.html#TYPEt">t</a> -> ('value, 'id) <a href="Belt_Set.html#TYPEid">id</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getId s0</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the identity of <code class="code">s0</code><br>
+<div class="tag"> <li><b>Returns</b> the identity of <code class="code">s0</code></li>
  </div> 
                     </div>
                     
@@ -615,10 +603,9 @@
 <pre><span id="VALpackIdData"><span class="keyword">val</span> packIdData</span> : <code class="type">id:('value, 'id) <a href="Belt_Set.html#TYPEid">id</a> -><br>       data:('value, 'id) <a href="Belt_SetDict.html#TYPEt">Belt_SetDict.t</a> -> ('value, 'id) <a href="Belt_Set.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">packIdData ~id ~data</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the packed collection<br>
+<div class="tag"> <li><b>Returns</b> the packed collection</li>
  </div> 
                     </div>
                     

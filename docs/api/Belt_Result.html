@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Belt_Result.html">Belt_Result</a></h1>
 
-<pre><span class="keyword">module</span> Belt_Result: <code class="code">sig</code> <a href="Belt_Result.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEBelt_Result"><span class="keyword">module</span> Belt_Result</span>: <code class="code">sig</code> <a href="Belt_Result.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.Result.html"><code class="code">Belt.Result</code></a>
-<p>
 
     Utilities for result data type.<br>
  
@@ -111,30 +110,34 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+<p><code class="code">Belt.Result</code> is a data type with two variants: <code class="code">Ok</code> and <code class="code">Error</code>. Each of these variants can
+  contain data, and those two pieces of data need not have the same data type. <code class="code">Belt.Result</code> is
+  useful when you need to not only determine whether some data is valid or not (use <code class="code">Belt.Option</code>
+  for that), but also keep information about the invalid data.</p>
+
+<p>In the examples, we presume the existence of two variables:</p>
+
 <pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type">('a, 'b)</code> t</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Ok"><span class="constructor">Ok</span></span></td><td><span class="keyword">of</span></td><td><code class="type">'a</code></code></td>
+<code><span id="TYPEELTt.Ok"><span class="constructor">Ok</span></span> <span class="keyword">of</span> <code class="type">'a</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Error"><span class="constructor">Error</span></span></td><td><span class="keyword">of</span></td><td><code class="type">'b</code></code></td>
+<code><span id="TYPEELTt.Error"><span class="constructor">Error</span></span> <span class="keyword">of</span> <code class="type">'b</code></code></td>
 
 </tr></table>
 
-</div>
 
 
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getExn res</code>
-<p>
 
   when <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>
   when <code class="code">res</code> is <code class="code">Error m</code>, <b>raise</b> an exception<br>
@@ -152,7 +155,6 @@
 <pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> 'b -> ('a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mapWithDefault res default f</code>
-<p>
 
   When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>, otherwise <code class="code">default</code>.<br>
  
@@ -169,7 +171,6 @@
 <pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">map res f</code>
-<p>
 
   When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">Ok (f n)</code>. Otherwise returns <code class="code">res</code> unchanged.
   Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns an ordinary value.<br>
@@ -188,7 +189,6 @@
 <pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('a -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a>) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">flatMap res f</code>
-<p>
 
   When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>. Otherwise, returns <code class="code">res</code> unchanged.
   Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns a <code class="code">Belt.Result</code>.<br>
@@ -213,7 +213,6 @@
 <pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getWithDefault res defaultValue</code>
-<p>
 
   if <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>, otherwise <code class="code">default</code><br>
  
@@ -229,7 +228,6 @@
 <pre><span id="VALisOk"><span class="keyword">val</span> isOk</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">isOk res</code>
-<p>
 
   Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Ok n</code>, <code class="code">false</code> if it is the <code class="code">Error e</code> variant.<br>
  
@@ -241,7 +239,6 @@
 <pre><span id="VALisError"><span class="keyword">val</span> isError</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">isError res</code>
-<p>
 
   Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Error e</code>, <code class="code">false</code> if it is the <code class="code">Ok n</code> variant.<br>
  
@@ -254,7 +251,6 @@
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq res1 res2 f</code>
-<p>
 
   Determine if two <code class="code">Belt.Result</code> variables are equal with respect to an equality function.
   If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
@@ -284,12 +280,10 @@
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">cmp res1 res2 f</code>
-<p>
 
   Compare two <code class="code">Belt.Result</code> variables with respect to a comparison function.
   The comparison function returns -1 if the first variable is "less than" the second,
   0 if the two variables are equal, and 1 if the first is "greater than" the second.
-<p>
 
   If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
   If <code class="code">res1</code> is of the form <code class="code">Error e</code> and <code class="code">res2</code> of the form <code class="code">Ok n</code>, return -1 (nothing is less than something)

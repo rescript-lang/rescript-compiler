@@ -98,16 +98,16 @@
 &nbsp;</div>
 <h1>Module <a href="type_Belt_internalMapInt.S.html">Belt_internalMapInt.S</a></h1>
 
-<pre><span class="keyword">module</span> S: <code class="type"><a href="Belt_SortArray.html">Belt_SortArray</a></code></pre><hr width="100%">
+<pre><span id="MODULES"><span class="keyword">module</span> S</span>: <code class="type"><a href="Belt_SortArray.html">Belt_SortArray</a></code></pre><hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_SortArray.Int.html">Int</a>: <code class="type"><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_SortArray.Int.html">Int</a></span>: <code class="type"><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_SortArray.String.html">String</a>: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_SortArray.String.html">String</a></span>: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
@@ -136,7 +136,7 @@
 <pre><span id="VALisSorted"><span class="keyword">val</span> isSorted</span> : <code class="type">'a array -> ('a -> 'a -> int) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">isSorted arr cmp</code><br>
-<div class="tag"> <b>Returns</b> true if array is increasingly sorted (equal is okay )<br>
+<div class="tag"> <li><b>Returns</b> true if array is increasingly sorted (equal is okay )</li>
  </div> 
                     </div>
                      <div class="examples">
@@ -150,7 +150,6 @@
 <pre><span id="VALstableSortInPlaceBy"><span class="keyword">val</span> stableSortInPlaceBy</span> : <code class="type">'a array -> ('a -> 'a -> int) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stableSortBy xs cmp</code>
-<p>
 
     Sort xs in place using comparator <code class="code">cmp</code>, the stable means if the elements
     are equal, their order will be preserved<br>
@@ -164,10 +163,9 @@
 <pre><span id="VALstableSortBy"><span class="keyword">val</span> stableSortBy</span> : <code class="type">'a array -> ('a -> 'a -> int) -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stableSort xs cmp</code><br>
-<div class="tag"> <b>Returns</b> a fresh array
-<p>
+<div class="tag"> <li><b>Returns</b> a fresh array
 
-    The same as <a href="Belt_SortArray.html#VALstableSortInPlaceBy"><code class="code">Belt_SortArray.stableSortInPlaceBy</code></a> except that <code class="code">xs</code> is  not modified<br>
+    The same as <a href="Belt_SortArray.html#VALstableSortInPlaceBy"><code class="code">Belt_SortArray.stableSortInPlaceBy</code></a> except that <code class="code">xs</code> is  not modified</li>
  </div> 
                     </div>
                     
@@ -180,12 +178,10 @@
                     If value is not found and value is less than one or more elements in array,
   the negative number returned is the bitwise complement of the index of the first element
   that is larger than value.
-<p>
 
   If value is not found and value is greater than all elements in array,
   the negative number returned is the bitwise complement of
   (the index of the last element plus 1)
-<p>
 
   for example, if <code class="code">key</code> is smaller than all elements return <code class="code">-1</code> since <code class="code">lnot (-1) = 0</code>
   if <code class="code">key</code> is larger than all elements return <code class="code">- (len + 1)</code> since <code class="code">lnot (-(len+1)) = len</code><br>

@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Js.Null_undefined.html">Js.Null_undefined</a></h1>
 
-<pre><span class="keyword">module</span> Null_undefined: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULENull_undefined"><span class="keyword">module</span> Null_undefined</span>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre><hr width="100%">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a></code> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Local alias for <code class="code">'a Js.null_undefined</code><br>
@@ -153,7 +152,6 @@
 <pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Maps the contained value using the given function
-<p>
 
 If <code class="code">'a Js.null_undefined</code> contains a value, that value is unwrapped, mapped to a <code class="code">'b</code> using
 the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up and returned as <code class="code">'b Js.null_undefined</code><br>
@@ -170,7 +168,6 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> unit [@bs]) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Iterates over the contained value with the given function
-<p>
 
 If <code class="code">'a Js.null_undefined</code> contains a value, that value is unwrapped and applied to
 the given function.<br>
@@ -187,7 +184,6 @@ the given function.<br>
 <pre><span id="VALfromOption"><span class="keyword">val</span> fromOption</span> : <code class="type">'a option -> 'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Maps <code class="code">'a option</code> to <code class="code">'a Js.null_undefined</code>
-<p>
 
 <table>
 <tr> <td>Some a <td>-> <td>return a
@@ -204,7 +200,6 @@ the given function.<br>
 <pre><span id="VALtoOption"><span class="keyword">val</span> toOption</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
                     Maps <code class="code">'a Js.null_undefined</code> to <code class="code">'a option</code>
-<p>
 
 <table>
 <tr> <td>return a <td>-> <td>Some a

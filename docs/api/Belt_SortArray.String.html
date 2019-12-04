@@ -98,7 +98,7 @@
 &nbsp;</div>
 <h1>Module <a href="type_Belt_SortArray.String.html">Belt_SortArray.String</a></h1>
 
-<pre><span class="keyword">module</span> String: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre><div class="info module top">
+<pre><span id="MODULEString"><span class="keyword">module</span> String</span>: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
@@ -108,15 +108,14 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+
 <pre><span id="TYPEelement"><span class="keyword">type</span> <code class="type"></code>element</span> = <code class="type">string</code> </pre>
-</div>
 
 
 <pre><span id="VALstrictlySortedLength"><span class="keyword">val</span> strictlySortedLength</span> : <code class="type"><a href="Belt_SortArrayString.html#TYPEelement">element</a> array -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     The same as <a href="Belt_SortArray.html#VALstrictlySortedLength"><code class="code">Belt_SortArray.strictlySortedLength</code></a> except the comparator is fixed<br>
-<div class="tag"> <b>Returns</b> <code class="code">+n</code> means increasing order  <code class="code">-n</code> means negative order<br>
+<div class="tag"> <li><b>Returns</b> <code class="code">+n</code> means increasing order  <code class="code">-n</code> means negative order</li>
  </div> 
                     </div>
                     
@@ -155,12 +154,10 @@
                     If value is not found and value is less than one or more elements in array, 
   the negative number returned is the bitwise complement of the index of the first element 
   that is larger than value. 
-<p>
 
   If value is not found and value is greater than all elements in array,
   the negative number returned is the bitwise complement of 
   (the index of the last element plus 1)
-<p>
 
   for example, if <code class="code">key</code> is smaller than all elements return <code class="code">-1</code> since <code class="code">lnot (-1) = 0</code>
   if <code class="code">key</code> is larger than all elements return <code class="code">- (len + 1)</code> since <code class="code">lnot (-(len+1)) = len</code><br>

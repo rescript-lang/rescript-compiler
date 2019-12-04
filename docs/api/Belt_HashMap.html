@@ -99,15 +99,13 @@
 </div>
 <h1>Module <a href="type_Belt_HashMap.html">Belt_HashMap</a></h1>
 
-<pre><span class="keyword">module</span> Belt_HashMap: <code class="code">sig</code> <a href="Belt_HashMap.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEBelt_HashMap"><span class="keyword">module</span> Belt_HashMap</span>: <code class="code">sig</code> <a href="Belt_HashMap.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     A <b>mutable</b> Hash map which allows customized <code class="code">hash</code> behavior.
-<p>
 
     All data are parameterized by not its only type but also a unique identity in
     the time of initialization, so that two <i>HashMaps of ints</i> initialized with different
     <i>hash</i> functions will have different type.
-<p>
 
     For example:
     <pre class="codepre"><code class="code">      type t = int
@@ -124,29 +122,23 @@
         )
       let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
     </code></pre>
-<p>
 
     The invariant must be held: for two elements who are <i>equal</i>,
     their hashed value should be the same
-<p>
 
     Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
     it would not mix.
-<p>
 
     <pre class="codepre"><code class="code">      val s0 :  (int, I0.identity) t
       val s1 :  (int, I1.identity) t
     </code></pre>
-<p>
 
     We can add elements to the collection:
-<p>
 
     <pre class="codepre"><code class="code">      let () =
         add s1 0 "3";
         add s1 1 "3"
     </code></pre>
-<p>
 
     Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
  
@@ -156,22 +148,21 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a></span>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a></span>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'value, 'id)</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The type of hash tables from type <code class="code">'key</code> to type <code class="code">'value</code>.<br>
@@ -181,9 +172,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('a, 'id)</code> id</span> = <code class="type">('a, 'id) <a href="Belt_Id.html#TYPEhashable">Belt_Id.hashable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">hintSize:int -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
@@ -240,7 +230,6 @@
     where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">tbl</code>,
     and <code class="code">d1 ... dN</code> are the associated values.
     Each binding is presented exactly once to <code class="code">f</code>.
-<p>
 
     The order in which the bindings are passed to <code class="code">f</code> is unspecified.
     However, if the table contains several bindings for the same key,

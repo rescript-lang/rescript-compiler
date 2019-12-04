@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js.Float.html">Js.Float</a></h1>
 
-<pre><span class="keyword">module</span> Float: <code class="type"><a href="Js_float.html">Js_float</a></code></pre><div class="info module top">
+<pre><span id="MODULEFloat"><span class="keyword">module</span> Float</span>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     Provide utilities for manipulating JS types<br>
  
@@ -112,7 +112,7 @@
 <pre><span id="VAL_NaN"><span class="keyword">val</span> _NaN</span> : <code class="type">float</code></pre><div class="info ">
                     <div class="not-examples">
                     The special value "Not a Number"<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN">MDN</a></li>
  </div> 
                     </div>
                     
@@ -122,14 +122,12 @@
 <pre><span id="VALisNaN"><span class="keyword">val</span> isNaN</span> : <code class="type">float -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     Tests if the given value is <code class="code">_NaN</code>
-<p>
 
 Note that both <code class="code">_NaN = _NaN</code> and <code class="code">_NaN == _NaN</code> will return <code class="code">false</code>. <code class="code">isNaN</code> is
 therefore necessary to test for <code class="code">_NaN</code>.
-<p>
 
 <b>Returns</b> <code class="code">true</code> if the given value is <code class="code">_NaN</code>, <code class="code">false</code> otherwise<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN">MDN</a></li>
  </div> 
                     </div>
                     
@@ -139,10 +137,9 @@ therefore necessary to test for <code class="code">_NaN</code>.
 <pre><span id="VALisFinite"><span class="keyword">val</span> isFinite</span> : <code class="type">float -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     Tests if the given value is finite
-<p>
 
 <b>Returns</b> <code class="code">true</code> if the given value is a finite number, <code class="code">false</code> otherwise<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -165,11 +162,10 @@ let _ = Js.Float.isFinite 1234
 <pre><span id="VALtoExponential"><span class="keyword">val</span> toExponential</span> : <code class="type">float -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using exponential (scientific) notation
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in exponential notation<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -186,18 +182,15 @@ let _ = Js.log @@ Js.Float.toExponential 77.
 <pre><span id="VALtoExponentialWithPrecision"><span class="keyword">val</span> toExponentialWithPrecision</span> : <code class="type">float -> digits:int -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using exponential (scientific) notation
-<p>
 
 <b>digits</b> specifies how many digits should appear after the decimal point. The
 value must be in the range [0, 20] (inclusive).
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in exponential notation
-<p>
 
 The output will be rounded or padded with zeroes if necessary.<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -211,11 +204,10 @@ let _ = Js.log @@ Js.Float.toExponentialWithPrecision 77.1234 ~digits:2
 <pre><span id="VALtoFixed"><span class="keyword">val</span> toFixed</span> : <code class="type">float -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using fixed point notation
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point notation (usually)<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -232,18 +224,15 @@ let _ = Js.log @@ Js.Float.toFixed 1.2e21
 <pre><span id="VALtoFixedWithPrecision"><span class="keyword">val</span> toFixedWithPrecision</span> : <code class="type">float -> digits:int -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using fixed point notation
-<p>
 
 <b>digits</b> specifies how many digits should appear after the decimal point. The
 value must be in the range [0, 20] (inclusive). Defaults to <code class="code">0</code>.
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point notation (usually)
-<p>
 
 The output will be rounded or padded with zeroes if necessary.<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -260,16 +249,14 @@ let _ = Js.log @@ Js.Float.toFixedWithPrecision 0. ~digits:2
 <pre><span id="VALtoPrecision"><span class="keyword">val</span> toPrecision</span> : <code class="type">float -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using some fairly arbitrary rules
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)
-<p>
 
 <code class="code">toPrecision</code> differs from <code class="code">toFixed</code> in that the former will format the number
 with full precision, while the latter will not output any digits after the
 decimal point.<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -286,26 +273,22 @@ let _ = Js.log @@ Js.Float.toPrecision 1.2e21
 <pre><span id="VALtoPrecisionWithPrecision"><span class="keyword">val</span> toPrecisionWithPrecision</span> : <code class="type">float -> digits:int -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> using some fairly arbitrary rules
-<p>
 
 <b>digits</b> specifies how many digits should appear in total. The
 value must between 0 and some arbitrary number that's hopefully at least larger
 than 20 (for Node it's 21. Why? Who knows).
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point or scientific notation
-<p>
 
 The output will be rounded or padded with zeroes if necessary.
-<p>
 
 <code class="code">toPrecisionWithPrecision</code> differs from <code class="code">toFixedWithPrecision</code> in that the former
 will count all digits against the precision, while the latter will count only
 the digits after the decimal point. <code class="code">toPrecisionWithPrecision</code> will also use
 scientific notation if the specified precision is less than the number for digits
 before the decimal point.<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -322,10 +305,9 @@ let _ = Js.log @@ Js.Float.toPrecisionWithPrecision 0. ~digits:2
 <pre><span id="VALtoString"><span class="keyword">val</span> toString</span> : <code class="type">float -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> as a string
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -339,15 +321,13 @@ let _ = Js.log @@ Js.Float.toString 12345.6789
 <pre><span id="VALtoStringWithRadix"><span class="keyword">val</span> toStringWithRadix</span> : <code class="type">float -> radix:int -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Formats a <code class="code">float</code> as a string
-<p>
 
 <b>radix</b> specifies the radix base to use for the formatted number. The
 value must be in the range [2, 36] (inclusive).
-<p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<div class="tag"> <b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -370,7 +350,6 @@ let _ = Js.log @@ Js.Float.toStringWithRadix 123.456 ~radix:36
 <pre><span id="VALfromString"><span class="keyword">val</span> fromString</span> : <code class="type">string -> float</code></pre><div class="info ">
                     <div class="not-examples">
                     Parses the given <code class="code">string</code> into a <code class="code">float</code> using JavaScript semantics
-<p>
 
 <b>Returns</b> the number as a <code class="code">float</code> if successfully parsed, <code class="code">_NaN</code> otherwise.<br>
  

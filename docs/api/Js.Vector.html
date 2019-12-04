@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Js.Vector.html">Js.Vector</a></h1>
 
-<pre><span class="keyword">module</span> Vector: <code class="type"><a href="Js_vector.html">Js_vector</a></code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULEVector"><span class="keyword">module</span> Vector</span>: <code class="type"><a href="Js_vector.html">Js_vector</a></code></pre><hr width="100%">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a array</code> </pre>
-</div>
 
 
 <pre><span id="VALfilterInPlace"><span class="keyword">val</span> filterInPlace</span> : <code class="type">('a -> bool [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
@@ -157,7 +156,6 @@
    The first element has number 0.
    The last element has number <code class="code">Array.length a - 1</code>.
    You can also write <code class="code">a.(n)</code> instead of <code class="code">Array.get a n</code>.
-<p>
 
    Raise <code class="code">Invalid_argument "index out of bounds"</code>
    if <code class="code">n</code> is outside the range 0 to <code class="code">(Array.length a - 1)</code>.<br>
@@ -172,7 +170,6 @@
                     <code class="code">Array.set a n x</code> modifies array <code class="code">a</code> in place, replacing
    element number <code class="code">n</code> with <code class="code">x</code>.
    You can also write <code class="code">a.(n) &lt;- x</code> instead of <code class="code">Array.set a n x</code>.
-<p>
 
    Raise <code class="code">Invalid_argument "index out of bounds"</code>
    if <code class="code">n</code> is outside the range 0 to <code class="code">Array.length a - 1</code>.<br>
@@ -191,7 +188,6 @@
    Consequently, if <code class="code">x</code> is mutable, it is shared among all elements
    of the array, and modifying <code class="code">x</code> through one of the array entries
    will modify all other entries at the same time.
-<p>
 
    Raise <code class="code">Invalid_argument</code> if <code class="code">n &lt; 0</code> or <code class="code">n &gt; Sys.max_array_length</code>.
    If the value of <code class="code">x</code> is a floating-point number, then the maximum
@@ -204,7 +200,7 @@
                   
 <pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Raises</b> <code>RangeError</code> when <code class="code">n</code> is negative<br>
+                    <div class="tag"> <li><b>Raises</b> <code>RangeError</code> when <code class="code">n</code> is negative</li>
  </div> 
                     </div>
                     

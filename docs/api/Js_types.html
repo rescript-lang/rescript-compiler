@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js_types.html">Js_types</a></h1>
 
-<pre><span class="keyword">module</span> Js_types: <code class="code">sig</code> <a href="Js_types.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs_types"><span class="keyword">module</span> Js_types</span>: <code class="code">sig</code> <a href="Js_types.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                      
                     </div>
@@ -107,9 +107,8 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+
 <pre><span id="TYPEsymbol"><span class="keyword">type</span> <code class="type"></code>symbol</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Js symbol type only available in ES6<br>
@@ -119,13 +118,11 @@
                     </div>
 
                   
-<div class="type-declaration">
-<pre><span id="TYPEobj_val"><span class="keyword">type</span> <code class="type"></code>obj_val</span> </pre>
-</div>
 
-<div class="type-declaration">
+<pre><span id="TYPEobj_val"><span class="keyword">type</span> <code class="type"></code>obj_val</span> </pre>
+
+
 <pre><span id="TYPEundefined_val"><span class="keyword">type</span> <code class="type"></code>undefined_val</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     This type has only one value <code class="code">undefined</code><br>
@@ -135,9 +132,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEnull_val"><span class="keyword">type</span> <code class="type"></code>null_val</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     This type has only one value <code class="code">null</code><br>
@@ -147,70 +143,68 @@
                     </div>
 
                   
-<div class="type-declaration">
-<pre><span id="TYPEfunction_val"><span class="keyword">type</span> <code class="type"></code>function_val</span> </pre>
-</div>
 
-<div class="type-declaration">
+<pre><span id="TYPEfunction_val"><span class="keyword">type</span> <code class="type"></code>function_val</span> </pre>
+
+
 <pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type">'_</code> t</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Undefined"><span class="constructor">Undefined</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEundefined_val">undefined_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Undefined"><span class="constructor">Undefined</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEundefined_val">undefined_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Null"><span class="constructor">Null</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEnull_val">null_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Null"><span class="constructor">Null</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEnull_val">null_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Boolean"><span class="constructor">Boolean</span></span></td><td><span class="keyword">:</span></td><td><code class="type">bool <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Boolean"><span class="constructor">Boolean</span></span> <span class="keyword">:</span> <code class="type">bool <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Number"><span class="constructor">Number</span></span></td><td><span class="keyword">:</span></td><td><code class="type">float <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Number"><span class="constructor">Number</span></span> <span class="keyword">:</span> <code class="type">float <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.String"><span class="constructor">String</span></span></td><td><span class="keyword">:</span></td><td><code class="type">string <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.String"><span class="constructor">String</span></span> <span class="keyword">:</span> <code class="type">string <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Function"><span class="constructor">Function</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEfunction_val">function_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Function"><span class="constructor">Function</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEfunction_val">function_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Object"><span class="constructor">Object</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEobj_val">obj_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Object"><span class="constructor">Object</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEobj_val">obj_val</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.Symbol"><span class="constructor">Symbol</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEsymbol">symbol</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
+<code><span id="TYPEELTt.Symbol"><span class="constructor">Symbol</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEsymbol">symbol</a> <a href="Js_types.html#TYPEt">t</a></code></code></td>
 
 </tr></table>
 
-</div>
 
 
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
@@ -223,7 +217,7 @@
                     </div>
                     </div>
 
-                  <div class="type-declaration">
+                  
 <pre><code><span id="TYPEtagged_t"><span class="keyword">type</span> <code class="type"></code>tagged_t</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
@@ -257,39 +251,38 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSNumber"><span class="constructor">JSNumber</span></span></td><td><span class="keyword">of</span></td><td><code class="type">float</code></code></td>
+<code><span id="TYPEELTtagged_t.JSNumber"><span class="constructor">JSNumber</span></span> <span class="keyword">of</span> <code class="type">float</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSString"><span class="constructor">JSString</span></span></td><td><span class="keyword">of</span></td><td><code class="type">string</code></code></td>
+<code><span id="TYPEELTtagged_t.JSString"><span class="constructor">JSString</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSFunction"><span class="constructor">JSFunction</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEfunction_val">function_val</a></code></code></td>
+<code><span id="TYPEELTtagged_t.JSFunction"><span class="constructor">JSFunction</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_types.html#TYPEfunction_val">function_val</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSObject"><span class="constructor">JSObject</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEobj_val">obj_val</a></code></code></td>
+<code><span id="TYPEELTtagged_t.JSObject"><span class="constructor">JSObject</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_types.html#TYPEobj_val">obj_val</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSSymbol"><span class="constructor">JSSymbol</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEsymbol">symbol</a></code></code></td>
+<code><span id="TYPEELTtagged_t.JSSymbol"><span class="constructor">JSSymbol</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_types.html#TYPEsymbol">symbol</a></code></code></td>
 
 </tr></table>
 
-</div>
 
 
 <pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type">'a -> <a href="Js_types.html#TYPEtagged_t">tagged_t</a></code></pre></body></html>

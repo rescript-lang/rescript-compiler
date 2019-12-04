@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js.html">Js</a></h1>
 
-<pre><span class="keyword">module</span> Js: <code class="code">sig</code> <a href="Js.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs"><span class="keyword">module</span> Js</span>: <code class="code">sig</code> <a href="Js.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     This library provides bindings and necessary support for JS FFI.
     It contains all bindings into <code class="code">Js</code> namespace.<br>
@@ -115,9 +115,9 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+<p>Types for JS objects</p>
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">+'a</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Js object type.<br>
@@ -131,9 +131,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEnull"><span class="keyword">type</span> <code class="type">+'a</code> null</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     nullable, value of this type can be either <code class="code">null</code> or <code class="code">'a</code>
@@ -144,9 +143,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEundefined"><span class="keyword">type</span> <code class="type">+'a</code> undefined</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     value of this type can be either <code class="code">undefined</code> or <code class="code">'a</code>
@@ -157,9 +155,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEnullable"><span class="keyword">type</span> <code class="type">+'a</code> nullable</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     value of this type can be <code class="code">undefined</code>, <code class="code">null</code> or <code class="code">'a</code>
@@ -170,9 +167,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEnull_undefined"><span class="keyword">type</span> <code class="type">'a</code> null_undefined</span> = <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALtoOption"><span class="keyword">val</span> toOption</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> 'a option</code></pre>
@@ -188,9 +184,8 @@
                     
                     </div>
 
-                  <div class="type-declaration">
+                  
 <pre><span id="TYPEpromise"><span class="keyword">type</span> <code class="type">(+'a, +'e)</code> promise</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     <div class="warning">
@@ -205,15 +200,12 @@
 
                   
 
-<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><br>
-The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code><br>
+<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><p>The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code></p>
 
-<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre><br>
-The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code><br>
+<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre><p>The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code></p>
 
-<pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><br>
-<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
-    Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection<br>
+<pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><p><code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
+    Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection</p>
 
 <pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre>
 <pre><span id="VALlog2"><span class="keyword">val</span> log2</span> : <code class="type">'a -> 'b -> unit</code></pre>
@@ -227,206 +219,179 @@ The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code c
                     
                     </div>
 
-                  <br>
-A convenience function to log more than 4 arguments<br>
+                  <p>A convenience function to log more than 4 arguments</p>
 
 <pre><span id="VALeqNull"><span class="keyword">val</span> eqNull</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnull">null</a> -> bool</code></pre>
 <pre><span id="VALeqUndefined"><span class="keyword">val</span> eqUndefined</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEundefined">undefined</a> -> bool</code></pre>
-<pre><span id="VALeqNullable"><span class="keyword">val</span> eqNullable</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre>
-<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
-<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
+<pre><span id="VALeqNullable"><span class="keyword">val</span> eqNullable</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre><h5 id="4_operators">operators </h5>
+<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><p><code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
     It is marked as unsafe, since it is impossible
-    to give a proper semantics for comparision which applies to any type<br>
+    to give a proper semantics for comparision which applies to any type</p>
 
-<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
-<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
-    See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
+<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><p><code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
+    See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a></p>
 
-<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
-<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
-     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
+<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><p><code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
+     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a></p>
 
-<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
-<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
-    See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
-
-<pre><span class="keyword">module</span> <a href="Js.Null.html">Null</a>: <code class="type"><a href="Js_null.html">Js_null</a></code></pre> <div class="info">                     
+<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><p><code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
+    See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a></p>
+<div class="h13" id="12_nestedmodules">nested modules</div>
+<pre><span id="MODULENull"><span class="keyword">module</span> <a href="Js.Null.html">Null</a></span>: <code class="type"><a href="Js_null.html">Js_null</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities around <code class="code">'a null</code><br>
+                </div> <p>Provide utilities around <code class="code">'a null</code></p>
 
-<pre><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre> <div class="info">                     
+<pre><span id="MODULEUndefined"><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a></span>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
+                </div> <p>Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a></p>
 
-<pre><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+<pre><span id="MODULENullable"><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a></span>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
+                </div> <p>Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a></p>
 
-<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+<pre><span id="MODULENull_undefined"><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a></span>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
+<pre><span id="MODULEExn"><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a></span>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for dealing with Js exceptions<br>
+                </div> <p>Provide utilities for dealing with Js exceptions</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Array.html">Array</a>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre> <div class="info">                     
+<pre><span id="MODULEArray"><span class="keyword">module</span> <a href="Js.Array.html">Array</a></span>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to Js array<br>
+                </div> <p>Provide bindings to Js array</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Array2.html">Array2</a>: <code class="type"><a href="Js_array2.html">Js_array2</a></code></pre> <div class="info">                     
+<pre><span id="MODULEArray2"><span class="keyword">module</span> <a href="Js.Array2.html">Array2</a></span>: <code class="type"><a href="Js_array2.html">Js_array2</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to Js array<br>
+                </div> <p>Provide bindings to Js array</p>
 
-<pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Js.String.html">String</a></span>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to JS string<br>
+                </div> <p>Provide bindings to JS string</p>
 
-<pre><span class="keyword">module</span> <a href="Js.String2.html">String2</a>: <code class="type"><a href="Js_string2.html">Js_string2</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString2"><span class="keyword">module</span> <a href="Js.String2.html">String2</a></span>: <code class="type"><a href="Js_string2.html">Js_string2</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to JS string<br>
+                </div> <p>Provide bindings to JS string</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Re.html">Re</a>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre> <div class="info">                     
+<pre><span id="MODULERe"><span class="keyword">module</span> <a href="Js.Re.html">Re</a></span>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to Js regex expression<br>
+                </div> <p>Provide bindings to Js regex expression</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre> <div class="info">                     
+<pre><span id="MODULEPromise"><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a></span>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to JS promise<br>
+                </div> <p>Provide bindings to JS promise</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Date.html">Date</a>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre> <div class="info">                     
+<pre><span id="MODULEDate"><span class="keyword">module</span> <a href="Js.Date.html">Date</a></span>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings for JS Date<br>
+                </div> <p>Provide bindings for JS Date</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Dict.html">Dict</a>: <code class="type"><a href="Js_dict.html">Js_dict</a></code></pre> <div class="info">                     
+<pre><span id="MODULEDict"><span class="keyword">module</span> <a href="Js.Dict.html">Dict</a></span>: <code class="type"><a href="Js_dict.html">Js_dict</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for JS dictionary object<br>
+                </div> <p>Provide utilities for JS dictionary object</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Global.html">Global</a>: <code class="type"><a href="Js_global.html">Js_global</a></code></pre> <div class="info">                     
+<pre><span id="MODULEGlobal"><span class="keyword">module</span> <a href="Js.Global.html">Global</a></span>: <code class="type"><a href="Js_global.html">Js_global</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings to JS global functions in global namespace<br>
+                </div> <p>Provide bindings to JS global functions in global namespace</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Json.html">Json</a>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre> <div class="info">                     
+<pre><span id="MODULEJson"><span class="keyword">module</span> <a href="Js.Json.html">Json</a></span>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for json<br>
+                </div> <p>Provide utilities for json</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Math.html">Math</a>: <code class="type"><a href="Js_math.html">Js_math</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMath"><span class="keyword">module</span> <a href="Js.Math.html">Math</a></span>: <code class="type"><a href="Js_math.html">Js_math</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings for JS <code class="code">Math</code> object<br>
+                </div> <p>Provide bindings for JS <code class="code">Math</code> object</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Obj.html">Obj</a>: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre> <div class="info">                     
+<pre><span id="MODULEObj"><span class="keyword">module</span> <a href="Js.Obj.html">Obj</a></span>: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
+                </div> <p>Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a></p>
 
-<pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre> <div class="info">                     
+<pre><span id="MODULETyped_array"><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a></span>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings for JS typed array<br>
+                </div> <p>Provide bindings for JS typed array</p>
 
-<pre><span class="keyword">module</span> <a href="Js.TypedArray2.html">TypedArray2</a>: <code class="type"><a href="Js_typed_array2.html">Js_typed_array2</a></code></pre> <div class="info">                     
+<pre><span id="MODULETypedArray2"><span class="keyword">module</span> <a href="Js.TypedArray2.html">TypedArray2</a></span>: <code class="type"><a href="Js_typed_array2.html">Js_typed_array2</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide bindings for JS typed array<br>
+                </div> <p>Provide bindings for JS typed array</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre> <div class="info">                     
+<pre><span id="MODULETypes"><span class="keyword">module</span> <a href="Js.Types.html">Types</a></span>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
+<pre><span id="MODULEFloat"><span class="keyword">module</span> <a href="Js.Float.html">Float</a></span>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for manipulating JS types<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Js.Int.html">Int</a></span>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for JS float<br>
  
                 </div>
-                </div> <br>
-Provide utilities for int<br>
+                </div> <p>Provide utilities for int</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Option.html">Option</a>: <code class="type"><a href="Js_option.html">Js_option</a></code></pre> <div class="info">                     
+<pre><span id="MODULEOption"><span class="keyword">module</span> <a href="Js.Option.html">Option</a></span>: <code class="type"><a href="Js_option.html">Js_option</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for option<br>
+                </div> <p>Provide utilities for option</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Result.html">Result</a>: <code class="type"><a href="Js_result.html">Js_result</a></code></pre> <div class="info">                     
+<pre><span id="MODULEResult"><span class="keyword">module</span> <a href="Js.Result.html">Result</a></span>: <code class="type"><a href="Js_result.html">Js_result</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Define the interface for result<br>
+                </div> <p>Define the interface for result</p>
 
-<pre><span class="keyword">module</span> <a href="Js.List.html">List</a>: <code class="type"><a href="Js_list.html">Js_list</a></code></pre> <div class="info">                     
+<pre><span id="MODULEList"><span class="keyword">module</span> <a href="Js.List.html">List</a></span>: <code class="type"><a href="Js_list.html">Js_list</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <br>
-Provide utilities for list<br>
+                </div> <p>Provide utilities for list</p>
 
-<pre><span class="keyword">module</span> <a href="Js.Vector.html">Vector</a>: <code class="type"><a href="Js_vector.html">Js_vector</a></code></pre> <div class="info">                     
+<pre><span id="MODULEVector"><span class="keyword">module</span> <a href="Js.Vector.html">Vector</a></span>: <code class="type"><a href="Js_vector.html">Js_vector</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Console.html">Console</a>: <code class="type"><a href="Js_console.html">Js_console</a></code></pre> <div class="info">                     
+<pre><span id="MODULEConsole"><span class="keyword">module</span> <a href="Js.Console.html">Console</a></span>: <code class="type"><a href="Js_console.html">Js_console</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>

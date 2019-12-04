@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js_string2.html">Js_string2</a></h1>
 
-<pre><span class="keyword">module</span> Js_string2: <code class="code">sig</code> <a href="Js_string2.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs_string2"><span class="keyword">module</span> Js_string2</span>: <code class="code">sig</code> <a href="Js_string2.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     JavaScript String API<br>
  
@@ -108,9 +108,8 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">string</code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">'a -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
@@ -142,8 +141,7 @@
                     </div>
 
                   
-<pre><span id="VALfromCharCodeMany"><span class="keyword">val</span> fromCharCodeMany</span> : <code class="type">int array -> <a href="Js_string2.html#TYPEt">t</a></code></pre><br>
-<code class="code">fromCharCodeMany [|n1;n2;n3|]</code> creates a string from the characters corresponding to the given numbers, using the same rules as <code class="code">fromCharCode</code>.<br>
+<pre><span id="VALfromCharCodeMany"><span class="keyword">val</span> fromCharCodeMany</span> : <code class="type">int array -> <a href="Js_string2.html#TYPEt">t</a></code></pre><p><code class="code">fromCharCodeMany [|n1;n2;n3|]</code> creates a string from the characters corresponding to the given numbers, using the same rules as <code class="code">fromCharCode</code>.</p>
 
 <pre><span id="VALfromCodePoint"><span class="keyword">val</span> fromCodePoint</span> : <code class="type">int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -160,8 +158,7 @@
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALfromCodePointMany"><span class="keyword">val</span> fromCodePointMany</span> : <code class="type">int array -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -174,8 +171,7 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
@@ -243,8 +239,7 @@ The return type is <code class="code">float</code> because this function returns
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -298,8 +293,7 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
@@ -315,8 +309,7 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALincludesFrom"><span class="keyword">val</span> includesFrom</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> int -> bool</code></pre><div class="info ">
                     <div class="not-examples">
@@ -331,8 +324,7 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
@@ -396,7 +388,6 @@ ES2015<br>
 <pre><span id="VALlocaleCompare"><span class="keyword">val</span> localeCompare</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> float</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">localeCompare comparison reference</code> returns
-<p>
 
 <ul>
 <li>a negative value if <code class="code">reference</code> comes before <code class="code">comparison</code> in sort order</li>
@@ -420,14 +411,12 @@ ES2015<br>
                     <div class="not-examples">
                     <code class="code">match regexp str</code> matches a string against the given <code class="code">regexp</code>. If there is no match, it returns <code class="code">None</code>.
   For regular expressions without the <code class="code">g</code> modifier, if there is a match, the return value is <code class="code">Some array</code> where the array contains:
-<p>
 
   <ul>
 <li>The entire matched string</li>
 <li>Any capture groups if the <code class="code">regexp</code> had parentheses</li>
 </ul>
 
-<p>
 
   For regular expressions with the <code class="code">g</code> modifier, a matched expression returns <code class="code">Some array</code> with all the matched substrings and no capture groups.<br>
  
@@ -445,22 +434,19 @@ ES2015<br>
 <pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">normalize str</code> returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
-<p>
 
 Consider the character <code class="code">ã</code>, which can be represented as the single codepoint <code class="code">\u00e3</code> or the combination of a lower case letter A <code class="code">\u0061</code> and a combining tilde <code class="code">\u0303</code>. Normalization ensures that both can be stored in an equivalent binary representation.<br>
-<div class="tag"> <b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a></li>
  </div> 
                     </div>
                     
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALnormalizeByForm"><span class="keyword">val</span> normalizeByForm</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">normalize str form</code> (ES2015) returns the normalized Unicode string using the specified form of normalization, which may be one of:
-<p>
 
   <ul>
 <li>"NFC" — Normalization Form Canonical Composition.</li>
@@ -469,7 +455,7 @@ ES2015<br>
 <li>"NFKD" — Normalization Form Compatibility Decomposition.</li>
 </ul>
 <br>
-<div class="tag"> <b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a></li>
  </div> 
                     </div>
                     
@@ -488,15 +474,13 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALreplace"><span class="keyword">val</span> replace</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">replace substr newSubstr string</code> returns a new string which is
 identical to <code class="code">string</code> except with the first matching instance of <code class="code">substr</code>
 replaced by <code class="code">newSubstr</code>.
-<p>
 
 <code class="code">substr</code> is treated as a verbatim string to match, not a regular
 expression.<br>
@@ -530,7 +514,7 @@ have been replaced by <code class="code">replacement</code>.<br>
 parentheses replaced by the value returned from the given function.
 The function receives as its parameters the matched string, the offset at which the
 match begins, and the whole string being matched<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -553,7 +537,7 @@ let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
 parentheses replaced by the value returned from the given function.
 The function receives as its parameters the matched string, the captured string,
 the offset at which the match begins, and the whole string being matched.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -576,7 +560,7 @@ let () = Js.log replaced (* prints "increment 23 is 24" *)
 parentheses replaced by the value returned from the given function.
 The function receives as its parameters the matched string, the captured strings,
 the offset at which the match begins, and the whole string being matched.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -599,7 +583,7 @@ let () = Js.log replaced (* prints "42" *)
 parentheses replaced by the value returned from the given function.
 The function receives as its parameters the matched string, the captured strings,
 the offset at which the match begins, and the whole string being matched.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a></li>
  </div> 
                     </div>
                     
@@ -622,13 +606,10 @@ search "no numbers" [%re "/\\d+/"] = -1;;
 <pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> to_:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">slice from:n1 to_:n2 str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n1</code> up to but not including <code class="code">n2</code>
-<p>
 
 If either <code class="code">n1</code> or <code class="code">n2</code> is negative, then it is evaluated as <code class="code">length str - n1</code> (or <code class="code">length str - n2</code>.
-<p>
 
 If <code class="code">n2</code> is greater than the length of <code class="code">str</code>, then it is treated as <code class="code">length str</code>.
-<p>
 
 If <code class="code">n1</code> is greater than <code class="code">n2</code>, <code class="code">slice</code> returns the empty string.<br>
  
@@ -646,10 +627,8 @@ If <code class="code">n1</code> is greater than <code class="code">n2</code>, <c
 <pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">sliceToEnd from: n str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n</code> to the end of the string
-<p>
 
 If <code class="code">n</code> is negative, then it is evaluated as <code class="code">length str - n</code>.
-<p>
 
 If <code class="code">n</code> is greater than the length of <code class="code">str</code>, then <code class="code">sliceToEnd</code> returns the empty string.<br>
  
@@ -755,10 +734,8 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <pre><span id="VALsubstr"><span class="keyword">val</span> substr</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">substr ~from: n str</code> returns the substring of <code class="code">str</code> from position <code class="code">n</code> to the end of the string.
-<p>
 
   If <code class="code">n</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">n</code>.
-<p>
 
   If <code class="code">n</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.<br>
  
@@ -775,13 +752,10 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <pre><span id="VALsubstrAtMost"><span class="keyword">val</span> substrAtMost</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> length:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">substrAtMost ~from: pos ~length: n str</code> returns the substring of <code class="code">str</code> of length <code class="code">n</code> starting at position <code class="code">pos</code>.
-<p>
 
   If <code class="code">pos</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">pos</code>.
-<p>
 
   If <code class="code">pos</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.
-<p>
 
   If <code class="code">n</code> is less than or equal to zero, returns the empty string.<br>
  
@@ -798,13 +772,10 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <pre><span id="VALsubstring"><span class="keyword">val</span> substring</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> to_:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">substring ~from: start ~to_: finish str</code> returns characters <code class="code">start</code> up to but not including <code class="code">finish</code> from <code class="code">str</code>.
-<p>
 
   If <code class="code">start</code> is less than zero, it is treated as zero.
-<p>
 
   If <code class="code">finish</code> is zero or negative, the empty string is returned.
-<p>
 
   If <code class="code">start</code> is greater than <code class="code">finish</code>, the start and finish points are swapped.<br>
  
@@ -821,10 +792,8 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <pre><span id="VALsubstringToEnd"><span class="keyword">val</span> substringToEnd</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> from:int -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">substringToEnd ~from: start str</code> returns the substring of <code class="code">str</code> from position <code class="code">start</code> to the end.
-<p>
 
   If <code class="code">start</code> is less than or equal to zero, the entire string is returned.
-<p>
 
   If <code class="code">start</code> is greater than or equal to the length of <code class="code">str</code>, the empty string is returned.<br>
  
@@ -908,8 +877,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALlink"><span class="keyword">val</span> link</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -922,7 +890,6 @@ ES2015<br>
                     </div>
                     </div>
 
-                  <br>
-ES2015<br>
+                  <p>ES2015</p>
 
 <pre><span id="VALcastToArrayLike"><span class="keyword">val</span> castToArrayLike</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_string2.html#TYPEt">t</a> <a href="Js_array2.html#TYPEarray_like">Js_array2.array_like</a></code></pre></body></html>

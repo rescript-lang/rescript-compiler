@@ -99,13 +99,11 @@
 </div>
 <h1>Module <a href="type_Belt.HashMap.html">Belt.HashMap</a></h1>
 
-<pre><span class="keyword">module</span> HashMap: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre><div class="info module top">
+<pre><span id="MODULEHashMap"><span class="keyword">module</span> HashMap</span>: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
@@ -116,22 +114,21 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a></span>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a></span>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'value, 'id)</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The type of hash tables from type <code class="code">'key</code> to type <code class="code">'value</code>.<br>
@@ -141,9 +138,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('a, 'id)</code> id</span> = <code class="type">('a, 'id) <a href="Belt_Id.html#TYPEhashable">Belt_Id.hashable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">hintSize:int -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
@@ -200,7 +196,6 @@
     where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">tbl</code>,
     and <code class="code">d1 ... dN</code> are the associated values.
     Each binding is presented exactly once to <code class="code">f</code>.
-<p>
 
     The order in which the bindings are passed to <code class="code">f</code> is unspecified.
     However, if the table contains several bindings for the same key,

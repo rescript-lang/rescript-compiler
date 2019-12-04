@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js_promise.html">Js_promise</a></h1>
 
-<pre><span class="keyword">module</span> Js_promise: <code class="code">sig</code> <a href="Js_promise.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs_promise"><span class="keyword">module</span> Js_promise</span>: <code class="code">sig</code> <a href="Js_promise.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     Specialized bindings to Promise. Note: For simplicity,
     this binding does not track the error type, it treat it as an opaque type
@@ -110,13 +110,11 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">+'a</code> t</span> </pre>
-</div>
 
-<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">+'a</code> t</span> </pre>
+
+
 <pre><span id="TYPEerror"><span class="keyword">type</span> <code class="type"></code>error</span> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(resolve:('a -> unit [@bs]) -> reject:(exn -> unit [@bs]) -> unit) -><br>       'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
