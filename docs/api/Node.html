@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Node.html">Node</a></h1>
 
-<pre><span class="keyword">module</span> Node: <code class="code">sig</code> <a href="Node.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULENode"><span class="keyword">module</span> Node</span>: <code class="code">sig</code> <a href="Node.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     Placeholder for Node bindings<br>
  
@@ -109,73 +109,67 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Node.Path.html">Path</a>: <code class="type"><a href="Node_path.html">Node_path</a></code></pre> <div class="info">                     
+<pre><span id="MODULEPath"><span class="keyword">module</span> <a href="Node.Path.html">Path</a></span>: <code class="type"><a href="Node_path.html">Node_path</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Node.Fs.html">Fs</a>: <code class="type"><a href="Node_fs.html">Node_fs</a></code></pre> <div class="info">                     
+<pre><span id="MODULEFs"><span class="keyword">module</span> <a href="Node.Fs.html">Fs</a></span>: <code class="type"><a href="Node_fs.html">Node_fs</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Node.Process.html">Process</a>: <code class="type"><a href="Node_process.html">Node_process</a></code></pre> <div class="info">                     
+<pre><span id="MODULEProcess"><span class="keyword">module</span> <a href="Node.Process.html">Process</a></span>: <code class="type"><a href="Node_process.html">Node_process</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Node.Module.html">Module</a>: <code class="type"><a href="Node_module.html">Node_module</a></code></pre> <div class="info">                     
+<pre><span id="MODULEModule"><span class="keyword">module</span> <a href="Node.Module.html">Module</a></span>: <code class="type"><a href="Node_module.html">Node_module</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Node.Buffer.html">Buffer</a>: <code class="type"><a href="Node_buffer.html">Node_buffer</a></code></pre> <div class="info">                     
+<pre><span id="MODULEBuffer"><span class="keyword">module</span> <a href="Node.Buffer.html">Buffer</a></span>: <code class="type"><a href="Node_buffer.html">Node_buffer</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Node.Child_process.html">Child_process</a>: <code class="type"><a href="Node_child_process.html">Node_child_process</a></code></pre> <div class="info">                     
+<pre><span id="MODULEChild_process"><span class="keyword">module</span> <a href="Node.Child_process.html">Child_process</a></span>: <code class="type"><a href="Node_child_process.html">Node_child_process</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEnode_exports"><span class="keyword">type</span> <code class="type"></code>node_exports</span> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><span id="TYPEnode_module"><span class="keyword">type</span> <code class="type"></code>node_module</span> = <code class="type">< children : <a href="Node.html#TYPEnode_module">node_module</a> array; exports : <a href="Node.html#TYPEnode_exports">node_exports</a>;<br>         filename : string; id : string; loaded : bool;<br>         parrent : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a>; paths : string array ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><span id="TYPEnode_require"><span class="keyword">type</span> <code class="type"></code>node_require</span> = <code class="type">< main : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEundefined">Js.undefined</a>; resolve : (string -> string [@bs]) ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><span id="TYPEstring_buffer"><span class="keyword">type</span> <code class="type"></code>string_buffer</span> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><span id="TYPEbuffer"><span class="keyword">type</span> <code class="type"></code>buffer</span> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><code><span id="TYPEstring_buffer_kind"><span class="keyword">type</span> <code class="type">'_</code> string_buffer_kind</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstring_buffer_kind.String"><span class="constructor">String</span></span></td><td><span class="keyword">:</span></td><td><code class="type">string <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
+<code><span id="TYPEELTstring_buffer_kind.String"><span class="constructor">String</span></span> <span class="keyword">:</span> <code class="type">string <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstring_buffer_kind.Buffer"><span class="constructor">Buffer</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Node.html#TYPEbuffer">buffer</a> <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
+<code><span id="TYPEELTstring_buffer_kind.Buffer"><span class="constructor">Buffer</span></span> <span class="keyword">:</span> <code class="type"><a href="Node.html#TYPEbuffer">buffer</a> <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
 
 </tr></table>
 
-</div>
 
 
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type"><a href="Node.html#TYPEstring_buffer">string_buffer</a> -> 'a <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a> * 'a</code></pre><div class="info ">

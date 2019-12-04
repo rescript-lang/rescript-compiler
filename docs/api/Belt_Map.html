@@ -99,18 +99,15 @@
 </div>
 <h1>Module <a href="type_Belt_Map.html">Belt_Map</a></h1>
 
-<pre><span class="keyword">module</span> Belt_Map: <code class="code">sig</code> <a href="Belt_Map.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEBelt_Map"><span class="keyword">module</span> Belt_Map</span>: <code class="code">sig</code> <a href="Belt_Map.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     A <i>immutable</i> sorted map module which allows customize <i>compare</i> behavior.
-<p>
 
    The implementation uses balanced binary trees, and therefore searching
    and insertion take time logarithmic in the size of the map.
-<p>
 
   For more info on this module's usage of identity, `make` and others, please see
   the top level documentation of Belt, <b>A special encoding for collection safety</b>.
-<p>
 
   Example usage:<br>
  
@@ -127,7 +124,6 @@
     let myMap = Belt.Map.make ~id:(module PairComparator)
     let myMap2 = Belt.Map.set myMap (1, 2) "myValue"
   </code></pre>
-<p>
 
   The API documentation below will assume a predeclared comparator module for integers, IntCmp  </pre>
                     </div>
@@ -135,43 +131,38 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_Map.Int.html">Int</a>: <code class="type"><a href="Belt_MapInt.html">Belt_MapInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_Map.Int.html">Int</a></span>: <code class="type"><a href="Belt_MapInt.html">Belt_MapInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_Map.String.html">String</a>: <code class="type"><a href="Belt_MapString.html">Belt_MapString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_Map.String.html">String</a></span>: <code class="type"><a href="Belt_MapString.html">Belt_MapString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     specalized when key type is <code class="code">string</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_Map.Dict.html">Dict</a>: <code class="type"><a href="Belt_MapDict.html">Belt_MapDict</a></code></pre> <div class="info">                     
+<pre><span id="MODULEDict"><span class="keyword">module</span> <a href="Belt_Map.Dict.html">Dict</a></span>: <code class="type"><a href="Belt_MapDict.html">Belt_MapDict</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
-<p>
 
     <b>Advanced usage only</b><br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'value, 'identity)</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     <code class="code">('key, 'identity) t</code>
-<p>
 
     <code class="code">'key</code> is the field type
-<p>
 
     <code class="code">'value</code> is the element type
-<p>
 
     <code class="code">'identity</code> the identity of the collection<br>
  
@@ -180,9 +171,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('key, 'id)</code> id</span> = <code class="type">('key, 'id) <a href="Belt_Id.html#TYPEcomparable">Belt_Id.comparable</a></code> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The identity needed for making an empty map<br>
@@ -233,10 +223,8 @@
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">cmp m0 m1 vcmp</code>
-<p>
 
     Total ordering of map given total ordering of value function.
-<p>
 
     It will compare size first and each element following the order one by one.<br>
  
@@ -358,7 +346,6 @@
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order
-<p>
 
     <b>See</b> <a href="Belt_Map.html#VALtoArray"><code class="code">Belt_Map.toArray</code></a><br>
  
@@ -408,7 +395,7 @@
 <pre><span id="VALminKey"><span class="keyword">val</span> minKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> 'k option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minKey s</code><br>
-<div class="tag"> <b>Returns</b> the minimum key, None if not exist<br>
+<div class="tag"> <li><b>Returns</b> the minimum key, None if not exist</li>
  </div> 
                     </div>
                     
@@ -427,7 +414,7 @@
 <pre><span id="VALmaxKey"><span class="keyword">val</span> maxKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> 'k option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maxKey s</code><br>
-<div class="tag"> <b>Returns</b> the maximum key, None if not exist<br>
+<div class="tag"> <li><b>Returns</b> the maximum key, None if not exist</li>
  </div> 
                     </div>
                     
@@ -446,7 +433,7 @@
 <pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minimum s</code><br>
-<div class="tag"> <b>Returns</b> the minimum key value pair, None if not exist<br>
+<div class="tag"> <li><b>Returns</b> the minimum key value pair, None if not exist</li>
  </div> 
                     </div>
                     
@@ -465,7 +452,7 @@
 <pre><span id="VALmaximum"><span class="keyword">val</span> maximum</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maximum s</code><br>
-<div class="tag"> <b>Returns</b> the maximum key value pair, None if not exist<br>
+<div class="tag"> <li><b>Returns</b> the maximum key value pair, None if not exist</li>
  </div> 
                     </div>
                     
@@ -499,7 +486,7 @@
 <pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <b>See</b> <a href="Belt_Map.html#VALget"><code class="code">Belt_Map.get</code></a><br>
-<div class="tag"> <b>Returns</b> <code class="code">undefined</code> when not found<br>
+<div class="tag"> <li><b>Returns</b> <code class="code">undefined</code> when not found</li>
  </div> 
                     </div>
                     
@@ -509,10 +496,9 @@
 <pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v -> 'v</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getWithDefault s k default</code>
-<p>
 
    <b>See</b> <a href="Belt_Map.html#VALget"><code class="code">Belt_Map.get</code></a><br>
-<div class="tag"> <b>Returns</b> <code class="code">default</code> when <code class="code">k</code> is not found<br>
+<div class="tag"> <li><b>Returns</b> <code class="code">default</code> when <code class="code">k</code> is not found</li>
  </div> 
                     </div>
                     
@@ -522,10 +508,8 @@
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getExn s k</code>
-<p>
 
    <b>See</b> <a href="Belt_Map.html#VALgetExn"><code class="code">Belt_Map.getExn</code></a>
-<p>
 
     <b>raise</b> when <code class="code">k</code> not exist<br>
  
@@ -554,7 +538,6 @@
 <pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k array -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">removeMany s xs</code>
-<p>
 
     Removing each of <code class="code">xs</code> to <code class="code">s</code>, note unlike <a href="Belt_Map.html#VALremove"><code class="code">Belt_Map.remove</code></a>,
     the reference of return value might be changed even if none in <code class="code">xs</code>
@@ -602,7 +585,6 @@
 <pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) array -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mergeMany s xs</code>
-<p>
 
     Adding each of <code class="code">xs</code> to <code class="code">s</code>, note unlike <code class="code">add</code>,
     the reference of return value might be changed even if all values in <code class="code">xs</code>
@@ -682,7 +664,6 @@
 <pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mapWithKey m f</code>
-<p>
 
     The same as <a href="Belt_Map.html#VALmap"><code class="code">Belt_Map.map</code></a> except that <code class="code">f</code> is supplied with one more argument: the key<br>
  
@@ -694,12 +675,11 @@
 <pre><span id="VALgetData"><span class="keyword">val</span> getData</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k, 'v, 'id) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getData s0</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the raw data (detached from comparator),
+<div class="tag"> <li><b>Returns</b> the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
-    without boxing<br>
+    without boxing</li>
  </div> 
                     </div>
                     
@@ -709,10 +689,9 @@
 <pre><span id="VALgetId"><span class="keyword">val</span> getId</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k, 'id) <a href="Belt_Map.html#TYPEid">id</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getId s0</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the identity of <code class="code">s0</code><br>
+<div class="tag"> <li><b>Returns</b> the identity of <code class="code">s0</code></li>
  </div> 
                     </div>
                     
@@ -722,10 +701,9 @@
 <pre><span id="VALpackIdData"><span class="keyword">val</span> packIdData</span> : <code class="type">id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -><br>       data:('k, 'v, 'id) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a> -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">packIdData ~id ~data</code>
-<p>
 
     <b>Advanced usage only</b><br>
-<div class="tag"> <b>Returns</b> the packed collection<br>
+<div class="tag"> <li><b>Returns</b> the packed collection</li>
  </div> 
                     </div>
                     

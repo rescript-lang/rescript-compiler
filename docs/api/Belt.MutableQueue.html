@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Belt.MutableQueue.html">Belt.MutableQueue</a></h1>
 
-<pre><span class="keyword">module</span> MutableQueue: <code class="type"><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></code></pre><div class="info module top">
+<pre><span id="MODULEMutableQueue"><span class="keyword">module</span> MutableQueue</span>: <code class="type"><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.MutableQueue.html"><code class="code">Belt.MutableQueue</code></a>
-<p>
 
     An FIFO(first in first out) queue data structure<br>
  
@@ -111,9 +110,8 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The type of queues containing elements of type <code class="code">'a</code>.<br>
@@ -126,7 +124,7 @@
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">unit -> 'a <a href="Belt_MutableQueue.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Returns</b> a new queue, initially empty.<br>
+                    <div class="tag"> <li><b>Returns</b> a new queue, initially empty.</li>
  </div> 
                     </div>
                     
@@ -144,7 +142,7 @@
                   
 <pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">'a <a href="Belt_MutableQueue.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Returns</b> <code class="code">true</code> if the given queue is empty, <code class="code">false</code> otherwise.<br>
+                    <div class="tag"> <li><b>Returns</b> <code class="code">true</code> if the given queue is empty, <code class="code">false</code> otherwise.</li>
  </div> 
                     </div>
                     
@@ -191,7 +189,6 @@
 <pre><span id="VALpeekExn"><span class="keyword">val</span> peekExn</span> : <code class="type">'a <a href="Belt_MutableQueue.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">peekExn q</code>
-<p>
 
     <b>raise</b> an exception if <code class="code">q</code> is empty<br>
  
@@ -222,7 +219,6 @@
 <pre><span id="VALpopExn"><span class="keyword">val</span> popExn</span> : <code class="type">'a <a href="Belt_MutableQueue.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">popExn q</code>
-<p>
 
     <b>raise</b> an exception if <code class="code">q</code> is empty<br>
  
@@ -234,7 +230,7 @@
 <pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">'a <a href="Belt_MutableQueue.html#TYPEt">t</a> -> 'a <a href="Belt_MutableQueue.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">copy q</code><br>
-<div class="tag"> <b>Returns</b> a fresh queue<br>
+<div class="tag"> <li><b>Returns</b> a fresh queue</li>
  </div> 
                     </div>
                     
@@ -243,7 +239,7 @@
                   
 <pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">'a <a href="Belt_MutableQueue.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Returns</b> the number of elements in a queue.<br>
+                    <div class="tag"> <li><b>Returns</b> the number of elements in a queue.</li>
  </div> 
                     </div>
                     

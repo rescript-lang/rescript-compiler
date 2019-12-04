@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Js_typed_array.Float64Array.html">Js_typed_array.Float64Array</a></h1>
 
-<pre><span class="keyword">module</span> Float64Array: <code class="code">sig</code> <a href="Js_typed_array.Float64Array.html">..</a> <code class="code">end</code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULEFloat64Array"><span class="keyword">module</span> Float64Array</span>: <code class="code">sig</code> <a href="Js_typed_array.Float64Array.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
 <pre><span id="TYPEelt"><span class="keyword">type</span> <code class="type"></code>elt</span> = <code class="type">float</code> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                      
@@ -111,13 +110,11 @@
                     </div>
 
                   
-<div class="type-declaration">
-<pre><span id="TYPEtyped_array"><span class="keyword">type</span> <code class="type">'a</code> typed_array</span> = <code class="type">'a <a href="Js_typed_array2.Float64Array.html#TYPEtyped_array">Js_typed_array2.Float64Array.typed_array</a></code> </pre>
-</div>
 
-<div class="type-declaration">
+<pre><span id="TYPEtyped_array"><span class="keyword">type</span> <code class="type">'a</code> typed_array</span> = <code class="type">'a <a href="Js_typed_array2.Float64Array.html#TYPEtyped_array">Js_typed_array2.Float64Array.typed_array</a></code> </pre>
+
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> <a href="Js_typed_array.Float64Array.html#TYPEtyped_array">typed_array</a></code> </pre>
-</div>
 
 
 <pre><span id="VALunsafe_get"><span class="keyword">val</span> unsafe_get</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a></code></pre>
@@ -137,8 +134,7 @@
 <pre><span id="VALreverseInPlace"><span class="keyword">val</span> reverseInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
 <pre><span id="VALsortInPlace"><span class="keyword">val</span> sortInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
 <pre><span id="VALsortInPlaceWith"><span class="keyword">val</span> sortInPlaceWith</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int<br>       [@bs]) -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
-<pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre><br>
-ES2016<br>
+<pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre><p>ES2016</p>
 
 <pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALindexOfFrom"><span class="keyword">val</span> indexOfFrom</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       from:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
@@ -209,7 +205,7 @@ ES2016<br>
                   
 <pre><span id="VALfromBufferRange"><span class="keyword">val</span> fromBufferRange</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -><br>       offset:int -> length:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raise Js exception<br>
+                    <div class="tag"> <li><b>Raises</b> <code>Js.Exn.Error</code> raise Js exception</li>
  </div> 
                     </div>
                     
@@ -218,7 +214,7 @@ ES2016<br>
                   
 <pre><span id="VALfromLength"><span class="keyword">val</span> fromLength</span> : <code class="type">int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raises Js exception<br>
+                    <div class="tag"> <li><b>Raises</b> <code>Js.Exn.Error</code> raises Js exception</li>
  </div> 
                     </div>
                     

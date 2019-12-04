@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Js.Json.html">Js.Json</a></h1>
 
-<pre><span class="keyword">module</span> Json: <code class="type"><a href="Js_json.html">Js_json</a></code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULEJson"><span class="keyword">module</span> Json</span>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre><hr width="100%">
+<h3 id="2_Types">Types</h3>
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     The JSON data structure<br>
@@ -112,52 +111,51 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><code><span id="TYPEkind"><span class="keyword">type</span> <code class="type">'_</code> kind</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.String"><span class="constructor">String</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_string.html#TYPEt">Js_string.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.String"><span class="constructor">String</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_string.html#TYPEt">Js_string.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Number"><span class="constructor">Number</span></span></td><td><span class="keyword">:</span></td><td><code class="type">float <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Number"><span class="constructor">Number</span></span> <span class="keyword">:</span> <code class="type">float <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Object"><span class="constructor">Object</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Object"><span class="constructor">Object</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Array"><span class="constructor">Array</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> array <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Array"><span class="constructor">Array</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_json.html#TYPEt">t</a> array <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Boolean"><span class="constructor">Boolean</span></span></td><td><span class="keyword">:</span></td><td><code class="type">bool <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Boolean"><span class="constructor">Boolean</span></span> <span class="keyword">:</span> <code class="type">bool <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Null"><span class="constructor">Null</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js_types.html#TYPEnull_val">Js_types.null_val</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Null"><span class="constructor">Null</span></span> <span class="keyword">:</span> <code class="type"><a href="Js_types.html#TYPEnull_val">Js_types.null_val</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr></table>
 
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Underlying type of a JSON value<br>
@@ -167,7 +165,7 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><code><span id="TYPEtagged_t"><span class="keyword">type</span> <code class="type"></code>tagged_t</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
@@ -194,34 +192,33 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSONString"><span class="constructor">JSONString</span></span></td><td><span class="keyword">of</span></td><td><code class="type">string</code></code></td>
+<code><span id="TYPEELTtagged_t.JSONString"><span class="constructor">JSONString</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSONNumber"><span class="constructor">JSONNumber</span></span></td><td><span class="keyword">of</span></td><td><code class="type">float</code></code></td>
+<code><span id="TYPEELTtagged_t.JSONNumber"><span class="constructor">JSONNumber</span></span> <span class="keyword">of</span> <code class="type">float</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSONObject"><span class="constructor">JSONObject</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a></code></code></td>
+<code><span id="TYPEELTtagged_t.JSONObject"><span class="constructor">JSONObject</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTtagged_t.JSONArray"><span class="constructor">JSONArray</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> array</code></code></td>
+<code><span id="TYPEELTtagged_t.JSONArray"><span class="constructor">JSONArray</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_json.html#TYPEt">t</a> array</code></code></td>
 
 </tr></table>
 
-</div>
 
-
+<h3 id="2_Accessor">Accessor</h3>
 <pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEtagged_t">tagged_t</a></code></pre>
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_json.html#TYPEkind">kind</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
@@ -291,7 +288,9 @@
                     
                     </div>
 
-                  
+                  <h3 id="2_Construtors">Construtors</h3><p>Those functions allows the construction of an arbitrary complex 
+    JSON values.</p>
+
 <pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">null</code> is the singleton null JSON value<br>
@@ -345,7 +344,10 @@
                     
                     </div>
 
-                  
+                  <p>The functions below are specialized for specific array type which 
+    happened to be already JSON object in the BuckleScript runtime. Therefore
+    they are more efficient (constant time rather than linear conversion).</p>
+
 <pre><span id="VALstringArray"><span class="keyword">val</span> stringArray</span> : <code class="type">string array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stringArray a</code> makes a JSON array of the <code class="code">string array</code> <code class="code">a</code><br>
@@ -381,15 +383,14 @@
                     
                     </div>
 
-                  
+                  <h3 id="2_Stringconversion">String conversion</h3>
 <pre><span id="VALparseExn"><span class="keyword">val</span> parseExn</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">parseExn s</code> parses the string <code class="code">s</code> into a JSON data structure
-<p>
 
 <b>Returns</b> a JSON data structure<br>
-<div class="tag"> <b>Raises</b> <code>SyntaxError</code> if given string is not a valid JSON. Note <code class="code">SyntaxError</code> is a JavaScript exception.<br>
- </div><div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">MDN</a><br>
+<div class="tag"> <li><b>Raises</b> <code>SyntaxError</code> if given string is not a valid JSON. Note <code class="code">SyntaxError</code> is a JavaScript exception.</li>
+ </div><div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -439,10 +440,9 @@ let _ =
 <pre><span id="VALstringify"><span class="keyword">val</span> stringify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stringify json</code> formats the JSON data structure as a string
-<p>
 
 <b>Returns</b> the string representation of a given JSON data structure<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -463,10 +463,9 @@ Js.log @@ Js.Json.stringify (Js.Json.object_ dict)
 <pre><span id="VALstringifyWithSpace"><span class="keyword">val</span> stringifyWithSpace</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> int -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stringify json</code> formats the JSON data structure as a string
-<p>
 
 <b>Returns</b> the string representation of a given JSON data structure<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -487,7 +486,7 @@ Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
 <pre><span id="VALstringifyAny"><span class="keyword">val</span> stringifyAny</span> : <code class="type">'a -> string option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">stringifyAny value</code> formats any <code class="code">value</code> into a JSON string<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">

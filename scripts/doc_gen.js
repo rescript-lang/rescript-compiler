@@ -83,7 +83,7 @@ function main() {
 
         console.log(`Running ${cmd}`)
 
-        child_process.execSync(cmd, { cwd: jscomp })
+        child_process.execSync(cmd, { cwd: jscomp, encoding : 'utf8' })
 }
 exports.main = main
 if(require.main === module){

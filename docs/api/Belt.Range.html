@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Belt.Range.html">Belt.Range</a></h1>
 
-<pre><span class="keyword">module</span> Range: <code class="type"><a href="Belt_Range.html">Belt_Range</a></code></pre><div class="info module top">
+<pre><span id="MODULERange"><span class="keyword">module</span> Range</span>: <code class="type"><a href="Belt_Range.html">Belt_Range</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.Range.html"><code class="code">Belt.Range</code></a>
-<p>
 
     Utilities for a closed range <code class="code">(from, start)</code><br>
  
@@ -116,7 +115,6 @@
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">int -> int -> (int -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">forEach start finish action</code>
-<p>
 
     equivalent to <code class="code">Belt.Array.(forEach (range start finish) action)</code><br>
  
@@ -129,7 +127,6 @@
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">int -> int -> (int -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every start finish p</code>
-<p>
 
     equivalent to <code class="code">Belt.Array.(every (range start finish) p )</code><br>
  
@@ -142,10 +139,8 @@
 <pre><span id="VALeveryBy"><span class="keyword">val</span> everyBy</span> : <code class="type">int -> int -> step:int -> (int -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">everyBy start finish ~step p</code>
-<p>
 
     <b>See</b> <a href="Belt_Array.html#VALrangeBy"><code class="code">Belt_Array.rangeBy</code></a>
-<p>
 
     equivalent to <code class="code">Belt.Array.(every (rangeBy start finish ~step) p)</code><br>
  
@@ -158,7 +153,6 @@
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">int -> int -> (int -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some start finish p</code>
-<p>
 
     equivalent to <code class="code">Belt.Array.(some (range start finish) p)</code><br>
  
@@ -171,10 +165,8 @@
 <pre><span id="VALsomeBy"><span class="keyword">val</span> someBy</span> : <code class="type">int -> int -> step:int -> (int -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">someBy start finish ~step  p</code>
-<p>
 
     <b>See</b> <a href="Belt_Array.html#VALrangeBy"><code class="code">Belt_Array.rangeBy</code></a>
-<p>
 
     equivalent to <code class="code">Belt.Array.(some (rangeBy start finish ~step) p)</code><br>
  

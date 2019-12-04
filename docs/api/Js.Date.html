@@ -99,17 +99,14 @@
 </div>
 <h1>Module <a href="type_Js.Date.html">Js.Date</a></h1>
 
-<pre><span class="keyword">module</span> Date: <code class="type"><a href="Js_date.html">Js_date</a></code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULEDate"><span class="keyword">module</span> Date</span>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre><hr width="100%">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
-</div>
 
 
-<pre><span id="VALvalueOf"><span class="keyword">val</span> valueOf</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><br>
-returns the primitive value of this date, equivalent to getTime<br>
+<pre><span id="VALvalueOf"><span class="keyword">val</span> valueOf</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the primitive value of this date, equivalent to getTime</p>
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">unit -> <a href="Js_date.html#TYPEt">t</a></code></pre><br>
-returns a date representing the current time<br>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">unit -> <a href="Js_date.html#TYPEt">t</a></code></pre><p>returns a date representing the current time</p>
 
 <pre><span id="VALfromFloat"><span class="keyword">val</span> fromFloat</span> : <code class="type">float -> <a href="Js_date.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromString"><span class="keyword">val</span> fromString</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
@@ -123,12 +120,10 @@ returns a date representing the current time<br>
 <pre><span id="VALutcWithYMDH"><span class="keyword">val</span> utcWithYMDH</span> : <code class="type">year:float -> month:float -> date:float -> hours:float -> unit -> float</code></pre>
 <pre><span id="VALutcWithYMDHM"><span class="keyword">val</span> utcWithYMDHM</span> : <code class="type">year:float -><br>       month:float -> date:float -> hours:float -> minutes:float -> unit -> float</code></pre>
 <pre><span id="VALutcWithYMDHMS"><span class="keyword">val</span> utcWithYMDHMS</span> : <code class="type">year:float -><br>       month:float -><br>       date:float -> hours:float -> minutes:float -> seconds:float -> unit -> float</code></pre>
-<pre><span id="VALnow"><span class="keyword">val</span> now</span> : <code class="type">unit -> float</code></pre><br>
-returns the number of milliseconds since Unix epoch<br>
+<pre><span id="VALnow"><span class="keyword">val</span> now</span> : <code class="type">unit -> float</code></pre><p>returns the number of milliseconds since Unix epoch</p>
 
 <pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
-<pre><span id="VALparseAsFloat"><span class="keyword">val</span> parseAsFloat</span> : <code class="type">string -> float</code></pre><br>
-returns NaN if passed invalid date string<br>
+<pre><span id="VALparseAsFloat"><span class="keyword">val</span> parseAsFloat</span> : <code class="type">string -> float</code></pre><p>returns NaN if passed invalid date string</p>
 
 <pre><span id="VALgetDate"><span class="keyword">val</span> getDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetDay"><span class="keyword">val</span> getDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">

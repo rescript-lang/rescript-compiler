@@ -99,13 +99,11 @@
 </div>
 <h1>Module <a href="type_Belt.HashSet.html">Belt.HashSet</a></h1>
 
-<pre><span class="keyword">module</span> HashSet: <code class="type"><a href="Belt_HashSet.html">Belt_HashSet</a></code></pre><div class="info module top">
+<pre><span id="MODULEHashSet"><span class="keyword">module</span> HashSet</span>: <code class="type"><a href="Belt_HashSet.html">Belt_HashSet</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashSet.Int</code> and <code class="code">Belt.HashSet.String</code><br>
@@ -116,26 +114,25 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_HashSet.Int.html">Int</a>: <code class="type"><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_HashSet.Int.html">Int</a></span>: <code class="type"><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_HashSet.String.html">String</a>: <code class="type"><a href="Belt_HashSetString.html">Belt_HashSetString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_HashSet.String.html">String</a></span>: <code class="type"><a href="Belt_HashSetString.html">Belt_HashSetString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('a, 'id)</code> t</span> </pre>
-</div>
 
-<div class="type-declaration">
+<p>The type of hash tables from type <code class="code">'a</code> to type <code class="code">'b</code>.</p>
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('a, 'id)</code> id</span> = <code class="type">('a, 'id) <a href="Belt_Id.html#TYPEhashable">Belt_Id.hashable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">hintSize:int -> id:('a, 'id) <a href="Belt_HashSet.html#TYPEid">id</a> -> ('a, 'id) <a href="Belt_HashSet.html#TYPEt">t</a></code></pre>

@@ -99,20 +99,17 @@
 </div>
 <h1>Module <a href="type_Js_cast.html">Js_cast</a></h1>
 
-<pre><span class="keyword">module</span> Js_cast: <code class="code">sig</code> <a href="Js_cast.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs_cast"><span class="keyword">module</span> Js_cast</span>: <code class="code">sig</code> <a href="Js_cast.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     Safe cast between OCaml values which share the same 
     runtime representation
-<p>
 
     Different OCaml types might share the same represention in the 
     BuckleScript runtime; while this is a compiler internal knowledge,
     applications might benefit from having a safe and zero cost 
     conversion between those types. 
-<p>
 
     This modules acts as the <b>single place</b> for such conversion. 
-<p>
 
     If for any reason, the runtime representation changes, those function 
     will be modified accordingly.<br>

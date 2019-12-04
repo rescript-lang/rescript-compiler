@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Js.Re.html">Js.Re</a></h1>
 
-<pre><span class="keyword">module</span> Re: <code class="type"><a href="Js_re.html">Js_re</a></code></pre><hr width="100%">
-<div class="type-declaration">
+<pre><span id="MODULERe"><span class="keyword">module</span> Re</span>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre><hr width="100%">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     the RegExp object<br>
@@ -112,9 +111,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEresult"><span class="keyword">type</span> <code class="type"></code>result</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     the result of a executing a RegExp on a string<br>
@@ -169,7 +167,6 @@
 <pre><span id="VALfromString"><span class="keyword">val</span> fromString</span> : <code class="type">string -> <a href="Js_re.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string
-<p>
 
 Regex literals (<code class="code">[%re "/.../"]</code>) should generally be preferred, but
 <code class="code">fromString</code> is very useful when you need to insert a string into a regex.<br>
@@ -192,10 +189,8 @@ let contentOf tag xmlString =
 <pre><span id="VALfromStringWithFlags"><span class="keyword">val</span> fromStringWithFlags</span> : <code class="type">string -> flags:string -> <a href="Js_re.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string with the given <code class="code">flags</code>
-<p>
 
 See <a href="Js_re.html#VALfromString"><code class="code">Js_re.fromString</code></a>
-<p>
 
 Valid flags:
 <table>
@@ -242,11 +237,10 @@ Valid flags:
 <pre><span id="VALlastIndex"><span class="keyword">val</span> lastIndex</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     returns the index where the next match will start its search
-<p>
 
 This property will be modified when the RegExp object is used, if the <code class="code">global</code> ("g")
 flag is set.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -317,10 +311,9 @@ done
 <pre><span id="VALexec_"><span class="keyword">val</span> exec_</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> string -> <a href="Js_re.html#TYPEresult">result</a> option</code></pre><div class="info ">
                     <div class="not-examples">
                     executes a search on a given string using the given RegExp object
-<p>
 
 <b>returns</b> <code class="code">Some</code> <a href="Js_re.html#TYPEresult"><code class="code">Js_re.result</code></a> if a match is found, <code class="code">None</code> otherwise<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -351,10 +344,9 @@ let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
 <pre><span id="VALtest_"><span class="keyword">val</span> test_</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> string -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     tests whether the given RegExp object will match a given string
-<p>
 
 <b>returns</b> <code class="code">true</code> if a match is found, <code class="code">false</code> otherwise<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">

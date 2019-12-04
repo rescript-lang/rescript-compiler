@@ -99,7 +99,7 @@
 </div>
 <h1>Module <a href="type_Js_global.html">Js_global</a></h1>
 
-<pre><span class="keyword">module</span> Js_global: <code class="code">sig</code> <a href="Js_global.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEJs_global"><span class="keyword">module</span> Js_global</span>: <code class="code">sig</code> <a href="Js_global.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     Contains functions available in the global scope
     (<code class="code">window</code> in a browser context)<br>
@@ -109,9 +109,8 @@
                     </div>
 
                   <hr width="100%">
-<div class="type-declaration">
+
 <pre><span id="TYPEintervalId"><span class="keyword">type</span> <code class="type"></code>intervalId</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Identify an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
@@ -121,9 +120,8 @@
                     </div>
 
                   
-<div class="type-declaration">
+
 <pre><span id="TYPEtimeoutId"><span class="keyword">type</span> <code class="type"></code>timeoutId</span> </pre>
-</div>
 <div class="info ">
                     <div class="not-examples">
                     Identify timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
@@ -137,7 +135,7 @@
 <pre><span id="VALclearInterval"><span class="keyword">val</span> clearInterval</span> : <code class="type"><a href="Js_global.html#TYPEintervalId">intervalId</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Clear an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -162,7 +160,7 @@ let cancel () =
 <pre><span id="VALclearTimeout"><span class="keyword">val</span> clearTimeout</span> : <code class="type"><a href="Js_global.html#TYPEtimeoutId">timeoutId</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Clear a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -184,10 +182,9 @@ let procrastinate mins =
 <pre><span id="VALsetInterval"><span class="keyword">val</span> setInterval</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEintervalId">intervalId</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <i>Repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
-<p>
 
 <b>Return</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -208,10 +205,9 @@ let _ =
 <pre><span id="VALsetIntervalFloat"><span class="keyword">val</span> setIntervalFloat</span> : <code class="type">(unit -> unit) -> float -> <a href="Js_global.html#TYPEintervalId">intervalId</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <i>Repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
-<p>
 
 <b>Return</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -232,10 +228,9 @@ let _ =
 <pre><span id="VALsetTimeout"><span class="keyword">val</span> setTimeout</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEtimeoutId">timeoutId</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Execute a callback after a specified delay (in milliseconds)
-<p>
 
 <b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -253,10 +248,9 @@ let _ =
 <pre><span id="VALsetTimeoutFloat"><span class="keyword">val</span> setTimeoutFloat</span> : <code class="type">(unit -> unit) -> float -> <a href="Js_global.html#TYPEtimeoutId">timeoutId</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Execute a callback after a specified delay (in milliseconds)
-<p>
 
 <b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a></li>
  </div> 
                     </div>
                      <div class="examples">
@@ -274,7 +268,7 @@ let _ =
 <pre><span id="VALencodeURI"><span class="keyword">val</span> encodeURI</span> : <code class="type">string -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     URL-encodes a string.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI">MDN</a></li>
  </div> 
                     </div>
                     
@@ -284,7 +278,7 @@ let _ =
 <pre><span id="VALdecodeURI"><span class="keyword">val</span> decodeURI</span> : <code class="type">string -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Decodes a URL-enmcoded string produced by <code class="code">encodeURI</code><br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI">MDN</a></li>
  </div> 
                     </div>
                     
@@ -294,7 +288,7 @@ let _ =
 <pre><span id="VALencodeURIComponent"><span class="keyword">val</span> encodeURIComponent</span> : <code class="type">string -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     URL-encodes a string, including characters with special meaning in a URI.<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent">MDN</a></li>
  </div> 
                     </div>
                     
@@ -304,7 +298,7 @@ let _ =
 <pre><span id="VALdecodeURIComponent"><span class="keyword">val</span> decodeURIComponent</span> : <code class="type">string -> string</code></pre><div class="info ">
                     <div class="not-examples">
                     Decodes a URL-enmcoded string produced by <code class="code">encodeURIComponent</code><br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent">MDN</a><br>
+<div class="tag"> <li><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent">MDN</a></li>
  </div> 
                     </div>
                     

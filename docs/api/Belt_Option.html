@@ -99,10 +99,9 @@
 </div>
 <h1>Module <a href="type_Belt_Option.html">Belt_Option</a></h1>
 
-<pre><span class="keyword">module</span> Belt_Option: <code class="code">sig</code> <a href="Belt_Option.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEBelt_Option"><span class="keyword">module</span> Belt_Option</span>: <code class="code">sig</code> <a href="Belt_Option.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
-<p>
 
     Utilities for option data type<br>
  
@@ -112,6 +111,30 @@
 
                   <hr width="100%">
 
+<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">'a option -> ('a -> unit [@bs]) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">forEach</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">'a option -> ('a -> unit) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEach optionValue f</code>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, it calls <code class="code">f value</code>; otherwise returns <code class="code">()</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    forEach (Some "thing")(fun x -&gt; Js.log x);; (* logs "thing" *)
+    forEach None (fun x -&gt; Js.log x);; (* returns () *)
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a option -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getExn optionalValue</code>
@@ -138,7 +161,6 @@
 <pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">'a option -> 'b -> ('a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mapWithDefault optionValue default f</code>
-<p>
 
   If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">default</code><br>
  
@@ -163,7 +185,6 @@
 <pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">'a option -> ('a -> 'b) -> 'b option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">map optionValue f</code>
-<p>
 
   If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">Some (f value)</code>; otherwise returns <code class="code">None</code><br>
  
@@ -188,7 +209,6 @@
 <pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">'a option -> ('a -> 'b option) -> 'b option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">flatMap optionValue f</code>
-<p>
 
   If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">None</code>
   The function <code class="code">f</code> must have a return type of <code class="code">'a option</code><br>
@@ -212,7 +232,6 @@
 <pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">'a option -> 'a -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getWithDefault optionalValue default</code>
-<p>
 
   If <code class="code">optionalValue</code> is <code class="code">Some value</code>, returns <code class="code">value</code>, otherwise <code class="code">default</code><br>
  
@@ -255,16 +274,12 @@
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq optValue1 optvalue2 predicate</code>
-<p>
 
   Evaluates two optional values for equality with respect to a predicate function.
-<p>
 
   If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns <code class="code">true</code>.
-<p>
 
   If one of the arguments is <code class="code">Some value</code> and the other is <code class="code">None</code>, returns <code class="code">false</code>
-<p>
 
   If arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">predicate value1 value2</code>;
   the <code class="code">predicate</code> function must return a <code class="code">bool</code><br>
@@ -293,19 +308,14 @@
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">cmp optValue1 optvalue2 comparisonFcn</code>
-<p>
 
   Compares two optional values with respect to a comparison function
-<p>
 
   If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns 0.
-<p>
 
   If the first argument is <code class="code">Some value1</code> and the second is <code class="code">None</code>, returns 1 (something is greater than nothing)
-<p>
 
   If the first argument is <code class="code">None</code> and the second is <code class="code">Some value2</code>, returns -1 (nothing is less than something)
-<p>
 
   If the arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">comparisonFcn value1 value2</code>; <code class="code">comparisonFcn</code> takes two arguments and returns -1 if the first argument is less than the second, 0 if the arguments are equal, and 1 if the first argument is greater than the second.<br>
  

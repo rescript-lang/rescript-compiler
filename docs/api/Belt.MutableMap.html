@@ -99,13 +99,11 @@
 </div>
 <h1>Module <a href="type_Belt.MutableMap.html">Belt.MutableMap</a></h1>
 
-<pre><span class="keyword">module</span> MutableMap: <code class="type"><a href="Belt_MutableMap.html">Belt_MutableMap</a></code></pre><div class="info module top">
+<pre><span id="MODULEMutableMap"><span class="keyword">module</span> MutableMap</span>: <code class="type"><a href="Belt_MutableMap.html">Belt_MutableMap</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableMap.Int</code> and <code class="code">Belt.MutableMap.String</code><br>
@@ -116,22 +114,23 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_MutableMap.Int.html">Int</a>: <code class="type"><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_MutableMap.Int.html">Int</a></span>: <code class="type"><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_MutableMap.String.html">String</a>: <code class="type"><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_MutableMap.String.html">String</a></span>: <code class="type"><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
-                </div> <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('k, 'v, 'id)</code> t</span> </pre>
-</div>
+                </div> <p>A <b>mutable</b> sorted map module which allows customize <i>compare</i> behavior.</p>
 
-<div class="type-declaration">
+<p>Same as Belt.Map, but mutable.</p>
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('k, 'v, 'id)</code> t</span> </pre>
+
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('key, 'id)</code> id</span> = <code class="type">('key, 'id) <a href="Belt_Id.html#TYPEcomparable">Belt_Id.comparable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>

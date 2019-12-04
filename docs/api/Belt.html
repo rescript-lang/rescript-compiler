@@ -98,17 +98,14 @@
 </div>
 <h1>Module <a href="type_Belt.html">Belt</a></h1>
 
-<pre><span class="keyword">module</span> Belt: <code class="code">sig</code> <a href="Belt.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<pre><span id="MODULEBelt"><span class="keyword">module</span> Belt</span>: <code class="code">sig</code> <a href="Belt.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     A stdlib shipped with BuckleScript
-<p>
 
     This stdlib is still in <i>beta</i> but we encourage you to try it out and
     give us feedback.
-<p>
 
     <b>Motivation </b>
-<p>
 
     The motivation for creating such library is to provide BuckleScript users a
     better end-to-end user experience, since the original OCaml stdlib was not
@@ -120,26 +117,20 @@
 <li>Better performance and smaller code size running on JS platform</li>
 </OL>
 
-<p>
 
     <b>Name Convention</b>
-<p>
 
     For higher order functions, it will be suffixed <b>U</b> if it takes uncurried
     callback.
-<p>
 
     <pre class="codepre"><code class="code">      val forEach  : 'a t -&gt; ('a -&gt; unit) -&gt; unit
       val forEachU : 'a t -&gt; ('a -&gt; unit [@bs]) -&gt; unit
     </code></pre>
-<p>
 
     In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
-<p>
 
    <b>A special encoding for collection safety</b>
-<p>
 
    When we create a collection library for a custom data type we need a way to provide a comparator
    function. Take <i>Set</i> for example, suppose its element type is a pair of ints,
@@ -147,12 +138,10 @@
     The <i>Set</i> could not just be typed as <code class="code"> Set.t (int * int) </code>, its customized <i>compare</i> function
     needs to manifest itself in the signature, otherwise, if the user creates another
     customized <i>compare</i> function, the two collection could mix which would result in runtime error.
-<p>
 
     The original OCaml stdlib solved the problem using <i>functor</i> which creates a big
     closure at runtime and makes dead code elimination much harder.
     We use a phantom type to solve the problem:
-<p>
 
     <pre class="codepre"><code class="code">      module Comparable1 = Belt.Id.MakeComparable(struct
         type t = int * int
@@ -174,36 +163,28 @@
 
     let mySet2 = Belt.Set.make ~id:(module Comparable2)
     </code></pre>
-<p>
 
     Here, the compiler would infer <code class="code">mySet1</code> and <code class="code">mySet2</code> having different type, so
     e.g. a `merge` operation that tries to merge these two sets will correctly fail.
-<p>
 
     <pre class="codepre"><code class="code">      val mySet1 : ((int * int), Comparable1.identity) t
       val mySet2 : ((int * int), Comparable2.identity) t
     </code></pre>
-<p>
 
     <code class="code">Comparable1.identity</code> and <code class="code">Comparable2.identity</code> are not the same using our encoding scheme.
-<p>
 
     <b>Collection Hierarchy</b>
-<p>
 
     In general, we provide a generic collection module, but also create specialized
     modules for commonly used data type. Take <i>Belt.Set</i> for example, we provide:
-<p>
 
     <pre class="codepre"><code class="code">        Belt.Set
         Belt.Set.Int
         Belt.Set.String
     </code></pre>
-<p>
 
     The specialized modules <i>Belt.Set.Int</i>, <i>Belt.Set.String</i> are in general more
     efficient.
-<p>
 
     Currently, both <i>Belt_Set</i> and <i>Belt.Set</i> are accessible to users for some
     technical reasons,
@@ -216,14 +197,12 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt.Id.html">Id</a>: <code class="type"><a href="Belt_Id.html">Belt_Id</a></code></pre> <div class="info">                     
+<pre><span id="MODULEId"><span class="keyword">module</span> <a href="Belt.Id.html">Id</a></span>: <code class="type"><a href="Belt_Id.html">Belt_Id</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
-<p>
 
     Provide utilities to create identified comparators or hashes for
     data structures used below.
-<p>
 
     It create a unique identifier per module of
     functions so that different data structures with slightly different
@@ -231,178 +210,164 @@
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Array.html">Array</a>: <code class="type"><a href="Belt_Array.html">Belt_Array</a></code></pre> <div class="info">                     
+<pre><span id="MODULEArray"><span class="keyword">module</span> <a href="Belt.Array.html">Array</a></span>: <code class="type"><a href="Belt_Array.html">Belt_Array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>
-<p>
 
     <b>mutable array</b>: Utilities functions<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.SortArray.html">SortArray</a>: <code class="type"><a href="Belt_SortArray.html">Belt_SortArray</a></code></pre> <div class="info">                     
+<pre><span id="MODULESortArray"><span class="keyword">module</span> <a href="Belt.SortArray.html">SortArray</a></span>: <code class="type"><a href="Belt_SortArray.html">Belt_SortArray</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.SortArray.html"><code class="code">Belt.SortArray</code></a>
-<p>
 
     The top level provides some generic sort related utilities.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.SortArray.Int</code> and <code class="code">Belt.SortArray.String</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.MutableQueue.html">MutableQueue</a>: <code class="type"><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMutableQueue"><span class="keyword">module</span> <a href="Belt.MutableQueue.html">MutableQueue</a></span>: <code class="type"><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableQueue.html"><code class="code">Belt.MutableQueue</code></a>
-<p>
 
     An FIFO(first in first out) queue data structure<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.MutableStack.html">MutableStack</a>: <code class="type"><a href="Belt_MutableStack.html">Belt_MutableStack</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMutableStack"><span class="keyword">module</span> <a href="Belt.MutableStack.html">MutableStack</a></span>: <code class="type"><a href="Belt_MutableStack.html">Belt_MutableStack</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableStack.html"><code class="code">Belt.MutableStack</code></a>
-<p>
 
     An FILO(first in last out) stack data structure<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.List.html">List</a>: <code class="type"><a href="Belt_List.html">Belt_List</a></code></pre> <div class="info">                     
+<pre><span id="MODULEList"><span class="keyword">module</span> <a href="Belt.List.html">List</a></span>: <code class="type"><a href="Belt_List.html">Belt_List</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.List.html"><code class="code">Belt.List</code></a>
-<p>
 
     Utilities for List data type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Range.html">Range</a>: <code class="type"><a href="Belt_Range.html">Belt_Range</a></code></pre> <div class="info">                     
+<pre><span id="MODULERange"><span class="keyword">module</span> <a href="Belt.Range.html">Range</a></span>: <code class="type"><a href="Belt_Range.html">Belt_Range</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Range.html"><code class="code">Belt.Range</code></a>
-<p>
 
     Utilities for a closed range <code class="code">(from, start)</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Set.html">Set</a>: <code class="type"><a href="Belt_Set.html">Belt_Set</a></code></pre> <div class="info">                     
+<pre><span id="MODULESet"><span class="keyword">module</span> <a href="Belt.Set.html">Set</a></span>: <code class="type"><a href="Belt_Set.html">Belt_Set</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Set.html"><code class="code">Belt.Set</code></a>
-<p>
 
     The top level provides generic <b>immutable</b> set operations.
-<p>
 
     It also has three specialized inner modules
     <code class="code">Belt.Set.Int</code>, <code class="code">Belt.Set.String</code> and
-<p>
 
     <code class="code">Belt.Set.Dict</code>: This module separates data from function
     which is more verbose but slightly more efficient<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Map.html">Map</a>: <code class="type"><a href="Belt_Map.html">Belt_Map</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMap"><span class="keyword">module</span> <a href="Belt.Map.html">Map</a></span>: <code class="type"><a href="Belt_Map.html">Belt_Map</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Map.html"><code class="code">Belt.Map</code></a>,
-<p>
 
     The top level provides generic <b>immutable</b> map operations.
-<p>
 
     It also has three specialized inner modules
     <code class="code">Belt.Map.Int</code>, <code class="code">Belt.Map.String</code> and
-<p>
 
     <code class="code">Belt.Map.Dict</code>: This module separates data from function
     which  is more verbose but slightly more efficient<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.MutableSet.html">MutableSet</a>: <code class="type"><a href="Belt_MutableSet.html">Belt_MutableSet</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMutableSet"><span class="keyword">module</span> <a href="Belt.MutableSet.html">MutableSet</a></span>: <code class="type"><a href="Belt_MutableSet.html">Belt_MutableSet</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableSet.Int</code> and <code class="code">Belt.MutableSet.String</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.MutableMap.html">MutableMap</a>: <code class="type"><a href="Belt_MutableMap.html">Belt_MutableMap</a></code></pre> <div class="info">                     
+<pre><span id="MODULEMutableMap"><span class="keyword">module</span> <a href="Belt.MutableMap.html">MutableMap</a></span>: <code class="type"><a href="Belt_MutableMap.html">Belt_MutableMap</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableMap.Int</code> and <code class="code">Belt.MutableMap.String</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.HashSet.html">HashSet</a>: <code class="type"><a href="Belt_HashSet.html">Belt_HashSet</a></code></pre> <div class="info">                     
+<pre><span id="MODULEHashSet"><span class="keyword">module</span> <a href="Belt.HashSet.html">HashSet</a></span>: <code class="type"><a href="Belt_HashSet.html">Belt_HashSet</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashSet.Int</code> and <code class="code">Belt.HashSet.String</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.HashMap.html">HashMap</a>: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre> <div class="info">                     
+<pre><span id="MODULEHashMap"><span class="keyword">module</span> <a href="Belt.HashMap.html">HashMap</a></span>: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Option.html">Option</a>: <code class="type"><a href="Belt_Option.html">Belt_Option</a></code></pre> <div class="info">                     
+<pre><span id="MODULEOption"><span class="keyword">module</span> <a href="Belt.Option.html">Option</a></span>: <code class="type"><a href="Belt_Option.html">Belt_Option</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
-<p>
 
     Utilities for option data type.<br>
  
                 </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Result.html">Result</a>: <code class="type"><a href="Belt_Result.html">Belt_Result</a></code></pre> <div class="info">                     
+                </div> <p><a href="Belt.Result.html"><code class="code">Belt.Result</code></a></p>
+
+<p>Utilities for result data type.</p>
+
+<pre><span id="MODULEResult"><span class="keyword">module</span> <a href="Belt.Result.html">Result</a></span>: <code class="type"><a href="Belt_Result.html">Belt_Result</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <p><a href="Belt.Int.html"><code class="code">Belt.Int</code></a></p>
+
+<p>Utilities for Int.</p>
+
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt.Int.html">Int</a></span>: <code class="type"><a href="Belt_Int.html">Belt_Int</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <p><a href="Belt.Float.html"><code class="code">Belt.Float</code></a></p>
+
+<p>Utilities for Float.</p>
+
+<pre><span id="MODULEFloat"><span class="keyword">module</span> <a href="Belt.Float.html">Float</a></span>: <code class="type"><a href="Belt_Float.html">Belt_Float</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Int.html">Int</a>: <code class="type"><a href="Belt_Int.html">Belt_Int</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Float.html">Float</a>: <code class="type"><a href="Belt_Float.html">Belt_Float</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Belt.Debug.html">Debug</a>: <code class="type"><a href="Belt_Debug.html">Belt_Debug</a></code></pre> <div class="info">                     
+<pre><span id="MODULEDebug"><span class="keyword">module</span> <a href="Belt.Debug.html">Debug</a></span>: <code class="type"><a href="Belt_Debug.html">Belt_Debug</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Debug.html"><code class="code">Belt.Debug</code></a>
-<p>
 
     Utilities for set up debugging<br>
  

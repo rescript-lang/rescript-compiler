@@ -99,13 +99,11 @@
 </div>
 <h1>Module <a href="type_Belt.MutableSet.html">Belt.MutableSet</a></h1>
 
-<pre><span class="keyword">module</span> MutableSet: <code class="type"><a href="Belt_MutableSet.html">Belt_MutableSet</a></code></pre><div class="info module top">
+<pre><span id="MODULEMutableSet"><span class="keyword">module</span> MutableSet</span>: <code class="type"><a href="Belt_MutableSet.html">Belt_MutableSet</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableSet.Int</code> and <code class="code">Belt.MutableSet.String</code><br>
@@ -116,26 +114,24 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_MutableSet.Int.html">Int</a>: <code class="type"><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></code></pre> <div class="info">                     
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Belt_MutableSet.Int.html">Int</a></span>: <code class="type"><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Belt_MutableSet.String.html">String</a>: <code class="type"><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></code></pre> <div class="info">                     
+<pre><span id="MODULEString"><span class="keyword">module</span> <a href="Belt_MutableSet.String.html">String</a></span>: <code class="type"><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
  
                 </div>
-                </div> <div class="type-declaration">
+                </div> 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('k, 'id)</code> t</span> </pre>
-</div>
 
-<div class="type-declaration">
+
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('k, 'id)</code> id</span> = <code class="type">('k, 'id) <a href="Belt_Id.html#TYPEcomparable">Belt_Id.comparable</a></code> </pre>
-</div>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">id:('value, 'id) <a href="Belt_MutableSet.html#TYPEid">id</a> -> ('value, 'id) <a href="Belt_MutableSet.html#TYPEt">t</a></code></pre>

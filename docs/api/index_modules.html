@@ -131,7 +131,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>
-<p>
 
     <b>mutable array</b>: Utilities functions<br>
  
@@ -160,14 +159,11 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A stdlib shipped with BuckleScript
-<p>
 
     This stdlib is still in <i>beta</i> but we encourage you to try it out and
     give us feedback.
-<p>
 
     <b>Motivation </b>
-<p>
 
     The motivation for creating such library is to provide BuckleScript users a
     better end-to-end user experience, since the original OCaml stdlib was not
@@ -179,26 +175,20 @@
 <li>Better performance and smaller code size running on JS platform</li>
 </OL>
 
-<p>
 
     <b>Name Convention</b>
-<p>
 
     For higher order functions, it will be suffixed <b>U</b> if it takes uncurried
     callback.
-<p>
 
     <pre class="codepre"><code class="code">      val forEach  : 'a t -&gt; ('a -&gt; unit) -&gt; unit
       val forEachU : 'a t -&gt; ('a -&gt; unit [@bs]) -&gt; unit
     </code></pre>
-<p>
 
     In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
-<p>
 
    <b>A special encoding for collection safety</b>
-<p>
 
    When we create a collection library for a custom data type we need a way to provide a comparator
    function. Take <i>Set</i> for example, suppose its element type is a pair of ints,
@@ -206,12 +196,10 @@
     The <i>Set</i> could not just be typed as <code class="code"> Set.t (int * int) </code>, its customized <i>compare</i> function
     needs to manifest itself in the signature, otherwise, if the user creates another
     customized <i>compare</i> function, the two collection could mix which would result in runtime error.
-<p>
 
     The original OCaml stdlib solved the problem using <i>functor</i> which creates a big
     closure at runtime and makes dead code elimination much harder.
     We use a phantom type to solve the problem:
-<p>
 
     <pre class="codepre"><code class="code">      module Comparable1 = Belt.Id.MakeComparable(struct
         type t = int * int
@@ -233,36 +221,28 @@
 
     let mySet2 = Belt.Set.make ~id:(module Comparable2)
     </code></pre>
-<p>
 
     Here, the compiler would infer <code class="code">mySet1</code> and <code class="code">mySet2</code> having different type, so
     e.g. a `merge` operation that tries to merge these two sets will correctly fail.
-<p>
 
     <pre class="codepre"><code class="code">      val mySet1 : ((int * int), Comparable1.identity) t
       val mySet2 : ((int * int), Comparable2.identity) t
     </code></pre>
-<p>
 
     <code class="code">Comparable1.identity</code> and <code class="code">Comparable2.identity</code> are not the same using our encoding scheme.
-<p>
 
     <b>Collection Hierarchy</b>
-<p>
 
     In general, we provide a generic collection module, but also create specialized
     modules for commonly used data type. Take <i>Belt.Set</i> for example, we provide:
-<p>
 
     <pre class="codepre"><code class="code">        Belt.Set
         Belt.Set.Int
         Belt.Set.String
     </code></pre>
-<p>
 
     The specialized modules <i>Belt.Set.Int</i>, <i>Belt.Set.String</i> are in general more
     efficient.
-<p>
 
     Currently, both <i>Belt_Set</i> and <i>Belt.Set</i> are accessible to users for some
     technical reasons,
@@ -297,12 +277,10 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A <b>mutable</b> Hash map which allows customized <code class="code">hash</code> behavior.
-<p>
 
     All data are parameterized by not its only type but also a unique identity in
     the time of initialization, so that two <i>HashMaps of ints</i> initialized with different
     <i>hash</i> functions will have different type.
-<p>
 
     For example:
     <pre class="codepre"><code class="code">      type t = int
@@ -319,29 +297,23 @@
         )
       let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
     </code></pre>
-<p>
 
     The invariant must be held: for two elements who are <i>equal</i>,
     their hashed value should be the same
-<p>
 
     Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
     it would not mix.
-<p>
 
     <pre class="codepre"><code class="code">      val s0 :  (int, I0.identity) t
       val s1 :  (int, I1.identity) t
     </code></pre>
-<p>
 
     We can add elements to the collection:
-<p>
 
     <pre class="codepre"><code class="code">      let () =
         add s1 0 "3";
         add s1 1 "3"
     </code></pre>
-<p>
 
     Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
  
@@ -350,18 +322,14 @@
 <tr><td><a href="Belt_HashMapInt.html">Belt_HashMapInt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">setDone tbl k v</code> if <code class="code">k</code> does not exist,
-    add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
-    <code class="code">v</code><br>
+                    Adapted by Authors of BuckleScript 2017<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMapString.html">Belt_HashMapString</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">setDone tbl k v</code> if <code class="code">k</code> does not exist,
-    add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
-    <code class="code">v</code><br>
+                    Adapted by Authors of BuckleScript 2017<br>
  
                 </div>
                 </div> </td></tr>
@@ -369,12 +337,10 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A <b>mutable</b> Hash set which allows customized <code class="code">hash</code> behavior.
-<p>
 
     All data are parameterized by not its only type but also a unique identity in
     the time of initialization, so that two <i>HashSets of ints</i> initialized with different
     <i>hash</i> functions will have different type.
-<p>
 
     For example:
     <pre class="codepre"><code class="code">      type t = int
@@ -391,29 +357,23 @@
         )
       let s1 = make ~id:(module I1) ~hintSize:40
     </code></pre>
-<p>
 
     The invariant must be held: for two elements who are <i>equal</i>,
     their hashed value should be the same
-<p>
 
     Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
     it would not mix.
-<p>
 
     <pre class="codepre"><code class="code">      val s0 :  (int, I0.identity) t
       val s1 :  (int, I1.identity) t
     </code></pre>
-<p>
 
     We can add elements to the collection:
-<p>
 
     <pre class="codepre"><code class="code">      let () =
         add s1 0;
         add s1 1
     </code></pre>
-<p>
 
     Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
  
@@ -423,11 +383,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> specialized with key type to be a primitive type.
-<p>
 
     It is more efficient in general, the  API is the same with <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> except its key type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a><br>
  
@@ -437,11 +395,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> specialized with key type to be a primitive type.
-<p>
 
     It is more efficient in general, the  API is the same with <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> except its key type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a><br>
  
@@ -451,11 +407,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
-<p>
 
     Provide utiliites to create identified comparators or hashes for
     data structures used below.
-<p>
 
     It create a unique identifer per module of functions so that different data structures with slightly different
     comparison functions won't mix.<br>
@@ -474,10 +428,8 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.List.html"><code class="code">Belt.List</code></a>
-<p>
 
     Utilities for List data type.
-<p>
 
     This module is compatible with original ocaml stdlib.
     In general, all functions comes with the original stdlib also
@@ -490,15 +442,12 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A <i>immutable</i> sorted map module which allows customize <i>compare</i> behavior.
-<p>
 
    The implementation uses balanced binary trees, and therefore searching
    and insertion take time logarithmic in the size of the map.
-<p>
 
   For more info on this module's usage of identity, `make` and others, please see
   the top level documentation of Belt, <b>A special encoding for collection safety</b>.
-<p>
 
   Example usage:<br>
  
@@ -507,60 +456,43 @@
 <tr><td><a href="Belt_MapDict.html">Belt_MapDict</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">eq m1 m2 cmp</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
-    equal, that is, contain equal keys and associate them with
-    equal data.  <code class="code">cmp</code> is the equality predicate used to compare
-    the data associated with the keys.<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapInt.html">Belt_MapInt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html">Belt_MapString</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMap.html">Belt_MutableMap</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    A <b>mutable</b> sorted map module which allows customize <i>compare</i> behavior.
-<p>
-
-   Same as Belt.Map, but mutable.<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">cmp m1 m2 cmp</code>
-    First compare by size, if size is the same,
-    compare by key, value pair<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html">Belt_MutableMapString</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">cmp m1 m2 cmp</code>
-    First compare by size, if size is the same,
-    compare by key, value pair<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html">Belt_MutableQueue</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     First-in first-out queues.
-<p>
 
     This module implements queues (FIFOs), with in-place modification.<br>
  
@@ -570,7 +502,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A <i>mutable</i> sorted set module which allows customize <i>compare</i> behavior.
-<p>
 
    Same as Belt.Set, but mutable.<br>
  
@@ -580,11 +511,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> specialized with key type to be a primitive type.
-<p>
 
     It is more efficient in general, the  API is the same with <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> except its key type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
  
@@ -594,11 +523,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> specialized with key type to be a primitive type.
-<p>
 
     It is more efficient in general, the  API is the same with <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> except its key type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
  
@@ -608,7 +535,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     First in last out stack.
-<p>
 
     This module implements stacks, with in-place modification.<br>
  
@@ -618,7 +544,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
-<p>
 
     Utilities for option data type<br>
  
@@ -636,7 +561,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Result.html"><code class="code">Belt.Result</code></a>
-<p>
 
     Utilities for result data type.<br>
  
@@ -646,15 +570,12 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     A <i>immutable</i> sorted set module which allows customize <i>compare</i> behavior.
-<p>
 
    The implementation uses balanced binary trees, and therefore searching
    and insertion take time logarithmic in the size of the map.
-<p>
 
   For more info on this module's usage of identity, `make` and others, please see
   the top level documentation of Belt, <b>A special encoding for collection safety</b>.
-<p>
 
   Example usage:<br>
  
@@ -663,8 +584,7 @@
 <tr><td><a href="Belt_SetDict.html">Belt_SetDict</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html">Belt_SetInt</a> </td>
@@ -673,7 +593,6 @@
                     This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
     It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
  
@@ -685,7 +604,6 @@
                     This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
     It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
     and identity is not needed(using the built-in one)
-<p>
 
     <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
  
@@ -717,14 +635,13 @@
 <tr><td><a href="Belt_internalAVLset.html">Belt_internalAVLset</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <b>raise</b> when invariant is not held<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <b>raise</b> when invariant is not held<br>
+                    Almost rewritten  by authors of BuckleScript<br>
  
                 </div>
                 </div> </td></tr>
@@ -825,7 +742,6 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Debug.html"><code class="code">Belt.Debug</code></a>
-<p>
 
     Utilities for set up debugging<br>
  
@@ -843,7 +759,6 @@
                     This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
-<p>
 
     <b>Advanced usage only</b><br>
  
@@ -951,10 +866,8 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
@@ -965,10 +878,8 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> hash set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.HashSet.Int</code> and <code class="code">Belt.HashSet.String</code><br>
@@ -980,11 +891,9 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
-<p>
 
     Provide utilities to create identified comparators or hashes for
     data structures used below.
-<p>
 
     It create a unique identifier per module of
     functions so that different data structures with slightly different
@@ -1129,16 +1038,13 @@
                 <div class="not-examples">
                     Safe cast between OCaml values which share the same 
     runtime representation
-<p>
 
     Different OCaml types might share the same represention in the 
     BuckleScript runtime; while this is a compiler internal knowledge,
     applications might benefit from having a safe and zero cost 
     conversion between those types. 
-<p>
 
     This modules acts as the <b>single place</b> for such conversion. 
-<p>
 
     If for any reason, the runtime representation changes, those function 
     will be modified accordingly.<br>
@@ -1161,19 +1067,14 @@
 <tr><td><a href="Js_dict.html">Js_dict</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Dictionary type (ie an '{ }' JS object). However it is restricted 
-    to hold a single type; therefore values must have the same type. 
-<p>
-
-    This Dictionary type is mostly used with the <code class="code">Js_json.t</code> type.<br>
+                    Provides a simple key-value dictionary abstraction over native JavaScript objects<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_exn.html">Js_exn</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    internal use only<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_float.html">Js_float</a> </td>
@@ -1208,7 +1109,7 @@
 <tr><td><a href="Js_list.html">Js_list</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Application order is left to right, tail recurisve<br>
+                    WIP: List operations<br>
  
                 </div>
                 </div> </td></tr>
@@ -1268,12 +1169,10 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     Provides bindings for JavaScript Regular Expressions
-<p>
 
-<h4 id="4_Syntaxsugar">Syntax sugar</h4>
+<h5 id="4_Syntaxsugar">Syntax sugar</h5>
 BuckleScript provides a bit of syntax sugar for regex literals: <code class="code">[%re "/foo/g"]</code>
 will evaluate to a <a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a> that can be passed around and used like usual.
-<p>
 
 <b>Note:</b> This is not an immutable API. A RegExp object with the <code class="code">global</code> ("g")
 flag set will modify the <a href="Js_re.html#VALlastIndex"><code class="code">Js_re.lastIndex</code></a> property when the RegExp object is used,
@@ -1331,8 +1230,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <tr><td><a href="Js_vector.html">Js_vector</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    shallow copy<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Json.html">Json</a> [<a href="Js.html">Js</a>]</td>
@@ -1352,7 +1250,6 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.List.html"><code class="code">Belt.List</code></a>
-<p>
 
     Utilities for List data type<br>
  
@@ -1387,14 +1284,11 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Map.html"><code class="code">Belt.Map</code></a>,
-<p>
 
     The top level provides generic <b>immutable</b> map operations.
-<p>
 
     It also has three specialized inner modules
     <code class="code">Belt.Map.Int</code>, <code class="code">Belt.Map.String</code> and
-<p>
 
     <code class="code">Belt.Map.Dict</code>: This module separates data from function
     which  is more verbose but slightly more efficient<br>
@@ -1417,10 +1311,8 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> map operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableMap.Int</code> and <code class="code">Belt.MutableMap.String</code><br>
@@ -1431,7 +1323,6 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableQueue.html"><code class="code">Belt.MutableQueue</code></a>
-<p>
 
     An FIFO(first in first out) queue data structure<br>
  
@@ -1441,10 +1332,8 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a>
-<p>
 
     The top level provides generic <b>mutable</b> set operations.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableSet.Int</code> and <code class="code">Belt.MutableSet.String</code><br>
@@ -1455,7 +1344,6 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableStack.html"><code class="code">Belt.MutableStack</code></a>
-<p>
 
     An FILO(first in last out) stack data structure<br>
  
@@ -1531,8 +1419,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <tr><td><a href="Node_process.html">Node_process</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The process.uptime() method returns the number of seconds 
-   the current Node.js process has been running.)<br>
+                    Node Process API<br>
  
                 </div>
                 </div> </td></tr>
@@ -1571,7 +1458,6 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
-<p>
 
     Utilities for option data type.<br>
  
@@ -1601,7 +1487,6 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Range.html"><code class="code">Belt.Range</code></a>
-<p>
 
     Utilities for a closed range <code class="code">(from, start)</code><br>
  
@@ -1654,14 +1539,11 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Set.html"><code class="code">Belt.Set</code></a>
-<p>
 
     The top level provides generic <b>immutable</b> set operations.
-<p>
 
     It also has three specialized inner modules
     <code class="code">Belt.Set.Int</code>, <code class="code">Belt.Set.String</code> and
-<p>
 
     <code class="code">Belt.Set.Dict</code>: This module separates data from function
     which is more verbose but slightly more efficient<br>
@@ -1672,10 +1554,8 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.SortArray.html"><code class="code">Belt.SortArray</code></a>
-<p>
 
     The top level provides some generic sort related utilities.
-<p>
 
     It also has two specialized inner modules
     <code class="code">Belt.SortArray.Int</code> and <code class="code">Belt.SortArray.String</code><br>
