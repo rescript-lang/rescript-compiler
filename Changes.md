@@ -3,7 +3,12 @@
 # current
 
 # 7.0.0 
-
+- #4003 not doing ast invariant checking, leave it for bucklescript (faster compilation)
+- #4002 upgrade ocamldoc in 4.06, fix document build
+- #4001 tweak error message
+- #3999 #3987 fix ppx reactjs regression keep attributes on object fields
+- #3998 #3996 less strict check for duplication in record labels
+- #3996 #3969 fix refmt upgrade regressions
 - #3982 bs.as for record support (language level feature)
 - #3989 #3993 check renamed label is unique when using bs.as 
 - #3985 more precise runtime information passed down from upstream, fix a corner case of compiling ocaml class
