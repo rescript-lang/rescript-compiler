@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "esy": {
+    "buildsInSource": true,
+    "build": [
+      [
+        "ocamlopt",
+        "-g",
+        "-w",
+        "-40-30-3",
+        "#{self.root / 'jscomp' / 'stubs' / 'ext_basic_hash_stubs.c'}",
+        "unix.cmxa",
+        "#{self.root / 'lib' / '4.06.1' / 'unstable' / 'bspack.ml'}",
+        "-o",
+        "#{self.install / 'bin' / 'bspack.exe'}"
+      ]
+    ]
+  },
+  "dependencies": {
+    "ocaml": "ulrikstrid/ocaml#copy-folder-on-install"
+  }
+}
