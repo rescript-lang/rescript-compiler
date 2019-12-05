@@ -22,7 +22,9 @@ let make = () => {
       <button onClick={_ => dispatch(Decrement)}>
         {React.string("Decrement")}
       </button>
-      <span> {state.count |> string_of_int |> React.string} </span>
+      <span className="counter">
+        {state.count |> string_of_int |> React.string}
+      </span>
       <button onClick={_ => dispatch(Increment)}>
         {React.string("Increment")}
       </button>
