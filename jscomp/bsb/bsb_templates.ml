@@ -1005,15 +1005,17 @@ let root = OCamlRes.Res.([
       File  ("index.css",
         "body {\n\
         \  margin: 0;\n\
-        \  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n\
-        \    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n\
-        \    sans-serif;\n\
-        \  -webkit-font-smoothing: antialiased;\n\
-        \  -moz-osx-font-smoothing: grayscale;\n\
+        \  font-family: -apple-system, system-ui, \"Segoe UI\", Helvetica, Arial,\n\
+        \    sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n\
          }\n\
          \n\
          main {\n\
         \  padding: 20px;\n\
+         }\n\
+         \n\
+         .counter {\n\
+        \  padding: 20px;\n\
+        \  display: inline-block;\n\
          }\n\
          ") ;
       File  ("App.re",
@@ -1041,7 +1043,9 @@ let root = OCamlRes.Res.([
         \      <button onClick={_ => dispatch(Decrement)}>\n\
         \        {React.string(\"Decrement\")}\n\
         \      </button>\n\
-        \      <span> {state.count |> string_of_int |> React.string} </span>\n\
+        \      <span className=\"counter\">\n\
+        \        {state.count |> string_of_int |> React.string}\n\
+        \      </span>\n\
         \      <button onClick={_ => dispatch(Increment)}>\n\
         \        {React.string(\"Increment\")}\n\
         \      </button>\n\
