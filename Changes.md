@@ -2,6 +2,11 @@
 
 # current
 
+# 7.0.1
+- #4009 #4011 fix ocaml type checking bug (cherry pick)
+- #4000 #4010 add react-starter theme
+- #4005 fix windows installing issues
+
 # 7.0.0 
 - #4003 not doing ast invariant checking, leave it for bucklescript (faster compilation)
 - #4002 upgrade ocamldoc in 4.06, fix document build
