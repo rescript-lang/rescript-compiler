@@ -32384,7 +32384,7 @@ let file_aux ppf ~tool_name inputfile (type a) parse_fun invariant_fun
   let ast =
     Profile.record_call "-ppx" (fun () ->
       apply_rewriters ~restore:false ~tool_name kind ast) in
-  if is_ast_file || !Clflags.all_ppx <> [] then invariant_fun ast;
+  if is_ast_file || !Clflags.all_ppx <> [] && not !Clflags.bs_only then invariant_fun ast;
   ast
 
 let file ppf ~tool_name inputfile parse_fun ast_kind =
@@ -42189,11 +42189,11 @@ let parse_external_attributes
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> 
               if String.length prim_name_check <> 0 then 
-                Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+                Location.raise_errorf ~loc "[@@bs.set_index] this particular external's name needs to be a placeholder empty string";
               {st with set_index = true}
             | "bs.get_index"->               
               if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+                Location.raise_errorf ~loc "[@@bs.get_index] this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->

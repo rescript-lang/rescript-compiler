@@ -20471,11 +20471,11 @@ let parse_external_attributes
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> 
               if String.length prim_name_check <> 0 then 
-                Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+                Location.raise_errorf ~loc "[@@bs.set_index] this particular external's name needs to be a placeholder empty string";
               {st with set_index = true}
             | "bs.get_index"->               
               if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+                Location.raise_errorf ~loc "[@@bs.get_index] this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
