@@ -14744,6 +14744,29 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons l ->
+        let nidx = indexfun h l.data in
+        Array.unsafe_set 
+          ndata nidx  
+            (Cons {
+              l with rest =  Array.unsafe_get ndata nidx
+              });
+        insert_bucket l.rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
 let iter h f =
   let rec do_bucket = function
     | Empty ->
@@ -14769,63 +14792,27 @@ let fold h init f =
   done;
   !accu
 
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons l ->
-        let nidx = indexfun h l.data in
-        ndata.(nidx) <- Cons {l with rest =  ndata.(nidx)};
-        insert_bucket l.rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
 
 let elements set = 
-  fold set [] (fun k  acc ->  k :: acc) 
-
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons l -> bucket_length (accu + 1) l.rest
+  fold set [] List.cons
 
 
 
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  {Hashtbl.num_bindings = h.size;
-   num_buckets = Array.length h.data;
-   max_bucket_length = mbl;
-   bucket_histogram = histo }
 
-
-let rec small_bucket_mem eq_key key lst =
+let rec small_bucket_mem eq key lst =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
-    eq_key key lst.data ||
+    eq key lst.data ||
     match lst.rest with 
     | Empty -> false 
     | Cons lst  -> 
-      eq_key key   lst.data ||
+      eq key   lst.data ||
       match lst.rest with 
       | Empty -> false 
       | Cons lst  -> 
-        eq_key key lst.data ||
-        small_bucket_mem eq_key key lst.rest 
+        eq key lst.data ||
+        small_bucket_mem eq key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
   match buckets with 
@@ -14852,9 +14839,11 @@ sig
   val iter: t -> (key -> unit) -> unit
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
+  (* val stats:  t -> Hashtbl.statistics *)
   val elements : t -> key list 
 end
+
+
 
 end
 module Hash_set_poly : sig 
@@ -14905,7 +14894,7 @@ val elements : 'a t -> 'a list
 
 val length : 'a t -> int 
 
-val stats:  'a t -> Hashtbl.statistics
+(* val stats:  'a t -> Hashtbl.statistics *)
 
 end = struct
 #1 "hash_set_poly.ml"
@@ -14952,7 +14941,7 @@ let copy = Hash_set_gen.copy
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
+(* let stats = Hash_set_gen.stats *)
 let elements = Hash_set_gen.elements
 
 
@@ -18906,7 +18895,7 @@ let copy = Hash_set_gen.copy
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
+(* let stats = Hash_set_gen.stats *)
 let elements = Hash_set_gen.elements
 
 

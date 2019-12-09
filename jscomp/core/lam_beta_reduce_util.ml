@@ -77,10 +77,10 @@ let simple_beta_reduce params body args =
     begin match aux [] args' with 
     | args -> 
       let result = 
-        Ident_hashtbl.fold (fun _param {lambda; used} code -> 
+        Ident_hashtbl.fold param_hash (Lam.prim ~primitive ~args loc) (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
-            else code) param_hash (Lam.prim ~primitive ~args loc) in 
+            else code)  in 
       Ident_hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
@@ -101,12 +101,12 @@ let simple_beta_reduce params body args =
       | us -> 
         let f = find_param fn_name  f in
         let result = 
-          Ident_hashtbl.fold 
+          Ident_hashtbl.fold param_hash (Lam.apply  f us  loc status)
             (fun _param {lambda; used} code -> 
                if not used then 
                  Lam.seq lambda code
                else code )
-            param_hash (Lam.apply  f us  loc status) in
+        in
         Ident_hashtbl.clear param_hash;
         Some result 
       | exception _ -> 
