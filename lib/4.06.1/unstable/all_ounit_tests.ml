@@ -9255,8 +9255,8 @@ let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons {data = k;   rest} ->
-      f k ; do_bucket rest in
+    | Cons l  ->
+      f l.data  ; do_bucket l.rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -9267,8 +9267,8 @@ let fold h init f =
     match b with
       Empty ->
       accu
-    | Cons {data = k;   rest} ->
-      do_bucket rest (f k  accu) in
+    | Cons l  ->
+      do_bucket l.rest (f l.data  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
