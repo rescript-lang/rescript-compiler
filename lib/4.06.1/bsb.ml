@@ -7381,9 +7381,13 @@ module Hash_set_gen
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
+type 'a bucket = 
+  | Empty
+  | Cons of {data : 'a ; rest : 'a bucket }
+
 type 'a t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: 'a list array;  (* the buckets *)
+    mutable data: 'a bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -7392,18 +7396,18 @@ type 'a t =
 
 let create  initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] }
+  { initial_size = s; size = 0; data = Array.make s Empty }
 
 let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  []
+    Array.unsafe_set h.data i  Empty
   done
 
 let reset h =
   h.size <- 0;
-  h.data <- Array.make h.initial_size [ ]
+  h.data <- Array.make h.initial_size Empty
 
 
 let copy h = { h with data = Array.copy h.data }
@@ -7412,9 +7416,9 @@ let length h = h.size
 
 let iter h f =
   let rec do_bucket = function
-    | [ ] ->
+    | Empty ->
       ()
-    | k ::  rest ->
+    | Cons {data = k;   rest} ->
       f k ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -7424,9 +7428,9 @@ let iter h f =
 let fold h init f =
   let rec do_bucket b accu =
     match b with
-      [ ] ->
+      Empty ->
       accu
-    | k ::  rest ->
+    | Cons {data = k;   rest} ->
       do_bucket rest (f k  accu) in
   let d = h.data in
   let accu = ref init in
@@ -7440,13 +7444,13 @@ let resize indexfun h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
+    let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
+        Empty -> ()
+      | Cons {data = key; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- key :: ndata.(nidx);
+        ndata.(nidx) <- Cons {data = key ; rest =  ndata.(nidx)};
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -7457,16 +7461,19 @@ let resize indexfun h =
 let elements set = 
   fold set [] (fun k  acc ->  k :: acc) 
 
+let rec bucket_length accu = function
+  | Empty -> accu
+  | Cons {rest} -> bucket_length (accu + 1) rest
 
 
 
 let stats h =
   let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (List.length b)) in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
-       let l = List.length b in
+       let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
     ;
   {Hashtbl.num_bindings = h.size;
@@ -7474,29 +7481,30 @@ let stats h =
    max_bucket_length = mbl;
    bucket_histogram = histo }
 
+
 let rec small_bucket_mem eq_key key lst =
   match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    eq_key key   key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      eq_key key   key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-        eq_key key   key3 ||
-        small_bucket_mem eq_key key rest 
+  | Empty -> false 
+  | Cons lst -> 
+    eq_key key lst.data ||
+    match lst.rest with 
+    | Empty -> false 
+    | Cons lst  -> 
+      eq_key key   lst.data ||
+      match lst.rest with 
+      | Empty -> false 
+      | Cons lst  -> 
+        eq_key key lst.data ||
+        small_bucket_mem eq_key key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
   match buckets with 
-  | [ ] ->
-    [ ]
-  | k :: next ->
+  | Empty ->
+    Empty
+  | Cons { data = k ; rest =  next} ->
     if  eq_key k   key
     then begin h.size <- h.size - 1; next end
-    else k :: remove_bucket eq_key key h next    
+    else Cons { data = k ; rest =  remove_bucket eq_key key h next}   
 
 module type S =
 sig
@@ -7611,7 +7619,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
+      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -7631,7 +7639,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
+      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -8105,7 +8113,7 @@ type ('a, 'b) t =
 
 and ('a, 'b) bucketlist =
   | Empty
-  | Cons of 'a * 'b * ('a, 'b) bucketlist
+  | Cons of {key : 'a ; data : 'b ; rest :  ('a, 'b) bucketlist}
 
 
 let create  initial_size =
@@ -8137,10 +8145,10 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons(key, data, rest) ->
+      | Cons{key; data; rest} ->
         insert_bucket rest; (* preserve original order of elements *)
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+        ndata.(nidx) <- Cons {key; data; rest = ndata.(nidx)} in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done
@@ -8152,7 +8160,7 @@ let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons(k, d, rest) ->
+    | Cons{key = k;  data = d;  rest} ->
       f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -8164,7 +8172,7 @@ let to_list h f =
     match bucket with 
     | Empty ->
       acc
-    | Cons(k, d, rest) ->
+    | Cons {key = k; data = d; rest} ->
       do_bucket rest (f k d :: acc) in
   let d = h.data in
   let acc = ref [] in
@@ -8178,7 +8186,7 @@ let fold f h init =
     match b with
       Empty ->
       accu
-    | Cons(k, d, rest) ->
+    | Cons {key = k; data = d; rest} ->
       do_bucket rest (f k d accu) in
   let d = h.data in
   let accu = ref init in
@@ -8189,7 +8197,7 @@ let fold f h init =
 
 let rec bucket_length accu = function
   | Empty -> accu
-  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
+  | Cons {rest} -> bucket_length (accu + 1) rest
 
 let stats h =
   let mbl =
@@ -8211,15 +8219,15 @@ let stats h =
 let rec small_bucket_mem eq key (lst : _ bucketlist) =
   match lst with 
   | Empty -> false 
-  | Cons(k1,_,rest1) -> 
+  | Cons{key=k1; rest=rest1} -> 
     eq  key k1 ||
     match rest1 with
     | Empty -> false 
-    | Cons(k2,_,rest2) -> 
+    | Cons{ key=k2; rest = rest2} -> 
       eq key k2  || 
       match rest2 with 
       | Empty -> false 
-      | Cons(k3,_,rest3) -> 
+      | Cons {key=k3; rest=rest3} -> 
         eq key k3  ||
         small_bucket_mem eq key rest3 
 
@@ -8227,15 +8235,15 @@ let rec small_bucket_mem eq key (lst : _ bucketlist) =
 let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data=d1; rest=rest1} -> 
     if eq  key k1 then Some d1 else 
       match rest1 with
       | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data=d2; rest=rest2} -> 
         if eq key k2 then Some d2 else 
           match rest2 with 
           | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then Some d3 else 
               small_bucket_opt eq key rest3 
 
@@ -8243,15 +8251,15 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
 let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data= d1; rest=rest1} -> 
     if eq  key k1 then Some k1 else 
       match rest1 with
       | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data= d2; rest=rest2} -> 
         if eq key k2 then Some k2 else 
           match rest2 with 
           | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then Some k3 else 
               small_bucket_key_opt eq key rest3
 
@@ -8259,15 +8267,15 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data=d1; rest=rest1} -> 
     if eq  key k1 then  d1 else 
       match rest1 with
       | Empty -> default 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data=d2; rest=rest2} -> 
         if eq key k2 then  d2 else 
           match rest2 with 
           | Empty -> default 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then  d3 else 
               small_bucket_default eq key default rest3 
 
@@ -8306,7 +8314,7 @@ let stats = Hashtbl_gen.stats
 let add (h : _ t) key info =
   let i = key_index h key in
   let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
   if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
 
@@ -8314,7 +8322,7 @@ let add (h : _ t) key info =
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
-    | Cons(k,i,next) ->
+    | Cons{key=k; data=i; rest=next} ->
       if eq_key k key then begin modf i; false end
       else find_bucket next 
     | Empty -> true in
@@ -8322,7 +8330,7 @@ let modify_or_init (h : _ t) key modf default =
   let h_data = h.data in 
   if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
     end
@@ -8332,10 +8340,10 @@ let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist =
   match bucketlist with  
   | Empty ->
     Empty
-  | Cons(k, i, next) ->
+  | Cons{key=k; data=i; rest=next} ->
     if eq_key k key 
     then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
+    else Cons{key = k; data=i; rest=remove_bucket key h next} 
 
 let remove (h : _ t ) key =
   let i = key_index h key in
@@ -8348,21 +8356,21 @@ let remove (h : _ t ) key =
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
     raise Not_found
-  | Cons(k, d, rest) ->
+  | Cons { key= k; data=d; rest} ->
     if eq_key key k then d else find_rec key rest
 
 let find_exn (h : _ t) key =
   match Array.unsafe_get h.data (key_index h key) with
   | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
+  | Cons {key = k1; data=d1; rest=rest1} ->
     if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
+      | Cons{key=k2; data=d2; rest=rest2} ->
         if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
+          | Cons{key=k3; data=d3; rest=rest3} ->
             if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
@@ -8377,7 +8385,7 @@ let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       []
-    | Cons(k, d, rest) ->
+    | Cons{key=k; data=d; rest} ->
       if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
@@ -8387,10 +8395,10 @@ let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
     | Empty ->
       raise_notrace Not_found
-    | Cons(k, i, next) ->
+    | Cons{key = k; data=i; rest = next} ->
       if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
+      then Cons{key=key; data=info; rest=next}
+      else Cons{key=k; data=i; rest = replace_bucket next} in
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
@@ -8398,7 +8406,7 @@ let replace h key info =
     Array.unsafe_set h_data i  (replace_bucket l)
   with Not_found ->
     begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
+      Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
       h.size <- h.size + 1;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
     end 
@@ -8407,7 +8415,7 @@ let mem (h : _ t) key =
   let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       false
-    | Cons(k, d, rest) ->
+    | Cons {key=k; data=d; rest} ->
       eq_key k key  || mem_in_bucket rest in
   mem_in_bucket (Array.unsafe_get h.data (key_index h key))
 
@@ -9455,7 +9463,7 @@ let stats = Hashtbl_gen.stats
 let add (h : _ t) key info =
   let i = key_index h key in
   let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
   if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
 
@@ -9463,7 +9471,7 @@ let add (h : _ t) key info =
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
-    | Cons(k,i,next) ->
+    | Cons{key=k; data=i; rest=next} ->
       if eq_key k key then begin modf i; false end
       else find_bucket next 
     | Empty -> true in
@@ -9471,7 +9479,7 @@ let modify_or_init (h : _ t) key modf default =
   let h_data = h.data in 
   if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
     end
@@ -9481,10 +9489,10 @@ let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist =
   match bucketlist with  
   | Empty ->
     Empty
-  | Cons(k, i, next) ->
+  | Cons{key=k; data=i; rest=next} ->
     if eq_key k key 
     then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
+    else Cons{key = k; data=i; rest=remove_bucket key h next} 
 
 let remove (h : _ t ) key =
   let i = key_index h key in
@@ -9497,21 +9505,21 @@ let remove (h : _ t ) key =
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
     raise Not_found
-  | Cons(k, d, rest) ->
+  | Cons { key= k; data=d; rest} ->
     if eq_key key k then d else find_rec key rest
 
 let find_exn (h : _ t) key =
   match Array.unsafe_get h.data (key_index h key) with
   | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
+  | Cons {key = k1; data=d1; rest=rest1} ->
     if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
+      | Cons{key=k2; data=d2; rest=rest2} ->
         if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
+          | Cons{key=k3; data=d3; rest=rest3} ->
             if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
@@ -9526,7 +9534,7 @@ let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       []
-    | Cons(k, d, rest) ->
+    | Cons{key=k; data=d; rest} ->
       if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
@@ -9536,10 +9544,10 @@ let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
     | Empty ->
       raise_notrace Not_found
-    | Cons(k, i, next) ->
+    | Cons{key = k; data=i; rest = next} ->
       if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
+      then Cons{key=key; data=info; rest=next}
+      else Cons{key=k; data=i; rest = replace_bucket next} in
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
@@ -9547,7 +9555,7 @@ let replace h key info =
     Array.unsafe_set h_data i  (replace_bucket l)
   with Not_found ->
     begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
+      Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
       h.size <- h.size + 1;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
     end 
@@ -9556,7 +9564,7 @@ let mem (h : _ t) key =
   let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       false
-    | Cons(k, d, rest) ->
+    | Cons {key=k; data=d; rest} ->
       eq_key k key  || mem_in_bucket rest in
   mem_in_bucket (Array.unsafe_get h.data (key_index h key))
 

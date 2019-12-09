@@ -36607,9 +36607,13 @@ module Hash_set_gen
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
+type 'a bucket = 
+  | Empty
+  | Cons of {data : 'a ; rest : 'a bucket }
+
 type 'a t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: 'a list array;  (* the buckets *)
+    mutable data: 'a bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -36618,18 +36622,18 @@ type 'a t =
 
 let create  initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] }
+  { initial_size = s; size = 0; data = Array.make s Empty }
 
 let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  []
+    Array.unsafe_set h.data i  Empty
   done
 
 let reset h =
   h.size <- 0;
-  h.data <- Array.make h.initial_size [ ]
+  h.data <- Array.make h.initial_size Empty
 
 
 let copy h = { h with data = Array.copy h.data }
@@ -36638,9 +36642,9 @@ let length h = h.size
 
 let iter h f =
   let rec do_bucket = function
-    | [ ] ->
+    | Empty ->
       ()
-    | k ::  rest ->
+    | Cons {data = k;   rest} ->
       f k ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -36650,9 +36654,9 @@ let iter h f =
 let fold h init f =
   let rec do_bucket b accu =
     match b with
-      [ ] ->
+      Empty ->
       accu
-    | k ::  rest ->
+    | Cons {data = k;   rest} ->
       do_bucket rest (f k  accu) in
   let d = h.data in
   let accu = ref init in
@@ -36666,13 +36670,13 @@ let resize indexfun h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
+    let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
+        Empty -> ()
+      | Cons {data = key; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- key :: ndata.(nidx);
+        ndata.(nidx) <- Cons {data = key ; rest =  ndata.(nidx)};
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -36683,16 +36687,19 @@ let resize indexfun h =
 let elements set = 
   fold set [] (fun k  acc ->  k :: acc) 
 
+let rec bucket_length accu = function
+  | Empty -> accu
+  | Cons {rest} -> bucket_length (accu + 1) rest
 
 
 
 let stats h =
   let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (List.length b)) in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
-       let l = List.length b in
+       let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
     ;
   {Hashtbl.num_bindings = h.size;
@@ -36700,29 +36707,30 @@ let stats h =
    max_bucket_length = mbl;
    bucket_histogram = histo }
 
+
 let rec small_bucket_mem eq_key key lst =
   match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    eq_key key   key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      eq_key key   key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-        eq_key key   key3 ||
-        small_bucket_mem eq_key key rest 
+  | Empty -> false 
+  | Cons lst -> 
+    eq_key key lst.data ||
+    match lst.rest with 
+    | Empty -> false 
+    | Cons lst  -> 
+      eq_key key   lst.data ||
+      match lst.rest with 
+      | Empty -> false 
+      | Cons lst  -> 
+        eq_key key lst.data ||
+        small_bucket_mem eq_key key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
   match buckets with 
-  | [ ] ->
-    [ ]
-  | k :: next ->
+  | Empty ->
+    Empty
+  | Cons { data = k ; rest =  next} ->
     if  eq_key k   key
     then begin h.size <- h.size - 1; next end
-    else k :: remove_bucket eq_key key h next    
+    else Cons { data = k ; rest =  remove_bucket eq_key key h next}   
 
 module type S =
 sig
@@ -36861,7 +36869,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
+      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -36881,7 +36889,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
+      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -41572,7 +41580,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
+      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -41592,7 +41600,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
+      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
