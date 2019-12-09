@@ -16,7 +16,6 @@ var sourceDirs =
         'outcome_printer',
         'bsb',
         'main',
-        'stdlib-402',
         'others',
         'stdlib-406',
         'runtime',
