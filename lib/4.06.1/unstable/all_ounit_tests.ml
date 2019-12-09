@@ -9203,7 +9203,7 @@ module Hash_set_gen
 
 type 'a bucket = 
   | Empty
-  | Cons of {data : 'a ; rest : 'a bucket }
+  | Cons of {key : 'a ; rest : 'a bucket }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -9244,7 +9244,7 @@ let resize indexfun h =
     let rec insert_bucket = function
         Empty -> ()
       | Cons l ->
-        let nidx = indexfun h l.data in
+        let nidx = indexfun h l.key in
         Array.unsafe_set 
           ndata nidx  
             (Cons {
@@ -9262,7 +9262,7 @@ let iter h f =
     | Empty ->
       ()
     | Cons l  ->
-      f l.data  ; do_bucket l.rest in
+      f l.key  ; do_bucket l.rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -9274,7 +9274,7 @@ let fold h init f =
       Empty ->
       accu
     | Cons l  ->
-      do_bucket l.rest (f l.data  accu) in
+      do_bucket l.rest (f l.key  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -9293,15 +9293,15 @@ let rec small_bucket_mem eq key lst =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
-    eq key lst.data ||
+    eq key lst.key ||
     match lst.rest with 
     | Empty -> false 
     | Cons lst  -> 
-      eq key   lst.data ||
+      eq key   lst.key ||
       match lst.rest with 
       | Empty -> false 
       | Cons lst  -> 
-        eq key lst.data ||
+        eq key lst.key ||
         small_bucket_mem eq key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
@@ -9309,7 +9309,7 @@ let rec remove_bucket eq_key key (h : _ t) buckets =
   | Empty ->
     Empty
   | Cons l ->
-    if  eq_key l.data   key
+    if  eq_key l.key   key
     then begin h.size <- h.size - 1; l.rest end
     else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
 
@@ -9441,7 +9441,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -9461,7 +9461,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -9593,7 +9593,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -9613,7 +9613,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -10074,7 +10074,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -10094,7 +10094,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -10337,7 +10337,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -10357,7 +10357,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
