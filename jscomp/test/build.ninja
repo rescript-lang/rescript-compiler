@@ -439,6 +439,7 @@ build test/nested_pattern_match_test.cmi test/nested_pattern_match_test.cmj : cc
 build test/noassert.cmi test/noassert.cmj : cc test/noassert.ml | $stdlib
 build test/node_fs_test.cmi test/node_fs_test.cmj : cc test/node_fs_test.ml | $stdlib
 build test/node_path_test.cmi test/node_path_test.cmj : cc test/node_path_test.ml | $stdlib
+build test/null_list_test.cmi test/null_list_test.cmj : cc test/null_list_test.ml | $stdlib
 build test/number_lexer.cmi test/number_lexer.cmj : cc test/number_lexer.ml | $stdlib
 build test/obj_curry_test.cmi test/obj_curry_test.cmj : cc test/obj_curry_test.ml | $stdlib
 build test/obj_literal_ppx.cmi test/obj_literal_ppx.cmj : cc test/obj_literal_ppx.ml | $stdlib
