@@ -60,7 +60,7 @@ type ('a, 'b) t =
 
 and ('a, 'b) bucketlist =
   | Empty
-  | Cons of 'a * 'b * ('a, 'b) bucketlist
+  | Cons of {key : 'a ; data : 'b ; rest :  ('a, 'b) bucketlist}
 
 
 let create  initial_size =
@@ -92,10 +92,10 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons(key, data, rest) ->
+      | Cons{key; data; rest} ->
         insert_bucket rest; (* preserve original order of elements *)
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+        ndata.(nidx) <- Cons {key; data; rest = ndata.(nidx)} in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done
@@ -107,7 +107,7 @@ let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons(k, d, rest) ->
+    | Cons{key = k;  data = d;  rest} ->
       f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -119,7 +119,7 @@ let to_list h f =
     match bucket with 
     | Empty ->
       acc
-    | Cons(k, d, rest) ->
+    | Cons {key = k; data = d; rest} ->
       do_bucket rest (f k d :: acc) in
   let d = h.data in
   let acc = ref [] in
@@ -133,7 +133,7 @@ let fold f h init =
     match b with
       Empty ->
       accu
-    | Cons(k, d, rest) ->
+    | Cons {key = k; data = d; rest} ->
       do_bucket rest (f k d accu) in
   let d = h.data in
   let accu = ref init in
@@ -144,7 +144,7 @@ let fold f h init =
 
 let rec bucket_length accu = function
   | Empty -> accu
-  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
+  | Cons {rest} -> bucket_length (accu + 1) rest
 
 let stats h =
   let mbl =
@@ -166,15 +166,15 @@ let stats h =
 let rec small_bucket_mem eq key (lst : _ bucketlist) =
   match lst with 
   | Empty -> false 
-  | Cons(k1,_,rest1) -> 
+  | Cons{key=k1; rest=rest1} -> 
     eq  key k1 ||
     match rest1 with
     | Empty -> false 
-    | Cons(k2,_,rest2) -> 
+    | Cons{ key=k2; rest = rest2} -> 
       eq key k2  || 
       match rest2 with 
       | Empty -> false 
-      | Cons(k3,_,rest3) -> 
+      | Cons {key=k3; rest=rest3} -> 
         eq key k3  ||
         small_bucket_mem eq key rest3 
 
@@ -182,15 +182,15 @@ let rec small_bucket_mem eq key (lst : _ bucketlist) =
 let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data=d1; rest=rest1} -> 
     if eq  key k1 then Some d1 else 
       match rest1 with
       | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data=d2; rest=rest2} -> 
         if eq key k2 then Some d2 else 
           match rest2 with 
           | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then Some d3 else 
               small_bucket_opt eq key rest3 
 
@@ -198,15 +198,15 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
 let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data= d1; rest=rest1} -> 
     if eq  key k1 then Some k1 else 
       match rest1 with
       | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data= d2; rest=rest2} -> 
         if eq key k2 then Some k2 else 
           match rest2 with 
           | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then Some k3 else 
               small_bucket_key_opt eq key rest3
 
@@ -214,14 +214,14 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
-  | Cons(k1,d1,rest1) -> 
+  | Cons {key=k1; data=d1; rest=rest1} -> 
     if eq  key k1 then  d1 else 
       match rest1 with
       | Empty -> default 
-      | Cons(k2,d2,rest2) -> 
+      | Cons {key=k2; data=d2; rest=rest2} -> 
         if eq key k2 then  d2 else 
           match rest2 with 
           | Empty -> default 
-          | Cons(k3,d3,rest3) -> 
+          | Cons {key=k3; data=d3; rest=rest3} -> 
             if eq key k3  then  d3 else 
               small_bucket_default eq key default rest3 

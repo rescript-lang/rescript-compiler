@@ -46,7 +46,7 @@ let stats = Hashtbl_gen.stats
 let add (h : _ t) key info =
   let i = key_index h key in
   let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
   if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
 
@@ -54,7 +54,7 @@ let add (h : _ t) key info =
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
-    | Cons(k,i,next) ->
+    | Cons{key=k; data=i; rest=next} ->
       if eq_key k key then begin modf i; false end
       else find_bucket next 
     | Empty -> true in
@@ -62,7 +62,7 @@ let modify_or_init (h : _ t) key modf default =
   let h_data = h.data in 
   if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
     end
@@ -72,10 +72,10 @@ let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist =
   match bucketlist with  
   | Empty ->
     Empty
-  | Cons(k, i, next) ->
+  | Cons{key=k; data=i; rest=next} ->
     if eq_key k key 
     then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
+    else Cons{key = k; data=i; rest=remove_bucket key h next} 
 
 let remove (h : _ t ) key =
   let i = key_index h key in
@@ -88,21 +88,21 @@ let remove (h : _ t ) key =
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
     raise Not_found
-  | Cons(k, d, rest) ->
+  | Cons { key= k; data=d; rest} ->
     if eq_key key k then d else find_rec key rest
 
 let find_exn (h : _ t) key =
   match Array.unsafe_get h.data (key_index h key) with
   | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
+  | Cons {key = k1; data=d1; rest=rest1} ->
     if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
+      | Cons{key=k2; data=d2; rest=rest2} ->
         if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
+          | Cons{key=k3; data=d3; rest=rest3} ->
             if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
@@ -117,7 +117,7 @@ let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       []
-    | Cons(k, d, rest) ->
+    | Cons{key=k; data=d; rest} ->
       if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
@@ -127,10 +127,10 @@ let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
     | Empty ->
       raise_notrace Not_found
-    | Cons(k, i, next) ->
+    | Cons{key = k; data=i; rest = next} ->
       if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
+      then Cons{key=key; data=info; rest=next}
+      else Cons{key=k; data=i; rest = replace_bucket next} in
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
@@ -138,7 +138,7 @@ let replace h key info =
     Array.unsafe_set h_data i  (replace_bucket l)
   with Not_found ->
     begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
+      Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
       h.size <- h.size + 1;
       if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
     end 
@@ -147,7 +147,7 @@ let mem (h : _ t) key =
   let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
       false
-    | Cons(k, d, rest) ->
+    | Cons {key=k; data=d; rest} ->
       eq_key k key  || mem_in_bucket rest in
   mem_in_bucket (Array.unsafe_get h.data (key_index h key))
 
