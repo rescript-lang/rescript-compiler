@@ -7448,10 +7448,10 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons {data = key; rest} ->
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {data = key ; rest =  ndata.(nidx)};
-        insert_bucket rest
+      | Cons l ->
+        let nidx = indexfun h l.data in
+        ndata.(nidx) <- Cons {l with rest =  ndata.(nidx)};
+        insert_bucket l.rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -7463,7 +7463,7 @@ let elements set =
 
 let rec bucket_length accu = function
   | Empty -> accu
-  | Cons {rest} -> bucket_length (accu + 1) rest
+  | Cons l -> bucket_length (accu + 1) l.rest
 
 
 
@@ -7501,10 +7501,10 @@ let rec remove_bucket eq_key key (h : _ t) buckets =
   match buckets with 
   | Empty ->
     Empty
-  | Cons { data = k ; rest =  next} ->
-    if  eq_key k   key
-    then begin h.size <- h.size - 1; next end
-    else Cons { data = k ; rest =  remove_bucket eq_key key h next}   
+  | Cons l ->
+    if  eq_key l.data   key
+    then begin h.size <- h.size - 1; l.rest end
+    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
 
 module type S =
 sig
