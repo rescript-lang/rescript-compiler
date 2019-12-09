@@ -89,7 +89,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
+      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -109,7 +109,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
+      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
