@@ -1,8 +1,0 @@
-camlheader
-target_camlheader
-camlheaderd
-target_camlheaderd
-camlheader_ur
-labelled-*
-caml
-sys.ml

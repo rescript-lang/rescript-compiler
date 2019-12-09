@@ -45,7 +45,7 @@ JavaScript specific optimization purposes.
 `jscomp/main/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main entry 
 point of the underlying compiler.
 
-* [`jscomp/stdlib-402`](jscomp/stdlib-402) [`jscomp/stdlib-406`](jscomp/stdlib-406)
+*  [`jscomp/stdlib-406`](jscomp/stdlib-406)
 
 `jscomp/stdlib-*` is copied from [`ocaml/stdlib`](ocaml/stdlib). It is compiled to JavaScript and
 included with BuckleScript.
