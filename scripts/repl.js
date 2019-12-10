@@ -85,20 +85,24 @@ var cmi_files = [
   `js_float`,
   `js_json`,
 
-  `arrayLabels`,
-  `bytesLabels`,
-  `complex`,
-  `gc`,
-  `genlex`,
-  `listLabels`,
-  `moreLabels`,
-  `queue`,
-  `scanf`,
-  `sort`,
-  `stack`,
-  `stdLabels`,
-  `stream`,
-  `stringLabels`,
+  /*
+  These files cause troubles when compiled with JSOO (v3.4.0)
+  Be aware, if those are included you will get an error stating something like "/static/cmis/scanf.cmi : file already exists"
+  */
+  // `arrayLabels`,
+  // `bytesLabels`,
+  // `complex`,
+  // `gc`,
+  // `genlex`,
+  // `listLabels`,
+  // `moreLabels`,
+  // `queue`,
+  // `scanf`,
+  // `sort`,
+  // `stack`,
+  // `stdLabels`,
+  // `stream`,
+  // `stringLabels`,
 
   `dom`,
   `belt`,
