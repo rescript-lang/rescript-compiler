@@ -229,6 +229,8 @@ node scripts/ninja.js config && node scripts/ninja.js build
 BS_PLAYGROUND=../playground node scripts/repl.js
 ```
 
+_Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
+
 **You should now find following files:**
 
 - `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object

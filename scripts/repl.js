@@ -5,7 +5,10 @@ var fs = require("fs");
 var path = require("path");
 
 process.env.BS_RELEASE_BUILD = 1;
+var ocamlVersion = "4.06.1";
 var jscompDir = path.join(__dirname, "..", "jscomp");
+var jsRefmtCompDir = path.join(__dirname, "..", "lib", ocamlVersion, "unstable");
+
 var config = {
   cwd: jscompDir,
   encoding: "utf8",
@@ -29,13 +32,12 @@ if (!process.env.BS_PLAYGROUND) {
 var playground = process.env.BS_PLAYGROUND;
 
 function prepare() {
-  e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 2.8.4 (although not with the buckelscript switch) and put it on your path."; exit 1; }
+  e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
 `);
 
   e(`./bin/cmjbrowser.exe`);
-  var js_compiler_path = `../lib/4.06.1/unstable`;
   e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_refmt_compiler.mli ${js_compiler_path}/js_refmt_compiler.ml -o jsc.byte`
+    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -48,6 +50,7 @@ console.log(`playground : ${playground}`);
 
 var includes = [`stdlib-406`, `runtime`, `others`]
   .map(x => path.join(jscompDir, x))
+  .concat([jsRefmtCompDir])
   .map(x => `-I ${x}`)
   .join(` `);
 
@@ -82,24 +85,20 @@ var cmi_files = [
   `js_float`,
   `js_json`,
 
-  /*
-  These files cause troubles when compiled with JSOO (v3.4.0)
-  Be aware, if those are included you will get an error stating something like "/static/cmis/scanf.cmi : file already exists"
-  */
-  // `arrayLabels`,
-  // `bytesLabels`,
-  // `complex`,
-  // `gc`,
-  // `genlex`,
-  // `listLabels`,
-  // `moreLabels`,
-  // `queue`,
-  // `scanf`,
-  // `sort`,
-  // `stack`,
-  // `stdLabels`,
-  // `stream`,
-  // `stringLabels`,
+  `arrayLabels`,
+  `bytesLabels`,
+  `complex`,
+  `gc`,
+  `genlex`,
+  `listLabels`,
+  `moreLabels`,
+  `queue`,
+  `scanf`,
+  `sort`,
+  `stack`,
+  `stdLabels`,
+  `stream`,
+  `stringLabels`,
 
   `dom`,
   `belt`,
@@ -136,5 +135,5 @@ var cmi_files = [
   .map(x => `--file ${x}`)
   .join(` `);
 e(
-  `js_of_ocaml --disable share --toplevel +weak.js ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`
+  `js_of_ocaml --disable share --toplevel ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`
 );
