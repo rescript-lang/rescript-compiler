@@ -68,7 +68,7 @@ let copy = Hash_set_gen.copy
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
+(* let stats = Hash_set_gen.stats *)
 let elements = Hash_set_gen.elements
 
 
@@ -89,7 +89,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -109,7 +109,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 

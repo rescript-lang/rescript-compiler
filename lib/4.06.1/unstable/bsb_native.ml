@@ -7383,7 +7383,7 @@ module Hash_set_gen
 
 type 'a bucket = 
   | Empty
-  | Cons of {data : 'a ; rest : 'a bucket }
+  | Cons of {key : 'a ; rest : 'a bucket }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -7414,12 +7414,35 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons l ->
+        let nidx = indexfun h l.key in
+        Array.unsafe_set 
+          ndata nidx  
+            (Cons {
+              l with rest =  Array.unsafe_get ndata nidx
+              });
+        insert_bucket l.rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
 let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons {data = k;   rest} ->
-      f k ; do_bucket rest in
+    | Cons l  ->
+      f l.key  ; do_bucket l.rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -7430,8 +7453,8 @@ let fold h init f =
     match b with
       Empty ->
       accu
-    | Cons {data = k;   rest} ->
-      do_bucket rest (f k  accu) in
+    | Cons l  ->
+      do_bucket l.rest (f l.key  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -7439,72 +7462,36 @@ let fold h init f =
   done;
   !accu
 
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons {data = key; rest} ->
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {data = key ; rest =  ndata.(nidx)};
-        insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
 
 let elements set = 
-  fold set [] (fun k  acc ->  k :: acc) 
-
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons {rest} -> bucket_length (accu + 1) rest
+  fold set [] List.cons
 
 
 
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  {Hashtbl.num_bindings = h.size;
-   num_buckets = Array.length h.data;
-   max_bucket_length = mbl;
-   bucket_histogram = histo }
 
-
-let rec small_bucket_mem eq_key key lst =
+let rec small_bucket_mem eq key lst =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
-    eq_key key lst.data ||
+    eq key lst.key ||
     match lst.rest with 
     | Empty -> false 
     | Cons lst  -> 
-      eq_key key   lst.data ||
+      eq key   lst.key ||
       match lst.rest with 
       | Empty -> false 
       | Cons lst  -> 
-        eq_key key lst.data ||
-        small_bucket_mem eq_key key lst.rest 
+        eq key lst.key ||
+        small_bucket_mem eq key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
   match buckets with 
   | Empty ->
     Empty
-  | Cons { data = k ; rest =  next} ->
-    if  eq_key k   key
-    then begin h.size <- h.size - 1; next end
-    else Cons { data = k ; rest =  remove_bucket eq_key key h next}   
+  | Cons l ->
+    if  eq_key l.key   key
+    then begin h.size <- h.size - 1; l.rest end
+    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
 
 module type S =
 sig
@@ -7522,9 +7509,11 @@ sig
   val iter: t -> (key -> unit) -> unit
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
+  (* val stats:  t -> Hashtbl.statistics *)
   val elements : t -> key list 
 end
+
+
 
 end
 module String_hash_set : sig 
@@ -7598,7 +7587,7 @@ let copy = Hash_set_gen.copy
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
+(* let stats = Hash_set_gen.stats *)
 let elements = Hash_set_gen.elements
 
 
@@ -7619,7 +7608,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -7639,7 +7628,7 @@ let check_add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { data = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -8068,57 +8057,25 @@ module Hashtbl_gen
 
 
 
-module type S = sig 
-  type key
-  type 'a t
-  val create: int -> 'a t
-  val clear: 'a t -> unit
-  val reset: 'a t -> unit
-  val copy: 'a t -> 'a t
-  val add: 'a t -> key -> 'a -> unit
-  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
-  val remove: 'a t -> key -> unit
-  val find_exn: 'a t -> key -> 'a
-  val find_all: 'a t -> key -> 'a list
-  val find_opt: 'a t -> key  -> 'a option
-  
-  (** return the key found in the hashtbl.
-    Use case: when you find the key existed in hashtbl, 
-    you want to use the one stored in the hashtbl. 
-    (they are semantically equivlanent, but may have other information different) 
-   *)
-  val find_key_opt: 'a t -> key -> key option 
-
-  val find_default: 'a t -> key -> 'a -> 'a 
-
-  val replace: 'a t -> key -> 'a -> unit
-  val mem: 'a t -> key -> bool
-  val iter: 'a t -> (key -> 'a -> unit) -> unit
-  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-  val length: 'a t -> int
-  val stats: 'a t -> Hashtbl.statistics
-  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
-  val of_list2: key list -> 'a list -> 'a t
-end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
+type ('a, 'b) bucketlist =
+  | Empty
+  | Cons of {key : 'a ; data : 'b ; rest :  ('a, 'b) bucketlist}
+
 type ('a, 'b) t =
   { mutable size: int;                        (* number of entries *)
     mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
-    mutable seed: int;                        (* for randomization *)
     initial_size: int;                        (* initial array size *)
   }
 
-and ('a, 'b) bucketlist =
-  | Empty
-  | Cons of {key : 'a ; data : 'b ; rest :  ('a, 'b) bucketlist}
 
 
 let create  initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
+  { initial_size = s; size = 0; data = Array.make s Empty }
 
 let clear h =
   h.size <- 0;
@@ -8145,10 +8102,14 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons{key; data; rest} ->
-        insert_bucket rest; (* preserve original order of elements *)
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {key; data; rest = ndata.(nidx)} in
+      | Cons l ->
+        insert_bucket l.rest; (* preserve original order of elements *)
+        let nidx = indexfun h l.key in
+        Array.unsafe_set
+          ndata nidx
+          (Cons {l with 
+                 rest = 
+                   Array.unsafe_get ndata nidx}) in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done
@@ -8160,106 +8121,77 @@ let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons{key = k;  data = d;  rest} ->
-      f k d; do_bucket rest in
+    | Cons l  ->
+      f l.key l.data; do_bucket l.rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
   done
 
-let to_list h f =
-  let rec do_bucket bucket acc =
-    match bucket with 
-    | Empty ->
-      acc
-    | Cons {key = k; data = d; rest} ->
-      do_bucket rest (f k d :: acc) in
-  let d = h.data in
-  let acc = ref [] in
-  for i = 0 to Array.length d - 1 do
-    acc := do_bucket (Array.unsafe_get d i) !acc
-  done;
-  !acc
-
-let fold f h init =
+let fold h init f =
   let rec do_bucket b accu =
     match b with
       Empty ->
       accu
-    | Cons {key = k; data = d; rest} ->
-      do_bucket rest (f k d accu) in
+    | Cons l ->
+      do_bucket l.rest (f l.key l.data accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
-    accu := do_bucket d.(i) !accu
+    accu := do_bucket (Array.unsafe_get d i) !accu
   done;
   !accu
 
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons {rest} -> bucket_length (accu + 1) rest
+let to_list h f =
+  fold h [] (fun k data acc -> f k data :: acc)  
 
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  {Hashtbl.
-    num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
 
 
 
 let rec small_bucket_mem eq key (lst : _ bucketlist) =
   match lst with 
   | Empty -> false 
-  | Cons{key=k1; rest=rest1} -> 
-    eq  key k1 ||
-    match rest1 with
+  | Cons lst -> 
+    eq  key lst.key ||
+    match lst.rest with
     | Empty -> false 
-    | Cons{ key=k2; rest = rest2} -> 
-      eq key k2  || 
-      match rest2 with 
+    | Cons lst -> 
+      eq key lst.key  || 
+      match lst.rest with 
       | Empty -> false 
-      | Cons {key=k3; rest=rest3} -> 
-        eq key k3  ||
-        small_bucket_mem eq key rest3 
+      | Cons lst -> 
+        eq key lst.key  ||
+        small_bucket_mem eq key lst.rest
 
 
 let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons {key=k1; data=d1; rest=rest1} -> 
-    if eq  key k1 then Some d1 else 
-      match rest1 with
+  | Cons lst -> 
+    if eq  key lst.key then Some lst.data else 
+      match lst.rest with
       | Empty -> None 
-      | Cons {key=k2; data=d2; rest=rest2} -> 
-        if eq key k2 then Some d2 else 
-          match rest2 with 
+      | Cons lst -> 
+        if eq key lst.key then Some lst.data else 
+          match lst.rest with 
           | Empty -> None 
-          | Cons {key=k3; data=d3; rest=rest3} -> 
-            if eq key k3  then Some d3 else 
-              small_bucket_opt eq key rest3 
+          | Cons lst -> 
+            if eq key lst.key  then Some lst.data else 
+              small_bucket_opt eq key lst.rest
 
 
 let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons {key=k1; data= d1; rest=rest1} -> 
+  | Cons {key=k1;  rest=rest1} -> 
     if eq  key k1 then Some k1 else 
       match rest1 with
       | Empty -> None 
-      | Cons {key=k2; data= d2; rest=rest2} -> 
+      | Cons {key=k2; rest=rest2} -> 
         if eq key k2 then Some k2 else 
           match rest2 with 
           | Empty -> None 
-          | Cons {key=k3; data=d3; rest=rest3} -> 
+          | Cons {key=k3;  rest=rest3} -> 
             if eq key k3  then Some k3 else 
               small_bucket_key_opt eq key rest3
 
@@ -8267,17 +8199,57 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
-  | Cons {key=k1; data=d1; rest=rest1} -> 
-    if eq  key k1 then  d1 else 
-      match rest1 with
+  | Cons lst -> 
+    if eq  key lst.key then  lst.data else 
+      match lst.rest with
       | Empty -> default 
-      | Cons {key=k2; data=d2; rest=rest2} -> 
-        if eq key k2 then  d2 else 
-          match rest2 with 
+      | Cons lst -> 
+        if eq key lst.key then  lst.data else 
+          match lst.rest with 
           | Empty -> default 
-          | Cons {key=k3; data=d3; rest=rest3} -> 
-            if eq key k3  then  d3 else 
-              small_bucket_default eq key default rest3 
+          | Cons lst -> 
+            if eq key lst.key  then lst.data else 
+              small_bucket_default eq key default lst.rest
+
+
+module type S = sig 
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear: 'a t -> unit
+  val reset: 'a t -> unit
+  val copy: 'a t -> 'a t
+  val add: 'a t -> key -> 'a -> unit
+  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
+  val remove: 'a t -> key -> unit
+  val find_exn: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val find_opt: 'a t -> key  -> 'a option
+
+  (** return the key found in the hashtbl.
+      Use case: when you find the key existed in hashtbl, 
+      you want to use the one stored in the hashtbl. 
+      (they are semantically equivlanent, but may have other information different) 
+  *)
+  val find_key_opt: 'a t -> key -> key option 
+
+  val find_default: 'a t -> key -> 'a -> 'a 
+
+  val replace: 'a t -> key -> 'a -> unit
+  val mem: 'a t -> key -> bool
+  val iter: 'a t -> (key -> 'a -> unit) -> unit
+  val fold: 
+    'a t -> 'b ->
+    (key -> 'a -> 'b -> 'b) ->  'b
+  val length: 'a t -> int
+  (* val stats: 'a t -> Hashtbl.statistics *)
+  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
+  val of_list2: key list -> 'a list -> 'a t
+end
+
+
+
+
 
 end
 module Hashtbl_make : sig 
@@ -8307,7 +8279,7 @@ let iter = Hashtbl_gen.iter
 let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
 let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
+(* let stats = Hashtbl_gen.stats *)
 
 
 
@@ -9456,7 +9428,7 @@ let iter = Hashtbl_gen.iter
 let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
 let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
+(* let stats = Hashtbl_gen.stats *)
 
 
 

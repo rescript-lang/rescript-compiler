@@ -44,4 +44,4 @@ val elements : 'a t -> 'a list
 
 val length : 'a t -> int 
 
-val stats:  'a t -> Hashtbl.statistics
+(* val stats:  'a t -> Hashtbl.statistics *)

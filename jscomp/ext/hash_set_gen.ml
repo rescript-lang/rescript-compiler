@@ -28,7 +28,7 @@
 
 type 'a bucket = 
   | Empty
-  | Cons of {data : 'a ; rest : 'a bucket }
+  | Cons of {key : 'a ; rest : 'a bucket }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -59,12 +59,35 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons l ->
+        let nidx = indexfun h l.key in
+        Array.unsafe_set 
+          ndata nidx  
+            (Cons {
+              l with rest =  Array.unsafe_get ndata nidx
+              });
+        insert_bucket l.rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
 let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons {data = k;   rest} ->
-      f k ; do_bucket rest in
+    | Cons l  ->
+      f l.key  ; do_bucket l.rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -75,8 +98,8 @@ let fold h init f =
     match b with
       Empty ->
       accu
-    | Cons {data = k;   rest} ->
-      do_bucket rest (f k  accu) in
+    | Cons l  ->
+      do_bucket l.rest (f l.key  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -84,72 +107,36 @@ let fold h init f =
   done;
   !accu
 
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons {data = key; rest} ->
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {data = key ; rest =  ndata.(nidx)};
-        insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
 
 let elements set = 
-  fold set [] (fun k  acc ->  k :: acc) 
-
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons {rest} -> bucket_length (accu + 1) rest
+  fold set [] List.cons
 
 
 
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  {Hashtbl.num_bindings = h.size;
-   num_buckets = Array.length h.data;
-   max_bucket_length = mbl;
-   bucket_histogram = histo }
 
-
-let rec small_bucket_mem eq_key key lst =
+let rec small_bucket_mem eq key lst =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
-    eq_key key lst.data ||
+    eq key lst.key ||
     match lst.rest with 
     | Empty -> false 
     | Cons lst  -> 
-      eq_key key   lst.data ||
+      eq key   lst.key ||
       match lst.rest with 
       | Empty -> false 
       | Cons lst  -> 
-        eq_key key lst.data ||
-        small_bucket_mem eq_key key lst.rest 
+        eq key lst.key ||
+        small_bucket_mem eq key lst.rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
   match buckets with 
   | Empty ->
     Empty
-  | Cons { data = k ; rest =  next} ->
-    if  eq_key k   key
-    then begin h.size <- h.size - 1; next end
-    else Cons { data = k ; rest =  remove_bucket eq_key key h next}   
+  | Cons l ->
+    if  eq_key l.key   key
+    then begin h.size <- h.size - 1; l.rest end
+    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
 
 module type S =
 sig
@@ -167,6 +154,29 @@ sig
   val iter: t -> (key -> unit) -> unit
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
+  (* val stats:  t -> Hashtbl.statistics *)
   val elements : t -> key list 
 end
+
+
+#if 0 then 
+let rec bucket_length accu = function
+  | Empty -> accu
+  | Cons l -> bucket_length (accu + 1) l.rest
+
+
+
+let stats h =
+  let mbl =
+    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
+  let histo = Array.make (mbl + 1) 0 in
+  Ext_array.iter h.data
+    (fun b ->
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    ;
+  {Hashtbl.num_bindings = h.size;
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
+#end
