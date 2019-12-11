@@ -11244,8 +11244,6 @@ let reset h =
   h.data <- Array.make h.initial_size Empty
 
 
-let copy h = { h with data = Array.copy h.data }
-
 let length h = h.size
 
 let resize indexfun h =
@@ -11373,7 +11371,7 @@ module type S = sig
   val create: int -> 'a t
   val clear: 'a t -> unit
   val reset: 'a t -> unit
-  val copy: 'a t -> 'a t
+
   val add: 'a t -> key -> 'a -> unit
   val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
   val remove: 'a t -> key -> unit
@@ -11453,7 +11451,6 @@ type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
 let iter = Hashtbl_gen.iter
 let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
