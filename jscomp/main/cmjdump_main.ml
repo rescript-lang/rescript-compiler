@@ -22,17 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* open Printf *)
-
-
-
-
 
 let () = 
   match Sys.argv  with
   | [|_; file |] 
     -> 
-      let cmj,digest = (Js_cmj_format.from_file_with_digest file) in 
+      let cmj,digest = Js_cmj_format.from_file_with_digest file in 
       Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
       Js_cmj_format.pp_cmj cmj
   | _ -> failwith "expect one argument"
