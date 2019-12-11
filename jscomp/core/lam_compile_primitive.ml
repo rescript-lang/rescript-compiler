@@ -576,7 +576,7 @@ let translate  loc
     -> 
     assert false 
 
-  | Pjs_call (_, arg_types, ffi) -> 
+  | Pjs_call {arg_types; ffi} -> 
     Lam_compile_external_call.translate_ffi 
       loc cxt arg_types ffi args 
   (** FIXME, this can be removed later *)

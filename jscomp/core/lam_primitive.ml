@@ -48,9 +48,9 @@ type t =
   (* External call *)
   | Pccall of  Primitive_compat.t
   | Pjs_call of
-      string *  (* prim_name *)
-      External_arg_spec.t list * (* arg_types *)
-      External_ffi_types.external_spec  (* ffi *)
+      { prim_name : string ;
+        arg_types : External_arg_spec.t list ;
+        ffi : External_ffi_types.external_spec }
   | Pjs_object_create of External_ffi_types.obj_create
   (* Exceptions *)
   | Praise
@@ -277,7 +277,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
   | Pduprecord record_repesentation0 -> (match rhs with Pduprecord record_repesentation1 ->  eq_record_representation record_repesentation0 record_repesentation1  | _ -> false)
-  | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
+  | Pjs_call {prim_name; arg_types; ffi} ->  ( match rhs with Pjs_call rhs -> prim_name = rhs.prim_name && arg_types = rhs.arg_types && ffi = rhs.ffi | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
   | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
   | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1 | _ -> false)

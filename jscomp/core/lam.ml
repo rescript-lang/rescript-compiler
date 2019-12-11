@@ -839,12 +839,12 @@ let handle_bs_non_obj_ffi
     loc
     prim_name =
   if no_auto_uncurried_arg_types arg_types then
-    result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi))
-      ~args loc
+    result_wrap loc result_type (prim ~primitive:(Pjs_call {prim_name; arg_types; ffi})
+      ~args loc)
   else
     let n_arg_types, n_args =
       transform_uncurried_arg_type loc  arg_types args in
-    result_wrap loc result_type @@
-    prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-      ~args:n_args loc
+    result_wrap loc result_type (
+    prim ~primitive:(Pjs_call {prim_name; arg_types = n_arg_types; ffi})
+      ~args:n_args loc)
 
