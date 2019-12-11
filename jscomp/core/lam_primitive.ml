@@ -188,10 +188,10 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
   match p with 
   | Record_regular -> p1 = Record_regular
 #if OCAML_VERSION =~ ">4.03.0" then 
-  | Record_inlined {tag = a0; name = a1; num_nonconsts = a2 } -> 
+  | Record_inlined {tag ; name ; num_nonconsts} -> 
     (match p1 with 
-    |Record_inlined {tag = b0; name = b1; num_nonconsts = b2} ->
-       a0 = b0 && a1 = b1 && a2 = b2
+    |Record_inlined rhs ->
+       tag = rhs.tag && name = rhs.name && num_nonconsts = rhs.num_nonconsts
     | _ -> false)
   | Record_extension -> 
     p1 = Record_extension   

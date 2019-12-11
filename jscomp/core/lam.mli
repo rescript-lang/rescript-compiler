@@ -51,17 +51,15 @@ and prim_info = private
     args : t list ; 
     loc : Location.t 
   }
-and function_info = private
-  { arity : int ; 
-    params : ident list ;
-    body : t 
-  }
 and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
   | Lconst of Lam_constant.t
   | Lapply of apply_info
-  | Lfunction of function_info
+  | Lfunction of   { arity : int ; 
+                     params : ident list ;
+                     body : t 
+                   }
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
