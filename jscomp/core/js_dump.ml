@@ -952,23 +952,21 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     in
     if level > 2 then P.paren_vgroup f 1 action else action ()
 
-  | Object lst ->
-    match lst with
-    | [] -> P.string f "{ }" ; cxt
-    | _ ->
-      let action () =
+  | Object lst ->    
+    let action () =
+      if lst = [] then begin P.string f "{ }" ; cxt end else      
         P.brace_vgroup f 1 (fun _ ->
-        property_name_and_value_list cxt f lst) in
-      if level > 1 then
-        (* #1946 object literal is easy to be
-           interpreted as block statement
-           here we avoid parens in such case
-           {[
-             var f = { x : 2 , y : 2}
-           ]}
-        *)
-        P.paren_group f 1 action
-      else action ()
+            property_name_and_value_list cxt f lst) in
+    if level > 1 then
+      (* #1946 object literal is easy to be
+         interpreted as block statement
+         here we avoid parens in such case
+         {[
+           var f = { x : 2 , y : 2}
+         ]}
+      *)
+      P.paren_group f 1 action
+    else action ()
 
 and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
