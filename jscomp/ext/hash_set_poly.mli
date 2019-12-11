@@ -31,7 +31,7 @@ val clear : 'a t -> unit
 
 val reset : 'a t -> unit
 
-val copy : 'a t -> 'a t
+(* val copy : 'a t -> 'a t *)
 
 val add : 'a t -> 'a  -> unit
 val remove : 'a t -> 'a -> unit

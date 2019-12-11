@@ -55,7 +55,7 @@ let reset h =
   h.data <- Array.make h.initial_size Empty
 
 
-let copy h = { h with data = Array.copy h.data }
+(* let copy h = { h with data = Array.copy h.data } *)
 
 let length h = h.size
 
@@ -145,7 +145,7 @@ sig
   val create: int ->  t
   val clear : t -> unit
   val reset : t -> unit
-  val copy: t -> t
+  (* val copy: t -> t *)
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
   val of_array : key array -> t 

@@ -34,7 +34,6 @@ type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
 let iter = Hashtbl_gen.iter
 let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold

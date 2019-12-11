@@ -80,17 +80,16 @@ module Types = struct
       loc : Location.t;
       status : apply_status
     }
-  and function_info =
-    { arity : int ;
-      params : ident list ;
-      body : t
-    }
+
   and t =
     | Lvar of ident
     | Lglobal_module of ident
     | Lconst of Lam_constant.t
     | Lapply of apply_info
-    | Lfunction of function_info
+    | Lfunction of { arity : int ;
+                     params : ident list ;
+                     body : t
+                   }
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
@@ -133,14 +132,6 @@ module X = struct
         loc : Location.t;
         status : apply_status
       }
-
-  and function_info
-    = Types.function_info
-    =
-      { arity : int ;
-        params : ident list ;
-        body : t
-      }
   and t
     = Types.t
     =
@@ -148,7 +139,10 @@ module X = struct
       | Lglobal_module of ident
       | Lconst of Lam_constant.t
       | Lapply of apply_info
-      | Lfunction of function_info
+      | Lfunction of { arity : int ;
+                       params : ident list ;
+                       body : t
+                     }      
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
@@ -839,12 +833,12 @@ let handle_bs_non_obj_ffi
     loc
     prim_name =
   if no_auto_uncurried_arg_types arg_types then
-    result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi))
-      ~args loc
+    result_wrap loc result_type (prim ~primitive:(Pjs_call {prim_name; arg_types; ffi})
+      ~args loc)
   else
     let n_arg_types, n_args =
       transform_uncurried_arg_type loc  arg_types args in
-    result_wrap loc result_type @@
-    prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-      ~args:n_args loc
+    result_wrap loc result_type (
+    prim ~primitive:(Pjs_call {prim_name; arg_types = n_arg_types; ffi})
+      ~args:n_args loc)
 

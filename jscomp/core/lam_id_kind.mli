@@ -32,10 +32,6 @@ type rec_flag =
 *)  
   | Lam_self_rec
   (* not inlining in this case *)
-type function_id = {
-  mutable arity : Lam_arity.t;
-  lambda  : (Lam.t * rec_flag) option ;
-}
 
 type element = 
   | NA 
@@ -56,7 +52,10 @@ type t =
   | Constant of Lam_constant.t
   | Module of Ident.t
         (** TODO: static module vs first class module *)
-  | FunctionId of function_id 
+  | FunctionId of {
+    mutable arity : Lam_arity.t;
+    lambda : (Lam.t * rec_flag) option;
+  }
   | Exception 
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)

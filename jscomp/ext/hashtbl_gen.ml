@@ -47,8 +47,6 @@ let reset h =
   h.data <- Array.make h.initial_size Empty
 
 
-let copy h = { h with data = Array.copy h.data }
-
 let length h = h.size
 
 let resize indexfun h =
@@ -176,7 +174,7 @@ module type S = sig
   val create: int -> 'a t
   val clear: 'a t -> unit
   val reset: 'a t -> unit
-  val copy: 'a t -> 'a t
+
   val add: 'a t -> key -> 'a -> unit
   val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
   val remove: 'a t -> key -> unit

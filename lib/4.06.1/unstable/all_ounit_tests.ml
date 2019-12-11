@@ -7665,8 +7665,6 @@ let reset h =
   h.data <- Array.make h.initial_size Empty
 
 
-let copy h = { h with data = Array.copy h.data }
-
 let length h = h.size
 
 let resize indexfun h =
@@ -7794,7 +7792,7 @@ module type S = sig
   val create: int -> 'a t
   val clear: 'a t -> unit
   val reset: 'a t -> unit
-  val copy: 'a t -> 'a t
+
   val add: 'a t -> key -> 'a -> unit
   val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
   val remove: 'a t -> key -> unit
@@ -7874,7 +7872,6 @@ type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
 let iter = Hashtbl_gen.iter
 let to_list = Hashtbl_gen.to_list
 let fold = Hashtbl_gen.fold
@@ -9230,7 +9227,7 @@ let reset h =
   h.data <- Array.make h.initial_size Empty
 
 
-let copy h = { h with data = Array.copy h.data }
+(* let copy h = { h with data = Array.copy h.data } *)
 
 let length h = h.size
 
@@ -9320,7 +9317,7 @@ sig
   val create: int ->  t
   val clear : t -> unit
   val reset : t -> unit
-  val copy: t -> t
+  (* val copy: t -> t *)
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
   val of_array : key array -> t 
@@ -9416,7 +9413,7 @@ type t = key Hash_set_gen.t
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
+(* let copy = Hash_set_gen.copy *)
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
@@ -9512,7 +9509,7 @@ val clear : 'a t -> unit
 
 val reset : 'a t -> unit
 
-val copy : 'a t -> 'a t
+(* val copy : 'a t -> 'a t *)
 
 val add : 'a t -> 'a  -> unit
 val remove : 'a t -> 'a -> unit
@@ -9568,7 +9565,7 @@ type  'a t = 'a Hash_set_gen.t
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
+(* let copy = Hash_set_gen.copy *)
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
@@ -10049,7 +10046,7 @@ type  t = key  Hash_set_gen.t
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
+(* let copy = Hash_set_gen.copy *)
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
@@ -10312,7 +10309,7 @@ type  t = key  Hash_set_gen.t
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
+(* let copy = Hash_set_gen.copy *)
 let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length

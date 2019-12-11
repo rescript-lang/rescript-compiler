@@ -166,7 +166,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pduprecord rep -> fprintf ppf "duprecord %a" record_rep rep
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
-  | Pjs_call (prim_name, _, _) -> 
+  | Pjs_call {prim_name} -> 
     fprintf ppf  "%s[js]" prim_name 
   | Pjs_object_create obj_create -> 
     fprintf ppf "[js.obj]"

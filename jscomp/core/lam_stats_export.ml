@@ -47,6 +47,7 @@ let values_of_export
          match Ident_hashtbl.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 
          | Some (ImmutableBlock(elems)) ->  
+          (* FIXME: field name for dumping*)
            Submodule(Ext_array.map elems (fun x -> 
                match x with 
                | NA -> Lam_arity.na
