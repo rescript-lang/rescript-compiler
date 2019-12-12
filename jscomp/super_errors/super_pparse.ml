@@ -5,7 +5,7 @@ let fprintf = Format.fprintf
 let report_error ppf () = 
       fprintf ppf
         "@[<v>@{<info>There's been an error running Reason's parser on a file.@}@,\
-          The error location should be slightly above this message.@,\
+          If the message doesn't help, check for errors slightly above.@,\
           @[Please file an issue on@ github.com/facebook/reason.@ Thanks!@]@]"
 
 
