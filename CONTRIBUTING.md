@@ -298,8 +298,7 @@ noticed, the generated `playground` files are all plain `.js`, so how are the `c
 
 `repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a
 compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj`
-/ `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml` and
-`jscomp/core/js_cmi_datasets.ml`. These files are only linked for the browser
+/ `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser
 target, where BuckleScript doesn't have access to the filesystem. When working
 on BS, you'll see diffs on those files whenever there are changes on core
 modules, e.g. stdlib modules or when the ocaml version was changed. We usually
