@@ -42,19 +42,19 @@ let link link_byte_or_native ~main_module ~batch_files ~includes ~ocaml_dependen
   | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt", output_file
   end in
   (* Map used to track the path to the files as the dependency_graph that we're going to read from the mlast file only contains module names *)
-  let module_to_filepath = Ext_list.fold_left batch_files String_map.empty
+  let module_to_filepath = Ext_list.fold_left batch_files Map_string.empty
     (fun m v ->
-      String_map.add m
+      Map_string.add m
       (Ext_filename.module_name (module_of_filename v))
       (Ext_filename.chop_extension_maybe v)
       )    
   in
-  let dependency_graph = Ext_list.fold_left batch_files String_map.empty
+  let dependency_graph = Ext_list.fold_left batch_files Map_string.empty
     (fun m file ->
       let module_name = module_of_filename file in
       let suffix = if Sys.file_exists (module_name ^ Literals.suffix_mlast) then Literals.suffix_mlast
         else Literals.suffix_reast in
-      String_map.add m
+      Map_string.add m
         (Ext_filename.module_name module_name)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file (module_name ^ suffix))
         )    
@@ -79,7 +79,7 @@ let link link_byte_or_native ~main_module ~batch_files ~includes ~ocaml_dependen
      | Some namespace -> "-" ^ namespace
    in
   let list_of_object_files = Queue.fold
-    (fun acc v -> match String_map.find_opt module_to_filepath v with
+    (fun acc v -> match Map_string.find_opt module_to_filepath v with
       | Some file -> (file ^ namespace ^ suffix_object_files) :: acc
       | None -> Bsb_exception.missing_object_file v
       )

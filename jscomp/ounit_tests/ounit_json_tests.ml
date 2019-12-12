@@ -16,7 +16,7 @@ let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t =
   | Str {str = s} -> str s 
   | Arr {content } -> arr (Array.map strip content)
   | Obj {map} -> 
-    obj (String_map.map map strip)
+    obj (Map_string.map map strip)
 
 let id_parsing_serializing x = 
   let normal_s = 
@@ -79,7 +79,7 @@ let suites =
     "empty_json" >:: begin fun _ -> 
       let v =parse_json_from_string "{}" in
       match v with 
-      | Obj {map = v} -> OUnit.assert_equal (String_map.is_empty v ) true
+      | Obj {map = v} -> OUnit.assert_equal (Map_string.is_empty v ) true
       | _ -> OUnit.assert_failure "should be empty"
     end
     ;

@@ -76,4 +76,4 @@ val assert_bool_lit : Parsetree.expression -> bool
 val empty : t 
 
 val table_dispatch : 
-  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
+  (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a

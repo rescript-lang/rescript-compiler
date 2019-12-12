@@ -57,7 +57,7 @@ type t = {
 let empty_values = [||]
 let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
   {
-    values = String_map.to_sorted_array values; 
+    values = Map_string.to_sorted_array values; 
     pure = effect = None ; 
     npm_package_path;
     cmj_case
@@ -131,7 +131,7 @@ let to_file name ~check_exists (v : t) =
     close_out oc 
 
 let keyComp (a : string) (b,_) = 
-    String_map.compare_key  a b 
+    Map_string.compare_key  a b 
 
 let not_found = single_na, None 
 let get_result  midVal = 

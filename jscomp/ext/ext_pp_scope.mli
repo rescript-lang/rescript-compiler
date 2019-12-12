@@ -42,9 +42,9 @@ val empty : t
 
 val print : Format.formatter -> t -> unit
 
-val sub_scope : t -> Ident_set.t -> t
+val sub_scope : t -> Set_ident.t -> t
 
-val merge : t -> Ident_set.t ->  t
+val merge : t -> Set_ident.t ->  t
 
 
 

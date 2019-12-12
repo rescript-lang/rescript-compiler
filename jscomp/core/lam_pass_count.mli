@@ -21,7 +21,7 @@ type used_info = {
     *)
 }
 
-type occ_tbl  = used_info Ident_hashtbl.t
+type occ_tbl  = used_info Hash_ident.t
 
 val dummy_info : unit -> used_info
 val collect_occurs : Lam.t -> occ_tbl

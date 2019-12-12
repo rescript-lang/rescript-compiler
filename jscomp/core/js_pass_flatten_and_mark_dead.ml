@@ -67,30 +67,30 @@ class rewrite_return ?return_value ()=
  *)
 let mark_dead = object (self)
   inherit Js_fold.fold as super
-  val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Ident_hashtbl.t
-      = Ident_hashtbl.create 17
+  val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Hash_ident.t
+      = Hash_ident.create 17
   
-  val mutable export_set : Ident_set.t = Ident_set.empty    
+  val mutable export_set : Set_ident.t = Set_ident.empty    
 
   method mark_not_dead ident =
-    match Ident_hashtbl.find_opt ident_use_stats ident with
+    match Hash_ident.find_opt ident_use_stats ident with
     | None -> (* First time *)
-        Ident_hashtbl.add ident_use_stats ident `Recursive 
+        Hash_ident.add ident_use_stats ident `Recursive 
         (* recursive identifiers *)
     | Some `Recursive
       -> ()
     | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
-    let is_export = Ident_set.mem export_set ident in
+    let is_export = Set_ident.mem export_set ident in
     let () = 
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 
     in
-    match Ident_hashtbl.find_opt ident_use_stats ident with
+    match Hash_ident.find_opt ident_use_stats ident with
     | Some (`Recursive) -> 
         Js_op_util.update_used_stats ident_info Used; 
-        Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
+        Hash_ident.replace ident_use_stats ident (`Info ident_info)
     | Some (`Info _) ->  
       (** check [camlinternlFormat,box_type] inlined twice 
           FIXME: seems we have redeclared identifiers
@@ -98,11 +98,11 @@ let mark_dead = object (self)
       ()
     (* assert false *)
     | None ->  (* First time *)
-        Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
+        Hash_ident.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
   method promote_dead = 
-    Ident_hashtbl.iter ident_use_stats (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
+    Hash_ident.iter ident_use_stats (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
       match info  with 
       | `Info ({used_stats = Scanning_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_pure
@@ -110,7 +110,7 @@ let mark_dead = object (self)
           Js_op_util.update_used_stats info Dead_non_pure
       | _ -> ())
       ;
-    Ident_hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
+    Hash_ident.clear ident_use_stats (* clear to make it re-entrant *)
 
   method! program x = 
     export_set <- x.export_set ; 
@@ -197,12 +197,12 @@ let mark_dead_code js =
 let subst_map () = object (self)
   inherit Js_map.map as super
 
-  val mutable substitution :  J.expression Ident_hashtbl.t= Ident_hashtbl.create 17 
+  val mutable substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
 
   method get_substitution = substitution
 
   method add_substitue (ident : Ident.t) (e:J.expression) = 
-    Ident_hashtbl.replace  substitution ident e
+    Hash_ident.replace  substitution ident e
 
   method! statement v = 
     match v.statement_desc with 
@@ -278,7 +278,7 @@ let subst_map () = object (self)
               {expression_desc = Number (Int {i; _})})
     | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
      -> 
-      (match Ident_hashtbl.find_opt self#get_substitution id with 
+      (match Hash_ident.find_opt self#get_substitution id with 
        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
          -> 
          (* user program can be wrong, we should not 

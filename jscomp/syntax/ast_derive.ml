@@ -36,12 +36,12 @@ type gen = {
    ]}
 *)
 type derive_table  = 
-  (Parsetree.expression option -> gen) String_map.t
+  (Parsetree.expression option -> gen) Map_string.t
 
-let derive_table : derive_table ref = ref String_map.empty
+let derive_table : derive_table ref = ref Map_string.empty
 
 let register key value = 
-  derive_table := String_map.add !derive_table key value 
+  derive_table := Map_string.add !derive_table key value 
 
 
 

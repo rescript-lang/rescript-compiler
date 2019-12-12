@@ -263,7 +263,7 @@ let rec parse_json lexbuf =
     | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
 (** Note if we remove [trailing_comma] support 
     we should report errors (actually more work), for example 
@@ -311,9 +311,9 @@ let rec parse_json lexbuf =
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> Obj {map = String_map.add acc key value  ; loc = loc_start}
+        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
         | Comma -> 
-          parse_map loc_start  (String_map.add acc key value ) lexbuf 
+          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon

@@ -434,9 +434,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 let may_depend = Lam_module_ident.Hash_set.add
 
 
-let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
-  let alias_tbl = Ident_hashtbl.create 64 in
-  let exit_map = Int_hashtbl.create 0 in
+let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
+  let alias_tbl = Hash_ident.create 64 in
+  let exit_map = Hash_int.create 0 in
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec
@@ -579,7 +579,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->
-      let var = Ident_hashtbl.find_default alias_tbl x x in
+      let var = Hash_ident.find_default alias_tbl x x in
       if Ident.persistent var then
         Lam.global_module var
       else
@@ -655,15 +655,15 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       (Ext_list.map_snd cases convert_aux)
       (Ext_option.map default convert_aux)
     | Lstaticraise (id,[]) ->
-        (match Int_hashtbl.find_opt exit_map id  with
+        (match Hash_int.find_opt exit_map id  with
         | None -> Lam.staticraise id []
         | Some new_id -> Lam.staticraise new_id [])      
     | Lstaticraise (id, args) ->
       Lam.staticraise id (Ext_list.map args convert_aux )
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
       -> (* peep-hole [i] aliased to [j] *)
-      let new_i = Int_hashtbl.find_default exit_map j j in
-      Int_hashtbl.add exit_map i new_i ;
+      let new_i = Hash_int.find_default exit_map j j in
+      Hash_int.add exit_map i new_i ;
       convert_aux b
     | Lstaticcatch (b, (i, ids), handler) ->
       Lam.staticcatch (convert_aux b) (i,ids) (convert_aux handler)
@@ -711,16 +711,16 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
     match kind, e with
     | Alias , Lvar u  ->
-      let new_u = Ident_hashtbl.find_default alias_tbl u u in
-      Ident_hashtbl.add alias_tbl id new_u ;
-      if Ident_set.mem exports id then
+      let new_u = Hash_ident.find_default alias_tbl u u in
+      Hash_ident.add alias_tbl id new_u ;
+      if Set_ident.mem exports id then
         Lam.let_ kind id (Lam.var new_u) (convert_aux body)
       else convert_aux body
     | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
       ->
-      Ident_hashtbl.add alias_tbl id u;
+      Hash_ident.add alias_tbl id u;
       may_depend may_depends (Lam_module_ident.of_ml u);
-      if Ident_set.mem exports id then
+      if Set_ident.mem exports id then
         Lam.let_ kind id (Lam.var u) (convert_aux body)
       else convert_aux body
 

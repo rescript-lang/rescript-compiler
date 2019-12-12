@@ -34,7 +34,7 @@ val get_dependent_module_effect:
 val export_to_cmj : 
   Lam_stats.t ->
   Js_cmj_format.effect ->
-  Lam.t Ident_map.t ->
+  Lam.t Map_ident.t ->
   Js_cmj_format.cmj_case ->
   Js_cmj_format.t
 

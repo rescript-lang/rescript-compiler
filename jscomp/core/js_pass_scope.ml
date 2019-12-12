@@ -107,17 +107,17 @@ let scope_pass  =
   object(self)
     inherit Js_fold.fold as super
 
-    val  defined_idents = Ident_set.empty 
+    val  defined_idents = Set_ident.empty 
         
     (** [used_idents] 
         does not contain locally defined idents *)
-    val  used_idents = Ident_set.empty 
+    val  used_idents = Set_ident.empty 
     (** we need collect mutable values and loop defined varaibles *)    
-    val loop_mutable_values = Ident_set.empty 
+    val loop_mutable_values = Set_ident.empty 
 
-    val mutable_values = Ident_set.empty      
+    val mutable_values = Set_ident.empty      
 
-    val closured_idents = Ident_set.empty 
+    val closured_idents = Set_ident.empty 
 
     (** check if in loop or not *)    
     val in_loop = false 
@@ -144,17 +144,17 @@ let scope_pass  =
       {< loop_mutable_values =  b >}
 
     method add_loop_mutable_variable id = 
-      {< loop_mutable_values = Ident_set.add loop_mutable_values id;
-         mutable_values = Ident_set.add mutable_values id 
+      {< loop_mutable_values = Set_ident.add loop_mutable_values id;
+         mutable_values = Set_ident.add mutable_values id 
          >}
 
     method add_mutable_variable id = 
-      {< mutable_values = Ident_set.add mutable_values id >}
+      {< mutable_values = Set_ident.add mutable_values id >}
 
     method add_defined_ident ident = 
-      {< defined_idents = Ident_set.add defined_idents ident >} 
+      {< defined_idents = Set_ident.add defined_idents ident >} 
     method add_used_ident ident = 
-      {< used_idents = Ident_set.add used_idents ident >}
+      {< used_idents = Set_ident.add used_idents ident >}
     method! expression x = 
       match x.expression_desc with 
       | Fun (_method_, params, block , env) -> 
@@ -166,37 +166,37 @@ let scope_pass  =
         *)
         (* Note that [used_idents] is not complete
             it ignores some locally defined idents *)
-        let param_set = Ident_set.of_list params in
-        let obj =  {<defined_idents = Ident_set.empty;
+        let param_set = Set_ident.of_list params in
+        let obj =  {<defined_idents = Set_ident.empty;
                      (** pass [empty]
                          so that we can check which parameter was actually used *)
-                     used_idents = Ident_set.empty ;
+                     used_idents = Set_ident.empty ;
                      in_loop = false;
-                     loop_mutable_values = Ident_set.empty;
-                     mutable_values = Ident_set.of_list (Js_fun_env.get_mutable_params params env) ; 
-                     closured_idents = Ident_set.empty; (* think about nested function*)
+                     loop_mutable_values = Set_ident.empty;
+                     mutable_values = Set_ident.of_list (Js_fun_env.get_mutable_params params env) ; 
+                     closured_idents = Set_ident.empty; (* think about nested function*)
                    >} # block block in
         let defined_idents', used_idents' = 
           obj#get_defined_idents, obj#get_used_idents  in
         (* mark which param is used *)
         params |> List.iteri 
           (fun i v -> 
-             if not (Ident_set.mem used_idents' v) then 
+             if not (Set_ident.mem used_idents' v) then 
                Js_fun_env.mark_unused env i) ;
         let closured_idents' =  (* pass param_set down *)
-          Ident_set.(diff used_idents' (union defined_idents' param_set )) in
+          Set_ident.(diff used_idents' (union defined_idents' param_set )) in
 
         (* Noe that we don't know which variables are exactly mutable yet ..
            due to the recursive thing
          *)
         Js_fun_env.set_unbounded env closured_idents'   ; 
-        let lexical_scopes = Ident_set.(inter closured_idents' self#get_loop_mutable_values) in
+        let lexical_scopes = Set_ident.(inter closured_idents' self#get_loop_mutable_values) in
         Js_fun_env.set_lexical_scope env lexical_scopes;
         (* tailcall , note that these varibles are used in another pass *)
         {< used_idents = 
-             Ident_set.union used_idents closured_idents' ;
+             Set_ident.union used_idents closured_idents' ;
            (* There is a bug in ocaml -dsource*)           
-           closured_idents = Ident_set.union closured_idents closured_idents'
+           closured_idents = Set_ident.union closured_idents closured_idents'
         >}
       | _ -> 
         let obj = super#expression x in 
@@ -239,11 +239,11 @@ let scope_pass  =
                  | Fun _  | Number _ | Str _ 
                    -> self 
                  | _ -> 
-                   (* if Ident_set.(is_empty @@ *)
+                   (* if Set_ident.(is_empty @@ *)
                    (*   inter self#get_mutable_values  *)
                    (*     ( ({<  *)
-                   (*         defined_idents = Ident_set.empty;  *)
-                   (*         used_idents = Ident_set.empty; *)
+                   (*         defined_idents = Set_ident.empty;  *)
+                   (*         used_idents = Set_ident.empty; *)
                    (*         >} # expression x) # get_used_idents)) then *)
                    (*   (\* FIXME: still need to check expression is pure or not*\) *)
                    (*   self *)
@@ -268,10 +268,10 @@ let scope_pass  =
       | ForRange  (_,_, loop_id, _,_,a_env) as y -> (* TODO: simplify definition of For *)
           let obj = 
             {< in_loop = true ;
-               loop_mutable_values = Ident_set.singleton loop_id ;
-               used_idents = Ident_set.empty; (* TODO: if unused, can we generate better code? *)
-               defined_idents = Ident_set.singleton loop_id ;
-               closured_idents = Ident_set.empty (* Think about nested for blocks *)
+               loop_mutable_values = Set_ident.singleton loop_id ;
+               used_idents = Set_ident.empty; (* TODO: if unused, can we generate better code? *)
+               defined_idents = Set_ident.singleton loop_id ;
+               closured_idents = Set_ident.empty (* Think about nested for blocks *)
                  (* Invariant: Finish id is never used *)
                  >}
               # statement_desc y in
@@ -280,21 +280,21 @@ let scope_pass  =
             obj#get_defined_idents, obj#get_used_idents, obj#get_closured_idents in
 
 
-          let lexical_scope =  Ident_set.(inter (diff closured_idents' defined_idents') self#get_loop_mutable_values) in
+          let lexical_scope =  Set_ident.(inter (diff closured_idents' defined_idents') self#get_loop_mutable_values) in
           let () = Js_closure.set_lexical_scope a_env lexical_scope in
           (* set scope *)
-          {< used_idents = Ident_set.union used_idents used_idents';
+          {< used_idents = Set_ident.union used_idents used_idents';
              (* walk around ocaml -dsource bug 
                 {[ 
-                  Ident_set.(union used_idents used_idents)                  
+                  Set_ident.(union used_idents used_idents)                  
                 ]}                
              *)             
-             defined_idents = Ident_set.union defined_idents defined_idents';
+             defined_idents = Set_ident.union defined_idents defined_idents';
              (* TODO: if we our generated code also follow lexical scope,
                 this is not necessary ;
                 [varaibles] are mutable or not is known at definition
               *)
-             closured_idents = Ident_set.union closured_idents lexical_scope
+             closured_idents = Set_ident.union closured_idents lexical_scope
              >}
 
       | While (_label,pred,body, _env) ->  
@@ -312,15 +312,15 @@ let scope_pass  =
           } 
           })
        *)
-      {< used_idents = Ident_set.add used_idents x ;
-         defined_idents = Ident_set.add defined_idents x
+      {< used_idents = Set_ident.add used_idents x ;
+         defined_idents = Set_ident.add defined_idents x
          >}
-    method! for_ident x = {< loop_mutable_values = Ident_set.add loop_mutable_values x >}
+    method! for_ident x = {< loop_mutable_values = Set_ident.add loop_mutable_values x >}
 
     method! ident x = 
-      if Ident_set.mem defined_idents x then 
+      if Set_ident.mem defined_idents x then 
         self
-      else {< used_idents = Ident_set.add used_idents x >}
+      else {< used_idents = Set_ident.add used_idents x >}
   end
 
 let program js = 

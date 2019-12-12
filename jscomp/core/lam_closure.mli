@@ -25,21 +25,21 @@
 (** [is_closed_by map lam]
     return [true] if all unbound variables
     belongs to the given [map] *)
-(* val is_closed_by : Ident_set.t -> Lam.t -> bool *)
+(* val is_closed_by : Set_ident.t -> Lam.t -> bool *)
 
 val is_closed : Lam.t -> bool
 
 
 (** The output is mostly used in betat reduction *)
 val is_closed_with_map : 
-  Ident_set.t ->
+  Set_ident.t ->
   Ident.t list -> 
   Lam.t -> 
-  bool * Lam_var_stats.stats Ident_map.t
+  bool * Lam_var_stats.stats Map_ident.t
 
 val free_variables : 
-  Ident_set.t -> 
-  Lam_var_stats.stats Ident_map.t -> 
+  Set_ident.t -> 
+  Lam_var_stats.stats Map_ident.t -> 
   Lam.t -> 
-  Lam_var_stats.stats Ident_map.t
+  Lam_var_stats.stats Map_ident.t
 

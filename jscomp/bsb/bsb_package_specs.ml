@@ -92,10 +92,10 @@ and from_json_single (x : Ext_json_types.t) : spec =
   | Str {str = format; loc } ->    
       {format = supported_format format loc  ; in_source = false }    
   | Obj {map; loc} ->
-    begin match String_map.find_exn map "module" with
+    begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match String_map.find_opt map  Bsb_build_schemas.in_source with
+          match Map_string.find_opt map  Bsb_build_schemas.in_source with
           | Some (True _) -> true
           | Some _
           | None -> false

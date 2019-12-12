@@ -3,12 +3,12 @@ let ((>::),
 
 open Ext_json
 
-let v = Int_vec.init 10 (fun i -> i);;
-let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y
+let v = Vec_int.init 10 (fun i -> i);;
+let (=~) x y = OUnit.assert_equal ~cmp:(Vec_int.equal  (fun (x: int) y -> x=y)) x y
 let (=~~) x y 
   = 
-  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) 
-  x (Int_vec.of_array y) 
+  OUnit.assert_equal ~cmp:(Vec_int.equal  (fun (x: int) y -> x=y)) 
+  x (Vec_int.of_array y) 
 
 let suites = 
   __FILE__ 
@@ -21,61 +21,61 @@ let suites =
     "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
       
-      ignore @@ Int_vec.push v 32;
-      let capacity = Int_vec.capacity v  in 
+      ignore @@ Vec_int.push v 32;
+      let capacity = Vec_int.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
-      Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
+      Vec_int.inplace_filter (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 2; 4; 6; 8; 32|];
-      Int_vec.inplace_filter (fun x -> x mod 3 = 0) v ;
+      Vec_int.inplace_filter (fun x -> x mod 3 = 0) v ;
       v =~~ [|0;6|];
-      Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
+      Vec_int.inplace_filter (fun x -> x mod 3 <> 0) v ;
       v =~~ [||];
-      OUnit.assert_equal (Int_vec.capacity v ) capacity ;
-      Int_vec.compact v ; 
-      OUnit.assert_equal (Int_vec.capacity v ) 0 
+      OUnit.assert_equal (Vec_int.capacity v ) capacity ;
+      Vec_int.compact v ; 
+      OUnit.assert_equal (Vec_int.capacity v ) 0 
     end
     ;
     "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
+      let v = Vec_int.of_array (Array.init 10 (fun i -> i)) in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
-      Int_vec.push v 96  ;      
-      Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
+      Vec_int.push v 96  ;      
+      Vec_int.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 1; 2; 4; 6; 8; 96|];
-      Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
+      Vec_int.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
       v =~~ [|0; 1; 6; 96|];
-      Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
+      Vec_int.inplace_filter (fun x -> x mod 3 <> 0) v ;
       v =~~ [|1|];      
-      Int_vec.compact v ; 
-      OUnit.assert_equal (Int_vec.capacity v ) 1
+      Vec_int.compact v ; 
+      OUnit.assert_equal (Vec_int.capacity v ) 1
     end
     ;
     "map " ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.of_array (Array.init 1000 (fun i -> i )) in 
-      Int_vec.map succ v =~~ (Array.init 1000 succ) ;
-      OUnit.assert_bool __LOC__ (Int_vec.exists (fun x -> x >= 999) v );
-      OUnit.assert_bool __LOC__ (not (Int_vec.exists (fun x -> x > 1000) v ));
-      OUnit.assert_equal (Int_vec.last v ) 999
+      let v = Vec_int.of_array (Array.init 1000 (fun i -> i )) in 
+      Vec_int.map succ v =~~ (Array.init 1000 succ) ;
+      OUnit.assert_bool __LOC__ (Vec_int.exists (fun x -> x >= 999) v );
+      OUnit.assert_bool __LOC__ (not (Vec_int.exists (fun x -> x > 1000) v ));
+      OUnit.assert_equal (Vec_int.last v ) 999
     end ;  
     __LOC__ >:: begin fun _ -> 
       let count = 1000 in 
       let init_array = (Array.init count (fun i -> i)) in 
-      let u = Int_vec.of_array  init_array in 
-      let v = Int_vec.inplace_filter_with (fun x -> x mod 2 = 0) ~cb_no:(fun a b -> Set_int.add b a)Set_int.empty u  in
+      let u = Vec_int.of_array  init_array in 
+      let v = Vec_int.inplace_filter_with (fun x -> x mod 2 = 0) ~cb_no:(fun a b -> Set_int.add b a)Set_int.empty u  in
       let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> x mod 2 = 0) in 
       OUnit.assert_equal 
       (Set_int.elements v) odd ;
       u =~~ Array.of_list even 
     end ;
     "filter" ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
-      v |> Int_vec.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
+      let v = Vec_int.of_array [|1;2;3;4;5;6|] in 
+      v |> Vec_int.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
       v =~~ [|1;2;3;4;5;6|];
-      Int_vec.pop v ; 
+      Vec_int.pop v ; 
       v =~~ [|1;2;3;4;5|];
       let count = ref 0 in 
-      let len = Int_vec.length v  in 
-      while not (Int_vec.is_empty v ) do 
-        Int_vec.pop v ;
+      let len = Vec_int.length v  in 
+      while not (Vec_int.is_empty v ) do 
+        Vec_int.pop v ;
         incr count
       done;
       OUnit.assert_equal len !count
@@ -83,70 +83,70 @@ let suites =
     ;
     __LOC__ >:: begin fun _ -> 
       let count = 100 in 
-      let v = Int_vec.of_array (Array.init count (fun i -> i)) in 
+      let v = Vec_int.of_array (Array.init count (fun i -> i)) in 
       OUnit.assert_bool __LOC__ 
-        (try Int_vec.delete v count; false with _ -> true );
+        (try Vec_int.delete v count; false with _ -> true );
       for i = count - 1 downto 10 do 
-        Int_vec.delete v i ;
+        Vec_int.delete v i ;
       done ;
       v =~~ [|0;1;2;3;4;5;6;7;8;9|] 
     end; 
     "sub" ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.make 5 in 
+      let v = Vec_int.make 5 in 
       OUnit.assert_bool __LOC__
-        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push v 1;
+        (try ignore @@ Vec_int.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Vec_int.push v 1;
       OUnit.assert_bool __LOC__
-        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push v 2;  
-      ( Int_vec.sub v 0 2 =~~ [|1;2|])
+        (try ignore @@ Vec_int.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Vec_int.push v 2;  
+      ( Vec_int.sub v 0 2 =~~ [|1;2|])
     end;
     "reserve" ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.empty () in 
-      Int_vec.reserve v  1000 ;
+      let v = Vec_int.empty () in 
+      Vec_int.reserve v  1000 ;
       for i = 0 to 900 do
-        Int_vec.push v i
+        Vec_int.push v i
       done ;
-      OUnit.assert_equal (Int_vec.length v) 901 ;
-      OUnit.assert_equal (Int_vec.capacity v) 1000
+      OUnit.assert_equal (Vec_int.length v) 901 ;
+      OUnit.assert_equal (Vec_int.capacity v) 1000
     end ; 
     "capacity"  ^ __LOC__ >:: begin fun _ -> 
-      let v = Int_vec.of_array [|3|] in 
-      Int_vec.reserve v 10 ;
+      let v = Vec_int.of_array [|3|] in 
+      Vec_int.reserve v 10 ;
       v =~~ [|3 |];
-      Int_vec.push v 1 ;
-      Int_vec.push v 2 ;
-      Int_vec.push v 5;
+      Vec_int.push v 1 ;
+      Vec_int.push v 2 ;
+      Vec_int.push v 5;
       v=~~ [|3;1;2;5|];
-      OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
+      OUnit.assert_equal (Vec_int.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_vec.push v i
+        Vec_int.push v i
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_vec.push v 100;
+      Vec_int.push v 100;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
-      OUnit.assert_equal (Int_vec.capacity v ) 20
+      OUnit.assert_equal (Vec_int.capacity v ) 20
     end
     ;
     __LOC__  >:: begin fun _ -> 
-      let empty = Int_vec.empty () in 
-      Int_vec.push empty 3;
+      let empty = Vec_int.empty () in 
+      Vec_int.push empty 3;
       empty =~~ [|3|];
 
     end
     ;
     __LOC__ >:: begin fun _ ->
       let lst = [1;2;3;4] in 
-      let v = Int_vec.of_list lst in 
+      let v = Vec_int.of_list lst in 
       OUnit.assert_equal 
-        (Int_vec.map_into_list (fun x -> x + 1) v)
+        (Vec_int.map_into_list (fun x -> x + 1) v)
         (Ext_list.map lst (fun x -> x + 1) )  
     end;
     __LOC__ >:: begin fun _ ->
-      let v = Int_vec.make 4 in 
-      Int_vec.push v  1 ;
-      Int_vec.push v 2;
-      Int_vec.reverse_in_place v;
+      let v = Vec_int.make 4 in 
+      Vec_int.push v  1 ;
+      Vec_int.push v 2;
+      Vec_int.reverse_in_place v;
       v =~~ [|2;1|]
     end
     ;

@@ -96,7 +96,7 @@ type lam_subst =
   | Id of Lam.t 
   | Refresh of Lam.t
 
-type subst_tbl = (Ident.t list * lam_subst ) Int_hashtbl.t
+type subst_tbl = (Ident.t list * lam_subst ) Hash_int.t
 
 let to_lam x = 
   match x with 
@@ -172,10 +172,10 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
         | 0,_ -> simplif l1
         | ( _ , Lvar _
           | _, Lconst _) (* when i >= 0  # 2316 *) ->  
-          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
+          Hash_int.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
+          Hash_int.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         |  _ ->
           let l2 = simplif l2 in 
@@ -192,23 +192,23 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
           if ok_to_inline 
           then 
             begin            
-              Int_hashtbl.add subst i (xs,  Id l2) ;
+              Hash_int.add subst i (xs,  Id l2) ;
               simplif l1 
             end
           else Lam.staticcatch (simplif l1) (i,xs) l2)
     | Lstaticraise (i,[])  ->
-      (match Int_hashtbl.find_opt subst i with
+      (match Hash_int.find_opt subst i with
        | Some (_,handler) -> to_lam handler
        | None -> lam)      
     | Lstaticraise (i,ls) ->
       let ls = Ext_list.map  ls simplif in
-      (match Int_hashtbl.find_opt subst i with
+      (match Hash_int.find_opt subst i with
        | Some (xs, handler) -> 
          let handler = to_lam handler in 
          let ys = Ext_list.map xs Ident.rename in
          let env =
-           Ext_list.fold_right2 xs ys Ident_map.empty 
-             (fun x y t -> Ident_map.add t x (Lam.var y) ) in
+           Ext_list.fold_right2 xs ys Map_ident.empty 
+             (fun x y t -> Map_ident.add t x (Lam.var y) ) in
          Ext_list.fold_right2 ys ls 
            (Lam_subst.subst  env  handler)
            (fun y l r -> Lam.let_ Strict y l r)
@@ -262,7 +262,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
 
 let simplify_exits (lam : Lam.t) =
   let exits = Lam_exit_count.count_helper lam in
-  subst_helper (Int_hashtbl.create 17 ) (Lam_exit_count.count_exit exits) lam
+  subst_helper (Hash_int.create 17 ) (Lam_exit_count.count_exit exits) lam
 
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->

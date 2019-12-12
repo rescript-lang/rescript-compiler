@@ -38,12 +38,12 @@
 
 
 
-type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
+type ident_tbl = Lam_id_kind.t Hash_ident.t 
 
 
 
 type t = {
-  export_idents : Ident_set.t ;
+  export_idents : Set_ident.t ;
   exports : Ident.t list ;  
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -58,5 +58,5 @@ val print : Format.formatter -> t -> unit
 
 val make : 
   export_idents:Ident.t list ->
-  export_ident_sets:Ident_set.t ->
+  export_ident_sets:Set_ident.t ->
   t

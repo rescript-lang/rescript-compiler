@@ -34,23 +34,23 @@
 
 let transitive_closure 
     (initial_idents : Ident.t list) 
-    (ident_freevars : Ident_set.t Ident_hashtbl.t) 
+    (ident_freevars : Set_ident.t Hash_ident.t) 
   =
-  let visited  = Ident_hash_set.create 31 in 
+  let visited  = Hash_set_ident.create 31 in 
   let rec dfs (id : Ident.t) : unit =
-    if not (Ident_hash_set.mem visited id || Ext_ident.is_js_or_global id ) then
+    if not (Hash_set_ident.mem visited id || Ext_ident.is_js_or_global id ) then
       begin 
-        Ident_hash_set.add visited id;
-        match Ident_hashtbl.find_opt ident_freevars id with 
+        Hash_set_ident.add visited id;
+        match Hash_ident.find_opt ident_freevars id with 
         | None -> 
           Ext_fmt.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.stamp)  
-        | Some e -> Ident_set.iter e dfs
+        | Some e -> Set_ident.iter e dfs
       end  in 
   Ext_list.iter initial_idents dfs;
   visited
 
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
-  let ident_free_vars :  _ Ident_hashtbl.t = Ident_hashtbl.create 17 in
+  let ident_free_vars :  _ Hash_ident.t = Hash_ident.create 17 in
   (* calculate initial required idents, 
      at the same time, populate dependency set [ident_free_vars]
   *)
@@ -59,7 +59,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         match x with
         | Single(kind, id,lam) ->                   
           begin
-            Ident_hashtbl.add ident_free_vars id 
+            Hash_ident.add ident_free_vars id 
               (Lam_free_variables.pass_free_variables lam);
             match kind with
             | Alias | StrictOpt -> acc
@@ -67,7 +67,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           end
         | Recursive bindings -> 
           Ext_list.fold_left bindings acc (fun acc (id,lam) -> 
-              Ident_hashtbl.add ident_free_vars id (Lam_free_variables.pass_free_variables lam);
+              Hash_ident.add ident_free_vars id (Lam_free_variables.pass_free_variables lam);
               match lam with
               | Lfunction _ -> acc 
               | _ -> id :: acc
@@ -76,20 +76,20 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            Ident_set.fold (Lam_free_variables.pass_free_variables lam) acc (fun x acc -> x :: acc) 
+            Set_ident.fold (Lam_free_variables.pass_free_variables lam) acc (fun x acc -> x :: acc) 
       )  in 
   let visited = transitive_closure initial_idents ident_free_vars in 
   Ext_list.fold_left rest [] (fun acc x->
       match x with 
       | Single(_,id,_) -> 
-        if Ident_hash_set.mem visited id  then 
+        if Hash_set_ident.mem visited id  then 
           x :: acc 
         else acc 
       | Nop _ -> x :: acc  
       | Recursive bindings ->
         let b = 
           Ext_list.fold_right bindings [] (fun ((id,_) as v) acc ->
-              if Ident_hash_set.mem visited id then 
+              if Hash_set_ident.mem visited id then 
                 v :: acc 
               else
                 acc  

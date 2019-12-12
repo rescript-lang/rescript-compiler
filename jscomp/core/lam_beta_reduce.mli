@@ -72,12 +72,12 @@ val propogate_beta_reduce :
    {[
      let propogate_beta_reduce meta params body args = 
        let (_, param_map) = 
-         Lam_analysis.is_closed_with_map Ident_set.empty params body in 
+         Lam_analysis.is_closed_with_map Set_ident.empty params body in 
        propogate_beta_reduce_with_map meta param_map params body args  
    ]}
 *)
 val propogate_beta_reduce_with_map : 
   Lam_stats.t ->
-  Lam_var_stats.stats Ident_map.t ->
+  Lam_var_stats.stats Map_ident.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t

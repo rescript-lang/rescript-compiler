@@ -40,11 +40,11 @@ type value =
   { mutable used : bool ; 
     lambda  : Lam.t
   }
-let param_hash :  _ Ident_hashtbl.t = Ident_hashtbl.create 20
+let param_hash :  _ Hash_ident.t = Hash_ident.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
   let rec find_param v  opt = 
-    match Ident_hashtbl.find_opt param_hash v with 
+    match Hash_ident.find_opt param_hash v with 
     | Some exp ->  
       if exp.used then raise E.Not_simple_apply
       else exp.used <- true; exp.lambda
@@ -72,25 +72,25 @@ let simple_beta_reduce params body args =
                 | _ -> false ) params args'
        ]}*)
     let () = 
-      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] args' with 
     | args -> 
       let result = 
-        Ident_hashtbl.fold param_hash (Lam.prim ~primitive ~args loc) (fun _param {lambda; used} code -> 
+        Hash_ident.fold param_hash (Lam.prim ~primitive ~args loc) (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
             else code)  in 
-      Ident_hashtbl.clear param_hash;
+      Hash_ident.clear param_hash;
       Some result 
     | exception _ -> 
-      Ident_hashtbl.clear param_hash ;
+      Hash_ident.clear param_hash ;
       None
     end
   | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
-      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
     in 
     (*since we adde each param only once, 
       iff it is removed once, no exception, 
@@ -101,16 +101,16 @@ let simple_beta_reduce params body args =
       | us -> 
         let f = find_param fn_name  f in
         let result = 
-          Ident_hashtbl.fold param_hash (Lam.apply  f us  loc status)
+          Hash_ident.fold param_hash (Lam.apply  f us  loc status)
             (fun _param {lambda; used} code -> 
                if not used then 
                  Lam.seq lambda code
                else code )
         in
-        Ident_hashtbl.clear param_hash;
+        Hash_ident.clear param_hash;
         Some result 
       | exception _ -> 
-        Ident_hashtbl.clear param_hash; 
+        Hash_ident.clear param_hash; 
         None
     end
   | _ -> None

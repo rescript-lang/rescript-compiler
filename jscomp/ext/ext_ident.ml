@@ -66,7 +66,7 @@ let create = Ident.create
 let create_tmp ?(name=Literals.tmp) () = create name
 
 
-let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
+let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
 (* This is for a js exeternal module, we can change it when printing
    for example
@@ -86,11 +86,11 @@ let create_js_module (name : string) : Ident.t =
       react--dom
       check collision later
   *)
-  match String_hashtbl.find_exn js_module_table name  with
+  match Hash_string.find_exn js_module_table name  with
   | exception Not_found ->
     let ans = Ident.create name in
     (* let ans = { v with flags = js_module_flag} in  *)
-    String_hashtbl.add js_module_table name ans;
+    Hash_string.add js_module_table name ans;
     ans
   | v -> (* v *) Ident.rename v
 
@@ -200,7 +200,7 @@ let make_unused () = create "_"
 
 
 let reset () =
-  String_hashtbl.clear js_module_table
+  Hash_string.clear js_module_table
 
 
 (* Has to be total order, [x < y]

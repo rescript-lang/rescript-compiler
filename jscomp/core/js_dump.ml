@@ -383,12 +383,12 @@ and  pp_function is_method
        optimize len (arity = NA && len <=8) cxt f v)
 
   | _, _  ->
-    let set_env : Ident_set.t = (** identifiers will be printed following*)
+    let set_env : Set_ident.t = (** identifiers will be printed following*)
       match name with
       | No_name ->
         Js_fun_env.get_unbounded env
       | Name_top id | Name_non_top id -> 
-        Ident_set.add (Js_fun_env.get_unbounded env ) id in
+        Set_ident.add (Js_fun_env.get_unbounded env ) id in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge cxt set_env in
 
@@ -420,10 +420,10 @@ and  pp_function is_method
         P.space f ;
         P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) 
     in
-    let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
+    let lexical : Set_ident.t = Js_fun_env.get_lexical_scope env in
     let enclose  lexical  return =
       let handle lexical =
-        if  Ident_set.is_empty lexical
+        if  Set_ident.is_empty lexical
         then
           (if return then
              return_sp f ;
@@ -449,7 +449,7 @@ and  pp_function is_method
           (* print as
              {[(function(x,y){...} (x,y))]}
           *)
-          let lexical = Ident_set.elements lexical in
+          let lexical = Set_ident.elements lexical in
           (if return then 
              return_sp f             
            else
@@ -477,9 +477,9 @@ and  pp_function is_method
           | _ -> semi f (* has binding, a statement *)  in
       handle 
         (match name with
-         | Name_top name | Name_non_top name  when Ident_set.mem lexical name ->
+         | Name_top name | Name_non_top name  when Set_ident.mem lexical name ->
            (*TODO: when calculating lexical we should not include itself *)
-           Ident_set.remove lexical name
+           Set_ident.remove lexical name
          | _ -> lexical) in
     enclose lexical return;
     outer_cxt
@@ -1175,7 +1175,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   Ext_pp_scope.ident cxt f id)) in
           block  cxt f s ) in
     let lexical = Js_closure.get_lexical_scope env in
-    if Ident_set.is_empty lexical
+    if Set_ident.is_empty lexical
     then action cxt
     else
       (* unlike function,
@@ -1183,7 +1183,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
          we should take it out
       *)
       let inner_cxt = Ext_pp_scope.merge cxt lexical in
-      let lexical = Ident_set.elements lexical in
+      let lexical = Set_ident.elements lexical in
       P.vgroup f 0
         (fun _ ->
            P.string f L.lparen;

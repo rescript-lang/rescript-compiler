@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type edges = { id : int ; deps : Int_vec.t }
+type edges = { id : int ; deps : Vec_int.t }
 
 module Edge_vec : Vec_gen.S with type elt = edges 
 

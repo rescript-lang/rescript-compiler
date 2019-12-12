@@ -43,7 +43,7 @@ type return_label = {
   label : J.label;
   params : Ident.t list;
   immutable_mask : bool array;
-  mutable new_params : Ident.t Ident_map.t ;
+  mutable new_params : Ident.t Map_ident.t ;
   mutable triggered : bool
 }
 
@@ -85,7 +85,7 @@ type continuation =
 
 
 
-type jmp_table = value Int_map.t
+type jmp_table = value Map_int.t
 
 val continuation_is_return:
   continuation -> 

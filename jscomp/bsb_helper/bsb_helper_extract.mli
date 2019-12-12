@@ -23,4 +23,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* This reads the header part of the mlast file, which simply encodes a set that indicates all of the deps of the current library. *)
-val read_dependency_graph_from_mlast_file : string -> String_set.t
+val read_dependency_graph_from_mlast_file : string -> Set_string.t

@@ -70,7 +70,7 @@ type t
 
 
 val mk:
-  values: cmj_value String_map.t -> 
+  values: cmj_value Map_string.t -> 
   effect: effect -> 
   npm_package_path: Js_packages_info.t ->
   cmj_case:cmj_case -> 

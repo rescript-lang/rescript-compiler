@@ -31,4 +31,4 @@
 
 (** A module to do scope analysis over JS IR *)
 
-val program : J.program ->  Ident_set.t
+val program : J.program ->  Set_ident.t

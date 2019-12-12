@@ -36,7 +36,7 @@ let handle_generators oc
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
   Ext_list.iter group.generators (fun {output; input; command} -> 
       (*TODO: add a loc for better error message *)
-      match String_map.find_opt custom_rules command with 
+      match Map_string.find_opt custom_rules command with 
       | None -> Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
       | Some rule -> 
         Bsb_ninja_targets.output_build oc 
@@ -184,7 +184,7 @@ let handle_files_per_dir
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
-    ~(files_to_install : String_hash_set.t) 
+    ~(files_to_install : Hash_set_string.t) 
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
@@ -196,10 +196,10 @@ let handle_files_per_dir
     | Export_none -> fun _ -> false
     | Export_set set ->  
       fun module_name ->
-      String_set.mem set module_name in
-  String_map.iter group.sources   (fun  module_name module_info   ->
+      Set_string.mem set module_name in
+  Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
-        String_hash_set.add files_to_install 
+        Hash_set_string.add files_to_install 
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs

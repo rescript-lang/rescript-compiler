@@ -63,7 +63,7 @@ let refine_let
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
   (*     Ext_log.err "@[substitution >> @]@."; *)
-  (*     let v= subst_lambda (Ident_map.singleton param arg ) l in *)
+  (*     let v= subst_lambda (Map_ident.singleton param arg ) l in *)
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
   | _, _, Lapply {fn; args = [Lvar w]; loc; status} when
@@ -127,11 +127,11 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
     match v_kind with 
     | NA ->
       begin 
-        match Ident_hashtbl.find_opt meta.ident_tbl v  with 
+        match Hash_ident.find_opt meta.ident_tbl v  with 
         | None -> ()
-        | Some ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
+        | Some ident_info -> Hash_ident.add meta.ident_tbl k ident_info
       end
-    | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
+    | ident_info -> Hash_ident.add meta.ident_tbl k ident_info
   
   (* share -- it is safe to share most properties,
       for arity, we might be careful, only [Alias] can share,
@@ -182,8 +182,8 @@ let kind_of_lambda_block (xs : Lam.t list) : Lam_id_kind.t =
     element_of_lambda x ))
 
 let field_flatten_get
-   lam v i info (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
-  match Ident_hashtbl.find_opt tbl v  with 
+   lam v i info (tbl : Lam_id_kind.t Hash_ident.t) : Lam.t =
+  match Hash_ident.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, info)) 
       ~args:[ Lam.global_module g ] Location.none

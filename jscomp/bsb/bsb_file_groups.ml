@@ -26,7 +26,7 @@
  type public = 
   | Export_none
   | Export_all 
-  | Export_set of String_set.t 
+  | Export_set of Set_string.t 
   
 
 type build_generator = 
@@ -81,6 +81,6 @@ let cons ~file_group ?globbed_dir (v : t) : t =
     we don't need issue [-I] [-S] in [.merlin] file
 *)  
 let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
+  Map_string.is_empty x.sources &&
   x.resources = [] &&
   x.generators = []    

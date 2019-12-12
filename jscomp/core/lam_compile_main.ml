@@ -135,7 +135,7 @@ let compile
     (output_prefix : string) 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
-  let export_ident_sets = Ident_set.of_list export_idents in 
+  let export_ident_sets = Set_ident.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
 #if undefined BS_RELEASE_BUILD then     
@@ -237,7 +237,7 @@ let compile
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
   let meta_exports = meta.exports in 
-  let export_set = Ident_set.of_list meta_exports in 
+  let export_set = Set_ident.of_list meta_exports in 
   let js : J.program = 
       { 
         exports = meta_exports ; 

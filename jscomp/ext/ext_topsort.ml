@@ -22,11 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type edges = { id : int ; deps : Int_vec.t }
+type edges = { id : int ; deps : Vec_int.t }
 
-module Edge_vec = Resize_array.Make( struct 
+module Edge_vec = Vec.Make( struct 
     type t = edges
-    let null = { id = 0 ; deps = Int_vec.empty ()}
+    let null = { id = 0 ; deps = Vec_int.empty ()}
     end
     )
 
@@ -46,13 +46,13 @@ let layered_dfs (g : t) =
    let rec aux g = 
         let new_entries = 
         Edge_vec.inplace_filter_with 
-        (fun (x : edges) -> not (Int_vec.is_empty x.deps) ) 
+        (fun (x : edges) -> not (Vec_int.is_empty x.deps) ) 
         ~cb_no:(fun x acc -> Set_int.add acc x.id) Set_int.empty  g in 
         if not (Set_int.is_empty new_entries) 
         then 
         begin 
             Queue.push new_entries queue ; 
-            Edge_vec.iter g (fun edges -> Int_vec.inplace_filter  
+            Edge_vec.iter g (fun edges -> Vec_int.inplace_filter  
                 (fun x -> not (Set_int.mem new_entries x)) edges.deps ) ;
             aux g 
         end

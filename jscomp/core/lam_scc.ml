@@ -91,7 +91,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
  type bindings = (Ident.t * Lam.t) list
 
 
-let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   =
+let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array   =
   let len = List.length groups in
   let domain : _ Ordered_hash_map_local_ident.t =
     Ordered_hash_map_local_ident.create len in
@@ -101,7 +101,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
       Hash_set_ident_mask.add_unmask mask x;
     ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in
-  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+  let node_vec = Array.make (Array.length int_mapping) (Vec_int.empty ()) in
   domain
   |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->
       let base_key =  node_vec.(key_index) in
@@ -110,7 +110,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
           if hit then
             begin
               let key = Ordered_hash_map_local_ident.rank domain ident in
-              Int_vec.push base_key key;
+              Vec_int.push base_key key;
             end
         );
 
@@ -143,9 +143,9 @@ let scc_bindings (groups : bindings) : bindings list =
     let clusters : Int_vec_vec.t = Ext_scc.graph node_vec in
     if Int_vec_vec.length clusters <= 1 then [ sort_single_binding_group groups]
     else
-      Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+      Int_vec_vec.fold_right (fun  (v : Vec_int.t) acc ->
           let bindings =
-            Int_vec.map_into_list (fun i ->
+            Vec_int.map_into_list (fun i ->
                 let id = int_mapping.(i) in
                 let lam  = Ordered_hash_map_local_ident.find_value domain  id in
                 (id,lam)
@@ -168,9 +168,9 @@ let scc  (groups :  bindings)  ( lam : Lam.t) ( body : Lam.t)
       let clusters = Ext_scc.graph node_vec in
       if Int_vec_vec.length clusters <= 1 then lam
       else
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+        Int_vec_vec.fold_right (fun  (v : Vec_int.t) acc ->
             let bindings =
-              Int_vec.map_into_list (fun i ->
+              Vec_int.map_into_list (fun i ->
                   let id = int_mapping.(i) in
                   let lam  = Ordered_hash_map_local_ident.find_value domain  id in
                   (id,lam)

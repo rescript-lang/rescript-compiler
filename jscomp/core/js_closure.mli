@@ -34,11 +34,11 @@
  *)
 
 type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t 
+  mutable outer_loop_mutable_values :  Set_ident.t 
 }
 
 val empty : unit -> t
 
-val get_lexical_scope : t -> Ident_set.t
+val get_lexical_scope : t -> Set_ident.t
 
-val set_lexical_scope : t -> Ident_set.t -> unit
+val set_lexical_scope : t -> Set_ident.t -> unit

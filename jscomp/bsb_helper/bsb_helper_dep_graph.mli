@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Will do a topological sort of the tree given [String_set.t String_map.t] while ignoring anything not in the given [domain]. Returns a queue of modules topologically sorted. *)
-val sort_files_by_dependencies : domain:String_set.t -> String_set.t String_map.t -> string Queue.t
+(* Will do a topological sort of the tree given [Set_string.t Map_string.t] while ignoring anything not in the given [domain]. Returns a queue of modules topologically sorted. *)
+val sort_files_by_dependencies : domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t
 
 (* Returns a topologically sorted Queue of module names found from the given main module. *)
 val simple_collect_from_main :
-           ?alias_map:string String_hashtbl.t ->
-           String_set.t String_map.t ->
+           ?alias_map:string Hash_string.t ->
+           Set_string.t Map_string.t ->
            string -> string Queue.t
 
 (* Returns a list of extra modules which are part of the "otherlibs" stdlib to link in. *)
-val get_otherlibs_dependencies : String_set.t String_map.t -> string -> string list
+val get_otherlibs_dependencies : Set_string.t Map_string.t -> string -> string list

@@ -29,8 +29,8 @@
 type position = Lam_var_stats.position
 type stats = Lam_var_stats.stats
 
-let adjust ( pos : position) (v : Ident.t) (fv : stats Ident_map.t) : stats Ident_map.t = 
-  Ident_map.adjust fv v
+let adjust ( pos : position) (v : Ident.t) (fv : stats Map_ident.t) : stats Map_ident.t = 
+  Map_ident.adjust fv v
     (fun v -> 
       let stat = match v with None -> Lam_var_stats.fresh_stats | Some v -> v in 
       Lam_var_stats.update pos stat)
@@ -39,9 +39,9 @@ let adjust ( pos : position) (v : Ident.t) (fv : stats Ident_map.t) : stats Iden
 
 
 
-let param_map_of_list lst : stats Ident_map.t = 
-  Ext_list.fold_left lst Ident_map.empty 
-    (fun acc l -> Ident_map.add acc l Lam_var_stats.fresh_stats ) 
+let param_map_of_list lst : stats Map_ident.t = 
+  Ext_list.fold_left lst Map_ident.empty 
+    (fun acc l -> Map_ident.add acc l Lam_var_stats.fresh_stats ) 
 
 let sink_pos = Lam_var_stats.sink    
 (** Sanity check, remove all varaibles in [local_set] in the last pass *)  
@@ -56,22 +56,22 @@ let sink_pos = Lam_var_stats.sink
    An enriched version of [free_varaibles] in {!Lam_free_variables}
 *)
 let free_variables 
-    (export_idents : Ident_set.t ) 
-    (params : stats Ident_map.t ) 
+    (export_idents : Set_ident.t ) 
+    (params : stats Map_ident.t ) 
     (lam : Lam.t )
-  : stats Ident_map.t = 
+  : stats Map_ident.t = 
   let fv = ref params in
   let local_set = ref export_idents in
   let local_add k =
-    local_set := Ident_set.add !local_set k in
+    local_set := Set_ident.add !local_set k in
   let local_add_list ks = 
     local_set :=  
-      Ext_list.fold_left ks !local_set Ident_set.add in    
+      Ext_list.fold_left ks !local_set Set_ident.add in    
   (* base don the envrionmet, recoring the use cases of arguments 
      relies on [identifier] uniquely bound *)    
   let used (cur_pos : position) (v : Ident.t) = 
 
-    if not (Ident_set.mem !local_set v) then 
+    if not (Set_ident.mem !local_set v) then 
       fv := adjust cur_pos v !fv in
 
   let rec iter (top : position) (lam : Lam.t) =
@@ -95,7 +95,7 @@ let free_variables
       iter sink_pos body
     | Lletrec(decl, body) ->
       local_set := Ext_list.fold_left decl !local_set  (fun acc (id, _) -> 
-          Ident_set.add acc id) ;        
+          Set_ident.add acc id) ;        
       Ext_list.iter decl (fun (_, exp) -> iter sink_pos exp);
       iter sink_pos body
     | Lswitch(arg, 
@@ -152,24 +152,24 @@ let free_variables
   !fv 
 
 
-let is_closed_by (set : Ident_set.t) (lam : Lam.t) : bool = 
-  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
+let is_closed_by (set : Set_ident.t) (lam : Lam.t) : bool = 
+  Map_ident.is_empty (free_variables set (Map_ident.empty ) lam   )
 
 
 (** A bit consverative , it should be empty *)
 let is_closed  lam = 
-  Ident_map.for_all (free_variables Ident_set.empty Ident_map.empty lam)
+  Map_ident.for_all (free_variables Set_ident.empty Map_ident.empty lam)
     (fun k _ -> Ident.global k)
       
 
 
 let is_closed_with_map 
-  (exports : Ident_set.t) 
+  (exports : Set_ident.t) 
   (params : Ident.t list) 
-  (body : Lam.t) : bool * stats Ident_map.t = 
+  (body : Lam.t) : bool * stats Map_ident.t = 
   let param_map = free_variables exports (param_map_of_list params) body in
   let old_count = List.length params in
-  let new_count = Ident_map.cardinal param_map in
+  let new_count = Map_ident.cardinal param_map in
   (old_count  = new_count, param_map)
 
 

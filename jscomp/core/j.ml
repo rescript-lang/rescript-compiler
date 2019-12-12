@@ -340,7 +340,7 @@ and block =  statement list
 and program = {
   block : block ;
   exports : exports ;
-  export_set : Ident_set.t ;
+  export_set : Set_ident.t ;
 
 }
 and deps_program = 

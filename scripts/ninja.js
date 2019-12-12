@@ -152,9 +152,9 @@ var getVersionString = () => {
       try this
       git submodule init && git submodule update
       node ./scripts/buildocaml.js
-      `)
-      console.error(err.message)
-      process.exit(err.status)
+      `);
+      console.error(err.message);
+      process.exit(err.status);
     }
   }
   return versionString;
@@ -1535,29 +1535,28 @@ build ${cppoFile}: link ${cppoMonoFile}
     generator = true
 ${cppoRule()}
 ${cppoList("ext", [
-  ["string_hash_set.ml", "hash_set.cppo.ml", dTypeString],
-  ["int_hash_set.ml", "hash_set.cppo.ml", dTypeInt],
-  ["ident_hash_set.ml", "hash_set.cppo.ml", dTypeIdent],
+  ["hash_set_string.ml", "hash_set.cppo.ml", dTypeString],
+  ["hash_set_int.ml", "hash_set.cppo.ml", dTypeInt],
+  ["hash_set_ident.ml", "hash_set.cppo.ml", dTypeIdent],
   ["hash_set.ml", "hash_set.cppo.ml", dTypeFunctor],
   ["hash_set_poly.ml", "hash_set.cppo.ml", dTypePoly],
-  ["int_vec.ml", "vec.cppo.ml", dTypeInt],
-  ["resize_array.ml", "vec.cppo.ml", dTypeFunctor],
-  ["string_set.ml", "set.cppo.ml", dTypeString],
+  ["vec_int.ml", "vec.cppo.ml", dTypeInt],
+  ["vec.ml", "vec.cppo.ml", dTypeFunctor],
+  ["set_string.ml", "set.cppo.ml", dTypeString],
   ["set_int.ml", "set.cppo.ml", dTypeInt],
-  ["ident_set.ml", "set.cppo.ml", dTypeIdent],
-  ["string_map.ml", "map.cppo.ml", dTypeString],
-  ["int_map.ml", "map.cppo.ml", dTypeInt],
-  ["ident_map.ml", "map.cppo.ml", dTypeIdent],
+  ["set_ident.ml", "set.cppo.ml", dTypeIdent],
+  ["map_string.ml", "map.cppo.ml", dTypeString],
+  ["map_int.ml", "map.cppo.ml", dTypeInt],
+  ["map_ident.ml", "map.cppo.ml", dTypeIdent],
   [
     "ordered_hash_map_local_ident.ml",
     "ordered_hash_map.cppo.ml",
     dTypeLocalIdent
   ],
-  ["ordered_hash_set_make.ml", "ordered_hash_set.cppo.ml", dTypeFunctor],
-  ["string_hashtbl.ml", "hashtbl.cppo.ml", dTypeString],
-  ["int_hashtbl.ml", "hashtbl.cppo.ml", dTypeInt],
-  ["ident_hashtbl.ml", "hashtbl.cppo.ml", dTypeIdent],
-  ["hashtbl_make.ml", "hashtbl.cppo.ml", dTypeFunctor]
+  ["hash_string.ml", "hash.cppo.ml", dTypeString],
+  ["hash_int.ml", "hash.cppo.ml", dTypeInt],
+  ["hash_ident.ml", "hash.cppo.ml", dTypeIdent],
+  ["hash.ml", "hash.cppo.ml", dTypeFunctor]
 ])}
 ${cppoList("outcome_printer", [
   ["tweaked_reason_oprint.ml", "tweaked_reason_oprint.cppo.ml", ""],

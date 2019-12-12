@@ -950,7 +950,7 @@ let process_file file =
         begin match Ext_string.quick_split_by_ws v with
           | [a;b] ->
             let a,b = int_of_string a , int_of_string b in
-            Int_vec_vec.push  edges (Int_vec.of_array [|a;b|]); 
+            Int_vec_vec.push  edges (Vec_int.of_array [|a;b|]); 
           | _ -> ()
         end;
         aux ((i+1) mod 10000);
@@ -959,7 +959,7 @@ let process_file file =
   (* indeed, [unsafe_internal_array] is necessary for real performnace *)
   let internal = Int_vec_vec.unsafe_internal_array edges in
   for i = 0 to Array.length internal - 1 do
-     let i = Int_vec.unsafe_internal_array (Array.unsafe_get internal i) in 
+     let i = Vec_int.unsafe_internal_array (Array.unsafe_get internal i) in 
      Union_find.union store (Array.unsafe_get i 0) (Array.unsafe_get i 1) 
   done;  
               (* Union_find.union store a b *)

@@ -35,7 +35,7 @@ type json_array =
   }
 
 and json_map = 
-  { map : t String_map.t ; loc :  loc }
+  { map : t Map_string.t ; loc :  loc }
 and t = 
   | True of loc 
   | False of loc 

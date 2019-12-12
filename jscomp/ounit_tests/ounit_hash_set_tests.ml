@@ -109,10 +109,10 @@ let suites =
           if off >= len  then None
           else 
             let curr = (Array.unsafe_get arr off) in
-            if String_hash_set.check_add tbl curr then 
+            if Hash_set_string.check_add tbl curr then 
               aux tbl (off + 1)
             else   Some curr in 
-        aux (String_hash_set.create len) 0 in 
+        aux (Hash_set_string.create len) 0 in 
       let v = [| "if"; "a"; "b"; "c" |] in 
       OUnit.assert_equal (duplicate v) None;
       OUnit.assert_equal (duplicate [|"if"; "a"; "b"; "b"; "c"|]) (Some "b")
@@ -120,13 +120,13 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       let of_array lst =
         let len = Array.length lst in 
-        let tbl = String_hash_set.create len in 
-        Ext_array.iter lst (String_hash_set.add tbl) ; tbl  in 
+        let tbl = Hash_set_string.create len in 
+        Ext_array.iter lst (Hash_set_string.add tbl) ; tbl  in 
       let hash = of_array const_tbl  in 
-      let len = String_hash_set.length hash in 
-      String_hash_set.remove hash "x";
-      OUnit.assert_equal len (String_hash_set.length hash);
-      String_hash_set.remove hash "0";
-      OUnit.assert_equal (len - 1 ) (String_hash_set.length hash)
+      let len = Hash_set_string.length hash in 
+      Hash_set_string.remove hash "x";
+      OUnit.assert_equal len (Hash_set_string.length hash);
+      Hash_set_string.remove hash "0";
+      OUnit.assert_equal (len - 1 ) (Hash_set_string.length hash)
     end
   ]

@@ -30,33 +30,33 @@
 
 
 type t =  
-  int  Int_map.t String_map.t
+  int  Map_int.t Map_string.t
 (**
    -- "name" --> int map -- stamp --> index suffix
 *)
 let empty : t = 
-  String_map.empty 
+  Map_string.empty 
 
 let rec print fmt v = 
   Format.fprintf fmt "@[<v>{"  ;
-  String_map.iter v (fun k m -> 
+  Map_string.iter v (fun k m -> 
       Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m       
     )  ;
   Format.fprintf fmt "}@]"  
 and print_int_map fmt m = 
-  Int_map.iter m (fun k v -> 
+  Map_int.iter m (fun k v -> 
       Format.fprintf fmt "%d - %d" k v       
     )    
 
 let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t = 
-  match String_map.find_opt cxt name with 
+  match Map_string.find_opt cxt name with 
   | None -> 
-    (0, String_map.add cxt name (Int_map.add Int_map.empty stamp 0  )  )
+    (0, Map_string.add cxt name (Map_int.add Map_int.empty stamp 0  )  )
   | Some imap -> (
-      match Int_map.find_opt imap stamp with
+      match Map_int.find_opt imap stamp with
       | None -> 
-        let v = Int_map.cardinal imap in
-        v, String_map.add  cxt name (Int_map.add imap stamp v )
+        let v = Map_int.cardinal imap in
+        v, Map_string.add  cxt name (Map_int.add imap stamp v )
       | Some i -> i, cxt
     )
 
@@ -116,21 +116,21 @@ let ident (cxt : t) f (id : Ident.t) : t  =
   cxt   
 
 
-let merge (cxt : t) (set : Ident_set.t) = 
-  Ident_set.fold set cxt (fun ident acc -> 
+let merge (cxt : t) (set : Set_ident.t) = 
+  Set_ident.fold set cxt (fun ident acc -> 
       snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) 
 
 (* Assume that all idents are already in [scope]
    so both [param/0] and [param/1] are in idents, we don't need 
    update twice,  once is enough
 *)
-let sub_scope (scope : t) (idents : Ident_set.t) : t =
-  Ident_set.fold idents empty (fun {name } acc -> 
+let sub_scope (scope : t) (idents : Set_ident.t) : t =
+  Set_ident.fold idents empty (fun {name } acc -> 
       let mangled = Ext_ident.convert name in 
-      match String_map.find_exn scope mangled with 
+      match Map_string.find_exn scope mangled with 
       | exception Not_found -> assert false 
       | imap -> 
-          if String_map.mem acc  mangled then acc 
-          else String_map.add acc mangled imap 
+          if Map_string.mem acc  mangled then acc 
+          else Map_string.add acc mangled imap 
     )
 

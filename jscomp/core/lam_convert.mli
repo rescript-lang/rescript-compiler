@@ -48,4 +48,4 @@ val happens_to_be_diff:
     we should remove all those let aliases, otherwise, it will be
     pushed into alias table again
  *)
-val convert :  Ident_set.t -> Lambda.lambda -> Lam.t * Lam_module_ident.Hash_set.t
+val convert :  Set_ident.t -> Lambda.lambda -> Lam.t * Lam_module_ident.Hash_set.t

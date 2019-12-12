@@ -142,7 +142,7 @@ let iteri d f =
   done
 
 let iter_range d ~from ~to_ f =
-  if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
+  if from < 0 || to_ >= d.len then invalid_arg "Vec.iter_range"
   else 
     let d_arr = d.arr in 
     for i = from to to_ do 
@@ -150,7 +150,7 @@ let iter_range d ~from ~to_ f =
     done
 
 let iteri_range d ~from ~to_ f =
-  if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
+  if from < 0 || to_ >= d.len then invalid_arg "Vec.iteri_range"
   else 
     let d_arr = d.arr in 
     for i = from to to_ do 
@@ -238,11 +238,11 @@ let equal eq x y : bool =
     aux x.arr y.arr (x.len - 1)
 
 let get d i = 
-  if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
+  if i < 0 || i >= d.len then invalid_arg "Vec.get"
   else Array.unsafe_get d.arr i
 let unsafe_get d i = Array.unsafe_get d.arr i 
 let last d = 
-  if d.len <= 0 then invalid_arg   "Resize_array.last"
+  if d.len <= 0 then invalid_arg   "Vec.last"
   else Array.unsafe_get d.arr (d.len - 1)
 
 let capacity d = Array.length d.arr
@@ -283,7 +283,7 @@ let map f src =
     }
 
 let init len f =
-  if len < 0 then invalid_arg  "Resize_array.init"
+  if len < 0 then invalid_arg  "Vec.init"
   else if len = 0 then { len = 0 ; arr = [||] }
   else 
     let first = f 0 in 
@@ -300,7 +300,7 @@ let init len f =
 
 
   let make initsize : t =
-    if initsize < 0 then invalid_arg  "Resize_array.make" ;
+    if initsize < 0 then invalid_arg  "Vec.make" ;
     {
 
       len = 0;
@@ -348,7 +348,7 @@ let init len f =
 (** delete element at offset [idx], will raise exception when have invalid input *)
   let delete (d : t) idx =
     let d_len = d.len in 
-    if idx < 0 || idx >= d_len then invalid_arg "Resize_array.delete" ;
+    if idx < 0 || idx >= d_len then invalid_arg "Vec.delete" ;
     let arr = d.arr in 
      unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
     let idx = d_len - 1 in 
@@ -362,7 +362,7 @@ let init len f =
 (** pop the last element, a specialized version of [delete] *)
   let pop (d : t) = 
     let idx  = d.len - 1  in
-    if idx < 0 then invalid_arg "Resize_array.pop";
+    if idx < 0 then invalid_arg "Vec.pop";
     d.len <- idx
 #ifdef TYPE_INT    
 #else     
@@ -373,7 +373,7 @@ let init len f =
 (** pop and return the last element *)  
   let get_last_and_pop (d : t) = 
     let idx  = d.len - 1  in
-    if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
+    if idx < 0 then invalid_arg "Vec.get_last_and_pop";
     let last = Array.unsafe_get d.arr idx in 
     d.len <- idx 
 #ifdef TYPE_INT    
@@ -387,7 +387,7 @@ let init len f =
 (** delete elements start from [idx] with length [len] *)
   let delete_range (d : t) idx len =
     let d_len = d.len in 
-    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.delete_range"  ;
+    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Vec.delete_range"  ;
     let arr = d.arr in 
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len
@@ -402,7 +402,7 @@ let init len f =
 (** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
   let get_and_delete_range (d : t) idx len : t = 
     let d_len = d.len in 
-    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.get_and_delete_range"  ;
+    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Vec.get_and_delete_range"  ;
     let arr = d.arr in 
     let value =  unsafe_sub arr idx len in
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);

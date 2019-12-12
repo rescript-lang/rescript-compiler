@@ -27,7 +27,7 @@
 
 type jbl_label = int 
 
-module HandlerMap = Int_map
+module HandlerMap = Map_int
 type value = {
   exit_id : Ident.t ;
   bindings : Ident.t list ;
@@ -42,7 +42,7 @@ type return_label = {
   label : J.label;
   params : Ident.t list;
   immutable_mask : bool array; 
-  mutable new_params : Ident.t Ident_map.t;  
+  mutable new_params : Ident.t Map_ident.t;  
   mutable triggered : bool
 }
 
@@ -141,4 +141,4 @@ let add_pseudo_jmp
 
 
 let find_exn cxt i = 
-  Int_map.find_exn cxt.jmp_table i 
+  Map_int.find_exn cxt.jmp_table i 

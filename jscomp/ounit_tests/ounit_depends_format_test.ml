@@ -7,7 +7,7 @@ let (=~) (xs : string list) (ys : string list) =
 
 let f (x : string) = 
      let stru = Parse.implementation (Lexing.from_string x)  in 
-     Ast_extract.String_set.elements (Ast_extract.read_parse_and_extract Ml_binary.Ml stru)
+     Ast_extract.Set_string.elements (Ast_extract.read_parse_and_extract Ml_binary.Ml stru)
 
 
 let suites = 

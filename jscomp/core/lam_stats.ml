@@ -45,16 +45,16 @@
 
 
 
-type alias_tbl =  Ident.t Ident_hashtbl.t
+type alias_tbl =  Ident.t Hash_ident.t
 
 
 
-type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
+type ident_tbl = Lam_id_kind.t Hash_ident.t 
 
 
 
 type t = {
-  export_idents : Ident_set.t ;
+  export_idents : Set_ident.t ;
   exports : Ident.t list ; (*It is kept since order matters? *)
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -66,13 +66,13 @@ type t = {
 let pp = Format.fprintf
 
 let pp_alias_tbl fmt (tbl : alias_tbl) = 
-  Ident_hashtbl.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+  Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
   
 
 
 
 let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
-  Ident_hashtbl.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
+  Hash_ident.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
     Ident.print k Lam_id_kind.print v)
     
 
@@ -85,7 +85,7 @@ let print fmt (v : t) =
         ) v.exports
 
 let make ~export_idents ~export_ident_sets : t = {
-  ident_tbl = Ident_hashtbl.create 31;
+  ident_tbl = Hash_ident.create 31;
   exports =  export_idents;
   export_idents = export_ident_sets;
 }

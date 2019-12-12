@@ -103,7 +103,7 @@ type builtin = {
   ml_cmi_dev : t ;
   
   build_package : t ;
-  customs : t String_map.t
+  customs : t Map_string.t
 }
 
 
@@ -119,7 +119,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
-  (custom_rules : command String_map.t) : 
+  (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
@@ -250,7 +250,7 @@ let make_custom_rules
     
     build_package ;
     customs =
-      String_map.mapi custom_rules begin fun name command -> 
+      Map_string.mapi custom_rules begin fun name command -> 
         define ~command ("custom_" ^ name)
       end
   }

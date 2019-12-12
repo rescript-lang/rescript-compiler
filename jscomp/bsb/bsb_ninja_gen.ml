@@ -174,7 +174,7 @@ let output_ninja_and_namespace_map
   let  bs_groups, bsc_lib_dirs, static_resources =    
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
-        Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
+        Ext_list.fold_left bs_file_groups (Map_string.empty,[],[]) 
           (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
             ->
             Bsb_db_util.merge  acc  sources ,  
@@ -185,7 +185,7 @@ let output_ninja_and_namespace_map
       Bsb_db_util.sanity_check bs_group;
       [|bs_group|], source_dirs, static_resources
     else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
+      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> Map_string.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
@@ -200,10 +200,10 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         Bsb_db_util.sanity_check c;
-        String_map.iter c 
+        Map_string.iter c 
           (fun k a -> 
-            if String_map.mem lib k  then 
-              Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
+            if Map_string.mem lib k  then 
+              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
             ) ;
         Bsb_ninja_targets.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))

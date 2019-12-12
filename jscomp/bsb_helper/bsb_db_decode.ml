@@ -93,7 +93,7 @@ let read_build_cache ~dir  : t =
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
   decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
-(* Invariant: the same as encoding String_map.compare_key  *)  
+(* Invariant: the same as encoding Map_string.compare_key  *)  
 let cmp  =  Ext_string.compare
     
 

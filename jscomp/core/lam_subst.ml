@@ -31,11 +31,11 @@
    Assumes that the image of the substitution is out of reach
    of the bound variables of the lambda-term (no capture). *)
 
- let subst (s : Lam.t Ident_map.t) lam =
+ let subst (s : Lam.t Map_ident.t) lam =
   let rec subst_aux (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id as l ->
-      Ident_map.find_default s id  l
+      Map_ident.find_default s id  l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst_aux fn) (Ext_list.map args subst_aux ) loc status

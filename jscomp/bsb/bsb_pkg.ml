@@ -69,7 +69,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
     
     
 
-module Coll = Hashtbl_make.Make(struct
+module Coll = Hash.Make(struct
   type nonrec t = t 
   let equal = Bsb_pkg_types.equal
   let hash (x : t) = Hashtbl.hash x     

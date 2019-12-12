@@ -4,7 +4,7 @@ let ((>::),
 let (=~) = OUnit.assert_equal 
 
 let test_sorted_strict arr = 
-  let v = Int_map.of_array arr |> Int_map.to_sorted_array in 
+  let v = Map_int.of_array arr |> Map_int.to_sorted_array in 
   let arr_copy = Array.copy arr in 
   Array.sort (fun ((a:int),_) (b,_) -> compare a b ) arr_copy;
   v =~ arr_copy 
@@ -14,21 +14,21 @@ let suites =
   [
     __LOC__ >:: begin fun _ -> 
       [1,"1"; 2,"2"; 12,"12"; 3, "3"]
-      |> Int_map.of_list 
-      |> Int_map.keys 
+      |> Map_int.of_list 
+      |> Map_int.keys 
       |> OUnit.assert_equal [1;2;3;12]
     end
     ;
     __LOC__ >:: begin fun _ -> 
-      OUnit.assert_equal (Int_map.cardinal Int_map.empty) 0 ;
+      OUnit.assert_equal (Map_int.cardinal Map_int.empty) 0 ;
       OUnit.assert_equal ([1,"1"; 2,"2"; 12,"12"; 3, "3"]
-      |> Int_map.of_list|>Int_map.cardinal )  4      
+      |> Map_int.of_list|>Map_int.cardinal )  4      
     end;
     __LOC__ >:: begin fun _ -> 
       let v = 
       [1,"1"; 2,"2"; 12,"12"; 3, "3"]
-      |> Int_map.of_list 
-      |> Int_map.to_sorted_array in 
+      |> Map_int.of_list 
+      |> Map_int.to_sorted_array in 
       Array.length v =~ 4 ; 
       v =~ [|1,"1"; 2,"2"; 3, "3"; 12,"12"; |]
     end;
@@ -40,20 +40,20 @@ let suites =
         test_sorted_strict [|2,""; 1,""; 3, ""; 4,""|]
     end;
     __LOC__ >:: begin fun _ ->
-      Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (i,i))))
+      Map_int.cardinal (Map_int.of_array (Array.init 1000 (fun i -> (i,i))))
       =~ 1000
     end;
     __LOC__ >:: begin fun _ -> 
       let count = 1000 in 
       let a = Array.init count (fun x -> x ) in 
-      let v = Int_map.empty in
+      let v = Map_int.empty in
       let u = 
         begin 
-          let v = Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v ->  match v with None -> 1 | Some v -> succ v)  ) v a   in 
-          Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v -> match v with None ->  1 | Some v -> succ v)   ) v a  
+          let v = Array.fold_left (fun acc key -> Map_int.adjust acc key (fun v ->  match v with None -> 1 | Some v -> succ v)  ) v a   in 
+          Array.fold_left (fun acc key -> Map_int.adjust acc key (fun v -> match v with None ->  1 | Some v -> succ v)   ) v a  
           end
         in  
-       Int_map.iter u (fun _ v -> v =~ 2 ) ;
-       Int_map.cardinal u =~ count
+       Map_int.iter u (fun _ v -> v =~ 2 ) ;
+       Map_int.cardinal u =~ count
     end
   ]

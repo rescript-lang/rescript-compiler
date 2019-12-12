@@ -63,12 +63,12 @@
    2. number of invoked times
    3. arguments are const or not   
 *)
-let rewrite (map :   _ Ident_hashtbl.t) 
+let rewrite (map :   _ Hash_ident.t) 
     (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Ident_hashtbl.add map i (Lam.var i');
+    Hash_ident.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -79,7 +79,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
   and aux (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v ->
-      Ident_hashtbl.find_default map v lam 
+      Hash_ident.find_default map v lam 
     | Llet(str, v, l1, l2) ->
       let v = rebind v in
       let l1 = aux l1 in      
@@ -168,4 +168,4 @@ let rewrite (map :   _ Ident_hashtbl.t)
   aux lam
 
 
-let refresh lam = rewrite (Ident_hashtbl.create 17 : Lam.t Ident_hashtbl.t ) lam
+let refresh lam = rewrite (Hash_ident.create 17 : Lam.t Hash_ident.t ) lam
