@@ -2914,8 +2914,8 @@ module type S =
   end
 
 end
-module String_map : sig 
-#1 "string_map.mli"
+module Map_string : sig 
+#1 "map_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2944,7 +2944,7 @@ module String_map : sig
 include Map_gen.S with type key = string
 
 end = struct
-#1 "string_map.ml"
+#1 "map_string.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -3160,7 +3160,7 @@ type module_info =
     name_sans_extension : string;
   }
 
-type t = module_info String_map.t 
+type t = module_info Map_string.t 
 
 type ts = t array 
 
@@ -3224,7 +3224,7 @@ type module_info =
   }
 
 
-type t = module_info String_map.t 
+type t = module_info Map_string.t 
 
 type ts = t array 
 (** indexed by the group *)
@@ -3761,8 +3761,8 @@ module type S = sig
 end 
 
 end
-module String_set : sig 
-#1 "string_set.mli"
+module Set_string : sig 
+#1 "set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3792,7 +3792,7 @@ module String_set : sig
 
 include Set_gen.S with type elt = string
 end = struct
-#1 "string_set.ml"
+#1 "set_string.ml"
 # 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -4022,7 +4022,7 @@ module Bsb_file_groups : sig
  type public = 
   | Export_none
   | Export_all 
-  | Export_set of String_set.t 
+  | Export_set of Set_string.t 
   
 
 type build_generator = 
@@ -4099,7 +4099,7 @@ end = struct
  type public = 
   | Export_none
   | Export_all 
-  | Export_set of String_set.t 
+  | Export_set of Set_string.t 
   
 
 type build_generator = 
@@ -4154,7 +4154,7 @@ let cons ~file_group ?globbed_dir (v : t) : t =
     we don't need issue [-I] [-S] in [.merlin] file
 *)  
 let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
+  Map_string.is_empty x.sources &&
   x.resources = [] &&
   x.generators = []    
 end
@@ -5435,7 +5435,7 @@ type json_array =
   }
 
 and json_map = 
-  { map : t String_map.t ; loc :  loc }
+  { map : t Map_string.t ; loc :  loc }
 and t = 
   | True of loc 
   | False of loc 
@@ -5602,7 +5602,7 @@ type callback =
   | `Flo of (string -> unit )
   | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of 
     (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
@@ -5614,8 +5614,8 @@ type callback =
 val test:
   ?fail:(unit -> unit) ->
   string -> callback 
-  -> Ext_json_types.t String_map.t
-   -> Ext_json_types.t String_map.t
+  -> Ext_json_types.t Map_string.t
+   -> Ext_json_types.t Map_string.t
 
 val query : path -> Ext_json_types.t ->  status
 
@@ -5656,7 +5656,7 @@ type callback =
   | `Flo of (string -> unit )
   | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
@@ -5673,9 +5673,9 @@ type status =
   | Wrong_type of path 
 
 let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) (m  : Ext_json_types.t String_map.t)
+    (cb : callback) (m  : Ext_json_types.t Map_string.t)
   =
-  begin match String_map.find_exn m key, cb with 
+  begin match Map_string.find_exn m key, cb with 
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
@@ -5702,7 +5702,7 @@ let query path (json : Ext_json_types.t ) =
     | p :: rest -> 
       match json with 
       | Obj {map } -> 
-        (match String_map.find_opt map p with 
+        (match Map_string.find_opt map p with 
          | Some m  -> aux (p::acc) rest m
          | None ->  No_path)          
       | _ -> Wrong_type acc       
@@ -5759,7 +5759,7 @@ let rec equal
   | Obj {map} -> 
     begin match y with 
       | Obj { map = map2} -> 
-        String_map.equal map map2 equal
+        Map_string.equal map map2 equal
       | _ -> false 
     end 
 
@@ -6985,10 +6985,10 @@ and from_json_single (x : Ext_json_types.t) : spec =
   | Str {str = format; loc } ->    
       {format = supported_format format loc  ; in_source = false }    
   | Obj {map; loc} ->
-    begin match String_map.find_exn map "module" with
+    begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match String_map.find_opt map  Bsb_build_schemas.in_source with
+          match Map_string.find_opt map  Bsb_build_schemas.in_source with
           | Some (True _) -> true
           | Some _
           | None -> false
@@ -7107,7 +7107,7 @@ val default_warning : string
 val default_warning_flag : string
 (* default_warning, including the -w prefix, for command-line arguments *)
 
-val from_map : Ext_json_types.t String_map.t -> t option
+val from_map : Ext_json_types.t Map_string.t -> t option
 
 (** [opt_warning_to_string not_dev warning]
 *)
@@ -7214,9 +7214,9 @@ let warning_to_string ~toplevel
 
 
 
-let from_map (m : Ext_json_types.t String_map.t) =
-  let number_opt = String_map.find_opt m Bsb_build_schemas.number in
-  let error_opt = String_map.find_opt m  Bsb_build_schemas.error in
+let from_map (m : Ext_json_types.t Map_string.t) =
+  let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
+  let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
   match number_opt, error_opt  with
   | None, None -> None
   | _, _ ->
@@ -7516,8 +7516,8 @@ end
 
 
 end
-module String_hash_set : sig 
-#1 "string_hash_set.mli"
+module Hash_set_string : sig 
+#1 "hash_set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7546,7 +7546,7 @@ module String_hash_set : sig
 include Hash_set_gen.S with type key = string
 
 end = struct
-#1 "string_hash_set.ml"
+#1 "hash_set_string.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7722,11 +7722,11 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
-    files_to_install : String_hash_set.t ;
+    files_to_install : Hash_set_string.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
-    generators : command String_map.t ; 
+    generators : command Map_string.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option;
@@ -8037,9 +8037,9 @@ let info_args (args : string array) =
   
 
 end
-module Hashtbl_gen
+module Hash_gen
 = struct
-#1 "hashtbl_gen.ml"
+#1 "hash_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -8250,33 +8250,33 @@ end
 
 
 end
-module Hashtbl_make : sig 
-#1 "hashtbl_make.mli"
+module Hash : sig 
+#1 "hash.mli"
 
 
-module Make (Key : Hashtbl.HashedType) : Hashtbl_gen.S with type key = Key.t
+module Make (Key : Hashtbl.HashedType) : Hash_gen.S with type key = Key.t
 
 end = struct
-#1 "hashtbl_make.ml"
-# 22 "ext/hashtbl.cppo.ml"
+#1 "hash.ml"
+# 22 "ext/hash.cppo.ml"
 module Make (Key : Hashtbl.HashedType) = struct 
   type key = Key.t 
-  type 'a t = (key, 'a)  Hashtbl_gen.t 
+  type 'a t = (key, 'a)  Hash_gen.t 
   let key_index (h : _ t ) (key : key) =
     (Key.hash  key ) land (Array.length h.data - 1)
   let eq_key = Key.equal   
 
 
-# 33 "ext/hashtbl.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let iter = Hashtbl_gen.iter
-let to_list = Hashtbl_gen.to_list
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-(* let stats = Hashtbl_gen.stats *)
+# 33 "ext/hash.cppo.ml"
+type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucketlist
+let create = Hash_gen.create
+let clear = Hash_gen.clear
+let reset = Hash_gen.reset
+let iter = Hash_gen.iter
+let to_list = Hash_gen.to_list
+let fold = Hash_gen.fold
+let length = Hash_gen.length
+(* let stats = Hash_gen.stats *)
 
 
 
@@ -8285,7 +8285,7 @@ let add (h : _ t) key info =
   let h_data = h.data in   
   Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
+  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
@@ -8301,7 +8301,7 @@ let modify_or_init (h : _ t) key modf default =
     begin 
       Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
     end
 
 
@@ -8343,13 +8343,13 @@ let find_exn (h : _ t) key =
             if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
 
 let find_key_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
   
 let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
@@ -8377,7 +8377,7 @@ let replace h key info =
     begin 
       Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
       h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
     end 
 
 let mem (h : _ t) key =
@@ -8395,7 +8395,7 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
-# 161 "ext/hashtbl.cppo.ml"
+# 161 "ext/hash.cppo.ml"
 end
 
 end
@@ -8519,7 +8519,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
     
     
 
-module Coll = Hashtbl_make.Make(struct
+module Coll = Hash.Make(struct
   type nonrec t = t 
   let equal = Bsb_pkg_types.equal
   let hash (x : t) = Hashtbl.hash x     
@@ -8809,7 +8809,7 @@ let lf = '\010'
 
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
@@ -8818,7 +8818,7 @@ let __ocaml_lex_tables = {
     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
     \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
@@ -8827,7 +8827,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
     \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
@@ -8836,7 +8836,7 @@ let __ocaml_lex_tables = {
     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
@@ -8906,7 +8906,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
@@ -8976,22 +8976,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec lex_json buf lexbuf =
-    __ocaml_lex_lex_json_rec buf lexbuf 0
+   __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -9093,11 +9093,11 @@ let
           ( error lexbuf (Illegal_character c ))
 # 408 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-    __ocaml_lex_comment_rec buf lexbuf 40
+   __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -9115,11 +9115,11 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
        (error lexbuf Unterminated_comment)
 # 430 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 45
+   __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -9254,7 +9254,7 @@ let
       )
 # 569 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
@@ -9287,7 +9287,7 @@ let rec parse_json lexbuf =
     | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
 (** Note if we remove [trailing_comma] support 
     we should report errors (actually more work), for example 
@@ -9335,9 +9335,9 @@ let rec parse_json lexbuf =
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> Obj {map = String_map.add acc key value  ; loc = loc_start}
+        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
         | Comma -> 
-          parse_map loc_start  (String_map.add acc key value ) lexbuf 
+          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -9374,8 +9374,8 @@ let parse_json_from_file s =
 # 688 "ext/ext_json_parse.ml"
 
 end
-module String_hashtbl : sig 
-#1 "string_hashtbl.mli"
+module Hash_string : sig 
+#1 "hash_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9401,30 +9401,30 @@ module String_hashtbl : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-include Hashtbl_gen.S with type key = string
+include Hash_gen.S with type key = string
 
 
 
 
 end = struct
-#1 "string_hashtbl.ml"
-# 9 "ext/hashtbl.cppo.ml"
+#1 "hash_string.ml"
+# 9 "ext/hash.cppo.ml"
 type key = string
-type 'a t = (key, 'a)  Hashtbl_gen.t 
+type 'a t = (key, 'a)  Hash_gen.t 
 let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 
-# 33 "ext/hashtbl.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let iter = Hashtbl_gen.iter
-let to_list = Hashtbl_gen.to_list
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-(* let stats = Hashtbl_gen.stats *)
+# 33 "ext/hash.cppo.ml"
+type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucketlist
+let create = Hash_gen.create
+let clear = Hash_gen.clear
+let reset = Hash_gen.reset
+let iter = Hash_gen.iter
+let to_list = Hash_gen.to_list
+let fold = Hash_gen.fold
+let length = Hash_gen.length
+(* let stats = Hash_gen.stats *)
 
 
 
@@ -9433,7 +9433,7 @@ let add (h : _ t) key info =
   let h_data = h.data in   
   Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
+  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
@@ -9449,7 +9449,7 @@ let modify_or_init (h : _ t) key modf default =
     begin 
       Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
     end
 
 
@@ -9491,13 +9491,13 @@ let find_exn (h : _ t) key =
             if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
 
 let find_key_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
   
 let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
     | Empty ->
@@ -9525,7 +9525,7 @@ let replace h key info =
     begin 
       Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
       h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
     end 
 
 let mem (h : _ t) key =
@@ -9823,7 +9823,7 @@ let pp_packages_rev ppf lst =
   Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
 let rec walk_all_deps_aux 
-  (visited : string String_hashtbl.t) 
+  (visited : string Hash_string.t) 
   (paths : string list) 
   (top : bool) 
   (dir : string) 
@@ -9832,7 +9832,7 @@ let rec walk_all_deps_aux
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
-      match String_map.find_opt map Bsb_build_schemas.name with 
+      match Map_string.find_opt map Bsb_build_schemas.name with 
       | Some (Str {str }) -> str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
@@ -9845,7 +9845,7 @@ let rec walk_all_deps_aux
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
       end;
-    if String_hashtbl.mem visited cur_package_name then 
+    if Hash_string.mem visited cur_package_name then 
       Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
     else 
@@ -9871,7 +9871,7 @@ let rec walk_all_deps_aux
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
         cb {top ; proj_dir = dir};
-        String_hashtbl.add visited cur_package_name dir;
+        Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
   | exception _ -> 
@@ -9879,7 +9879,7 @@ let rec walk_all_deps_aux
     
 
 let walk_all_deps dir cb = 
-  let visited = String_hashtbl.create 0 in 
+  let visited = Hash_string.create 0 in 
   walk_all_deps_aux visited [] true dir cb 
 
 end
@@ -10085,7 +10085,7 @@ let conflict_module_info modname (a : module_info) (b : module_info) =
 
 (* merge data info from two directories*)    
 let merge (acc : t) (sources : t) : t =
-  String_map.merge acc sources (fun modname k1 k2 ->
+  Map_string.merge acc sources (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -10098,7 +10098,7 @@ let merge (acc : t) (sources : t) : t =
     )
 
 let sanity_check (map : t) = 
-  String_map.iter map (fun m module_info -> 
+  Map_string.iter map (fun m module_info -> 
       if module_info.info = Mli then
         Bsb_exception.no_implementation m 
     )    
@@ -10170,7 +10170,7 @@ let add_basename
       let name_sans_extension = 
         Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
       let dir = Filename.dirname name_sans_extension in                
-      String_map.adjust 
+      Map_string.adjust 
         map
         module_name 
         (fun  opt_module_info -> 
@@ -10309,7 +10309,7 @@ val scan :
   cut_generators: bool -> 
   namespace : string option -> 
   bs_suffix:bool -> 
-  ignored_dirs:String_set.t ->
+  ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t * int 
 
@@ -10376,7 +10376,7 @@ type cxt = {
   traverse : bool;
   namespace : string option;
   bs_suffix: bool;
-  ignored_dirs : String_set.t
+  ignored_dirs : Set_string.t
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
@@ -10384,15 +10384,15 @@ type cxt = {
 *)
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_db.t) : String_set.t = 
-  let set = ref String_set.empty in 
+    (cache : Bsb_db.t) : Set_string.t = 
+  let set = ref Set_string.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
     match v with 
     | Str { str}
       -> 
-      if String_map.mem cache str then 
-        set := String_set.add !set str
+      if Map_string.mem cache str then 
+        set := Set_string.add !set str
       else 
         Bsb_log.warn
           "@{<warning>IGNORED@} %S in public is ignored since it is not\
@@ -10404,8 +10404,8 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
-  match String_map.find_opt input  Bsb_build_schemas.public with 
+let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
+  match Map_string.find_opt input  Bsb_build_schemas.public with 
   | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
@@ -10417,8 +10417,8 @@ let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t)
   | None ->
     Export_all 
 
-let extract_resources (input : Ext_json_types.t String_map.t) : string list =   
-  match String_map.find_opt input  Bsb_build_schemas.resources with 
+let extract_resources (input : Ext_json_types.t Map_string.t) : string list =   
+  match Map_string.find_opt input  Bsb_build_schemas.resources with 
   | Some (Arr x) ->
     Bsb_build_util.get_list_string x.content
   | Some config -> 
@@ -10454,17 +10454,17 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
         | _ -> None) input))
     | _ -> error ()    
-type json_map = Ext_json_types.t String_map.t
+type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
-  match String_map.find_opt input  Bsb_build_schemas.generators with
+  match Map_string.find_opt input  Bsb_build_schemas.generators with
   | Some (Arr { content ; loc_start}) ->
     (* Need check is dev build or not *)
     Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-          (match String_map.find_opt map Bsb_build_schemas.name ,
-                 String_map.find_opt map Bsb_build_schemas.edge
+          (match Map_string.find_opt map Bsb_build_schemas.name ,
+                 Map_string.find_opt map Bsb_build_schemas.edge
            with
            | Some (Str command), Some edge ->
              let output, input = extract_input_output edge in 
@@ -10478,11 +10478,11 @@ let extract_generators (input : json_map) : build_generator list  =
 
 let extract_predicate (m : json_map)  : string -> bool =
   let excludes = 
-    match String_map.find_opt m  Bsb_build_schemas.excludes with 
+    match Map_string.find_opt m  Bsb_build_schemas.excludes with 
     | None -> []   
     | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
     | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-  let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
+  let slow_re = Map_string.find_opt m Bsb_build_schemas.slow_re in 
   match slow_re, excludes with 
   | Some (Str {str = s}), [] -> 
     let re = Str.regexp s  in 
@@ -10534,7 +10534,7 @@ let classify_suffix (x : string) : suffix_kind =
 *)    
 let prune_staled_bs_js_files 
     (context : cxt) 
-    (cur_sources : _ String_map.t ) 
+    (cur_sources : _ Map_string.t ) 
      : unit =     
   let lib_parent = 
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
@@ -10553,7 +10553,7 @@ let prune_staled_bs_js_files
           in 
           if j >= 0 then
             let cmp = Ext_string.capitalize_sub x  j  in
-            if not (String_map.mem cur_sources cmp) then 
+            if not (Map_string.mem cur_sources cmp) then 
             begin (* prune action *)
               let filepath = Filename.concat lib_parent x in 
               (match kind with 
@@ -10588,22 +10588,22 @@ let prune_staled_bs_js_files
 let rec 
   parsing_source_dir_map 
     ({ cwd =  dir;} as cxt )
-    (input : Ext_json_types.t String_map.t) : Bsb_file_groups.t     
+    (input : Ext_json_types.t Map_string.t) : Bsb_file_groups.t     
   = 
-  if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
+  if Set_string.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
     let cur_globbed_dirs = ref false in 
     let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
     let scanned_generators = extract_generators input in        
-    let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
+    let sub_dirs_field = Map_string.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = 
         lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
     let output_sources = 
       Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
-        String_map.empty (fun acc o -> 
+        Map_string.empty (fun acc o -> 
             Bsb_db_util.add_basename ~dir acc o) in 
     let sources = 
-      match String_map.find_opt input Bsb_build_schemas.files with 
+      match Map_string.find_opt input Bsb_build_schemas.files with 
       | None ->  
         (** We should avoid temporary files *)
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
@@ -10638,7 +10638,7 @@ let rec
         let root = cxt.root in 
         let parent = Filename.concat root dir in
         Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
-            if  not (String_set.mem cxt.ignored_dirs x) && 
+            if  not (Set_string.mem cxt.ignored_dirs x) && 
                 Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
                 (
@@ -10647,7 +10647,7 @@ let rec
                      cwd = Ext_path.concat cxt.cwd 
                          (Ext_path.simple_convert_node_path_to_os_path x);
                      traverse = true
-                    } String_map.empty)  origin               
+                    } Map_string.empty)  origin               
             else origin  
           ) 
       (* readdir parent avoiding scanning twice *)        
@@ -10679,10 +10679,10 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
       parsing_source_dir_map 
         {cxt with 
          cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
-        String_map.empty  
+        Map_string.empty  
   | Obj {map} ->
     let current_dir_index = 
-      match String_map.find_opt map Bsb_build_schemas.type_ with 
+      match Map_string.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
@@ -10691,7 +10691,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
       Bsb_file_groups.empty 
     else 
       let dir = 
-        match String_map.find_opt map Bsb_build_schemas.dir with 
+        match Map_string.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
           Ext_path.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
@@ -10747,7 +10747,7 @@ type walk_cxt = {
     cwd : string ;
     root : string;
     traverse : bool;
-    ignored_dirs : String_set.t;
+    ignored_dirs : Set_string.t;
   }
   
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
@@ -10763,17 +10763,17 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     walk_source_dir_map 
     {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
-    begin match String_map.find_opt map Bsb_build_schemas.dir with 
+    begin match Map_string.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
       let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir} (String_map.find_opt map Bsb_build_schemas.subdirs)
+      {cxt with cwd = Ext_path.concat cxt.cwd dir} (Map_string.find_opt map Bsb_build_schemas.subdirs)
     | _ -> ()
     end
   | _ -> ()  
 and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
-    if not (String_set.mem cxt.ignored_dirs cxt.cwd) then begin 
+    if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then begin 
       let file_array = Sys.readdir working_dir in 
       (* Remove .re.js when clean up *)
       Ext_array.iter file_array begin fun file -> 
@@ -10787,7 +10787,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
       | None, true 
       | Some(True _), _ -> 
         Ext_array.iter file_array begin fun f -> 
-          if not (String_set.mem cxt.ignored_dirs f) && 
+          if not (Set_string.mem cxt.ignored_dirs f) && 
              Sys.is_directory (Filename.concat working_dir f ) then 
             walk_source_dir_map 
               {cxt with 
@@ -10809,12 +10809,12 @@ let clean_re_js root =
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj { map } -> 
     let ignored_dirs = 
-      match String_map.find_opt map Bsb_build_schemas.ignored_dirs with       
-      | Some (Arr {content = x}) -> String_set.of_list (Bsb_build_util.get_list_string x )
+      match Map_string.find_opt map Bsb_build_schemas.ignored_dirs with       
+      | Some (Arr {content = x}) -> Set_string.of_list (Bsb_build_util.get_list_string x )
       | Some _
-      | None -> String_set.empty
+      | None -> Set_string.empty
     in  
-    Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) begin fun config -> 
+    Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
       Ext_pervasives.try_it (fun () -> 
           walk_sources { root ;                           
                          traverse = true; 
@@ -11151,7 +11151,7 @@ let resolve_package cwd  package_name =
     package_install_path = x // Bsb_config.lib_ocaml
   }
 
-type json_map = Ext_json_types.t String_map.t
+type json_map = Ext_json_types.t Map_string.t
 (* Key is the path *)
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
@@ -11169,7 +11169,7 @@ let package_specs_from_bsconfig () =
   begin match json with
     | Obj {map} ->
       begin 
-        match String_map.find_opt map  Bsb_build_schemas.package_specs with 
+        match Map_string.find_opt map  Bsb_build_schemas.package_specs with 
         | Some x ->
           Bsb_package_specs.from_json x
         | None -> 
@@ -11188,7 +11188,7 @@ let package_specs_from_bsconfig () =
 let extract_package_name_and_namespace
     (map : json_map) : string * string option =   
   let package_name = 
-    match String_map.find_opt map Bsb_build_schemas.name with 
+    match Map_string.find_opt map Bsb_build_schemas.name with 
 
     | Some (Str { str = "_" } as config)
       -> 
@@ -11203,7 +11203,7 @@ let extract_package_name_and_namespace
         "field name is required"
   in 
   let namespace = 
-    match String_map.find_opt map Bsb_build_schemas.namespace with 
+    match Map_string.find_opt map Bsb_build_schemas.namespace with 
     | None 
     | Some (False _) 
       -> None 
@@ -11226,7 +11226,7 @@ let extract_package_name_and_namespace
       (kinda check npm upgrade)
 *)
 let check_version_exit (map : json_map) stdlib_path =   
-  match String_map.find_exn map Bsb_build_schemas.version with 
+  match Map_string.find_exn map Bsb_build_schemas.version with 
   | Str {str } -> 
     if str <> Bs_version.version then 
       begin
@@ -11242,7 +11242,7 @@ let check_version_exit (map : json_map) stdlib_path =
   | _ -> assert false
 
 let check_stdlib (map : json_map) cwd (*built_in_package*) =  
-  match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
+  match Map_string.find_opt map Bsb_build_schemas.use_stdlib with      
   | Some (False _) -> None    
   | None 
   | Some _ ->
@@ -11264,7 +11264,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
 
     end
 let extract_bs_suffix_exn (map : json_map) =  
-  match String_map.find_opt map Bsb_build_schemas.suffix with 
+  match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> false  
   | Some (Str {str} as config ) -> 
     if str = Literals.suffix_js then false 
@@ -11277,11 +11277,11 @@ let extract_bs_suffix_exn (map : json_map) =
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 
-  match String_map.find_opt map Bsb_build_schemas.gentypeconfig with 
+  match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with 
   | None -> None
   | Some (Obj {map = obj}) -> 
     Some { path = 
-             match String_map.find_opt obj Bsb_build_schemas.path with
+             match Map_string.find_opt obj Bsb_build_schemas.path with
              | None -> 
                (Bsb_build_util.resolve_bsb_magic_file
                  ~cwd ~desc:"gentype.exe"
@@ -11299,7 +11299,7 @@ let extract_gentype_config (map : json_map) cwd
       config "gentypeconfig expect an object"  
 
 let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
-  match String_map.find_opt map Bsb_build_schemas.refmt with 
+  match Map_string.find_opt map Bsb_build_schemas.refmt with 
   | Some (Flo {flo} as config) -> 
     begin match flo with 
       | "3" -> Bsb_config_types.Refmt_v3
@@ -11316,14 +11316,14 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
     Refmt_none 
 
 let extract_string (map : json_map) (field : string) cb = 
-  match String_map.find_opt map field with 
+  match Map_string.find_opt map field with 
   | None -> None 
   | Some (Str{str}) -> cb str 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a string" )
   
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
-  match String_map.find_opt map field with 
+  match Map_string.find_opt map field with 
   | None -> default 
   | Some (True _ ) -> true
   | Some (False _) -> false 
@@ -11334,7 +11334,7 @@ let extract_reason_react_jsx (map : json_map) =
   let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
   map
   |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-      match String_map.find_opt m Bsb_build_schemas.react_jsx with 
+      match Map_string.find_opt m Bsb_build_schemas.react_jsx with 
       | Some (Flo{loc; flo}) -> 
         begin match flo with 
           | "2" -> 
@@ -11351,32 +11351,32 @@ let extract_reason_react_jsx (map : json_map) =
   !default
 
 let extract_warning (map : json_map) = 
-  match String_map.find_opt map Bsb_build_schemas.warnings with 
+  match Map_string.find_opt map Bsb_build_schemas.warnings with 
   | None -> None 
   | Some (Obj {map }) -> Bsb_warning.from_map map 
   | Some config -> Bsb_exception.config_error config "expect an object"
 
 let extract_ignored_dirs (map : json_map) =   
-  match String_map.find_opt map Bsb_build_schemas.ignored_dirs with 
-  | None -> String_set.empty
+  match Map_string.find_opt map Bsb_build_schemas.ignored_dirs with 
+  | None -> Set_string.empty
   | Some (Arr {content}) -> 
-    String_set.of_list (Bsb_build_util.get_list_string content)
+    Set_string.of_list (Bsb_build_util.get_list_string content)
   | Some config -> 
     Bsb_exception.config_error config "expect an array of string"  
 
 let extract_generators (map : json_map) = 
-  let generators = ref String_map.empty in 
-  (match String_map.find_opt map Bsb_build_schemas.generators with 
+  let generators = ref Map_string.empty in 
+  (match Map_string.find_opt map Bsb_build_schemas.generators with 
    | None -> ()
    | Some (Arr {content = s}) -> 
      generators :=
-       Ext_array.fold_left s String_map.empty (fun acc json -> 
+       Ext_array.fold_left s Map_string.empty (fun acc json -> 
            match json with 
            | Obj {map = m ; loc}  -> 
-             begin match String_map.find_opt  m Bsb_build_schemas.name,
-                         String_map.find_opt  m Bsb_build_schemas.command with 
+             begin match Map_string.find_opt  m Bsb_build_schemas.name,
+                         Map_string.find_opt  m Bsb_build_schemas.command with 
              | Some (Str {str = name}), Some ( Str {str = command}) -> 
-               String_map.add acc name command 
+               Map_string.add acc name command 
              | _, _ -> 
                Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
              end
@@ -11389,7 +11389,7 @@ let extract_generators (map : json_map) =
 
 let extract_dependencies (map : json_map) cwd (field : string )
   : Bsb_config_types.dependencies =   
-  match String_map.find_opt map field with 
+  match Map_string.find_opt map field with 
   | None -> []
   | Some (Arr ({content = s})) -> 
     Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
@@ -11399,7 +11399,7 @@ let extract_dependencies (map : json_map) cwd (field : string )
   
 (* return an empty array if not found *)     
 let extract_string_list (map : json_map) (field : string) : string list = 
-  match String_map.find_opt map field with 
+  match Map_string.find_opt map field with 
   | None -> []
   | Some (Arr {content = s}) -> 
     Bsb_build_util.get_list_string s 
@@ -11410,7 +11410,7 @@ let extract_ppx
   (map : json_map) 
   (field : string) 
   ~(cwd : string) : Bsb_config_types.ppx list =     
-  match String_map.find_opt map field with 
+  match Map_string.find_opt map field with 
   | None -> []
   | Some (Arr {content }) -> 
     let resolve s = 
@@ -11490,7 +11490,7 @@ let interpret_json
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
-      match String_map.find_opt map Bsb_build_schemas.package_specs with 
+      match Map_string.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
         Bsb_package_specs.from_json x 
       | None ->  Bsb_package_specs.default_package_specs 
@@ -11509,7 +11509,7 @@ let interpret_json
       if toplevel then 
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       else [] in 
-    begin match String_map.find_opt map Bsb_build_schemas.sources with 
+    begin match Map_string.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
@@ -11549,7 +11549,7 @@ let interpret_json
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 
-          files_to_install = String_hash_set.create 96;
+          files_to_install = Hash_set_string.create 96;
           built_in_dependency = built_in_package;
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
@@ -12188,24 +12188,24 @@ let make_encoding length buf =
 *)
 let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
   nl buf ; (* module name section *)
-  let len = String_map.cardinal db in 
+  let len = Map_string.cardinal db in 
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
-  let mapping = String_hashtbl.create 50 in 
-  String_map.iter db (fun name {dir} ->  
+  let mapping = Hash_string.create 50 in 
+  Map_string.iter db (fun name {dir} ->  
       Ext_buffer.add_string_char buf name '\n'; 
-      if not (String_hashtbl.mem mapping dir) then
-        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
+      if not (Hash_string.mem mapping dir) then
+        Hash_string.add mapping dir (Hash_string.length mapping)
     ); 
-  let length = String_hashtbl.length mapping in   
+  let length = Hash_string.length mapping in   
   let rev_mapping = Array.make length "" in 
-  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
   (* directory name section *)
   Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
   nl buf; (* module name info section *)
   let len_encoding = make_encoding length buf in 
-  String_map.iter db (fun _ module_info ->       
+  Map_string.iter db (fun _ module_info ->       
       len_encoding buf 
-        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+        (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
     
 let encode (dbs : Bsb_db.ts) buf =     
   
@@ -12377,7 +12377,7 @@ let output
   let buf = Ext_buffer.create 10000 in   
   Ext_list.iter file_groups 
     (fun  x ->
-       String_map.iter x.sources (fun k _ -> 
+       Map_string.iter x.sources (fun k _ -> 
            Ext_buffer.add_string_char buf k '\n';
          ) 
     );
@@ -12515,7 +12515,7 @@ type builtin = {
   ml_cmi_dev : t ;
 
   build_package : t ;
-  customs : t String_map.t
+  customs : t Map_string.t
 }
 (***********************************************************)
 
@@ -12539,7 +12539,7 @@ val make_custom_rules :
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
-  command String_map.t ->
+  command Map_string.t ->
   builtin
 
 
@@ -12650,7 +12650,7 @@ type builtin = {
   ml_cmi_dev : t ;
   
   build_package : t ;
-  customs : t String_map.t
+  customs : t Map_string.t
 }
 
 
@@ -12666,7 +12666,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
-  (custom_rules : command String_map.t) : 
+  (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
@@ -12797,7 +12797,7 @@ let make_custom_rules
     
     build_package ;
     customs =
-      String_map.mapi custom_rules begin fun name command -> 
+      Map_string.mapi custom_rules begin fun name command -> 
         define ~command ("custom_" ^ name)
       end
   }
@@ -13063,7 +13063,7 @@ val handle_files_per_dir :
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->
-  files_to_install:String_hash_set.t ->
+  files_to_install:Hash_set_string.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit
 
@@ -13107,7 +13107,7 @@ let handle_generators oc
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
   Ext_list.iter group.generators (fun {output; input; command} -> 
       (*TODO: add a loc for better error message *)
-      match String_map.find_opt custom_rules command with 
+      match Map_string.find_opt custom_rules command with 
       | None -> Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
       | Some rule -> 
         Bsb_ninja_targets.output_build oc 
@@ -13255,7 +13255,7 @@ let handle_files_per_dir
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
-    ~(files_to_install : String_hash_set.t) 
+    ~(files_to_install : Hash_set_string.t) 
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
@@ -13267,10 +13267,10 @@ let handle_files_per_dir
     | Export_none -> fun _ -> false
     | Export_set set ->  
       fun module_name ->
-      String_set.mem set module_name in
-  String_map.iter group.sources   (fun  module_name module_info   ->
+      Set_string.mem set module_name in
+  Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
-        String_hash_set.add files_to_install 
+        Hash_set_string.add files_to_install 
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs
@@ -13500,7 +13500,7 @@ let output_ninja_and_namespace_map
   let  bs_groups, bsc_lib_dirs, static_resources =    
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
-        Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
+        Ext_list.fold_left bs_file_groups (Map_string.empty,[],[]) 
           (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
             ->
             Bsb_db_util.merge  acc  sources ,  
@@ -13511,7 +13511,7 @@ let output_ninja_and_namespace_map
       Bsb_db_util.sanity_check bs_group;
       [|bs_group|], source_dirs, static_resources
     else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
+      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> Map_string.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
@@ -13526,10 +13526,10 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         Bsb_db_util.sanity_check c;
-        String_map.iter c 
+        Map_string.iter c 
           (fun k a -> 
-            if String_map.mem lib k  then 
-              Bsb_db_util.conflict_module_info k a (String_map.find_exn lib k)            
+            if Map_string.mem lib k  then 
+              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
             ) ;
         Bsb_ninja_targets.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
@@ -13617,7 +13617,7 @@ val null : t
 val str : string -> t 
 val flo : string -> t 
 val arr : t array -> t 
-val obj : t String_map.t -> t 
+val obj : t Map_string.t -> t 
 val kvs : (string * t) list -> t 
 val equal : t -> t -> bool 
 val to_string : t -> string 
@@ -13664,7 +13664,7 @@ type t =
   | Flo of string 
   | Str of string
   | Arr of t array 
-  | Obj of t String_map.t
+  | Obj of t Map_string.t
 
 
 (** poor man's serialization *)
@@ -13680,7 +13680,7 @@ let flo s = Flo s
 let arr s = Arr s 
 let obj s = Obj s 
 let kvs s = 
-  Obj (String_map.of_list s)
+  Obj (Map_string.of_list s)
   
 let rec equal 
     (x : t)
@@ -13723,7 +13723,7 @@ let rec equal
   | Obj map -> 
     begin match y with 
       | Obj map2 -> 
-        String_map.equal map map2 equal 
+        Map_string.equal map map2 equal 
       | _ -> false 
     end 
 
@@ -13755,14 +13755,14 @@ let rec encode_buf (x : t )
   | True  -> a "true"
   | False  -> a "false"
   | Obj map -> 
-    if String_map.is_empty map then 
+    if Map_string.is_empty map then 
       a "{}"
     else 
       begin  
         (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold map 0 (fun  k v i -> 
+        let _ : int =  Map_string.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 
@@ -16108,7 +16108,7 @@ let replace s env : string =
     (fun (_s : string) templates ->
        match templates with
        | key::_ ->
-         String_hashtbl.find_exn  env key
+         Hash_string.find_exn  env key
        | _ -> assert false
     ) 
 
@@ -16121,7 +16121,7 @@ let get_bs_platform_version_if_exists dir =
     (Filename.concat dir Literals.package_json) with 
   | Obj {map} 
     -> 
-    (match String_map.find_exn map Bsb_build_schemas.version with 
+    (match Map_string.find_exn map Bsb_build_schemas.version with 
     | Str {str} -> str 
     | _ -> assert false)
   | _ -> assert false 
@@ -16227,8 +16227,8 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
 
 (** TODO: run npm link *)
 let init_sample_project ~cwd ~theme name =
-  let env = String_hashtbl.create 0 in
-  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [
+  let env = Hash_string.create 0 in
+  List.iter (fun (k,v) -> Hash_string.add env k v  ) [
     "proj-version", "0.1.0";
     "bs-version", Bs_version.version;
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
@@ -16242,7 +16242,7 @@ let init_sample_project ~cwd ~theme name =
       let name = Filename.basename cwd in
       if Ext_namespace.is_valid_npm_package_name name then
         begin
-          String_hashtbl.add env "name" name;
+          Hash_string.add env "name" name;
           action ()
         end
       else
@@ -16266,7 +16266,7 @@ let init_sample_project ~cwd ~theme name =
         | Directory -> 
           begin
             Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name; 
-            String_hashtbl.add env "name" name;
+            Hash_string.add env "name" name;
             enter_dir cwd name action
           end
         | Non_exists
@@ -16274,7 +16274,7 @@ let init_sample_project ~cwd ~theme name =
           begin
             Format.fprintf Format.std_formatter "Making directory %s@." name;
             Unix.mkdir name 0o777;            
-            String_hashtbl.add env "name" name;
+            Hash_string.add env "name" name;
             enter_dir cwd name action
           end
       end else begin
@@ -16442,7 +16442,7 @@ let install_targets cwd ({files_to_install; namespace; package_name} : Bsb_confi
       | Some x -> 
         install_filename_sans_extension destdir None  x
     end;
-    String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+    Hash_set_string.iter files_to_install (install_filename_sans_extension destdir namespace) ;
     Bsb_log.info "@{<info>Installing finished@} @.";
   end
 
@@ -16652,11 +16652,11 @@ let install_target config_opt =
             | Export_none -> fun _ -> false
             | Export_set set ->  
               fun module_name ->
-                String_set.mem set module_name in
-          String_map.iter group.sources 
+                Set_string.mem set module_name in
+          Map_string.iter group.sources 
             (fun  module_name module_info -> 
                if check_file module_name then 
-                 begin String_hash_set.add config.files_to_install module_info.name_sans_extension end
+                 begin Hash_set_string.add config.files_to_install module_info.name_sans_extension end
             )) in 
       config
     | Some config -> config in

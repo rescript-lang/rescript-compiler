@@ -35,10 +35,10 @@
 *)
 
 val free_variables_of_statement : 
-  Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
+  Set_ident.t -> Set_ident.t -> J.statement -> Set_ident.t
 
 val free_variables_of_expression : 
-  Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+  Set_ident.t -> Set_ident.t -> J.finish_ident_expression -> Set_ident.t
 
 val no_side_effect_expression_desc :
   J.expression_desc -> bool   

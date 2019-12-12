@@ -50,22 +50,22 @@ type immutable_mask =
   | Immutable_mask of bool array
 
 type t = { 
-  mutable unbounded : Ident_set.t;
-  mutable bound_loop_mutable_values : Ident_set.t; 
+  mutable unbounded : Set_ident.t;
+  mutable bound_loop_mutable_values : Set_ident.t; 
   used_mask : bool array;
   immutable_mask : immutable_mask; 
 }
 (** Invariant: unused param has to be immutable *)
 
 let make ?immutable_mask n = { 
-  unbounded =  Ident_set.empty ;
+  unbounded =  Set_ident.empty ;
   used_mask = Array.make n false;
   immutable_mask = 
     (match immutable_mask with 
      | Some x -> Immutable_mask x 
      | None -> All_immutable_and_no_tail_call
     );
-  bound_loop_mutable_values =Ident_set.empty;
+  bound_loop_mutable_values =Set_ident.empty;
 }
 
 let is_tailcalled x = 
@@ -81,7 +81,7 @@ let get_length t = Array.length t.used_mask
 
 let to_string env =  
   String.concat "," 
-    (Ext_list.map (Ident_set.elements  env.unbounded ) 
+    (Ext_list.map (Set_ident.elements  env.unbounded ) 
       (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
        )
 
@@ -97,7 +97,7 @@ let get_unbounded t = t.unbounded
 
 let set_unbounded env v = 
   (* Ext_log.err "%s -- set @." (to_string env); *)
-  (* if Ident_set.is_empty env.bound then *)
+  (* if Set_ident.is_empty env.bound then *)
   env.unbounded <- v 
  (* else assert false *)
 
@@ -110,4 +110,4 @@ let get_lexical_scope env =
 (* TODO:  can be refined if it 
     only enclose toplevel variables 
  *)
-let is_empty t = Ident_set.is_empty t.unbounded
+let is_empty t = Set_ident.is_empty t.unbounded

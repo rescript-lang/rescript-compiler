@@ -30,7 +30,7 @@ type t =
   | Flo of string 
   | Str of string
   | Arr of t array 
-  | Obj of t String_map.t
+  | Obj of t Map_string.t
 
 
 (** poor man's serialization *)
@@ -46,7 +46,7 @@ let flo s = Flo s
 let arr s = Arr s 
 let obj s = Obj s 
 let kvs s = 
-  Obj (String_map.of_list s)
+  Obj (Map_string.of_list s)
   
 let rec equal 
     (x : t)
@@ -89,7 +89,7 @@ let rec equal
   | Obj map -> 
     begin match y with 
       | Obj map2 -> 
-        String_map.equal map map2 equal 
+        Map_string.equal map map2 equal 
       | _ -> false 
     end 
 
@@ -121,14 +121,14 @@ let rec encode_buf (x : t )
   | True  -> a "true"
   | False  -> a "false"
   | Obj map -> 
-    if String_map.is_empty map then 
+    if Map_string.is_empty map then 
       a "{}"
     else 
       begin  
         (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold map 0 (fun  k v i -> 
+        let _ : int =  Map_string.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 

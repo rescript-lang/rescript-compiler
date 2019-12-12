@@ -126,7 +126,7 @@ let shake_compile impl ~use_super_errors ?react_ppx_version =
 let load_module cmi_path cmi_content cmj_name cmj_content =
   Js.create_file cmi_path cmi_content;
   Js_cmj_datasets.data_sets :=
-    String_map.add !Js_cmj_datasets.data_sets
+    Map_string.add !Js_cmj_datasets.data_sets
       cmj_name (lazy (Js_cmj_format.from_string cmj_content))
       
 

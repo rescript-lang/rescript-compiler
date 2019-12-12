@@ -173,7 +173,7 @@ let pp_packages_rev ppf lst =
   Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
 let rec walk_all_deps_aux 
-  (visited : string String_hashtbl.t) 
+  (visited : string Hash_string.t) 
   (paths : string list) 
   (top : bool) 
   (dir : string) 
@@ -182,7 +182,7 @@ let rec walk_all_deps_aux
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
-      match String_map.find_opt map Bsb_build_schemas.name with 
+      match Map_string.find_opt map Bsb_build_schemas.name with 
       | Some (Str {str }) -> str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
@@ -195,7 +195,7 @@ let rec walk_all_deps_aux
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
       end;
-    if String_hashtbl.mem visited cur_package_name then 
+    if Hash_string.mem visited cur_package_name then 
       Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
     else 
@@ -221,7 +221,7 @@ let rec walk_all_deps_aux
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
         cb {top ; proj_dir = dir};
-        String_hashtbl.add visited cur_package_name dir;
+        Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
   | exception _ -> 
@@ -229,5 +229,5 @@ let rec walk_all_deps_aux
     
 
 let walk_all_deps dir cb = 
-  let visited = String_hashtbl.create 0 in 
+  let visited = Hash_string.create 0 in 
   walk_all_deps_aux visited [] true dir cb 

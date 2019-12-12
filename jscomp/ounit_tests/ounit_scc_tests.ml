@@ -192,14 +192,14 @@ let handle_lines tiny_test_cases =
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> Int_vec.empty () )
+        (fun i -> Vec_int.empty () )
     in 
     begin 
     Ext_list.iter rest (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push node_array.(a) b  
+            Vec_int.push node_array.(a) b  
           | _ -> assert false 
         );
       node_array 
@@ -209,7 +209,7 @@ let handle_lines tiny_test_cases =
 let read_file file = 
   let in_chan = open_in_bin file in 
   let nodes_sum = int_of_string (input_line in_chan) in 
-  let node_array = Array.init nodes_sum (fun i -> Int_vec.empty () ) in 
+  let node_array = Array.init nodes_sum (fun i -> Vec_int.empty () ) in 
   let rec aux () = 
     match input_line in_chan with 
     | exception End_of_file -> ()
@@ -217,7 +217,7 @@ let read_file file =
       begin match Ext_string.split x ' ' with 
       | [ a ; b] -> 
         let a , b = int_of_string a , int_of_string b in 
-        Int_vec.push node_array.(a) b 
+        Vec_int.push node_array.(a) b 
       | _ -> (* assert false  *) ()
       end; 
       aux () in 
@@ -229,56 +229,56 @@ let read_file file =
 let test  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  let tbl = String_hashtbl.create 32 in
+  let tbl = Hash_string.create 32 in
   let idx = ref 0 in 
   let add x =
-    if not (String_hashtbl.mem tbl x ) then 
+    if not (Hash_string.mem tbl x ) then 
       begin 
-        String_hashtbl.add  tbl x !idx ;
+        Hash_string.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
     (fun (x,others) -> List.iter add (x::others));
-  let nodes_num = String_hashtbl.length tbl in
+  let nodes_num = Hash_string.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> Int_vec.empty () ) in 
+        (fun i -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      let idx = String_hashtbl.find_exn tbl  x  in 
+      let idx = Hash_string.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
+      List.iter (fun y -> Vec_int.push node_array.(idx) (Hash_string.find_exn tbl y ) )
     ) ; 
   Ext_scc.graph_check node_array 
 
 let test2  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  let tbl = String_hashtbl.create 32 in
+  let tbl = Hash_string.create 32 in
   let idx = ref 0 in 
   let add x =
-    if not (String_hashtbl.mem tbl x ) then 
+    if not (Hash_string.mem tbl x ) then 
       begin 
-        String_hashtbl.add  tbl x !idx ;
+        Hash_string.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
     (fun (x,others) -> List.iter add (x::others));
-  let nodes_num = String_hashtbl.length tbl in
+  let nodes_num = Hash_string.length tbl in
   let other_mapping = Array.make nodes_num "" in 
-  String_hashtbl.iter tbl (fun k v  -> other_mapping.(v) <- k ) ;
+  Hash_string.iter tbl (fun k v  -> other_mapping.(v) <- k ) ;
   
   let node_array = 
       Array.init nodes_num
-        (fun i -> Int_vec.empty () ) in 
+        (fun i -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      let idx = String_hashtbl.find_exn tbl  x  in 
+      let idx = Hash_string.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
+      List.iter (fun y -> Vec_int.push node_array.(idx) (Hash_string.find_exn tbl y ) )
     )  ;
   let output = Ext_scc.graph node_array in 
-  output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
+  output |> Int_vec_vec.map_into_array (fun int_vec -> Vec_int.map_into_array (fun i -> other_mapping.(i)) int_vec )
 
 
 let suites = 

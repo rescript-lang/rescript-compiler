@@ -84,13 +84,13 @@ This file is integrity is not impacted by `.bscache`. whenever `.bscache` change
 # Appendix
 [source,ocaml]
 --------------
-module String_set = Set.Make(String)
+module Set_string = Set.Make(String)
 
-(* let v = String_set.of_list ["List" ; "Set" ; "String" ; "Test_order"] *)
-let v = String_set.of_list []
+(* let v = Set_string.of_list ["List" ; "Set" ; "String" ; "Test_order"] *)
+let v = Set_string.of_list []
 let deseralize f =
   let ichan  = open_in_bin f in
-  let v : String_set.t = input_value ichan  in
+  let v : Set_string.t = input_value ichan  in
   close_in ichan ;
   v
 
@@ -101,7 +101,7 @@ let time f arg =
   print_endline (Printf.sprintf "%f elapsed" (v1 -. v0))
 
 let deseralize_and_compare f =
-  ignore @@ String_set.equal v (deseralize f)
+  ignore @@ Set_string.equal v (deseralize f)
 
 let  seralize f =
   let ochan = open_out_bin f in

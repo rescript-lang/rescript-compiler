@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let pass_free_variables (l : Lam.t) : Ident_set.t =
-  let fv = ref Ident_set.empty in
+ let pass_free_variables (l : Lam.t) : Set_ident.t =
+  let fv = ref Set_ident.empty in
   let rec 
   free_list xs = List.iter free xs 
   and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
@@ -32,29 +32,29 @@
   and free (l : Lam.t) =
 
     match l with
-    | Lvar id -> fv := Ident_set.add !fv id
+    | Lvar id -> fv := Set_ident.add !fv id
     | Lassign(id, e) ->
       free e;
-      fv := Ident_set.add !fv id
+      fv := Set_ident.add !fv id
     | Lstaticcatch(e1, (_,vars), e2) ->
       free e1; free e2;
-      Ext_list.iter vars (fun id -> fv := Ident_set.remove !fv id) 
+      Ext_list.iter vars (fun id -> fv := Set_ident.remove !fv id) 
     | Ltrywith(e1, exn, e2) ->
       free e1; free e2;
-      fv := Ident_set.remove !fv exn 
+      fv := Set_ident.remove !fv exn 
     | Lfunction{body;params} ->
       free body;
-      Ext_list.iter params (fun param -> fv := Ident_set.remove !fv param) 
+      Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param) 
     | Llet(str, id, arg, body) ->
       free arg; free body;
-      fv := Ident_set.remove !fv id
+      fv := Set_ident.remove !fv id
     | Lletrec(decl, body) ->
       free body;
       free_list_snd decl;
-      Ext_list.iter decl (fun (id, exp) -> fv := Ident_set.remove !fv id) 
+      Ext_list.iter decl (fun (id, exp) -> fv := Set_ident.remove !fv id) 
     | Lfor(v, e1, e2, dir, e3) ->
       free e1; free e2; free e3;
-      fv := Ident_set.remove !fv v 
+      fv := Set_ident.remove !fv v 
     | Lconst _ -> ()
     | Lapply{fn; args; _} ->
       free fn; free_list args

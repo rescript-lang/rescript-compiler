@@ -75,8 +75,8 @@
 
 type t = {
   export_list : Ident.t list ;
-  export_set : Ident_set.t;
-  export_map : Lam.t Ident_map.t ;
+  export_set : Set_ident.t;
+  export_map : Lam.t Map_ident.t ;
   (** not used in code generation, mostly used
       for store some information in cmj files *)
   groups : Lam_group.t list ;
@@ -88,16 +88,16 @@ let handle_exports (meta : Lam_stats.t)
     (lambda_exports : Lam.t list)  (reverse_input : Lam_group.t list) =
 
   let (original_exports : Ident.t list) = meta.exports in
-  let (original_export_set : Ident_set.t) = meta.export_idents in
+  let (original_export_set : Set_ident.t) = meta.export_idents in
   let len = List.length original_exports in
-  let tbl = String_hash_set.create len in
+  let tbl = Hash_set_string.create len in
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  =
     Ext_list.fold_right2 original_exports
       lambda_exports
-      {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
+      {export_list = []; export_set = original_export_set; export_map = Map_ident.empty; groups = []}
       (fun  (original_export_id : Ident.t) (lam : Lam.t) (acc : t)  ->
          let original_name = original_export_id.name in
-         if not @@ String_hash_set.check_add tbl original_name then
+         if not @@ Hash_set_string.check_add tbl original_name then
            Bs_exception.error (Bs_duplicate_exports original_name);
          (match lam  with
           | Lvar id ->
@@ -107,7 +107,7 @@ let handle_exports (meta : Lam_stats.t)
               export_list = id :: acc.export_list ;
               export_set =
                 if id.stamp = original_export_id.stamp then acc.export_set
-                else (Ident_set.add (Ident_set.remove acc.export_set original_export_id) id )
+                else (Set_ident.add (Set_ident.remove acc.export_set original_export_id) id )
             }
             else
              let newid = Ident.rename original_export_id in
@@ -115,7 +115,7 @@ let handle_exports (meta : Lam_stats.t)
              Lam_util.alias_ident_or_global meta newid id NA kind;
               { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add acc.export_map newid lam ;
+              export_map = Map_ident.add acc.export_map newid lam ;
               groups = Single(kind, newid, lam) :: acc.groups
               }
           | _ ->
@@ -140,7 +140,7 @@ let handle_exports (meta : Lam_stats.t)
              (
                 let arity = Lam_arity_analysis.get_arity meta lam in  
                 if not (Lam_arity.first_arity_na arity) then 
-                Ident_hashtbl.add meta.ident_tbl newid
+                Hash_ident.add meta.ident_tbl newid
                 (FunctionId{arity ; lambda = 
                 match lam with 
                 | Lfunction _ -> 
@@ -149,7 +149,7 @@ let handle_exports (meta : Lam_stats.t)
               );
             { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add acc.export_map newid lam ;
+              export_map = Map_ident.add acc.export_map newid lam ;
               groups = Single(Strict, newid, lam) :: acc.groups
             })
       )
@@ -161,8 +161,8 @@ let handle_exports (meta : Lam_stats.t)
     Ext_list.fold_left reverse_input (result.export_map, result.groups)
       (fun (export_map, acc) x ->
          (match x with
-          | Single (_,id,lam) when Ident_set.mem export_set id 
-            -> Ident_map.add export_map id lam 
+          | Single (_,id,lam) when Set_ident.mem export_set id 
+            -> Map_ident.add export_map id lam 
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold
               *)
@@ -219,7 +219,7 @@ let coerce_and_group_big_lambda
     (* {
       export_list = meta.exports;
       export_set = meta.export_idents;
-      export_map = Ident_map.empty ;
+      export_map = Map_ident.empty ;
       (** not used in code generation, mostly used
           for store some information in cmj files *)
       groups = [Nop lam] ;

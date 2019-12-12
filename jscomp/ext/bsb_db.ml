@@ -42,7 +42,7 @@ type module_info =
   }
 
 
-type t = module_info String_map.t 
+type t = module_info Map_string.t 
 
 type ts = t array 
 (** indexed by the group *)

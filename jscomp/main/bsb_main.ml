@@ -148,11 +148,11 @@ let install_target config_opt =
             | Export_none -> fun _ -> false
             | Export_set set ->  
               fun module_name ->
-                String_set.mem set module_name in
-          String_map.iter group.sources 
+                Set_string.mem set module_name in
+          Map_string.iter group.sources 
             (fun  module_name module_info -> 
                if check_file module_name then 
-                 begin String_hash_set.add config.files_to_install module_info.name_sans_extension end
+                 begin Hash_set_string.add config.files_to_install module_info.name_sans_extension end
             )) in 
       config
     | Some config -> config in

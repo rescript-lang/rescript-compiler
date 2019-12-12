@@ -47,13 +47,13 @@ let free_variables used_idents defined_idents =
       match st with 
       | { ident; value = None}
         -> 
-        {< defined_idents = Ident_set.add defined_idents ident >}
+        {< defined_idents = Set_ident.add defined_idents ident >}
       | { ident; value = Some v}
         -> 
-        {< defined_idents = Ident_set.add defined_idents ident >} # expression v
+        {< defined_idents = Set_ident.add defined_idents ident >} # expression v
     method! ident id = 
-      if Ident_set.mem defined_idents id then self
-      else {<used_idents = Ident_set.add used_idents id>}
+      if Set_ident.mem defined_idents id then self
+      else {<used_idents = Set_ident.add used_idents id>}
     method! expression exp = 
 
       match exp.expression_desc with
@@ -63,14 +63,14 @@ let free_variables used_idents defined_idents =
         *)
         ->
         {< used_idents = 
-             Ident_set.union (Js_fun_env.get_unbounded env) used_idents  >}
+             Set_ident.union (Js_fun_env.get_unbounded env) used_idents  >}
 
       | _
         ->
         super#expression exp
 
     method get_depenencies = 
-      Ident_set.diff used_idents defined_idents
+      Set_ident.diff used_idents defined_idents
     method get_used_idents = used_idents
     method get_defined_idents = defined_idents 
   end 

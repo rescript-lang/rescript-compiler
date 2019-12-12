@@ -23,4 +23,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val mem : int -> Int_vec.t -> bool
+val mem : int -> Vec_int.t -> bool

@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
  (** Synced up with module {!Bsb_helper_depfile_gen} *)
-module String_set = Ast_extract.String_set
+module Set_string = Ast_extract.Set_string
 
 
 
@@ -44,7 +44,7 @@ let magic_sep_char = '\n'
 (*
    Reasons that we don't [output_value] the set:
    1. for performance , easy skipping and calcuate the length 
-   2. cut dependency, otherwise its type is {!Ast_extract.String_set.t}
+   2. cut dependency, otherwise its type is {!Ast_extract.Set_string.t}
 *)      
 let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
   let oc = open_out_bin output in 
@@ -52,7 +52,7 @@ let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) 
   let buf = Ext_buffer.create 1000 in
 
   Ext_buffer.add_char buf magic_sep_char;  
-  String_set.iter (fun s ->
+  Set_string.iter (fun s ->
       if s <> "" && s.[0] <> '*' then begin (* filter *predef* *)
         Ext_buffer.add_string_char buf s magic_sep_char; 
       end

@@ -27,7 +27,7 @@
 
 
 let id_is_for_sure_true_in_boolean (tbl : Lam_stats.ident_tbl) id = 
-  match Ident_hashtbl.find_opt tbl id with 
+  match Hash_ident.find_opt tbl id with 
   | Some (ImmutableBlock(_))
   | Some (Normal_optional _ )
   | Some (MutableBlock _) -> true
@@ -57,7 +57,7 @@ let simplify_alias
           Lam.prim ~primitive ~args:[l] loc 
       end
     | Lprim {primitive = Pval_from_option | Pval_from_option_not_nest; args = [Lvar v]} as x -> 
-      begin match Ident_hashtbl.find_opt meta.ident_tbl v with 
+      begin match Hash_ident.find_opt meta.ident_tbl v with 
         | Some (OptionalBlock (l,_)) -> l
         | _ -> x 
       end 
@@ -67,7 +67,7 @@ let simplify_alias
 
     | Lifthenelse(Lprim {primitive = Pis_not_none; args =  [Lvar id ]} as l1, l2, l3) 
       -> 
-      begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
+      begin match Hash_ident.find_opt meta.ident_tbl id with 
         | Some (ImmutableBlock ( _) | (MutableBlock _  ) 
                | Normal_optional _)
           -> simpl l2 
@@ -129,7 +129,7 @@ let simplify_alias
                 match arg with 
                 | Lvar p -> 
                   begin 
-                    match Ident_hashtbl.find_opt meta.ident_tbl p with
+                    match Hash_ident.find_opt meta.ident_tbl p with
                     | Some v  -> v <> Parameter
                     | None -> true 
                   end
@@ -155,7 +155,7 @@ let simplify_alias
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
       let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) loc status in
       begin 
-        match Ident_hashtbl.find_opt meta.ident_tbl v with
+        match Hash_ident.find_opt meta.ident_tbl v with
         | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
                                           rec_flag)
                            })
@@ -164,7 +164,7 @@ let simplify_alias
           if Ext_list.same_length args params (* && false *)
           then               
             if Lam_inline_util.maybe_functor v.name  
-            (* && (Ident_set.mem v meta.export_idents) && false *)
+            (* && (Set_ident.mem v meta.export_idents) && false *)
             then 
               (* TODO: check l1 if it is exported, 
                  if so, maybe not since in that case, 
@@ -185,11 +185,11 @@ let simplify_alias
               (*   Lam_analysis.free_variables meta.export_idents  *)
               (*     (Lam_analysis.param_map_of_list params) body in *)
               (* let old_count = List.length params in *)
-              (* let new_count = Ident_map.cardinal param_map in *)
+              (* let new_count = Map_ident.cardinal param_map in *)
               let param_map = 
                 Lam_closure.is_closed_with_map 
                   meta.export_idents params body in
-              let is_export_id = Ident_set.mem meta.export_idents v in
+              let is_export_id = Set_ident.mem meta.export_idents v in
               match is_export_id, param_map with 
               | false, (_, param_map)
               | true, (true, param_map) -> 

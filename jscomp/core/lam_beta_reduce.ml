@@ -67,27 +67,27 @@ let propogate_beta_reduce
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  in
-  let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = Lam_bounded_vars.rewrite (Hash_ident.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, arg ) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             match Hash_ident.find_opt meta.ident_tbl v with 
              | None -> ()
              | Some ident_info -> 
-               Ident_hashtbl.add meta.ident_tbl param ident_info 
+               Hash_ident.add meta.ident_tbl param ident_info 
            end;
            arg          
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
 
-           Ident_hashtbl.replace meta.ident_tbl param 
+           Hash_ident.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block args ); (** *)
            arg           
          | Lprim {primitive = Psome | Psome_not_nest; args = [v]; _} -> 
-           Ident_hashtbl.replace meta.ident_tbl param 
+           Hash_ident.replace meta.ident_tbl param 
             (Normal_optional(v));
            arg
          | _ -> arg in
@@ -95,7 +95,7 @@ let propogate_beta_reduce
      
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.t) (map : Lam_var_stats.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.t) (map : Lam_var_stats.stats Map_ident.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -113,7 +113,7 @@ let propogate_beta_reduce_with_map
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             match Ident_map.find_exn map old_param with 
+             match Map_ident.find_exn map old_param with 
              | exception Not_found -> assert false 
              | stat -> 
                if Lam_var_stats.top_and_used_zero_or_one stat then 
@@ -124,26 +124,26 @@ let propogate_beta_reduce_with_map
            else
              let p = Ident.rename old_param in 
              (p,arg) :: rest_bindings , (Lam.var p) :: acc ) in
-  let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = Lam_bounded_vars.rewrite (Hash_ident.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             match Hash_ident.find_opt meta.ident_tbl v with 
              | None -> ()
              | Some ident_info -> 
-               Ident_hashtbl.add meta.ident_tbl param ident_info 
+               Hash_ident.add meta.ident_tbl param ident_info 
            end;
            arg 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
-           Ident_hashtbl.replace meta.ident_tbl param 
+           Hash_ident.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block args ); (** *)
            arg
          | Lprim {primitive = Psome | Psome_not_nest; args = [v]} -> 
-           Ident_hashtbl.replace meta.ident_tbl param 
+           Hash_ident.replace meta.ident_tbl param 
             (Normal_optional(v));
            arg 
          | _ -> arg in

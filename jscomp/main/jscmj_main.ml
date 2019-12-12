@@ -70,7 +70,7 @@ let from_cmj (files : string list) (output_file : string) =
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
       Ext_pp.newline f ;
-      Ext_pp.string f "let data_sets = let map = String_map.of_list "    ;
+      Ext_pp.string f "let data_sets = let map = Map_string.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files);
       Ext_pp.string f " in ref map")
 
@@ -111,7 +111,7 @@ let from_cmi (files : string list) (output_file : string) =
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
       Ext_pp.newline f ;
-      Ext_pp.string f "let data_sets = String_map.of_list "    ;
+      Ext_pp.string f "let data_sets = Map_string.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
 
 let stdlib = 

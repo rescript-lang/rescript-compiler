@@ -31,4 +31,4 @@
    Assumes that the image of the substitution is out of reach
    of the bound variables of the lambda-term (no capture). *)
 
-val subst : Lam.t Ident_map.t -> Lam.t -> Lam.t
+val subst : Lam.t Map_ident.t -> Lam.t -> Lam.t

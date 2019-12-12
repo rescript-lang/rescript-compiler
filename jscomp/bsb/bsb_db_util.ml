@@ -36,7 +36,7 @@ let conflict_module_info modname (a : module_info) (b : module_info) =
 
 (* merge data info from two directories*)    
 let merge (acc : t) (sources : t) : t =
-  String_map.merge acc sources (fun modname k1 k2 ->
+  Map_string.merge acc sources (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -49,7 +49,7 @@ let merge (acc : t) (sources : t) : t =
     )
 
 let sanity_check (map : t) = 
-  String_map.iter map (fun m module_info -> 
+  Map_string.iter map (fun m module_info -> 
       if module_info.info = Mli then
         Bsb_exception.no_implementation m 
     )    
@@ -121,7 +121,7 @@ let add_basename
       let name_sans_extension = 
         Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
       let dir = Filename.dirname name_sans_extension in                
-      String_map.adjust 
+      Map_string.adjust 
         map
         module_name 
         (fun  opt_module_info -> 

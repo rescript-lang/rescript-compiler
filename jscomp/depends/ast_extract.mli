@@ -30,20 +30,20 @@
 
 
 
-module String_set = Depend.StringSet
+module Set_string = Depend.StringSet
 
-val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> String_set.t
+val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> Set_string.t
 
 type ('a,'b) t 
 
 val sort_files_by_dependencies :
-  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
+  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t
 
 
 val sort :
   ('a -> Parsetree.structure) ->
   ('b -> Parsetree.signature) ->
-  ('a, 'b) t String_map.t -> string Queue.t  
+  ('a, 'b) t Map_string.t -> string Queue.t  
 
 
 
@@ -56,7 +56,7 @@ val collect_ast_map :
   string list ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
-  ('a, 'b) t String_map.t
+  ('a, 'b) t Map_string.t
 
 type dir_spec = 
   { dir : string ;
@@ -71,25 +71,25 @@ type dir_spec =
 val collect_from_main :
   ?extra_dirs:dir_spec list -> 
   ?excludes : string list -> 
-  ?alias_map: string String_hashtbl.t ->
+  ?alias_map: string Hash_string.t ->
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
   ('a -> Parsetree.structure) ->
   ('b -> Parsetree.signature) ->
-  string -> ('a, 'b) t String_map.t * string Queue.t
+  string -> ('a, 'b) t Map_string.t * string Queue.t
 
 val build_queue :
   Format.formatter ->
   string Queue.t ->
-  ('b, 'c) t String_map.t ->
+  ('b, 'c) t Map_string.t ->
   (Format.formatter -> string -> string -> 'b -> unit) ->
   (Format.formatter -> string -> string -> 'c -> unit) -> unit
   
 val handle_queue :
   Format.formatter ->
   string Queue.t ->
-  ('a, 'b) t String_map.t ->
+  ('a, 'b) t Map_string.t ->
   (string -> string -> 'a -> unit) ->
   (string -> string -> 'b  -> unit) ->
   (string -> string -> string -> 'b -> 'a -> unit) -> unit
@@ -98,7 +98,7 @@ val handle_queue :
 val build_lazy_queue :
   Format.formatter ->
   string Queue.t ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t Map_string.t ->
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
 

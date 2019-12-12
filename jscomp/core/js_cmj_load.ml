@@ -37,7 +37,7 @@ type cmj_load_info = {
 #if BS_COMPILER_IN_BROWSER then 
 let find_cmj_exn file : cmj_load_info = 
   let target = Ext_string.uncapitalize_ascii (Filename.basename file) in
-  match String_map.find_exn !Js_cmj_datasets.data_sets target with
+  match Map_string.find_exn !Js_cmj_datasets.data_sets target with
   | v
     -> 
     begin match Lazy.force v with

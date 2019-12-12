@@ -53,7 +53,7 @@ let install_targets cwd ({files_to_install; namespace; package_name} : Bsb_confi
       | Some x -> 
         install_filename_sans_extension destdir None  x
     end;
-    String_hash_set.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+    Hash_set_string.iter files_to_install (install_filename_sans_extension destdir namespace) ;
     Bsb_log.info "@{<info>Installing finished@} @.";
   end
 

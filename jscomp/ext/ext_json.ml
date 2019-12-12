@@ -29,7 +29,7 @@ type callback =
   | `Flo of (string -> unit )
   | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
@@ -46,9 +46,9 @@ type status =
   | Wrong_type of path 
 
 let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) (m  : Ext_json_types.t String_map.t)
+    (cb : callback) (m  : Ext_json_types.t Map_string.t)
   =
-  begin match String_map.find_exn m key, cb with 
+  begin match Map_string.find_exn m key, cb with 
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
@@ -75,7 +75,7 @@ let query path (json : Ext_json_types.t ) =
     | p :: rest -> 
       match json with 
       | Obj {map } -> 
-        (match String_map.find_opt map p with 
+        (match Map_string.find_opt map p with 
          | Some m  -> aux (p::acc) rest m
          | None ->  No_path)          
       | _ -> Wrong_type acc       
@@ -132,7 +132,7 @@ let rec equal
   | Obj {map} -> 
     begin match y with 
       | Obj { map = map2} -> 
-        String_map.equal map map2 equal
+        Map_string.equal map map2 equal
       | _ -> false 
     end 
 

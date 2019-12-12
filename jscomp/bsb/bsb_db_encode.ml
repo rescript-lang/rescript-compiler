@@ -64,24 +64,24 @@ let make_encoding length buf =
 *)
 let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
   nl buf ; (* module name section *)
-  let len = String_map.cardinal db in 
+  let len = Map_string.cardinal db in 
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
-  let mapping = String_hashtbl.create 50 in 
-  String_map.iter db (fun name {dir} ->  
+  let mapping = Hash_string.create 50 in 
+  Map_string.iter db (fun name {dir} ->  
       Ext_buffer.add_string_char buf name '\n'; 
-      if not (String_hashtbl.mem mapping dir) then
-        String_hashtbl.add mapping dir (String_hashtbl.length mapping)
+      if not (Hash_string.mem mapping dir) then
+        Hash_string.add mapping dir (Hash_string.length mapping)
     ); 
-  let length = String_hashtbl.length mapping in   
+  let length = Hash_string.length mapping in   
   let rev_mapping = Array.make length "" in 
-  String_hashtbl.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+  Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
   (* directory name section *)
   Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
   nl buf; (* module name info section *)
   let len_encoding = make_encoding length buf in 
-  String_map.iter db (fun _ module_info ->       
+  Map_string.iter db (fun _ module_info ->       
       len_encoding buf 
-        (String_hashtbl.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
+        (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
     
 let encode (dbs : Bsb_db.ts) buf =     
   

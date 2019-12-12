@@ -31,7 +31,7 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
   | Llet (Alias,v, Lprim {primitive = Pfield (i,_); args = [Lvar tuple]}, e2)
     when Ident.same tuple id
     ->
-    eliminate_tuple id e2 (Int_map.add acc i v )
+    eliminate_tuple id e2 (Map_int.add acc i v )
     (* it is okay to have duplicates*)
   | _ ->
     if Lam_hit.hit_variable id lam then
@@ -160,12 +160,12 @@ let deep_flatten
         | ("match" | "include"| "param"),
           (Alias | Strict | StrictOpt),
           Lprim {primitive = Pmakeblock(_,_, Immutable); args} ->
-          begin match eliminate_tuple id body Int_map.empty with
+          begin match eliminate_tuple id body Map_int.empty with
             | Some (tuple_mapping, body) ->
               flatten (
                 Ext_list.fold_left_with_offset args accux  0
                   (fun arg  acc i ->
-                     match Int_map.find_opt tuple_mapping i with
+                     match Map_int.find_opt tuple_mapping i with
                      | None ->
                         Lam_group.nop_cons arg acc
                      | Some key ->
@@ -205,9 +205,9 @@ let deep_flatten
         match bind_args with
         | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          iter rest ((id, aux arg) :: groups) (Ident_set.add set id)
+          iter rest ((id, aux arg) :: groups) (Set_ident.add set id)
       in
-      let groups, collections = iter bind_args [] Ident_set.empty in
+      let groups, collections = iter bind_args [] Set_ident.empty in
       (* Try to extract some value definitions from recursive values as [wrap],
          it will stop whenever it find it could not move forward
         {[

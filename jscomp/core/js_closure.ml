@@ -30,11 +30,11 @@
 
 
 type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t ;
+  mutable outer_loop_mutable_values :  Set_ident.t ;
 }
 
 let empty () = {
-  outer_loop_mutable_values  = Ident_set.empty
+  outer_loop_mutable_values  = Set_ident.empty
 }
 
 let set_lexical_scope t v = t.outer_loop_mutable_values <- v 

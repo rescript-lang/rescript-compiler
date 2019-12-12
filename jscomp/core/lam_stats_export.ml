@@ -38,13 +38,13 @@ let single_na = Js_cmj_format.single_na
 
 let values_of_export 
   (meta : Lam_stats.t) 
-  (export_map  : Lam.t Ident_map.t)
-  : Js_cmj_format.cmj_value String_map.t 
+  (export_map  : Lam.t Map_ident.t)
+  : Js_cmj_format.cmj_value Map_string.t 
   = 
-  Ext_list.fold_left meta.exports  String_map.empty    
+  Ext_list.fold_left meta.exports  Map_string.empty    
     (fun  acc x ->
        let arity : Js_cmj_format.arity =
-         match Ident_hashtbl.find_opt meta.ident_tbl x with 
+         match Hash_ident.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 
          | Some (ImmutableBlock(elems)) ->  
           (* FIXME: field name for dumping*)
@@ -55,7 +55,7 @@ let values_of_export
              )
          | Some _ 
          | None ->
-           begin match Ident_map.find_opt export_map x with 
+           begin match Map_ident.find_opt export_map x with 
              | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
                Submodule (Ext_array.of_list_map args (fun lam -> 
                    Lam_arity_analysis.get_arity meta lam))
@@ -65,7 +65,7 @@ let values_of_export
        in
        let persistent_closed_lambda = 
          if not !Js_config.cross_module_inline then None
-         else match Ident_map.find_opt export_map x with 
+         else match Map_ident.find_opt export_map x with 
          | Some lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
@@ -84,9 +84,9 @@ let values_of_export
                   2. [lambda_exports] is not precise
                *)
                let free_variables =
-                 Lam_closure.free_variables Ident_set.empty Ident_map.empty lambda in
+                 Lam_closure.free_variables Set_ident.empty Map_ident.empty lambda in
                if  lam_size < Lam_analysis.small_inline_size  && 
-                   Ident_map.is_empty free_variables
+                   Map_ident.is_empty free_variables
                then 
                  begin
                    Ext_log.dwarn ~__POS__ "%s recorded for inlining @." x.name ;
@@ -96,7 +96,7 @@ let values_of_export
            else
              None
          | None -> None  in 
-       String_map.add  acc x.name  Js_cmj_format.{arity ; persistent_closed_lambda }
+       Map_string.add  acc x.name  Js_cmj_format.{arity ; persistent_closed_lambda }
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 

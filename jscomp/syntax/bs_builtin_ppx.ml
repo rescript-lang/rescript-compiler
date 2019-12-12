@@ -356,7 +356,7 @@ let rec unsafe_mapper : mapper =
 
 
 type action_table = 
-  (Parsetree.expression option -> unit) String_map.t
+  (Parsetree.expression option -> unit) Map_string.t
 (** global configurations below *)
 let common_actions_table :
   (string *  (Parsetree.expression option -> unit)) list =
@@ -365,7 +365,7 @@ let common_actions_table :
 
 
 let structural_config_table : action_table =
-  String_map.of_list
+  Map_string.of_list
     (( "no_export" ,
        (fun x ->
           no_export := (
@@ -376,7 +376,7 @@ let structural_config_table : action_table =
      :: common_actions_table)
 
 let signature_config_table : action_table =
-  String_map.of_list common_actions_table
+  Map_string.of_list common_actions_table
 
 
 let rewrite_signature (x : Parsetree.signature) =  

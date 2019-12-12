@@ -27701,8 +27701,8 @@ module type S = sig
 end 
 
 end
-module String_set : sig 
-#1 "string_set.mli"
+module Set_string : sig 
+#1 "set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -27732,7 +27732,7 @@ module String_set : sig
 
 include Set_gen.S with type elt = string
 end = struct
-#1 "string_set.ml"
+#1 "set_string.ml"
 # 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -28004,26 +28004,26 @@ let check_bs_attributes_inclusion
 
 let rec check_duplicated_labels_aux 
   (lbls : Parsetree.label_declaration  list) 
-  (coll : String_set.t) = 
+  (coll : Set_string.t) = 
     match lbls with 
     | [] -> None 
     | {pld_name= ({txt} as pld_name); pld_attributes}::rest ->
-        if String_set.mem coll txt then Some            pld_name
+        if Set_string.mem coll txt then Some            pld_name
         else 
-          let coll_with_lbl = String_set.add coll txt in
+          let coll_with_lbl = Set_string.add coll txt in
           match Ext_list.find_opt pld_attributes find_name_with_loc with 
           | None -> check_duplicated_labels_aux rest coll_with_lbl
           | Some ({txt = s;} as l) -> 
-            if String_set.mem coll s  
+            if Set_string.mem coll s  
               (*use coll to make check a bit looser
                 allow cases like [ x : int [@bs.as "x"]]
                *) then  
               Some l
             else 
-              check_duplicated_labels_aux rest (String_set.add coll_with_lbl s)
+              check_duplicated_labels_aux rest (Set_string.add coll_with_lbl s)
 
 let check_duplicated_labels lbls = 
-    check_duplicated_labels_aux lbls String_set.empty             
+    check_duplicated_labels_aux lbls Set_string.empty             
 end
 module Bs_conditional_initial : sig 
 #1 "bs_conditional_initial.mli"
@@ -33754,8 +33754,8 @@ module type S =
   end
 
 end
-module String_map : sig 
-#1 "string_map.mli"
+module Map_string : sig 
+#1 "map_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -33784,7 +33784,7 @@ module String_map : sig
 include Map_gen.S with type key = string
 
 end = struct
-#1 "string_map.ml"
+#1 "map_string.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -34028,7 +34028,7 @@ val assert_bool_lit : Parsetree.expression -> bool
 val empty : t 
 
 val table_dispatch : 
-  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
+  (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a
 
 end = struct
 #1 "ast_payload.ml"
@@ -34264,7 +34264,7 @@ let table_dispatch table (action : action)
   = 
   match action with 
   | {txt =  name; loc  }, y -> 
-    begin match String_map.find_exn table name with 
+    begin match Map_string.find_exn table name with 
       | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
@@ -39124,7 +39124,7 @@ type json_array =
   }
 
 and json_map = 
-  { map : t String_map.t ; loc :  loc }
+  { map : t Map_string.t ; loc :  loc }
 and t = 
   | True of loc 
   | False of loc 
@@ -39416,7 +39416,7 @@ let lf = '\010'
 
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
@@ -39425,7 +39425,7 @@ let __ocaml_lex_tables = {
     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
     \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
@@ -39434,7 +39434,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
     \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
@@ -39443,7 +39443,7 @@ let __ocaml_lex_tables = {
     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
@@ -39513,7 +39513,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
@@ -39583,22 +39583,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec lex_json buf lexbuf =
-    __ocaml_lex_lex_json_rec buf lexbuf 0
+   __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -39700,11 +39700,11 @@ let
           ( error lexbuf (Illegal_character c ))
 # 408 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-    __ocaml_lex_comment_rec buf lexbuf 40
+   __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -39722,11 +39722,11 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
        (error lexbuf Unterminated_comment)
 # 430 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 45
+   __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -39861,7 +39861,7 @@ let
       )
 # 569 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
@@ -39894,7 +39894,7 @@ let rec parse_json lexbuf =
     | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
 (** Note if we remove [trailing_comma] support 
     we should report errors (actually more work), for example 
@@ -39942,9 +39942,9 @@ let rec parse_json lexbuf =
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> Obj {map = String_map.add acc key value  ; loc = loc_start}
+        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
         | Comma -> 
-          parse_map loc_start  (String_map.add acc key value ) lexbuf 
+          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -41477,8 +41477,8 @@ external
     
 
 end
-module String_hash_set : sig 
-#1 "string_hash_set.mli"
+module Hash_set_string : sig 
+#1 "hash_set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -41507,7 +41507,7 @@ module String_hash_set : sig
 include Hash_set_gen.S with type key = string
 
 end = struct
-#1 "string_hash_set.ml"
+#1 "hash_set_string.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -41696,7 +41696,7 @@ end = struct
 *)
 
 (* Copied from [ocaml/parsing/lexer.mll] *)
-let key_words = String_hash_set.of_array [|
+let key_words = Hash_set_string.of_array [|
     "and";
     "as";
     "assert";
@@ -41777,7 +41777,7 @@ let translate ?loc name =
       let try_key_word = (String.sub name 1 (name_len - 1)) in 
       if name_len > 1 && 
         (not (valid_start_char try_key_word.[0])
-        || String_hash_set.mem key_words try_key_word)  then 
+        || Hash_set_string.mem key_words try_key_word)  then 
         try_key_word
       else 
         name 
@@ -44420,12 +44420,12 @@ type gen = {
    ]}
 *)
 type derive_table  = 
-  (Parsetree.expression option -> gen) String_map.t
+  (Parsetree.expression option -> gen) Map_string.t
 
-let derive_table : derive_table ref = ref String_map.empty
+let derive_table : derive_table ref = ref Map_string.empty
 
 let register key value = 
-  derive_table := String_map.add !derive_table key value 
+  derive_table := Map_string.add !derive_table key value 
 
 
 
@@ -47216,7 +47216,7 @@ let rec unsafe_mapper : mapper =
 
 
 type action_table = 
-  (Parsetree.expression option -> unit) String_map.t
+  (Parsetree.expression option -> unit) Map_string.t
 (** global configurations below *)
 let common_actions_table :
   (string *  (Parsetree.expression option -> unit)) list =
@@ -47225,7 +47225,7 @@ let common_actions_table :
 
 
 let structural_config_table : action_table =
-  String_map.of_list
+  Map_string.of_list
     (( "no_export" ,
        (fun x ->
           no_export := (
@@ -47236,7 +47236,7 @@ let structural_config_table : action_table =
      :: common_actions_table)
 
 let signature_config_table : action_table =
-  String_map.of_list common_actions_table
+  Map_string.of_list common_actions_table
 
 
 let rewrite_signature (x : Parsetree.signature) =  

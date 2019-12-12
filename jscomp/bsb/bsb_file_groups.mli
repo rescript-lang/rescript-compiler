@@ -26,7 +26,7 @@
  type public = 
   | Export_none
   | Export_all 
-  | Export_set of String_set.t 
+  | Export_set of Set_string.t 
   
 
 type build_generator = 

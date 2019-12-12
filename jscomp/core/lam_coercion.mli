@@ -25,8 +25,8 @@
 
 type t = {
   export_list : Ident.t list ;
-  export_set : Ident_set.t;
-  export_map : Lam.t Ident_map.t ; 
+  export_set : Set_ident.t;
+  export_map : Lam.t Map_ident.t ; 
   groups : Lam_group.t list ; 
 }   
 

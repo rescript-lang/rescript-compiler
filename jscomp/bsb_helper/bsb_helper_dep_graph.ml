@@ -27,27 +27,27 @@
          We should combine them at some point to avoid the duplicated logic. *)
 let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
-    String_map.find_exn  dependency_graph current in
+    Map_string.find_exn  dependency_graph current in
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit visiting path current =
-    if String_set.mem visiting current  then
+    if Set_string.mem visiting current  then
       Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
         (current::path)
-    else if String_set.mem !worklist current then
+    else if Set_string.mem !worklist current then
       begin        
-        String_set.iter (next current)
+        Set_string.iter (next current)
           (fun node ->
-             if  String_map.mem dependency_graph node then
-               visit (String_set.add visiting current) (current::path) node)
+             if  Map_string.mem dependency_graph node then
+               visit (Set_string.add visiting current) (current::path) node)
         ;
-        worklist := String_set.remove !worklist  current;
+        worklist := Set_string.remove !worklist  current;
         Queue.push current result ;
       end in
-  while not (String_set.is_empty !worklist) do
-    visit String_set.empty []  (String_set.choose !worklist)
+  while not (Set_string.is_empty !worklist) do
+    visit Set_string.empty []  (Set_string.choose !worklist)
   done;
   result
 ;;
@@ -57,48 +57,48 @@ let sort_files_by_dependencies ~domain dependency_graph =
          and made it return a Queue. It also doesn't create the ast_table itself.
          We should probably refactor the two to work together at some point. *)
 let simple_collect_from_main ?alias_map ast_table main_module =
-  let visited = String_hashtbl.create 31 in
+  let visited = Hash_string.create 31 in
   let result = Queue.create () in
-  let next module_name : String_set.t =
+  let next module_name : Set_string.t =
     let module_set =
-      match String_map.find_exn ast_table module_name with
-      | exception _ -> String_set.empty
+      match Map_string.find_exn ast_table module_name with
+      | exception _ -> Set_string.empty
       | x -> x
     in
     match alias_map with
     | None -> module_set
     | Some map ->
-      String_set.fold module_set String_set.empty (fun x acc -> String_set.add acc (String_hashtbl.find_default map x x) ) 
+      Set_string.fold module_set Set_string.empty (fun x acc -> Set_string.add acc (Hash_string.find_default map x x) ) 
   in
   let rec visit visiting path current =
-    if String_set.mem visiting current then
+    if Set_string.mem visiting current then
       Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
         (current::path)
     else
-    if not (String_hashtbl.mem visited current)
-    && String_map.mem ast_table current then
+    if not (Hash_string.mem visited current)
+    && Map_string.mem ast_table current then
       begin
-        String_set.iter (next current)
+        Set_string.iter (next current)
           (visit
-             (String_set.add visiting current)
+             (Set_string.add visiting current)
              (current::path))
           ;
         Queue.push current result;
-        String_hashtbl.add visited current ();
+        Hash_string.add visited current ();
       end in
-  visit (String_set.empty) [] main_module ;
+  visit (Set_string.empty) [] main_module ;
   result
 
 let get_otherlibs_dependencies dependency_graph file_extension =
   let addIfPresentInSet v moduleName fileName acc = 
-    if String_set.mem v moduleName then
-      String_set.add acc (fileName ^ file_extension)
+    if Set_string.mem v moduleName then
+      Set_string.add acc (fileName ^ file_extension)
     else
       acc
   in
-  let set_of_otherlib_deps = String_map.fold dependency_graph String_set.empty (fun k v acc ->
+  let set_of_otherlib_deps = Map_string.fold dependency_graph Set_string.empty (fun k v acc ->
     let addIfPresent = addIfPresentInSet v in
     acc
       |> addIfPresent "Unix"     "unix"
@@ -109,4 +109,4 @@ let get_otherlibs_dependencies dependency_graph file_extension =
       |> addIfPresent "Dynlink"  "dynlink"
       |> addIfPresent "Graphics" "graphics"
   )  in
-  String_set.fold set_of_otherlib_deps [] (fun v acc -> v :: acc) 
+  Set_string.fold set_of_otherlib_deps [] (fun v acc -> v :: acc) 

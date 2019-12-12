@@ -22,10 +22,10 @@ type used_info = {
   *)
 }
 
-type occ_tbl  = used_info Ident_hashtbl.t
+type occ_tbl  = used_info Hash_ident.t
 (* First pass: count the occurrences of all let-bound identifiers *)
 
-type local_tbl = used_info  Ident_map.t
+type local_tbl = used_info  Map_ident.t
 
 let dummy_info () = {times =  0 ; captured = false }
 (* y is untouched *)
@@ -40,7 +40,7 @@ let pp_info fmt (x : used_info) =
   Format.fprintf fmt "(<captured:%b>:%d)"  x.captured x.times
 
 let pp_occ_tbl fmt tbl = 
-  Ident_hashtbl.iter tbl (fun k v -> 
+  Hash_ident.iter tbl (fun k v -> 
       Format.fprintf fmt "@[%a@ %a@]@." Ident.print k pp_info v 
     ) 
 (* The global table [occ] associates to each let-bound identifier
@@ -57,29 +57,29 @@ let pp_occ_tbl fmt tbl =
    its reference count, as above.  [bv] is enriched at let bindings
    but emptied when crossing lambdas and loops. *)
 let collect_occurs  lam : occ_tbl =
-  let occ : occ_tbl = Ident_hashtbl.create 83 in
+  let occ : occ_tbl = Hash_ident.create 83 in
 
   (* Current use count of a variable. *)
   let used v = 
-    match Ident_hashtbl.find_opt occ v with 
+    match Hash_ident.find_opt occ v with 
     | None -> false 
     | Some {times ; _} -> times > 0  in
 
   (* Entering a [let].  Returns updated [bv]. *)
   let bind_var bv ident =
     let r = dummy_info () in
-    Ident_hashtbl.add occ ident r;
-    Ident_map.add bv ident r  in
+    Hash_ident.add occ ident r;
+    Map_ident.add bv ident r  in
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =
-    match Ident_map.find_opt bv ident with 
+    match Map_ident.find_opt bv ident with 
     | Some r  -> r.times <- r.times + 1 
     | None ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find_opt occ ident with 
+      match Hash_ident.find_opt occ ident with 
       | Some r -> absorb_info r {times = 1; captured =  true}
       | None ->
         (* Not a let-bound variable, ignore *)
@@ -87,16 +87,16 @@ let collect_occurs  lam : occ_tbl =
 
   let inherit_use bv ident bid =
     let n =
-      match Ident_hashtbl.find_opt occ bid with
+      match Hash_ident.find_opt occ bid with
       | None -> dummy_info ()
       | Some v -> v in
-    match Ident_map.find_opt bv ident with 
+    match Map_ident.find_opt bv ident with 
     | Some r  -> absorb_info r n
     | None ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find_opt occ ident with 
+      match Hash_ident.find_opt occ ident with 
       | Some r -> absorb_info r {n with captured = true} 
       | None ->
         (* Not a let-bound variable, ignore *)
@@ -105,7 +105,7 @@ let collect_occurs  lam : occ_tbl =
   let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
     | Lfunction{body = l} ->
-      count Ident_map.empty l
+      count Map_ident.empty l
     (** when entering a function local [bv] 
         is cleaned up, so that all closure variables will not be
         carried over, since the parameters are never rebound, 
@@ -114,8 +114,8 @@ let collect_occurs  lam : occ_tbl =
     | Lfor(_, l1, l2, dir, l3) -> 
       count bv l1;
       count bv l2; 
-      count Ident_map.empty l3
-    | Lwhile(l1, l2) -> count Ident_map.empty l1; count Ident_map.empty l2
+      count Map_ident.empty l3
+    | Lwhile(l1, l2) -> count Map_ident.empty l1; count Map_ident.empty l2
     | Lvar v ->
       add_one_use bv v 
     | Llet(_, v, Lvar w, l2)  ->
@@ -189,6 +189,6 @@ let collect_occurs  lam : occ_tbl =
           count bv al
         end
   in
-  count Ident_map.empty  lam;
+  count Map_ident.empty  lam;
   occ
 

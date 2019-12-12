@@ -31,7 +31,7 @@ val null : t
 val str : string -> t 
 val flo : string -> t 
 val arr : t array -> t 
-val obj : t String_map.t -> t 
+val obj : t Map_string.t -> t 
 val kvs : (string * t) list -> t 
 val equal : t -> t -> bool 
 val to_string : t -> string 

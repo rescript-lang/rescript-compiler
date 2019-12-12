@@ -234,7 +234,7 @@ and compile_external_field_apply
       when Ext_list.same_length params args_lambda ->
       (* TODO: serialize it when exporting to save compile time *)
       let (_, param_map)  =
-        Lam_closure.is_closed_with_map Ident_set.empty params body in
+        Lam_closure.is_closed_with_map Set_ident.empty params body in
       compile_lambda lambda_cxt
         (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
            params body args_lambda)
@@ -311,7 +311,7 @@ and compile_recursive_let ~all_bindings
         label = continue_label;
         params;
         immutable_mask = Array.make (List.length params) true;
-        new_params = Ident_map.empty;
+        new_params = Map_ident.empty;
         triggered = false } in
     let output =
       compile_lambda
@@ -329,13 +329,13 @@ and compile_recursive_let ~all_bindings
           *)
           ~immutable_mask:ret.immutable_mask
           (Ext_list.map params (fun x ->
-               Ident_map.find_default ret.new_params x  x )
+               Map_ident.find_default ret.new_params x  x )
               )
           [
             S.while_ (* ~label:continue_label *)
               E.true_
               (
-                Ident_map.fold ret.new_params body_block
+                Map_ident.fold ret.new_params body_block
                   (fun old new_param  acc ->
                      S.define_variable ~kind:Alias old (E.var new_param) :: acc)
                   
@@ -1374,21 +1374,21 @@ and compile_apply
             *)
         (* TODO: use [fold]*)
         let (_,assigned_params,new_params) =
-          Ext_list.fold_left2 ret.params args  (0, [], Ident_map.empty) (fun param arg (i,assigns,new_params) ->
+          Ext_list.fold_left2 ret.params args  (0, [], Map_ident.empty) (fun param arg (i,assigns,new_params) ->
               match arg with
               | {expression_desc = Var (Id x); _} when Ident.same x param ->
                 (i + 1, assigns, new_params)
               | _ ->
                 let new_param, m  =
-                  match Ident_map.find_opt ret.new_params param  with
+                  match Map_ident.find_opt ret.new_params param  with
                   | None ->
                     ret.immutable_mask.(i)<- false;
                     let v = Ext_ident.create ("_"^param.Ident.name) in
-                    v, (Ident_map.add new_params param v)
+                    v, (Map_ident.add new_params param v)
                   | Some v -> v, new_params  in
                 (i+1, (new_param, arg) :: assigns, m)
             ) in
-        ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params;
+        ret.new_params <- Map_ident.disjoint_merge new_params ret.new_params;
         let block = Ext_list.map_append assigned_params [S.continue_ ] (fun (param, arg) -> S.assign param arg) in 
         (* Note true and continue needed to be handled together*)
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)

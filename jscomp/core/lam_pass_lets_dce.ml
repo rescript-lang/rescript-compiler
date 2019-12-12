@@ -13,15 +13,15 @@
 
 
 let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam = 
-  let subst : Lam.t Ident_hashtbl.t = Ident_hashtbl.create 32 in
-  let string_table : string Ident_hashtbl.t = Ident_hashtbl.create 32 in  
+  let subst : Lam.t Hash_ident.t = Hash_ident.create 32 in
+  let string_table : string Hash_ident.t = Hash_ident.create 32 in  
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
     match lam with 
-    | Lvar v  -> Ident_hashtbl.find_default subst v lam 
+    | Lvar v  -> Hash_ident.find_default subst v lam 
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
-      Ident_hashtbl.add subst v (simplif (Lam.var w));
+      Hash_ident.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet(Strict as kind,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
@@ -65,12 +65,12 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
              do constant folding independently              
           *)
           ->
-          Ident_hashtbl.add subst v (simplif l1); simplif l2
+          Hash_ident.add subst v (simplif l1); simplif l2
         | _, Lconst (Const_string s ) -> 
           (** only "" added for later inlining *)
-          Ident_hashtbl.add string_table v s;
+          Hash_ident.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
-          (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
+          (* we need move [simplif l2] later, since adding Hash does have side effect *)
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
         (* for Alias, in most cases [l1] is already simplified *)
       end
@@ -116,8 +116,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           let l1 = simplif l1 in         
           begin match l1 with 
             | Lconst(Const_string s) -> 
-              Ident_hashtbl.add string_table v s; 
-              (* we need move [simplif lbody] later, since adding Hashtbl does have side effect *)
+              Hash_ident.add string_table v s; 
+              (* we need move [simplif lbody] later, since adding Hash does have side effect *)
               Lam.let_ Alias v l1 (simplif lbody)
             | _ -> 
               Lam_util.refine_let ~kind v l1 (simplif lbody)
@@ -139,7 +139,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
          begin match kind, l1 with 
          | Strict, Lconst((Const_string s))
            -> 
-            Ident_hashtbl.add string_table v s;
+            Hash_ident.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
          | _ -> 
            Lam_util.refine_let ~kind v l1 (simplif l2)
@@ -173,7 +173,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let opt_l = 
           match l' with 
           | Lconst((Const_string ls)) -> Some ls 
-          | Lvar i -> Ident_hashtbl.find_opt string_table i 
+          | Lvar i -> Hash_ident.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
         | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
@@ -181,7 +181,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           let opt_r = 
             match r' with 
             | Lconst ( (Const_string rs)) -> Some rs 
-            | Lvar i -> Ident_hashtbl.find_opt string_table i 
+            | Lvar i -> Hash_ident.find_opt string_table i 
             | _ -> None in 
             begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
@@ -199,7 +199,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
          match l' with 
          | Lconst (Const_string ls) -> 
             Some ls 
-         | Lvar i -> Ident_hashtbl.find_opt string_table i 
+         | Lvar i -> Hash_ident.find_opt string_table i 
          | _ -> None in 
       begin match opt_l with 
       | None -> Lam.prim ~primitive ~args:[l';r'] loc 
@@ -252,7 +252,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
 let apply_lets  occ lambda = 
   let count_var v =
     match
-      Ident_hashtbl.find_opt occ v 
+      Hash_ident.find_opt occ v 
     with
     | None -> Lam_pass_count.dummy_info ()
     | Some  v -> v in

@@ -29,22 +29,22 @@
    2. all variables are of right scope
 *)
 let check file lam =
-  let defined_variables = Ident_hash_set.create 1000 in
+  let defined_variables = Hash_set_ident.create 1000 in
   let success = ref true in
   let use (id : Ident.t)  =
-    if not @@ Ident_hash_set.mem defined_variables id  then
+    if not @@ Hash_set_ident.mem defined_variables id  then
       begin
         Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
         success := false
       end
   in
   let def (id : Ident.t) =
-    if Ident_hash_set.mem defined_variables id  then
+    if Hash_set_ident.mem defined_variables id  then
       begin
         Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
         success := false
       end
-    else Ident_hash_set.add defined_variables id
+    else Hash_set_ident.add defined_variables id
   in
   (* TODO: replaced by a slow version of {!Lam_iter.inner_iter} *)
   let rec 

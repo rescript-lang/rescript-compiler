@@ -43,7 +43,7 @@ module E = Js_exp_make
 
 (** Update ident info use cases, it is a non pure function, 
     it will annotate [program] with some meta data
-    TODO: Ident Hashtbl could be improved, 
+    TODO: Ident Hash could be improved, 
     since in this case it can not be global?  
 
 *)
@@ -51,16 +51,16 @@ let count_collects () =
   object (self)
     inherit Js_fold.fold as super
     (* collect used status*)
-    val stats : int ref Ident_hashtbl.t = Ident_hashtbl.create 83
+    val stats : int ref Hash_ident.t = Hash_ident.create 83
     (* collect all def sites *)
-    val defined_idents : J.variable_declaration Ident_hashtbl.t = Ident_hashtbl.create 83
+    val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
 
-    val mutable my_export_set  : Ident_set.t = Ident_set.empty
+    val mutable my_export_set  : Set_ident.t = Set_ident.empty
 
 
     method add_use id = 
-      match Ident_hashtbl.find_opt stats id with
-      | None -> Ident_hashtbl.add stats id (ref 1)
+      match Hash_ident.find_opt stats id with
+      | None -> Hash_ident.add stats id (ref 1)
       | Some v -> incr v 
     method! program x = 
       my_export_set <- x.export_set ; 
@@ -69,7 +69,7 @@ let count_collects () =
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
       =  
-      Ident_hashtbl.add defined_idents ident v; 
+      Hash_ident.add defined_idents ident v; 
       match value with 
       | None -> 
         self
@@ -77,15 +77,15 @@ let count_collects () =
         -> self#expression x 
     method! ident id = self#add_use id; self
     method get_stats = 
-      Ident_hashtbl.iter defined_idents (fun ident v  -> 
-          if Ident_set.mem my_export_set ident then 
+      Hash_ident.iter defined_idents (fun ident v  -> 
+          if Set_ident.mem my_export_set ident then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
             let pure = 
               match v.value  with 
               | None -> false  (* can not happen *)
               | Some x -> Js_analyzer.no_side_effect_expression x in
-            match Ident_hashtbl.find_opt stats ident with 
+            match Hash_ident.find_opt stats ident with 
             | None -> 
               Js_op_util.update_used_stats v.ident_info 
                 (if pure then Dead_pure else Dead_non_pure)
@@ -97,7 +97,7 @@ let count_collects () =
   end
 
 
-let get_stats (program : J.program) : J.variable_declaration Ident_hashtbl.t
+let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
   =  ((count_collects ()) #program program) #get_stats
 
 
@@ -135,7 +135,7 @@ let get_stats (program : J.program) : J.variable_declaration Ident_hashtbl.t
     (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
     while it is still called 
 *)
-let subst (export_set : Ident_set.t) stats  = 
+let subst (export_set : Set_ident.t) stats  = 
   object (self)
     inherit Js_map.map as super
     method! statement st = 
@@ -159,7 +159,7 @@ let subst (export_set : Ident_set.t) stats  =
          does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
       *)
       let v = super # variable_declaration v in
-      Ident_hashtbl.add stats ident v; (* see #278 before changes *)
+      Hash_ident.add stats ident v; (* see #278 before changes *)
       v
     method! block bs = 
       match bs with
@@ -167,12 +167,12 @@ let subst (export_set : Ident_set.t) stats  =
             Variable ({value =
                          Some ({expression_desc = Fun _; _ } as v )
                       } as vd) ; comment = _} as st) :: rest  -> 
-        let is_export = Ident_set.mem export_set vd.ident in
+        let is_export = Set_ident.mem export_set vd.ident in
         if is_export then 
           self#statement st :: self#block rest 
         else 
           begin 
-            match Ident_hashtbl.find_opt stats vd.ident with 
+            match Hash_ident.find_opt stats vd.ident with 
             (* TODO: could be improved as [mem] *)
             | None -> 
               if Js_analyzer.no_side_effect_expression v 
@@ -189,7 +189,7 @@ let subst (export_set : Ident_set.t) stats  =
         as st 
         :: rest 
         -> 
-        begin match Ident_hashtbl.find_opt stats id with 
+        begin match Hash_ident.find_opt stats id with 
 
           | Some ({ value = 
                       Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 

@@ -43,7 +43,7 @@ module E = Js_exp_make
 
 (** Update ident info use cases, it is a non pure function, 
     it will annotate [program] with some meta data
-    TODO: Ident Hashtbl could be improved, 
+    TODO: Ident Hash could be improved, 
     since in this case it can not be global?  
 
  *)

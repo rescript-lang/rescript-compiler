@@ -37,7 +37,7 @@ type callback =
   | `Flo of (string -> unit )
   | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of 
     (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
@@ -49,8 +49,8 @@ type callback =
 val test:
   ?fail:(unit -> unit) ->
   string -> callback 
-  -> Ext_json_types.t String_map.t
-   -> Ext_json_types.t String_map.t
+  -> Ext_json_types.t Map_string.t
+   -> Ext_json_types.t Map_string.t
 
 val query : path -> Ext_json_types.t ->  status
 

@@ -48,7 +48,7 @@ type module_info =
     name_sans_extension : string;
   }
 
-type t = module_info String_map.t 
+type t = module_info Map_string.t 
 
 type ts = t array 
 

@@ -41,30 +41,30 @@ let pack pack_byte_or_native ~batch_files ~includes ~namespace ~warnings ~warn_e
   | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc", "bytecode"
   | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt", "native"
   end in
-  let module_to_filepath = Ext_list.fold_left batch_files  String_map.empty
+  let module_to_filepath = Ext_list.fold_left batch_files  Map_string.empty
     (fun m v ->
-      String_map.add m
+      Map_string.add m
       (Ext_filename.module_name (module_of_filename v))
       (Ext_filename.chop_extension_maybe v)
       )  
   in
-  let dependency_graph = Ext_list.fold_left batch_files String_map.empty
+  let dependency_graph = Ext_list.fold_left batch_files Map_string.empty
     (fun m file ->
       let module_name = module_of_filename file in
       let suffix = if Sys.file_exists (module_name ^ Literals.suffix_mlast) then Literals.suffix_mlast
         else Literals.suffix_reast in
-      String_map.add m
+      Map_string.add m
         (Ext_filename.module_name module_name)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file (module_name ^ suffix))
         )    
   in
   let domain =
-    String_map.fold dependency_graph String_set.empty 
-      (fun k _ acc -> String_set.add acc k)
+    Map_string.fold dependency_graph Set_string.empty 
+      (fun k _ acc -> Set_string.add acc k)
       in
   let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
   let all_object_files = Queue.fold
-    (fun acc v -> match String_map.find_opt module_to_filepath v with
+    (fun acc v -> match Map_string.find_opt module_to_filepath v with
       | Some file -> (file ^ suffix_object_files) :: acc
       | None -> failwith @@ "build.ninja is missing the file '" ^ v ^ "' that was used in the project. Try force-regenerating but this shouldn't happen."
       )

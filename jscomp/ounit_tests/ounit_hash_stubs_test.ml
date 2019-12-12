@@ -7,13 +7,13 @@ let count = 2_000_000
 
 let bench () = 
   Ounit_tests_util.time "int hash set" begin fun _ -> 
-    let v = Int_hash_set.create 2_000_000 in 
+    let v = Hash_set_int.create 2_000_000 in 
     for i = 0 to  count do 
-      Int_hash_set.add  v i
+      Hash_set_int.add  v i
     done ;
     for i = 0 to 3 do 
       for i = 0 to count do 
-        assert (Int_hash_set.mem v i)
+        assert (Hash_set_int.mem v i)
       done
     done
   end;

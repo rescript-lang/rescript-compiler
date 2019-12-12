@@ -24,4 +24,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-include Resize_array.Make(struct type t = string let null = "" end)
+include Vec.Make(struct type t = string let null = "" end)

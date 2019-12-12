@@ -70,7 +70,7 @@ let suites =
 
 type ident = { stamp : int ; name : string ; mutable flags : int}
 
-module Ident_set = Set.Make(struct type t = ident 
+module Set_ident = Set.Make(struct type t = ident 
     let compare = Pervasives.compare end)
 
 let compare_ident x y = 
@@ -103,12 +103,12 @@ module Ident_set2 = Set.Make(struct type t = ident
 let bench () = 
   let times = 1_000_000 in
   Ounit_tests_util.time "functor set" begin fun _ -> 
-    let v = ref Ident_set.empty in  
+    let v = ref Set_ident.empty in  
     for i = 0 to  times do
-      v := Ident_set.add   {stamp = i ; name = "name"; flags = -1 } !v 
+      v := Set_ident.add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
     for i = 0 to times do
-      ignore @@ Ident_set.mem   {stamp = i; name = "name" ; flags = -1} !v 
+      ignore @@ Set_ident.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done 
   end ;
   Ounit_tests_util.time "functor set (specialized)" begin fun _ -> 
@@ -122,7 +122,7 @@ let bench () =
   end ;
 
   Ounit_tests_util.time "poly set" begin fun _ -> 
-    let module Set_poly = Ident_set in 
+    let module Set_poly = Set_ident in 
     let v = ref Set_poly.empty in  
     for i = 0 to  times do
       v := Set_poly.add   {stamp = i ; name = "name"; flags = -1 } !v 

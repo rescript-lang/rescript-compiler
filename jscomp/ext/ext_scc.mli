@@ -25,7 +25,7 @@
 
 
 
-type node = Int_vec.t
+type node = Vec_int.t
 (** Assume input is int array with offset from 0 
     Typical input 
     {[
@@ -38,7 +38,7 @@ type node = Int_vec.t
     Note that we can tell how many nodes by calculating 
     [Array.length] of the input 
 *)
-val graph : Int_vec.t array -> Int_vec_vec.t
+val graph : Vec_int.t array -> Int_vec_vec.t
 
 
 (** Used for unit test *)

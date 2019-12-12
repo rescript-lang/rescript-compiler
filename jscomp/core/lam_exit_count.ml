@@ -23,16 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type collection = int ref Int_hashtbl.t
+type collection = int ref Hash_int.t
 (** Don't modify it .. *)
 let default_zero = ref 0
 
 (* Count occurrences of (exit n ...) statements *)
 let count_exit (exits : collection) i =
-  !(Int_hashtbl.find_default exits i default_zero)
+  !(Hash_int.find_default exits i default_zero)
 
 let incr_exit (exits : collection) i =
-  Int_hashtbl.modify_or_init exits i incr (fun _ -> ref 1)
+  Hash_int.modify_or_init exits i incr (fun _ -> ref 1)
 
 
 (** 
@@ -54,7 +54,7 @@ let incr_exit (exits : collection) i =
   Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_numconsts] vs nconsts
 *)
 let count_helper  (lam : Lam.t) : collection = 
-  let exits : collection = Int_hashtbl.create 17 in
+  let exits : collection = Hash_int.create 17 in
   let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; Ext_list.iter ls count

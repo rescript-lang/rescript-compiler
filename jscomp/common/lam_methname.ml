@@ -59,7 +59,7 @@
 *)
 
 (* Copied from [ocaml/parsing/lexer.mll] *)
-let key_words = String_hash_set.of_array [|
+let key_words = Hash_set_string.of_array [|
     "and";
     "as";
     "assert";
@@ -140,7 +140,7 @@ let translate ?loc name =
       let try_key_word = (String.sub name 1 (name_len - 1)) in 
       if name_len > 1 && 
         (not (valid_start_char try_key_word.[0])
-        || String_hash_set.mem key_words try_key_word)  then 
+        || Hash_set_string.mem key_words try_key_word)  then 
         try_key_word
       else 
         name 

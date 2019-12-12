@@ -35,7 +35,7 @@ val scan :
   cut_generators: bool -> 
   namespace : string option -> 
   bs_suffix:bool -> 
-  ignored_dirs:String_set.t ->
+  ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t * int 
 

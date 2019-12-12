@@ -55,14 +55,14 @@ let rec encode_aux (x : Ext_json_types.t )
   | True _ -> a "true"
   | False _ -> a "false"
   | Obj {map} -> 
-    if String_map.is_empty map then 
+    if Map_string.is_empty map then 
       a "{}"
     else 
       begin  
         (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold map 0  (fun  k v i -> 
+        let _ : int =  Map_string.fold map 0  (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 

@@ -51,7 +51,7 @@ let output
   let buf = Ext_buffer.create 10000 in   
   Ext_list.iter file_groups 
     (fun  x ->
-       String_map.iter x.sources (fun k _ -> 
+       Map_string.iter x.sources (fun k _ -> 
            Ext_buffer.add_string_char buf k '\n';
          ) 
     );

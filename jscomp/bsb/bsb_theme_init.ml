@@ -41,7 +41,7 @@ let replace s env : string =
     (fun (_s : string) templates ->
        match templates with
        | key::_ ->
-         String_hashtbl.find_exn  env key
+         Hash_string.find_exn  env key
        | _ -> assert false
     ) 
 
@@ -54,7 +54,7 @@ let get_bs_platform_version_if_exists dir =
     (Filename.concat dir Literals.package_json) with 
   | Obj {map} 
     -> 
-    (match String_map.find_exn map Bsb_build_schemas.version with 
+    (match Map_string.find_exn map Bsb_build_schemas.version with 
     | Str {str} -> str 
     | _ -> assert false)
   | _ -> assert false 
@@ -160,8 +160,8 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
 
 (** TODO: run npm link *)
 let init_sample_project ~cwd ~theme name =
-  let env = String_hashtbl.create 0 in
-  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [
+  let env = Hash_string.create 0 in
+  List.iter (fun (k,v) -> Hash_string.add env k v  ) [
     "proj-version", "0.1.0";
     "bs-version", Bs_version.version;
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
@@ -175,7 +175,7 @@ let init_sample_project ~cwd ~theme name =
       let name = Filename.basename cwd in
       if Ext_namespace.is_valid_npm_package_name name then
         begin
-          String_hashtbl.add env "name" name;
+          Hash_string.add env "name" name;
           action ()
         end
       else
@@ -199,7 +199,7 @@ let init_sample_project ~cwd ~theme name =
         | Directory -> 
           begin
             Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name; 
-            String_hashtbl.add env "name" name;
+            Hash_string.add env "name" name;
             enter_dir cwd name action
           end
         | Non_exists
@@ -207,7 +207,7 @@ let init_sample_project ~cwd ~theme name =
           begin
             Format.fprintf Format.std_formatter "Making directory %s@." name;
             Unix.mkdir name 0o777;            
-            String_hashtbl.add env "name" name;
+            Hash_string.add env "name" name;
             enter_dir cwd name action
           end
       end else begin

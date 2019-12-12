@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
-type node = Int_vec.t 
+type node = Vec_int.t 
 (** 
    [int] as data for this algorithm
    Pros:
@@ -38,7 +38,7 @@ let min_int (x : int) y = if x < y then x else y
 
 let graph  e =
   let index = ref 0 in 
-  let s = Int_vec.empty () in
+  let s = Vec_int.empty () in
 
   let output = Int_vec_vec.empty () in (* collect output *)
   let node_numes = Array.length e in
@@ -50,13 +50,13 @@ let graph  e =
   let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Int_vec.push s v_data; 
+    Vec_int.push s v_data; 
 
     index_array.(v_data) <- new_index ;  
     lowlink_array.(v_data) <- new_index ; 
     on_stack_array.(v_data) <- true ;    
     let v = e.(v_data) in     
-    Int_vec.iter v (fun w_data  ->
+    Vec_int.iter v (fun w_data  ->
         if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
             scc w_data;
@@ -74,16 +74,16 @@ let graph  e =
     if Array.unsafe_get lowlink_array v_data = Array.unsafe_get index_array v_data then
       (* start a new scc *)
       begin
-        let s_len = Int_vec.length s in
+        let s_len = Vec_int.length s in
         let last_index = ref (s_len - 1) in 
-        let u = ref (Int_vec.unsafe_get s !last_index) in
+        let u = ref (Vec_int.unsafe_get s !last_index) in
         while  !u <> v_data do 
           Array.unsafe_set on_stack_array (!u)  false ; 
           last_index := !last_index - 1;
-          u := Int_vec.unsafe_get s !last_index
+          u := Vec_int.unsafe_get s !last_index
         done ;
         on_stack_array.(v_data) <- false; (* necessary *)
-        Int_vec_vec.push output (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index));
+        Int_vec_vec.push output (Vec_int.get_and_delete_range s !last_index (s_len  - !last_index));
       end   
   in
   for i = 0 to node_numes - 1 do 
@@ -94,4 +94,4 @@ let graph  e =
 let graph_check v = 
   let v = graph v in 
   Int_vec_vec.length v, 
-  Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  
+  Int_vec_vec.fold_left (fun acc x -> Vec_int.length x :: acc ) [] v  

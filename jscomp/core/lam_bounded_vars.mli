@@ -26,7 +26,7 @@
 (** [rewrite tbl lam] 
     Given a [tbl] to rewrite all bounded variables in [lam] 
 *)
-val rewrite : Lam.t Ident_hashtbl.t -> Lam.t -> Lam.t
+val rewrite : Lam.t Hash_ident.t -> Lam.t -> Lam.t
 
 (** refresh lambda to replace all bounded vars for new ones *)
 val refresh : 

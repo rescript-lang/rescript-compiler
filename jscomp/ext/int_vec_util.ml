@@ -32,8 +32,8 @@ let rec unsafe_mem_aux arr  i (key : int) bound =
     
 
 
-let mem key (x : Int_vec.t) =
-    let internal_array = Int_vec.unsafe_internal_array x in 
-    let len = Int_vec.length x in 
+let mem key (x : Vec_int.t) =
+    let internal_array = Vec_int.unsafe_internal_array x in 
+    let len = Vec_int.length x in 
     unsafe_mem_aux internal_array 0 key (len - 1)
     

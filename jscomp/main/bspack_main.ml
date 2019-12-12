@@ -264,11 +264,11 @@ let process_include s : Ast_extract.dir_spec =
           ','}
 
 let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
-  let set :  Ast_extract.dir_spec String_hashtbl.t = String_hashtbl.create 64 in 
+  let set :  Ast_extract.dir_spec Hash_string.t = Hash_string.create 64 in 
   List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
-      match String_hashtbl.find_opt set dir with
+      match Hash_string.find_opt set dir with
       | None ->  
-        String_hashtbl.add set dir y;
+        Hash_string.add set dir y;
         true 
       | Some x ->  x.excludes <- new_excludes @ x.excludes ; false
     ) xs 
@@ -283,8 +283,8 @@ let add_exclude module_ =
   exclude_modules := module_ :: !exclude_modules
 let no_implicit_include = ref false 
 
-let alias_map = String_hashtbl.create 0
-let alias_map_rev = String_hashtbl.create 0
+let alias_map = Hash_string.create 0
+let alias_map_rev = Hash_string.create 0
 
 (**
    {[
@@ -307,12 +307,12 @@ let alias_module s =
   match Ext_string.split s '=' with 
   | [a;b] -> 
     (* Error checking later*)
-    if String_hashtbl.mem alias_map a then 
+    if Hash_string.mem alias_map a then 
       raise (Arg.Bad ("duplicated module alias " ^ a))
     else
       begin 
-        String_hashtbl.add alias_map_rev b a;
-        String_hashtbl.add alias_map a b 
+        Hash_string.add alias_map_rev b a;
+        Hash_string.add alias_map a b 
       end
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
@@ -445,7 +445,7 @@ let () =
               let module_bound = not  export || task_length > !count  in 
               decorate_module_only ~module_bound out_chan base ml_name ml_content;
               let aliased = Ext_string.capitalize_ascii base in 
-              String_hashtbl.find_all alias_map_rev aliased
+              Hash_string.find_all alias_map_rev aliased
               |> List.iter 
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
@@ -457,7 +457,7 @@ let () =
 
               decorate_interface_only out_chan base mli_name mli_content;
               let aliased = Ext_string.capitalize_ascii base in 
-              String_hashtbl.find_all alias_map_rev aliased
+              Hash_string.find_all alias_map_rev aliased
               |> List.iter 
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
@@ -480,7 +480,7 @@ let () =
                let module_bound = not export || task_length > !count in 
                decorate_module ~module_bound out_chan base mli_name ml_name mli_content ml_content;
                let aliased = (Ext_string.capitalize_ascii base) in 
-               String_hashtbl.find_all alias_map_rev aliased
+               Hash_string.find_all alias_map_rev aliased
                |> List.iter 
                  (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 

@@ -87,6 +87,6 @@ module Cmp = struct
       Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
 end
 
-module Hash = Hashtbl_make.Make (Cmp)
+module Hash = Hash.Make (Cmp)
 
 module Hash_set = Hash_set.Make (Cmp)
