@@ -5,5 +5,5 @@ Error: syntax error, consider adding a `;' before
   [36m/.../fixtures/syntaxErrors1.re[0m
   
   [1;33mThere's been an error running Reason's parser on a file.[0m
-  The error location should be slightly above this message.
+  If the message doesn't help, check for errors slightly above.
   Please file an issue on github.com/facebook/reason. Thanks!
