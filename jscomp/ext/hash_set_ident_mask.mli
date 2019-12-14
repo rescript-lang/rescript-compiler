@@ -18,7 +18,10 @@ val add_unmask :  t -> ident -> unit
 (** [check_mask h key] if [key] exists mask it otherwise nothing
     return true if all keys are masked otherwise false
 *)
-val mask_and_check_all_hit : ident ->  t -> bool
+val mask_and_check_all_hit : 
+  t -> 
+  ident ->  
+  bool
 
 (** [iter_and_unmask f h] iterating the collection and mask all idents,
     dont consul the collection in function [f]

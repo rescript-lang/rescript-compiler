@@ -11775,7 +11775,10 @@ val add_unmask :  t -> ident -> unit
 (** [check_mask h key] if [key] exists mask it otherwise nothing
     return true if all keys are masked otherwise false
 *)
-val mask_and_check_all_hit : ident ->  t -> bool
+val mask_and_check_all_hit : 
+  t -> 
+  ident ->  
+  bool
 
 (** [iter_and_unmask f h] iterating the collection and mask all idents,
     dont consul the collection in function [f]
@@ -11899,7 +11902,9 @@ let resize indexfun h =
         Empty -> ()
       | Cons {ident = key;  mask; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {ident = key; mask; rest = ndata.(nidx)};
+        Array.unsafe_set 
+          ndata (nidx)  
+            (Cons {ident = key; mask; rest = Array.unsafe_get ndata (nidx)});
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -11943,7 +11948,7 @@ let rec small_bucket_mask  key lst =
             else 
               small_bucket_mask  key rst.rest 
 
-let mask_and_check_all_hit (key : Ident.t) (h : t)  =     
+let mask_and_check_all_hit (h : t) (key : Ident.t) =     
   if 
     small_bucket_mask key 
       (Array.unsafe_get h.data (key_index_by_ident h key )) then 
@@ -11977,8 +11982,8 @@ let suites =
       Hash_set_ident_mask.add_unmask set a ;     
       Hash_set_ident_mask.add_unmask set a ;     
       Hash_set_ident_mask.add_unmask set b ;     
-      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit a set );
-      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit b set );
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set  a);
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit set  b );
       Hash_set_ident_mask.iter_and_unmask set (fun id mask -> 
           if id.Ident.name = "a" then
             OUnit.assert_bool __LOC__ mask 
@@ -11986,8 +11991,8 @@ let suites =
             OUnit.assert_bool __LOC__ mask 
           else ()        
         ) ;
-      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit a set );
-      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit b set );
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set a );
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit set  b );
     end;
     __LOC__ >:: begin fun _ -> 
         let len = 1000 in 
@@ -11995,20 +12000,20 @@ let suites =
         let set = Hash_set_ident_mask.create 0 in 
         Array.iter (fun i -> Hash_set_ident_mask.add_unmask set i) idents;
         for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i));
         done ;
          for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ; 
-         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit idents.(len - 1) set) ;
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
          Hash_set_ident_mask.iter_and_unmask set(fun id mask -> ()) ;
         for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ;
          for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i));
         done ; 
-         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit idents.(len - 1) set) ;
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
          
     end
   ]

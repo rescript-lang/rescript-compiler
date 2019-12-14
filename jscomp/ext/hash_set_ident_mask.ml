@@ -104,7 +104,9 @@ let resize indexfun h =
         Empty -> ()
       | Cons {ident = key;  mask; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons {ident = key; mask; rest = ndata.(nidx)};
+        Array.unsafe_set 
+          ndata (nidx)  
+            (Cons {ident = key; mask; rest = Array.unsafe_get ndata (nidx)});
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -148,7 +150,7 @@ let rec small_bucket_mask  key lst =
             else 
               small_bucket_mask  key rst.rest 
 
-let mask_and_check_all_hit (key : Ident.t) (h : t)  =     
+let mask_and_check_all_hit (h : t) (key : Ident.t) =     
   if 
     small_bucket_mask key 
       (Array.unsafe_get h.data (key_index_by_ident h key )) then 
