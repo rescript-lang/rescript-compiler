@@ -1537,7 +1537,6 @@ ${cppoRule()}
 ${cppoList("ext", [
   ["hash_set_string.ml", "hash_set.cppo.ml", dTypeString],
   ["hash_set_int.ml", "hash_set.cppo.ml", dTypeInt],
-  ["ordered_hash_set_string.ml","ordered_hash_set.cppo.ml",dTypeString],
   ["hash_set_ident.ml", "hash_set.cppo.ml", dTypeIdent],
   ["hash_set.ml", "hash_set.cppo.ml", dTypeFunctor],
   ["hash_set_poly.ml", "hash_set.cppo.ml", dTypePoly],

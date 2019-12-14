@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* does not support [remove], 
+(** Hash based datastrucure which does not support [remove], 
     so that the adding order is strict and continous  
  *)
 
@@ -51,7 +51,12 @@ end
    when buckets become too long. *)
 type ('a,'b) bucket = 
   | Empty 
-  | Cons of 'a * int * 'b  * ('a,'b) bucket
+  | Cons of {
+    key : 'a ;
+    ord :  int ;
+    data :'b  ;
+    next :  ('a,'b) bucket
+  }
 
 type ('a,'b) t =
   { mutable size: int;                        (* number of entries *)
@@ -89,9 +94,9 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons(key,info,data,rest) ->
+      | Cons { key; ord = info; data; next = rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key,info,data, ndata.(nidx));
+        ndata.(nidx) <- Cons { key; ord = info; data; next =  ndata.(nidx)};
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -103,7 +108,7 @@ let iter f h =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons(k ,i, value, rest) ->
+    | Cons { key = k ; ord = i;  data = value; next =  rest} ->
       f k value i; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -116,7 +121,7 @@ let choose h =
     else 
       match Array.unsafe_get arr offset with 
       | Empty -> aux arr (offset + 1) len 
-      | Cons (k,_,_,rest) -> k 
+      | Cons {key = k; next = rest} -> k 
   in
   aux h.data 0 (Array.length h.data)
 
@@ -133,7 +138,7 @@ let fold f h init =
     match b with
       Empty ->
       accu
-    | Cons( k , i,  value, rest) ->
+    | Cons { key = k ; ord = i; data =   value; next =  rest} ->
       do_bucket rest (f k  value i  accu) in
   let d = h.data in
   let accu = ref init in
@@ -149,7 +154,7 @@ let elements set =
 let rec bucket_length acc (x : _ bucket) = 
   match x with 
   | Empty -> 0
-  | Cons(_,_,_,rest) -> bucket_length (acc + 1) rest  
+  | Cons rhs -> bucket_length (acc + 1) rhs.next
 
 let stats h =
   let mbl =
