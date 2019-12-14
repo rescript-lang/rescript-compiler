@@ -36609,7 +36609,10 @@ module Hash_set_gen
 
 type 'a bucket = 
   | Empty
-  | Cons of {key : 'a ; rest : 'a bucket }
+  | Cons of {
+      mutable key : 'a ; 
+      mutable rest : 'a bucket 
+    }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -36635,9 +36638,6 @@ let reset h =
   h.size <- 0;
   h.data <- Array.make h.initial_size Empty
 
-
-(* let copy h = { h with data = Array.copy h.data } *)
-
 let length h = h.size
 
 let resize indexfun h =
@@ -36646,21 +36646,29 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
+    let ndata_tail = Array.make nsize Empty in 
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons l ->
-        let nidx = indexfun h l.key in
-        Array.unsafe_set 
-          ndata nidx  
-            (Cons {
-              l with rest =  Array.unsafe_get ndata nidx
-              });
-        insert_bucket l.rest
+      | Cons {key; rest} as cell ->
+        let nidx = indexfun h key in
+        begin match Array.unsafe_get ndata_tail nidx with 
+        | Empty ->
+          Array.unsafe_set ndata nidx cell
+        | Cons tail -> 
+          tail.rest <- cell
+        end;
+        Array.unsafe_set ndata_tail nidx  cell;          
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
-    done
+    done;
+    for i = 0 to nsize - 1 do 
+      match Array.unsafe_get ndata_tail i with 
+      | Empty -> ()
+      | Cons tail -> tail.rest <- Empty
+    done 
   end
 
 let iter h f =

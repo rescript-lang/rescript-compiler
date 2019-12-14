@@ -7319,17 +7319,17 @@ module Hash_gen
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
-type ('a, 'b) bucketlist =
+type ('a, 'b) bucket =
   | Empty
   | Cons of {
       mutable key : 'a ; 
       mutable data : 'b ; 
-      mutable rest :  ('a, 'b) bucketlist
+      mutable rest :  ('a, 'b) bucket
     }
 
 type ('a, 'b) t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable data: ('a, 'b) bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -7343,7 +7343,7 @@ let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    h.data.(i) <- Empty
+    Array.unsafe_set h.data i  Empty  
   done
 
 let reset h =
@@ -7417,7 +7417,7 @@ let to_list h f =
 
 
 
-let rec small_bucket_mem (lst : _ bucketlist) eq key  =
+let rec small_bucket_mem (lst : _ bucket) eq key  =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
@@ -7433,7 +7433,7 @@ let rec small_bucket_mem (lst : _ bucketlist) eq key  =
         small_bucket_mem lst.rest eq key 
 
 
-let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons lst -> 
@@ -7449,7 +7449,7 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_opt eq key lst.rest
 
 
-let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons {key=k1;  rest=rest1} -> 
@@ -7465,7 +7465,7 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_key_opt eq key rest3
 
 
-let rec small_bucket_default eq key default (lst : _ bucketlist) =
+let rec small_bucket_default eq key default (lst : _ bucket) =
   match lst with 
   | Empty -> default 
   | Cons lst -> 
@@ -7567,7 +7567,7 @@ let key_index (h : _ t ) (key : key) =
 let eq_key = Ext_string.equal 
 
 # 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucketlist
+type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -9226,7 +9226,10 @@ module Hash_set_gen
 
 type 'a bucket = 
   | Empty
-  | Cons of {key : 'a ; rest : 'a bucket }
+  | Cons of {
+      mutable key : 'a ; 
+      mutable rest : 'a bucket 
+    }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -9252,9 +9255,6 @@ let reset h =
   h.size <- 0;
   h.data <- Array.make h.initial_size Empty
 
-
-(* let copy h = { h with data = Array.copy h.data } *)
-
 let length h = h.size
 
 let resize indexfun h =
@@ -9263,21 +9263,29 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
+    let ndata_tail = Array.make nsize Empty in 
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons l ->
-        let nidx = indexfun h l.key in
-        Array.unsafe_set 
-          ndata nidx  
-            (Cons {
-              l with rest =  Array.unsafe_get ndata nidx
-              });
-        insert_bucket l.rest
+      | Cons {key; rest} as cell ->
+        let nidx = indexfun h key in
+        begin match Array.unsafe_get ndata_tail nidx with 
+        | Empty ->
+          Array.unsafe_set ndata nidx cell
+        | Cons tail -> 
+          tail.rest <- cell
+        end;
+        Array.unsafe_set ndata_tail nidx  cell;          
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
-    done
+    done;
+    for i = 0 to nsize - 1 do 
+      match Array.unsafe_get ndata_tail i with 
+      | Empty -> ()
+      | Cons tail -> tail.rest <- Empty
+    done 
   end
 
 let iter h f =
@@ -9810,7 +9818,6 @@ sig
   val create: int ->  t
   val clear: t -> unit
   val reset: t -> unit
-  val copy: t -> t
   val add:  t -> key -> unit
   val mem:  t -> key -> bool
   val rank: t -> key -> int (* -1 if not found*)
@@ -9877,7 +9884,6 @@ let reset h  =
   reset_with_size h h.initial_size
 
 
-let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
@@ -10006,13 +10012,12 @@ end = struct
   let hash = Bs_hash_stubs.hash_string
   let equal_key = Ext_string.equal
 
-# 24
+# 24 "ext/ordered_hash_set.cppo.ml"
 open Ordered_hash_set_gen
 exception Replace_failure = Replace_failure
 let create = create
 let clear = clear
 let reset = reset
-let copy = copy
 let iter = iter
 let fold = fold
 let length = length

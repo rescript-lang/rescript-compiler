@@ -125,6 +125,7 @@ jscomp/ext/hash_int.ml
 jscomp/ext/map_int.ml
 jscomp/ext/vec_int.ml
 jscomp/ext/ordered_hash_map_local_ident.ml
+jscomp/ext/ordered_hash_set_string.ml
 jscomp/ext/vec.ml
 jscomp/ext/set_int.ml
 jscomp/ext/hash_set_string.ml

@@ -29,7 +29,6 @@ sig
   val create: int ->  t
   val clear: t -> unit
   val reset: t -> unit
-  val copy: t -> t
   val add:  t -> key -> unit
   val mem:  t -> key -> bool
   val rank: t -> key -> int (* -1 if not found*)
@@ -96,7 +95,6 @@ let reset h  =
   reset_with_size h h.initial_size
 
 
-let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 

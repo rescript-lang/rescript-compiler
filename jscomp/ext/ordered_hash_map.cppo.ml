@@ -22,7 +22,7 @@ open Ordered_hash_map_gen
 let create = create
 let clear = clear
 let reset = reset
-let copy = copy
+
 let iter = iter
 let fold = fold
 let length = length
