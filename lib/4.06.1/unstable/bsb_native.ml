@@ -7492,14 +7492,25 @@ let rec small_bucket_mem eq key lst =
         eq key lst.key ||
         small_bucket_mem eq key lst.rest 
 
-let rec remove_bucket eq_key key (h : _ t) buckets = 
-  match buckets with 
+let rec remove_bucket 
+    (h : _ t) (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
   | Empty ->
-    Empty
-  | Cons l ->
-    if  eq_key l.key   key
-    then begin h.size <- h.size - 1; l.rest end
-    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
+    ()
+  | (Cons {key=k; rest = next }) as c ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.rest <- next
+    end
+    else remove_bucket h i key ~prec:c next eq_key
+
 
 module type S =
 sig
@@ -7600,13 +7611,10 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : _ Hash_set_gen.t) key =  
+let remove (h : _ Hash_set_gen.t ) key =
   let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
+  let h_data = h.data in 
+  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
@@ -7630,7 +7638,7 @@ let of_array arr =
   tbl 
   
     
-let check_add (h : _ Hash_set_gen.t) key =
+let check_add (h : _ Hash_set_gen.t) key : bool =
   let i = key_index h key  in 
   let h_data = h.data in  
   let old_bucket = (Array.unsafe_get h_data i) in
@@ -8293,7 +8301,7 @@ module Make (Key : Hashtbl.HashedType) = struct
 
 
 # 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
+type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -8318,7 +8326,7 @@ let modify_or_init
   (key : key) 
   (modf : 'a -> 'a) 
   (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucketlist) : bool =
+  let rec find_bucket (bucketlist : _ bucket) : bool =
     match bucketlist with
     | Cons rhs  ->
       if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
@@ -8337,8 +8345,8 @@ let modify_or_init
 let rec remove_bucket 
     (h : _ t) (i : int)
     key 
-    ~(prec : _ bucketlist) 
-    (buck : _ bucketlist) 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
     eq_key = 
   match buck with   
   | Empty ->
@@ -8359,7 +8367,7 @@ let remove (h : _ t ) key =
   remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
 (* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
   | Empty ->
     raise Not_found
   | Cons rhs  ->
@@ -8388,7 +8396,7 @@ let find_key_opt (h : _ t) key =
 let find_default (h : _ t) key default = 
   Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
     | Empty ->
       []
     | Cons{key=k; data=d; rest} ->
@@ -8397,7 +8405,7 @@ let find_all (h : _ t) key =
       else find_in_bucket rest in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let rec replace_bucket key data (buck : _ bucketlist) eq_key = 
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
   match buck with   
   | Empty ->
     true
@@ -9450,7 +9458,7 @@ let key_index (h : _ t ) (key : key) =
 let eq_key = Ext_string.equal 
 
 # 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
+type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -9475,7 +9483,7 @@ let modify_or_init
   (key : key) 
   (modf : 'a -> 'a) 
   (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucketlist) : bool =
+  let rec find_bucket (bucketlist : _ bucket) : bool =
     match bucketlist with
     | Cons rhs  ->
       if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
@@ -9494,8 +9502,8 @@ let modify_or_init
 let rec remove_bucket 
     (h : _ t) (i : int)
     key 
-    ~(prec : _ bucketlist) 
-    (buck : _ bucketlist) 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
     eq_key = 
   match buck with   
   | Empty ->
@@ -9516,7 +9524,7 @@ let remove (h : _ t ) key =
   remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
 (* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
   | Empty ->
     raise Not_found
   | Cons rhs  ->
@@ -9545,7 +9553,7 @@ let find_key_opt (h : _ t) key =
 let find_default (h : _ t) key default = 
   Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
     | Empty ->
       []
     | Cons{key=k; data=d; rest} ->
@@ -9554,7 +9562,7 @@ let find_all (h : _ t) key =
       else find_in_bucket rest in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let rec replace_bucket key data (buck : _ bucketlist) eq_key = 
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
   match buck with   
   | Empty ->
     true

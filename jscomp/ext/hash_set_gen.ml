@@ -137,14 +137,25 @@ let rec small_bucket_mem eq key lst =
         eq key lst.key ||
         small_bucket_mem eq key lst.rest 
 
-let rec remove_bucket eq_key key (h : _ t) buckets = 
-  match buckets with 
+let rec remove_bucket 
+    (h : _ t) (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
   | Empty ->
-    Empty
-  | Cons l ->
-    if  eq_key l.key   key
-    then begin h.size <- h.size - 1; l.rest end
-    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
+    ()
+  | (Cons {key=k; rest = next }) as c ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.rest <- next
+    end
+    else remove_bucket h i key ~prec:c next eq_key
+
 
 module type S =
 sig
