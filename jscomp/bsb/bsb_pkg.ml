@@ -46,6 +46,13 @@ let check_dir dir =
   | true -> Some(dir)
   | false -> None
 
+let is_same_paths a b =
+  if a = b then true
+  else 
+  match Bs_realpath_stubs.realpath a, Bs_realpath_stubs.realpath b with
+  | Some a, Some b -> a = b
+  | _ -> false
+
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
   let sub_path = make_sub_path pkg   in
@@ -151,7 +158,7 @@ let resolve_bs_package ~cwd (package : t) =
     | Some x
       ->
       let result = resolve_bs_package_aux ~cwd package in
-      if result <> x then
+      if not (is_same_paths result x) then
         begin
           Bsb_log.warn
             "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 

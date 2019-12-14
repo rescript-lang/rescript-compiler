@@ -9,6 +9,7 @@
         "-w",
         "-40-30-3",
         "#{self.root / 'jscomp' / 'stubs' / 'ext_basic_hash_stubs.c'}",
+        "#{self.root / 'jscomp' / 'stubs' / 'realpath.c'}",
         "unix.cmxa",
         "#{self.root / 'lib' / '4.06.1' / 'unstable' / 'bspack.ml'}",
         "-o",
