@@ -28,7 +28,10 @@
 
 type 'a bucket = 
   | Empty
-  | Cons of {key : 'a ; rest : 'a bucket }
+  | Cons of {
+      mutable key : 'a ; 
+      mutable rest : 'a bucket 
+    }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)

@@ -30,7 +30,7 @@ module Make (Key : Hashtbl.HashedType) = struct
   [%error "unknown type"]
 #endif
 
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucketlist
+type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
