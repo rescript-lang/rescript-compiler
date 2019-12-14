@@ -27,7 +27,7 @@
 (**
     [hit_mask mask lambda] iters through the lambda
     set the bit of corresponding [id] if [id] is hit.
-    As an optimization step if [mask_check_all_hit],
+    As an optimization step if [mask_and_check_all_hit],
     there is no need to iter such lambda any more
 *)
 let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
@@ -36,7 +36,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     match x with 
     | None -> false 
     | Some a -> hit a
-    and hit_var (id : Ident.t) = Hash_set_ident_mask.mask_check_all_hit id mask
+    and hit_var (id : Ident.t) = Hash_set_ident_mask.mask_and_check_all_hit id mask
     and hit_list_snd : 'a. ('a * Lam.t ) list -> bool = fun x ->    
       Ext_list.exists_snd x hit
     and hit_list xs = Ext_list.exists  xs hit
@@ -96,17 +96,17 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array   
   let domain : _ Ordered_hash_map_local_ident.t =
     Ordered_hash_map_local_ident.create len in
   let mask = Hash_set_ident_mask.create len in
-  List.iter (fun (x,lam) ->
+  Ext_list.iter groups (fun (x,lam) ->
       Ordered_hash_map_local_ident.add domain x lam;
       Hash_set_ident_mask.add_unmask mask x;
-    ) groups ;
+    )  ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in
   let node_vec = Array.make (Array.length int_mapping) (Vec_int.empty ()) in
   domain
   |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->
       let base_key =  node_vec.(key_index) in
       ignore (hit_mask mask lam) ;
-      mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  ->
+      Hash_set_ident_mask.iter_and_unmask mask (fun ident hit  ->
           if hit then
             begin
               let key = Ordered_hash_map_local_ident.rank domain ident in

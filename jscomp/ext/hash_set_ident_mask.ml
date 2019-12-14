@@ -27,11 +27,17 @@
 
 type ident = Ident.t
 
-type key = {ident : ident ; mutable mask : bool }
+type bucket =
+  | Empty 
+  | Cons of {
+    ident : ident; 
+    mutable mask : bool;
+    rest : bucket
+  }
 
 type t = {
   mutable size : int ; 
-  mutable data : key list array;
+  mutable data : bucket array;
   initial_size : int ; 
   mutable mask_size : int (* mark how many idents are marked *)
 }
@@ -41,22 +47,22 @@ type t = {
 let key_index_by_ident (h : t) (key : Ident.t) =    
   (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 
-let key_index (h :  t ) ({ident = key} : key) =
-  key_index_by_ident h key 
+
 
 
 let create  initial_size =
   let s = Ext_util.power_2_above 8 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] ; mask_size = 0}
+  { initial_size = s; size = 0; data = Array.make s Empty ; mask_size = 0}
 
-let iter_and_unmask f h =
+let iter_and_unmask h f =
   let rec do_bucket buckets = 
     match buckets with 
-    | [ ] ->
+    | Empty ->
       ()
-    | k ::  rest ->    
-      f k.ident k.mask ;
-      if k.mask then 
+    | Cons k ->    
+      let k_mask = k.mask in 
+      f k.ident k_mask ;
+      if k_mask then 
         begin 
           k.mask <- false ;
           (* we can set [h.mask_size] to zero,
@@ -65,7 +71,7 @@ let iter_and_unmask f h =
           *)
           h.mask_size <- h.mask_size - 1
         end; 
-      do_bucket rest 
+      do_bucket k.rest 
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -75,31 +81,31 @@ let iter_and_unmask f h =
 
 let rec small_bucket_mem key lst =
   match lst with 
-  | [] -> false 
-  | {ident = key1 }::rest -> 
-    Ext_ident.equal key   key1 ||
-    match rest with 
-    | [] -> false 
-    | {ident = key2} :: rest -> 
-      Ext_ident.equal key   key2 ||
-      match rest with 
-      | [] -> false 
-      | {ident = key3; _} :: rest -> 
-        Ext_ident.equal key   key3 ||
-        small_bucket_mem key rest 
+  | Empty -> false 
+  | Cons rst -> 
+    Ext_ident.equal key   rst.ident ||
+    match rst.rest with 
+    | Empty -> false 
+    | Cons rst -> 
+      Ext_ident.equal key   rst.ident ||
+      match rst.rest with 
+      | Empty -> false 
+      | Cons rst -> 
+        Ext_ident.equal key   rst.ident ||
+        small_bucket_mem key rst.rest 
 
 let resize indexfun h =
   let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
+    let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
+        Empty -> ()
+      | Cons {ident = key;  mask; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- key :: ndata.(nidx);
+        ndata.(nidx) <- Cons {ident = key; mask; rest = ndata.(nidx)};
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -113,9 +119,10 @@ let add_unmask (h : t) (key : Ident.t) =
   let old_bucket = Array.unsafe_get h_data i in
   if not (small_bucket_mem key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i ({ident = key; mask = false} :: old_bucket);
+      Array.unsafe_set h_data i 
+        (Cons {ident = key; mask = false; rest =  old_bucket});
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then resize key_index h
+      if h.size > Array.length h_data lsl 1 then resize key_index_by_ident h
     end
 
 
@@ -123,26 +130,26 @@ let add_unmask (h : t) (key : Ident.t) =
 
 let rec small_bucket_mask  key lst =
   match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    if Ext_ident.equal key   key1.ident  then 
-      if key1.mask then false else (key1.mask <- true ; true) 
+  | Empty -> false 
+  | Cons rst -> 
+    if Ext_ident.equal key   rst.ident  then 
+      if rst.mask then false else (rst.mask <- true ; true) 
     else 
-      match rest with 
-      | [] -> false
-      | key2 :: rest -> 
-        if Ext_ident.equal key key2.ident  then 
-          if key2.mask then false else (key2.mask <- true ; true)
+      match rst.rest with 
+      | Empty -> false
+      | Cons rst -> 
+        if Ext_ident.equal key rst.ident  then 
+          if rst.mask then false else (rst.mask <- true ; true)
         else 
-          match rest with 
-          | [] -> false
-          | key3 :: rest -> 
-            if Ext_ident.equal key key3.ident then 
-              if key3.mask then false else (key3.mask <- true ; true)
+          match rst.rest with 
+          | Empty -> false
+          | Cons rst -> 
+            if Ext_ident.equal key rst.ident then 
+              if rst.mask then false else (rst.mask <- true ; true)
             else 
-              small_bucket_mask  key rest 
+              small_bucket_mask  key rst.rest 
 
-let mask_check_all_hit (key : Ident.t) (h : t)  =     
+let mask_and_check_all_hit (key : Ident.t) (h : t)  =     
   if 
     small_bucket_mask key 
       (Array.unsafe_get h.data (key_index_by_ident h key )) then 
