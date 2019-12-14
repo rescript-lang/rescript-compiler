@@ -19,17 +19,17 @@
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
-type ('a, 'b) bucketlist =
+type ('a, 'b) bucket =
   | Empty
   | Cons of {
       mutable key : 'a ; 
       mutable data : 'b ; 
-      mutable rest :  ('a, 'b) bucketlist
+      mutable rest :  ('a, 'b) bucket
     }
 
 type ('a, 'b) t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable data: ('a, 'b) bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -43,7 +43,7 @@ let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    h.data.(i) <- Empty
+    Array.unsafe_set h.data i  Empty  
   done
 
 let reset h =
@@ -117,7 +117,7 @@ let to_list h f =
 
 
 
-let rec small_bucket_mem (lst : _ bucketlist) eq key  =
+let rec small_bucket_mem (lst : _ bucket) eq key  =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
@@ -133,7 +133,7 @@ let rec small_bucket_mem (lst : _ bucketlist) eq key  =
         small_bucket_mem lst.rest eq key 
 
 
-let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons lst -> 
@@ -149,7 +149,7 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_opt eq key lst.rest
 
 
-let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons {key=k1;  rest=rest1} -> 
@@ -165,7 +165,7 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_key_opt eq key rest3
 
 
-let rec small_bucket_default eq key default (lst : _ bucketlist) =
+let rec small_bucket_default eq key default (lst : _ bucket) =
   match lst with 
   | Empty -> default 
   | Cons lst -> 

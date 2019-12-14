@@ -26,7 +26,6 @@ exception Replace_failure = Replace_failure
 let create = create
 let clear = clear
 let reset = reset
-let copy = copy
 let iter = iter
 let fold = fold
 let length = length

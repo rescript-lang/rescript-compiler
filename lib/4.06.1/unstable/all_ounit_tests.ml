@@ -7319,17 +7319,17 @@ module Hash_gen
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
-type ('a, 'b) bucketlist =
+type ('a, 'b) bucket =
   | Empty
   | Cons of {
       mutable key : 'a ; 
       mutable data : 'b ; 
-      mutable rest :  ('a, 'b) bucketlist
+      mutable rest :  ('a, 'b) bucket
     }
 
 type ('a, 'b) t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable data: ('a, 'b) bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -7343,7 +7343,7 @@ let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    h.data.(i) <- Empty
+    Array.unsafe_set h.data i  Empty  
   done
 
 let reset h =
@@ -7417,7 +7417,7 @@ let to_list h f =
 
 
 
-let rec small_bucket_mem (lst : _ bucketlist) eq key  =
+let rec small_bucket_mem (lst : _ bucket) eq key  =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
@@ -7433,7 +7433,7 @@ let rec small_bucket_mem (lst : _ bucketlist) eq key  =
         small_bucket_mem lst.rest eq key 
 
 
-let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons lst -> 
@@ -7449,7 +7449,7 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_opt eq key lst.rest
 
 
-let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
   | Cons {key=k1;  rest=rest1} -> 
@@ -7465,7 +7465,7 @@ let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
               small_bucket_key_opt eq key rest3
 
 
-let rec small_bucket_default eq key default (lst : _ bucketlist) =
+let rec small_bucket_default eq key default (lst : _ bucket) =
   match lst with 
   | Empty -> default 
   | Cons lst -> 
@@ -7567,7 +7567,7 @@ let key_index (h : _ t ) (key : key) =
 let eq_key = Ext_string.equal 
 
 # 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucketlist
+type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -9226,7 +9226,10 @@ module Hash_set_gen
 
 type 'a bucket = 
   | Empty
-  | Cons of {key : 'a ; rest : 'a bucket }
+  | Cons of {
+      mutable key : 'a ; 
+      mutable rest : 'a bucket 
+    }
 
 type 'a t =
   { mutable size: int;                        (* number of entries *)
@@ -9252,9 +9255,6 @@ let reset h =
   h.size <- 0;
   h.data <- Array.make h.initial_size Empty
 
-
-(* let copy h = { h with data = Array.copy h.data } *)
-
 let length h = h.size
 
 let resize indexfun h =
@@ -9263,21 +9263,29 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
+    let ndata_tail = Array.make nsize Empty in 
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons l ->
-        let nidx = indexfun h l.key in
-        Array.unsafe_set 
-          ndata nidx  
-            (Cons {
-              l with rest =  Array.unsafe_get ndata nidx
-              });
-        insert_bucket l.rest
+      | Cons {key; rest} as cell ->
+        let nidx = indexfun h key in
+        begin match Array.unsafe_get ndata_tail nidx with 
+        | Empty ->
+          Array.unsafe_set ndata nidx cell
+        | Cons tail -> 
+          tail.rest <- cell
+        end;
+        Array.unsafe_set ndata_tail nidx  cell;          
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
-    done
+    done;
+    for i = 0 to nsize - 1 do 
+      match Array.unsafe_get ndata_tail i with 
+      | Empty -> ()
+      | Cons tail -> tail.rest <- Empty
+    done 
   end
 
 let iter h f =
@@ -9810,7 +9818,6 @@ sig
   val create: int ->  t
   val clear: t -> unit
   val reset: t -> unit
-  val copy: t -> t
   val add:  t -> key -> unit
   val mem:  t -> key -> bool
   val rank: t -> key -> int (* -1 if not found*)
@@ -9877,7 +9884,6 @@ let reset h  =
   reset_with_size h h.initial_size
 
 
-let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
@@ -10006,13 +10012,12 @@ end = struct
   let hash = Bs_hash_stubs.hash_string
   let equal_key = Ext_string.equal
 
-# 24
+# 24 "ext/ordered_hash_set.cppo.ml"
 open Ordered_hash_set_gen
 exception Replace_failure = Replace_failure
 let create = create
 let clear = clear
 let reset = reset
-let copy = copy
 let iter = iter
 let fold = fold
 let length = length
@@ -11757,24 +11762,33 @@ type ident = Ident.t
 
 
 type t
+
 val create: int ->  t
 
 
-(* add one ident *)
+(* add one ident 
+  ident is unmaksed by default
+*)
 val add_unmask :  t -> ident -> unit
 
 
 (** [check_mask h key] if [key] exists mask it otherwise nothing
     return true if all keys are masked otherwise false
 *)
-val mask_check_all_hit : ident ->  t -> bool
+val mask_and_check_all_hit : 
+  t -> 
+  ident ->  
+  bool
 
 (** [iter_and_unmask f h] iterating the collection and mask all idents,
     dont consul the collection in function [f]
     TODO: what happens if an exception raised in the callback,
     would the hashtbl still be in consistent state?
 *)
-val iter_and_unmask: (ident -> bool ->  unit) ->  t -> unit
+val iter_and_unmask: 
+  t -> 
+  (ident -> bool ->  unit) -> 
+  unit
 
 
 
@@ -11811,12 +11825,17 @@ end = struct
 
 type ident = Ident.t
 
-type key = {ident : ident ; mutable mask : bool }
+type bucket =
+  | Empty 
+  | Cons of {
+    ident : ident; 
+    mutable mask : bool;
+    rest : bucket
+  }
 
 type t = {
   mutable size : int ; 
-  mutable data : key list array;
-  initial_size : int ; 
+  mutable data : bucket array;
   mutable mask_size : int (* mark how many idents are marked *)
 }
 
@@ -11825,22 +11844,22 @@ type t = {
 let key_index_by_ident (h : t) (key : Ident.t) =    
   (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 
-let key_index (h :  t ) ({ident = key} : key) =
-  key_index_by_ident h key 
+
 
 
 let create  initial_size =
   let s = Ext_util.power_2_above 8 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] ; mask_size = 0}
+  { size = 0; data = Array.make s Empty ; mask_size = 0}
 
-let iter_and_unmask f h =
-  let rec do_bucket buckets = 
+let iter_and_unmask h f =
+  let rec iter_bucket buckets = 
     match buckets with 
-    | [ ] ->
+    | Empty ->
       ()
-    | k ::  rest ->    
-      f k.ident k.mask ;
-      if k.mask then 
+    | Cons k ->    
+      let k_mask = k.mask in 
+      f k.ident k_mask ;
+      if k_mask then 
         begin 
           k.mask <- false ;
           (* we can set [h.mask_size] to zero,
@@ -11849,41 +11868,43 @@ let iter_and_unmask f h =
           *)
           h.mask_size <- h.mask_size - 1
         end; 
-      do_bucket rest 
+      iter_bucket k.rest 
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
+    iter_bucket (Array.unsafe_get d i)
   done
-  
+
 
 let rec small_bucket_mem key lst =
   match lst with 
-  | [] -> false 
-  | {ident = key1 }::rest -> 
-    Ext_ident.equal key   key1 ||
-    match rest with 
-    | [] -> false 
-    | {ident = key2} :: rest -> 
-      Ext_ident.equal key   key2 ||
-      match rest with 
-      | [] -> false 
-      | {ident = key3; _} :: rest -> 
-        Ext_ident.equal key   key3 ||
-        small_bucket_mem key rest 
+  | Empty -> false 
+  | Cons rst -> 
+    Ext_ident.equal key   rst.ident ||
+    match rst.rest with 
+    | Empty -> false 
+    | Cons rst -> 
+      Ext_ident.equal key   rst.ident ||
+      match rst.rest with 
+      | Empty -> false 
+      | Cons rst -> 
+        Ext_ident.equal key   rst.ident ||
+        small_bucket_mem key rst.rest 
 
 let resize indexfun h =
   let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
+    let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
+        Empty -> ()
+      | Cons {ident = key;  mask; rest} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- key :: ndata.(nidx);
+        Array.unsafe_set 
+          ndata (nidx)  
+            (Cons {ident = key; mask; rest = Array.unsafe_get ndata (nidx)});
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -11897,9 +11918,10 @@ let add_unmask (h : t) (key : Ident.t) =
   let old_bucket = Array.unsafe_get h_data i in
   if not (small_bucket_mem key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i ({ident = key; mask = false} :: old_bucket);
+      Array.unsafe_set h_data i 
+        (Cons {ident = key; mask = false; rest =  old_bucket});
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then resize key_index h
+      if h.size > Array.length h_data lsl 1 then resize key_index_by_ident h
     end
 
 
@@ -11907,26 +11929,26 @@ let add_unmask (h : t) (key : Ident.t) =
 
 let rec small_bucket_mask  key lst =
   match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    if Ext_ident.equal key   key1.ident  then 
-      if key1.mask then false else (key1.mask <- true ; true) 
+  | Empty -> false 
+  | Cons rst -> 
+    if Ext_ident.equal key   rst.ident  then 
+      if rst.mask then false else (rst.mask <- true ; true) 
     else 
-      match rest with 
-      | [] -> false
-      | key2 :: rest -> 
-        if Ext_ident.equal key key2.ident  then 
-          if key2.mask then false else (key2.mask <- true ; true)
+      match rst.rest with 
+      | Empty -> false
+      | Cons rst -> 
+        if Ext_ident.equal key rst.ident  then 
+          if rst.mask then false else (rst.mask <- true ; true)
         else 
-          match rest with 
-          | [] -> false
-          | key3 :: rest -> 
-            if Ext_ident.equal key key3.ident then 
-              if key3.mask then false else (key3.mask <- true ; true)
+          match rst.rest with 
+          | Empty -> false
+          | Cons rst -> 
+            if Ext_ident.equal key rst.ident then 
+              if rst.mask then false else (rst.mask <- true ; true)
             else 
-              small_bucket_mask  key rest 
+              small_bucket_mask  key rst.rest 
 
-let mask_check_all_hit (key : Ident.t) (h : t)  =     
+let mask_and_check_all_hit (h : t) (key : Ident.t) =     
   if 
     small_bucket_mask key 
       (Array.unsafe_get h.data (key_index_by_ident h key )) then 
@@ -11960,17 +11982,17 @@ let suites =
       Hash_set_ident_mask.add_unmask set a ;     
       Hash_set_ident_mask.add_unmask set a ;     
       Hash_set_ident_mask.add_unmask set b ;     
-      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
-      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
-      Hash_set_ident_mask.iter_and_unmask (fun id mask -> 
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set  a);
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit set  b );
+      Hash_set_ident_mask.iter_and_unmask set (fun id mask -> 
           if id.Ident.name = "a" then
             OUnit.assert_bool __LOC__ mask 
           else if id.Ident.name = "b" then 
             OUnit.assert_bool __LOC__ mask 
           else ()        
-        ) set ;
-      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
-      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
+        ) ;
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set a );
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit set  b );
     end;
     __LOC__ >:: begin fun _ -> 
         let len = 1000 in 
@@ -11978,20 +12000,20 @@ let suites =
         let set = Hash_set_ident_mask.create 0 in 
         Array.iter (fun i -> Hash_set_ident_mask.add_unmask set i) idents;
         for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i));
         done ;
          for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ; 
-         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
-         Hash_set_ident_mask.iter_and_unmask (fun id mask -> ()) set;
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
+         Hash_set_ident_mask.iter_and_unmask set(fun id mask -> ()) ;
         for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ;
          for i = 0 to len - 2 do 
-                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i));
         done ; 
-         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
          
     end
   ]

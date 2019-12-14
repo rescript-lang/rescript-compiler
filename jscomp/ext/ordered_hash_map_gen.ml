@@ -34,7 +34,6 @@ sig
   val create: int ->  'value t
   val clear : 'vaulue t -> unit
   val reset : 'value t -> unit
-  val copy: 'value t -> 'value t
   val add : 'value t -> key -> 'value -> unit
   val mem : 'value t -> key -> bool
   val rank : 'value t -> key -> int (* -1 if not found*)
@@ -78,8 +77,6 @@ let reset h =
   h.size <- 0;
   h.data <- Array.make h.initial_size Empty
 
-
-let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
