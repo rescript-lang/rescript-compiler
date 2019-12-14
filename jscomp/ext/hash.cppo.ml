@@ -30,7 +30,7 @@ module Make (Key : Hashtbl.HashedType) = struct
   [%error "unknown type"]
 #endif
 
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
+type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -55,7 +55,7 @@ let modify_or_init
   (key : key) 
   (modf : 'a -> 'a) 
   (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucketlist) : bool =
+  let rec find_bucket (bucketlist : _ bucket) : bool =
     match bucketlist with
     | Cons rhs  ->
       if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
@@ -74,8 +74,8 @@ let modify_or_init
 let rec remove_bucket 
     (h : _ t) (i : int)
     key 
-    ~(prec : _ bucketlist) 
-    (buck : _ bucketlist) 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
     eq_key = 
   match buck with   
   | Empty ->
@@ -96,7 +96,7 @@ let remove (h : _ t ) key =
   remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
 (* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
   | Empty ->
     raise Not_found
   | Cons rhs  ->
@@ -125,7 +125,7 @@ let find_key_opt (h : _ t) key =
 let find_default (h : _ t) key default = 
   Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
     | Empty ->
       []
     | Cons{key=k; data=d; rest} ->
@@ -134,7 +134,7 @@ let find_all (h : _ t) key =
       else find_in_bucket rest in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let rec replace_bucket key data (buck : _ bucketlist) eq_key = 
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
   match buck with   
   | Empty ->
     true

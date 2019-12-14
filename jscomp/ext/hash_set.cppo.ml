@@ -73,13 +73,10 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : _ Hash_set_gen.t) key =  
+let remove (h : _ Hash_set_gen.t ) key =
   let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
+  let h_data = h.data in 
+  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
@@ -103,7 +100,7 @@ let of_array arr =
   tbl 
   
     
-let check_add (h : _ Hash_set_gen.t) key =
+let check_add (h : _ Hash_set_gen.t) key : bool =
   let i = key_index h key  in 
   let h_data = h.data in  
   let old_bucket = (Array.unsafe_get h_data i) in
