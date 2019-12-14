@@ -11833,7 +11833,6 @@ type bucket =
 type t = {
   mutable size : int ; 
   mutable data : bucket array;
-  initial_size : int ; 
   mutable mask_size : int (* mark how many idents are marked *)
 }
 
@@ -11847,10 +11846,10 @@ let key_index_by_ident (h : t) (key : Ident.t) =
 
 let create  initial_size =
   let s = Ext_util.power_2_above 8 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty ; mask_size = 0}
+  { size = 0; data = Array.make s Empty ; mask_size = 0}
 
 let iter_and_unmask h f =
-  let rec do_bucket buckets = 
+  let rec iter_bucket buckets = 
     match buckets with 
     | Empty ->
       ()
@@ -11866,13 +11865,13 @@ let iter_and_unmask h f =
           *)
           h.mask_size <- h.mask_size - 1
         end; 
-      do_bucket k.rest 
+      iter_bucket k.rest 
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
+    iter_bucket (Array.unsafe_get d i)
   done
-  
+
 
 let rec small_bucket_mem key lst =
   match lst with 
