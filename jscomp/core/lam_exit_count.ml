@@ -23,16 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type collection = int ref Hash_int.t
-(** Don't modify it .. *)
-let default_zero = ref 0
+type collection = int  Hash_int.t
+
 
 (* Count occurrences of (exit n ...) statements *)
 let count_exit (exits : collection) i =
-  !(Hash_int.find_default exits i default_zero)
+  Hash_int.find_default exits i 0
 
 let incr_exit (exits : collection) i =
-  Hash_int.modify_or_init exits i incr (fun _ -> ref 1)
+  Hash_int.modify_or_init exits i succ 1
 
 
 (** 

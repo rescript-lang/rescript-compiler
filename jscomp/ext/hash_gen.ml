@@ -21,7 +21,11 @@
 
 type ('a, 'b) bucketlist =
   | Empty
-  | Cons of {key : 'a ; data : 'b ; rest :  ('a, 'b) bucketlist}
+  | Cons of {
+      mutable key : 'a ; 
+      mutable data : 'b ; 
+      mutable rest :  ('a, 'b) bucketlist
+    }
 
 type ('a, 'b) t =
   { mutable size: int;                        (* number of entries *)
@@ -55,20 +59,29 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
+    let ndata_tail = Array.make nsize Empty in 
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons l ->
-        insert_bucket l.rest; (* preserve original order of elements *)
-        let nidx = indexfun h l.key in
-        Array.unsafe_set
-          ndata nidx
-          (Cons {l with 
-                 rest = 
-                   Array.unsafe_get ndata nidx}) in
+      | Cons {key; rest} as cell ->
+        let nidx = indexfun h key in
+        begin match Array.unsafe_get ndata_tail nidx with 
+        | Empty -> 
+          Array.unsafe_set ndata nidx cell
+        | Cons tail ->
+          tail.rest <- cell  
+        end;
+        Array.unsafe_set ndata_tail nidx cell;
+        insert_bucket rest
+    in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
-    done
+    done;
+    for i = 0 to nsize - 1 do 
+      match Array.unsafe_get ndata_tail i with 
+      | Empty -> ()  
+      | Cons tail -> tail.rest <- Empty
+    done   
   end
 
 
@@ -104,7 +117,7 @@ let to_list h f =
 
 
 
-let rec small_bucket_mem eq key (lst : _ bucketlist) =
+let rec small_bucket_mem (lst : _ bucketlist) eq key  =
   match lst with 
   | Empty -> false 
   | Cons lst -> 
@@ -117,7 +130,7 @@ let rec small_bucket_mem eq key (lst : _ bucketlist) =
       | Empty -> false 
       | Cons lst -> 
         eq key lst.key  ||
-        small_bucket_mem eq key lst.rest
+        small_bucket_mem lst.rest eq key 
 
 
 let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
@@ -176,7 +189,11 @@ module type S = sig
   val reset: 'a t -> unit
 
   val add: 'a t -> key -> 'a -> unit
-  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
+  val modify_or_init: 
+    'a t -> 
+    key -> 
+    ('a -> 'a) -> 
+    'a -> unit 
   val remove: 'a t -> key -> unit
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list

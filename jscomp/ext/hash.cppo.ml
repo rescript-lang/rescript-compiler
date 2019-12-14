@@ -42,67 +42,79 @@ let length = Hash_gen.length
 
 
 
-let add (h : _ t) key info =
+let add (h : _ t) key data =
   let i = key_index h key in
   let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons{key; data=info; rest=Array.unsafe_get h_data i});
+  Array.unsafe_set h_data i (Cons{key; data; rest=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
   if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init (h : _ t) key modf default =
-  let rec find_bucket (bucketlist : _ bucketlist)  =
+let modify_or_init 
+  (h : 'a t) 
+  (key : key) 
+  (modf : 'a -> 'a) 
+  (default :  'a) : unit =
+  let rec find_bucket (bucketlist : _ bucketlist) : bool =
     match bucketlist with
-    | Cons{key=k; data=i; rest=next} ->
-      if eq_key k key then begin modf i; false end
-      else find_bucket next 
+    | Cons rhs  ->
+      if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
+      else find_bucket rhs.rest
     | Empty -> true in
   let i = key_index h key in 
   let h_data = h.data in 
   if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      Array.unsafe_set h_data i  (Cons{key; data=default (); rest=Array.unsafe_get h_data i});
+      Array.unsafe_set h_data i  (Cons{key; data=default; rest=Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
     end
 
 
-let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
-  match bucketlist with  
+let rec remove_bucket 
+    (h : _ t) (i : int)
+    key 
+    ~(prec : _ bucketlist) 
+    (buck : _ bucketlist) 
+    eq_key = 
+  match buck with   
   | Empty ->
-    Empty
-  | Cons{key=k; data=i; rest=next} ->
+    ()
+  | (Cons {key=k; rest = next }) as c ->
     if eq_key k key 
-    then begin h.size <- h.size - 1; next end
-    else Cons{key = k; data=i; rest=remove_bucket key h next} 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.rest <- next
+    end
+    else remove_bucket h i key ~prec:c next eq_key
 
 let remove (h : _ t ) key =
   let i = key_index h key in
   let h_data = h.data in 
-  let old_h_szie = h.size in 
-  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
-  if old_h_szie <> h.size then 
-    Array.unsafe_set h_data i  new_bucket
+  remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
+(* for short bucket list, [find_rec is not called ] *)
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
     raise Not_found
-  | Cons { key= k; data=d; rest} ->
-    if eq_key key k then d else find_rec key rest
+  | Cons rhs  ->
+    if eq_key key rhs.key then rhs.data else find_rec key rhs.rest
 
 let find_exn (h : _ t) key =
   match Array.unsafe_get h.data (key_index h key) with
   | Empty -> raise Not_found
-  | Cons {key = k1; data=d1; rest=rest1} ->
-    if eq_key key k1 then d1 else
-      match rest1 with
+  | Cons rhs  ->
+    if eq_key key rhs.key then rhs.data else
+      match rhs.rest with
       | Empty -> raise Not_found
-      | Cons{key=k2; data=d2; rest=rest2} ->
-        if eq_key key k2 then d2 else
-          match rest2 with
+      | Cons rhs  ->
+        if eq_key key rhs.key then rhs.data else
+          match rhs.rest with
           | Empty -> raise Not_found
-          | Cons{key=k3; data=d3; rest=rest3} ->
-            if eq_key key k3  then d3 else find_rec key rest3
+          | Cons rhs ->
+            if eq_key key rhs.key  then rhs.data else find_rec key rhs.rest
 
 let find_opt (h : _ t) key =
   Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
@@ -122,33 +134,30 @@ let find_all (h : _ t) key =
       else find_in_bucket rest in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let replace h key info =
-  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
-    | Empty ->
-      raise_notrace Not_found
-    | Cons{key = k; data=i; rest = next} ->
-      if eq_key k key
-      then Cons{key=key; data=info; rest=next}
-      else Cons{key=k; data=i; rest = replace_bucket next} in
+let rec replace_bucket key data (buck : _ bucketlist) eq_key = 
+  match buck with   
+  | Empty ->
+    true
+  | Cons ({key=k; rest = next} as slot) ->
+    if eq_key k key
+    then (slot.key <- key; slot.data <- data; false)
+    else replace_bucket key data next eq_key
+
+let replace h key data =
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
-  try
-    Array.unsafe_set h_data i  (replace_bucket l)
-  with Not_found ->
+  if replace_bucket key data l eq_key then 
     begin 
-      Array.unsafe_set h_data i (Cons{key; data=info; rest=l});
+      Array.unsafe_set h_data i (Cons{key; data; rest=l});
       h.size <- h.size + 1;
       if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
     end 
 
-let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      false
-    | Cons {key=k; data=d; rest} ->
-      eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
+let mem (h : _ t) key = 
+  Hash_gen.small_bucket_mem 
+    (Array.unsafe_get h.data (key_index h key))
+    eq_key key 
 
 
 let of_list2 ks vs = 
