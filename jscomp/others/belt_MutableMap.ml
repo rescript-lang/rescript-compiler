@@ -241,4 +241,5 @@ let mergeMany d xs =
   if newRoot != oldRoot then 
     S.dataSet d newRoot
 
-
+let ( .:[] ) t x = get t x
+let ( .:[]<- ) t x v = set t x v

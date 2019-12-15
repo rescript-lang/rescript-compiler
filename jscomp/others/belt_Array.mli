@@ -616,3 +616,18 @@ external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
   ]}
 
 *)
+
+val ( .:[] ): 'a array -> int -> 'a option
+(** [arr.:[i]]
+    
+    If [i <= 0 <= length arr];returns [Some value] where [value] is the item at index [i]
+    If [i] is out of range;returns [None]
+*)
+
+val ( .:[]<- ): 'a array -> int -> 'a -> bool
+(** [arr.:[n] <- x]
+
+    modifies [arr] in place;
+    it replaces the nth element of [arr] with [x]
+    @return false means not updated due to out of range
+*)

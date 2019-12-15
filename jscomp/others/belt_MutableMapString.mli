@@ -132,5 +132,15 @@ val map: 'a t -> ('a -> 'b) ->  'b t
 val mapWithKeyU: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 val mapWithKey: 'a t -> (key -> 'a -> 'b) -> 'b t    
 
+val ( .:[] ): 'a t ->  key -> 'a option
+(** [get m x] returns [None] if the [x] is not found in map [x],
+    [Some y] otherwise 
+*)
+
+val ( .:[]<- ): 'a t -> key -> 'a -> unit  
+(** [m.:[x] <- y] returns a map containing the same bindings as
+    [m], with a new binding of [x] to [y]. If [x] was already bound
+    in [m], its previous binding disappears.
+*)
 
 

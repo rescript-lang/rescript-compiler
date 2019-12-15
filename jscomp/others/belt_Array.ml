@@ -509,3 +509,6 @@ let unzip a =
     setUnsafe a2 i v2
   done;
   (a1, a2)
+
+let ( .:[] ) t x = get t x
+let ( .:[]<- ) t x v = set t x v
