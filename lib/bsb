@@ -262,7 +262,6 @@ if (watch_mode) {
             if (!stats.isSymbolicLink()) continue
             pkg_dir = fs.realpathSync(pkg[1])
             if (visited[pkg_dir]) continue
-            if (pkg_dir.indexOf(cwd) !== 0) continue
             visited[pkg_dir] = true
             var pkg_sourcedirs = path.join(pkg_dir, sourcedirs)
             var watch_files = getWatchFiles(pkg_sourcedirs)
@@ -411,7 +410,7 @@ if (watch_mode) {
             }
             reasons_to_rebuild = [];
             var p = child_process
-                .spawn(bsb_exe, [], { stdio: ['inherit', 'inherit', 'pipe'] });
+                .spawn(bsb_exe, ['-make-world'], { stdio: ['inherit', 'inherit', 'pipe'] });
             p.on('exit', build_finished_callback)
             p.stderr
                 .setEncoding('utf8')
