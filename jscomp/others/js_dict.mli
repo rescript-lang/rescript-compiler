@@ -37,6 +37,8 @@ val get : 'a t -> key -> 'a option
     dictionary, [Some value] otherwise *)
 
 val ( .:[] ) : 'a t -> key -> 'a option
+(** [dict.:[key]] returns [None] if the [key] is not found in the 
+    dictionary, [Some value] otherwise *)
 
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
 (** [unsafeGet dict key] return the value if the [key] exists, 
@@ -54,7 +56,8 @@ external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
 
   
 val ( .:[]<- ) : 'a t -> key -> 'a -> unit
-  
+(** [dict.:[key] <- value] sets the [key]/[value] in [dict] *)
+
 external keys : 'a t -> string array = "Object.keys" [@@bs.val]
 (** [keys dict] returns all the keys in the dictionary [dict]*)
 
