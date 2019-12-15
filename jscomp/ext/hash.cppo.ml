@@ -70,30 +70,10 @@ let add_or_update
       if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
     end
 
-
-let rec remove_bucket 
-    (h : _ t) (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
-  | Empty ->
-    ()
-  | (Cons {key=k; next }) as c ->
-    if eq_key k key 
-    then begin
-      h.size <- h.size - 1;
-      match prec with
-      | Empty -> Array.unsafe_set h.data i  next
-      | Cons c -> c.next <- next
-    end
-    else remove_bucket h i key ~prec:c next eq_key
-
 let remove (h : _ t ) key =
   let i = key_index h key in
   let h_data = h.data in 
-  remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
+  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
 (* for short bucket list, [find_rec is not called ] *)
 let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  

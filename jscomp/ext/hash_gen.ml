@@ -180,6 +180,24 @@ let rec small_bucket_default eq key default (lst : _ bucket) =
             if eq key lst.key  then lst.data else 
               small_bucket_default eq key default lst.next
 
+let rec remove_bucket 
+    h  (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
+  | Empty ->
+    ()
+  | Cons {key=k; next }  ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.next <- next
+    end
+    else remove_bucket h i key ~prec:buck next eq_key
 
 module type S = sig 
   type key
