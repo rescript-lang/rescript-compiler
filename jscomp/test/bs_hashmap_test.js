@@ -67,7 +67,7 @@ eqx("File \"bs_hashmap_test.ml\", line 32, characters 6-13", Belt_HashMap.$dot$c
 
 Belt_HashMap.$dot$colon$lbrack$rbrack$less$neg(empty, 2, 22);
 
-eqx("File \"bs_hashmap_test.ml\", line 34, characters 6-13", Belt_HashMap.$dot$colon$lbrack$rbrack(empty, 2), 2);
+eqx("File \"bs_hashmap_test.ml\", line 34, characters 6-13", Belt_HashMap.$dot$colon$lbrack$rbrack(empty, 2), 22);
 
 eqx("File \"bs_hashmap_test.ml\", line 35, characters 6-13", empty.size, 3);
 
