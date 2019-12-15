@@ -4813,6 +4813,8 @@ val check_suffix_case :
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
+val real_path : string -> string 
+
 end = struct
 #1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -5139,6 +5141,35 @@ let find_package_json_dir cwd  =
   find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+let getchdir s =
+  let p = Sys.getcwd () in
+  Unix.chdir s;
+  p
+
+let normalize s =
+  try getchdir (getchdir s) with _ -> s
+
+let real_path p =
+  match (try Some (Sys.is_directory p) with Sys_error _ -> None) with
+  | None ->
+    let rec resolve dir =
+      if Sys.file_exists dir then normalize dir else
+      let parent = Filename.dirname dir in
+      if dir = parent then dir
+      else Filename.concat (resolve parent) (Filename.basename dir)
+    in
+    let p =
+      if Filename.is_relative p then Filename.concat (Sys.getcwd ()) p
+      else p
+    in
+    resolve p
+  | Some true -> normalize p
+  | Some false ->
+    let dir = normalize (Filename.dirname p) in
+    match Filename.basename p with
+    | "." -> dir
+    | base -> dir // base
 
 end
 module Bsb_config : sig 
@@ -8045,12 +8076,6 @@ let info_args (args : string array) =
   
 
 end
-module Bs_realpath_stubs
-= struct
-#1 "bs_realpath_stubs.ml"
-external realpath : string -> string option = "caml_realpath"
-
-end
 module Hash_gen
 = struct
 #1 "hash_gen.ml"
@@ -8537,11 +8562,7 @@ let check_dir dir =
   | false -> None
 
 let is_same_paths a b =
-  if a = b then true
-  else 
-  match Bs_realpath_stubs.realpath a, Bs_realpath_stubs.realpath b with
-  | Some a, Some b -> a = b
-  | _ -> false
+  if a = b then true else (Ext_path.real_path a) = (Ext_path.real_path b)
 
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
