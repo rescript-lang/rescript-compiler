@@ -152,6 +152,8 @@ let get  h (key : key) =
             if  key = (N.keyGet cell3)  then Some (N.valueGet cell3)
             else getAux  key (N.nextGet cell3)
 
+let ( .:[]<- ) h key value = set h key value
+let ( .:[] ) h key = get h key
 
 let rec memInBucket (key : key) cell = 
     (N.keyGet cell)  = key  ||

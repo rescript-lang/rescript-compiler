@@ -22,6 +22,18 @@ val set: 'a t -> key -> 'a -> unit
 val copy: 'a t -> 'a t 
 val get:  'a t -> key -> 'a option
 
+
+val ( .:[] ):  'a t -> key -> 'a option
+(** [get tbl k] returns [None] if the [k] is not found in table [tbl],
+    [Some v] otherwise 
+*)
+
+val ( .:[]<- ): 'a t -> key -> 'a -> unit
+(** [tbl.:[k] <- v] if [k] does not exist,
+     add the binding [k,v], otherwise, update the old value with the new
+     [v]
+*)
+
 val has:  'b  t -> key -> bool
 
 val remove: 'a t -> key -> unit
