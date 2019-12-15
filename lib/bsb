@@ -431,10 +431,12 @@ if (watch_mode) {
         if (validEvent(event, reason)) {
             dlog(`Event ${event} ${reason}`);
             reasons_to_rebuild.push([event, reason])
-            if (needRebuild()) {
-                if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
-                build()
-            }
+            setImmediate(() => {
+                if (needRebuild()) {
+                    if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
+                    build()
+                }
+            })
         }
 
     }
