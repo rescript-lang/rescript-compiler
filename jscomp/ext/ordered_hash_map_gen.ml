@@ -100,10 +100,13 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons { key; ord = info; data; next = rest} ->
+      | Cons { key; ord; data; next} ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons { key; ord = info; data; next =  ndata.(nidx)};
-        insert_bucket rest
+        Array.unsafe_set ndata nidx 
+          (Cons { key; ord ; data; 
+                  next =   
+                    Array.unsafe_get ndata nidx });
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -114,8 +117,8 @@ let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons { key = k ; ord = i;  data = value; next =  rest} ->
-      f k value i; do_bucket rest in
+    | Cons { key; ord;  data; next } ->
+      f key data ord; do_bucket next in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -144,8 +147,8 @@ let fold h init f =
     match b with
       Empty ->
       accu
-    | Cons { key = k ; ord = i; data =   value; next =  rest} ->
-      do_bucket rest (f k  value i  accu) in
+    | Cons { key ; ord ; data ; next } ->
+      do_bucket next (f key  data ord  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
