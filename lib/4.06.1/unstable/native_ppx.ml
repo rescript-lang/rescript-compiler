@@ -22094,6 +22094,8 @@ let app_exp_mapper
            { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
              pexp_attributes = [];
              pexp_loc = pexp_loc}
+         | {pexp_desc = Pexp_variant(label,None); pexp_loc; pexp_attributes} -> 
+           {fn with pexp_desc = Pexp_variant(label, Some new_obj_arg)}
          | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
            {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
          | _ ->
@@ -22223,6 +22225,7 @@ let app_exp_mapper
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )
+
 end
 module Ast_signature : sig 
 #1 "ast_signature.mli"
