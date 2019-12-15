@@ -254,4 +254,25 @@
 
                   
 <pre><span id="VALmapWithKeyU"><span class="keyword">val</span> mapWithKeyU</span> : <code class="type">'a <a href="Belt_MutableMapString.html#TYPEt">t</a> -><br>       (<a href="Belt_MutableMapString.html#TYPEkey">key</a> -> 'a -> 'b [@bs]) -> 'b <a href="Belt_MutableMapString.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">'a <a href="Belt_MutableMapString.html#TYPEt">t</a> -><br>       (<a href="Belt_MutableMapString.html#TYPEkey">key</a> -> 'a -> 'b) -> 'b <a href="Belt_MutableMapString.html#TYPEt">t</a></code></pre></body></html>
+<pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">'a <a href="Belt_MutableMapString.html#TYPEt">t</a> -><br>       (<a href="Belt_MutableMapString.html#TYPEkey">key</a> -> 'a -> 'b) -> 'b <a href="Belt_MutableMapString.html#TYPEt">t</a></code></pre>
+<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'a <a href="Belt_MutableMapString.html#TYPEt">t</a> -> <a href="Belt_MutableMapString.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">get m x</code> returns <code class="code">None</code> if the <code class="code">x</code> is not found in map <code class="code">x</code>,
+    <code class="code">Some y</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'a <a href="Belt_MutableMapString.html#TYPEt">t</a> -> <a href="Belt_MutableMapString.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">m.:[x] &lt;- y</code> returns a map containing the same bindings as
+    <code class="code">m</code>, with a new binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
+    in <code class="code">m</code>, its previous binding disappears.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  </body></html>

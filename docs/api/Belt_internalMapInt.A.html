@@ -897,4 +897,29 @@
                     </div>
                     </div>
 
+                  
+<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'a array -> int -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">arr.:[i]</code>
+
+    If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code>
+    If <code class="code">i</code> is out of range;returns <code class="code">None</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'a array -> int -> 'a -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">arr.:[n] &lt;- x</code>
+
+    modifies <code class="code">arr</code> in place;
+    it replaces the nth element of <code class="code">arr</code> with <code class="code">x</code><br>
+<div class="tag"> <li><b>Returns</b> false means not updated due to out of range</li>
+ </div> 
+                    </div>
+                    
+                    </div>
+
                   </body></html>

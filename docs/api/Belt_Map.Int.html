@@ -268,6 +268,27 @@
                     </div>
 
                   
+<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -> <a href="Belt_MapInt.html#TYPEkey">key</a> -> 'v option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">m.:[x]</code> returns <code class="code">None</code> if the <code class="code">x</code> is not found in map <code class="code">m</code>,
+    <code class="code">Some y</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -> <a href="Belt_MapInt.html#TYPEkey">key</a> -> 'v -> 'v <a href="Belt_MapInt.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">m.:[x] &lt;- y</code> returns a map containing the same bindings as
+   <code class="code">m</code>, plus a binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
+   in <code class="code">m</code>, its previous binding disappears.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALupdateU"><span class="keyword">val</span> updateU</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       <a href="Belt_MapInt.html#TYPEkey">key</a> -> ('v option -> 'v option [@bs]) -> 'v <a href="Belt_MapInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       <a href="Belt_MapInt.html#TYPEkey">key</a> -> ('v option -> 'v option) -> 'v <a href="Belt_MapInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmergeU"><span class="keyword">val</span> mergeU</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       'v2 <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       (<a href="Belt_MapInt.html#TYPEkey">key</a> -> 'v option -> 'v2 option -> 'c option [@bs]) -><br>       'c <a href="Belt_MapInt.html#TYPEt">t</a></code></pre>
