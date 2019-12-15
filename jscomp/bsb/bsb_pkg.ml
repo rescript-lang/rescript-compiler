@@ -47,11 +47,7 @@ let check_dir dir =
   | false -> None
 
 let is_same_paths a b =
-  if a = b then true
-  else 
-  match Bs_realpath_stubs.realpath a, Bs_realpath_stubs.realpath b with
-  | Some a, Some b -> a = b
-  | _ -> false
+  if a = b then true else (Ext_path.real_path a) = (Ext_path.real_path b)
 
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)

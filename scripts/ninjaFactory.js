@@ -29,6 +29,7 @@ build bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
 build refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
     flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
 build bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
+    flags = $flags unix.cmxa
 `
 }
 
