@@ -115,20 +115,12 @@ let find_all (h : _ t) key =
       else find_in_bucket rhs.next in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let rec replace_bucket key data (buck : _ bucket) eq_key = 
-  match buck with   
-  | Empty ->
-    true
-  | Cons slot ->
-    if eq_key slot.key key
-    then (slot.key <- key; slot.data <- data; false)
-    else replace_bucket key data slot.next eq_key
 
 let replace h key data =
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
-  if replace_bucket key data l eq_key then 
+  if Hash_gen.replace_bucket key data l eq_key then 
     begin 
       Array.unsafe_set h_data i (Cons{key; data; next=l});
       h.size <- h.size + 1;

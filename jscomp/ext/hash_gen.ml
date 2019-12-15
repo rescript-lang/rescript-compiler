@@ -199,6 +199,15 @@ let rec remove_bucket
     end
     else remove_bucket h i key ~prec:buck next eq_key
 
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
+  match buck with   
+  | Empty ->
+    true
+  | Cons slot ->
+    if eq_key slot.key key
+    then (slot.key <- key; slot.data <- data; false)
+    else replace_bucket key data slot.next eq_key
+
 module type S = sig 
   type key
   type 'a t
