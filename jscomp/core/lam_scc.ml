@@ -103,8 +103,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array   
     )  ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in
   let node_vec = Array.make (Array.length int_mapping) (Vec_int.empty ()) in
-  domain
-  |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->
+  Ordered_hash_map_local_ident.iter domain ( fun id lam key_index ->
       let base_key =  node_vec.(key_index) in
       ignore (hit_mask mask lam) ;
       Hash_set_ident_mask.iter_and_unmask mask (fun ident hit  ->

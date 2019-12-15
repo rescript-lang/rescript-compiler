@@ -37,11 +37,17 @@ sig
   val add : 'value t -> key -> 'value -> unit
   val mem : 'value t -> key -> bool
   val rank : 'value t -> key -> int (* -1 if not found*)
-  val find_value : 'value t -> key -> 'value (* raise if not found*)
-  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
-  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val find_value : 'value t -> key -> 'value (* raise if not found*)  
+  val iter: 
+    'value t -> 
+    (key -> 'value -> int -> unit) ->  
+    unit
+  val fold: 
+    'value t -> 
+    'b -> 
+    (key -> 'value -> int -> 'b -> 'b) ->  
+    'b
   val length:  'value t -> int
-  val stats: 'value t -> Hashtbl.statistics
   val elements : 'value t -> key list 
   val choose : 'value t -> key 
   val to_sorted_array: 'value t -> key array
@@ -104,7 +110,7 @@ let resize indexfun h =
     done
   end
 
-let iter f h =
+let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
@@ -130,10 +136,10 @@ let to_sorted_array h =
   else 
     let v = choose h in 
     let arr = Array.make h.size v in
-    iter (fun k _ i -> Array.unsafe_set arr i k) h;
+    iter h (fun k _ i -> Array.unsafe_set arr i k);
     arr 
 
-let fold f h init =
+let fold h init f =
   let rec do_bucket b accu =
     match b with
       Empty ->
@@ -148,7 +154,7 @@ let fold f h init =
   !accu
 
 let elements set = 
-  fold  (fun k  _  _ acc  ->  k :: acc) set []
+  fold set [] (fun k  _  _ acc  ->  k :: acc) 
 
 
 let rec bucket_length acc (x : _ bucket) = 
@@ -156,18 +162,6 @@ let rec bucket_length acc (x : _ bucket) =
   | Empty -> 0
   | Cons rhs -> bucket_length (acc + 1) rhs.next
 
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b))  in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    ;
-  { Hashtbl.num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
+
 
 
