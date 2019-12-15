@@ -165,7 +165,37 @@
 
                   
 <pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
+    <code class="code">Some v</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
+    <code class="code">Some v</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">tbl.:[k] &lt;- v</code> if <code class="code">k</code> does not exist,
+     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
+     <code class="code">v</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">has tbl x</code> checks if <code class="code">x</code> is bound in <code class="code">tbl</code>.<br>

@@ -176,6 +176,8 @@ let get h key =
             else 
               getAux ~eq key (N.nextGet cell3)
 
+let ( .:[]<- ) h key value = set h key value
+let ( .:[] ) h key = get h key
 
 let rec memInBucket key cell ~eq = 
   eq (N.keyGet cell) key [@bs] || 

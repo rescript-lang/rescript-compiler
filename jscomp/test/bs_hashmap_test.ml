@@ -29,8 +29,12 @@ let add = (+)
 let () = 
   N.mergeMany empty [|1,1;2,3;3,3; 2,2|];
   eqx __LOC__ (N.get empty 2) (Some 2);
+  eqx __LOC__ (empty.N.:[2]) (Some 2);
+  empty.N.:[2] <- 22;
+  eqx __LOC__ (empty.N.:[2]) (Some 2);
   eqx __LOC__ (N.size empty) 3
-  
+
+
 module A = Belt.Array 
 module So = Belt.SortArray 
 

@@ -141,10 +141,27 @@
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_HashMap.html#VAL(.:[])">(.:[])</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
+    <code class="code">Some v</code> otherwise<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_dict.html#VAL(.:[]<-)">(.:[]&lt;-)</a> [<a href="Js_dict.html">Js_dict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">dict.:[key] &lt;- value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_HashMap.html#VAL(.:[]<-)">(.:[]&lt;-)</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">tbl.:[k] &lt;- v</code> if <code class="code">k</code> does not exist,
+     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
+     <code class="code">v</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -7324,7 +7341,9 @@ Valid flags:
 <tr><td><a href="Belt_HashMap.html#VALget">get</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
+    <code class="code">Some v</code> otherwise<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALget">get</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
