@@ -1619,7 +1619,6 @@ rule mk_bsversion
 rule gcc
     command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
-build stubs/realpath.o : gcc  stubs/realpath.c
 rule ocamlmklib
     command = $ocamlmklib $in -o $name
 
@@ -1630,13 +1629,11 @@ build ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.li
 
 build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
     name = stubs/bs_hash
-build stubs/libbs_realpath.a stubs/dllbs_realpath.so: ocamlmklib stubs/realpath.o
-    name = stubs/bs_realpath
 rule stubslib
     command = $ocamlopt -a $ml -o $out -cclib $clib
-build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a stubs/bs_realpath_stubs.cmx stubs/libbs_realpath.a
-    ml = stubs/bs_hash_stubs.cmx stubs/bs_realpath_stubs.cmx
-    clib = stubs/libbs_hash.a stubs/libbs_realpath.a
+build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
+    ml = stubs/bs_hash_stubs.cmx
+    clib = stubs/libbs_hash.a
 
 ${generateVisitorPattern()}
 

@@ -92,7 +92,7 @@ function main() {
                 'unstable',
                 'all_ounit_tests.ml'),
             path.join(binDir, 'all_ounit_tests.ml'))
-        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/realpath.c ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
+        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
             {
                 cwd: binDir,
                 stdio : [0,1,2]
