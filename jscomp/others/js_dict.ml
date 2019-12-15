@@ -43,8 +43,12 @@ let get (type u) (dict : u t) (k : key) : u option =
     Some (unsafeGet dict k)
   else None
 
+let ( .:[] ) dict key = get dict key
+
 (** [set dict key value] sets the value of [key] in [dict] to [value] *)
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
+
+let ( .:[]<- ) dict key value = set dict key value
 
 (** [keys dict] returns an array of all the keys in [dict] *)
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
