@@ -9,12 +9,18 @@ let suites = Mt.[
     Eq(Some 43, get (obj ()) "foo"));
   "get - property not in object", (fun _ ->
     Eq(None, get (obj ()) "baz"));
+  "get - index ext", (fun _ ->
+    Eq(Some 43, (obj()).:["foo"]));
   "unsafe_get", (fun _ ->
     Eq(43, unsafeGet (obj ()) "foo"));
   "set", (fun _ ->
     let o = obj () in 
     set o "foo" 36;
     Eq(Some 36, get o "foo"));
+  "set - index ext", (fun _ ->
+    let o = obj () in 
+    o.:["foo"] <- 36;
+    Eq(Some 36, o.:["foo"]));
   "keys", (fun _ ->
     Eq([| "foo"; "bar" |], keys (obj ())));
   "entries", (fun _ ->
@@ -34,3 +40,4 @@ let suites = Mt.[
         map (fun [@bs] i -> string_of_int i) (obj ())))
 ]
 ;; Mt.from_pair_suites __MODULE__ suites
+
