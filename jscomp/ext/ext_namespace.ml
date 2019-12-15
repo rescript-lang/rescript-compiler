@@ -116,6 +116,7 @@ let namespace_of_package_name (s : string) : string =
       | 'a' .. 'z' 
       | 'A' .. 'Z' 
       | '0' .. '9'
+      | '_'
         ->
         add capital ch ; 
         aux false (off + 1) len 
