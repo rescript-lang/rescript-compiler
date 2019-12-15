@@ -50,10 +50,10 @@ let add (h : _ t) key data =
   if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init 
+let add_or_update 
   (h : 'a t) 
   (key : key) 
-  (modf : 'a -> 'a) 
+  ~update:(modf : 'a -> 'a) 
   (default :  'a) : unit =
   let rec find_bucket (bucketlist : _ bucket) : bool =
     match bucketlist with
