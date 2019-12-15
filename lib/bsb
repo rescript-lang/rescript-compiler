@@ -431,6 +431,9 @@ if (watch_mode) {
         if (validEvent(event, reason)) {
             dlog(`Event ${event} ${reason}`);
             reasons_to_rebuild.push([event, reason])
+            // Some editors are using temporary files to store edits.
+            // This results in two sync change events: change + rename and two sync builds. 
+            // Using setImmediate will ensure that only one build done.
             setImmediate(() => {
                 if (needRebuild()) {
                     if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
