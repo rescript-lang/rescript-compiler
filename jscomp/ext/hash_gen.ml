@@ -24,7 +24,7 @@ type ('a, 'b) bucket =
   | Cons of {
       mutable key : 'a ; 
       mutable data : 'b ; 
-      mutable rest :  ('a, 'b) bucket
+      mutable next :  ('a, 'b) bucket
     }
 
 type ('a, 'b) t =
@@ -63,16 +63,16 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons {key; rest} as cell ->
+      | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
         | Empty -> 
           Array.unsafe_set ndata nidx cell
         | Cons tail ->
-          tail.rest <- cell  
+          tail.next <- cell  
         end;
         Array.unsafe_set ndata_tail nidx cell;
-        insert_bucket rest
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -80,7 +80,7 @@ let resize indexfun h =
     for i = 0 to nsize - 1 do 
       match Array.unsafe_get ndata_tail i with 
       | Empty -> ()  
-      | Cons tail -> tail.rest <- Empty
+      | Cons tail -> tail.next <- Empty
     done   
   end
 
@@ -91,7 +91,7 @@ let iter h f =
     | Empty ->
       ()
     | Cons l  ->
-      f l.key l.data; do_bucket l.rest in
+      f l.key l.data; do_bucket l.next in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -103,7 +103,7 @@ let fold h init f =
       Empty ->
       accu
     | Cons l ->
-      do_bucket l.rest (f l.key l.data accu) in
+      do_bucket l.next (f l.key l.data accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -122,15 +122,15 @@ let rec small_bucket_mem (lst : _ bucket) eq key  =
   | Empty -> false 
   | Cons lst -> 
     eq  key lst.key ||
-    match lst.rest with
+    match lst.next with
     | Empty -> false 
     | Cons lst -> 
       eq key lst.key  || 
-      match lst.rest with 
+      match lst.next with 
       | Empty -> false 
       | Cons lst -> 
         eq key lst.key  ||
-        small_bucket_mem lst.rest eq key 
+        small_bucket_mem lst.next eq key 
 
 
 let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
@@ -138,31 +138,31 @@ let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   | Empty -> None 
   | Cons lst -> 
     if eq  key lst.key then Some lst.data else 
-      match lst.rest with
+      match lst.next with
       | Empty -> None 
       | Cons lst -> 
         if eq key lst.key then Some lst.data else 
-          match lst.rest with 
+          match lst.next with 
           | Empty -> None 
           | Cons lst -> 
             if eq key lst.key  then Some lst.data else 
-              small_bucket_opt eq key lst.rest
+              small_bucket_opt eq key lst.next
 
 
 let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons {key=k1;  rest=rest1} -> 
-    if eq  key k1 then Some k1 else 
-      match rest1 with
+  | Cons {key=k;  next} -> 
+    if eq  key k then Some k else 
+      match next with
       | Empty -> None 
-      | Cons {key=k2; rest=rest2} -> 
-        if eq key k2 then Some k2 else 
-          match rest2 with 
+      | Cons {key=k; next} -> 
+        if eq key k then Some k else 
+          match next with 
           | Empty -> None 
-          | Cons {key=k3;  rest=rest3} -> 
-            if eq key k3  then Some k3 else 
-              small_bucket_key_opt eq key rest3
+          | Cons {key=k; next} -> 
+            if eq key k  then Some k else 
+              small_bucket_key_opt eq key next
 
 
 let rec small_bucket_default eq key default (lst : _ bucket) =
@@ -170,15 +170,15 @@ let rec small_bucket_default eq key default (lst : _ bucket) =
   | Empty -> default 
   | Cons lst -> 
     if eq  key lst.key then  lst.data else 
-      match lst.rest with
+      match lst.next with
       | Empty -> default 
       | Cons lst -> 
         if eq key lst.key then  lst.data else 
-          match lst.rest with 
+          match lst.next with 
           | Empty -> default 
           | Cons lst -> 
             if eq key lst.key  then lst.data else 
-              small_bucket_default eq key default lst.rest
+              small_bucket_default eq key default lst.next
 
 
 module type S = sig 
@@ -225,7 +225,7 @@ end
 #if 0 then
 let rec bucket_length accu = function
   | Empty -> accu
-  | Cons l -> bucket_length (accu + 1) l.rest
+  | Cons l -> bucket_length (accu + 1) l.next
 
 let stats h =
   let mbl =
