@@ -118,7 +118,7 @@ end
   external every : t -> (elt  -> bool [@bs]) -> bool = "every" [@@bs.send]\
   external everyi : t -> (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send]\
   \
-  (** should we use [bool] or [boolan] seems they are intechangeable here *)\
+  (** should we use [bool] or [boolean] seems they are intechangeable here *)\
   external filter : t -> (elt -> bool [@bs]) -> t = "filter" [@@bs.send]\
   external filteri : t -> (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send]\
   \

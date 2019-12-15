@@ -128,7 +128,7 @@ module type S =  sig
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
 
-  (** should we use [bool] or [boolan] seems they are intechangeable here *)
+  (** should we use [bool] or [boolean] seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
@@ -227,7 +227,7 @@ end
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]\
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]\
   \
-  (** should we use [bool] or [boolan] seems they are intechangeable here *)\
+  (** should we use [bool] or [boolean] seems they are intechangeable here *)\
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]\
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]\
   \
