@@ -249,8 +249,37 @@ if (watch_mode) {
     var sourcedirs = path.join('lib', 'bs', '.sourcedirs.json')
     var watch_generated = []
 
+    function getDirsForRelativeSymlinkedPackages (pkgs) {
+        pkgs = pkgs.slice()
+        var watched_dirs = []
+        var visited = {}
+        var pkg
+        var cwd = process.cwd()
+        //noinspection JSAssignmentUsedAsCondition
+        while (pkg = pkgs.shift()) {
+            var pkg_dir = pkg[1]
+            var stats = fs.lstatSync(pkg_dir)
+            if (!stats.isSymbolicLink()) continue
+            pkg_dir = fs.realpathSync(pkg[1])
+            if (visited[pkg_dir]) continue
+            if (pkg_dir.indexOf(cwd) !== 0) continue
+            visited[pkg_dir] = true
+            var pkg_sourcedirs = path.join(pkg_dir, sourcedirs)
+            var watch_files = getWatchFiles(pkg_sourcedirs)
+            var dirs = watch_files.dirs
+            for (var i = 0; i < dirs.length; i++) {
+                var dir = path.join(pkg_dir, dirs[i])
+                if (fs.existsSync(dir)) {
+                    watched_dirs.push(dir)
+                }
+            }
+            pkgs.push.apply(pkgs, watch_files.pkgs)
+        }
+        return watched_dirs
+    }
+
     function watch_build(watch_config) {
-        var watch_files = watch_config.dirs
+        var watch_files = watch_config.dirs.concat(getDirsForRelativeSymlinkedPackages(watch_config.pkgs))
         watch_generated = watch_config.generated
         // close and remove all unused watchers
         watchers = watchers.filter(function (watcher) {
@@ -411,7 +440,7 @@ if (watch_mode) {
         if (fs.existsSync(file)) {
             return JSON.parse(fs.readFileSync(file, 'utf8'))
         } else {
-            return { dirs: [], generated: [] }
+            return { dirs: [], pkgs: [], generated: [] }
         }
 
     }
