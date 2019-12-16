@@ -165,4 +165,4 @@ let packIdData (type value) (type identity) ~(id : (value, identity) id) ~data  
 
 let checkInvariantInternal d = Dict.checkInvariantInternal (dataGet d)
 
-let ( .:[] ) s x = get s x
+let ( .:[] ) = get

@@ -168,5 +168,5 @@ let mergeU = I.mergeU
 let merge = I.merge 
 let fromArray = I.fromArray
 
-let ( .:[] ) t x = get t x
-let ( .:[]<- ) t x v = set t x v
+let ( .:[] ) = get
+let ( .:[]<- ) = set

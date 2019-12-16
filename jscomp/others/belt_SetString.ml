@@ -196,5 +196,5 @@ let rec diff (s1 : t) (s2 : t) =
     if pres.contents then N.concatShared ll rr 
     else N.joinShared ll v1 rr 
 
-let ( .:[] ) s x = get s x
+let ( .:[] ) = get
 

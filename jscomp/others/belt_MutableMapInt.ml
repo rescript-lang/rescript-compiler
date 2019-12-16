@@ -171,5 +171,5 @@ let getUndefined d x = I.getUndefined (dataGet d) x
 let getWithDefault d x def = I.getWithDefault (dataGet d) x def  
 let getExn d x = I.getExn (dataGet d) x 
 
-let ( .:[] ) t x = get t x
-let ( .:[]<- ) t x v = set t x v
+let ( .:[] ) = get
+let ( .:[]<- ) = set

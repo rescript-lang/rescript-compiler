@@ -138,7 +138,7 @@ let add0 h key  ~hash  ~eq =
 let add h key  = 
   add0 ~hash:(C.hashGet h) ~eq:(C.eqGet h) h  key 
 
-let ( .:[]<- ) h key = add h key
+let ( .:[]<- ) = add
 
 let rec memInBucket ~eq key cell = 
   (Belt_Id.getEqInternal eq) 
