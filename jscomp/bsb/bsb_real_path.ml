@@ -5,8 +5,7 @@ let getchdir s =
   Unix.chdir s;
   p
 
-let normalize s =
-  try getchdir (getchdir s) with _ -> s
+let normalize s = getchdir (getchdir s)
 
 let real_path p =
   match (try Some (Sys.is_directory p) with Sys_error _ -> None) with
