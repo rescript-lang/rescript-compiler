@@ -373,3 +373,4 @@ let has d x =
 let copy d = S.t ~data:(N.copy (S.dataGet d)) ~cmp:(S.cmpGet d)
 
 let ( .:[] ) = get
+let ( .:[]<- ) = add

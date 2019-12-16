@@ -385,9 +385,4 @@ val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('va
 *)
 
 val ( .:[] ): ('value, 'id) t -> 'value -> 'value option
-(** [s.:[k]]
-    @return the reference of the value [k'] which is equivalent to [k]
-    using  the comparator specifiecd by this collection, [None]
-    if it does not exist
-*)
-
+(** {b Index operator} for {!get} *)

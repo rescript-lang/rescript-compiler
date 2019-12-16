@@ -145,6 +145,4 @@ val checkInvariantInternal: t -> unit
 *)
 
 val ( .:[] ): t -> value -> value option
-(** [s.:[x]] returns [None] if the [x] is not found in set [x],
-    [Some y] otherwise 
-*)
+(** {b Index operator} for {!get} *)

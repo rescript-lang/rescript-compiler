@@ -36,10 +36,6 @@ val get : 'a t -> key -> 'a option
 (** [get dict key] returns [None] if the [key] is not found in the 
     dictionary, [Some value] otherwise *)
 
-val ( .:[] ) : 'a t -> key -> 'a option
-(** [dict.:[key]] returns [None] if the [key] is not found in the 
-    dictionary, [Some value] otherwise *)
-
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
 (** [unsafeGet dict key] return the value if the [key] exists, 
     otherwise an {b undefined} value is returned. Must be used only 
@@ -53,10 +49,6 @@ Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict)
 
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 (** [set dict key value] sets the [key]/[value] in [dict] *)
-
-  
-val ( .:[]<- ) : 'a t -> key -> 'a -> unit
-(** [dict.:[key] <- value] sets the [key]/[value] in [dict] *)
 
 external keys : 'a t -> string array = "Object.keys" [@@bs.val]
 (** [keys dict] returns all the keys in the dictionary [dict]*)
@@ -86,3 +78,9 @@ val fromArray : (key * 'a) array -> 'a t
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
 (** [map f dict] maps [dict] to a new dictionary with the same keys,
 using [f] to map each value *)
+
+val ( .:[] ) : 'a t -> key -> 'a option
+(** {b Index operator} for {!get} *)
+
+val ( .:[]<- ) : 'a t -> key -> 'a -> unit
+(** {b Index operator} for {!set} *)

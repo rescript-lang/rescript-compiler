@@ -23,15 +23,10 @@ val copy: 'a t -> 'a t
 val get:  'a t -> key -> 'a option
 
 val ( .:[] ):  'a t -> key -> 'a option
-(** [get tbl k] returns [None] if the [k] is not found in table [tbl],
-    [Some v] otherwise 
-*)
+(** {b Index operator} for {!get} *)
 
 val ( .:[]<- ): 'a t -> key -> 'a -> unit
-(** [tbl.:[k] <- v] if [k] does not exist,
-     add the binding [k,v], otherwise, update the old value with the new
-     [v]
-*)
+(** {b Index operator} for {!set} *)
 
 val has:  'b  t -> key -> bool
 

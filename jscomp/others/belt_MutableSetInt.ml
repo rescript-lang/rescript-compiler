@@ -342,3 +342,4 @@ let has d x = I.has (dataGet d) x
 let copy d = t ~data:(N.copy (dataGet d)) 
 
 let ( .:[] ) = get
+let ( .:[]<- ) = add

@@ -109,15 +109,10 @@ val get: ('key, 'value, 'id ) t -> 'key -> 'value option
 *)
 
 val ( .:[] ): ('key, 'value, 'id ) t -> 'key -> 'value option
-(** [get tbl k] returns [None] if the [k] is not found in table [tbl],
-    [Some v] otherwise 
-*)
+(** {b Index operator} for {!get} *)
 
 val ( .:[]<- ): ('key, 'value, 'id ) t -> 'key -> 'value -> unit
-(** [tbl.:[k] <- v] if [k] does not exist,
-     add the binding [k,v], otherwise, update the old value with the new
-     [v]
-*)
+(** {b Index operator} for {!set} *)
 
 val has: ('key, 'value, 'id ) t -> 'key -> bool
 (** [has tbl x] checks if [x] is bound in [tbl]. *)

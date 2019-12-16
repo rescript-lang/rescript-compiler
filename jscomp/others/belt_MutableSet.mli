@@ -149,6 +149,7 @@ val checkInvariantInternal: _ t -> unit
 
 
 val ( .:[] ): ('value, 'id) t -> 'value -> 'value option
-(** [s.:[x]] returns [None] if the [x] is not found in set [x],
-    [Some y] otherwise 
-*)
+(** {b Index operator} for {!get} *)
+
+val ( .:[]<- ): ('value, 'id) t -> 'value -> unit
+(** {b Index operator} for {!add} *)

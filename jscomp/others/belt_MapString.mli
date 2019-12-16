@@ -114,15 +114,10 @@ val set: 'v t -> key -> 'v -> 'v t
 
 
 val ( .:[] ): 'v t -> key -> 'v option
-(** [m.:[x]] returns [None] if the [x] is not found in map [m],
-    [Some y] otherwise 
-*)
+(** {b Index operator} for {!get} *)
 
 val ( .:[]<- ): 'v t -> key -> 'v -> 'v t
-(** [m.:[x] <- y] returns a map containing the same bindings as
-   [m], plus a binding of [x] to [y]. If [x] was already bound
-   in [m], its previous binding disappears. 
-*)
+(** {b Index operator} for {!set} *)
 
 
 val updateU: 'v t -> key -> ('v option -> 'v option [@bs]) -> 'v t

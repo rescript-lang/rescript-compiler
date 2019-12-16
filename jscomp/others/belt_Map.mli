@@ -287,15 +287,10 @@ val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 *)
 
 val ( .:[] ): ('k, 'v, 'id) t -> 'k -> 'v option
-(** [m.:[x]] returns [None] if the [x] is not found in map [m],
-    [Some y] otherwise 
-*)
+(** {b Index operator} for {!get} *)
 
 val ( .:[]<- ): ('k, 'v, 'id) t -> 'k -> 'v ->  ('k, 'v, 'id) t
-(** [m.:[x] <- y] returns a map containing the same bindings as
-    [m], with a new binding of [x] to [y]. If [x] was already bound
-    in [m], its previous binding disappears.
-*)
+(** {b Index operator} for {!set} *)
 
 val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
 (** {b See} {!get}
