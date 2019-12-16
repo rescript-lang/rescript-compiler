@@ -485,8 +485,7 @@
                   
 <pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v option</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">m.:[x]</code> returns <code class="code">None</code> if the <code class="code">x</code> is not found in map <code class="code">m</code>,
-    <code class="code">Some y</code> otherwise<br>
+                    <b>Index operator</b> for <a href="Belt_Map.html#VALget"><code class="code">Belt_Map.get</code></a><br>
  
                     </div>
                     
@@ -495,9 +494,7 @@
                   
 <pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">m.:[x] &lt;- y</code> returns a map containing the same bindings as
-    <code class="code">m</code>, with a new binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
-    in <code class="code">m</code>, its previous binding disappears.<br>
+                    <b>Index operator</b> for <a href="Belt_Map.html#VALset"><code class="code">Belt_Map.set</code></a><br>
  
                     </div>
                     

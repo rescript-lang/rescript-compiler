@@ -211,8 +211,7 @@
                   
 <pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
-    <code class="code">Some v</code> otherwise<br>
+                    <b>Index operator</b> for <a href="Belt_HashMap.html#VALget"><code class="code">Belt_HashMap.get</code></a><br>
  
                     </div>
                     
@@ -221,9 +220,7 @@
                   
 <pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">tbl.:[k] &lt;- v</code> if <code class="code">k</code> does not exist,
-     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
-     <code class="code">v</code><br>
+                    <b>Index operator</b> for <a href="Belt_HashMap.html#VALset"><code class="code">Belt_HashMap.set</code></a><br>
  
                     </div>
                     

@@ -133,8 +133,7 @@
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Belt_HashMapString.html#TYPEt">t</a> -> <a href="Belt_HashMapString.html#TYPEkey">key</a> -> 'a option</code></pre>
 <pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'a <a href="Belt_HashMapString.html#TYPEt">t</a> -> <a href="Belt_HashMapString.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">get tbl k</code> returns <code class="code">None</code> if the <code class="code">k</code> is not found in table <code class="code">tbl</code>,
-    <code class="code">Some v</code> otherwise<br>
+                    <b>Index operator</b> for <a href="Belt_HashMapString.html#VALget"><code class="code">Belt_HashMapString.get</code></a><br>
  
                     </div>
                     
@@ -143,9 +142,7 @@
                   
 <pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'a <a href="Belt_HashMapString.html#TYPEt">t</a> -> <a href="Belt_HashMapString.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">tbl.:[k] &lt;- v</code> if <code class="code">k</code> does not exist,
-     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
-     <code class="code">v</code><br>
+                    <b>Index operator</b> for <a href="Belt_HashMapString.html#VALset"><code class="code">Belt_HashMapString.set</code></a><br>
  
                     </div>
                     

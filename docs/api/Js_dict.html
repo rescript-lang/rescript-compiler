@@ -144,16 +144,6 @@
                     </div>
 
                   
-<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">dict.:[key]</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
-    dictionary, <code class="code">Some value</code> otherwise<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
 <pre><span id="VALunsafeGet"><span class="keyword">val</span> unsafeGet</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafeGet dict key</code> return the value if the <code class="code">key</code> exists, 
@@ -172,15 +162,6 @@
 <pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">set dict key value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">dict.:[key] &lt;- value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
  
                     </div>
                     
@@ -256,6 +237,24 @@
                     <div class="not-examples">
                     <code class="code">map f dict</code> maps <code class="code">dict</code> to a new dictionary with the same keys,
 using <code class="code">f</code> to map each value<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>Index operator</b> for <a href="Js_dict.html#VALget"><code class="code">Js_dict.get</code></a><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>Index operator</b> for <a href="Js_dict.html#VALset"><code class="code">Js_dict.set</code></a><br>
  
                     </div>
                     

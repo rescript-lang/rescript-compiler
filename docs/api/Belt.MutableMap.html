@@ -284,8 +284,7 @@
 <pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -><br>       ('k -> 'a -> 'b) -> ('k, 'b, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VAL(.:[])"><span class="keyword">val</span> (.:[])</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">m.:[x]</code> returns <code class="code">None</code> if the <code class="code">x</code> is not found in map <code class="code">m</code>,
-    <code class="code">Some y</code> otherwise<br>
+                    <b>Index operator</b> for <a href="Belt_MutableMap.html#VALget"><code class="code">Belt_MutableMap.get</code></a><br>
  
                     </div>
                     
@@ -294,9 +293,7 @@
                   
 <pre><span id="VAL(.:[]<-)"><span class="keyword">val</span> (.:[]&lt;-)</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> 'a -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">m.:[x] &lt;- y</code> returns a map containing the same bindings as
-    <code class="code">m</code>, with a new binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
-    in <code class="code">m</code>, its previous binding disappears.<br>
+                    <b>Index operator</b> for <a href="Belt_MutableMap.html#VALset"><code class="code">Belt_MutableMap.set</code></a><br>
  
                     </div>
                     
