@@ -15,10 +15,10 @@ let real_path p =
       if Sys.file_exists dir then normalize dir else
       let parent = Filename.dirname dir in
       if dir = parent then dir
-      else Filename.concat (resolve parent) (Filename.basename dir)
+      else  (resolve parent) // (Filename.basename dir)
     in
     let p =
-      if Filename.is_relative p then Filename.concat (Sys.getcwd ()) p
+      if Filename.is_relative p then (Sys.getcwd ()) // p
       else p
     in
     resolve p
