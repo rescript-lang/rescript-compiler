@@ -365,6 +365,9 @@ let suites =
         "reason-react"
       =~ "ReasonReact";
       Ext_namespace.namespace_of_package_name
+          "Foo_bar"
+        =~ "Foo_bar";
+      Ext_namespace.namespace_of_package_name
         "reason"
       =~ "Reason";
       Ext_namespace.namespace_of_package_name 

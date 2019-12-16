@@ -16648,6 +16648,7 @@ let namespace_of_package_name (s : string) : string =
       | 'a' .. 'z' 
       | 'A' .. 'Z' 
       | '0' .. '9'
+      | '_'
         ->
         add capital ch ; 
         aux false (off + 1) len 
@@ -17042,6 +17043,9 @@ let suites =
       Ext_namespace.namespace_of_package_name
         "reason-react"
       =~ "ReasonReact";
+      Ext_namespace.namespace_of_package_name
+          "Foo_bar"
+        =~ "Foo_bar";
       Ext_namespace.namespace_of_package_name
         "reason"
       =~ "Reason";
