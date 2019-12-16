@@ -26,7 +26,7 @@ let reset = reset
 let iter = iter
 let fold = fold
 let length = length
-let stats = stats
+
 let elements = elements
 let choose = choose
 let to_sorted_array = to_sorted_array

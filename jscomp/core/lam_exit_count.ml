@@ -31,7 +31,7 @@ let count_exit (exits : collection) i =
   Hash_int.find_default exits i 0
 
 let incr_exit (exits : collection) i =
-  Hash_int.modify_or_init exits i succ 1
+  Hash_int.add_or_update exits i 1 ~update:succ 
 
 
 (** 
