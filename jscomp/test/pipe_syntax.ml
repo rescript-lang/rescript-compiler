@@ -54,6 +54,7 @@ let f7 a  = a |. (Some, Some, Some)
 
 let f8 a = a |. Some |. Some 
 
-
 let hi x = 
   x |. Belt.Array.(map (fun x -> x + 1 ))
+
+let with_poly = 1 |. `Foo
