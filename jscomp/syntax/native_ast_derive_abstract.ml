@@ -7,9 +7,16 @@ let deprecated name =
     ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
 
 let strip_option arg_name =
+#if OCAML_VERSION =~ ">4.03.0" then
+   match arg_name with 
+   | Asttypes.Nolabel -> assert false
+   | Optional s
+   | Labelled s -> s
+#else
    if arg_name.[0] = '?' then
      String.sub arg_name 1 (String.length arg_name - 1)
    else arg_name
+#end
 [@@@ocaml.warning "-a"]
 let handleTdcl light (tdcl : Parsetree.type_declaration) =
    let core_type = U.core_type_of_type_declaration tdcl in
@@ -58,11 +65,9 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
            let is_optional = Ast_attributes.has_bs_optional pld_attributes in
 
            let newLabel = 
-#if BS_NATIVE then            
-            if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name 
-#else            
-assert false (* FIXME *)
-#end
+            if is_optional
+              then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} 
+              else {pld_name with txt = Asttypes.Labelled pld_name.Asttypes.txt}
             in
 
             let maker, getter_type =
@@ -188,7 +193,7 @@ let code_sig_transform sigi = match sigi with
     Sig.value (Val.mk ~loc:pstr_loc name typ)
   | _ -> 
 #if BS_NATIVE  then
-    Sig.type_ []
+    Sig.type_ Nonrecursive []
 #else assert false    
 #end
 
