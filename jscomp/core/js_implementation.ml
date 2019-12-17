@@ -50,6 +50,11 @@ let process_with_gentype filename =
       )
 
 let after_parsing_sig ppf  outputprefix ast  =
+  if !Js_config.simple_binary_ast then begin
+    let oc = open_out_bin (outputprefix ^ Literals.suffix_mliast_simple) in 
+    Ml_binary.write_ast Mli !Location.input_name ast oc;
+    close_out oc ;
+  end;
   if !Js_config.binary_ast then
     begin 
       Binary_ast.write_ast
@@ -151,6 +156,11 @@ let after_parsing_impl ppf  outputprefix ast =
     !Clflags.assume_no_mli =  Mli_non_exists &&
     all_module_alias ast 
     ;
+  if !Js_config.simple_binary_ast then begin
+    let oc = open_out_bin (outputprefix ^ Literals.suffix_mlast_simple) in 
+    Ml_binary.write_ast Ml !Location.input_name  ast oc;
+    close_out oc ;
+  end;
   if !Js_config.binary_ast then
     Binary_ast.write_ast ~sourcefile:!Location.input_name 
       Ml ~output:(outputprefix ^ 

@@ -92,6 +92,7 @@ let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 let bs_suffix = ref false 
 
