@@ -88,6 +88,7 @@ val sort_imports : bool ref
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 val bs_suffix : bool ref
