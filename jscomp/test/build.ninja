@@ -674,7 +674,9 @@ build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/
 build test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
 build test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib
 build test/ui_defs.cmi : cc test/ui_defs.mli | $stdlib
-build test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/unboxed_attribute_test.ml | $stdlib
+build test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/unboxed_attribute_test.ml | test/mt.cmj $stdlib
+build test/unboxed_use_case.cmj : cc_cmi test/unboxed_use_case.ml | test/unboxed_use_case.cmi $stdlib
+build test/unboxed_use_case.cmi : cc test/unboxed_use_case.mli | $stdlib
 build test/uncurry_glob_test.cmi test/uncurry_glob_test.cmj : cc test/uncurry_glob_test.ml | $stdlib
 build test/undef_regression2_test.cmi test/undef_regression2_test.cmj : cc test/undef_regression2_test.ml | test/mt.cmj $stdlib
 build test/undef_regression_test.cmi test/undef_regression_test.cmj : cc test/undef_regression_test.ml | $stdlib

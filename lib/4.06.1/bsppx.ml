@@ -4910,6 +4910,7 @@ val sort_imports : bool ref
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 val bs_suffix : bool ref
@@ -4928,6 +4929,7 @@ val is_reason : bool ref
 val js_stdout : bool ref 
 
 val all_module_aliases : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5024,6 +5026,7 @@ let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 let bs_suffix = ref false 
 
@@ -5044,6 +5047,7 @@ let is_reason = ref false
 let js_stdout = ref true
 
 let all_module_aliases = ref false
+
 end
 (** Interface as module  *)
 module Asttypes

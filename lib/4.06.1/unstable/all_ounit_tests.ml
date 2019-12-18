@@ -5674,7 +5674,32 @@ external ff :
     end; *)
 
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      (* let rec must be rejected *)
+type t10 = A of t10 [@@ocaml.unboxed];;
+let rec x = A x;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type t = {x: int64} [@@unboxed];;
+let rec x = {x = y} and y = 3L;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type r = A of r [@@unboxed];;
+let rec y = A y;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
@@ -7797,6 +7822,7 @@ val sort_imports : bool ref
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 val bs_suffix : bool ref
@@ -7815,6 +7841,7 @@ val is_reason : bool ref
 val js_stdout : bool ref 
 
 val all_module_aliases : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7911,6 +7938,7 @@ let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 let bs_suffix = ref false 
 
@@ -7931,6 +7959,7 @@ let is_reason = ref false
 let js_stdout = ref true
 
 let all_module_aliases = ref false
+
 end
 module Map_gen
 = struct
