@@ -182,7 +182,32 @@ external ff :
     end; *)
 
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      (* let rec must be rejected *)
+type t10 = A of t10 [@@ocaml.unboxed];;
+let rec x = A x;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type t = {x: int64} [@@unboxed];;
+let rec x = {x = y} and y = 3L;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type r = A of r [@@unboxed];;
+let rec y = A y;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
