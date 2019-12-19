@@ -24,5 +24,9 @@ var hi = /* array */[
   "x"
 ];
 
+console.log(3);
+
+console.log("x");
+
 exports.hi = hi;
 /*  Not a pure module */

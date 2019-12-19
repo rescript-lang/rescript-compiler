@@ -22,3 +22,10 @@ type any =
 
 let hi =  [|Any 3; Any 2 ; Any "x"|]
 
+let dump (any : any) = match any with Any v -> Js.log v ;;
+
+let () = 
+    dump (Any 3);
+    dump (Any "x")
+    
+
