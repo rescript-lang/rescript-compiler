@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var match = /* array */[1];
+var match = [1];
 
 if (match.length !== 1) {
   throw [

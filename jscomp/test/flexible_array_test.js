@@ -300,7 +300,7 @@ function $eq$tilde(x, y) {
   return Caml_obj.caml_equal(x, of_array(y));
 }
 
-var u = of_array(/* array */[
+var u = of_array([
       1,
       2,
       2,
@@ -311,7 +311,7 @@ var u = of_array(/* array */[
 
 var x = sort(u);
 
-if (!Caml_obj.caml_equal(x, of_array(/* array */[
+if (!Caml_obj.caml_equal(x, of_array([
             1,
             2,
             2,

@@ -3,7 +3,7 @@
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function g(x) {
-  return /* array */[
+  return [
           3,
           x
         ];

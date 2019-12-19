@@ -24,7 +24,7 @@ var suites_000 = /* tuple */[
   "caml_obj",
   (function (param) {
       if (!class_tables[0]) {
-        var $$class = CamlinternalOO.create_table(/* array */["say"]);
+        var $$class = CamlinternalOO.create_table(["say"]);
         var env = CamlinternalOO.new_variable($$class, "");
         var say = CamlinternalOO.get_method_label($$class, "say");
         CamlinternalOO.set_method($$class, say, (function (self$1, x) {

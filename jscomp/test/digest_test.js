@@ -16,7 +16,7 @@ function f(x) {
   return Digest.to_hex(Digest.string(x));
 }
 
-var ref = /* array */[
+var ref = [
   "d41d8cd98f00b204e9800998ecf8427e",
   "0cc175b9c0f1b6a831c399e269772661",
   "4124bc0a9335c27f086f24ba207a4912",

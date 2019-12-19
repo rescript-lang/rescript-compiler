@@ -9,7 +9,7 @@ var obj = {
 };
 
 var eventObj = {
-  events: /* array */[],
+  events: [],
   empty: (function () {
       return /* () */0;
     }),

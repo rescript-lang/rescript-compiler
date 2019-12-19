@@ -18,7 +18,7 @@ map_pair(u, /* tuple */[
       true
     ]);
 
-var hi = /* array */[
+var hi = [
   3,
   2,
   "x"

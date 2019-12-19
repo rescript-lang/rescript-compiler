@@ -4,16 +4,16 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = /* array */["add"];
+var shared = ["add"];
 
-var $$class = CamlinternalOO.create_table(/* array */[
+var $$class = CamlinternalOO.create_table([
       "hi",
       "id1",
       "id2",
       "hello"
     ]);
 
-var ids = CamlinternalOO.get_method_labels($$class, /* array */[
+var ids = CamlinternalOO.get_method_labels($$class, [
       "id2",
       "id1",
       "hi",
@@ -28,7 +28,7 @@ var hi = ids[2];
 
 var hello = ids[3];
 
-CamlinternalOO.set_methods($$class, /* array */[
+CamlinternalOO.set_methods($$class, [
       hi,
       (function (self$1, v, z) {
           return v + z | 0;
@@ -51,7 +51,7 @@ CamlinternalOO.init_class($$class);
 
 var u = CamlinternalOO.create_object_opt(0, $$class);
 
-var $$class$1 = CamlinternalOO.create_table(/* array */["id"]);
+var $$class$1 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$1, "id");
 

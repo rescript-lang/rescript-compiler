@@ -55,7 +55,7 @@ function searchForSureExists(xs, k) {
   };
 }
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   0,
   3,
   4,
@@ -70,7 +70,7 @@ function aFromJs(param) {
   return Js_mapperRt.fromIntAssert(4, jsMapperConstantArray, param);
 }
 
-var jsMapperConstantArray$1 = /* array */[
+var jsMapperConstantArray$1 = [
   /* tuple */[
     21902,
     "b0"

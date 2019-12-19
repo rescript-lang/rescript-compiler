@@ -120,7 +120,7 @@ var z = {
 };
 
 var eventObj = {
-  events: /* array */[],
+  events: [],
   empty: (function () {
       var self = this ;
       var a = self.events;

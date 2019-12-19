@@ -4,7 +4,7 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var x = /* array */[
+var x = [
   1,
   2
 ];

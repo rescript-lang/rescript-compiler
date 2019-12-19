@@ -64,31 +64,31 @@ eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, /*
       ]
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 33, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 33, characters 7-14", [
         1,
         2,
         3
       ].map((function (x) {
             return x + 1 | 0;
-          })), /* array */[
+          })), [
       2,
       3,
       4
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 36, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 36, characters 7-14", [
         1,
         2,
         3
       ].map((function (x) {
             return x + 1 | 0;
-          })), /* array */[
+          })), [
       2,
       3,
       4
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 40, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 40, characters 7-14", [
         1,
         2,
         3
@@ -96,7 +96,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 40, characters 7-14", /* array */[
             return prim + prim$1 | 0;
           }), 0), 6);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 44, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 44, characters 7-14", [
         1,
         2,
         3
@@ -104,7 +104,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 44, characters 7-14", /* array */[
             return (x + y | 0) + i | 0;
           }), 0), 9);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", [
         1,
         2,
         3
@@ -112,7 +112,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", /* array */[
             return x < 1;
           })), false);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", /* array */[
+eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", [
         1,
         2,
         3

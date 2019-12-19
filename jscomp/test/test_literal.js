@@ -10,13 +10,13 @@ var v = [
   2
 ];
 
-var vv = /* array */[
+var vv = [
   1,
   2,
   3
 ];
 
-var long_v = /* array */[
+var long_v = [
   1,
   2,
   3,
@@ -25,7 +25,7 @@ var long_v = /* array */[
   6
 ];
 
-var long_int_v = /* array */[
+var long_int_v = [
   1,
   2,
   3,
@@ -34,9 +34,9 @@ var long_int_v = /* array */[
   6
 ];
 
-var short_int_v = /* array */[1];
+var short_int_v = [1];
 
-var empty = /* array */[];
+var empty = [];
 
 exports.Custom_inline = Custom_inline;
 exports.v = v;

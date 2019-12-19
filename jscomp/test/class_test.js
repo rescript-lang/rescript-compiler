@@ -6,9 +6,9 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = /* array */["x"];
+var shared = ["x"];
 
-var shared$1 = /* array */[
+var shared$1 = [
   "move",
   "get_x"
 ];
@@ -18,7 +18,7 @@ function point_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$1) {
             return self$1[x];
@@ -55,7 +55,7 @@ function point2_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$2) {
             return self$2[x];

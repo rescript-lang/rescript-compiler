@@ -1445,7 +1445,7 @@ function category(re, c) {
   }
 }
 
-var dummy_next = /* array */[];
+var dummy_next = [];
 
 var unknown_state = {
   idx: -2,
@@ -2889,7 +2889,7 @@ function compile(r) {
           ncol: ncol$2,
           lnl: lnl$1,
           tbl: {
-            contents: /* array */[false]
+            contents: [false]
           },
           states: Curry._1(Re_automata_State.Table.create, 97),
           group_count: group_count
@@ -2916,7 +2916,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   var tmp;
   if (groups$1) {
     var n = re$1.tbl.contents.length + 1 | 0;
-    tmp = n <= 10 ? /* array */[
+    tmp = n <= 10 ? [
         0,
         0,
         0,
@@ -2929,7 +2929,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
         0
       ] : Caml_array.caml_make_vect(n, 0);
   } else {
-    tmp = /* array */[];
+    tmp = [];
   }
   var info = {
     re: re$1,

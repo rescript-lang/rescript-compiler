@@ -2,11 +2,11 @@
 
 var Belt_Array = require("../../lib/js/belt_Array.js");
 
-var b = Belt_Array.eq(/* array */[
+var b = Belt_Array.eq([
       1,
       2,
       3
-    ], /* array */[
+    ], [
       1,
       2,
       3

@@ -24,7 +24,7 @@ function commutative_mul(result, a, b) {
           ]);
 }
 
-var pairs = /* array */[
+var pairs = [
   /* tuple */[
     /* int64 */{
       hi: -1482940033,
@@ -335,7 +335,7 @@ function from_pairs(prefix, pairs) {
                   }), pairs));
 }
 
-var small_pairs = /* array */[
+var small_pairs = [
   /* tuple */[
     /* int64 */{
       hi: 0,
@@ -422,7 +422,7 @@ var small_pairs = /* array */[
   ]
 ];
 
-var to_floats = /* array */[
+var to_floats = [
   /* tuple */[
     /* int64 */{
       hi: 0,
@@ -873,7 +873,7 @@ var to_floats = /* array */[
   ]
 ];
 
-var check_complete_compare = /* array */[
+var check_complete_compare = [
   true,
   true,
   true,
@@ -884,7 +884,7 @@ var check_complete_compare = /* array */[
   true
 ];
 
-var of_float_pairs = /* array */[
+var of_float_pairs = [
   /* tuple */[
     6853066956871844,
     /* int64 */{
@@ -1167,7 +1167,7 @@ var of_float_pairs = /* array */[
   ]
 ];
 
-var simple_divs = /* array */[
+var simple_divs = [
   /* tuple */[
     /* int64 */{
       hi: 0,
@@ -1617,7 +1617,7 @@ function from(xs) {
               }), $$Array.to_list(xs));
 }
 
-var to_string = /* array */[/* tuple */[
+var to_string = [/* tuple */[
     /* int64 */{
       hi: 0,
       lo: 0
@@ -1625,7 +1625,7 @@ var to_string = /* array */[/* tuple */[
     "0"
   ]];
 
-var int64_compare_tests = /* array */[
+var int64_compare_tests = [
   /* tuple */[
     /* int64 */{
       hi: 0,

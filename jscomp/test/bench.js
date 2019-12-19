@@ -10,7 +10,7 @@ function map(f, a) {
   var a$1 = a;
   var l = a$1.length;
   if (l === 0) {
-    return /* array */[];
+    return [];
   } else {
     var r = Caml_array.caml_make_vect(l, f$1(a$1[0]));
     for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
@@ -24,7 +24,7 @@ function init(l, f) {
   var l$1 = l;
   var f$1 = Curry.__1(f);
   if (l$1 === 0) {
-    return /* array */[];
+    return [];
   } else {
     if (l$1 < 0) {
       throw [

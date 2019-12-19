@@ -31,7 +31,7 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var v = /* array */[
+var v = [
   1,
   2,
   3,
@@ -116,17 +116,17 @@ function fff4(x) {
 }
 
 eq("File \"array_subtle_test.ml\", line 51, characters 6-13", /* tuple */[
-      fff3(/* array */[]),
+      fff3([]),
       1
     ]);
 
 eq("File \"array_subtle_test.ml\", line 52, characters 6-13", /* tuple */[
-      fff4(/* array */[]),
+      fff4([]),
       2
     ]);
 
 eq("File \"array_subtle_test.ml\", line 53, characters 6-13", /* tuple */[
-      fff4(/* array */[1]),
+      fff4([1]),
       1
     ]);
 

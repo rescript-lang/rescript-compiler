@@ -4,7 +4,7 @@ var Block = require("../../lib/js/block.js");
 var Parsing = require("../../lib/js/parsing.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var yytransl_const = /* array */[
+var yytransl_const = [
   259,
   260,
   261,
@@ -16,7 +16,7 @@ var yytransl_const = /* array */[
   0
 ];
 
-var yytransl_block = /* array */[
+var yytransl_block = [
   257,
   258,
   0
@@ -44,7 +44,7 @@ var yynames_const = "PLUS\0MINUS\0TIMES\0DIVIDE\0UMINUS\0LPAREN\0RPAREN\0EOF\0";
 
 var yynames_block = "NUMERAL\0IDENT\0";
 
-var yyact = /* array */[
+var yyact = [
   (function (param) {
       throw [
             Caml_builtin_exceptions.failure,

@@ -47,7 +47,7 @@ var shift_left_tests_000 = $$Array.map((function (i) {
                   }, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_left_tests_001 = /* array */[
+var shift_left_tests_001 = [
   /* int64 */{
     hi: 0,
     lo: 1
@@ -318,7 +318,7 @@ var shift_right_tests_000 = $$Array.map((function (i) {
                   }, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_right_tests_001 = /* array */[
+var shift_right_tests_001 = [
   /* int64 */{
     hi: -2147483648,
     lo: 0
@@ -589,7 +589,7 @@ var shift_right_logical_suites_000 = $$Array.map((function (i) {
                   }, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_right_logical_suites_001 = /* array */[
+var shift_right_logical_suites_001 = [
   /* int64 */{
     hi: -2147483648,
     lo: 0
@@ -1216,7 +1216,7 @@ var suites = Pervasives.$at(/* :: */[
                                                                     }), $$Array.init(64, (function (i) {
                                                                           return i;
                                                                         }))),
-                                                              /* array */[
+                                                              [
                                                                 /* int64 */{
                                                                   hi: 0,
                                                                   lo: 1
@@ -1490,7 +1490,7 @@ var suites = Pervasives.$at(/* :: */[
                                                                       }), $$Array.init(64, (function (i) {
                                                                             return i;
                                                                           }))),
-                                                                /* array */[
+                                                                [
                                                                   /* int64 */{
                                                                     hi: -1,
                                                                     lo: 4294967295
@@ -1764,7 +1764,7 @@ var suites = Pervasives.$at(/* :: */[
                                                                         }), $$Array.init(64, (function (i) {
                                                                               return i;
                                                                             }))),
-                                                                  /* array */[
+                                                                  [
                                                                     /* int64 */{
                                                                       hi: -1,
                                                                       lo: 4294967295
@@ -2046,11 +2046,11 @@ var suites = Pervasives.$at(/* :: */[
                                                         "of_int32",
                                                         (function (param) {
                                                             return /* Eq */Block.__(0, [
-                                                                      $$Array.map(Caml_int64.of_int32, /* array */[
+                                                                      $$Array.map(Caml_int64.of_int32, [
                                                                             0,
                                                                             -2147483648
                                                                           ]),
-                                                                      /* array */[
+                                                                      [
                                                                         /* int64 */{
                                                                           hi: 0,
                                                                           lo: 0
@@ -2100,7 +2100,7 @@ var suites = Pervasives.$at(/* :: */[
                                                               "to_int32",
                                                               (function (param) {
                                                                   return /* Eq */Block.__(0, [
-                                                                            $$Array.map(Caml_int64.to_int32, /* array */[
+                                                                            $$Array.map(Caml_int64.to_int32, [
                                                                                   /* int64 */{
                                                                                     hi: 0,
                                                                                     lo: 0
@@ -2110,7 +2110,7 @@ var suites = Pervasives.$at(/* :: */[
                                                                                     lo: 2147483648
                                                                                   }
                                                                                 ]),
-                                                                            /* array */[
+                                                                            [
                                                                               0,
                                                                               -2147483648
                                                                             ]

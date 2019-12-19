@@ -91,7 +91,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */[
               "ffi_keys",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            /* array */["a"],
+                            ["a"],
                             Ffi_js_test.keys(( {a : 3}))
                           ]);
                 })

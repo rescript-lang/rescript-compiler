@@ -17,7 +17,7 @@ function f(v) {
   }
 }
 
-var v = /* array */[
+var v = [
     1,
     2,
     3
@@ -25,7 +25,7 @@ var v = /* array */[
         return f(param)(param$1);
       }));
 
-var vv = /* array */[
+var vv = [
     1,
     2,
     3
@@ -33,7 +33,7 @@ var vv = /* array */[
         return prim + prim$1 | 0;
       }));
 
-var hh = /* array */[
+var hh = [
     "1",
     "2",
     "3"
@@ -76,7 +76,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       v,
-                      /* array */[
+                      [
                         0,
                         1,
                         4
@@ -90,7 +90,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         vv,
-                        /* array */[
+                        [
                           1,
                           3,
                           5
@@ -104,7 +104,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
             (function (param) {
                 return /* Eq */Block.__(0, [
                           hh,
-                          /* array */[
+                          [
                             1,
                             2,
                             3
@@ -117,7 +117,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
               "File \"ffi_arity_test.ml\", line 48, characters 4-11",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            /* array */[
+                            [
                                   1,
                                   2,
                                   3
@@ -128,7 +128,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
                                     })).map((function (y) {
                                     return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
                                   })),
-                            /* array */[
+                            [
                               2,
                               6,
                               12
@@ -141,7 +141,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
                 "File \"ffi_arity_test.ml\", line 53, characters 4-11",
                 (function (param) {
                     return /* Eq */Block.__(0, [
-                              /* array */[
+                              [
                                   1,
                                   2,
                                   3
@@ -151,7 +151,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
                                                   return y + i | 0;
                                                 })(param);
                                     })),
-                              /* array */[
+                              [
                                 1,
                                 5,
                                 11

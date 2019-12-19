@@ -8,11 +8,11 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = /* array */["x"];
+var shared = ["x"];
 
-var shared$1 = /* array */["get_x"];
+var shared$1 = ["get_x"];
 
-var shared$2 = /* array */[
+var shared$2 = [
   "incr",
   "get_money"
 ];
@@ -76,11 +76,11 @@ if (Caml_oo_curry.js1(291546447, 2, u) !== 3) {
 
 function xx_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, /* array */["money"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, ["money"]);
   var incr = ids[0];
   var get_money = ids[1];
   var money = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_money,
         (function (self$3) {
             return self$3[money];
@@ -134,14 +134,14 @@ if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
 }
 
 function point_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
+  var ids = CamlinternalOO.new_methods_variables($$class, [
         "get_x5",
         "get_x"
       ], shared);
   var get_x5 = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$4) {
             return self$4[x];
@@ -158,7 +158,7 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class(/* array */[
+var point = CamlinternalOO.make_class([
       "get_x",
       "get_x5"
     ], point_init);

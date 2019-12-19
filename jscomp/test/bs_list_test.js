@@ -201,7 +201,7 @@ eq("FLATTEN", Belt_List.flatten(/* :: */[
       ]
     ]);
 
-eq("CONCATMANY", Belt_List.concatMany(/* array */[
+eq("CONCATMANY", Belt_List.concatMany([
           /* :: */[
             1,
             /* [] */0
@@ -241,9 +241,9 @@ eq("CONCATMANY", Belt_List.concatMany(/* array */[
       ]
     ]);
 
-eq("CONCATMANY", Belt_List.concatMany(/* array */[]), /* [] */0);
+eq("CONCATMANY", Belt_List.concatMany([]), /* [] */0);
 
-eq("CONCATMANY", Belt_List.concatMany(/* array */[
+eq("CONCATMANY", Belt_List.concatMany([
           /* [] */0,
           /* [] */0,
           /* :: */[
@@ -270,7 +270,7 @@ eq("CONCATMANY", Belt_List.concatMany(/* array */[
       ]
     ]);
 
-eq("CONCATMANY", Belt_List.concatMany(/* array */[
+eq("CONCATMANY", Belt_List.concatMany([
           /* [] */0,
           /* [] */0,
           /* :: */[
@@ -303,7 +303,7 @@ eq("CONCATMANY", Belt_List.concatMany(/* array */[
       ]
     ]);
 
-eq("CONCATMANY", Belt_List.concatMany(/* array */[/* :: */[
+eq("CONCATMANY", Belt_List.concatMany([/* :: */[
             1,
             /* :: */[
               2,

@@ -255,21 +255,21 @@ b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Belt_Mutabl
           data: Belt_internalAVLset.empty
         }));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 124, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(/* array */[
+b("File \"bs_poly_mutable_set_test.ml\", line 124, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray([
                   1,
                   3,
                   4,
                   5,
                   7,
                   9
-                ]), fromArray(/* array */[
+                ]), fromArray([
                   2,
                   4,
                   5,
                   6,
                   8,
                   10
-                ])), fromArray(/* array */[
+                ])), fromArray([
               4,
               5
             ])));
