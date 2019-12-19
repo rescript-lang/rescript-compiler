@@ -9597,6 +9597,14 @@ module Bsb_build_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
+  Use:
+  {[
+  flag_concat "-ppx" [ppxs]
+  ]}
+  *)
+  val flag_concat : string -> string list -> string
+
+(**
 Build quoted commandline arguments for bsc.exe for the given ppx flags
 
 Use:
