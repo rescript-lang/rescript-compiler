@@ -151,7 +151,7 @@ b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", 11 === Belt_Map.getU
 
 b("File \"bs_poly_map_test.ml\", line 78, characters 4-11", Belt_Map.getUndefined(a4, 3) === undefined);
 
-var a7 = Belt_Map.removeMany(a0, /* array */[
+var a7 = Belt_Map.removeMany(a0, [
       7,
       8,
       0,
@@ -165,7 +165,7 @@ var a7 = Belt_Map.removeMany(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_map_test.ml\", line 81, characters 5-12", Belt_MapDict.keysToArray(a7.data), /* array */[
+eq("File \"bs_poly_map_test.ml\", line 81, characters 5-12", Belt_MapDict.keysToArray(a7.data), [
       9,
       10
     ]);
@@ -281,7 +281,7 @@ b("File \"bs_poly_map_test.ml\", line 129, characters 4-11", Belt_MapDict.isEmpt
 var map$1 = Belt_Map.removeMany({
       cmp: Icmp.cmp,
       data: Belt_MapDict.empty
-    }, /* array */[0]);
+    }, [0]);
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 

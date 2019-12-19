@@ -39,19 +39,19 @@ var class_tables = /* Cons */[
 
 function create(param) {
   if (!class_tables[0]) {
-    var $$class = CamlinternalOO.create_table(/* array */[
+    var $$class = CamlinternalOO.create_table([
           "add",
           "get"
         ]);
     var env = CamlinternalOO.new_variable($$class, "");
-    var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
+    var ids = CamlinternalOO.new_methods_variables($$class, [
           "get",
           "add"
-        ], /* array */["data"]);
+        ], ["data"]);
     var get = ids[0];
     var add = ids[1];
     var data = ids[2];
-    CamlinternalOO.set_methods($$class, /* array */[
+    CamlinternalOO.set_methods($$class, [
           add,
           (function (self$1, param) {
               self$1[data] = self$1[data] + 1 | 0;

@@ -184,7 +184,7 @@ var suites = {
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       true,
-                                      Caml_obj.caml_lessthan(undefined, /* array */[
+                                      Caml_obj.caml_lessthan(undefined, [
                                             1,
                                             30
                                           ])
@@ -197,7 +197,7 @@ var suites = {
                           (function (param) {
                               return /* Eq */Block.__(0, [
                                         true,
-                                        Caml_obj.caml_greaterthan(/* array */[
+                                        Caml_obj.caml_greaterthan([
                                               1,
                                               30
                                             ], undefined)
@@ -1047,12 +1047,12 @@ eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.ca
 
 eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, /* array */[
+eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, [
           1,
           30
         ]));
 
-eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan(/* array */[
+eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan([
           1,
           30
         ], undefined));

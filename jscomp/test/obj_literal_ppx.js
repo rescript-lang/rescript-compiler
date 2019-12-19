@@ -3,12 +3,12 @@
 
 var a = {
   x: 3,
-  y: /* array */[1]
+  y: [1]
 };
 
 var b = {
   x: 3,
-  y: /* array */[1],
+  y: [1],
   z: 3,
   u: (function (x, y) {
       return x + y | 0;

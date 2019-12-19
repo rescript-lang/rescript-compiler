@@ -1,7 +1,7 @@
 'use strict';
 
 
-var v = /* array */[
+var v = [
   0,
   1
 ];

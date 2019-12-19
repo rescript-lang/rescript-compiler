@@ -27,7 +27,7 @@ var x = List.length(/* :: */[
       ]
     ]);
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   /* tuple */[
     -988374136,
     "http"

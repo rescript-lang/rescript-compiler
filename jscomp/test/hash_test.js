@@ -27,7 +27,7 @@ var test_strings = $$Array.init(32, (function (i) {
         return Caml_bytes.bytes_to_string(Bytes.make(i, c));
       }));
 
-var test_strings_hash_results = /* array */[
+var test_strings_hash_results = [
   0,
   904391063,
   889600889,
@@ -159,7 +159,7 @@ var param$8 = Hashtbl.hash(/* :: */[
         ],
         /* `B */[
           66,
-          /* array */[/* tuple */[
+          [/* tuple */[
               "x",
               "y"
             ]]

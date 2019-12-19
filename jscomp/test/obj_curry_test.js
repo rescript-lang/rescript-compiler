@@ -7,7 +7,7 @@ function f(o) {
   return Caml_oo_curry.js4(23297, 1, o, 1, 2, 3);
 }
 
-var $$class = CamlinternalOO.create_table(/* array */["hi"]);
+var $$class = CamlinternalOO.create_table(["hi"]);
 
 var hi = CamlinternalOO.get_method_label($$class, "hi");
 

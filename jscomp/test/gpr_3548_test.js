@@ -2,7 +2,7 @@
 
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   /* tuple */[
     -1010337642,
     "vertical"

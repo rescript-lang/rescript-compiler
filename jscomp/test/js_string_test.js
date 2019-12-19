@@ -229,7 +229,7 @@ var suites_001 = /* :: */[
                                               "match",
                                               (function (param) {
                                                   return /* Eq */Block.__(0, [
-                                                            /* array */[
+                                                            [
                                                               "na",
                                                               "na"
                                                             ],
@@ -400,7 +400,7 @@ var suites_001 = /* :: */[
                                                                           "split",
                                                                           (function (param) {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        /* array */[
+                                                                                        [
                                                                                           "foo",
                                                                                           "bar",
                                                                                           "baz"
@@ -414,7 +414,7 @@ var suites_001 = /* :: */[
                                                                             "splitAtMost",
                                                                             (function (param) {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          /* array */[
+                                                                                          [
                                                                                             "foo",
                                                                                             "bar"
                                                                                           ],
@@ -427,7 +427,7 @@ var suites_001 = /* :: */[
                                                                               "splitByRe",
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            /* array */[
+                                                                                            [
                                                                                               "a",
                                                                                               "#",
                                                                                               undefined,
@@ -445,7 +445,7 @@ var suites_001 = /* :: */[
                                                                                 "splitByReAtMost",
                                                                                 (function (param) {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              /* array */[
+                                                                                              [
                                                                                                 "a",
                                                                                                 "#",
                                                                                                 undefined

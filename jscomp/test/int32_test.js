@@ -23,7 +23,7 @@ var shift_right_logical_tests_000 = $$Array.map((function (x) {
         return (-1 >>> x) | 0;
       }), Ext_array_test.range(0, 31));
 
-var shift_right_logical_tests_001 = /* array */[
+var shift_right_logical_tests_001 = [
   -1,
   2147483647,
   1073741823,
@@ -67,7 +67,7 @@ var shift_right_tests_000 = $$Array.map((function (x) {
         return (Int32.min_int >> x);
       }), Ext_array_test.range(0, 31));
 
-var shift_right_tests_001 = /* array */[
+var shift_right_tests_001 = [
   -2147483648,
   -1073741824,
   -536870912,
@@ -111,7 +111,7 @@ var shift_left_tests_000 = $$Array.map((function (x) {
         return (1 << x);
       }), Ext_array_test.range(0, 31));
 
-var shift_left_tests_001 = /* array */[
+var shift_left_tests_001 = [
   1,
   2,
   4,

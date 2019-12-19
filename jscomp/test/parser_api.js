@@ -6848,7 +6848,7 @@ function mklb(param, attrs) {
         };
 }
 
-var yytransl_const = /* array */[
+var yytransl_const = [
   257,
   258,
   259,
@@ -6953,7 +6953,7 @@ var yytransl_const = /* array */[
   0
 ];
 
-var yytransl_block = /* array */[
+var yytransl_block = [
   268,
   287,
   298,
@@ -6977,7 +6977,7 @@ var yytransl_block = /* array */[
   0
 ];
 
-var yyact = /* array */[
+var yyact = [
   (function (param) {
       throw [
             Caml_builtin_exceptions.failure,

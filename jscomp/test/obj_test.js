@@ -6,12 +6,12 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = /* array */[
+var shared = [
   "hi",
   "hello"
 ];
 
-var shared$1 = /* array */[
+var shared$1 = [
   "hi",
   "add"
 ];
@@ -24,7 +24,7 @@ var hi = ids[0];
 
 var hello = ids[1];
 
-CamlinternalOO.set_methods($$class, /* array */[
+CamlinternalOO.set_methods($$class, [
       hi,
       (function (self$1, x, y) {
           return x + y | 0;
@@ -39,12 +39,12 @@ CamlinternalOO.init_class($$class);
 
 var vv = CamlinternalOO.create_object_opt(0, $$class);
 
-var $$class$1 = CamlinternalOO.create_table(/* array */[
+var $$class$1 = CamlinternalOO.create_table([
       "x",
       "y"
     ]);
 
-var ids$1 = CamlinternalOO.get_method_labels($$class$1, /* array */[
+var ids$1 = CamlinternalOO.get_method_labels($$class$1, [
       "y",
       "x"
     ]);
@@ -53,7 +53,7 @@ var y = ids$1[0];
 
 var x = ids$1[1];
 
-CamlinternalOO.set_methods($$class$1, /* array */[
+CamlinternalOO.set_methods($$class$1, [
       x,
       (function (self$2) {
           return 3;
@@ -68,14 +68,14 @@ CamlinternalOO.init_class($$class$1);
 
 var v = CamlinternalOO.create_object_opt(0, $$class$1);
 
-var $$class$2 = CamlinternalOO.create_table(/* array */[
+var $$class$2 = CamlinternalOO.create_table([
       "hi",
       "id1",
       "id2",
       "hello"
     ]);
 
-var ids$2 = CamlinternalOO.get_method_labels($$class$2, /* array */[
+var ids$2 = CamlinternalOO.get_method_labels($$class$2, [
       "id2",
       "id1",
       "hi",
@@ -90,7 +90,7 @@ var hi$1 = ids$2[2];
 
 var hello$1 = ids$2[3];
 
-CamlinternalOO.set_methods($$class$2, /* array */[
+CamlinternalOO.set_methods($$class$2, [
       hi$1,
       (function (self$3, v, z) {
           return v + z | 0;
@@ -113,7 +113,7 @@ CamlinternalOO.init_class($$class$2);
 
 var u = CamlinternalOO.create_object_opt(0, $$class$2);
 
-var $$class$3 = CamlinternalOO.create_table(/* array */["id"]);
+var $$class$3 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$3, "id");
 
@@ -125,7 +125,7 @@ CamlinternalOO.init_class($$class$3);
 
 var uu = CamlinternalOO.create_object_opt(0, $$class$3);
 
-var $$class$4 = CamlinternalOO.create_table(/* array */["add"]);
+var $$class$4 = CamlinternalOO.create_table(["add"]);
 
 var add = CamlinternalOO.get_method_label($$class$4, "add");
 
@@ -145,7 +145,7 @@ var hi$2 = ids$3[0];
 
 var add$1 = ids$3[1];
 
-CamlinternalOO.set_methods($$class$5, /* array */[
+CamlinternalOO.set_methods($$class$5, [
       add$1,
       (function (self$6, x, y) {
           return x + y | 0;
@@ -164,11 +164,11 @@ var suites_000 = /* tuple */[
   "single_obj",
   (function (param) {
       return /* Eq */Block.__(0, [
-                /* array */[
+                [
                   3,
                   32
                 ],
-                /* array */[
+                [
                   Caml_oo_curry.js1(120, 1, v),
                   Caml_oo_curry.js1(121, 2, v)
                 ]
@@ -181,11 +181,11 @@ var suites_001 = /* :: */[
     "single_obj_cache",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  /* array */[
+                  [
                     3,
                     32
                   ],
-                  /* array */[
+                  [
                     Caml_oo_curry.js1(120, 3, v),
                     Caml_oo_curry.js1(121, 4, v)
                   ]

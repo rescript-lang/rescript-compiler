@@ -18,11 +18,15 @@ map_pair(u, /* tuple */[
       true
     ]);
 
-var hi = /* array */[
+var hi = [
   3,
   2,
   "x"
 ];
+
+console.log(3);
+
+console.log("x");
 
 exports.hi = hi;
 /*  Not a pure module */

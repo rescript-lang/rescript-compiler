@@ -37,7 +37,7 @@ function aFromJs(param) {
   return param - 0 | 0;
 }
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   0,
   3,
   4
@@ -51,7 +51,7 @@ function bFromJs(param) {
   return Js_mapperRt.fromIntAssert(3, jsMapperConstantArray, param);
 }
 
-var jsMapperConstantArray$1 = /* array */[
+var jsMapperConstantArray$1 = [
   /* tuple */[
     22125,
     "c0"

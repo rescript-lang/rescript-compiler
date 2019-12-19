@@ -51,7 +51,11 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_record_inlined (_,ctor,_) -> Some ctor
   | Blk_record_ext _ -> None
 #end  
-  | Blk_array -> Some "array"
+  | Blk_array -> 
+    (* so far only appears in {!Translclass} 
+      and some constant immutable array block
+    *)
+    Some "array"
   | Blk_module_export
   | Blk_module _ ->  
      (* Turn it on next time to save some noise diff*)

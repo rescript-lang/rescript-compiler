@@ -122,7 +122,7 @@ var consts = /* tuple */[
   true
 ];
 
-var bool_array = /* array */[
+var bool_array = [
   true,
   false
 ];

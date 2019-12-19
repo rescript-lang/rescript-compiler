@@ -290,7 +290,7 @@ var spec = /* :: */[
   spec_001
 ];
 
-var args1 = /* array */[
+var args1 = [
   "prog",
   "anon1",
   "-u",
@@ -324,7 +324,7 @@ var args1 = /* array */[
   "r2"
 ];
 
-var args2 = /* array */[
+var args2 = [
   "prog",
   "anon1",
   "-u",

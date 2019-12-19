@@ -29,7 +29,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", /* array */[
+eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", [
         1,
         2,
         3,

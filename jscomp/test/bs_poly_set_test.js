@@ -49,14 +49,14 @@ var u5 = Belt_Set.add(u4, 3);
 
 var u6 = Belt_Set.removeMany(u5, r);
 
-var u7 = Belt_Set.mergeMany(u6, /* array */[
+var u7 = Belt_Set.mergeMany(u6, [
       0,
       1,
       2,
       0
     ]);
 
-var u8 = Belt_Set.removeMany(u7, /* array */[
+var u8 = Belt_Set.removeMany(u7, [
       0,
       1,
       2,
@@ -156,7 +156,7 @@ var u29 = Belt_Set.union(u26, u27);
 
 b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Belt_Set.eq(u28, u29));
 
-b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, /* array */[3]), Caml_primitive.caml_int_compare)));
+b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, [3]), Caml_primitive.caml_int_compare)));
 
 b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Belt_Set.eq(u19, u20));
 
@@ -284,7 +284,7 @@ b("File \"bs_poly_set_test.ml\", line 116, characters 4-11", !Belt_Set.every(u2$
             return x < 24;
           })));
 
-b("File \"bs_poly_set_test.ml\", line 117, characters 4-11", !Belt_Set.every(Belt_Set.fromArray(/* array */[
+b("File \"bs_poly_set_test.ml\", line 117, characters 4-11", !Belt_Set.every(Belt_Set.fromArray([
               1,
               2,
               3
@@ -393,7 +393,7 @@ Belt_List.forEach(/* :: */[
         return Belt_SetDict.checkInvariantInternal(x.data);
       }));
 
-var a = Belt_Set.fromArray(/* array */[], IntCmp);
+var a = Belt_Set.fromArray([], IntCmp);
 
 var m$4 = Belt_Set.keep(a, (function (x) {
         return x % 2 === 0;

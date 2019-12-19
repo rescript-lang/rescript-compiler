@@ -45,12 +45,12 @@ var class_tables$1 = /* Cons */[
 
 function step1(param) {
   if (!class_tables[0]) {
-    var $$class = CamlinternalOO.create_table(/* array */["step2"]);
+    var $$class = CamlinternalOO.create_table(["step2"]);
     var env = CamlinternalOO.new_variable($$class, "");
     var step2 = CamlinternalOO.get_method_label($$class, "step2");
     CamlinternalOO.set_method($$class, step2, (function (self$1) {
             if (!class_tables$1[0]) {
-              var $$class = CamlinternalOO.create_table(/* array */["step3"]);
+              var $$class = CamlinternalOO.create_table(["step3"]);
               var env = CamlinternalOO.new_variable($$class, "");
               var step3 = CamlinternalOO.get_method_label($$class, "step3");
               CamlinternalOO.set_method($$class, step3, (function (self$2) {

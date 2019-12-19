@@ -31,7 +31,7 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 f(/* () */0),
-                /* array */[
+                [
                   0,
                   1,
                   3,
@@ -62,7 +62,7 @@ var suites_001 = /* :: */[
                       ]
                     ]
                   ],
-                  $$Array.to_list(/* array */[
+                  $$Array.to_list([
                         1,
                         2,
                         3

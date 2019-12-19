@@ -8,7 +8,7 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var suites_000 = /* tuple */[
   "File \"js_array_test.ml\", line 3, characters 4-11",
   (function (param) {
-      var x = /* array */[
+      var x = [
         1,
         2,
         3,
@@ -16,7 +16,7 @@ var suites_000 = /* tuple */[
         5
       ];
       return /* Eq */Block.__(0, [
-                /* array */[
+                [
                   2,
                   4
                 ],
@@ -31,7 +31,7 @@ var suites_001 = /* :: */[
   /* tuple */[
     "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
-        var x = /* array */[
+        var x = [
           1,
           2,
           3,
@@ -52,7 +52,7 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
-                    Array.isArray(/* array */[])
+                    Array.isArray([])
                   ]);
         })
     ],
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         3,
-                        /* array */[
+                        [
                           1,
                           2,
                           3
@@ -85,14 +85,14 @@ var suites_001 = /* :: */[
             "copyWithin",
             (function (param) {
                 return /* Eq */Block.__(0, [
-                          /* array */[
+                          [
                             1,
                             2,
                             3,
                             1,
                             2
                           ],
-                          /* array */[
+                          [
                               1,
                               2,
                               3,
@@ -107,14 +107,14 @@ var suites_001 = /* :: */[
               "copyWithinFrom",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            /* array */[
+                            [
                               4,
                               5,
                               3,
                               4,
                               5
                             ],
-                            /* array */[
+                            [
                                 1,
                                 2,
                                 3,
@@ -129,14 +129,14 @@ var suites_001 = /* :: */[
                 "copyWithinFromRange",
                 (function (param) {
                     return /* Eq */Block.__(0, [
-                              /* array */[
+                              [
                                 4,
                                 2,
                                 3,
                                 4,
                                 5
                               ],
-                              /* array */[
+                              [
                                   1,
                                   2,
                                   3,
@@ -151,12 +151,12 @@ var suites_001 = /* :: */[
                   "fillInPlace",
                   (function (param) {
                       return /* Eq */Block.__(0, [
-                                /* array */[
+                                [
                                   4,
                                   4,
                                   4
                                 ],
-                                /* array */[
+                                [
                                     1,
                                     2,
                                     3
@@ -169,12 +169,12 @@ var suites_001 = /* :: */[
                     "fillFromInPlace",
                     (function (param) {
                         return /* Eq */Block.__(0, [
-                                  /* array */[
+                                  [
                                     1,
                                     4,
                                     4
                                   ],
-                                  /* array */[
+                                  [
                                       1,
                                       2,
                                       3
@@ -187,12 +187,12 @@ var suites_001 = /* :: */[
                       "fillRangeInPlace",
                       (function (param) {
                           return /* Eq */Block.__(0, [
-                                    /* array */[
+                                    [
                                       1,
                                       4,
                                       3
                                     ],
-                                    /* array */[
+                                    [
                                         1,
                                         2,
                                         3
@@ -206,7 +206,7 @@ var suites_001 = /* :: */[
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       3,
-                                      Caml_option.undefined_to_opt(/* array */[
+                                      Caml_option.undefined_to_opt([
                                               1,
                                               2,
                                               3
@@ -220,7 +220,7 @@ var suites_001 = /* :: */[
                           (function (param) {
                               return /* Eq */Block.__(0, [
                                         undefined,
-                                        Caml_option.undefined_to_opt(/* array */[].pop())
+                                        Caml_option.undefined_to_opt([].pop())
                                       ]);
                             })
                         ],
@@ -230,7 +230,7 @@ var suites_001 = /* :: */[
                             (function (param) {
                                 return /* Eq */Block.__(0, [
                                           4,
-                                          /* array */[
+                                          [
                                               1,
                                               2,
                                               3
@@ -244,7 +244,7 @@ var suites_001 = /* :: */[
                               (function (param) {
                                   return /* Eq */Block.__(0, [
                                             5,
-                                            /* array */[
+                                            [
                                                 1,
                                                 2,
                                                 3
@@ -257,12 +257,12 @@ var suites_001 = /* :: */[
                                 "reverseInPlace",
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
-                                              /* array */[
+                                              [
                                                 3,
                                                 2,
                                                 1
                                               ],
-                                              /* array */[
+                                              [
                                                   1,
                                                   2,
                                                   3
@@ -276,7 +276,7 @@ var suites_001 = /* :: */[
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 1,
-                                                Caml_option.undefined_to_opt(/* array */[
+                                                Caml_option.undefined_to_opt([
                                                         1,
                                                         2,
                                                         3
@@ -290,7 +290,7 @@ var suites_001 = /* :: */[
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   undefined,
-                                                  Caml_option.undefined_to_opt(/* array */[].shift())
+                                                  Caml_option.undefined_to_opt([].shift())
                                                 ]);
                                       })
                                   ],
@@ -299,12 +299,12 @@ var suites_001 = /* :: */[
                                       "sortInPlace",
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
-                                                    /* array */[
+                                                    [
                                                       1,
                                                       2,
                                                       3
                                                     ],
-                                                    /* array */[
+                                                    [
                                                         3,
                                                         1,
                                                         2
@@ -317,12 +317,12 @@ var suites_001 = /* :: */[
                                         "sortInPlaceWith",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
-                                                      /* array */[
+                                                      [
                                                         3,
                                                         2,
                                                         1
                                                       ],
-                                                      /* array */[
+                                                      [
                                                           3,
                                                           1,
                                                           2
@@ -336,7 +336,7 @@ var suites_001 = /* :: */[
                                         /* tuple */[
                                           "spliceInPlace",
                                           (function (param) {
-                                              var arr = /* array */[
+                                              var arr = [
                                                 1,
                                                 2,
                                                 3,
@@ -345,14 +345,14 @@ var suites_001 = /* :: */[
                                               var removed = arr.splice(2, 0, 5);
                                               return /* Eq */Block.__(0, [
                                                         /* tuple */[
-                                                          /* array */[
+                                                          [
                                                             1,
                                                             2,
                                                             5,
                                                             3,
                                                             4
                                                           ],
-                                                          /* array */[]
+                                                          []
                                                         ],
                                                         /* tuple */[
                                                           arr,
@@ -365,7 +365,7 @@ var suites_001 = /* :: */[
                                           /* tuple */[
                                             "removeFromInPlace",
                                             (function (param) {
-                                                var arr = /* array */[
+                                                var arr = [
                                                   1,
                                                   2,
                                                   3,
@@ -374,11 +374,11 @@ var suites_001 = /* :: */[
                                                 var removed = arr.splice(2);
                                                 return /* Eq */Block.__(0, [
                                                           /* tuple */[
-                                                            /* array */[
+                                                            [
                                                               1,
                                                               2
                                                             ],
-                                                            /* array */[
+                                                            [
                                                               3,
                                                               4
                                                             ]
@@ -394,7 +394,7 @@ var suites_001 = /* :: */[
                                             /* tuple */[
                                               "removeCountInPlace",
                                               (function (param) {
-                                                  var arr = /* array */[
+                                                  var arr = [
                                                     1,
                                                     2,
                                                     3,
@@ -403,12 +403,12 @@ var suites_001 = /* :: */[
                                                   var removed = arr.splice(2, 1);
                                                   return /* Eq */Block.__(0, [
                                                             /* tuple */[
-                                                              /* array */[
+                                                              [
                                                                 1,
                                                                 2,
                                                                 4
                                                               ],
-                                                              /* array */[3]
+                                                              [3]
                                                             ],
                                                             /* tuple */[
                                                               arr,
@@ -423,7 +423,7 @@ var suites_001 = /* :: */[
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               4,
-                                                              /* array */[
+                                                              [
                                                                   1,
                                                                   2,
                                                                   3
@@ -437,7 +437,7 @@ var suites_001 = /* :: */[
                                                   (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 5,
-                                                                /* array */[
+                                                                [
                                                                     1,
                                                                     2,
                                                                     3
@@ -450,17 +450,17 @@ var suites_001 = /* :: */[
                                                     "append",
                                                     (function (param) {
                                                         return /* Eq */Block.__(0, [
-                                                                  /* array */[
+                                                                  [
                                                                     1,
                                                                     2,
                                                                     3,
                                                                     4
                                                                   ],
-                                                                  /* array */[
+                                                                  [
                                                                       1,
                                                                       2,
                                                                       3
-                                                                    ].concat(/* array */[4])
+                                                                    ].concat([4])
                                                                 ]);
                                                       })
                                                   ],
@@ -469,18 +469,18 @@ var suites_001 = /* :: */[
                                                       "concat",
                                                       (function (param) {
                                                           return /* Eq */Block.__(0, [
-                                                                    /* array */[
+                                                                    [
                                                                       1,
                                                                       2,
                                                                       3,
                                                                       4,
                                                                       5
                                                                     ],
-                                                                    /* array */[
+                                                                    [
                                                                         1,
                                                                         2,
                                                                         3
-                                                                      ].concat(/* array */[
+                                                                      ].concat([
                                                                           4,
                                                                           5
                                                                         ])
@@ -492,7 +492,7 @@ var suites_001 = /* :: */[
                                                         "concatMany",
                                                         (function (param) {
                                                             return /* Eq */Block.__(0, [
-                                                                      /* array */[
+                                                                      [
                                                                         1,
                                                                         2,
                                                                         3,
@@ -501,14 +501,14 @@ var suites_001 = /* :: */[
                                                                         6,
                                                                         7
                                                                       ],
-                                                                      /* array */[
+                                                                      [
                                                                           1,
                                                                           2,
                                                                           3
-                                                                        ].concat(/* array */[
+                                                                        ].concat([
                                                                             4,
                                                                             5
-                                                                          ], /* array */[
+                                                                          ], [
                                                                             6,
                                                                             7
                                                                           ])
@@ -521,7 +521,7 @@ var suites_001 = /* :: */[
                                                           (function (param) {
                                                               return /* Eq */Block.__(0, [
                                                                         true,
-                                                                        /* array */[
+                                                                        [
                                                                             1,
                                                                             2,
                                                                             3
@@ -535,7 +535,7 @@ var suites_001 = /* :: */[
                                                             (function (param) {
                                                                 return /* Eq */Block.__(0, [
                                                                           1,
-                                                                          /* array */[
+                                                                          [
                                                                               1,
                                                                               2,
                                                                               3
@@ -549,7 +549,7 @@ var suites_001 = /* :: */[
                                                               (function (param) {
                                                                   return /* Eq */Block.__(0, [
                                                                             3,
-                                                                            /* array */[
+                                                                            [
                                                                                 1,
                                                                                 2,
                                                                                 3,
@@ -564,7 +564,7 @@ var suites_001 = /* :: */[
                                                                 (function (param) {
                                                                     return /* Eq */Block.__(0, [
                                                                               "1,2,3",
-                                                                              /* array */[
+                                                                              [
                                                                                   1,
                                                                                   2,
                                                                                   3
@@ -578,7 +578,7 @@ var suites_001 = /* :: */[
                                                                   (function (param) {
                                                                       return /* Eq */Block.__(0, [
                                                                                 "1;2;3",
-                                                                                /* array */[
+                                                                                [
                                                                                     1,
                                                                                     2,
                                                                                     3
@@ -592,7 +592,7 @@ var suites_001 = /* :: */[
                                                                     (function (param) {
                                                                         return /* Eq */Block.__(0, [
                                                                                   1,
-                                                                                  /* array */[
+                                                                                  [
                                                                                       1,
                                                                                       2,
                                                                                       3
@@ -606,7 +606,7 @@ var suites_001 = /* :: */[
                                                                       (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     1,
-                                                                                    /* array */[
+                                                                                    [
                                                                                         1,
                                                                                         2,
                                                                                         3,
@@ -620,11 +620,11 @@ var suites_001 = /* :: */[
                                                                         "slice",
                                                                         (function (param) {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      /* array */[
+                                                                                      [
                                                                                         2,
                                                                                         3
                                                                                       ],
-                                                                                      /* array */[
+                                                                                      [
                                                                                           1,
                                                                                           2,
                                                                                           3,
@@ -639,14 +639,14 @@ var suites_001 = /* :: */[
                                                                           "copy",
                                                                           (function (param) {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        /* array */[
+                                                                                        [
                                                                                           1,
                                                                                           2,
                                                                                           3,
                                                                                           4,
                                                                                           5
                                                                                         ],
-                                                                                        /* array */[
+                                                                                        [
                                                                                             1,
                                                                                             2,
                                                                                             3,
@@ -661,12 +661,12 @@ var suites_001 = /* :: */[
                                                                             "sliceFrom",
                                                                             (function (param) {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          /* array */[
+                                                                                          [
                                                                                             3,
                                                                                             4,
                                                                                             5
                                                                                           ],
-                                                                                          /* array */[
+                                                                                          [
                                                                                               1,
                                                                                               2,
                                                                                               3,
@@ -682,7 +682,7 @@ var suites_001 = /* :: */[
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             "1,2,3",
-                                                                                            /* array */[
+                                                                                            [
                                                                                                 1,
                                                                                                 2,
                                                                                                 3
@@ -696,7 +696,7 @@ var suites_001 = /* :: */[
                                                                                 (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               "1,2,3",
-                                                                                              /* array */[
+                                                                                              [
                                                                                                   1,
                                                                                                   2,
                                                                                                   3
@@ -710,7 +710,7 @@ var suites_001 = /* :: */[
                                                                                   (function (param) {
                                                                                       return /* Eq */Block.__(0, [
                                                                                                 true,
-                                                                                                /* array */[
+                                                                                                [
                                                                                                     1,
                                                                                                     2,
                                                                                                     3
@@ -726,7 +726,7 @@ var suites_001 = /* :: */[
                                                                                     (function (param) {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   false,
-                                                                                                  /* array */[
+                                                                                                  [
                                                                                                       1,
                                                                                                       2,
                                                                                                       3
@@ -741,11 +741,11 @@ var suites_001 = /* :: */[
                                                                                       "filter",
                                                                                       (function (param) {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    /* array */[
+                                                                                                    [
                                                                                                       2,
                                                                                                       4
                                                                                                     ],
-                                                                                                    /* array */[
+                                                                                                    [
                                                                                                         1,
                                                                                                         2,
                                                                                                         3,
@@ -761,11 +761,11 @@ var suites_001 = /* :: */[
                                                                                         "filteri",
                                                                                         (function (param) {
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      /* array */[
+                                                                                                      [
                                                                                                         1,
                                                                                                         3
                                                                                                       ],
-                                                                                                      /* array */[
+                                                                                                      [
                                                                                                           1,
                                                                                                           2,
                                                                                                           3,
@@ -782,7 +782,7 @@ var suites_001 = /* :: */[
                                                                                           (function (param) {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         2,
-                                                                                                        Caml_option.undefined_to_opt(/* array */[
+                                                                                                        Caml_option.undefined_to_opt([
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
@@ -799,7 +799,7 @@ var suites_001 = /* :: */[
                                                                                             (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           undefined,
-                                                                                                          Caml_option.undefined_to_opt(/* array */[
+                                                                                                          Caml_option.undefined_to_opt([
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
@@ -816,7 +816,7 @@ var suites_001 = /* :: */[
                                                                                               (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             1,
-                                                                                                            Caml_option.undefined_to_opt(/* array */[
+                                                                                                            Caml_option.undefined_to_opt([
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
@@ -833,7 +833,7 @@ var suites_001 = /* :: */[
                                                                                                 (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               undefined,
-                                                                                                              Caml_option.undefined_to_opt(/* array */[
+                                                                                                              Caml_option.undefined_to_opt([
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
@@ -850,7 +850,7 @@ var suites_001 = /* :: */[
                                                                                                   (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 1,
-                                                                                                                /* array */[
+                                                                                                                [
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
@@ -867,7 +867,7 @@ var suites_001 = /* :: */[
                                                                                                     (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   0,
-                                                                                                                  /* array */[
+                                                                                                                  [
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
@@ -885,7 +885,7 @@ var suites_001 = /* :: */[
                                                                                                           var sum = {
                                                                                                             contents: 0
                                                                                                           };
-                                                                                                          /* array */[
+                                                                                                          [
                                                                                                               1,
                                                                                                               2,
                                                                                                               3
@@ -906,7 +906,7 @@ var suites_001 = /* :: */[
                                                                                                             var sum = {
                                                                                                               contents: 0
                                                                                                             };
-                                                                                                            /* array */[
+                                                                                                            [
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3
@@ -925,13 +925,13 @@ var suites_001 = /* :: */[
                                                                                                           "map",
                                                                                                           (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        /* array */[
+                                                                                                                        [
                                                                                                                           2,
                                                                                                                           4,
                                                                                                                           6,
                                                                                                                           8
                                                                                                                         ],
-                                                                                                                        /* array */[
+                                                                                                                        [
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
@@ -947,13 +947,13 @@ var suites_001 = /* :: */[
                                                                                                             "map",
                                                                                                             (function (param) {
                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                          /* array */[
+                                                                                                                          [
                                                                                                                             0,
                                                                                                                             2,
                                                                                                                             4,
                                                                                                                             6
                                                                                                                           ],
-                                                                                                                          /* array */[
+                                                                                                                          [
                                                                                                                               1,
                                                                                                                               2,
                                                                                                                               3,
@@ -970,7 +970,7 @@ var suites_001 = /* :: */[
                                                                                                               (function (param) {
                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                             -10,
-                                                                                                                            /* array */[
+                                                                                                                            [
                                                                                                                                 1,
                                                                                                                                 2,
                                                                                                                                 3,
@@ -987,7 +987,7 @@ var suites_001 = /* :: */[
                                                                                                                 (function (param) {
                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                               -6,
-                                                                                                                              /* array */[
+                                                                                                                              [
                                                                                                                                   1,
                                                                                                                                   2,
                                                                                                                                   3,
@@ -1004,7 +1004,7 @@ var suites_001 = /* :: */[
                                                                                                                   (function (param) {
                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                 -10,
-                                                                                                                                /* array */[
+                                                                                                                                [
                                                                                                                                     1,
                                                                                                                                     2,
                                                                                                                                     3,
@@ -1021,7 +1021,7 @@ var suites_001 = /* :: */[
                                                                                                                     (function (param) {
                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                   -6,
-                                                                                                                                  /* array */[
+                                                                                                                                  [
                                                                                                                                       1,
                                                                                                                                       2,
                                                                                                                                       3,
@@ -1038,7 +1038,7 @@ var suites_001 = /* :: */[
                                                                                                                       (function (param) {
                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                     false,
-                                                                                                                                    /* array */[
+                                                                                                                                    [
                                                                                                                                         1,
                                                                                                                                         2,
                                                                                                                                         3,
@@ -1055,7 +1055,7 @@ var suites_001 = /* :: */[
                                                                                                                         (function (param) {
                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                       true,
-                                                                                                                                      /* array */[
+                                                                                                                                      [
                                                                                                                                           1,
                                                                                                                                           2,
                                                                                                                                           3,

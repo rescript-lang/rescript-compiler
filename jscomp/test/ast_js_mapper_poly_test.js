@@ -30,7 +30,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   /* tuple */[
     67,
     "C"
@@ -77,17 +77,17 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFrom
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, [
           /* D */68,
           /* C */67,
           /* f */102
-        ]), /* array */[
+        ]), [
       "D",
       "C",
       "x"
     ]);
 
-var jsMapperConstantArray$1 = /* array */[
+var jsMapperConstantArray$1 = [
   0,
   3,
   4,
@@ -132,19 +132,19 @@ function s(param) {
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, [
           /* A0 */0,
           /* A1 */1,
           /* A2 */2,
           /* A3 */3
-        ]), /* array */[
+        ]), [
       0,
       3,
       4,
       5
     ]);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(vFromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(vFromJs, [
           0,
           1,
           2,
@@ -152,7 +152,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(
           4,
           5,
           6
-        ]), /* array */[
+        ]), [
       /* A0 */0,
       undefined,
       undefined,
@@ -173,14 +173,14 @@ function v1FromJs(param) {
   
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(v1ToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(v1ToJs, [
           /* B0 */0,
           /* B1 */1,
           /* B2 */2,
           /* B3 */3,
           /* B4 */4,
           /* B5 */5
-        ]), /* array */[
+        ]), [
       0,
       1,
       2,
@@ -189,7 +189,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(
       5
     ]);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(v1FromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(v1FromJs, [
           -1,
           0,
           1,
@@ -198,7 +198,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(
           4,
           5,
           6
-        ]), /* array */[
+        ]), [
       undefined,
       /* B0 */0,
       /* B1 */1,
@@ -220,14 +220,14 @@ function v2FromJs(param) {
   
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(v2ToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(v2ToJs, [
           /* C0 */0,
           /* C1 */1,
           /* C2 */2,
           /* C3 */3,
           /* C4 */4,
           /* C5 */5
-        ]), /* array */[
+        ]), [
       2,
       3,
       4,
@@ -236,7 +236,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(
       7
     ]);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(v2FromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(v2FromJs, [
           0,
           1,
           2,
@@ -246,19 +246,19 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(
           6,
           7,
           8
-        ]), $$Array.append($$Array.append(/* array */[
+        ]), $$Array.append($$Array.append([
               undefined,
               undefined
             ], $$Array.map((function (x) {
                     return x;
-                  }), /* array */[
+                  }), [
                   /* C0 */0,
                   /* C1 */1,
                   /* C2 */2,
                   /* C3 */3,
                   /* C4 */4,
                   /* C5 */5
-                ])), /* array */[undefined]));
+                ])), [undefined]));
 
 Mt.from_pair_suites("Ast_js_mapper_poly_test", suites.contents);
 

@@ -340,8 +340,8 @@ var Literal = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       44,
       6
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+    ], /* Module */Block.__(0, [[/* tuple */[
+            /* Module */Block.__(0, [[]]),
             "RegExp"
           ]]]));
 
@@ -349,54 +349,54 @@ var Type = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       191,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Param"
                   ]]]),
             "Function"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Indexer"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "CallProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Identifier"
                   ]]]),
             "Generic"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "StringLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "NumberLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "BooleanLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[/* tuple */[
-                            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[/* tuple */[
+                            /* Module */Block.__(0, [[]]),
                             "Variance"
                           ]]]),
                     "TypeParam"
@@ -404,7 +404,7 @@ var Type = Caml_module.init_mod(/* tuple */[
             "ParameterDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ParameterInstantiation"
           ]
         ]]));
@@ -413,124 +413,124 @@ var Statement = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       493,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Block"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "If"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Labeled"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Break"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Continue"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "With"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TypeAlias"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Case"
                   ]]]),
             "Switch"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Return"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Throw"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "CatchClause"
                   ]]]),
             "Try"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Declarator"
                   ]]]),
             "VariableDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "While"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DoWhile"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "For"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ForIn"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ForOf"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Let"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Interface"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareVariable"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareFunction"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareModule"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Specifier"
                   ]]]),
             "ExportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareExportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "NamedSpecifier"
                   ]]]),
             "ImportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Expression"
           ]
         ]]));
@@ -539,100 +539,100 @@ var Expression = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       758,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "SpreadElement"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Array"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Element"
                   ]]]),
             "TemplateLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TaggedTemplate"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "SpreadProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Sequence"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Unary"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Binary"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Assignment"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Update"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Logical"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Conditional"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "New"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Call"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Member"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Yield"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Block"
                   ]]]),
             "Comprehension"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Generator"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Let"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TypeCast"
           ]
         ]]));
@@ -641,41 +641,41 @@ var JSX = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       861,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Identifier"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "NamespacedName"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ExpressionContainer"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Text"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Attribute"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "SpreadAttribute"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "MemberExpression"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Opening"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Closing"
           ]
         ]]));
@@ -684,29 +684,29 @@ var Pattern = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       919,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "SpreadProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "SpreadElement"
                   ]]]),
             "Array"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Assignment"
           ]
         ]]));
@@ -715,78 +715,78 @@ var Class = Caml_module.init_mod(/* tuple */[
       "spider_monkey_ast.ml",
       978,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Method"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Property"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Implements"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Body"
           ]
         ]]));
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
+            /* Module */Block.__(0, [[]]),
             "RegExp"
           ]]]), Literal, Literal);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Param"
                   ]]]),
             "Function"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Indexer"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "CallProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Identifier"
                   ]]]),
             "Generic"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "StringLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "NumberLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "BooleanLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[/* tuple */[
-                            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[/* tuple */[
+                            /* Module */Block.__(0, [[]]),
                             "Variance"
                           ]]]),
                     "TypeParam"
@@ -794,312 +794,312 @@ Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
             "ParameterDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ParameterInstantiation"
           ]
         ]]), Type, Type);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Block"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "If"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Labeled"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Break"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Continue"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "With"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TypeAlias"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Case"
                   ]]]),
             "Switch"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Return"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Throw"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "CatchClause"
                   ]]]),
             "Try"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Declarator"
                   ]]]),
             "VariableDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "While"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DoWhile"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "For"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ForIn"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ForOf"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Let"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Interface"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareVariable"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareFunction"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareModule"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Specifier"
                   ]]]),
             "ExportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "DeclareExportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "NamedSpecifier"
                   ]]]),
             "ImportDeclaration"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Expression"
           ]
         ]]), Statement, Statement);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "SpreadElement"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Array"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Element"
                   ]]]),
             "TemplateLiteral"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TaggedTemplate"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "SpreadProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Sequence"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Unary"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Binary"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Assignment"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Update"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Logical"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Conditional"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "New"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Call"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Member"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Yield"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "Block"
                   ]]]),
             "Comprehension"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Generator"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Let"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "TypeCast"
           ]
         ]]), Expression, Expression);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Identifier"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "NamespacedName"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "ExpressionContainer"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Text"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Attribute"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "SpreadAttribute"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "MemberExpression"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Opening"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Closing"
           ]
         ]]), JSX, JSX);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[
+            /* Module */Block.__(0, [[
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "Property"
                   ],
                   /* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+                    /* Module */Block.__(0, [[]]),
                     "SpreadProperty"
                   ]
                 ]]),
             "Object"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
-                    /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[/* tuple */[
+                    /* Module */Block.__(0, [[]]),
                     "SpreadElement"
                   ]]]),
             "Array"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Assignment"
           ]
         ]]), Pattern, Pattern);
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Method"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Property"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Implements"
           ],
           /* tuple */[
-            /* Module */Block.__(0, [/* array */[]]),
+            /* Module */Block.__(0, [[]]),
             "Body"
           ]
         ]]), Class, Class);
@@ -4950,7 +4950,7 @@ function create$1(lex_env, mode) {
   };
   var lex_env$1 = with_lexbuf(lexbuf$1, lex_env);
   return {
-          la_results: /* array */[],
+          la_results: [],
           la_num_lexed: 0,
           la_lex_mode: mode,
           la_lex_env: lex_env$1
@@ -6153,7 +6153,7 @@ var Parse = Caml_module.init_mod(/* tuple */[
       "parser_flow.ml",
       95,
       6
-    ], /* Module */Block.__(0, [/* array */[
+    ], /* Module */Block.__(0, [[
           /* tuple */[
             /* Function */0,
             "program"
@@ -13912,7 +13912,7 @@ function predicate(env) {
   
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[
+Caml_module.update_mod(/* Module */Block.__(0, [[
           /* tuple */[
             /* Function */0,
             "program"
@@ -14107,7 +14107,7 @@ function parse(content, options) {
       }
     };
     var position = function (p) {
-      return Curry._1(obj, /* array */[
+      return Curry._1(obj, [
                   /* tuple */[
                     "line",
                     Curry._1(number$1, p.line)
@@ -14127,7 +14127,7 @@ function parse(content, options) {
       } else {
         source = $$null;
       }
-      return Curry._1(obj, /* array */[
+      return Curry._1(obj, [
                   /* tuple */[
                     "source",
                     source
@@ -14143,13 +14143,13 @@ function parse(content, options) {
                 ]);
     };
     var range = function ($$location) {
-      return Curry._1(array, /* array */[
+      return Curry._1(array, [
                   Curry._1(number$1, $$location.start.offset),
                   Curry._1(number$1, $$location._end.offset)
                 ]);
     };
     var node = function (_type, $$location, props) {
-      return Curry._1(obj, $$Array.append(/* array */[
+      return Curry._1(obj, $$Array.append([
                       /* tuple */[
                         "type",
                         Curry._1(string, _type)
@@ -14166,7 +14166,7 @@ function parse(content, options) {
     };
     var errors = function (l) {
       var error$2 = function (param) {
-        return Curry._1(obj, /* array */[
+        return Curry._1(obj, [
                     /* tuple */[
                       "loc",
                       loc(param[0])
@@ -14185,19 +14185,19 @@ function parse(content, options) {
       if (typeof t === "number") {
         switch (t) {
           case /* Any */0 :
-              return node("AnyTypeAnnotation", loc, /* array */[]);
+              return node("AnyTypeAnnotation", loc, []);
           case /* Void */1 :
-              return node("VoidTypeAnnotation", loc, /* array */[]);
+              return node("VoidTypeAnnotation", loc, []);
           case /* Null */2 :
-              return node("NullTypeAnnotation", loc, /* array */[]);
+              return node("NullTypeAnnotation", loc, []);
           case /* Number */3 :
-              return node("NumberTypeAnnotation", loc, /* array */[]);
+              return node("NumberTypeAnnotation", loc, []);
           case /* String */4 :
-              return node("StringTypeAnnotation", loc, /* array */[]);
+              return node("StringTypeAnnotation", loc, []);
           case /* Boolean */5 :
-              return node("BooleanTypeAnnotation", loc, /* array */[]);
+              return node("BooleanTypeAnnotation", loc, []);
           case /* Exists */6 :
-              return node("ExistsTypeAnnotation", loc, /* array */[]);
+              return node("ExistsTypeAnnotation", loc, []);
           
         }
       } else {
@@ -14205,7 +14205,7 @@ function parse(content, options) {
           case /* Nullable */0 :
               var loc$1 = loc;
               var t$1 = t[0];
-              return node("NullableTypeAnnotation", loc$1, /* array */[/* tuple */[
+              return node("NullableTypeAnnotation", loc$1, [/* tuple */[
                             "typeAnnotation",
                             _type(t$1)
                           ]]);
@@ -14222,7 +14222,7 @@ function parse(content, options) {
           case /* Array */3 :
               var loc$2 = loc;
               var t$2 = t[0];
-              return node("ArrayTypeAnnotation", loc$2, /* array */[/* tuple */[
+              return node("ArrayTypeAnnotation", loc$2, [/* tuple */[
                             "elementType",
                             _type(t$2)
                           ]]);
@@ -14235,7 +14235,7 @@ function parse(content, options) {
               var match = g.id;
               var id;
               id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-              return node("GenericTypeAnnotation", param$1[0], /* array */[
+              return node("GenericTypeAnnotation", param$1[0], [
                           /* tuple */[
                             "id",
                             id
@@ -14250,7 +14250,7 @@ function parse(content, options) {
                 loc,
                 t[0]
               ];
-              return node("UnionTypeAnnotation", param$2[0], /* array */[/* tuple */[
+              return node("UnionTypeAnnotation", param$2[0], [/* tuple */[
                             "types",
                             array_of_list(_type, param$2[1])
                           ]]);
@@ -14259,7 +14259,7 @@ function parse(content, options) {
                 loc,
                 t[0]
               ];
-              return node("IntersectionTypeAnnotation", param$3[0], /* array */[/* tuple */[
+              return node("IntersectionTypeAnnotation", param$3[0], [/* tuple */[
                             "types",
                             array_of_list(_type, param$3[1])
                           ]]);
@@ -14268,7 +14268,7 @@ function parse(content, options) {
                 loc,
                 t[0]
               ];
-              return node("TypeofTypeAnnotation", param$4[0], /* array */[/* tuple */[
+              return node("TypeofTypeAnnotation", param$4[0], [/* tuple */[
                             "argument",
                             _type(param$4[1])
                           ]]);
@@ -14277,7 +14277,7 @@ function parse(content, options) {
                 loc,
                 t[0]
               ];
-              return node("TupleTypeAnnotation", param$5[0], /* array */[/* tuple */[
+              return node("TupleTypeAnnotation", param$5[0], [/* tuple */[
                             "types",
                             array_of_list(_type, param$5[1])
                           ]]);
@@ -14287,7 +14287,7 @@ function parse(content, options) {
                 t[0]
               ];
               var s = param$6[1];
-              return node("StringLiteralTypeAnnotation", param$6[0], /* array */[
+              return node("StringLiteralTypeAnnotation", param$6[0], [
                           /* tuple */[
                             "value",
                             Curry._1(string, s.value)
@@ -14303,7 +14303,7 @@ function parse(content, options) {
                 t[0]
               ];
               var s$1 = param$7[1];
-              return node("NumberLiteralTypeAnnotation", param$7[0], /* array */[
+              return node("NumberLiteralTypeAnnotation", param$7[0], [
                           /* tuple */[
                             "value",
                             Curry._1(number$1, s$1.value)
@@ -14319,7 +14319,7 @@ function parse(content, options) {
                 t[0]
               ];
               var s$2 = param$8[1];
-              return node("BooleanLiteralTypeAnnotation", param$8[0], /* array */[
+              return node("BooleanLiteralTypeAnnotation", param$8[0], [
                           /* tuple */[
                             "value",
                             Curry._1(bool, s$2.value)
@@ -14338,7 +14338,7 @@ function parse(content, options) {
       var match = g.id;
       var id;
       id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-      return node("InterfaceExtends", param[0], /* array */[
+      return node("InterfaceExtends", param[0], [
                   /* tuple */[
                     "id",
                     id
@@ -14351,7 +14351,7 @@ function parse(content, options) {
     };
     var identifier = function (param) {
       var id = param[1];
-      return node("Identifier", param[0], /* array */[
+      return node("Identifier", param[0], [
                   /* tuple */[
                     "name",
                     Curry._1(string, id.name)
@@ -14368,7 +14368,7 @@ function parse(content, options) {
     };
     var object_type = function (param) {
       var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], /* array */[
+      return node("ObjectTypeAnnotation", param[0], [
                   /* tuple */[
                     "properties",
                     array_of_list(object_type_property, o.properties)
@@ -14384,14 +14384,14 @@ function parse(content, options) {
                 ]);
     };
     var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], /* array */[/* tuple */[
+      return node("TypeParameterDeclaration", param[0], [/* tuple */[
                     "params",
                     array_of_list(type_param, param[1].params)
                   ]]);
     };
     var function_type = function (param) {
       var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], /* array */[
+      return node("FunctionTypeAnnotation", param[0], [
                   /* tuple */[
                     "params",
                     array_of_list(function_type_param, fn.params)
@@ -14414,18 +14414,18 @@ function parse(content, options) {
       var match = param[1];
       var loc = param[0];
       if (typeof match === "number") {
-        return node("ThisExpression", loc, /* array */[]);
+        return node("ThisExpression", loc, []);
       } else {
         switch (match.tag | 0) {
           case /* Array */0 :
-              return node("ArrayExpression", loc, /* array */[/* tuple */[
+              return node("ArrayExpression", loc, [/* tuple */[
                             "elements",
                             array_of_list((function (param) {
                                     return option(expression_or_spread, param);
                                   }), match[0].elements)
                           ]]);
           case /* Object */1 :
-              return node("ObjectExpression", loc, /* array */[/* tuple */[
+              return node("ObjectExpression", loc, [/* tuple */[
                             "properties",
                             array_of_list(object_property, match[0].properties)
                           ]]);
@@ -14439,7 +14439,7 @@ function parse(content, options) {
               var match$1 = arrow.body;
               var body;
               body = match$1.tag ? expression(match$1[0]) : block(match$1[0]);
-              return node("ArrowFunctionExpression", loc, /* array */[
+              return node("ArrowFunctionExpression", loc, [
                           /* tuple */[
                             "id",
                             option(identifier, arrow.id)
@@ -14484,7 +14484,7 @@ function parse(content, options) {
                           ]
                         ]);
           case /* Sequence */4 :
-              return node("SequenceExpression", loc, /* array */[/* tuple */[
+              return node("SequenceExpression", loc, [/* tuple */[
                             "expressions",
                             array_of_list(expression, match[0].expressions)
                           ]]);
@@ -14492,7 +14492,7 @@ function parse(content, options) {
               var unary = match[0];
               var match$2 = unary.operator;
               if (match$2 >= 7) {
-                return node("AwaitExpression", loc, /* array */[/* tuple */[
+                return node("AwaitExpression", loc, [/* tuple */[
                               "argument",
                               expression(unary.argument)
                             ]]);
@@ -14528,7 +14528,7 @@ function parse(content, options) {
                           ];
                   
                 }
-                return node("UnaryExpression", loc, /* array */[
+                return node("UnaryExpression", loc, [
                             /* tuple */[
                               "operator",
                               Curry._1(string, operator)
@@ -14616,7 +14616,7 @@ function parse(content, options) {
                     break;
                 
               }
-              return node("BinaryExpression", loc, /* array */[
+              return node("BinaryExpression", loc, [
                           /* tuple */[
                             "operator",
                             Curry._1(string, operator$1)
@@ -14676,7 +14676,7 @@ function parse(content, options) {
                     break;
                 
               }
-              return node("AssignmentExpression", loc, /* array */[
+              return node("AssignmentExpression", loc, [
                           /* tuple */[
                             "operator",
                             Curry._1(string, operator$2)
@@ -14694,7 +14694,7 @@ function parse(content, options) {
               var update = match[0];
               var match$6 = update.operator;
               var operator$3 = match$6 ? "--" : "++";
-              return node("UpdateExpression", loc, /* array */[
+              return node("UpdateExpression", loc, [
                           /* tuple */[
                             "operator",
                             Curry._1(string, operator$3)
@@ -14712,7 +14712,7 @@ function parse(content, options) {
               var logical = match[0];
               var match$7 = logical.operator;
               var operator$4 = match$7 ? "&&" : "||";
-              return node("LogicalExpression", loc, /* array */[
+              return node("LogicalExpression", loc, [
                           /* tuple */[
                             "operator",
                             Curry._1(string, operator$4)
@@ -14728,7 +14728,7 @@ function parse(content, options) {
                         ]);
           case /* Conditional */10 :
               var conditional = match[0];
-              return node("ConditionalExpression", loc, /* array */[
+              return node("ConditionalExpression", loc, [
                           /* tuple */[
                             "test",
                             expression(conditional.test)
@@ -14744,7 +14744,7 @@ function parse(content, options) {
                         ]);
           case /* New */11 :
               var _new = match[0];
-              return node("NewExpression", loc, /* array */[
+              return node("NewExpression", loc, [
                           /* tuple */[
                             "callee",
                             expression(_new.callee)
@@ -14756,7 +14756,7 @@ function parse(content, options) {
                         ]);
           case /* Call */12 :
               var call = match[0];
-              return node("CallExpression", loc, /* array */[
+              return node("CallExpression", loc, [
                           /* tuple */[
                             "callee",
                             expression(call.callee)
@@ -14771,7 +14771,7 @@ function parse(content, options) {
               var match$8 = member.property;
               var property;
               property = match$8.tag ? expression(match$8[0]) : identifier(match$8[0]);
-              return node("MemberExpression", loc, /* array */[
+              return node("MemberExpression", loc, [
                           /* tuple */[
                             "object",
                             expression(member._object)
@@ -14787,7 +14787,7 @@ function parse(content, options) {
                         ]);
           case /* Yield */14 :
               var $$yield = match[0];
-              return node("YieldExpression", loc, /* array */[
+              return node("YieldExpression", loc, [
                           /* tuple */[
                             "argument",
                             option(expression, $$yield.argument)
@@ -14799,7 +14799,7 @@ function parse(content, options) {
                         ]);
           case /* Comprehension */15 :
               var comp = match[0];
-              return node("ComprehensionExpression", loc, /* array */[
+              return node("ComprehensionExpression", loc, [
                           /* tuple */[
                             "blocks",
                             array_of_list(comprehension_block, comp.blocks)
@@ -14811,7 +14811,7 @@ function parse(content, options) {
                         ]);
           case /* Generator */16 :
               var gen = match[0];
-              return node("GeneratorExpression", loc, /* array */[
+              return node("GeneratorExpression", loc, [
                           /* tuple */[
                             "blocks",
                             array_of_list(comprehension_block, gen.blocks)
@@ -14823,7 +14823,7 @@ function parse(content, options) {
                         ]);
           case /* Let */17 :
               var _let = match[0];
-              return node("LetExpression", loc, /* array */[
+              return node("LetExpression", loc, [
                           /* tuple */[
                             "head",
                             array_of_list(let_assignment, _let.head)
@@ -14851,7 +14851,7 @@ function parse(content, options) {
                 match[0]
               ];
               var tagged = param$1[1];
-              return node("TaggedTemplateExpression", param$1[0], /* array */[
+              return node("TaggedTemplateExpression", param$1[0], [
                           /* tuple */[
                             "tag",
                             expression(tagged.tag)
@@ -14872,7 +14872,7 @@ function parse(content, options) {
                 match[0]
               ];
               var c = param$2[1];
-              return node("ClassExpression", param$2[0], /* array */[
+              return node("ClassExpression", param$2[0], [
                           /* tuple */[
                             "id",
                             option(identifier, c.id)
@@ -14904,7 +14904,7 @@ function parse(content, options) {
                         ]);
           case /* TypeCast */24 :
               var typecast = match[0];
-              return node("TypeCastExpression", loc, /* array */[
+              return node("TypeCastExpression", loc, [
                           /* tuple */[
                             "expression",
                             expression(typecast.expression)
@@ -14919,7 +14919,7 @@ function parse(content, options) {
       }
     };
     var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], /* array */[/* tuple */[
+      return node("TypeAnnotation", param[0], [/* tuple */[
                     "typeAnnotation",
                     _type(param[1])
                   ]]);
@@ -14956,7 +14956,7 @@ function parse(content, options) {
         exit = 1;
       } else {
         var match$1 = value[0];
-        var regex = Curry._1(obj, /* array */[
+        var regex = Curry._1(obj, [
               /* tuple */[
                 "pattern",
                 Curry._1(string, match$1.pattern)
@@ -14966,7 +14966,7 @@ function parse(content, options) {
                 Curry._1(string, match$1.flags)
               ]
             ]);
-        props = /* array */[
+        props = [
           /* tuple */[
             "value",
             value_
@@ -14982,7 +14982,7 @@ function parse(content, options) {
         ];
       }
       if (exit === 1) {
-        props = /* array */[
+        props = [
           /* tuple */[
             "value",
             value_
@@ -15012,7 +15012,7 @@ function parse(content, options) {
       switch (match.tag | 0) {
         case /* Object */0 :
             var obj = match[0];
-            return node("ObjectPattern", loc, /* array */[
+            return node("ObjectPattern", loc, [
                         /* tuple */[
                           "properties",
                           array_of_list(object_pattern_property, obj.properties)
@@ -15024,7 +15024,7 @@ function parse(content, options) {
                       ]);
         case /* Array */1 :
             var arr = match[0];
-            return node("ArrayPattern", loc, /* array */[
+            return node("ArrayPattern", loc, [
                         /* tuple */[
                           "elements",
                           array_of_list((function (param) {
@@ -15038,7 +15038,7 @@ function parse(content, options) {
                       ]);
         case /* Assignment */2 :
             var match$1 = match[0];
-            return node("AssignmentPattern", loc, /* array */[
+            return node("AssignmentPattern", loc, [
                         /* tuple */[
                           "left",
                           pattern(match$1.left)
@@ -15057,7 +15057,7 @@ function parse(content, options) {
     };
     var $$case = function (param) {
       var c = param[1];
-      return node("SwitchCase", param[0], /* array */[
+      return node("SwitchCase", param[0], [
                   /* tuple */[
                     "test",
                     option(expression, c.test)
@@ -15069,7 +15069,7 @@ function parse(content, options) {
                 ]);
     };
     var block = function (param) {
-      return node("BlockStatement", param[0], /* array */[/* tuple */[
+      return node("BlockStatement", param[0], [/* tuple */[
                     "body",
                     array_of_list(statement, param[1].body)
                   ]]);
@@ -15078,7 +15078,7 @@ function parse(content, options) {
       if (param !== undefined) {
         var match = param;
         if (match.tag) {
-          return Curry._1(array, /* array */[node("ExportBatchSpecifier", match[0], /* array */[/* tuple */[
+          return Curry._1(array, [node("ExportBatchSpecifier", match[0], [/* tuple */[
                               "name",
                               option(identifier, match[1])
                             ]])]);
@@ -15086,12 +15086,12 @@ function parse(content, options) {
           return array_of_list(export_specifier, match[0]);
         }
       } else {
-        return Curry._1(array, /* array */[]);
+        return Curry._1(array, []);
       }
     };
     var $$catch = function (param) {
       var c = param[1];
-      return node("CatchClause", param[0], /* array */[
+      return node("CatchClause", param[0], [
                   /* tuple */[
                     "param",
                     pattern(c.param)
@@ -15107,7 +15107,7 @@ function parse(content, options) {
                 ]);
     };
     var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], /* array */[/* tuple */[
+      return node("DeclareVariable", param[0], [/* tuple */[
                     "id",
                     identifier(param[1].id)
                   ]]);
@@ -15117,9 +15117,9 @@ function parse(content, options) {
       var loc = param[0];
       if (typeof match === "number") {
         if (match === /* Empty */0) {
-          return node("EmptyStatement", loc, /* array */[]);
+          return node("EmptyStatement", loc, []);
         } else {
-          return node("DebuggerStatement", loc, /* array */[]);
+          return node("DebuggerStatement", loc, []);
         }
       } else {
         switch (match.tag | 0) {
@@ -15129,13 +15129,13 @@ function parse(content, options) {
                           match[0]
                         ]);
           case /* Expression */1 :
-              return node("ExpressionStatement", loc, /* array */[/* tuple */[
+              return node("ExpressionStatement", loc, [/* tuple */[
                             "expression",
                             expression(match[0].expression)
                           ]]);
           case /* If */2 :
               var _if = match[0];
-              return node("IfStatement", loc, /* array */[
+              return node("IfStatement", loc, [
                           /* tuple */[
                             "test",
                             expression(_if.test)
@@ -15151,7 +15151,7 @@ function parse(content, options) {
                         ]);
           case /* Labeled */3 :
               var labeled = match[0];
-              return node("LabeledStatement", loc, /* array */[
+              return node("LabeledStatement", loc, [
                           /* tuple */[
                             "label",
                             identifier(labeled.label)
@@ -15162,18 +15162,18 @@ function parse(content, options) {
                           ]
                         ]);
           case /* Break */4 :
-              return node("BreakStatement", loc, /* array */[/* tuple */[
+              return node("BreakStatement", loc, [/* tuple */[
                             "label",
                             option(identifier, match[0].label)
                           ]]);
           case /* Continue */5 :
-              return node("ContinueStatement", loc, /* array */[/* tuple */[
+              return node("ContinueStatement", loc, [/* tuple */[
                             "label",
                             option(identifier, match[0].label)
                           ]]);
           case /* With */6 :
               var _with = match[0];
-              return node("WithStatement", loc, /* array */[
+              return node("WithStatement", loc, [
                           /* tuple */[
                             "object",
                             expression(_with._object)
@@ -15190,7 +15190,7 @@ function parse(content, options) {
                         ]);
           case /* Switch */8 :
               var $$switch = match[0];
-              return node("SwitchStatement", loc, /* array */[
+              return node("SwitchStatement", loc, [
                           /* tuple */[
                             "discriminant",
                             expression($$switch.discriminant)
@@ -15205,18 +15205,18 @@ function parse(content, options) {
                           ]
                         ]);
           case /* Return */9 :
-              return node("ReturnStatement", loc, /* array */[/* tuple */[
+              return node("ReturnStatement", loc, [/* tuple */[
                             "argument",
                             option(expression, match[0].argument)
                           ]]);
           case /* Throw */10 :
-              return node("ThrowStatement", loc, /* array */[/* tuple */[
+              return node("ThrowStatement", loc, [/* tuple */[
                             "argument",
                             expression(match[0].argument)
                           ]]);
           case /* Try */11 :
               var _try = match[0];
-              return node("TryStatement", loc, /* array */[
+              return node("TryStatement", loc, [
                           /* tuple */[
                             "block",
                             block(_try.block)
@@ -15236,7 +15236,7 @@ function parse(content, options) {
                         ]);
           case /* While */12 :
               var _while = match[0];
-              return node("WhileStatement", loc, /* array */[
+              return node("WhileStatement", loc, [
                           /* tuple */[
                             "test",
                             expression(_while.test)
@@ -15248,7 +15248,7 @@ function parse(content, options) {
                         ]);
           case /* DoWhile */13 :
               var dowhile = match[0];
-              return node("DoWhileStatement", loc, /* array */[
+              return node("DoWhileStatement", loc, [
                           /* tuple */[
                             "body",
                             statement(dowhile.body)
@@ -15267,7 +15267,7 @@ function parse(content, options) {
                   return variable_declaration(param[0]);
                 }
               };
-              return node("ForStatement", loc, /* array */[
+              return node("ForStatement", loc, [
                           /* tuple */[
                             "init",
                             option(init, _for.init)
@@ -15290,7 +15290,7 @@ function parse(content, options) {
               var match$1 = forin.left;
               var left;
               left = match$1.tag ? expression(match$1[0]) : variable_declaration(match$1[0]);
-              return node("ForInStatement", loc, /* array */[
+              return node("ForInStatement", loc, [
                           /* tuple */[
                             "left",
                             left
@@ -15313,7 +15313,7 @@ function parse(content, options) {
               var match$2 = forof.left;
               var left$1;
               left$1 = match$2.tag ? expression(match$2[0]) : variable_declaration(match$2[0]);
-              return node("ForOfStatement", loc, /* array */[
+              return node("ForOfStatement", loc, [
                           /* tuple */[
                             "left",
                             left$1
@@ -15329,7 +15329,7 @@ function parse(content, options) {
                         ]);
           case /* Let */17 :
               var _let = match[0];
-              return node("LetStatement", loc, /* array */[
+              return node("LetStatement", loc, [
                           /* tuple */[
                             "head",
                             array_of_list(let_assignment, _let.head)
@@ -15352,7 +15352,7 @@ function parse(content, options) {
               var match$5 = fn.body;
               var body;
               body = match$5.tag ? expression(match$5[0]) : block(match$5[0]);
-              return node(match$4[0], loc, /* array */[
+              return node(match$4[0], loc, [
                           /* tuple */[
                             "id",
                             match$4[1]
@@ -15415,7 +15415,7 @@ function parse(content, options) {
                   "ClassExpression",
                   $$null
                 ];
-              return node(match$7[0], param$1[0], /* array */[
+              return node(match$7[0], param$1[0], [
                           /* tuple */[
                             "id",
                             match$7[1]
@@ -15473,7 +15473,7 @@ function parse(content, options) {
               var match$9 = m.kind;
               var tmp;
               tmp = match$9.tag ? Curry._1(string, "ES") : Curry._1(string, "CommonJS");
-              return node("DeclareModule", loc, /* array */[
+              return node("DeclareModule", loc, [
                           /* tuple */[
                             "id",
                             id
@@ -15488,7 +15488,7 @@ function parse(content, options) {
                           ]
                         ]);
           case /* DeclareModuleExports */26 :
-              return node("DeclareModuleExports", loc, /* array */[/* tuple */[
+              return node("DeclareModuleExports", loc, [/* tuple */[
                             "typeAnnotation",
                             type_annotation(match[0])
                           ]]);
@@ -15522,7 +15522,7 @@ function parse(content, options) {
               } else {
                 declaration = $$null;
               }
-              return node("DeclareExportDeclaration", loc, /* array */[
+              return node("DeclareExportDeclaration", loc, [
                           /* tuple */[
                             "default",
                             Curry._1(bool, $$export.default)
@@ -15550,7 +15550,7 @@ function parse(content, options) {
               } else {
                 declaration$1 = $$null;
               }
-              return node("ExportDeclaration", loc, /* array */[
+              return node("ExportDeclaration", loc, [
                           /* tuple */[
                             "default",
                             Curry._1(bool, $$export$1.default)
@@ -15581,7 +15581,7 @@ function parse(content, options) {
                             var local_id = match.local;
                             var remote_id = match.remote;
                             var span_loc = local_id !== undefined ? btwn(remote_id[0], local_id[0]) : remote_id[0];
-                            return node("ImportSpecifier", span_loc, /* array */[
+                            return node("ImportSpecifier", span_loc, [
                                         /* tuple */[
                                           "id",
                                           identifier(remote_id)
@@ -15593,13 +15593,13 @@ function parse(content, options) {
                                       ]);
                         case /* ImportDefaultSpecifier */1 :
                             var id = param[0];
-                            return node("ImportDefaultSpecifier", id[0], /* array */[/* tuple */[
+                            return node("ImportDefaultSpecifier", id[0], [/* tuple */[
                                           "id",
                                           identifier(id)
                                         ]]);
                         case /* ImportNamespaceSpecifier */2 :
                             var param$1 = param[0];
-                            return node("ImportNamespaceSpecifier", param$1[0], /* array */[/* tuple */[
+                            return node("ImportNamespaceSpecifier", param$1[0], [/* tuple */[
                                           "id",
                                           identifier(param$1[1])
                                         ]]);
@@ -15620,7 +15620,7 @@ function parse(content, options) {
                     break;
                 
               }
-              return node("ImportDeclaration", loc, /* array */[
+              return node("ImportDeclaration", loc, [
                           /* tuple */[
                             "specifiers",
                             Curry._1(array, $$Array.of_list(specifiers))
@@ -15639,14 +15639,14 @@ function parse(content, options) {
       }
     };
     var declare_function = function (param) {
-      return node("DeclareFunction", param[0], /* array */[/* tuple */[
+      return node("DeclareFunction", param[0], [/* tuple */[
                     "id",
                     identifier(param[1].id)
                   ]]);
     };
     var interface_declaration = function (param) {
       var i = param[1];
-      return node("InterfaceDeclaration", param[0], /* array */[
+      return node("InterfaceDeclaration", param[0], [
                   /* tuple */[
                     "id",
                     identifier(i.id)
@@ -15666,7 +15666,7 @@ function parse(content, options) {
                 ]);
     };
     var let_assignment = function (assignment) {
-      return Curry._1(obj, /* array */[
+      return Curry._1(obj, [
                   /* tuple */[
                     "id",
                     pattern(assignment.id)
@@ -15679,7 +15679,7 @@ function parse(content, options) {
     };
     var type_alias = function (param) {
       var alias = param[1];
-      return node("TypeAlias", param[0], /* array */[
+      return node("TypeAlias", param[0], [
                   /* tuple */[
                     "id",
                     identifier(alias.id)
@@ -15710,7 +15710,7 @@ function parse(content, options) {
             break;
         
       }
-      return node("VariableDeclaration", param[0], /* array */[
+      return node("VariableDeclaration", param[0], [
                   /* tuple */[
                     "declarations",
                     array_of_list(variable_declarator, $$var.declarations)
@@ -15723,7 +15723,7 @@ function parse(content, options) {
     };
     var declare_class = function (param) {
       var d = param[1];
-      return node("DeclareClass", param[0], /* array */[
+      return node("DeclareClass", param[0], [
                   /* tuple */[
                     "id",
                     identifier(d.id)
@@ -15751,7 +15751,7 @@ function parse(content, options) {
           return Curry._1(string, "plus");
         }
       };
-      return node("TypeParameter", param[0], /* array */[
+      return node("TypeParameter", param[0], [
                   /* tuple */[
                     "name",
                     Curry._1(string, tp.name)
@@ -15775,7 +15775,7 @@ function parse(content, options) {
       var match = q.qualification;
       var qualification;
       qualification = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-      return node("QualifiedTypeIdentifier", param[0], /* array */[
+      return node("QualifiedTypeIdentifier", param[0], [
                   /* tuple */[
                     "qualification",
                     qualification
@@ -15787,7 +15787,7 @@ function parse(content, options) {
                 ]);
     };
     var type_parameter_instantiation = function (param) {
-      return node("TypeParameterInstantiation", param[0], /* array */[/* tuple */[
+      return node("TypeParameterInstantiation", param[0], [/* tuple */[
                     "params",
                     array_of_list(_type, param[1].params)
                   ]]);
@@ -15795,7 +15795,7 @@ function parse(content, options) {
     var jsx_opening_attribute = function (param) {
       if (param.tag) {
         var param$1 = param[0];
-        return node("JSXSpreadAttribute", param$1[0], /* array */[/* tuple */[
+        return node("JSXSpreadAttribute", param$1[0], [/* tuple */[
                       "argument",
                       expression(param$1[1].argument)
                     ]]);
@@ -15805,7 +15805,7 @@ function parse(content, options) {
         var match = attribute.name;
         var name;
         name = match.tag ? jsx_namespaced_name(match[0]) : jsx_identifier(match[0]);
-        return node("JSXAttribute", param$2[0], /* array */[
+        return node("JSXAttribute", param$2[0], [
                     /* tuple */[
                       "name",
                       name
@@ -15820,7 +15820,7 @@ function parse(content, options) {
     var object_pattern_property = function (param) {
       if (param.tag) {
         var match = param[0];
-        return node("SpreadPropertyPattern", match[0], /* array */[/* tuple */[
+        return node("SpreadPropertyPattern", match[0], [/* tuple */[
                       "argument",
                       pattern(match[1].argument)
                     ]]);
@@ -15850,7 +15850,7 @@ function parse(content, options) {
               break;
           
         }
-        return node("PropertyPattern", match$1[0], /* array */[
+        return node("PropertyPattern", match$1[0], [
                     /* tuple */[
                       "key",
                       match$3[0]
@@ -15873,7 +15873,7 @@ function parse(content, options) {
     var array_pattern_element = function (param) {
       if (param.tag) {
         var match = param[0];
-        return node("SpreadElementPattern", match[0], /* array */[/* tuple */[
+        return node("SpreadElementPattern", match[0], [/* tuple */[
                       "argument",
                       pattern(match[1].argument)
                     ]]);
@@ -15883,7 +15883,7 @@ function parse(content, options) {
     };
     var export_specifier = function (param) {
       var specifier = param[1];
-      return node("ExportSpecifier", param[0], /* array */[
+      return node("ExportSpecifier", param[0], [
                   /* tuple */[
                     "id",
                     identifier(specifier.id)
@@ -15899,7 +15899,7 @@ function parse(content, options) {
       var match = member_expression._object;
       var _object;
       _object = match.tag ? jsx_member_expression(match[0]) : jsx_identifier(match[0]);
-      return node("JSXMemberExpression", param[0], /* array */[
+      return node("JSXMemberExpression", param[0], [
                   /* tuple */[
                     "object",
                     _object
@@ -15912,7 +15912,7 @@ function parse(content, options) {
     };
     var jsx_namespaced_name = function (param) {
       var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], /* array */[
+      return node("JSXNamespacedName", param[0], [
                   /* tuple */[
                     "namespace",
                     jsx_identifier(namespaced_name.namespace)
@@ -15924,20 +15924,20 @@ function parse(content, options) {
                 ]);
     };
     var jsx_identifier = function (param) {
-      return node("JSXIdentifier", param[0], /* array */[/* tuple */[
+      return node("JSXIdentifier", param[0], [/* tuple */[
                     "name",
                     Curry._1(string, param[1].name)
                   ]]);
     };
     var class_body = function (param) {
-      return node("ClassBody", param[0], /* array */[/* tuple */[
+      return node("ClassBody", param[0], [/* tuple */[
                     "body",
                     array_of_list(class_element, param[1].body)
                   ]]);
     };
     var class_implements = function (param) {
       var $$implements = param[1];
-      return node("ClassImplements", param[0], /* array */[
+      return node("ClassImplements", param[0], [
                   /* tuple */[
                     "id",
                     identifier($$implements.id)
@@ -15950,7 +15950,7 @@ function parse(content, options) {
     };
     var jsx_element = function (param) {
       var element = param[1];
-      return node("JSXElement", param[0], /* array */[
+      return node("JSXElement", param[0], [
                   /* tuple */[
                     "openingElement",
                     jsx_opening(element.openingElement)
@@ -15968,7 +15968,7 @@ function parse(content, options) {
     var object_property = function (param) {
       if (param.tag) {
         var match = param[0];
-        return node("SpreadProperty", match[0], /* array */[/* tuple */[
+        return node("SpreadProperty", match[0], [/* tuple */[
                       "argument",
                       expression(match[1].argument)
                     ]]);
@@ -16012,7 +16012,7 @@ function parse(content, options) {
               break;
           
         }
-        return node("Property", match$1[0], /* array */[
+        return node("Property", match$1[0], [
                     /* tuple */[
                       "key",
                       match$3[0]
@@ -16045,7 +16045,7 @@ function parse(content, options) {
       var match = _function.body;
       var body;
       body = match.tag ? expression(match[0]) : block(match[0]);
-      return node("FunctionExpression", param[0], /* array */[
+      return node("FunctionExpression", param[0], [
                   /* tuple */[
                     "id",
                     option(identifier, _function.id)
@@ -16092,7 +16092,7 @@ function parse(content, options) {
     };
     var template_literal = function (param) {
       var value = param[1];
-      return node("TemplateLiteral", param[0], /* array */[
+      return node("TemplateLiteral", param[0], [
                   /* tuple */[
                     "quasis",
                     array_of_list(template_element, value.quasis)
@@ -16105,7 +16105,7 @@ function parse(content, options) {
     };
     var comprehension_block = function (param) {
       var b = param[1];
-      return node("ComprehensionBlock", param[0], /* array */[
+      return node("ComprehensionBlock", param[0], [
                   /* tuple */[
                     "left",
                     pattern(b.left)
@@ -16123,7 +16123,7 @@ function parse(content, options) {
     var expression_or_spread = function (param) {
       if (param.tag) {
         var match = param[0];
-        return node("SpreadElement", match[0], /* array */[/* tuple */[
+        return node("SpreadElement", match[0], [/* tuple */[
                       "argument",
                       expression(match[1].argument)
                     ]]);
@@ -16149,7 +16149,7 @@ function parse(content, options) {
                 ];
         
       }
-      return node("ObjectTypeProperty", param[0], /* array */[
+      return node("ObjectTypeProperty", param[0], [
                   /* tuple */[
                     "key",
                     key
@@ -16170,7 +16170,7 @@ function parse(content, options) {
     };
     var object_type_call_property = function (param) {
       var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], /* array */[
+      return node("ObjectTypeCallProperty", param[0], [
                   /* tuple */[
                     "value",
                     function_type(callProperty.value)
@@ -16183,7 +16183,7 @@ function parse(content, options) {
     };
     var object_type_indexer = function (param) {
       var indexer = param[1];
-      return node("ObjectTypeIndexer", param[0], /* array */[
+      return node("ObjectTypeIndexer", param[0], [
                   /* tuple */[
                     "id",
                     identifier(indexer.id)
@@ -16205,15 +16205,15 @@ function parse(content, options) {
     var jsx_expression_container = function (param) {
       var match = param[1].expression;
       var expression$1;
-      expression$1 = match.tag ? node("JSXEmptyExpression", match[0], /* array */[]) : expression(match[0]);
-      return node("JSXExpressionContainer", param[0], /* array */[/* tuple */[
+      expression$1 = match.tag ? node("JSXEmptyExpression", match[0], []) : expression(match[0]);
+      return node("JSXExpressionContainer", param[0], [/* tuple */[
                     "expression",
                     expression$1
                   ]]);
     };
     var function_type_param = function (param) {
       var param$1 = param[1];
-      return node("FunctionTypeParam", param[0], /* array */[
+      return node("FunctionTypeParam", param[0], [
                   /* tuple */[
                     "name",
                     identifier(param$1.name)
@@ -16230,7 +16230,7 @@ function parse(content, options) {
     };
     var template_element = function (param) {
       var element = param[1];
-      var value = Curry._1(obj, /* array */[
+      var value = Curry._1(obj, [
             /* tuple */[
               "raw",
               Curry._1(string, element.value.raw)
@@ -16240,7 +16240,7 @@ function parse(content, options) {
               Curry._1(string, element.value.cooked)
             ]
           ]);
-      return node("TemplateElement", param[0], /* array */[
+      return node("TemplateElement", param[0], [
                   /* tuple */[
                     "value",
                     value
@@ -16278,7 +16278,7 @@ function parse(content, options) {
               break;
           
         }
-        return node("ClassProperty", param$1[0], /* array */[
+        return node("ClassProperty", param$1[0], [
                     /* tuple */[
                       "key",
                       match$1[0]
@@ -16342,7 +16342,7 @@ function parse(content, options) {
               break;
           
         }
-        return node("MethodDefinition", param$2[0], /* array */[
+        return node("MethodDefinition", param$2[0], [
                     /* tuple */[
                       "key",
                       match$2[0]
@@ -16380,7 +16380,7 @@ function parse(content, options) {
           "Block",
           c[0]
         ];
-      return node(match[0], param[0], /* array */[/* tuple */[
+      return node(match[0], param[0], [/* tuple */[
                     "value",
                     Curry._1(string, match[1])
                   ]]);
@@ -16405,7 +16405,7 @@ function parse(content, options) {
               match[0]
             ];
             var text = param$1[1];
-            return node("JSXText", param$1[0], /* array */[
+            return node("JSXText", param$1[0], [
                         /* tuple */[
                           "value",
                           Curry._1(string, text.value)
@@ -16419,14 +16419,14 @@ function parse(content, options) {
       }
     };
     var jsx_closing = function (param) {
-      return node("JSXClosingElement", param[0], /* array */[/* tuple */[
+      return node("JSXClosingElement", param[0], [/* tuple */[
                     "name",
                     jsx_name(param[1].name)
                   ]]);
     };
     var jsx_opening = function (param) {
       var opening = param[1];
-      return node("JSXOpeningElement", param[0], /* array */[
+      return node("JSXOpeningElement", param[0], [
                   /* tuple */[
                     "name",
                     jsx_name(opening.name)
@@ -16456,7 +16456,7 @@ function parse(content, options) {
     };
     var variable_declarator = function (param) {
       var declarator = param[1];
-      return node("VariableDeclarator", param[0], /* array */[
+      return node("VariableDeclarator", param[0], [
                   /* tuple */[
                     "id",
                     pattern(declarator.id)
@@ -16468,7 +16468,7 @@ function parse(content, options) {
                 ]);
     };
     var program$2 = function (param) {
-      return node("Program", param[0], /* array */[
+      return node("Program", param[0], [
                   /* tuple */[
                     "body",
                     array_of_list(statement, param[1])
