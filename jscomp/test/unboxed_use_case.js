@@ -28,5 +28,18 @@ console.log(3);
 
 console.log("x");
 
+var v0 = [];
+
+v0[0] = 65;
+
+v0[1] = v0;
+
+var v1 = /* `A */[
+  65,
+  /* B */66
+];
+
 exports.hi = hi;
+exports.v0 = v0;
+exports.v1 = v1;
 /*  Not a pure module */
