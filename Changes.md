@@ -2,6 +2,19 @@
 
 # current
 
+# 7.0.2
+
+- #4060 #4057 add unboxed type support 
+- #4053 use setImmediate for rebuilding to fix watch mode for some specific editors
+- #4050 support pipe first poly variant
+- #4049 Add support for custom underscored namespace
+- #4018 #4020 #4028 #4031 #4037 #4048 #4042 #4041 #4040 improve compiler performance (optimize hash base data structure)
+- #4039 upgrade refmt (various bug fixes)
+- #4006 #4029 fix misleading error message
+- #4025 #4026 fix corner case of code gen for empty object literal
+- #4024 Playground: update repl.js and docs to support jsoo 3.5.1
+
+
 # 7.0.1
 - #4009 #4011 fix ocaml type checking bug (cherry pick)
 - #4000 #4010 add react-starter theme
