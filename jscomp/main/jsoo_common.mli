@@ -29,6 +29,18 @@ module Js :
     external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
   end
 
+module Console :
+  sig
+    type +'a meth
+    class type t =
+      object
+        method log : _ -> unit meth
+        method log_2 : _ -> _ -> unit meth
+      end
+    val console : t Js.t
+    val log: 'a -> unit
+  end
+
 (*
 Creates a Js Error object for given location with and a certain error message
 *)
