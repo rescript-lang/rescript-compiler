@@ -84,9 +84,17 @@ var tmp$1 = Curry._1(point2[0], 0);
 
 var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 
+var u = {
+  x: 3,
+  getX: (function () {
+      var self = this ;
+      return self.x;
+    })
+};
+
 Mt.from_pair_suites("Class_test", /* :: */[
       /* tuple */[
-        "File \"class_test.ml\", line 33, characters 4-11",
+        "File \"class_test.ml\", line 38, characters 4-11",
         (function (param) {
             return /* Eq */Block.__(0, [
                       zero,
@@ -96,7 +104,7 @@ Mt.from_pair_suites("Class_test", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"class_test.ml\", line 34, characters 4-11",
+          "File \"class_test.ml\", line 39, characters 4-11",
           (function (param) {
               return /* Eq */Block.__(0, [
                         three,
@@ -106,7 +114,7 @@ Mt.from_pair_suites("Class_test", /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "File \"class_test.ml\", line 35, characters 4-11",
+            "File \"class_test.ml\", line 40, characters 4-11",
             (function (param) {
                 return /* Eq */Block.__(0, [
                           one,
@@ -116,7 +124,7 @@ Mt.from_pair_suites("Class_test", /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              "File \"class_test.ml\", line 36, characters 4-11",
+              "File \"class_test.ml\", line 41, characters 4-11",
               (function (param) {
                   return /* Eq */Block.__(0, [
                             two,
@@ -138,4 +146,5 @@ exports.x0 = x0;
 exports.point2 = point2;
 exports.one = one;
 exports.two = two;
+exports.u = u;
 /* point Not a pure module */

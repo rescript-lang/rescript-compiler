@@ -29,6 +29,11 @@ class point2 =
 let one = new point2#get_x 
 let two = new point2#get_x
 
+
+(* let u = {%obj x = 3; y = 2} *)
+let u = object [@bs] (self) val x = 3  method getX () = self##x end
+
+
 ;; Mt.from_pair_suites __MODULE__ Mt.[
     __LOC__, (fun _ -> Eq (zero, 0));
     __LOC__, (fun _ -> Eq (three, 3));
