@@ -19335,9 +19335,6 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
-let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-      ptyp_arg 
-
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -19352,7 +19349,7 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp_arg : Ast_core_type.t) :
   External_arg_spec.attr  =
-  let ptyp = get_basic_type_from_option_label ptyp_arg in 
+  let ptyp =  ptyp_arg in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
@@ -19683,7 +19680,7 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
