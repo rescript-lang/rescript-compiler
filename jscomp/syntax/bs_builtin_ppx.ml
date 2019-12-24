@@ -76,11 +76,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         | Pexp_extension extension ->
           Ast_exp_extension.handle_extension record_as_js_object e self extension
         | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then
             Pconst_string
-#else            
-            Const_string 
-#end            
             (s, (Some delim)))
           ->
             Ast_utf8_string_interp.transform e s delim
@@ -170,9 +166,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
            };
          pcty_attributes
         }               
-#if OCAML_VERSION =~ ">4.03.0" then 
      | Pcty_open _ (* let open M in CT *)
-#end
       | Pcty_constr _
       | Pcty_extension _
       | Pcty_arrow _ ->
@@ -189,9 +183,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
       | Psig_type (
-#if OCAML_VERSION =~ ">4.03.0" then        
           _rf, 
-#end          
            (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
       | Psig_value ({pval_attributes; pval_prim} as value_desc)
@@ -208,11 +200,7 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
          | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
            begin match pexp_desc with
              | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then
                Pconst_string
-#else
-               Const_string
-#end               
                (s,dec)) -> 
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
                { sigi with 
@@ -223,16 +211,10 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                        pval_attributes = []
                      }}
              | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then               
                Pconst_integer (s,None)
-#else
-               Const_int s
-#end               
                ) ->         
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
-#if OCAML_VERSION =~ ">4.03.0" then                
                let s = int_of_string s in  
-#end
                { sigi with 
                  psig_desc = Psig_value
                      { 
@@ -271,9 +253,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     ->          
     Ast_structure.dummy_item loc
   | Pstr_type (
-#if OCAML_VERSION =~ ">4.03.0" then
           _rf, 
-#end          
           (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
    | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
@@ -293,12 +273,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
     begin match pvb_expr.pexp_desc, has_inline_property with 
     | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then
                Pconst_string
-#else
-               Const_string
-#end               
-
               (s,dec)), true 
     ->      
         Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
@@ -310,16 +285,10 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
              pval_prim = External_ffi_types.inline_string_primitive s dec
            } } 
     | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then      
       Pconst_integer (s,None)
-#else      
-      Const_int s
-#end      
       ), true   
       -> 
-#if OCAML_VERSION =~ ">4.03.0" then     
       let s = int_of_string s in  
-#end
       Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
       {str with pstr_desc = Pstr_primitive  {
            pval_name = pval_name ;
