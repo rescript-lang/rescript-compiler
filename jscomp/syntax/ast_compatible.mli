@@ -26,7 +26,7 @@
 type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
-external convert: arg_label -> label = "%identity"
+
 
 
 

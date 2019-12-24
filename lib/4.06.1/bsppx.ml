@@ -9156,7 +9156,7 @@ module Ast_compatible : sig
 type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
-external convert: arg_label -> label = "%identity"
+
 
 
 
@@ -9372,7 +9372,7 @@ type arg_label = Asttypes.arg_label =
 let no_label : arg_label = Nolabel
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
 type label = arg_label 
-external convert : arg_label -> label = "%identity"
+
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
@@ -20559,7 +20559,7 @@ let process_obj
     let arg_kinds, new_arg_types_ty, result_types =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label = param_type.label in
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -21029,7 +21029,7 @@ let handle_attributes
         | None -> [],[], 0 in 
       Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label =  param_type.label in
            let ty = param_type.ty in 
            if i = 0 && splice  then
              begin match arg_label with 

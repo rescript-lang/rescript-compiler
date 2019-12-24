@@ -37,7 +37,7 @@ type arg_label = Asttypes.arg_label =
 let no_label : arg_label = Nolabel
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
 type label = arg_label 
-external convert : arg_label -> label = "%identity"
+
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
