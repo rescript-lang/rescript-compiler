@@ -19336,9 +19336,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     ptyp, spec_of_ptyp nolabel ptyp   
 
 let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-    
       ptyp_arg 
-      
+
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -22139,9 +22138,7 @@ let app_exp_mapper
               (Pexp_ident {txt = Lident name;_ } 
 
             | Pexp_constant (
-                           
               Pconst_string
-              
               (name,None))
             )
             ;
@@ -22174,9 +22171,7 @@ let app_exp_mapper
              pexp_desc = 
                Pexp_ident {txt = Lident name}
                | Pexp_constant (
-                           
               Pconst_string
-                         
                   (name, None)); pexp_loc
            }
            ]

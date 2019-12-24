@@ -131,13 +131,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     ptyp, spec_of_ptyp nolabel ptyp   
 
 let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-#if OCAML_VERSION =~ "<4.03.0" then
-      match ptyp_arg.ptyp_desc with 
-      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
-      | _ -> assert false
-#else    
       ptyp_arg 
-#end      
+
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type

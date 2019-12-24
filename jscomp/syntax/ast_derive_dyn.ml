@@ -182,12 +182,10 @@ let exp_of_core_type_exprs
 
 let destruct_constructor_declaration 
     ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
-#if OCAML_VERSION =~ ">4.03.0" then
   let pcd_args = 
     match pcd_args with 
     | Pcstr_tuple pcd_args -> pcd_args
     | Pcstr_record _ -> assert false in 
-#end    
   let last_i, core_type_exprs, pats = 
     Ext_list.fold_left pcd_args (0, [], []) (fun (i,core_type_exps, pats) core_type -> 
       let  txt = "a" ^ string_of_int i  in
@@ -287,12 +285,10 @@ let init ()  =
                          Ext_list.fold_right cd ([],[])
                            (fun {pcd_name = {txt}; pcd_args} 
                              (names,arities) -> 
-#if OCAML_VERSION =~ ">4.03.0" then                               
                              let pcd_args = 
                               match pcd_args with 
                               | Pcstr_tuple pcd_args -> pcd_args 
                               | Pcstr_record _ -> assert false in 
-#end                              
                              txt :: names, 
                              List.length pcd_args :: arities
                            )  in 

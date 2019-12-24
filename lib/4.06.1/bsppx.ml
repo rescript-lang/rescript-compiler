@@ -20271,9 +20271,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     ptyp, spec_of_ptyp nolabel ptyp   
 
 let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-    
       ptyp_arg 
-      
+
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -23510,12 +23509,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
                     -> (* TODO: add type annotations *)
-
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in  
-                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       let annotate_type = 
@@ -23573,12 +23570,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
                     -> 
-                                          
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in 
-                        
                       let annotate_type = 
                         match pcd_res with
                         | Some x -> x 
@@ -23936,9 +23931,7 @@ let app_exp_mapper
               (Pexp_ident {txt = Lident name;_ } 
 
             | Pexp_constant (
-                           
               Pconst_string
-              
               (name,None))
             )
             ;
@@ -23971,9 +23964,7 @@ let app_exp_mapper
              pexp_desc = 
                Pexp_ident {txt = Lident name}
                | Pexp_constant (
-                           
               Pconst_string
-                         
                   (name, None)); pexp_loc
            }
            ]
@@ -24081,9 +24072,7 @@ let rec unroll_function_aux
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
   | Pexp_constant(
- 
     Pconst_string
-    
     (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,pat,cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
@@ -24128,9 +24117,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-
           Pconst_string
-           
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
@@ -24239,9 +24226,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
              else 
                (raiseWithString locString)
            | Pexp_constant (
- 
     Pconst_string
-              
               (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
