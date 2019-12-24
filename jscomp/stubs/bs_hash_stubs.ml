@@ -14,7 +14,8 @@ let string_length_based_compare (x : string ) (y : string) =
     else compare (len1:int) len2
 let int_unsafe_blit: int array -> int -> int array -> int -> int -> unit = 
     Array.blit
-#elif OCAML_VERSION =~ ">4.3.0" then (* not suporting nested if here..*)
+
+#else
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
@@ -29,28 +30,9 @@ external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
 
 external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
 
-
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
-  
-#else 
-external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
-
-external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" "noalloc";;
-
-external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" "noalloc";;
-
-external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
-
-external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
-
-
-external    
-    int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
-#end    
+    
+#end

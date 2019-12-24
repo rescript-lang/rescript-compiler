@@ -7,14 +7,7 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
-(* #if OCAML_VERSION =~ ">4.03.0" then 
-let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
-  match xs with 
-  | Pcstr_tuple xs -> List.length xs 
-  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
-#else
-let constructor_arguments_length = List.length 
-#end *)
+
 let derivingName = "accessors" 
 let init () =
   

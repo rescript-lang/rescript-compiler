@@ -166,10 +166,8 @@ val empty : string
 
 #if BS_COMPILER_IN_BROWSER then
 val compare :  string -> string -> int
-#elif OCAML_VERSION =~ ">4.3.0" then
-external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
 #else
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
 #end  
 val single_space : string
 
