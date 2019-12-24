@@ -9019,7 +9019,7 @@ type attrs = Parsetree.attribute list
 open Parsetree
 let default_loc = Location.none
 
- 
+
 type poly_var_label = Asttypes.label Asttypes.loc
 
 type arg_label = Asttypes.arg_label = 
@@ -9100,9 +9100,7 @@ let fun_
   }
 
 let opt_label s =
-
   Asttypes.Optional s
-
 
 let label_fun
   ?(loc = default_loc)
@@ -9116,7 +9114,7 @@ let label_fun
     pexp_desc = Pexp_fun(label, None, pat, exp)
   }
 
- 
+
 
 let const_exp_string 
   ?(loc = default_loc)
@@ -9167,14 +9165,13 @@ let object_
     ptyp_attributes = attrs
   }
 
- 
+
 
 let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow(
- 
       Asttypes.Labelled s
-      
+  
       ,
       a,
       b);
@@ -9185,9 +9182,8 @@ let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
 let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow( 
- 
+
         Asttypes.Optional s
-        
         ,
         a,
         b);
@@ -9199,9 +9195,7 @@ let rec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
- 
       Recursive,
-      
       tds)
   }
 
@@ -9209,9 +9203,7 @@ let nonrec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
- 
       Nonrecursive,
-      
       tds)
   }  
 
@@ -9219,9 +9211,7 @@ let rec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
- 
       Recursive,
-      
       tds)
   }
 
@@ -9230,9 +9220,7 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
- 
       Nonrecursive,
-      
       tds)
   }  
 
@@ -9264,20 +9252,17 @@ type param_type =
   )
 
 type object_field = 
- 
   Parsetree.object_field 
-  
 
 let object_field   l attrs ty = 
 
   Parsetree.Otag 
- (l,attrs,ty)  
+  (l,attrs,ty)  
 
 
- 
+
 let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
-
 
 type args  = 
   (arg_label * Parsetree.expression) list 
