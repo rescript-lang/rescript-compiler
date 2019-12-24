@@ -9152,12 +9152,11 @@ module Ast_compatible : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
+
 type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
 external convert: arg_label -> label = "%identity"
-
 
 
 
@@ -9323,10 +9322,8 @@ val mk_fn_type:
   core_type
 
 type object_field = 
- 
   Parsetree.object_field 
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
-  
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
