@@ -115,12 +115,6 @@ let interface_mliast ppf fname outputprefix  =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
-
-let get_lambda = fun   
-              {Lambda.code = lambda}
- -> lambda 
-
-
 let all_module_alias (ast : Parsetree.structure)= 
   Ext_list.for_all ast (fun {pstr_desc} -> 
     match pstr_desc with 
@@ -179,7 +173,7 @@ let after_parsing_impl ppf  outputprefix ast =
       end else begin
         let lambda = Translmod.transl_implementation modulename typedtree_coercion in 
         let js_program =  
-          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
+          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda.code
           |> Lam_compile_main.compile outputprefix in 
         if not !Js_config.cmj_only then 
           Lam_compile_main.lambda_as_module
