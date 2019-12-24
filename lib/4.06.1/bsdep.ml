@@ -37875,9 +37875,6 @@ let deprecated s : attr =
 end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
-
-
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -37990,13 +37987,11 @@ let () =
       argument the mapper to be applied to children in the syntax
       tree. *)
   
-  val default_mapper: mapper
-  (** A default mapper, which implements a "deep identity" mapping. *)
-  
+val default_mapper: mapper
+(** A default mapper, which implements a "deep identity" mapping. *)
+
 end = struct
 #1 "bs_ast_mapper.ml"
-
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
