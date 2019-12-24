@@ -186,7 +186,6 @@ let make_block ?comment
     | _ -> comment in
   let es = 
     match tag_info with       
-#if OCAML_VERSION =~ ">4.03.0" then   
     | Blk_record_inlined (des, _,_)
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
@@ -194,7 +193,6 @@ let make_block ?comment
       -> 
       Ext_list.mapi es (fun i e  -> 
         if i <> 0 then merge_outer_comment des.(i-1) e else e) 
-#end         
     (* TODO: may overriden its previous comments *)
     | Blk_record _ 
     | Blk_module _
