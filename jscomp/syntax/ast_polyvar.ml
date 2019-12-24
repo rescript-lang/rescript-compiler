@@ -135,11 +135,7 @@ let is_enum_constructors
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
        | {pcd_args = 
-#if OCAML_VERSION =~ ">4.03.0" then 
   Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
-#else  
-        []
-#end        
         } -> true 
        | _ -> false 
     )

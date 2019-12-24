@@ -31,11 +31,7 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-#if OCAML_VERSION =~ ">4.3.0" then
                 (Pconst_string(name,dec))
-#else
-               (Const_string (name,dec))
-#end               
               ;
            _},_);
       _}] -> Some (name,dec)
@@ -49,11 +45,7 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-#if OCAML_VERSION =~ ">4.3.0" then
                 (Pconst_string(name,dec))
-#else
-               (Const_string (name,dec))
-#end               
               ;
            _} as e ,_);
       _}] -> Some e
@@ -61,7 +53,6 @@ let is_single_string_as_ast (x : t )
 
   
 (** TODO also need detect empty phrase case *)  
-#if OCAML_VERSION =~ ">4.3.0"  then
 let is_single_int (x : t ) : int option = 
   match x with  
   | PStr [ {
@@ -73,19 +64,7 @@ let is_single_int (x : t ) : int option =
            _},_);
       _}] -> Some (int_of_string name)
   | _  -> None
-#else
-let is_single_int (x : t ) : int option = 
-  match x with  
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_int name);
-           _},_);
-      _}] -> Some name
-  | _  -> None
-#end
+
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
 let as_string_exp ~check_js_regex (x : t ) = 
@@ -95,11 +74,7 @@ let as_string_exp ~check_js_regex (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-#if OCAML_VERSION =~ ">4.3.0" then 
-               (Pconst_string (str,_))
-#else
-               (Const_string (str,_))
-#end               
+               (Pconst_string (str,_))            
                ;
            _} as e ,_);
       _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
@@ -204,11 +179,7 @@ let assert_strings loc (x : t) : string list
         Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then 
               Pconst_string
-#else              
-              Const_string
-#end              
                (name,_)); _} -> 
              name
            | _ -> raise M.Not_str)
@@ -220,17 +191,11 @@ let assert_strings loc (x : t) : string list
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-#if OCAML_VERSION =~ ">4.03.0" then 
-               (Pconst_string(name,_)); 
-#else               
-               (Const_string (name,_));
-#end               
+               (Pconst_string(name,_));         
            _},_);
       _}] ->  [name] 
   | PStr [] ->  []
-#if OCAML_VERSION =~ ">4.03.0" then 
   | PSig _ 
-#end
   | PStr _                
   | PTyp _ | PPat _ ->
     Location.raise_errorf ~loc "expect string tuple list"

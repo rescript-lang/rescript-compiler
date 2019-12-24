@@ -99,11 +99,7 @@ let js_property loc obj (name : string) =
            {loc;
             txt = Ldot (Ast_literal.Lid.js_internal, Literals.unsafe_downgrade)})
         obj), 
-#if OCAML_VERSION =~ ">4.03.0" then
         {loc; txt = name}
-#else         
-        name
-#end
         )
 
 (* TODO: 

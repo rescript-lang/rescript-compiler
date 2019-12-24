@@ -18781,9 +18781,7 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
         let js_str = Ast_utf8_string.transform e.pexp_loc s in
         { e with pexp_desc =
                        Pexp_constant (
-
             Pconst_string
-
                          (js_str, escaped))}
     else if Ext_string.equal delim unescaped_j_delimiter then
             transform_interp e.pexp_loc s

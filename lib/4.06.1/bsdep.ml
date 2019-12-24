@@ -34047,9 +34047,7 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-
                 (Pconst_string(name,dec))
-               
               ;
            _},_);
       _}] -> Some (name,dec)
@@ -34063,9 +34061,7 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-
                 (Pconst_string(name,dec))
-               
               ;
            _} as e ,_);
       _}] -> Some e
@@ -34073,7 +34069,6 @@ let is_single_string_as_ast (x : t )
 
   
 (** TODO also need detect empty phrase case *)  
-
 let is_single_int (x : t ) : int option = 
   match x with  
   | PStr [ {
@@ -34095,9 +34090,7 @@ let as_string_exp ~check_js_regex (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
- 
-               (Pconst_string (str,_))
-               
+               (Pconst_string (str,_))            
                ;
            _} as e ,_);
       _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
@@ -34202,9 +34195,7 @@ let assert_strings loc (x : t) : string list
         Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
- 
               Pconst_string
-              
                (name,_)); _} -> 
              name
            | _ -> raise M.Not_str)
@@ -34216,15 +34207,11 @@ let assert_strings loc (x : t) : string list
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
- 
-               (Pconst_string(name,_)); 
-               
+               (Pconst_string(name,_));         
            _},_);
       _}] ->  [name] 
   | PStr [] ->  []
- 
   | PSig _ 
-
   | PStr _                
   | PTyp _ | PPat _ ->
     Location.raise_errorf ~loc "expect string tuple list"
@@ -36065,9 +36052,7 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
         let js_str = Ast_utf8_string.transform e.pexp_loc s in
         { e with pexp_desc =
                        Pexp_constant (
-
             Pconst_string
-
                          (js_str, escaped))}
     else if Ext_string.equal delim unescaped_j_delimiter then
             transform_interp e.pexp_loc s
@@ -36920,9 +36905,8 @@ module Bs_ast_invariant : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
-type iterator = Ast_iterator.iterator
 
+type iterator = Ast_iterator.iterator
 val mark_used_bs_attribute : 
   Parsetree.attribute -> unit 
 
@@ -37004,10 +36988,9 @@ let warn_discarded_unused_attributes (attrs : Parsetree.attributes) =
   if attrs <> [] then 
     Ext_list.iter attrs warn_unused_attribute
     
- 
+
 type iterator = Ast_iterator.iterator
 let default_iterator = Ast_iterator.default_iterator
-
 (* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
    rolling our own*)
 let emit_external_warnings : iterator=
@@ -37017,13 +37000,10 @@ let emit_external_warnings : iterator=
     expr = (fun self a -> 
         match a.pexp_desc with 
         | Pexp_constant (
-
           Pconst_string
-
           (_, Some s)) 
           when Ast_utf8_string_interp.is_unescaped s -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-
         | Pexp_constant(Pconst_integer(s,None)) -> 
           (* range check using int32 
             It is better to give a warning instead of error to avoid make people unhappy.
@@ -37039,7 +37019,6 @@ let emit_external_warnings : iterator=
             with _ ->              
               Bs_warnings.warn_literal_overflow a.pexp_loc
           )
-
         | _ -> default_iterator.expr self a 
       );
     label_declaration = (fun self lbl ->
@@ -37073,9 +37052,7 @@ let emit_external_warnings : iterator=
       pat = begin fun self (pat : Parsetree.pattern) -> 
                   match pat.ppat_desc with
                   |  Ppat_constant(
-
             Pconst_string
-                    
          (_, Some "j")) ->
         Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
       | _ -> default_iterator.pat self pat
@@ -40346,9 +40323,7 @@ let is_enum_constructors
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
        | {pcd_args = 
- 
   Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
-        
         } -> true 
        | _ -> false 
     )
@@ -42000,9 +41975,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
 *)
 let get_opt_arg_type
     ~(nolabel : bool)
-    (ptyp_arg : Ast_core_type.t) :
+    (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  let ptyp =  ptyp_arg in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
@@ -43206,9 +43180,7 @@ let js_property loc obj (name : string) =
            {loc;
             txt = Ldot (Ast_literal.Lid.js_internal, Literals.unsafe_downgrade)})
         obj), 
-
         {loc; txt = name}
-
         )
 
 (* TODO: 

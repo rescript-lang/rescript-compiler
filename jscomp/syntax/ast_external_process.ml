@@ -142,9 +142,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
 *)
 let get_opt_arg_type
     ~(nolabel : bool)
-    (ptyp_arg : Ast_core_type.t) :
+    (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  let ptyp =  ptyp_arg in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
