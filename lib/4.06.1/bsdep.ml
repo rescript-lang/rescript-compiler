@@ -43180,9 +43180,7 @@ let arity_lit = "Arity_"
 let mk_args loc (n : int) (tys : Parsetree.core_type list) : Parsetree.core_type = 
   Typ.variant ~loc 
     [ Rtag (
-
       {loc; txt = arity_lit ^ string_of_int n}
-      
       ,
        [], (n = 0),  tys)] Closed None
 
