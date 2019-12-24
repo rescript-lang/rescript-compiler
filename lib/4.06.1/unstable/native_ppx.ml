@@ -22868,9 +22868,7 @@ let handleTdcl
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
               (Ast_compatible.opt_arrow ~loc:pld_loc label_name 
-             pld_type  
-              
-
+                pld_type  
                 maker,
                 (Val.mk ~loc:pld_loc
                  (if light then pld_name else 
