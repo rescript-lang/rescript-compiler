@@ -22252,9 +22252,7 @@ let process_getter_setter
     if st.set = None then get_acc 
     else
       set ty 
-
     ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
-
       pctf_attributes         
       :: get_acc 
 
@@ -22362,10 +22360,8 @@ let typ_mapper
     let new_methods =
       Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
-
         | Parsetree.Oinherit _ -> meth_ :: acc 
         | Parsetree.Otag 
-        
           (label, ptyp_attrs, core_type) -> 
           let get ty name attrs =
             let attrs, core_type =

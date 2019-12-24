@@ -56,11 +56,7 @@ let process_getter_setter
     if st.set = None then get_acc 
     else
       set ty 
-#if OCAML_VERSION =~ ">4.03.0"  then
     ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
-#else
-      (name ^ Literals.setter_suffix)
-#end
       pctf_attributes         
       :: get_acc 
 
@@ -168,10 +164,8 @@ let typ_mapper
     let new_methods =
       Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
-#if OCAML_VERSION =~ ">4.03.0" then
         | Parsetree.Oinherit _ -> meth_ :: acc 
         | Parsetree.Otag 
-#end        
           (label, ptyp_attrs, core_type) -> 
           let get ty name attrs =
             let attrs, core_type =
