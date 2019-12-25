@@ -7,16 +7,10 @@ let deprecated name =
     ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
 
 let strip_option arg_name =
-#if OCAML_VERSION =~ ">4.03.0" then
    match arg_name with 
    | Asttypes.Nolabel -> assert false
    | Optional s
    | Labelled s -> s
-#else
-   if arg_name.[0] = '?' then
-     String.sub arg_name 1 (String.length arg_name - 1)
-   else arg_name
-#end
 [@@@ocaml.warning "-a"]
 let handleTdcl light (tdcl : Parsetree.type_declaration) =
    let core_type = U.core_type_of_type_declaration tdcl in
@@ -83,10 +77,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
                   ptyp_attributes = [];
                 } in
                 Ast_compatible.opt_arrow ~loc:pld_loc label_name
-#if OCAML_VERSION =~ "<4.03.0" then
-                  maker_optional_type
-#else             pld_type
-#end
+                pld_type
                 maker,
                 Ast_compatible.arrow ~loc  core_type getter_optional_type
               else

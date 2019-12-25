@@ -95,11 +95,7 @@ let has_effects_const = lazy false
 
 let is_nullary_variant x = 
   match x with 
-#if OCAML_VERSION =~ ">4.03.0" then
   | Types.Cstr_tuple [] -> true 
-#else  
-  |  [] -> true 
-#end  
   | _ -> false
 
 let names_from_construct_pattern (pat: Typedtree.pattern) =

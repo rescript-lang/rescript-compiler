@@ -630,7 +630,6 @@ let caml_hexstring_of_float : float -> int -> char -> string =
 
 
 let float_of_string : string -> exn ->  float  = 
-#if OCAML_VERSION =~ ">4.3.0" then
     fun%raw s exn -> {| 
 
     var res = +s;
@@ -657,25 +656,7 @@ let float_of_string : string -> exn ->  float  =
     throw exn;
 
 |}
-#else
-    fun%raw s exn -> {| 
 
-    var res = +s;
-    if ((s.length > 0) && (res === res))
-        return res;
-    s = s.replace(/_/g, "");
-    res = +s;
-    if (((s.length > 0) && (res === res)) || /^[+-]?nan$/i.test(s)) {
-        return res;
-    };
-    if (/^\+?inf(inity)?$/i.test(s))
-        return Infinity;
-    if (/^-inf(inity)?$/i.test(s))
-        return -Infinity;
-    throw exn;
-
-|}
-#end
 
 
 (**

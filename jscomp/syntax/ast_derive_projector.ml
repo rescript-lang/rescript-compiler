@@ -7,14 +7,7 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
-(* #if OCAML_VERSION =~ ">4.03.0" then 
-let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
-  match xs with 
-  | Pcstr_tuple xs -> List.length xs 
-  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
-#else
-let constructor_arguments_length = List.length 
-#end *)
+
 let derivingName = "accessors" 
 let init () =
   
@@ -43,12 +36,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
                     -> (* TODO: add type annotations *)
-#if OCAML_VERSION =~ ">4.03.0" then
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in  
-#end                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       let annotate_type = 
@@ -106,12 +97,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
                     -> 
-#if OCAML_VERSION =~ ">4.03.0" then                                          
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in 
-#end                        
                       let annotate_type = 
                         match pcd_res with
                         | Some x -> x 

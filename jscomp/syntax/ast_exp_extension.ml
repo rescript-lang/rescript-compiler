@@ -29,11 +29,7 @@ let rec unroll_function_aux
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
   | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then 
     Pconst_string
-#else    
-    Const_string
-#end    
     (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,pat,cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
@@ -78,11 +74,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then
           Pconst_string
-#else          
-           Const_string
-#end           
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
@@ -191,11 +183,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
              else 
                (raiseWithString locString)
            | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then 
     Pconst_string
-#else    
-    Const_string
-#end              
               (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)

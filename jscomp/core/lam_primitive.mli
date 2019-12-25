@@ -28,10 +28,9 @@ type ident = Ident.t
 
 type record_representation = 
     | Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then
     | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
-#end  
+
 
 type t = 
   | Pbytes_to_string

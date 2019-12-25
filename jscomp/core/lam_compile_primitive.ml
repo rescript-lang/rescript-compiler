@@ -590,7 +590,6 @@ let translate  loc
      | Ostype_unix -> E.bool Sys.unix
      | Ostype_win32 -> E.bool Sys.win32      
      | Ostype_cygwin -> E.bool Sys.cygwin
-#if OCAML_VERSION =~ ">4.03.0" then
      | Int_size -> E.int 32l
      | Max_wosize ->
       (* max_array_length*)
@@ -602,11 +601,9 @@ let translate  loc
         E.zero_int_literal 
         (Blk_constructor ("Other",1))
         [E.str "BS"] Immutable
-#end
      )
   | Pduprecord Record_regular -> 
       Lam_dispatch_primitive.translate loc "caml_obj_dup" args
-#if OCAML_VERSION =~ ">4.03.0" then         
   | Pduprecord ((
                  Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
@@ -618,7 +615,6 @@ let translate  loc
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
     (* check dubug mode *)  
-#end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
     (* can be refined to 

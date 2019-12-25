@@ -35,11 +35,7 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
   | Pexp_apply(fn, args) -> 
     Ast_exp_apply.app_exp_mapper e self fn args 
   | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then
     Pconst_string
-#else
-    Const_string
-#end
     (s, (Some delim)))
   ->
     Ast_utf8_string_interp.transform e s delim
@@ -70,9 +66,7 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
-#if OCAML_VERSION =~ ">4.03.0" then
       _rf,
-#end
     (_ :: _ as tdcls )) ->
       Ast_tdcls.handleTdclsInStru self str tdcls
   | _ -> default_str_mapper self str
@@ -80,9 +74,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
   match sigi.psig_desc with
   | Psig_type (
-#if OCAML_VERSION =~ ">4.03.0" then
       _rf,
-#end
        (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
       Ast_tdcls.handleTdclsInSigi self sigi tdcls
   | _ -> default_sig_mapper self sigi

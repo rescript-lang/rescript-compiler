@@ -72,12 +72,10 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
     match field_info with 
     | Fld_set_na 
       -> E.assign_by_int e i e0
-#if OCAML_VERSION =~ ">4.03.0" then
     | Fld_record_inline_set comment
     | Fld_record_extension_set comment
       -> (* see GPR#631*)
       E.assign_by_int ~comment e i e0 
-#end    
     | Fld_record_set name -> 
       E.record_assign e i name e0
   

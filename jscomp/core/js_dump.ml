@@ -19,9 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
-#if OCAML_VERSION =~ ">4.03.0" then
-[@@@ocaml.warning "-57"] (* turn off such warning temporarily*)
-#end
+
+[@@@ocaml.warning "-57"] (* FIXME: turn off such warning temporarily*)
+
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
   ASI catch up
@@ -874,16 +874,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           end
 
           
-#if OCAML_VERSION =~ ">4.03.0" then                               
+
         | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
-#end
         | Blk_tuple
         | Blk_extension
         | Blk_class
         | Blk_array
-#if OCAML_VERSION =~ ">4.03.0" then     
         | Blk_record_ext _
-#end      
         | Blk_extension_slot
         | Blk_na _
            ->           

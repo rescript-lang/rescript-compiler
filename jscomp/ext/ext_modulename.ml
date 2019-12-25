@@ -49,7 +49,7 @@ let rec collect_start buf s off len =
     let next = succ off in 
     match String.unsafe_get  s off with     
     | 'a' .. 'z' as c ->
-    Ext_buffer.add_char buf (Ext_char.uppercase_ascii c)
+    Ext_buffer.add_char buf (Char.uppercase_ascii c)
     ;
       collect_next buf s next len
     | 'A' .. 'Z' as c -> 

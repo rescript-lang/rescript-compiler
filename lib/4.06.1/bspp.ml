@@ -1,6 +1,5 @@
 module Config_whole_compiler : sig 
 #1 "config_whole_compiler.mli"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -189,7 +188,6 @@ val afl_instrument : bool
 
 end = struct
 #1 "config_whole_compiler.ml"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -375,7 +373,6 @@ let print_config oc =
 
   flush oc;
 ;;
-
 
 end
 module Config = Config_whole_compiler 

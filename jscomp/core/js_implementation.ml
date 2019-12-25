@@ -75,9 +75,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       Env.set_unit_name modulename;
 
       let tsg = Typemod.type_interface 
-#if OCAML_VERSION =~ ">4.03.0" then
           !Location.input_name
-#end
           initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
@@ -89,14 +87,11 @@ let after_parsing_sig ppf  outputprefix ast  =
       Typecore.force_delayed_checks ();
       Warnings.check_fatal ();
       if not !Clflags.print_types then begin
-#if OCAML_VERSION =~ ">4.03.0" then
+
         let deprecated = Builtin_attributes.deprecated_of_sig ast in
         let sg =
           Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
         in
-#else
-        let sg = Env.save_signature ?check_exists:(if !Js_config.force_cmi then None else Some ()) sg modulename (outputprefix ^ ".cmi") in
-#end        
         Typemod.save_signature modulename tsg outputprefix !Location.input_name
           initial_env sg ;
         process_with_gentype (outputprefix ^ ".cmti");  
@@ -119,15 +114,6 @@ let interface_mliast ppf fname outputprefix  =
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
-
-
-let get_lambda = fun   
-#if OCAML_VERSION =~ ">4.03.0" then
-              {Lambda.code = lambda}
-#else
-              lambda
-#end              -> lambda 
-
 
 let all_module_alias (ast : Parsetree.structure)= 
   Ext_list.for_all ast (fun {pstr_desc} -> 
@@ -187,7 +173,7 @@ let after_parsing_impl ppf  outputprefix ast =
       end else begin
         let lambda = Translmod.transl_implementation modulename typedtree_coercion in 
         let js_program =  
-          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda (get_lambda lambda)
+          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda.code
           |> Lam_compile_main.compile outputprefix in 
         if not !Js_config.cmj_only then 
           Lam_compile_main.lambda_as_module
