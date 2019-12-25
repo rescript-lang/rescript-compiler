@@ -127,17 +127,12 @@ let print_expr_type_clash env trace ppf =
       Format.pp_print_list
         ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
         (fun ppf (label, argtype) ->
-#if OCAML_VERSION =~ ">4.03.0" then
           match label with
           | Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
           | Labelled label ->
             fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
           | Optional label ->
             fprintf ppf "@[(?%s: %a)@]" label type_expr argtype
-#else
-          if label = "" then fprintf ppf "@[%a@]" type_expr argtype
-          else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
-#end
         )
     in
     match missing_arguments with

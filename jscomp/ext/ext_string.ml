@@ -350,10 +350,8 @@ let empty = ""
 
 #if BS_COMPILER_IN_BROWSER then
 let compare = Bs_hash_stubs.string_length_based_compare
-#elif OCAML_VERSION =~ ">4.3.0" then
+#else
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-#else    
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 #end
 let single_space = " "
 let single_colon = ":"
@@ -488,22 +486,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-#if OCAML_VERSION =~ ">4.3.0" then
     String.uncapitalize_ascii
-#else
-    String.uncapitalize
-#end      
 
-
-#if OCAML_VERSION =~ ">4.03.0" then 
 let lowercase_ascii = String.lowercase_ascii
-#else
-
-
-let lowercase_ascii (s : string) = 
-    Bytes.unsafe_to_string 
-      (Bytes.map Ext_char.lowercase_ascii (Bytes.unsafe_of_string s))
-#end
 
 
 

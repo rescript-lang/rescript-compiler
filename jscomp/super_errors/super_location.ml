@@ -136,7 +136,6 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 (* extracted from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
-#if OCAML_VERSION =~ ">4.03.0"  then
   match Warnings.report w with
   | `Inactive -> ()
   | `Active { Warnings. number; message; is_error; sub_locs } ->
@@ -148,17 +147,6 @@ let super_warning_printer loc ppf w =
       (Super_warnings.message w);
     (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
       but we won't bother for now *)
-#else
-  if Warnings.is_active w then begin
-    setup_colors ();
-    (* open a vertical box. Everything in our message is indented 2 spaces *)
-    Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]"
-      (print ~message_kind:`warning ("Warning number " ^ (Warnings.number w |> string_of_int)))
-      loc
-      (Warnings.super_print Super_warnings.message)
-      w
-  end
-#end
 ;;
 
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *)

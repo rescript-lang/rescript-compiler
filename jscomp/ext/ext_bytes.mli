@@ -28,11 +28,7 @@
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-#if OCAML_VERSION =~ ">4.03.0" then
 [@@noalloc]
-#else                     
-"noalloc"
-#end                     
     
 
 

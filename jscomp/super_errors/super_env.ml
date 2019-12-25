@@ -23,13 +23,11 @@ let report_error ppf = function
       fprintf ppf
         "@[<hov>Unit %s imports from %s, which uses recursive types.@ %s@]"
         export import "The compilation flag -rectypes is required"
-#if OCAML_VERSION =~ ">4.03.0" then
   | Depend_on_unsafe_string_unit(import, export) ->
       fprintf ppf
         "@[<hov>Unit %s imports from %s, compiled with -unsafe-string.@ %s@]"
         export import "This compiler has been configured in strict \
                        safe-string mode (-force-safe-string)"
-#end
   | Missing_module(_, path1, path2) ->
       fprintf ppf "@[@[<hov>";
       if Path.same path1 path2 then

@@ -9914,9 +9914,7 @@ module Ext_bytes : sig
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]
-                     
     
 
 
@@ -9958,9 +9956,7 @@ end = struct
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]                     
-
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -10708,14 +10704,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-
     String.uncapitalize_ascii
-      
 
-
- 
 let lowercase_ascii = String.lowercase_ascii
-
 
 
 
@@ -13245,9 +13236,7 @@ end = struct
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
  *)
- 
 let escaped = Char.escaped
-
 
 let valid_hex x = 
     match x with 
@@ -13263,14 +13252,10 @@ let is_lower_case c =
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
 let uppercase_ascii =
-
     Char.uppercase_ascii
-      
 
 let lowercase_ascii = 
-
     Char.lowercase_ascii
-      
 
 end
 module Ast_utf8_string : sig 
@@ -18158,10 +18143,8 @@ type t =
   | Blk_extension_slot
   | Blk_extension
   | Blk_na of string (* for debugging *)
-
   | Blk_record_inlined of string array * string * int
   | Blk_record_ext of string array
-
   | Blk_class
   | Blk_module_export
 end
@@ -23255,9 +23238,7 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
   | Pexp_apply(fn, args) -> 
     Ast_exp_apply.app_exp_mapper e self fn args 
   | Pexp_constant (
-
     Pconst_string
-
     (s, (Some delim)))
   ->
     Ast_utf8_string_interp.transform e s delim
@@ -23288,9 +23269,7 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
-
       _rf,
-
     (_ :: _ as tdcls )) ->
       Ast_tdcls.handleTdclsInStru self str tdcls
   | _ -> default_str_mapper self str
@@ -23298,9 +23277,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
   match sigi.psig_desc with
   | Psig_type (
-
       _rf,
-
        (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
       Ast_tdcls.handleTdclsInSigi self sigi tdcls
   | _ -> default_sig_mapper self sigi

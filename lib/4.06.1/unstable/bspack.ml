@@ -7266,9 +7266,7 @@ module Ext_bytes : sig
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]
-                     
     
 
 
@@ -7310,9 +7308,7 @@ end = struct
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]                     
-
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -9171,14 +9167,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-
     String.uncapitalize_ascii
-      
 
-
- 
 let lowercase_ascii = String.lowercase_ascii
-
 
 
 
@@ -12338,7 +12329,6 @@ type module_name = private string
 module Set_string = Depend.StringSet
 
 (* FIXME: [Clflags.open_modules] seems not to be properly used *)
- 
 module SMap = Depend.StringMap
 let bound_vars = SMap.empty 
 
@@ -12351,9 +12341,7 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
   List.iter (* check *)
     (fun modname  ->
-
        ignore @@ 
-       
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with

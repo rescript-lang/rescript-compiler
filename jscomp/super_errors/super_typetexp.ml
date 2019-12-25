@@ -115,12 +115,7 @@ let report_error env ppf = function
       - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
       @]"
       longident lid;
-#if OCAML_VERSION =~ ">4.03.0" then
       Typetexp.spellcheck ppf fold_constructors env lid
-#else
-      Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
-        env lid;
-#end
   | Unbound_label lid ->
       (* modified *)
       fprintf ppf "@[<v>\
@@ -130,11 +125,7 @@ let report_error env ppf = function
       @[- Or specifying its type:@ @{<info>let baby: MyModule.person = {age: 3}@}@]\
       @]"
       longident lid;
-#if OCAML_VERSION =~ ">4.03.0" then
       Typetexp.spellcheck ppf fold_labels env lid
-#else
-      Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
-#end
   | anythingElse ->
       Typetexp.report_error env ppf anythingElse
 

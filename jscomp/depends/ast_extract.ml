@@ -27,12 +27,9 @@ type module_name = private string
 module Set_string = Depend.StringSet
 
 (* FIXME: [Clflags.open_modules] seems not to be properly used *)
-#if OCAML_VERSION =~ ">4.03.0" then 
 module SMap = Depend.StringMap
 let bound_vars = SMap.empty 
-#else 
-let bound_vars = Set_string.empty 
-#end
+
 
 type 'a kind = 'a Ml_binary.kind 
 
@@ -42,9 +39,7 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
   List.iter (* check *)
     (fun modname  ->
-#if OCAML_VERSION =~ ">4.03.0" then
        ignore @@ 
-#end       
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with

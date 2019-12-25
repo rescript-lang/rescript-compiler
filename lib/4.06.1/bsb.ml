@@ -1676,9 +1676,7 @@ module Ext_bytes : sig
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]
-                     
     
 
 
@@ -1720,9 +1718,7 @@ end = struct
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]                     
-
 
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
@@ -2470,14 +2466,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-
     String.uncapitalize_ascii
-      
 
-
- 
 let lowercase_ascii = String.lowercase_ascii
-
 
 
 
@@ -6343,9 +6334,7 @@ end = struct
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
  *)
- 
 let escaped = Char.escaped
-
 
 let valid_hex x = 
     match x with 
@@ -6361,14 +6350,10 @@ let is_lower_case c =
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
 let uppercase_ascii =
-
     Char.uppercase_ascii
-      
 
 let lowercase_ascii = 
-
     Char.lowercase_ascii
-      
 
 end
 module Ext_filename : sig 

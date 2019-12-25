@@ -94,10 +94,9 @@ let print_bigarray name unsafe (kind : Lam_compat.bigarray_kind) ppf
 let record_rep ppf (r : Lam_primitive.record_representation) =
   match r with
   | Record_regular -> fprintf ppf "regular"
-#if OCAML_VERSION =~ ">4.03.0" then
   | Record_inlined {tag = i} -> fprintf ppf "inlined %d" i 
   | Record_extension -> fprintf ppf "ext"
-#end
+
 ;;
 
 let string_of_loc_kind (loc : Lambda.loc_kind) =
@@ -238,11 +237,9 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
       | Ostype_unix -> "ostype_unix"
       | Ostype_win32 -> "ostype_win32"
       | Ostype_cygwin -> "ostype_cygwin" 
-#if OCAML_VERSION =~ ">4.03.0" then     
       | Int_size -> "int_size"
       | Max_wosize -> "max_wosize"
       | Backend_type -> "backend_type"
-#end
     in
     fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"

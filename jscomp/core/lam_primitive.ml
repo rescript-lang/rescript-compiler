@@ -28,10 +28,9 @@ type ident = Ident.t
   
 type record_representation = 
     | Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then
     | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
-#end  
+
 
 type t =
   | Pbytes_to_string
@@ -187,7 +186,6 @@ let eq_tag_info ( x : Lam_tag_info.t) y =
 let eq_record_representation ( p : record_representation) ( p1 : record_representation) = 
   match p with 
   | Record_regular -> p1 = Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then 
   | Record_inlined {tag ; name ; num_nonconsts} -> 
     (match p1 with 
     |Record_inlined rhs ->
@@ -195,7 +193,7 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
     | _ -> false)
   | Record_extension -> 
     p1 = Record_extension   
-#end
+
 let eq_primitive_approx ( lhs : t) (rhs : t) = 
   match lhs with 
   | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end

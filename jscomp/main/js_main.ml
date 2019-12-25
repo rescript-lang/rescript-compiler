@@ -119,27 +119,15 @@ let ppf = Format.err_formatter
 (* Error messages to standard error formatter *)
 let anonymous filename =
   Compenv.readenv ppf 
-#if OCAML_VERSION =~ ">4.03.0" then  
     (Before_compile filename)
-#else
-    Before_compile
-#end    
     ; process_file ppf filename;;
 let impl filename =
   Compenv.readenv ppf 
-#if OCAML_VERSION =~ ">4.03.0" then  
     (Before_compile filename)
-#else
-    Before_compile
-#end      
   ; process_implementation_file ppf filename;;
 let intf filename =
   Compenv.readenv ppf 
-#if OCAML_VERSION =~ ">4.03.0" then  
     (Before_compile filename)
-#else
-    Before_compile
-#end      
   ; process_interface_file ppf filename;;
 
 
