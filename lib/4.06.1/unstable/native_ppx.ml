@@ -9918,9 +9918,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
     
 
 
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
 
 end = struct
 #1 "ext_bytes.ml"
@@ -9958,48 +9955,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
 [@@noalloc]                     
 
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = Pervasives.ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
 
 end
 module Ext_string : sig 
@@ -10076,7 +10031,7 @@ val ends_with : string -> string -> bool
 val ends_with_then_chop : string -> string -> string option
 
 
-val escaped : string -> string
+
 
 (**
   [for_all_from  s start p]
@@ -10350,22 +10305,6 @@ let check_any_suffix_case_then_chop s suffixes =
 
 
 
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
@@ -10411,8 +10350,9 @@ let unsafe_is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-exception Local_exit 
+
 let find ?(start=0) ~sub s =
+  let exception Local_exit in
   let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
@@ -10443,6 +10383,7 @@ let non_overlap_count ~sub s =
 
 
 let rfind ~sub s =
+  let exception Local_exit in   
   let n = String.length sub in
   let i = ref (String.length s - n) in
   let module M = struct exception Exit end in 
@@ -13193,16 +13134,10 @@ module Ext_char : sig
 
 (** Extension to Standard char module, avoid locale sensitivity *)
 
-val escaped : char -> string
-
-
 val valid_hex : char -> bool
-
 val is_lower_case : char -> bool
 
-val uppercase_ascii : char -> char
 
-val lowercase_ascii : char -> char
 end = struct
 #1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -13236,7 +13171,7 @@ end = struct
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
  *)
-let escaped = Char.escaped
+
 
 let valid_hex x = 
     match x with 
@@ -13251,11 +13186,6 @@ let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
-let uppercase_ascii =
-    Char.uppercase_ascii
-
-let lowercase_ascii = 
-    Char.lowercase_ascii
 
 end
 module Ast_utf8_string : sig 

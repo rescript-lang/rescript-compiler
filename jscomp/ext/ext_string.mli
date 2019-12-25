@@ -70,7 +70,7 @@ val ends_with : string -> string -> bool
 val ends_with_then_chop : string -> string -> string option
 
 
-val escaped : string -> string
+
 
 (**
   [for_all_from  s start p]

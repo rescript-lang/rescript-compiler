@@ -29,7 +29,7 @@
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
  *)
-let escaped = Char.escaped
+
 
 let valid_hex x = 
     match x with 
@@ -44,8 +44,3 @@ let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
-let uppercase_ascii =
-    Char.uppercase_ascii
-
-let lowercase_ascii = 
-    Char.lowercase_ascii

@@ -42,7 +42,7 @@ let get_files ext dir =
 let from_cmj (files : string list) (output_file : string) = 
   let raw_to_str f str = 
     Ext_pp.string f "\""   ;
-    Ext_pp.string f (Ext_string.escaped str);
+    Ext_pp.string f (String.escaped str);
     Ext_pp.string f "\""
   in  
   let v = open_out_bin output_file in
