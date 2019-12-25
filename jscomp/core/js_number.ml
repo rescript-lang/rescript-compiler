@@ -116,9 +116,7 @@ let transform v  len =
 
 let caml_float_literal_to_js_string (float_str : string) : string = 
   let len = String.length float_str in
-#if OCAML_VERSION =~ ">4.03.0"  then
   if len >= 2 && is_hex_format float_str then  
     to_string (float_of_string float_str)
   else    
-#end
   transform float_str len

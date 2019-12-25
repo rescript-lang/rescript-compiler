@@ -47,10 +47,8 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_class -> Some "class"
   | Blk_poly_var x -> Some ("`" ^  x)
   | Blk_record _ -> None
-#if OCAML_VERSION =~ ">4.03.0" then
   | Blk_record_inlined (_,ctor,_) -> Some ctor
   | Blk_record_ext _ -> None
-#end  
   | Blk_array -> 
     (* so far only appears in {!Translclass} 
       and some constant immutable array block

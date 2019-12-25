@@ -293,10 +293,8 @@ let translate loc (prim_name : string)
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
       end
-#if OCAML_VERSION =~ ">4.03.0" then
     | "caml_bytes_equal" ->   
       call Js_runtime_modules.caml_primitive
-#end      
     | "caml_int64_equal_null"
       -> Js_long.equal_null args 
     | "caml_int64_equal_undefined"
@@ -472,11 +470,7 @@ let translate loc (prim_name : string)
        -> E.string_comp EqEqEq e0 e1
       | _ -> assert false 
       end 
-
-
-#if OCAML_VERSION =~ ">4.03.0" then
     | "caml_create_bytes"  
-#end
     | "caml_create_string" -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
@@ -606,12 +600,9 @@ let translate loc (prim_name : string)
     *)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
-
-#if OCAML_VERSION =~ ">4.03.0" then
     | "caml_fresh_oo_id" 
       ->
       Js_of_lam_exception.caml_fresh_oo_id args   
-#end
     | "caml_is_extension" ->
       call Js_runtime_modules.exceptions
     | "caml_as_js_exn" ->
