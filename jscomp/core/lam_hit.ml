@@ -55,8 +55,8 @@ let hit_variables (fv : Set_ident.t) (l : t) : bool  =
       | Lfor(v, e1, e2, dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
-      | Lapply{fn; args; _} ->
-        hit fn || hit_list args
+      | Lapply{ap_func; ap_args; _} ->
+        hit ap_func || hit_list ap_args
       | Lglobal_module _  (* global persistent module, play safe *)
         -> false
       | Lprim {args; _} ->
@@ -114,8 +114,8 @@ let hit_variable (fv : Ident.t) (l : t) : bool  =
       | Lfor(v, e1, e2, dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
-      | Lapply{fn; args; _} ->
-        hit fn || hit_list args
+      | Lapply{ap_func; ap_args; _} ->
+        hit ap_func || hit_list ap_args
       | Lglobal_module _  (* global persistent module, play safe *)
         -> false
       | Lprim {args; _} ->

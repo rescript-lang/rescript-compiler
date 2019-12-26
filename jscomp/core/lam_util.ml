@@ -66,7 +66,7 @@ let refine_let
   (*     let v= subst_lambda (Map_ident.singleton param arg ) l in *)
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
-  | _, _, Lapply {fn; args = [Lvar w]; loc; status} when
+  | _, _, Lapply {ap_func=fn; ap_args = [Lvar w]; ap_loc = loc ; ap_status = status} when
    Ident.same w param &&
     (not (Lam_hit.hit_variable param fn ))
    -> 

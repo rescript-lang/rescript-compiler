@@ -60,8 +60,8 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     | Lfor(v, e1, e2, dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
-    | Lapply{fn; args; _} ->
-      hit fn || hit_list args
+    | Lapply{ap_func; ap_args; _} ->
+      hit ap_func || hit_list ap_args
     | Lglobal_module id (* playsafe *)
       -> false
     | Lprim {args; _} ->

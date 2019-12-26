@@ -87,7 +87,7 @@ let simple_beta_reduce params body args =
       Hash_ident.clear param_hash ;
       None
     end
-  | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
+  | Lapply { ap_func = Lvar fn_name as f ; ap_args =  args';  ap_loc = loc ; ap_status = status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
