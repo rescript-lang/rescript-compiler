@@ -66,7 +66,7 @@ let count_helper  (lam : Lam.t) : collection =
       Ext_option.iter d count
     | Lglobal_module _
     | Lvar _| Lconst _ -> ()
-    | Lapply{fn ; args; _} -> count fn; Ext_list.iter args count
+    | Lapply{ap_func ; ap_args; _} -> count ap_func; Ext_list.iter ap_args count
     | Lfunction {body} -> count body
     | Llet(_, _, l1, l2) ->
       count l2; count l1

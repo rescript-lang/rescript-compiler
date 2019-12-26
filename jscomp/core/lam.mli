@@ -40,10 +40,10 @@ and apply_status =
   | App_ml_full
   | App_js_full      
 and apply_info = private
-  { fn : t ; 
-    args : t list ; 
-    loc : Location.t;
-    status : apply_status
+  { ap_func : t ; 
+    ap_args : t list ; 
+    ap_loc : Location.t;
+    ap_status : apply_status
   }
 
 and prim_info = private

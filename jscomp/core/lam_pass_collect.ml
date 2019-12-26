@@ -130,7 +130,7 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
     match lam with 
     | Lconst _ -> ()
     | Lvar _ -> ()
-    | Lapply{fn = l1; args =  ll; _} ->
+    | Lapply{ap_func = l1; ap_args =  ll; _} ->
       collect  l1; List.iter collect  ll
     | Lfunction { params; body =  l} -> (* functor ? *)
       List.iter (fun p -> Hash_ident.add meta.ident_tbl p Parameter ) params;

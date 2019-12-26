@@ -56,8 +56,8 @@
       free e1; free e2; free e3;
       fv := Set_ident.remove !fv v 
     | Lconst _ -> ()
-    | Lapply{fn; args; _} ->
-      free fn; free_list args
+    | Lapply{ap_func; ap_args; _} ->
+      free ap_func; free_list ap_args
     | Lglobal_module _ -> ()
     (* according to the existing semantics:
        [primitive] is not counted

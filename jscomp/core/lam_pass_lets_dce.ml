@@ -146,7 +146,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         end
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply{fn = Lfunction{params; body};  args; _}
+    | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
     (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
@@ -157,7 +157,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     (*   when  Ext_list.same_length params  args -> *)
     (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
-    | Lapply{fn = l1;args =  ll; loc; status} -> 
+    | Lapply{ap_func = l1; ap_args =  ll; ap_loc = loc; ap_status = status} -> 
       Lam.apply (simplif l1) (Ext_list.map  ll simplif) loc status
     | Lfunction{arity; params; body = l} ->
       Lam.function_ ~arity ~params ~body:(simplif l)

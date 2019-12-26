@@ -80,7 +80,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   *)
   | Lletrec(_, body) ->  get_arity meta body
 
-  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
+  | Lapply{ap_func = app;  ap_args = args ; _ } -> (* detect functor application *)
     let fn = get_arity meta app in 
     begin match fn with 
       | Arity_na -> Lam_arity.na

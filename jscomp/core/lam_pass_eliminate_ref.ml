@@ -56,7 +56,7 @@ let rec eliminate_ref id (lam : Lam.t) =
            args =  [Lvar v]; loc } when Ident.same v id ->
     Lam.assign id (Lam.prim ~primitive:(Poffsetint delta) ~args:[Lam.var id] loc)
   | Lconst _  -> lam
-  | Lapply{fn = e1; args =  el;  loc; status} ->
+  | Lapply{ap_func = e1; ap_args =  el;  ap_loc = loc; ap_status = status} ->
     Lam.apply 
       (eliminate_ref id e1)
       (Ext_list.map  el (eliminate_ref id))

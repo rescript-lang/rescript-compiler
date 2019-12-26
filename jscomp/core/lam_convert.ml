@@ -92,8 +92,8 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
     | Lfor(v, e1, e2, dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
-    | Lapply{fn; args; _} ->
-      hit fn || hit_list args
+    | Lapply{ap_func; ap_args; _} ->
+      hit ap_func || hit_list ap_args
     | Lglobal_module _  (* global persistent module, play safe *)
       -> false
     | Lswitch(arg, sw) ->
@@ -712,13 +712,13 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg]; loc }}
         when Ident.same param inner_arg -> 
         Lam.prim ~primitive ~args:[x] outer_loc
-      | Lapply {fn = Lfunction{params; body = Lprim{primitive; args = inner_args}}; args}
+      | Lapply {ap_func = Lfunction{params; body = Lprim{primitive; args = inner_args}}; ap_args=args}
         when Ext_list.for_all2_no_exn inner_args params lam_is_var &&
              Ext_list.length_larger_than_n inner_args args 1 
         ->
         Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
-      | Lapply{fn;args} ->
-        Lam.apply fn (Ext_list.append_one args x) outer_loc App_na
+      | Lapply{ap_func;ap_args} ->
+        Lam.apply ap_func (Ext_list.append_one ap_args x) outer_loc App_na
       | _ ->
         Lam.apply f [x] outer_loc App_na
     and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 

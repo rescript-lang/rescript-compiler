@@ -1316,20 +1316,20 @@ and compile_apply
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      fn = Lapply{ fn; args =  fn_args; status = App_na ; };
-      args;
-      status = App_na; loc }
+      ap_func = Lapply{ ap_func=fn; ap_args =  fn_args; ap_status = App_na ; };
+      ap_args = args;
+      ap_status = App_na; ap_loc = loc}
       ->
       (* After inlining we can generate such code,
          see {!Ari_regress_test}
       *)
       compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
-    | { fn =
+    | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        args ;
-        status = App_na | App_ml_full} ->
+        ap_args = args ;
+        ap_status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
@@ -1338,7 +1338,7 @@ and compile_apply
           compile_external_field_apply  args id fld_name  lambda_cxt
         | _ -> assert false
       end     
-    | { fn; args = args_lambda;   status} ->
+    | { ap_func = fn; ap_args = args_lambda;   ap_status = status} ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
          2. no need create names

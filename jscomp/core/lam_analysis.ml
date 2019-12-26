@@ -297,8 +297,8 @@ let rec size (lam : Lam.t) =
         {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
      *)      
-    | Lapply{ fn;
-             args; _} -> size_lams (size fn) args
+    | Lapply{ ap_func;
+             ap_args; _} -> size_lams (size ap_func) ap_args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction {body} -> size body 
     | Lswitch _ -> really_big ()

@@ -78,10 +78,10 @@ let free_variables
     match lam with 
     | Lvar v -> used top v 
     | Lconst _ -> ()
-    | Lapply {fn; args; _} ->
-      iter top  fn; 
-      let top = Lam_var_stats.new_position_after_lam fn top in
-      Ext_list.iter args (fun lam -> iter top lam ) 
+    | Lapply {ap_func; ap_args; _} ->
+      iter top  ap_func; 
+      let top = Lam_var_stats.new_position_after_lam ap_func top in
+      Ext_list.iter ap_args (fun lam -> iter top lam ) 
     | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       Ext_list.iter args (iter top) 
