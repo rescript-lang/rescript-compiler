@@ -1451,7 +1451,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pjs_fn_run arity;  args = args_lambda}
+    | {primitive = Pjs_fn_run _;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
@@ -1507,7 +1507,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               App_js_full)
        | [] -> assert false)
       
-    | {primitive = Pjs_fn_runmethod arity ; args }
+    | {primitive = Pjs_fn_runmethod _ ; args }
       ->
       (match args with
        | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
