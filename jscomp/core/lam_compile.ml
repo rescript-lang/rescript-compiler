@@ -1464,10 +1464,11 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args_lambda with
        | [Lprim{
            primitive =
-             Pjs_unsafe_downgrade {name = method_name; loc};
-           args = [obj]} ;
+             Pjs_unsafe_downgrade {name = method_name; loc; setter = true};
+           args = args_l} ;
           arg] (** x##name arg  could be specialized as a setter *)         
-         when  Ext_string.ends_with method_name Literals.setter_suffix ->
+          ->
+         let obj = Ext_list.singleton_exn args_l in
          let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
          let obj_output = compile_lambda  need_value_no_return_cxt obj in
          let arg_output = compile_lambda need_value_no_return_cxt arg in

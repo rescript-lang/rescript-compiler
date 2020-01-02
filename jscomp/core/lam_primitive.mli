@@ -133,7 +133,12 @@ type t =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade of {name : string ; loc : Location.t}
+  | Pjs_unsafe_downgrade of 
+    { 
+      name : string ; 
+      setter : bool;
+      loc : Location.t;
+    }
   | Pinit_mod
   | Pupdate_mod
 

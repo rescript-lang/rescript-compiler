@@ -528,7 +528,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#fn_run" | "#method_run" -> Pjs_fn_run(Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method (Ext_pervasives.nat_of_string_exn p.prim_native_name)
-        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty; loc}
+        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty; loc ; setter = false}
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
       in
@@ -638,7 +638,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           ->
           begin match kind, ls with
             | Public (Some name), [] ->
-              prim ~primitive:(Pjs_unsafe_downgrade {name;loc})
+              prim ~primitive:(Pjs_unsafe_downgrade {name;loc; setter = Ext_string.ends_with name Literals.setter_suffix})
                 ~args loc
             | _ -> assert false
           end

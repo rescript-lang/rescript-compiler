@@ -139,7 +139,12 @@ type t =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade of {name : string ; loc : Location.t}
+  | Pjs_unsafe_downgrade of 
+    { 
+      name : string ;
+      setter : bool;
+      loc : Location.t;
+     }
   | Pinit_mod
   | Pupdate_mod
   | Praw_js_code_exp of string
@@ -319,7 +324,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
   | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
-  | Pjs_unsafe_downgrade {name; loc=_} -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name | _ -> false)  
+  | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
   | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )  
