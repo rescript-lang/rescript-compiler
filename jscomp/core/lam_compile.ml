@@ -1465,9 +1465,9 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        | [Lprim{
            primitive =
              Pjs_unsafe_downgrade {name = method_name; loc};
-           args = [obj]} as fn;
-          arg] (** x##name arg  could be specialized as a setter *)
-         ->
+           args = [obj]} ;
+          arg] (** x##name arg  could be specialized as a setter *)         
+         when  Ext_string.ends_with method_name Literals.setter_suffix ->
          let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
          let obj_output = compile_lambda  need_value_no_return_cxt obj in
          let arg_output = compile_lambda need_value_no_return_cxt arg in
@@ -1484,7 +1484,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
           | {block = obj_block; value = Some obj },
             {block = arg_block; value = Some value}
             ->
-            if  Ext_string.ends_with method_name Literals.setter_suffix then
+            
               let property =
                 Lam_methname.translate ~loc
                   (String.sub method_name 0
@@ -1497,10 +1497,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
                 ->
                 cont obj_block arg_block (Some obj_code)
                   (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
-            else
-              compile_lambda lambda_cxt
-                (Lam.apply fn [arg]
-                   Location.none (* TODO *) App_js_full))
+            )
        | fn :: rest ->
          compile_lambda lambda_cxt
            (Lam.apply fn rest
