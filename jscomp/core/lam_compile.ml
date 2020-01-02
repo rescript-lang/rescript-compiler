@@ -1432,7 +1432,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    |  {primitive = Pjs_unsafe_downgrade (name,loc); args = [obj]}
+    |  {primitive = Pjs_unsafe_downgrade {name;loc}; args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix)
       ->
       (**
@@ -1463,7 +1463,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args_lambda with
        | [Lprim{
            primitive =
-             Pjs_unsafe_downgrade(method_name,loc);
+             Pjs_unsafe_downgrade {name = method_name; loc};
            args = [obj]} as fn;
           arg]
          ->
@@ -1510,7 +1510,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
     | {primitive = Pjs_fn_runmethod _ ; args }
       ->
       (match args with
-       | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
+       | (Lprim{primitive = Pjs_unsafe_downgrade {name; loc};
                 args = [ _ ]} as fn)
          :: _obj
          :: rest ->
