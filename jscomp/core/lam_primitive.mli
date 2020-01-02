@@ -143,7 +143,6 @@ type t =
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 

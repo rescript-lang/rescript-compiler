@@ -1507,24 +1507,6 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               App_js_full)
        | [] -> assert false)
       
-    | {primitive = Pjs_fn_runmethod _ ; args }
-      ->
-      (match args with
-       | (Lprim{primitive = Pjs_unsafe_downgrade {name; loc};
-                args = [ _ ]} as fn)
-         :: _obj
-         :: rest ->
-         (* assert (Ident.same id2 id) ;  *)
-         (* we ignore the computation of [_obj],
-            since our ast writer
-            {[ obj#.f (x,y)
-            ]}
-            -->
-            {[ runmethod2 f obj#.f x y]}
-         *)
-         compile_lambda lambda_cxt (Lam.apply fn rest loc App_js_full)
-       | _ -> assert false)
-
     | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       (match args_lambda with
        | [Lfunction{arity = len; params; body} ]

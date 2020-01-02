@@ -148,7 +148,7 @@ type t =
   | Pjs_fn_make of int
   | Pjs_fn_run of int
   | Pjs_fn_method of int
-  | Pjs_fn_runmethod of int
+  
 
   | Pundefined_to_opt
   | Pnull_to_opt
@@ -322,9 +322,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_unsafe_downgrade {name; loc=_} -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
-  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )
-  | Pjs_fn_runmethod i -> (match rhs with Pjs_fn_runmethod i1 -> i = i1 | _ -> false ) 
-
+  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )  
   | Pbigarrayref  _ 
   | Pbigarrayset _ 
   | Praw_js_function _
