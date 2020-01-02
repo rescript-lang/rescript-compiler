@@ -528,7 +528,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#fn_run" | "#method_run" -> Pjs_fn_run(Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method (Ext_pervasives.nat_of_string_exn p.prim_native_name)
-        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
+        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty; loc ; setter = false}
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
       in
@@ -634,11 +634,18 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lsend (kind, a,b,ls, loc) ->
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
         (match convert_aux b with
-        | Lprim {primitive =  Pjs_unsafe_downgrade(_,loc);  args}
+        | Lprim {primitive =  Pjs_unsafe_downgrade {loc};  args}
           ->
           begin match kind, ls with
             | Public (Some name), [] ->
-              prim ~primitive:(Pjs_unsafe_downgrade (name,loc))
+              let setter = Ext_string.ends_with name Literals.setter_suffix in 
+              let property = 
+                if setter then   
+                  Lam_methname.translate ~loc
+                    (String.sub name 0
+                       (String.length name - Literals.setter_suffix_len))
+                else Lam_methname.translate ~loc name in 
+              prim ~primitive:(Pjs_unsafe_downgrade {name = property;loc; setter})
                 ~args loc
             | _ -> assert false
           end

@@ -1432,13 +1432,14 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    |  {primitive = Pjs_unsafe_downgrade (name,loc); args = [obj]}
-      when not (Ext_string.ends_with name Literals.setter_suffix)
+    |  {primitive = Pjs_unsafe_downgrade {name = property;loc; setter }; args = [obj]}
+      
       ->
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
-      let property =  Lam_methname.translate ~loc name  in      
+      assert (not setter);
+    
       (match compile_lambda {lambda_cxt with continuation = NeedValue Not_tail} obj
        with
        | {value = None} -> assert false
@@ -1451,7 +1452,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pjs_fn_run arity;  args = args_lambda}
+    | {primitive = Pjs_fn_run _;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
@@ -1463,10 +1464,11 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args_lambda with
        | [Lprim{
            primitive =
-             Pjs_unsafe_downgrade(method_name,loc);
-           args = [obj]} as fn;
-          arg]
-         ->
+             Pjs_unsafe_downgrade {name = property; loc; setter = true};
+           args = args_l} ;
+          arg] (** x##name arg  could be specialized as a setter *)         
+          ->
+         let obj = Ext_list.singleton_exn args_l in         
          let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
          let obj_output = compile_lambda  need_value_no_return_cxt obj in
          let arg_output = compile_lambda need_value_no_return_cxt arg in
@@ -1482,24 +1484,16 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
           | {value = None}, _ | _, {value = None} -> assert false
           | {block = obj_block; value = Some obj },
             {block = arg_block; value = Some value}
-            ->
-            if  Ext_string.ends_with method_name Literals.setter_suffix then
-              let property =
-                Lam_methname.translate ~loc
-                  (String.sub method_name 0
-                     (String.length method_name - Literals.setter_suffix_len)) in
-              match Js_ast_util.named_expression  obj with
-              | None ->
-                cont obj_block arg_block None
-                  (E.seq (E.assign (E.dot obj property) value) E.unit)
-              | Some (obj_code, obj)
-                ->
-                cont obj_block arg_block (Some obj_code)
-                  (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
-            else
-              compile_lambda lambda_cxt
-                (Lam.apply fn [arg]
-                   Location.none (* TODO *) App_js_full))
+            ->            
+            match Js_ast_util.named_expression  obj with
+            | None ->
+              cont obj_block arg_block None
+                (E.seq (E.assign (E.dot obj property) value) E.unit)
+            | Some (obj_code, obj)
+              ->
+              cont obj_block arg_block (Some obj_code)
+                (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
+         )
        | fn :: rest ->
          compile_lambda lambda_cxt
            (Lam.apply fn rest
@@ -1507,24 +1501,6 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               App_js_full)
        | [] -> assert false)
       
-    | {primitive = Pjs_fn_runmethod arity ; args }
-      ->
-      (match args with
-       | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
-                args = [ _ ]} as fn)
-         :: _obj
-         :: rest ->
-         (* assert (Ident.same id2 id) ;  *)
-         (* we ignore the computation of [_obj],
-            since our ast writer
-            {[ obj#.f (x,y)
-            ]}
-            -->
-            {[ runmethod2 f obj#.f x y]}
-         *)
-         compile_lambda lambda_cxt (Lam.apply fn rest loc App_js_full)
-       | _ -> assert false)
-
     | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       (match args_lambda with
        | [Lfunction{arity = len; params; body} ]

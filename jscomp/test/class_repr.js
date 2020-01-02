@@ -176,6 +176,46 @@ if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
       ];
 }
 
+function xx0_init($$class) {
+  var x = CamlinternalOO.new_variable($$class, "");
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, [
+        "money",
+        "a0",
+        "a1",
+        "a2"
+      ]);
+  var incr = ids[0];
+  var get_money = ids[1];
+  var money = ids[2];
+  var a0 = ids[3];
+  var a1 = ids[4];
+  var a2 = ids[5];
+  CamlinternalOO.set_methods($$class, [
+        get_money,
+        (function (self$5) {
+            return self$5[money];
+          }),
+        incr,
+        (function (self$5) {
+            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5));
+            copy[money] = 2 * self$5[x] + Curry._1(self$5[0][get_money], self$5);
+            copy[a0] = 2;
+            return copy;
+          })
+      ]);
+  return (function (env, self, x$1) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = x$1;
+      self$1[money] = x$1;
+      self$1[a0] = 0;
+      self$1[a1] = 1;
+      self$1[a2] = 2;
+      return self$1;
+    });
+}
+
+var xx0 = CamlinternalOO.make_class(shared$2, xx0_init);
+
 exports.x0 = x0;
 exports.x = x;
 exports.u = u;
@@ -184,4 +224,5 @@ exports.v1 = v1;
 exports.v2 = v2;
 exports.point = point;
 exports.v = v$1;
+exports.xx0 = xx0;
 /* x0 Not a pure module */
