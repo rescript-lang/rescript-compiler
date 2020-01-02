@@ -97,3 +97,13 @@ let v = new point
 
 let () = 
   assert (v#get_x5 = 5)
+
+class xx0 (x : float)= object (self)
+  val money = x 
+  val a0 = 0
+  val a1 = 1
+  val a2 = 2
+  method get_money = money (* Texp_instvar *)
+  method incr = {< money = 2. *. x +. self#get_money; a0 = 2 >}
+  (* Texp_instvar *) (* camlinternalOO.copy is inlined here *)
+end
