@@ -638,7 +638,14 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           ->
           begin match kind, ls with
             | Public (Some name), [] ->
-              prim ~primitive:(Pjs_unsafe_downgrade {name;loc; setter = Ext_string.ends_with name Literals.setter_suffix})
+              let setter = Ext_string.ends_with name Literals.setter_suffix in 
+              let property = 
+                if setter then   
+                  Lam_methname.translate ~loc
+                    (String.sub name 0
+                       (String.length name - Literals.setter_suffix_len))
+                else Lam_methname.translate ~loc name in 
+              prim ~primitive:(Pjs_unsafe_downgrade {name = property;loc; setter})
                 ~args loc
             | _ -> assert false
           end

@@ -1432,14 +1432,14 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    |  {primitive = Pjs_unsafe_downgrade {name;loc}; args = [obj]}
+    |  {primitive = Pjs_unsafe_downgrade {name = property;loc; setter }; args = [obj]}
       
       ->
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
-      assert (not (Ext_string.ends_with name Literals.setter_suffix));
-      let property =  Lam_methname.translate ~loc name  in      
+      assert (not setter);
+    
       (match compile_lambda {lambda_cxt with continuation = NeedValue Not_tail} obj
        with
        | {value = None} -> assert false
@@ -1464,15 +1464,11 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args_lambda with
        | [Lprim{
            primitive =
-             Pjs_unsafe_downgrade {name = method_name; loc; setter = true};
+             Pjs_unsafe_downgrade {name = property; loc; setter = true};
            args = args_l} ;
           arg] (** x##name arg  could be specialized as a setter *)         
           ->
-         let obj = Ext_list.singleton_exn args_l in
-         let property =
-           Lam_methname.translate ~loc
-             (String.sub method_name 0
-                (String.length method_name - Literals.setter_suffix_len)) in
+         let obj = Ext_list.singleton_exn args_l in         
          let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
          let obj_output = compile_lambda  need_value_no_return_cxt obj in
          let arg_output = compile_lambda need_value_no_return_cxt arg in
