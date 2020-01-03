@@ -26,6 +26,40 @@ module E = Js_exp_make
 
 module S = Js_stmt_make
 
+let rec apply_with_arity_aux (fn : J.expression)
+    (arity : int list) (args : E.t list) (len : int)  : E.t =
+  if len = 0 then         
+    fn (** All arguments consumed so far *)
+  else match arity with 
+    |  x :: rest   ->
+      let x =
+        if x = 0
+        then 1
+        else x in (* Relax when x = 0 *)
+      if  len >= x
+      then
+        let first_part, continue =  Ext_list.split_at args x in
+        apply_with_arity_aux
+          (E.call ~info:{arity=Full; call_info = Call_ml} fn first_part)
+          rest
+          continue (len - x)
+      else (* GPR #1423 *)
+      if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
+        let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
+        E.ocaml_fun params
+          [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
+                            fn (Ext_list.append args @@ Ext_list.map params E.var))]
+      else E.call ~info:Js_call_info.dummy fn args
+    (* alpha conversion now? --
+       Since we did an alpha conversion before so it is not here
+    *)
+    | [] ->
+      (* can not happen, unless it's an exception ? *)
+      E.call ~info:Js_call_info.dummy fn args
+
+let apply_with_arity ~arity fn args  = 
+  apply_with_arity_aux fn arity args (List.length args)  
+
 let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
 let change_tail_type_in_try 
@@ -235,48 +269,18 @@ and compile_external_field_apply
               (Ext_list.append block args_code), (b :: args )
             | _ -> assert false
           )  in
-      let rec aux (acc : J.expression)
-          arity args (len : int)  : E.t =
-          if len = 0 then         
-          acc (** All arguments consumed so far *)
-          else match arity with 
-          |  x :: rest   ->
-          let x =
-            if x = 0
-            then 1
-            else x in (* Relax when x = 0 *)
-          if  len >= x
-          then
-            let first_part, continue =  Ext_list.split_at args x in
-            aux
-              (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-              rest
-              continue (len - x)
-          else (* GPR #1423 *)
-          if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
-            let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
-            E.ocaml_fun params
-              [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
-                                acc (Ext_list.append args @@ Ext_list.map params E.var))]
-          else E.call ~info:Js_call_info.dummy acc args
-        (* alpha conversion now? --
-           Since we did an alpha conversion before so it is not here
-        *)
-        | [] ->
-          (* can not happen, unless it's an exception ? *)
-          E.call ~info:Js_call_info.dummy acc args
-      in
-      let fn = E.ml_var_dot id ident_info.name in 
-      let initial_args_len = List.length args in 
-      let expression = 
-        match ident_info.arity with 
-        | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
-        | Single x -> 
-          aux fn (Lam_arity.extract_arity x) args initial_args_len
-      in   
-      Js_output.output_of_block_and_expression
-        lambda_cxt.continuation
-        args_code expression
+
+    let fn = E.ml_var_dot id ident_info.name in     
+    let expression = 
+      match ident_info.arity with 
+      | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
+      | Single x -> 
+        apply_with_arity
+          fn ~arity:(Lam_arity.extract_arity x) args         
+    in   
+    Js_output.output_of_block_and_expression
+      lambda_cxt.continuation
+      args_code expression
 
 
 (**
