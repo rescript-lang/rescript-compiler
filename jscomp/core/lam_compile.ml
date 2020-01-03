@@ -28,9 +28,9 @@ module S = Js_stmt_make
 
 let rec apply_with_arity_aux (fn : J.expression)
     (arity : int list) (args : E.t list) (len : int)  : E.t =
-  if len = 0 then         
-    fn (** All arguments consumed so far *)
-  else match arity with 
+  if len = 0 then fn (** All arguments consumed so far *)
+  else 
+    match arity with 
     |  x :: rest   ->
       let x =
         if x = 0
