@@ -1316,26 +1316,26 @@ and compile_apply
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      ap_func = Lapply{ ap_func=fn; ap_args =  fn_args; ap_status = App_na ; };
+      ap_func = Lapply{ ap_func; ap_args =  fn_args; ap_status = App_na ; };
       ap_args = args;
       ap_status = App_na; ap_loc = loc}
       ->
       (* After inlining we can generate such code,
          see {!Ari_regress_test}
       *)
-      compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
+      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        ap_args = args ;
+        ap_args ;
         ap_status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
       begin match fld_info with 
-        | Fld_module {name = fld_name} -> 
-          compile_external_field_apply  args id fld_name  lambda_cxt
+        | Fld_module {name } -> 
+          compile_external_field_apply  ap_args id name  lambda_cxt
         | _ -> assert false
       end     
     | { ap_func = fn; ap_args = args_lambda;   ap_status = status} ->
@@ -1466,12 +1466,12 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
            primitive =
              Pjs_unsafe_downgrade {name = property; loc; setter = true};
            args = args_l} ;
-          arg] (** x##name arg  could be specialized as a setter *)         
+          setter_val] (** x##name arg  could be specialized as a setter *)         
           ->
          let obj = Ext_list.singleton_exn args_l in         
          let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
          let obj_output = compile_lambda  need_value_no_return_cxt obj in
-         let arg_output = compile_lambda need_value_no_return_cxt arg in
+         let arg_output = compile_lambda need_value_no_return_cxt setter_val in
          let cont obj_block arg_block obj_code =
            Js_output.output_of_block_and_expression lambda_cxt.continuation  
              (
