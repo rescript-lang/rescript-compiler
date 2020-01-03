@@ -26,6 +26,15 @@ module E = Js_exp_make
 
 module S = Js_stmt_make
 
+let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =  
+  match  ap_status with
+  | App_ml_full ->
+    {arity = Full ; call_info = Call_ml}
+  |  App_js_full ->
+    {arity = Full ; call_info = Call_na}
+  |  App_na ->
+    {arity = NA; call_info = Call_ml }
+
 let rec apply_with_arity_aux (fn : J.expression)
     (arity : int list) (args : E.t list) (len : int)  : E.t =
   if len = 0 then fn (** All arguments consumed so far *)
@@ -241,13 +250,14 @@ let rec
 *)
 
 and compile_external_field_apply    
-    (args_lambda : Lam.t list)
-    (id : Ident.t)
-    (pos : string)
+    (appinfo : Lam.apply_info)
+    (module_id : Ident.t)
+    (field_name : string)
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
-    Lam_compile_env.query_external_id_info id pos  in 
+    Lam_compile_env.query_external_id_info module_id field_name  in 
+  let args_lambda = appinfo.ap_args in 
   match ident_info.closed_lambda with
   | Some (Lfunction{ params; body; _})
       when Ext_list.same_length params args_lambda ->
@@ -270,7 +280,7 @@ and compile_external_field_apply
             | _ -> assert false
           )  in
 
-    let fn = E.ml_var_dot id ident_info.name in     
+    let fn = E.ml_var_dot module_id ident_info.name in     
     let expression = 
       match ident_info.arity with 
       | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
@@ -1336,7 +1346,7 @@ and compile_apply
       *)
       begin match fld_info with 
         | Fld_module {name } -> 
-          compile_external_field_apply  appinfo.ap_args id name  lambda_cxt
+          compile_external_field_apply  appinfo id name  lambda_cxt
         | _ -> assert false
       end     
     | _ ->
@@ -1392,14 +1402,7 @@ and compile_apply
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)
       | _ ->
         Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
-          (E.call ~info:(match ap_func, appinfo.ap_status with
-               | _,  App_ml_full ->
-                 {arity = Full ; call_info = Call_ml}
-               | _,  App_js_full ->
-                 {arity = Full ; call_info = Call_na}
-               | _,   App_na ->
-                 {arity = NA; call_info = Call_ml }
-             ) fn_code args)
+          (E.call ~info:(call_info_of_ap_status  appinfo.ap_status) fn_code args)
 and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
     match prim_info with 
     | {primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _}
