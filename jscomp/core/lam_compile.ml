@@ -1319,8 +1319,7 @@ and compile_apply
       ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; };    
       ap_status = App_na;}
       ->
-      (* After inlining, we can generate such code, see {!Ari_regress_test}
-      *)
+      (* After inlining, we can generate such code, see {!Ari_regress_test}*)
       compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na )
     (* External function calll *)
     | { ap_func = 
@@ -1336,19 +1335,20 @@ and compile_apply
           compile_external_field_apply  appinfo.ap_args id name  lambda_cxt
         | _ -> assert false
       end     
-    | { ap_func = fn; ap_args = args_lambda;   ap_status = status} ->
+    | _ ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
          2. no need create names
       *)
+      let ap_func = appinfo.ap_func in 
       let new_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
       let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) =
-        Ext_list.fold_right (fn::args_lambda) ([],[]) (fun x  (args_code, fn_code )->
+        Ext_list.fold_right (ap_func::appinfo.ap_args) ([],[]) (fun x  (args_code, fn_code )->
             match compile_lambda new_cxt x with
             | {block ; value =  Some b} -> Ext_list.append block  args_code , b:: fn_code
             | {value = None} -> assert false
           )  in
-      match fn, lambda_cxt.continuation with
+      match ap_func, lambda_cxt.continuation with
       | (Lvar fn_id,
          (EffectCall (Maybe_tail_is_return (Tail_with_name ( {label = Some ret}))) | NeedValue (Maybe_tail_is_return (Tail_with_name ( {label = Some ret})))))
         when Ident.same ret.id fn_id ->
@@ -1377,7 +1377,7 @@ and compile_apply
                   match Map_ident.find_opt ret.new_params param  with
                   | None ->
                     ret.immutable_mask.(i)<- false;
-                    let v = Ext_ident.create ("_"^param.Ident.name) in
+                    let v = Ext_ident.create ("_"^param.name) in
                     v, (Map_ident.add new_params param v)
                   | Some v -> v, new_params  in
                 (i+1, (new_param, arg) :: assigns, m)
@@ -1388,7 +1388,7 @@ and compile_apply
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)
       | _ ->
         Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
-          (E.call ~info:(match fn, status with
+          (E.call ~info:(match ap_func, appinfo.ap_status with
                | _,  App_ml_full ->
                  {arity = Full ; call_info = Call_ml}
                | _,  App_js_full ->
