@@ -1316,26 +1316,23 @@ and compile_apply
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      ap_func = Lapply{ ap_func; ap_args =  fn_args; ap_status = App_na ; };
-      ap_args = args;
-      ap_status = App_na; ap_loc = loc}
+      ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; };    
+      ap_status = App_na;}
       ->
-      (* After inlining we can generate such code,
-         see {!Ari_regress_test}
+      (* After inlining, we can generate such code, see {!Ari_regress_test}
       *)
-      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append fn_args  args)  loc  App_na )
+      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na )
     (* External function calll *)
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        ap_args ;
         ap_status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
       begin match fld_info with 
         | Fld_module {name } -> 
-          compile_external_field_apply  ap_args id name  lambda_cxt
+          compile_external_field_apply  appinfo.ap_args id name  lambda_cxt
         | _ -> assert false
       end     
     | { ap_func = fn; ap_args = args_lambda;   ap_status = status} ->
