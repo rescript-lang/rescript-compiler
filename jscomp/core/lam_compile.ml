@@ -209,22 +209,11 @@ let rec
 and compile_external_field_apply    
     (args_lambda : Lam.t list)
     (id : Ident.t)
-    pos
+    (pos : string)
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
     Lam_compile_env.query_external_id_info id pos  in 
-  let args_code, args =
-      let dummy = [], [] in 
-      if args_lambda = [] then dummy
-      else 
-        let arg_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
-        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
-           match compile_lambda arg_cxt arg_lambda with
-           | {block; value = Some b} ->
-             (Ext_list.append block args_code), (b :: args )
-           | _ -> assert false
-        )  in
   match ident_info.closed_lambda with
   | Some (Lfunction{ params; body; _})
       when Ext_list.same_length params args_lambda ->
@@ -235,6 +224,17 @@ and compile_external_field_apply
         (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
            params body args_lambda)
   | _ ->
+    let args_code, args =
+      let dummy = [], [] in 
+      if args_lambda = [] then dummy
+      else 
+        let arg_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
+        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
+            match compile_lambda arg_cxt arg_lambda with
+            | {block; value = Some b} ->
+              (Ext_list.append block args_code), (b :: args )
+            | _ -> assert false
+          )  in
       let rec aux (acc : J.expression)
           arity args (len : int)  : E.t =
           if len = 0 then         
@@ -1326,9 +1326,10 @@ and compile_apply
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        ap_status = App_na | App_ml_full} ->
-      (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
-         this information, we should fix [get_exp_with_args]
+        ap_status = App_na | App_ml_full
+        } ->
+      (* Note we skip [App_js_full] since [compile_external_field_apply] dont carry
+         this information, we should fix [compile_external_field_apply]
       *)
       begin match fld_info with 
         | Fld_module {name } -> 
