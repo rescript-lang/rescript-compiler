@@ -29,17 +29,16 @@
   | _ -> false
 
 let names_from_construct_pattern (pat: Typedtree.pattern) =
-  let names_from_type_variant cstrs =
-    let (consts, blocks) = List.fold_left
+  let names_from_type_variant (cstrs : Types.constructor_declaration list) =
+    let (consts, blocks) = Ext_list.fold_left cstrs ([], [])  
       (fun (consts, blocks) cstr ->
-        if is_nullary_variant cstr.Types.cd_args 
-        then (Ident.name cstr.Types.cd_id :: consts, blocks)
-        else (consts, Ident.name cstr.Types.cd_id :: blocks))
-      ([], []) cstrs in
-    Some {Lambda.consts = consts |> List.rev |> Array.of_list;
-          blocks = blocks |> List.rev |> Array.of_list } in
-
-  let rec resolve_path n path =
+        if is_nullary_variant cstr.cd_args 
+        then (Ident.name cstr.cd_id :: consts, blocks)
+        else (consts, Ident.name cstr.cd_id :: blocks))
+      in
+    Some {Lambda.consts = Ext_array.reverse_of_list consts;
+          blocks = Ext_array.reverse_of_list blocks } in
+  let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
     | {type_kind = Type_variant cstrs} ->
       names_from_type_variant cstrs
