@@ -28111,6 +28111,7 @@ end = struct
 
 
 let setup_env () =
+  Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
@@ -46953,6 +46954,18 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
               }
             | false , _ ->
               default_expr_mapper self e)
+        | Pexp_match(b,
+                     [
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "true"},None)};pc_guard=None;pc_rhs=t_exp};
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"false"}, None)};pc_guard=None;pc_rhs=f_exp}
+                     ]) 
+        | Pexp_match(b,
+                     [
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "false"},None)};pc_guard=None;pc_rhs=f_exp};
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"true"}, None)};pc_guard=None;pc_rhs=t_exp}
+                     ])   
+          -> 
+            default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}     
         | _ ->  default_expr_mapper self e
 
 
