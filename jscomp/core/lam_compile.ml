@@ -136,42 +136,9 @@ type default_case =
 let no_effects_const  = lazy true
 let has_effects_const = lazy false
 
-let is_nullary_variant x = 
-  match x with 
-  | Types.Cstr_tuple [] -> true 
-  | _ -> false
 
-let names_from_construct_pattern (pat: Typedtree.pattern) =
-  let names_from_type_variant cstrs =
-    let (consts, blocks) = List.fold_left
-      (fun (consts, blocks) cstr ->
-        if is_nullary_variant cstr.Types.cd_args 
-        then (Ident.name cstr.Types.cd_id :: consts, blocks)
-        else (consts, Ident.name cstr.Types.cd_id :: blocks))
-      ([], []) cstrs in
-    Some {Lambda.consts = consts |> List.rev |> Array.of_list;
-          blocks = blocks |> List.rev |> Array.of_list } in
 
-  let rec resolve_path n path =
-    match Env.find_type path pat.pat_env with
-    | {type_kind = Type_variant cstrs} ->
-      names_from_type_variant cstrs
-    | {type_kind = Type_abstract; type_manifest = Some t} ->
-      ( match (Ctype.unalias t).desc with
-        | Tconstr (pathn, _, _) ->
-          (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
-          resolve_path (n+1) pathn
-        | _ -> None)
-    | {type_kind = Type_abstract; type_manifest = None} ->
-      None
-    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
-      None in
-
-  match (Btype.repr pat.pat_type).desc with
-    | Tconstr (path, _, _) -> resolve_path 0 path
-    | _ -> assert false
-
- let () = Matching.names_from_construct_pattern := names_from_construct_pattern
+ 
 
 (** We drop the ability of cross-compiling
         the compiler has to be the same running
@@ -739,11 +706,6 @@ and compile_staticraise i (largs : Lam.t list) (lambda_cxt : Lam_compile_context
                     {lambda_cxt with continuation = Assign bind } larg
             in Js_output.append_output new_output acc
            )
-#if undefined BS_RELEASE_BUILD then            
-    | exception Not_found ->
-          assert false          
-    (* Invariant: staticraise is always enclosed by catch  *)
-#end
     (* Invariant: exit_code can not be reused
         (catch l with (32)
         (handler))
