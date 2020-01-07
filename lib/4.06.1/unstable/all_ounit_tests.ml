@@ -13042,7 +13042,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(* This file is only used in bsb watcher searlization *)
 type t = 
   | True 
   | False 
@@ -13054,10 +13054,41 @@ type t =
 
 
 (** poor man's serialization *)
+let naive_escaped (unmodified_input : string) : string =
+  let n = ref 0 in
+  let len = String.length unmodified_input in 
+  for i = 0 to len - 1 do
+    n := !n +
+         (match String.unsafe_get unmodified_input i with
+          | '\"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+          | _ -> 1
+         )
+  done;
+  if !n = len then  unmodified_input else begin
+    let result = Bytes.create !n in
+    n := 0;
+    for i = 0 to len - 1 do
+      let open Bytes in   
+      begin match String.unsafe_get unmodified_input i with
+        | ('\"' | '\\') as c ->
+          unsafe_set result !n '\\'; incr n; unsafe_set result !n c
+        | '\n' ->
+          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'n'
+        | '\t' ->
+          unsafe_set result !n '\\'; incr n; unsafe_set result !n 't'
+        | '\r' ->
+          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'r'
+        | '\b' ->
+          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'b'
+        |  c -> unsafe_set result !n c      
+      end;
+      incr n
+    done;
+    Bytes.unsafe_to_string result
+  end
 
 let quot x = 
-    "\"" ^ String.escaped x ^ "\""
-
+    "\"" ^ naive_escaped x ^ "\""
 let true_ = True
 let false_ = False
 let null = Null 
