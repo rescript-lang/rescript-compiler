@@ -1,0 +1,13 @@
+####{BSB GENERATED: NO EDIT
+FLG -ppx /Users/hongbozhang/git/bucklescript/lib/bsppx.exe
+S /Users/hongbozhang/git/bucklescript/jscomp/build_tests/node_modules/bs-platform/lib/ocaml
+B /Users/hongbozhang/git/bucklescript/jscomp/build_tests/node_modules/bs-platform/lib/ocaml
+FLG -nostdlib
+FLG -w -30-40+6+7+27+32..39+44+45+101
+S 📕annotation
+B lib/bs/📕annotation
+S 📗block
+B lib/bs/📗block
+S 📙inline
+B lib/bs/📙inline
+####BSB GENERATED: NO EDIT}

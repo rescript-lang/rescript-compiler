@@ -101,13 +101,13 @@ let rec equal
       | _ -> false end
   | Str {str } -> 
     begin match y with 
-      | Str {str = str2} -> str = str2
+      | Str rhs -> str = rhs.str
       | _ -> false end
   | Flo {flo} 
     ->
     begin match y with
-      |  Flo {flo = flo2} -> 
-        flo = flo2 
+      |  Flo rhs -> 
+        flo = rhs.flo
       | _ -> false
     end
   | True _ -> 
@@ -123,16 +123,16 @@ let rec equal
   | Arr {content} 
     -> 
     begin match y with 
-      | Arr {content = content2}
+      | Arr rhs
         ->
-        Ext_array.for_all2_no_exn content content2 equal
+        Ext_array.for_all2_no_exn content rhs.content equal
       | _ -> false 
     end
 
   | Obj {map} -> 
     begin match y with 
-      | Obj { map = map2} -> 
-        Map_string.equal map map2 equal
+      | Obj rhs -> 
+        Map_string.equal map rhs.map equal
       | _ -> false 
     end 
 
