@@ -224,23 +224,23 @@ and compile_external_field_apply
 
   let ident_info =  
     Lam_compile_env.query_external_id_info module_id field_name  in 
-  let args_lambda = appinfo.ap_args in 
+  let ap_args = appinfo.ap_args in 
   match ident_info.closed_lambda with
   | Some (Lfunction{ params; body; _})
-      when Ext_list.same_length params args_lambda ->
+      when Ext_list.same_length params ap_args ->
       (* TODO: serialize it when exporting to save compile time *)
       let (_, param_map)  =
         Lam_closure.is_closed_with_map Set_ident.empty params body in
       compile_lambda lambda_cxt
         (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
-           params body args_lambda)
+           params body ap_args)
   | _ ->
     let args_code, args =
       let dummy = [], [] in 
-      if args_lambda = [] then dummy
+      if ap_args = [] then dummy
       else 
         let arg_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
-        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
+        Ext_list.fold_right ap_args dummy (fun arg_lambda  (args_code, args)  ->
             match compile_lambda arg_cxt arg_lambda with
             | {block; value = Some b} ->
               (Ext_list.append block args_code), (b :: args )
@@ -249,11 +249,15 @@ and compile_external_field_apply
 
     let fn = E.ml_var_dot module_id ident_info.name in     
     let expression = 
-      match ident_info.arity with 
-      | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
-      | Single x -> 
-        apply_with_arity
-          fn ~arity:(Lam_arity.extract_arity x) args         
+      match appinfo.ap_status with 
+      | App_ml_full | App_js_full as ap_status -> 
+        E.call ~info:(call_info_of_ap_status ap_status) fn args 
+      | App_na ->   
+        match ident_info.arity with 
+        | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
+        | Single x -> 
+          apply_with_arity
+            fn ~arity:(Lam_arity.extract_arity x) args         
     in   
     Js_output.output_of_block_and_expression
       lambda_cxt.continuation
@@ -1297,15 +1301,11 @@ and compile_apply
       ->
       (* After inlining, we can generate such code, see {!Ari_regress_test}*)
       compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na )
-    (* External function calll *)
+    (* External function call: it can not be tailcall in this case*)
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        ap_status = App_na | App_ml_full
-        } ->
-      (* Note we skip [App_js_full] since [compile_external_field_apply] dont carry
-         this information, we should fix [compile_external_field_apply]
-      *)
+        } ->   
       begin match fld_info with 
         | Fld_module {name } -> 
           compile_external_field_apply  appinfo id name  lambda_cxt
