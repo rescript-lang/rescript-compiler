@@ -322,10 +322,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.no_assert_false,
     " no code for assert false"
   )  
-  :: 
-  ("-bs-noloc",
-    Arg.Clear Clflags.dump_location, 
-    " dont display location with -dtypedtree, -dparsetree"
+  ::
+  ("-bs-loc",
+    Arg.Set Clflags.dump_location, 
+  " dont display location with -dtypedtree, -dparsetree"
   )
   :: Ocaml_options.mk_impl 
     (fun file  ->  Js_config.js_stdout := false;  impl file )  

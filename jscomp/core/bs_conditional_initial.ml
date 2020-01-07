@@ -24,6 +24,7 @@
 
 
 let setup_env () =
+  Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
