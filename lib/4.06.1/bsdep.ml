@@ -24933,6 +24933,99 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
 # 3467 "parsing/lexer.ml"
 
 end
+module Matching_polyfill : sig 
+#1 "matching_polyfill.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+ val names_from_construct_pattern:
+  Typedtree.pattern -> 
+  Lambda.switch_names option
+end = struct
+#1 "matching_polyfill.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let is_nullary_variant (x : Types.constructor_arguments) = 
+  match x with 
+  | Types.Cstr_tuple [] -> true 
+  | _ -> false
+
+let names_from_construct_pattern (pat: Typedtree.pattern) =
+  let names_from_type_variant cstrs =
+    let (consts, blocks) = List.fold_left
+      (fun (consts, blocks) cstr ->
+        if is_nullary_variant cstr.Types.cd_args 
+        then (Ident.name cstr.Types.cd_id :: consts, blocks)
+        else (consts, Ident.name cstr.Types.cd_id :: blocks))
+      ([], []) cstrs in
+    Some {Lambda.consts = consts |> List.rev |> Array.of_list;
+          blocks = blocks |> List.rev |> Array.of_list } in
+
+  let rec resolve_path n path =
+    match Env.find_type path pat.pat_env with
+    | {type_kind = Type_variant cstrs} ->
+      names_from_type_variant cstrs
+    | {type_kind = Type_abstract; type_manifest = Some t} ->
+      ( match (Ctype.unalias t).desc with
+        | Tconstr (pathn, _, _) ->
+          (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
+          resolve_path (n+1) pathn
+        | _ -> None)
+    | {type_kind = Type_abstract; type_manifest = None} ->
+      None
+    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
+      None in
+
+  match (Btype.repr pat.pat_type).desc with
+    | Tconstr (path, _, _) -> resolve_path 0 path
+    | _ -> assert false 
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -28038,6 +28131,8 @@ let setup_env () =
   Lambda.fld_record := Record_attributes_check.fld_record;
   Lambda.fld_record_set := Record_attributes_check.fld_record_set;
   Lambda.blk_record := Record_attributes_check.blk_record;
+  Matching.names_from_construct_pattern := 
+    Matching_polyfill.names_from_construct_pattern;
 
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
