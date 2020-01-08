@@ -1454,7 +1454,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         } :: _
        } -> assert false        
-    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args = args_lambda}
+    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
@@ -1463,7 +1463,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
          3. we need a location for Pccall in the call site
       *)
 
-      (match args_lambda with
+      (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
            (Lam.apply fn rest
