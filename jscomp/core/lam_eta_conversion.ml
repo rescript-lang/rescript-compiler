@@ -191,7 +191,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
               ~params:extra_args 
               ~body:(
                 let first_args, rest_args = Ext_list.split_at extra_args from in 
-                Lam.apply (Lam.apply new_fn (Ext_list.map first_args  Lam.var) loc App_ml_full) (Ext_list.map rest_args Lam.var) loc App_na ) in 
+                Lam.apply (Lam.apply new_fn (Ext_list.map first_args  Lam.var) loc App_infer_full) (Ext_list.map rest_args Lam.var) loc App_na ) in 
           begin match wrapper with 
             | None -> cont 
             | Some partial_arg -> 
@@ -245,7 +245,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
                                 (Ext_list.map extra_inner_args Lam.var) 
                                 Lam.var 
                              )      
-                             loc App_ml_full)
+                             loc App_infer_full)
                 )  in 
             begin match wrapper with 
               | None -> cont 

@@ -28,9 +28,9 @@ module S = Js_stmt_make
 
 let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =  
   match  ap_status with
-  | App_ml_full ->
+  | App_infer_full ->
     {arity = Full ; call_info = Call_ml}
-  |  App_js_full ->
+  |  App_uncurry ->
     {arity = Full ; call_info = Call_na}
   |  App_na ->
     {arity = NA; call_info = Call_ml }
@@ -250,7 +250,7 @@ and compile_external_field_apply
     let fn = E.ml_var_dot module_id ident_info.name in     
     let expression = 
       match appinfo.ap_status with 
-      | App_ml_full | App_js_full as ap_status -> 
+      | App_infer_full | App_uncurry as ap_status -> 
         E.call ~info:(call_info_of_ap_status ap_status) fn args 
       | App_na ->   
         match ident_info.arity with 
@@ -1454,10 +1454,10 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         } :: _
        } -> assert false        
-    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args}
+    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args; loc}
       ->
-      (* 1. prevent eta-conversion
-         by using [App_js_full]
+      (* 1. uncurried call should not do eta-conversion
+            since `fn.length` will broken 
          2. invariant: `external` declaration will guarantee
          the function application is saturated
          3. we need a location for Pccall in the call site
@@ -1466,9 +1466,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
-           (Lam.apply fn rest
-              Location.none (*TODO*)
-              App_js_full)
+           (Lam.apply fn rest loc App_uncurry)
        | [] -> assert false)
       
     | {primitive = Pjs_fn_method arity;  args = args_lambda} ->

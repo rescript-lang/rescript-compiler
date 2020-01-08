@@ -26,8 +26,8 @@ type ident = Ident.t
 
 type apply_status =
   | App_na
-  | App_ml_full
-  | App_js_full
+  | App_infer_full
+  | App_uncurry
 
 
 module Types = struct
