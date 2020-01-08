@@ -1419,6 +1419,41 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
+    | {primitive = Pjs_fn_run _;  args = [Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        args = [obj]} ;
+       setter_val]} ->        
+       let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
+       let obj_output = compile_lambda  need_value_no_return_cxt obj in
+       let arg_output = compile_lambda need_value_no_return_cxt setter_val in
+       let cont obj_block arg_block obj_code =
+         Js_output.output_of_block_and_expression lambda_cxt.continuation  
+           (
+             match obj_code with
+             | None -> Ext_list.append obj_block  arg_block
+             | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
+           )
+       in
+       (match obj_output, arg_output with
+        | {value = None}, _ | _, {value = None} -> assert false
+        | {block = obj_block; value = Some obj },
+          {block = arg_block; value = Some value}
+          ->            
+          match Js_ast_util.named_expression  obj with
+          | None ->
+            cont obj_block arg_block None
+              (E.seq (E.assign (E.dot obj property) value) E.unit)
+          | Some (obj_code, obj)
+            ->
+            cont obj_block arg_block (Some obj_code)
+              (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
+       )
+    | {primitive = _;  args = Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        } :: _
+       } -> assert false        
     | {primitive = Pjs_fn_run _;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
@@ -1429,38 +1464,6 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       *)
 
       (match args_lambda with
-       | [Lprim{
-           primitive =
-             Pjs_unsafe_downgrade {name = property; loc; setter = true};
-           args = args_l} ;
-          setter_val] (** x##name arg  could be specialized as a setter *)         
-          ->
-         let obj = Ext_list.singleton_exn args_l in         
-         let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
-         let obj_output = compile_lambda  need_value_no_return_cxt obj in
-         let arg_output = compile_lambda need_value_no_return_cxt setter_val in
-         let cont obj_block arg_block obj_code =
-           Js_output.output_of_block_and_expression lambda_cxt.continuation  
-             (
-               match obj_code with
-               | None -> Ext_list.append obj_block  arg_block
-               | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
-             )
-         in
-         (match obj_output, arg_output with
-          | {value = None}, _ | _, {value = None} -> assert false
-          | {block = obj_block; value = Some obj },
-            {block = arg_block; value = Some value}
-            ->            
-            match Js_ast_util.named_expression  obj with
-            | None ->
-              cont obj_block arg_block None
-                (E.seq (E.assign (E.dot obj property) value) E.unit)
-            | Some (obj_code, obj)
-              ->
-              cont obj_block arg_block (Some obj_code)
-                (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
-         )
        | fn :: rest ->
          compile_lambda lambda_cxt
            (Lam.apply fn rest
