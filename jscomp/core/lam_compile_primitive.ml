@@ -120,6 +120,7 @@ let translate  loc
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
+  | Pmethod_run
   | Pjs_fn_make _
     -> assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method _ -> assert false

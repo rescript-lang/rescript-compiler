@@ -152,6 +152,7 @@ type t =
   | Praw_js_function of string * string list
   | Pjs_fn_make of int
   | Pjs_fn_run of int
+  | Pmethod_run
   | Pjs_fn_method of int
   
 
@@ -327,6 +328,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
+  | Pmethod_run  -> rhs = Pmethod_run 
   | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )  
   | Pbigarrayref  _ 
   | Pbigarrayset _ 

@@ -1419,7 +1419,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pjs_fn_run _;  args = [Lprim{
+    | {primitive = Pmethod_run;  args = [Lprim{
         primitive =
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         args = [obj]} ;
@@ -1449,12 +1449,12 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
             cont obj_block arg_block (Some obj_code)
               (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
        )
-    | {primitive = _;  args = Lprim{
+    | {primitive = Pmethod_run;  args = Lprim{
         primitive =
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         } :: _
        } -> assert false        
-    | {primitive = Pjs_fn_run _;  args = args_lambda}
+    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
