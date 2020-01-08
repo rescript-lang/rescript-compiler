@@ -37,8 +37,8 @@ type lambda_switch  =
     sw_names: Lambda.switch_names option }
 and apply_status =
   | App_na
-  | App_ml_full
-  | App_js_full      
+  | App_infer_full
+  | App_uncurry      
 and apply_info = private
   { ap_func : t ; 
     ap_args : t list ; 

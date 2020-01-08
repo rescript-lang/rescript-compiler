@@ -28,9 +28,9 @@ module S = Js_stmt_make
 
 let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =  
   match  ap_status with
-  | App_ml_full ->
+  | App_infer_full ->
     {arity = Full ; call_info = Call_ml}
-  |  App_js_full ->
+  |  App_uncurry ->
     {arity = Full ; call_info = Call_na}
   |  App_na ->
     {arity = NA; call_info = Call_ml }
@@ -250,7 +250,7 @@ and compile_external_field_apply
     let fn = E.ml_var_dot module_id ident_info.name in     
     let expression = 
       match appinfo.ap_status with 
-      | App_ml_full | App_js_full as ap_status -> 
+      | App_infer_full | App_uncurry as ap_status -> 
         E.call ~info:(call_info_of_ap_status ap_status) fn args 
       | App_na ->   
         match ident_info.arity with 
@@ -1419,53 +1419,54 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pjs_fn_run _;  args = args_lambda}
+    | {primitive = Pmethod_run;  args = [Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        args = [obj]} ;
+       setter_val]} ->        
+       let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
+       let obj_output = compile_lambda  need_value_no_return_cxt obj in
+       let arg_output = compile_lambda need_value_no_return_cxt setter_val in
+       let cont obj_block arg_block obj_code =
+         Js_output.output_of_block_and_expression lambda_cxt.continuation  
+           (
+             match obj_code with
+             | None -> Ext_list.append obj_block  arg_block
+             | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
+           )
+       in
+       (match obj_output, arg_output with
+        | {value = None}, _ | _, {value = None} -> assert false
+        | {block = obj_block; value = Some obj },
+          {block = arg_block; value = Some value}
+          ->            
+          match Js_ast_util.named_expression  obj with
+          | None ->
+            cont obj_block arg_block None
+              (E.seq (E.assign (E.dot obj property) value) E.unit)
+          | Some (obj_code, obj)
+            ->
+            cont obj_block arg_block (Some obj_code)
+              (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
+       )
+    | {primitive = Pmethod_run;  args = Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        } :: _
+       } -> assert false        
+    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args; loc}
       ->
-      (* 1. prevent eta-conversion
-         by using [App_js_full]
+      (* 1. uncurried call should not do eta-conversion
+            since `fn.length` will broken 
          2. invariant: `external` declaration will guarantee
          the function application is saturated
          3. we need a location for Pccall in the call site
       *)
 
-      (match args_lambda with
-       | [Lprim{
-           primitive =
-             Pjs_unsafe_downgrade {name = property; loc; setter = true};
-           args = args_l} ;
-          setter_val] (** x##name arg  could be specialized as a setter *)         
-          ->
-         let obj = Ext_list.singleton_exn args_l in         
-         let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
-         let obj_output = compile_lambda  need_value_no_return_cxt obj in
-         let arg_output = compile_lambda need_value_no_return_cxt setter_val in
-         let cont obj_block arg_block obj_code =
-           Js_output.output_of_block_and_expression lambda_cxt.continuation  
-             (
-               match obj_code with
-               | None -> Ext_list.append obj_block  arg_block
-               | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
-             )
-         in
-         (match obj_output, arg_output with
-          | {value = None}, _ | _, {value = None} -> assert false
-          | {block = obj_block; value = Some obj },
-            {block = arg_block; value = Some value}
-            ->            
-            match Js_ast_util.named_expression  obj with
-            | None ->
-              cont obj_block arg_block None
-                (E.seq (E.assign (E.dot obj property) value) E.unit)
-            | Some (obj_code, obj)
-              ->
-              cont obj_block arg_block (Some obj_code)
-                (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
-         )
+      (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
-           (Lam.apply fn rest
-              Location.none (*TODO*)
-              App_js_full)
+           (Lam.apply fn rest loc App_uncurry)
        | [] -> assert false)
       
     | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
