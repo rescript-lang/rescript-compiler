@@ -300,6 +300,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
+
 let handle_raw ~check_js_regex loc payload =
   begin match Ast_payload.as_string_exp ~check_js_regex payload with
     | Not_String_Lteral ->
@@ -311,9 +312,8 @@ let handle_raw ~check_js_regex loc payload =
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
-                     txt = 
-                       Ldot (Ast_literal.Lid.js_internal, 
-                             Literals.raw_expr)},
+                     txt = Ast_raw.raw_expr_id
+                       },
           [Ast_compatible.no_label,exp]
         )
       in
@@ -324,8 +324,7 @@ let handle_external loc (x : string) : Parsetree.expression =
   let raw_exp : Ast_exp.t = 
     Ast_compatible.app1
     (Exp.ident ~loc 
-         {loc; txt = Ldot (Ast_literal.Lid.js_internal, 
-                           Literals.raw_expr)})
+         {loc; txt = Ast_raw.raw_expr_id })
       ~loc 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
@@ -355,7 +354,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_internal,  Literals.raw_stmt); loc},
+          Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
           [ Ast_compatible.no_label,exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }
