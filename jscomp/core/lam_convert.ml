@@ -449,8 +449,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         ~args:(Ext_list.map args convert_aux ) loc
     | _ when s = "#raw_expr" ->
       (match args with
-       | [Lconst( Const_base (Const_string(s,_)))] ->
-         prim ~primitive:(Praw_js_code_exp {code = s})
+       | [Lconst( Const_base (Const_string(code,_)))] ->
+        (* js parsing here *)
+         prim ~primitive:(Praw_js_code_exp {code; kind = `unknown})
            ~args:[] loc
        | _ -> assert false)
       
@@ -458,14 +459,16 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       (match args with
        | [Lconst( Const_base (Const_string(s,_)))] ->
          let v = Ast_exp_extension.fromString s in 
-         prim ~primitive:(Praw_js_function {block = v.block; args = v.args})
+         prim ~primitive:(Praw_js_function {
+           block = v.block; args = v.args;
+           arity = List.length v.args})
            ~args:[] loc
        | _ -> assert false)
       
     | _ when s = "#raw_stmt" ->
       begin match args with
-        | [Lconst( Const_base (Const_string(s,_)))] ->
-          prim ~primitive:(Praw_js_code_stmt {code = s})
+        | [Lconst( Const_base (Const_string(code,_)))] ->
+          prim ~primitive:(Praw_js_code_stmt {code})
             ~args:[] loc
         | _ -> assert false
       end

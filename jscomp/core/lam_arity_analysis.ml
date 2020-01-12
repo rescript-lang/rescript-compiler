@@ -61,8 +61,11 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   (* TODO: all information except Pccall is complete, we could 
      get more arity information
   *)
-  | Lprim {primitive = Praw_js_function{args}} -> 
-    Lam_arity.info [List.length args] false
+  | Lprim {
+      primitive = Praw_js_function{arity} |  Praw_js_code_exp {kind = `fn arity}
+    } 
+    ->   
+    Lam_arity.info [arity] false
   | Lprim {primitive = Praise ;  _} -> Lam_arity.raise_arity_info
   | Lglobal_module _ (* TODO: fix me never going to happen *)
   | Lprim _  -> Lam_arity.na (* CHECK*)
