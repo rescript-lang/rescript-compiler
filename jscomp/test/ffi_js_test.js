@@ -197,4 +197,4 @@ exports.vvv = vvv;
 exports.vvvv = vvvv;
 exports.create_prim = create_prim;
 exports.ffff = ffff;
-/* keys Not a pure module */
+/*  Not a pure module */

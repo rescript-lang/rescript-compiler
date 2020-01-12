@@ -166,7 +166,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
       | Praw_js_function _
-      | Praw_js_code_exp {kind = `fn _ }
+      | Praw_js_code_exp {kind = Function _  }
         -> true
       | Pjs_apply
       | Pjs_runtime_apply

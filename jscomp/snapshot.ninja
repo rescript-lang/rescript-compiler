@@ -11,7 +11,7 @@ OCAML_SRC_TYPING=$native_ocaml_path/typing
 OCAML_SRC_BYTECOMP=$native_ocaml_path/bytecomp
 OCAML_SRC_DRIVER=$native_ocaml_path/driver
 OCAML_SRC_TOOLS=$native_ocaml_path/tools   
-includes = -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
+includes = -I js_parser -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
 SNAP=../lib/$snapshot_path
 
 build snapshot: phony  $SNAP/whole_compiler.ml $SNAP/bsppx.ml $SNAP/bsdep.ml $SNAP/bsb_helper.ml $SNAP/bsb.ml $SNAP/bspp.ml $SNAP/unstable/all_ounit_tests.ml

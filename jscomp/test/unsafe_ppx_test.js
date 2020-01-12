@@ -27,7 +27,7 @@ function g(a) {
    return ""
 });
   var regression2 = (Math.max);
-  Curry._2(regression, a, Pervasives.failwith);
+  regression(a, Pervasives.failwith);
   Curry._2(regression2, 3, 2);
   regression3(3, 2);
   regression4(3, (function (x) {

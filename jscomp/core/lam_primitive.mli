@@ -143,7 +143,7 @@ type t =
   | Pupdate_mod
 
   | Praw_js_code_exp of 
-    { code : string ; kind : [`fn of int | `unknown]}
+    { code : string ; kind : Js_raw_exp_info.t}
   | Praw_js_code_stmt of 
     { code : string }
   | Praw_js_function of 
