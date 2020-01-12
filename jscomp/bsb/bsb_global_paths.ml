@@ -66,4 +66,17 @@ let vendor_bsppx =
   
 ;; assert (Sys.file_exists bsc_dir)       
 
+let version = begin
+  let version = Sys.ocaml_version in 
+  match String.rindex version '+' with
+    | exception Not_found -> version
+    | i ->
+        String.sub version 0 i
+  end
 
+
+let ocaml_dir =
+  Filename.(concat (concat (dirname bsc_dir) "native") version)
+
+let ocaml_lib_dir =
+  Filename.(concat (concat ocaml_dir "lib") "ocaml")
