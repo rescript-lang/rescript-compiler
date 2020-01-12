@@ -53,12 +53,12 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
-  | Praw_js_function(arg,block) -> 
-    E.raw_js_function arg block
-  | Praw_js_code_exp s -> 
-    E.raw_js_code Exp s  
-  | Praw_js_code_stmt s -> 
-    E.raw_js_code Stmt s 
+  | Praw_js_function {args ; block} -> 
+    E.raw_js_function block args
+  | Praw_js_code_exp {code} -> 
+    E.raw_js_code Exp code
+  | Praw_js_code_stmt {code} -> 
+    E.raw_js_code Stmt code 
   | Pjs_runtime_apply -> 
     (match args with 
      | [f ;  args] -> 

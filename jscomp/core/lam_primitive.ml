@@ -147,9 +147,9 @@ type t =
      }
   | Pinit_mod
   | Pupdate_mod
-  | Praw_js_code_exp of string
-  | Praw_js_code_stmt of string
-  | Praw_js_function of string * string list
+  | Praw_js_code_exp of {code : string}
+  | Praw_js_code_stmt of {code : string}
+  | Praw_js_function of {block : string ; args : string list}
   | Pjs_fn_make of int
   | Pjs_fn_run of int
   | Pmethod_run
