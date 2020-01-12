@@ -116,11 +116,11 @@ let implementation ?prefix ~use_super_errors ?(react_ppx_version=V3) impl str  :
       end
 
 
-let compile ~use_super_errors ?react_ppx_version =
-    implementation ~use_super_errors ?react_ppx_version
+let compile ~use_super_errors ?react_ppx_version impl =
+    implementation ~use_super_errors ?react_ppx_version impl
 
-let shake_compile ~prefix ~use_super_errors ?react_ppx_version =
-   implementation ~prefix ~use_super_errors ?react_ppx_version
+let shake_compile ~prefix ~use_super_errors ?react_ppx_version impl =
+   implementation ~prefix ~use_super_errors ?react_ppx_version impl
 
 let load_module cmi_path cmi_content cmj_name cmj_content =
   Js.create_file cmi_path cmi_content;
@@ -189,8 +189,8 @@ let make_compiler ~name ~prefix impl=
                         load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
                   |]))
 
-let () = make_compiler ~name:"ocaml" ~prefix:"[@@@bs.config { no_export }]\n"  Parse.implementation
-let () = make_compiler ~name:"reason" ~prefix:"[@bs.config {no_export: no_export}];\n" reason_parse
+let () = make_compiler ~name:"ocaml" ~prefix:"[@@@bs.config {no_export}]\n#1 \"repl.ml\"\n"  Parse.implementation
+let () = make_compiler ~name:"reason" ~prefix:"[@bs.config {no_export: no_export}];\n#1 \"repl.re\"\n" reason_parse
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
