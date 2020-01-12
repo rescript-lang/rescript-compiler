@@ -155,10 +155,12 @@ let setupOnce () =
 
 type symbol
 
+type 'a t = { value : 'a} 
 
 external cacheSymbol : string -> symbol = "for"
  [@@bs.scope "Symbol"] [@@bs.val]
-external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a = 
+
+external addProp : 'a -> symbol -> 'b t  -> 'a = 
   "defineProperty"  [@@bs.scope "Object"] [@@bs.val]
 
 let __ = Block.__
@@ -167,13 +169,13 @@ let __ = Block.__
 let variant meta tag xs =     
   setupOnce ();
   xs |. Caml_obj_extern.set_tag tag;
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+  xs |. addProp (cacheSymbol "BsVariant") {value = meta }
 
 let simpleVariant meta xs =       
   setupOnce ();
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+  xs |. addProp (cacheSymbol "BsVariant") {value = meta }
   
 
 let polyVar meta xs =   
   setupOnce ();
-  xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
+  xs |. addProp (cacheSymbol "BsPolyVar") {value = meta}
