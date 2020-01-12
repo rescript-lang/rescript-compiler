@@ -190,7 +190,7 @@ let make_compiler ~name ~prefix impl=
                   |]))
 
 let () = make_compiler ~name:"ocaml" ~prefix:"[@@@bs.config {no_export}]\n#1 \"repl.ml\"\n"  Parse.implementation
-let () = make_compiler ~name:"reason" ~prefix:"[@bs.config {no_export: no_export}];\n#1 \"repl.re\"\n" reason_parse
+let () = make_compiler ~name:"reason" ~prefix:"[@bs.config {no_export: no_export}];\n#1 \"repl.re\";\n" reason_parse
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
