@@ -22,8 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type obj = Caml_obj_extern.t
-
+type obj = Caml_obj_extern.t
+open Js_internalRaw
  let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
  
  // I don't know how to directly refer to the classes that chrome's built-in
