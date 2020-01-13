@@ -8,7 +8,10 @@
 
 
 let x0 = [%raw{|null|}]
+
+#if 0 then
 let x1 = [%raw{|3n|}]
+#end
 
 let x2 = [%raw{|"荷兰"|}]
 
