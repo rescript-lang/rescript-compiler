@@ -366,7 +366,7 @@ and  pp_function is_method
       *)
       not is_method &&
       Ext_list.for_all2_no_exn ls l  is_var  ->
-    let optimize  len p cxt f v =
+    let optimize  len ~p cxt f v =
       if p then try_optimize_curry cxt f len function_id
       else
         vident cxt f v in
@@ -374,13 +374,13 @@ and  pp_function is_method
     (match name with
      | Name_top i | Name_non_top i  ->       
        let cxt = pp_var_assign cxt f i in 
-       let cxt = optimize len (arity = NA && len <= 8) cxt f v in
+       let cxt = optimize len ~p:(arity = NA && len <= 8) cxt f v in
        semi f ;
        cxt
      | No_name ->
        if return then 
          return_sp f ;
-       optimize len (arity = NA && len <=8) cxt f v)
+       optimize len ~p:(arity = NA && len <=8) cxt f v)
 
   | _, _  ->
     let set_env : Set_ident.t = (** identifiers will be printed following*)
