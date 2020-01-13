@@ -148,7 +148,7 @@ let rec iter_lst cxt (f : P.t) ls element inter =
 let raw_snippet_exp_simple_enough (s : string) =
   Ext_string.for_all s (fun c -> 
   match c with 
-  | 'a' .. 'z' | 'A' .. 'Z' | '_' -> true 
+  | 'a' .. 'z' | 'A' .. 'Z' | '_' | '.' -> true 
   | _ -> false
   )
 (* Parentheses are required when the expression
@@ -166,9 +166,9 @@ let raw_snippet_exp_simple_enough (s : string) =
 *)        
 let exp_need_paren  (e : J.expression) =
   match e.expression_desc with
-  | Call ({expression_desc = Fun _ | Raw_js_function _; },_,_) -> true
-  (* | Caml_uninitialized_obj _  *)
-  | Raw_js_code (_, Exp)
+  | Call ({expression_desc = Fun _ | Raw_js_function _ | Raw_js_code _ },_,_) -> true
+
+  | Raw_js_code (_, Exp _)
   | Fun _ 
   | Raw_js_function _ 
   | Caml_block (_,_,_, (Blk_record _ | Blk_module _))
@@ -644,8 +644,9 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     pp_js_function_params_body f s params;
     cxt 
   | Raw_js_code (s,info) ->
+    let s = String.trim s in             
     (match info with
-     | Exp ->
+     | Exp _ ->
        if raw_snippet_exp_simple_enough s then 
          P.string f s        
        else begin 

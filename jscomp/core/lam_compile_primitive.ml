@@ -55,8 +55,8 @@ let translate  loc
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
   | Praw_js_function {args ; block} -> 
     E.raw_js_function block args
-  | Praw_js_code_exp {code} -> 
-    E.raw_js_code Exp code
+  | Praw_js_code_exp {code; kind} -> 
+    E.raw_js_code (Exp kind) code
   | Praw_js_code_stmt {code} -> 
     E.raw_js_code Stmt code 
   | Pjs_runtime_apply -> 

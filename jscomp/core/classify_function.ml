@@ -10,7 +10,7 @@ let classify (prog : string) : Js_raw_exp_info.t =
     generator = false;
     predicate = None
   }) , [] -> 
-    Function {arity = List.length params; arrow = false}
+    Js_function {arity = List.length params; arrow = false}
   | (_, ArrowFunction {
     id = None;
     params = (_, {params});
@@ -18,12 +18,14 @@ let classify (prog : string) : Js_raw_exp_info.t =
     generator = false;
     predicate = None
   }) , [] -> 
-    Function
+    Js_function
       {arity = List.length params; arrow = true} 
+ |(_, Literal _), [] -> 
+  Js_literal     
  | _ -> 
-  Unknown
+  Js_unknown
  | exception _ -> 
-  Unknown
+  Js_unknown
 (* we can also analayze throw
   x.x pure access
  *)

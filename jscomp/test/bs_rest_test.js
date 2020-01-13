@@ -1,9 +1,7 @@
 'use strict';
 
 
-
 function x(v){return [v]}
-
 ;
 
 x("3");

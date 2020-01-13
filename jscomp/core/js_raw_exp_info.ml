@@ -24,5 +24,17 @@
 
 
 type t =
-  | Function of {arity : int ; arrow : bool}     
-  | Unknown
+  | Js_function of {arity : int ; arrow : bool}     
+  | Js_literal 
+  (* Flow ast module 
+  {[
+  and value =
+    | String of string
+    | Boolean of bool
+    | Null
+    | Number of float
+    | BigInt of float
+    | RegExp of RegExp.t
+  ]}
+  *)
+  | Js_unknown

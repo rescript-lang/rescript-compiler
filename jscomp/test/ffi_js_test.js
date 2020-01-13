@@ -3,15 +3,13 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var keys = ( function (x){return Object.keys(x)});
+var keys = (function (x){return Object.keys(x)});
 
-
-  function $$higher_order(x){
+function $$higher_order(x){
    return function(y,z){
       return x + y + z
    }
   }
-
 ;
 
 var suites = {

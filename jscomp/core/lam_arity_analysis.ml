@@ -62,7 +62,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
      get more arity information
   *)
   | Lprim {
-      primitive = Praw_js_function{arity} |  Praw_js_code_exp {kind = `fn arity}
+      primitive = Praw_js_function{arity} |  Praw_js_code_exp {kind = Js_function {arity}}
     } 
     ->   
     Lam_arity.info [arity] false

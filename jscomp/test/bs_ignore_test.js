@@ -1,17 +1,14 @@
 'use strict';
 
 
-
 function add(x,y){
   return x + y
 }
-
 ;
 
 console.log(add(3.0, 2.0));
 
 console.log(add("x", "y"));
-
 
 function add_dyn(kind,x,y){
   switch(kind){
@@ -19,7 +16,6 @@ function add_dyn(kind,x,y){
   case "float" : return x + y;
   }
 }
-
 ;
 
 function string_of_kind(kind) {

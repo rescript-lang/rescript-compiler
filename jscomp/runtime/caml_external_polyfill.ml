@@ -22,29 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Js_internalRaw
-let  getGlobalThis= fun%raw () -> {|
+let  getGlobalThis= [%raw{| function(){
   if (typeof globalThis !== 'undefined') return globalThis;
 	if (typeof self !== 'undefined') return self;
 	if (typeof window !== 'undefined') return window;
 	if (typeof global !== 'undefined') return global;
 	if (typeof this !== 'undefined') return this;
 	throw new Error('Unable to locate global `this`');
-|}
+}|}]
 
-let resolve  = fun%raw s -> {|
+let resolve  = [%raw {|function(s){
   var myGlobal = getGlobalThis();
   if (myGlobal[s] === undefined){
     throw new Error(s + " not polyfilled by BuckleScript yet\n")
   }
   return myGlobal[s]
-|}
+}|}]
   
 (* FIXME: it does not have to global states *)
 type fn 
 
 
-let register : string -> fn -> unit = fun%raw s fn -> {|
+let register : string -> fn -> unit = [%raw{| function(s,fn){
   var myGlobal = getGlobalThis();
   myGlobal[s] = fn 
   return 0
-|}
+}|}]

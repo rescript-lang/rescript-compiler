@@ -28,12 +28,10 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-
 function hi (cb){
     cb ();
     return 0;
 }
-
 ;
 
 var xs = {

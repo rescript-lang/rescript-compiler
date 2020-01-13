@@ -104,7 +104,7 @@ function caml_lex_array(s) {
  * @param lexbuf
  * @returns {any}
  *)
-let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tbl start_state lexbuf exn -> {|
+let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|function (tbl, start_state, lexbuf, exn){
     // Lexing.lexbuf
     var lex_buffer = 'lex_buffer';
     var lex_buffer_len = 'lex_buffer_len';
@@ -186,7 +186,8 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tb
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-|}
+}    
+|}]
 
 let empty_token_lit = "lexing: empty token"
 
@@ -252,7 +253,7 @@ function caml_lex_run_tag(s, i, mem) {
  *)
 
 
-let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= fun%raw tbl start_state lexbuf exn -> {|
+let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|function (tbl, start_state, lexbuf, exn) {
     // Lexing.lexbuf
     var lex_buffer = 'lex_buffer';
     var lex_buffer_len = 'lex_buffer_len';
@@ -357,7 +358,8 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= fun%raw
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-|}
+    }
+|}]
 
 
 

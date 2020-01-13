@@ -27,9 +27,9 @@ function f4(x) {
   }
 }
 
-var u = ( 1);
+var u = (1);
 
-var v = ( true);
+var v = true;
 
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
@@ -147,4 +147,4 @@ exports.ss = ss;
 exports.bb = bb;
 exports.consts = consts;
 exports.bool_array = bool_array;
-/* u Not a pure module */
+/*  Not a pure module */

@@ -10,4 +10,4 @@ var c = v;
 exports.v = v;
 exports.r = r;
 exports.c = c;
-/* v Not a pure module */
+/* No side effect */

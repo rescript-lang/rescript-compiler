@@ -24,7 +24,7 @@
 
 type obj = Caml_obj_extern.t
 open Js_internalRaw
- let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
+ let setupChromeDebugger : unit -> unit = [%raw{|function(_){
  
  // I don't know how to directly refer to the classes that chrome's built-in
  // formatters use. adding "class": "foo" doesn't seem to work
@@ -141,8 +141,8 @@ if (typeof window === "undefined"){
  window.devtoolsFormatters = [formatter]
 }
 return 0
-
-|}
+}
+|}]
 
 
 let setup = ref false 

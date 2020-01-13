@@ -37,4 +37,4 @@ exports.x = x;
 exports.zero_to_255 = zero_to_255;
 exports.js_zero_to_255 = js_zero_to_255;
 exports.wth_quote = wth_quote;
-/* js_zero_to_255 Not a pure module */
+/*  Not a pure module */

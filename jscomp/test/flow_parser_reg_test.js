@@ -2754,67 +2754,98 @@ function token(env, lexbuf) {
   };
 }
 
-function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
+function regexp_body(env, buf, lexbuf) {
+  var env$1 = env;
+  var buf$1 = buf;
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 314;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var env = _env;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
     switch (__ocaml_lex_state$1) {
       case 0 :
+          var loc = from_lb(env$1.lex_source, lexbuf$1);
+          var env$2 = lex_error(env$1, loc, /* UnterminatedRegExp */13);
           return /* tuple */[
-                  env,
-                  /* T_EOF */105
+                  env$2,
+                  ""
                 ];
       case 1 :
-          Lexing.new_line(lexbuf);
-          ___ocaml_lex_state = 291;
-          continue ;
-      case 2 :
-          unicode_fix_cols(lexbuf);
-          ___ocaml_lex_state = 291;
-          continue ;
-      case 3 :
-          var start = from_lb(env.lex_source, lexbuf);
-          var buf = $$Buffer.create(127);
-          var match = line_comment(env, buf, lexbuf);
-          var env$1 = save_comment(match[0], start, match[1], buf, true);
-          ___ocaml_lex_state = 291;
-          _env = env$1;
-          continue ;
-      case 4 :
-          var start$1 = from_lb(env.lex_source, lexbuf);
-          var buf$1 = $$Buffer.create(127);
-          var match$1 = comment(env, buf$1, lexbuf);
-          var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
-          ___ocaml_lex_state = 291;
-          _env = env$2;
-          continue ;
-      case 5 :
-          var start$2 = from_lb(env.lex_source, lexbuf);
-          var buf$2 = $$Buffer.create(127);
-          var match$2 = regexp_body(env, buf$2, lexbuf);
-          var env$3 = match$2[0];
-          var end_ = from_lb(env$3.lex_source, lexbuf);
-          var loc = btwn(start$2, end_);
+          var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
+          var env$3 = lex_error(env$1, loc$1, /* UnterminatedRegExp */13);
           return /* tuple */[
                   env$3,
-                  /* T_REGEXP */Block.__(3, [/* tuple */[
-                        loc,
-                        $$Buffer.contents(buf$2),
-                        match$2[1]
-                      ]])
+                  ""
                 ];
-      case 6 :
-          var env$4 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+      case 2 :
+          var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
+          $$Buffer.add_string(buf$1, s);
+          return regexp_body(env$1, buf$1, lexbuf$1);
+      case 3 :
+          var flags = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 1 | 0, lexbuf$1.lex_curr_pos);
           return /* tuple */[
-                  env$4,
-                  /* T_ERROR */104
+                  env$1,
+                  flags
                 ];
+      case 4 :
+          return /* tuple */[
+                  env$1,
+                  ""
+                ];
+      case 5 :
+          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(buf$1, c);
+          var env$4 = regexp_class(env$1, buf$1, lexbuf$1);
+          return regexp_body(env$4, buf$1, lexbuf$1);
+      case 6 :
+          var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
+          var env$5 = lex_error(env$1, loc$2, /* UnterminatedRegExp */13);
+          return /* tuple */[
+                  env$5,
+                  ""
+                ];
+      case 7 :
+          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(buf$1, c$1);
+          return regexp_body(env$1, buf$1, lexbuf$1);
       default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
+  };
+}
+
+function regexp_class(env, buf, lexbuf) {
+  var env$1 = env;
+  var buf$1 = buf;
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 326;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          return env$1;
+      case 1 :
+      case 2 :
+          break;
+      case 3 :
+          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(buf$1, c);
+          return env$1;
+      case 4 :
+          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(buf$1, c$1);
+          return regexp_class(env$1, buf$1, lexbuf$1);
+      default:
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+    var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
+    $$Buffer.add_string(buf$1, s);
+    return regexp_class(env$1, buf$1, lexbuf$1);
   };
 }
 
@@ -2856,6 +2887,54 @@ function line_comment(env, buf, lexbuf) {
           var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
           $$Buffer.add_char(buf$1, c);
           return line_comment(env$1, buf$1, lexbuf$1);
+      default:
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
+function comment(env, buf, lexbuf) {
+  var env$1 = env;
+  var buf$1 = buf;
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 279;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          return /* tuple */[
+                  env$2,
+                  from_lb(env$2.lex_source, lexbuf$1)
+                ];
+      case 1 :
+          Lexing.new_line(lexbuf$1);
+          $$Buffer.add_char(buf$1, /* "\n" */10);
+          return comment(env$1, buf$1, lexbuf$1);
+      case 2 :
+          var loc = from_lb(env$1.lex_source, lexbuf$1);
+          var env$3 = env$1.lex_in_comment_syntax ? unexpected_error_w_suggest(env$1, loc, "*/", "*-/") : env$1;
+          return /* tuple */[
+                  env$3,
+                  loc
+                ];
+      case 3 :
+          if (env$1.lex_in_comment_syntax) {
+            return /* tuple */[
+                    env$1,
+                    from_lb(env$1.lex_source, lexbuf$1)
+                  ];
+          } else {
+            $$Buffer.add_string(buf$1, "*-/");
+            return comment(env$1, buf$1, lexbuf$1);
+          }
+      case 4 :
+          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(buf$1, c);
+          return comment(env$1, buf$1, lexbuf$1);
       default:
         Curry._1(lexbuf$1.refill_buff, lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -2925,6 +3004,61 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
           $$Buffer.add_char(literal$1, c);
           $$Buffer.add_char(cooked$1, c);
           return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
+      default:
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
+function string_quote(env, q, buf, raw, octal, lexbuf) {
+  var env$1 = env;
+  var q$1 = q;
+  var buf$1 = buf;
+  var raw$1 = raw;
+  var octal$1 = octal;
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 247;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          var q$prime = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(raw$1, q$prime);
+          if (q$1 === q$prime) {
+            return /* tuple */[
+                    env$1,
+                    from_lb(env$1.lex_source, lexbuf$1),
+                    octal$1
+                  ];
+          } else {
+            $$Buffer.add_char(buf$1, q$prime);
+            return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
+          }
+      case 1 :
+          var e = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(raw$1, e);
+          var match = string_escape(env$1, buf$1, lexbuf$1);
+          var octal$2 = match[1] || octal$1;
+          $$Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
+          return string_quote(match[0], q$1, buf$1, raw$1, octal$2, lexbuf$1);
+      case 2 :
+          var x = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
+          $$Buffer.add_string(raw$1, x);
+          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          $$Buffer.add_string(buf$1, x);
+          return /* tuple */[
+                  env$2,
+                  from_lb(env$2.lex_source, lexbuf$1),
+                  octal$1
+                ];
+      case 3 :
+          var x$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          $$Buffer.add_char(raw$1, x$1);
+          $$Buffer.add_char(buf$1, x$1);
+          return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
       default:
         Curry._1(lexbuf$1.refill_buff, lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -3004,533 +3138,108 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function comment(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 279;
+function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var env = _env;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env$2,
-                  from_lb(env$2.lex_source, lexbuf$1)
-                ];
-      case 1 :
-          Lexing.new_line(lexbuf$1);
-          $$Buffer.add_char(buf$1, /* "\n" */10);
-          return comment(env$1, buf$1, lexbuf$1);
-      case 2 :
-          var loc = from_lb(env$1.lex_source, lexbuf$1);
-          var env$3 = env$1.lex_in_comment_syntax ? unexpected_error_w_suggest(env$1, loc, "*/", "*-/") : env$1;
-          return /* tuple */[
-                  env$3,
-                  loc
-                ];
-      case 3 :
-          if (env$1.lex_in_comment_syntax) {
-            return /* tuple */[
-                    env$1,
-                    from_lb(env$1.lex_source, lexbuf$1)
-                  ];
-          } else {
-            $$Buffer.add_string(buf$1, "*-/");
-            return comment(env$1, buf$1, lexbuf$1);
-          }
-      case 4 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          return comment(env$1, buf$1, lexbuf$1);
-      default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function regexp_body(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 314;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          var loc = from_lb(env$1.lex_source, lexbuf$1);
-          var env$2 = lex_error(env$1, loc, /* UnterminatedRegExp */13);
-          return /* tuple */[
-                  env$2,
-                  ""
-                ];
-      case 1 :
-          var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
-          var env$3 = lex_error(env$1, loc$1, /* UnterminatedRegExp */13);
-          return /* tuple */[
-                  env$3,
-                  ""
-                ];
-      case 2 :
-          var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
-          $$Buffer.add_string(buf$1, s);
-          return regexp_body(env$1, buf$1, lexbuf$1);
-      case 3 :
-          var flags = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 1 | 0, lexbuf$1.lex_curr_pos);
-          return /* tuple */[
-                  env$1,
-                  flags
-                ];
-      case 4 :
-          return /* tuple */[
-                  env$1,
-                  ""
-                ];
-      case 5 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          var env$4 = regexp_class(env$1, buf$1, lexbuf$1);
-          return regexp_body(env$4, buf$1, lexbuf$1);
-      case 6 :
-          var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
-          var env$5 = lex_error(env$1, loc$2, /* UnterminatedRegExp */13);
-          return /* tuple */[
-                  env$5,
-                  ""
-                ];
-      case 7 :
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c$1);
-          return regexp_body(env$1, buf$1, lexbuf$1);
-      default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function type_token(env, lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(26, -1);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 17, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 16, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 15, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 14, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 13, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 12, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 11, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 10, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 9, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 8, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 7, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 6, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 5, lexbuf.lex_curr_pos);
-  Caml_array.caml_array_set(lexbuf.lex_mem, 4, lexbuf.lex_curr_pos);
-  var env$1 = env;
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 133;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          Lexing.new_line(lexbuf$1);
-          return type_token(env$1, lexbuf$1);
-      case 1 :
-          unicode_fix_cols(lexbuf$1);
-          return type_token(env$1, lexbuf$1);
-      case 2 :
-          var start = from_lb(env$1.lex_source, lexbuf$1);
-          var buf = $$Buffer.create(127);
-          var match = comment(env$1, buf, lexbuf$1);
-          var env$2 = save_comment(match[0], start, match[1], buf, true);
-          return type_token(env$2, lexbuf$1);
-      case 3 :
-          var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          if (env$1.lex_enable_comment_syntax) {
-            var env$3;
-            if (env$1.lex_in_comment_syntax) {
-              var loc = from_lb(env$1.lex_source, lexbuf$1);
-              env$3 = unexpected_error(env$1, loc, pattern);
-            } else {
-              env$3 = env$1;
-            }
-            var env$4 = in_comment_syntax(true, env$3);
-            if (escape_type === ":") {
-              return /* tuple */[
-                      env$4,
-                      /* T_COLON */77
-                    ];
-            } else {
-              return type_token(env$4, lexbuf$1);
-            }
-          } else {
-            var start$1 = from_lb(env$1.lex_source, lexbuf$1);
-            var buf$1 = $$Buffer.create(127);
-            $$Buffer.add_string(buf$1, sp);
-            $$Buffer.add_string(buf$1, escape_type);
-            var match$1 = comment(env$1, buf$1, lexbuf$1);
-            var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
-            return type_token(env$5, lexbuf$1);
-          }
-      case 4 :
-          if (env$1.lex_in_comment_syntax) {
-            var env$6 = in_comment_syntax(false, env$1);
-            return type_token(env$6, lexbuf$1);
-          } else {
-            yyback(1, lexbuf$1);
-            return /* tuple */[
-                    env$1,
-                    /* T_MULT */97
-                  ];
-          }
-      case 5 :
-          var start$2 = from_lb(env$1.lex_source, lexbuf$1);
-          var buf$2 = $$Buffer.create(127);
-          var match$2 = line_comment(env$1, buf$2, lexbuf$1);
-          var env$7 = save_comment(match$2[0], start$2, match$2[1], buf$2, true);
-          return type_token(env$7, lexbuf$1);
-      case 6 :
-          var quote = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var start$3 = from_lb(env$1.lex_source, lexbuf$1);
-          var buf$3 = $$Buffer.create(127);
-          var raw = $$Buffer.create(127);
-          $$Buffer.add_char(raw, quote);
-          var match$3 = string_quote(env$1, quote, buf$3, raw, false, lexbuf$1);
-          return /* tuple */[
-                  match$3[0],
-                  /* T_STRING */Block.__(1, [/* tuple */[
-                        btwn(start$3, match$3[1]),
-                        $$Buffer.contents(buf$3),
-                        $$Buffer.contents(raw),
-                        match$3[2]
-                      ]])
-                ];
-      case 7 :
-          var neg = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w, mk_num_singleton(/* BINARY */0, num, neg));
-      case 8 :
-          var neg$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return /* tuple */[
-                  env$1,
-                  mk_num_singleton(/* BINARY */0, num$1, neg$1)
-                ];
-      case 9 :
-          var neg$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$1, mk_num_singleton(/* OCTAL */2, num$2, neg$2));
-      case 10 :
-          var neg$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return /* tuple */[
-                  env$1,
-                  mk_num_singleton(/* OCTAL */2, num$3, neg$3)
-                ];
-      case 11 :
-          var neg$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$2, mk_num_singleton(/* LEGACY_OCTAL */1, num$4, neg$4));
-      case 12 :
-          var neg$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return /* tuple */[
-                  env$1,
-                  mk_num_singleton(/* LEGACY_OCTAL */1, num$5, neg$5)
-                ];
-      case 13 :
-          var neg$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$6 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          var match$4;
-          try {
-            match$4 = /* tuple */[
-              env$1,
-              mk_num_singleton(/* NORMAL */3, num$6, neg$6)
-            ];
-          }
-          catch (exn){
-            if (Sys.win32) {
-              var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
-              var env$8 = lex_error(env$1, loc$1, /* WindowsFloatOfString */59);
-              match$4 = /* tuple */[
-                env$8,
-                /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
-                    /* NORMAL */3,
-                    789.0
-                  ])
-              ];
-            } else {
-              throw exn;
-            }
-          }
-          return illegal_number(match$4[0], lexbuf$1, w$3, match$4[1]);
-      case 14 :
-          var neg$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$7 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          try {
-            return /* tuple */[
-                    env$1,
-                    mk_num_singleton(/* NORMAL */3, num$7, neg$7)
-                  ];
-          }
-          catch (exn$1){
-            if (Sys.win32) {
-              var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
-              var env$9 = lex_error(env$1, loc$2, /* WindowsFloatOfString */59);
-              return /* tuple */[
-                      env$9,
-                      /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
-                          /* NORMAL */3,
-                          789.0
-                        ])
-                    ];
-            } else {
-              throw exn$1;
-            }
-          }
-      case 15 :
-          var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$8 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$4, mk_num_singleton(/* NORMAL */3, num$8, neg$8));
-      case 16 :
-          var neg$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$9 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return /* tuple */[
-                  env$1,
-                  mk_num_singleton(/* NORMAL */3, num$9, neg$9)
-                ];
-      case 17 :
-          var neg$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$10 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$5, mk_num_singleton(/* NORMAL */3, num$10, neg$10));
-      case 18 :
-          var neg$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 3), Caml_array.caml_array_get(lexbuf$1.lex_mem, 2));
-          return /* tuple */[
-                  env$1,
-                  mk_num_singleton(/* NORMAL */3, num$11, neg$11)
-                ];
-      case 19 :
-          var word = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          unicode_fix_cols(lexbuf$1);
-          try {
-            return /* tuple */[
-                    env$1,
-                    Hashtbl.find(type_keywords, word)
-                  ];
-          }
-          catch (exn$2){
-            if (exn$2 === Caml_builtin_exceptions.not_found) {
-              return /* tuple */[
-                      env$1,
-                      /* T_IDENTIFIER */0
-                    ];
-            } else {
-              throw exn$2;
-            }
-          }
-      case 22 :
-          return /* tuple */[
-                  env$1,
-                  /* T_LCURLY */1
-                ];
-      case 23 :
-          return /* tuple */[
-                  env$1,
-                  /* T_RCURLY */2
-                ];
-      case 24 :
-          return /* tuple */[
-                  env$1,
-                  /* T_LPAREN */3
-                ];
-      case 25 :
-          return /* tuple */[
-                  env$1,
-                  /* T_RPAREN */4
-                ];
-      case 26 :
-          return /* tuple */[
-                  env$1,
-                  /* T_ELLIPSIS */11
-                ];
-      case 27 :
-          return /* tuple */[
-                  env$1,
-                  /* T_PERIOD */9
-                ];
-      case 28 :
-          return /* tuple */[
-                  env$1,
-                  /* T_SEMICOLON */7
-                ];
-      case 29 :
-          return /* tuple */[
-                  env$1,
-                  /* T_COMMA */8
-                ];
-      case 20 :
-      case 32 :
-          return /* tuple */[
-                  env$1,
-                  /* T_LBRACKET */5
-                ];
-      case 21 :
-      case 33 :
-          return /* tuple */[
-                  env$1,
-                  /* T_RBRACKET */6
-                ];
-      case 34 :
-          return /* tuple */[
-                  env$1,
-                  /* T_LESS_THAN */89
-                ];
-      case 35 :
-          return /* tuple */[
-                  env$1,
-                  /* T_GREATER_THAN */90
-                ];
-      case 31 :
-      case 37 :
-          return /* tuple */[
-                  env$1,
-                  /* T_PLING */76
-                ];
-      case 38 :
-          return /* tuple */[
-                  env$1,
-                  /* T_MULT */97
-                ];
-      case 30 :
-      case 39 :
-          return /* tuple */[
-                  env$1,
-                  /* T_COLON */77
-                ];
-      case 40 :
-          return /* tuple */[
-                  env$1,
-                  /* T_BIT_OR */80
-                ];
-      case 41 :
-          return /* tuple */[
-                  env$1,
-                  /* T_BIT_AND */82
-                ];
-      case 42 :
-          return /* tuple */[
-                  env$1,
-                  /* T_TYPEOF */44
-                ];
-      case 43 :
-          return /* tuple */[
-                  env$1,
-                  /* T_ARROW */10
-                ];
-      case 36 :
-      case 44 :
-          return /* tuple */[
-                  env$1,
-                  /* T_ASSIGN */75
-                ];
-      case 45 :
-          return /* tuple */[
-                  env$1,
-                  /* T_PLUS */94
-                ];
-      case 46 :
-          return /* tuple */[
-                  env$1,
-                  /* T_MINUS */95
-                ];
-      case 47 :
-          var env$10;
-          if (env$1.lex_in_comment_syntax) {
-            var loc$3 = from_lb(env$1.lex_source, lexbuf$1);
-            env$10 = lex_error(env$1, loc$3, /* UnexpectedEOS */4);
-          } else {
-            env$10 = env$1;
-          }
-          return /* tuple */[
-                  env$10,
+                  env,
                   /* T_EOF */105
                 ];
-      case 48 :
+      case 1 :
+          Lexing.new_line(lexbuf);
+          ___ocaml_lex_state = 333;
+          continue ;
+      case 2 :
+          unicode_fix_cols(lexbuf);
+          ___ocaml_lex_state = 333;
+          continue ;
+      case 3 :
+          var start = from_lb(env.lex_source, lexbuf);
+          var buf = $$Buffer.create(127);
+          var match = line_comment(env, buf, lexbuf);
+          var env$1 = save_comment(match[0], start, match[1], buf, true);
+          ___ocaml_lex_state = 333;
+          _env = env$1;
+          continue ;
+      case 4 :
+          var start$1 = from_lb(env.lex_source, lexbuf);
+          var buf$1 = $$Buffer.create(127);
+          var match$1 = comment(env, buf$1, lexbuf);
+          var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
+          ___ocaml_lex_state = 333;
+          _env = env$2;
+          continue ;
+      case 5 :
           return /* tuple */[
-                  env$1,
+                  env,
+                  /* T_LESS_THAN */89
+                ];
+      case 6 :
+          return /* tuple */[
+                  env,
+                  /* T_DIV */96
+                ];
+      case 7 :
+          return /* tuple */[
+                  env,
+                  /* T_GREATER_THAN */90
+                ];
+      case 8 :
+          return /* tuple */[
+                  env,
+                  /* T_LCURLY */1
+                ];
+      case 9 :
+          return /* tuple */[
+                  env,
+                  /* T_COLON */77
+                ];
+      case 10 :
+          return /* tuple */[
+                  env,
+                  /* T_PERIOD */9
+                ];
+      case 11 :
+          return /* tuple */[
+                  env,
+                  /* T_ASSIGN */75
+                ];
+      case 12 :
+          unicode_fix_cols(lexbuf);
+          return /* tuple */[
+                  env,
+                  /* T_JSX_IDENTIFIER */106
+                ];
+      case 13 :
+          var quote = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var start$2 = from_lb(env.lex_source, lexbuf);
+          var buf$2 = $$Buffer.create(127);
+          var raw = $$Buffer.create(127);
+          $$Buffer.add_char(raw, quote);
+          var mode = quote === /* "'" */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
+          var match$2 = jsx_text(env, mode, buf$2, raw, lexbuf);
+          $$Buffer.add_char(raw, quote);
+          var value = $$Buffer.contents(buf$2);
+          var raw$1 = $$Buffer.contents(raw);
+          return /* tuple */[
+                  match$2[0],
+                  /* T_JSX_TEXT */Block.__(4, [/* tuple */[
+                        btwn(start$2, match$2[1]),
+                        value,
+                        raw$1
+                      ]])
+                ];
+      case 14 :
+          return /* tuple */[
+                  env,
                   /* T_ERROR */104
                 ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function string_quote(env, q, buf, raw, octal, lexbuf) {
-  var env$1 = env;
-  var q$1 = q;
-  var buf$1 = buf;
-  var raw$1 = raw;
-  var octal$1 = octal;
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 247;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          var q$prime = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, q$prime);
-          if (q$1 === q$prime) {
-            return /* tuple */[
-                    env$1,
-                    from_lb(env$1.lex_source, lexbuf$1),
-                    octal$1
-                  ];
-          } else {
-            $$Buffer.add_char(buf$1, q$prime);
-            return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
-          }
-      case 1 :
-          var e = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, e);
-          var match = string_escape(env$1, buf$1, lexbuf$1);
-          var octal$2 = match[1] || octal$1;
-          $$Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
-          return string_quote(match[0], q$1, buf$1, raw$1, octal$2, lexbuf$1);
-      case 2 :
-          var x = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, x);
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-          $$Buffer.add_string(buf$1, x);
-          return /* tuple */[
-                  env$2,
-                  from_lb(env$2.lex_source, lexbuf$1),
-                  octal$1
-                ];
-      case 3 :
-          var x$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, x$1);
-          $$Buffer.add_char(buf$1, x$1);
-          return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
-      default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -4404,6 +4113,374 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
   };
 }
 
+function type_token(env, lexbuf) {
+  lexbuf.lex_mem = Caml_array.caml_make_vect(26, -1);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 17, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 16, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 15, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 14, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 13, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 12, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 11, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 10, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 9, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 8, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 7, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 6, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 5, lexbuf.lex_curr_pos);
+  Caml_array.caml_array_set(lexbuf.lex_mem, 4, lexbuf.lex_curr_pos);
+  var env$1 = env;
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 133;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          Lexing.new_line(lexbuf$1);
+          return type_token(env$1, lexbuf$1);
+      case 1 :
+          unicode_fix_cols(lexbuf$1);
+          return type_token(env$1, lexbuf$1);
+      case 2 :
+          var start = from_lb(env$1.lex_source, lexbuf$1);
+          var buf = $$Buffer.create(127);
+          var match = comment(env$1, buf, lexbuf$1);
+          var env$2 = save_comment(match[0], start, match[1], buf, true);
+          return type_token(env$2, lexbuf$1);
+      case 3 :
+          var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
+          if (env$1.lex_enable_comment_syntax) {
+            var env$3;
+            if (env$1.lex_in_comment_syntax) {
+              var loc = from_lb(env$1.lex_source, lexbuf$1);
+              env$3 = unexpected_error(env$1, loc, pattern);
+            } else {
+              env$3 = env$1;
+            }
+            var env$4 = in_comment_syntax(true, env$3);
+            if (escape_type === ":") {
+              return /* tuple */[
+                      env$4,
+                      /* T_COLON */77
+                    ];
+            } else {
+              return type_token(env$4, lexbuf$1);
+            }
+          } else {
+            var start$1 = from_lb(env$1.lex_source, lexbuf$1);
+            var buf$1 = $$Buffer.create(127);
+            $$Buffer.add_string(buf$1, sp);
+            $$Buffer.add_string(buf$1, escape_type);
+            var match$1 = comment(env$1, buf$1, lexbuf$1);
+            var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
+            return type_token(env$5, lexbuf$1);
+          }
+      case 4 :
+          if (env$1.lex_in_comment_syntax) {
+            var env$6 = in_comment_syntax(false, env$1);
+            return type_token(env$6, lexbuf$1);
+          } else {
+            yyback(1, lexbuf$1);
+            return /* tuple */[
+                    env$1,
+                    /* T_MULT */97
+                  ];
+          }
+      case 5 :
+          var start$2 = from_lb(env$1.lex_source, lexbuf$1);
+          var buf$2 = $$Buffer.create(127);
+          var match$2 = line_comment(env$1, buf$2, lexbuf$1);
+          var env$7 = save_comment(match$2[0], start$2, match$2[1], buf$2, true);
+          return type_token(env$7, lexbuf$1);
+      case 6 :
+          var quote = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          var start$3 = from_lb(env$1.lex_source, lexbuf$1);
+          var buf$3 = $$Buffer.create(127);
+          var raw = $$Buffer.create(127);
+          $$Buffer.add_char(raw, quote);
+          var match$3 = string_quote(env$1, quote, buf$3, raw, false, lexbuf$1);
+          return /* tuple */[
+                  match$3[0],
+                  /* T_STRING */Block.__(1, [/* tuple */[
+                        btwn(start$3, match$3[1]),
+                        $$Buffer.contents(buf$3),
+                        $$Buffer.contents(raw),
+                        match$3[2]
+                      ]])
+                ];
+      case 7 :
+          var neg = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          return illegal_number(env$1, lexbuf$1, w, mk_num_singleton(/* BINARY */0, num, neg));
+      case 8 :
+          var neg$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          return /* tuple */[
+                  env$1,
+                  mk_num_singleton(/* BINARY */0, num$1, neg$1)
+                ];
+      case 9 :
+          var neg$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          return illegal_number(env$1, lexbuf$1, w$1, mk_num_singleton(/* OCTAL */2, num$2, neg$2));
+      case 10 :
+          var neg$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          return /* tuple */[
+                  env$1,
+                  mk_num_singleton(/* OCTAL */2, num$3, neg$3)
+                ];
+      case 11 :
+          var neg$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          return illegal_number(env$1, lexbuf$1, w$2, mk_num_singleton(/* LEGACY_OCTAL */1, num$4, neg$4));
+      case 12 :
+          var neg$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          return /* tuple */[
+                  env$1,
+                  mk_num_singleton(/* LEGACY_OCTAL */1, num$5, neg$5)
+                ];
+      case 13 :
+          var neg$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$6 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          var match$4;
+          try {
+            match$4 = /* tuple */[
+              env$1,
+              mk_num_singleton(/* NORMAL */3, num$6, neg$6)
+            ];
+          }
+          catch (exn){
+            if (Sys.win32) {
+              var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
+              var env$8 = lex_error(env$1, loc$1, /* WindowsFloatOfString */59);
+              match$4 = /* tuple */[
+                env$8,
+                /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
+                    /* NORMAL */3,
+                    789.0
+                  ])
+              ];
+            } else {
+              throw exn;
+            }
+          }
+          return illegal_number(match$4[0], lexbuf$1, w$3, match$4[1]);
+      case 14 :
+          var neg$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$7 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          try {
+            return /* tuple */[
+                    env$1,
+                    mk_num_singleton(/* NORMAL */3, num$7, neg$7)
+                  ];
+          }
+          catch (exn$1){
+            if (Sys.win32) {
+              var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
+              var env$9 = lex_error(env$1, loc$2, /* WindowsFloatOfString */59);
+              return /* tuple */[
+                      env$9,
+                      /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
+                          /* NORMAL */3,
+                          789.0
+                        ])
+                    ];
+            } else {
+              throw exn$1;
+            }
+          }
+      case 15 :
+          var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$8 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          return illegal_number(env$1, lexbuf$1, w$4, mk_num_singleton(/* NORMAL */3, num$8, neg$8));
+      case 16 :
+          var neg$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$9 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          return /* tuple */[
+                  env$1,
+                  mk_num_singleton(/* NORMAL */3, num$9, neg$9)
+                ];
+      case 17 :
+          var neg$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$10 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
+          var w$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          return illegal_number(env$1, lexbuf$1, w$5, mk_num_singleton(/* NORMAL */3, num$10, neg$10));
+      case 18 :
+          var neg$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
+          var num$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 3), Caml_array.caml_array_get(lexbuf$1.lex_mem, 2));
+          return /* tuple */[
+                  env$1,
+                  mk_num_singleton(/* NORMAL */3, num$11, neg$11)
+                ];
+      case 19 :
+          var word = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
+          unicode_fix_cols(lexbuf$1);
+          try {
+            return /* tuple */[
+                    env$1,
+                    Hashtbl.find(type_keywords, word)
+                  ];
+          }
+          catch (exn$2){
+            if (exn$2 === Caml_builtin_exceptions.not_found) {
+              return /* tuple */[
+                      env$1,
+                      /* T_IDENTIFIER */0
+                    ];
+            } else {
+              throw exn$2;
+            }
+          }
+      case 22 :
+          return /* tuple */[
+                  env$1,
+                  /* T_LCURLY */1
+                ];
+      case 23 :
+          return /* tuple */[
+                  env$1,
+                  /* T_RCURLY */2
+                ];
+      case 24 :
+          return /* tuple */[
+                  env$1,
+                  /* T_LPAREN */3
+                ];
+      case 25 :
+          return /* tuple */[
+                  env$1,
+                  /* T_RPAREN */4
+                ];
+      case 26 :
+          return /* tuple */[
+                  env$1,
+                  /* T_ELLIPSIS */11
+                ];
+      case 27 :
+          return /* tuple */[
+                  env$1,
+                  /* T_PERIOD */9
+                ];
+      case 28 :
+          return /* tuple */[
+                  env$1,
+                  /* T_SEMICOLON */7
+                ];
+      case 29 :
+          return /* tuple */[
+                  env$1,
+                  /* T_COMMA */8
+                ];
+      case 20 :
+      case 32 :
+          return /* tuple */[
+                  env$1,
+                  /* T_LBRACKET */5
+                ];
+      case 21 :
+      case 33 :
+          return /* tuple */[
+                  env$1,
+                  /* T_RBRACKET */6
+                ];
+      case 34 :
+          return /* tuple */[
+                  env$1,
+                  /* T_LESS_THAN */89
+                ];
+      case 35 :
+          return /* tuple */[
+                  env$1,
+                  /* T_GREATER_THAN */90
+                ];
+      case 31 :
+      case 37 :
+          return /* tuple */[
+                  env$1,
+                  /* T_PLING */76
+                ];
+      case 38 :
+          return /* tuple */[
+                  env$1,
+                  /* T_MULT */97
+                ];
+      case 30 :
+      case 39 :
+          return /* tuple */[
+                  env$1,
+                  /* T_COLON */77
+                ];
+      case 40 :
+          return /* tuple */[
+                  env$1,
+                  /* T_BIT_OR */80
+                ];
+      case 41 :
+          return /* tuple */[
+                  env$1,
+                  /* T_BIT_AND */82
+                ];
+      case 42 :
+          return /* tuple */[
+                  env$1,
+                  /* T_TYPEOF */44
+                ];
+      case 43 :
+          return /* tuple */[
+                  env$1,
+                  /* T_ARROW */10
+                ];
+      case 36 :
+      case 44 :
+          return /* tuple */[
+                  env$1,
+                  /* T_ASSIGN */75
+                ];
+      case 45 :
+          return /* tuple */[
+                  env$1,
+                  /* T_PLUS */94
+                ];
+      case 46 :
+          return /* tuple */[
+                  env$1,
+                  /* T_MINUS */95
+                ];
+      case 47 :
+          var env$10;
+          if (env$1.lex_in_comment_syntax) {
+            var loc$3 = from_lb(env$1.lex_source, lexbuf$1);
+            env$10 = lex_error(env$1, loc$3, /* UnexpectedEOS */4);
+          } else {
+            env$10 = env$1;
+          }
+          return /* tuple */[
+                  env$10,
+                  /* T_EOF */105
+                ];
+      case 48 :
+          return /* tuple */[
+                  env$1,
+                  /* T_ERROR */104
+                ];
+      default:
+        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
 function string_escape(env, buf, lexbuf) {
   var env$1 = env;
   var buf$1 = buf;
@@ -4571,7 +4648,7 @@ function string_escape(env, buf, lexbuf) {
   };
 }
 
-function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
+function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var env = _env;
@@ -4584,18 +4661,18 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
                 ];
       case 1 :
           Lexing.new_line(lexbuf);
-          ___ocaml_lex_state = 333;
+          ___ocaml_lex_state = 291;
           continue ;
       case 2 :
           unicode_fix_cols(lexbuf);
-          ___ocaml_lex_state = 333;
+          ___ocaml_lex_state = 291;
           continue ;
       case 3 :
           var start = from_lb(env.lex_source, lexbuf);
           var buf = $$Buffer.create(127);
           var match = line_comment(env, buf, lexbuf);
           var env$1 = save_comment(match[0], start, match[1], buf, true);
-          ___ocaml_lex_state = 333;
+          ___ocaml_lex_state = 291;
           _env = env$1;
           continue ;
       case 4 :
@@ -4603,72 +4680,28 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
           var buf$1 = $$Buffer.create(127);
           var match$1 = comment(env, buf$1, lexbuf);
           var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
-          ___ocaml_lex_state = 333;
+          ___ocaml_lex_state = 291;
           _env = env$2;
           continue ;
       case 5 :
-          return /* tuple */[
-                  env,
-                  /* T_LESS_THAN */89
-                ];
-      case 6 :
-          return /* tuple */[
-                  env,
-                  /* T_DIV */96
-                ];
-      case 7 :
-          return /* tuple */[
-                  env,
-                  /* T_GREATER_THAN */90
-                ];
-      case 8 :
-          return /* tuple */[
-                  env,
-                  /* T_LCURLY */1
-                ];
-      case 9 :
-          return /* tuple */[
-                  env,
-                  /* T_COLON */77
-                ];
-      case 10 :
-          return /* tuple */[
-                  env,
-                  /* T_PERIOD */9
-                ];
-      case 11 :
-          return /* tuple */[
-                  env,
-                  /* T_ASSIGN */75
-                ];
-      case 12 :
-          unicode_fix_cols(lexbuf);
-          return /* tuple */[
-                  env,
-                  /* T_JSX_IDENTIFIER */106
-                ];
-      case 13 :
-          var quote = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
           var start$2 = from_lb(env.lex_source, lexbuf);
           var buf$2 = $$Buffer.create(127);
-          var raw = $$Buffer.create(127);
-          $$Buffer.add_char(raw, quote);
-          var mode = quote === /* "'" */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
-          var match$2 = jsx_text(env, mode, buf$2, raw, lexbuf);
-          $$Buffer.add_char(raw, quote);
-          var value = $$Buffer.contents(buf$2);
-          var raw$1 = $$Buffer.contents(raw);
+          var match$2 = regexp_body(env, buf$2, lexbuf);
+          var env$3 = match$2[0];
+          var end_ = from_lb(env$3.lex_source, lexbuf);
+          var loc = btwn(start$2, end_);
           return /* tuple */[
-                  match$2[0],
-                  /* T_JSX_TEXT */Block.__(4, [/* tuple */[
-                        btwn(start$2, match$2[1]),
-                        value,
-                        raw$1
+                  env$3,
+                  /* T_REGEXP */Block.__(3, [/* tuple */[
+                        loc,
+                        $$Buffer.contents(buf$2),
+                        match$2[1]
                       ]])
                 ];
-      case 14 :
+      case 6 :
+          var env$4 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env,
+                  env$4,
                   /* T_ERROR */104
                 ];
       default:
@@ -4676,39 +4709,6 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
-  };
-}
-
-function regexp_class(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 326;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          return env$1;
-      case 1 :
-      case 2 :
-          break;
-      case 3 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          return env$1;
-      case 4 :
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c$1);
-          return regexp_class(env$1, buf$1, lexbuf$1);
-      default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-    var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
-    $$Buffer.add_string(buf$1, s);
-    return regexp_class(env$1, buf$1, lexbuf$1);
   };
 }
 
@@ -6248,72 +6248,14 @@ var Parse = Caml_module.init_mod(/* tuple */[
           ]
         ]]));
 
-function postfix_with(env, _t) {
-  while(true) {
-    var t = _t;
-    if (!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5)) {
-      var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-      token$4(env, /* T_RBRACKET */6);
-      var loc = btwn(t[0], end_loc);
-      var t_001 = /* Array */Block.__(3, [t]);
-      var t$1 = /* tuple */[
-        loc,
-        t_001
-      ];
-      _t = t$1;
-      continue ;
-    } else {
-      return t;
-    }
-  };
+function intersection(env) {
+  maybe(env, /* T_BIT_AND */82);
+  var left = prefix(env);
+  return Curry._2(intersection_with, env, left);
 }
 
-function union(env) {
-  maybe(env, /* T_BIT_OR */80);
-  var left = intersection(env);
-  return Curry._2(union_with, env, left);
-}
-
-function generic_type_with_identifier(env, id) {
-  var match = Curry._2(raw_generic_with_identifier, env, id);
-  return /* tuple */[
-          match[0],
-          /* Generic */Block.__(4, [match[1]])
-        ];
-}
-
-function function_param_with_id(env, name) {
-  if (!env.parse_options.types) {
-    error$1(env, /* UnexpectedTypeAnnotation */6);
-  }
-  var optional = maybe(env, /* T_PLING */76);
-  token$4(env, /* T_COLON */77);
-  var typeAnnotation = union(env);
-  return /* tuple */[
-          btwn(name[0], typeAnnotation[0]),
-          {
-            name: name,
-            typeAnnotation: typeAnnotation,
-            optional: optional
-          }
-        ];
-}
-
-function prefix(env) {
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && match === 76) {
-    var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-    token$4(env, /* T_PLING */76);
-    var t = prefix(env);
-    return /* tuple */[
-            btwn(loc, t[0]),
-            /* Nullable */Block.__(0, [t])
-          ];
-  } else {
-    var env$1 = env;
-    var t$1 = primary(env$1);
-    return postfix_with(env$1, t$1);
-  }
+function generic(env) {
+  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
 }
 
 function primary(env) {
@@ -6481,10 +6423,120 @@ function primary(env) {
   }
 }
 
-function intersection(env) {
-  maybe(env, /* T_BIT_AND */82);
-  var left = prefix(env);
-  return Curry._2(intersection_with, env, left);
+function primitive(param) {
+  if (typeof param === "number") {
+    if (param !== 27) {
+      if (param >= 107) {
+        switch (param - 107 | 0) {
+          case /* T_IDENTIFIER */0 :
+              return /* Any */0;
+          case /* T_LCURLY */1 :
+              return /* Boolean */5;
+          case /* T_RCURLY */2 :
+              return /* Number */3;
+          case /* T_LPAREN */3 :
+              return /* String */4;
+          case /* T_RPAREN */4 :
+              return /* Void */1;
+          
+        }
+      } else {
+        return ;
+      }
+    } else {
+      return /* Null */2;
+    }
+  }
+  
+}
+
+function function_param_or_generic_type(env) {
+  var id = Curry._2(Parse.identifier, undefined, env);
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match === "number" && (match === 77 || match === 76)) {
+    var param = function_param_with_id(env, id);
+    maybe(env, /* T_COMMA */8);
+    return /* ParamList */Block.__(0, [Curry._2(function_param_list_without_parens, env, /* :: */[
+                    param,
+                    /* [] */0
+                  ])]);
+  }
+  return /* Type */Block.__(1, [Curry._2(union_with, env, Curry._2(intersection_with, env, postfix_with(env, generic_type_with_identifier(env, id))))]);
+}
+
+function union(env) {
+  maybe(env, /* T_BIT_OR */80);
+  var left = intersection(env);
+  return Curry._2(union_with, env, left);
+}
+
+function function_param_with_id(env, name) {
+  if (!env.parse_options.types) {
+    error$1(env, /* UnexpectedTypeAnnotation */6);
+  }
+  var optional = maybe(env, /* T_PLING */76);
+  token$4(env, /* T_COLON */77);
+  var typeAnnotation = union(env);
+  return /* tuple */[
+          btwn(name[0], typeAnnotation[0]),
+          {
+            name: name,
+            typeAnnotation: typeAnnotation,
+            optional: optional
+          }
+        ];
+}
+
+function generic_type_with_identifier(env, id) {
+  var match = Curry._2(raw_generic_with_identifier, env, id);
+  return /* tuple */[
+          match[0],
+          /* Generic */Block.__(4, [match[1]])
+        ];
+}
+
+function postfix_with(env, _t) {
+  while(true) {
+    var t = _t;
+    if (!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5)) {
+      var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+      token$4(env, /* T_RBRACKET */6);
+      var loc = btwn(t[0], end_loc);
+      var t_001 = /* Array */Block.__(3, [t]);
+      var t$1 = /* tuple */[
+        loc,
+        t_001
+      ];
+      _t = t$1;
+      continue ;
+    } else {
+      return t;
+    }
+  };
+}
+
+function function_param_list(env) {
+  token$4(env, /* T_LPAREN */3);
+  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
+  token$4(env, /* T_RPAREN */4);
+  return ret;
+}
+
+function prefix(env) {
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match === "number" && match === 76) {
+    var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+    token$4(env, /* T_PLING */76);
+    var t = prefix(env);
+    return /* tuple */[
+            btwn(loc, t[0]),
+            /* Nullable */Block.__(0, [t])
+          ];
+  } else {
+    var env$1 = env;
+    var t$1 = primary(env$1);
+    return postfix_with(env$1, t$1);
+  }
 }
 
 function rev_nonempty_acc(acc) {
@@ -6605,58 +6657,6 @@ function param_list_or_type(env) {
   return ret;
 }
 
-function generic(env) {
-  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
-}
-
-function primitive(param) {
-  if (typeof param === "number") {
-    if (param !== 27) {
-      if (param >= 107) {
-        switch (param - 107 | 0) {
-          case /* T_IDENTIFIER */0 :
-              return /* Any */0;
-          case /* T_LCURLY */1 :
-              return /* Boolean */5;
-          case /* T_RCURLY */2 :
-              return /* Number */3;
-          case /* T_LPAREN */3 :
-              return /* String */4;
-          case /* T_RPAREN */4 :
-              return /* Void */1;
-          
-        }
-      } else {
-        return ;
-      }
-    } else {
-      return /* Null */2;
-    }
-  }
-  
-}
-
-function function_param_list(env) {
-  token$4(env, /* T_LPAREN */3);
-  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
-  token$4(env, /* T_RPAREN */4);
-  return ret;
-}
-
-function function_param_or_generic_type(env) {
-  var id = Curry._2(Parse.identifier, undefined, env);
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && (match === 77 || match === 76)) {
-    var param = function_param_with_id(env, id);
-    maybe(env, /* T_COMMA */8);
-    return /* ParamList */Block.__(0, [Curry._2(function_param_list_without_parens, env, /* :: */[
-                    param,
-                    /* [] */0
-                  ])]);
-  }
-  return /* Type */Block.__(1, [Curry._2(union_with, env, Curry._2(intersection_with, env, postfix_with(env, generic_type_with_identifier(env, id))))]);
-}
-
 function union_with(env, left) {
   if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
     var env$1 = env;
@@ -6684,132 +6684,6 @@ function union_with(env, left) {
   } else {
     return left;
   }
-}
-
-function intersection_with(env, left) {
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
-    var env$1 = env;
-    var _acc = /* :: */[
-      left,
-      /* [] */0
-    ];
-    while(true) {
-      var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, undefined, env$1);
-      if (typeof match === "number" && match === 82) {
-        token$4(env$1, /* T_BIT_AND */82);
-        _acc = /* :: */[
-          prefix(env$1),
-          acc
-        ];
-        continue ;
-      }
-      var match$1 = rev_nonempty_acc(acc);
-      return /* tuple */[
-              match$1[0],
-              /* Intersection */Block.__(6, [match$1[1]])
-            ];
-    };
-  } else {
-    return left;
-  }
-}
-
-function param(env) {
-  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
-  return function_param_with_id(env, match[0]);
-}
-
-function function_param_list_without_parens(env) {
-  return (function (param$1) {
-      var env$1 = env;
-      var _acc = param$1;
-      while(true) {
-        var acc = _acc;
-        var t = Curry._2(Parser_env_Peek.token, undefined, env$1);
-        var exit = 0;
-        if (typeof t === "number") {
-          var switcher = t - 4 | 0;
-          exit = switcher > 7 || switcher < 0 ? (
-              switcher !== 101 ? 1 : 2
-            ) : (
-              switcher > 6 || switcher < 1 ? 2 : 1
-            );
-        } else {
-          exit = 1;
-        }
-        switch (exit) {
-          case 1 :
-              var acc_000 = param(env$1);
-              var acc$1 = /* :: */[
-                acc_000,
-                acc
-              ];
-              if (Curry._2(Parser_env_Peek.token, undefined, env$1) !== /* T_RPAREN */4) {
-                token$4(env$1, /* T_COMMA */8);
-              }
-              _acc = acc$1;
-              continue ;
-          case 2 :
-              var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), param(env$1)) : undefined;
-              return /* tuple */[
-                      rest,
-                      List.rev(acc)
-                    ];
-          
-        }
-      };
-    });
-}
-
-function identifier(env, _param) {
-  while(true) {
-    var param = _param;
-    var qualification = param[1];
-    var q_loc = param[0];
-    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_PERIOD */9) {
-      token$4(env, /* T_PERIOD */9);
-      var id = Curry._2(Parse.identifier, undefined, env);
-      var loc = btwn(q_loc, id[0]);
-      var qualification$1 = /* Qualified */Block.__(1, [/* tuple */[
-            loc,
-            {
-              qualification: qualification,
-              id: id
-            }
-          ]]);
-      _param = /* tuple */[
-        loc,
-        qualification$1
-      ];
-      continue ;
-    } else {
-      return /* tuple */[
-              q_loc,
-              qualification
-            ];
-    }
-  };
-}
-
-function raw_generic_with_identifier(env, id) {
-  var id_000 = id[0];
-  var id_001 = /* Unqualified */Block.__(0, [id]);
-  var id$1 = /* tuple */[
-    id_000,
-    id_001
-  ];
-  var match = identifier(env, id$1);
-  var id_loc = match[0];
-  var typeParameters = Curry._1(type_parameter_instantiation, env);
-  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
-  return /* tuple */[
-          loc,
-          {
-            id: match[1],
-            typeParameters: typeParameters
-          }
-        ];
 }
 
 function methodish(env, start_loc) {
@@ -7085,7 +6959,120 @@ function types(env, _acc) {
   };
 }
 
-function params(env, allow_default, _require_default, _acc) {
+function param(env) {
+  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
+  return function_param_with_id(env, match[0]);
+}
+
+function function_param_list_without_parens(env) {
+  return (function (param$1) {
+      var env$1 = env;
+      var _acc = param$1;
+      while(true) {
+        var acc = _acc;
+        var t = Curry._2(Parser_env_Peek.token, undefined, env$1);
+        var exit = 0;
+        if (typeof t === "number") {
+          var switcher = t - 4 | 0;
+          exit = switcher > 7 || switcher < 0 ? (
+              switcher !== 101 ? 1 : 2
+            ) : (
+              switcher > 6 || switcher < 1 ? 2 : 1
+            );
+        } else {
+          exit = 1;
+        }
+        switch (exit) {
+          case 1 :
+              var acc_000 = param(env$1);
+              var acc$1 = /* :: */[
+                acc_000,
+                acc
+              ];
+              if (Curry._2(Parser_env_Peek.token, undefined, env$1) !== /* T_RPAREN */4) {
+                token$4(env$1, /* T_COMMA */8);
+              }
+              _acc = acc$1;
+              continue ;
+          case 2 :
+              var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), param(env$1)) : undefined;
+              return /* tuple */[
+                      rest,
+                      List.rev(acc)
+                    ];
+          
+        }
+      };
+    });
+}
+
+function params(env, _acc) {
+  while(true) {
+    var acc = _acc;
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof match === "number" && !(match !== 90 && match !== 105)) {
+      return List.rev(acc);
+    }
+    var acc_000 = union(env);
+    var acc$1 = /* :: */[
+      acc_000,
+      acc
+    ];
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
+      token$4(env, /* T_COMMA */8);
+    }
+    _acc = acc$1;
+    continue ;
+  };
+}
+
+function type_parameter_instantiation(env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LESS_THAN */89) {
+    token$4(env, /* T_LESS_THAN */89);
+    var params$1 = params(env, /* [] */0);
+    var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
+    token$4(env, /* T_GREATER_THAN */90);
+    return /* tuple */[
+            loc,
+            {
+              params: params$1
+            }
+          ];
+  }
+  
+}
+
+function intersection_with(env, left) {
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
+    var env$1 = env;
+    var _acc = /* :: */[
+      left,
+      /* [] */0
+    ];
+    while(true) {
+      var acc = _acc;
+      var match = Curry._2(Parser_env_Peek.token, undefined, env$1);
+      if (typeof match === "number" && match === 82) {
+        token$4(env$1, /* T_BIT_AND */82);
+        _acc = /* :: */[
+          prefix(env$1),
+          acc
+        ];
+        continue ;
+      }
+      var match$1 = rev_nonempty_acc(acc);
+      return /* tuple */[
+              match$1[0],
+              /* Intersection */Block.__(6, [match$1[1]])
+            ];
+    };
+  } else {
+    return left;
+  }
+}
+
+function params$1(env, allow_default, _require_default, _acc) {
   while(true) {
     var acc = _acc;
     var require_default = _require_default;
@@ -7166,44 +7153,7 @@ function type_parameter_declaration(allow_default, env) {
       error$1(env, /* UnexpectedTypeAnnotation */6);
     }
     token$4(env, /* T_LESS_THAN */89);
-    var params$1 = params(env, allow_default, false, /* [] */0);
-    var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
-    token$4(env, /* T_GREATER_THAN */90);
-    return /* tuple */[
-            loc,
-            {
-              params: params$1
-            }
-          ];
-  }
-  
-}
-
-function params$1(env, _acc) {
-  while(true) {
-    var acc = _acc;
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && !(match !== 90 && match !== 105)) {
-      return List.rev(acc);
-    }
-    var acc_000 = union(env);
-    var acc$1 = /* :: */[
-      acc_000,
-      acc
-    ];
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
-      token$4(env, /* T_COMMA */8);
-    }
-    _acc = acc$1;
-    continue ;
-  };
-}
-
-function type_parameter_instantiation(env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LESS_THAN */89) {
-    token$4(env, /* T_LESS_THAN */89);
-    var params$2 = params$1(env, /* [] */0);
+    var params$2 = params$1(env, allow_default, false, /* [] */0);
     var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
     token$4(env, /* T_GREATER_THAN */90);
     return /* tuple */[
@@ -7214,6 +7164,56 @@ function type_parameter_instantiation(env) {
           ];
   }
   
+}
+
+function identifier(env, _param) {
+  while(true) {
+    var param = _param;
+    var qualification = param[1];
+    var q_loc = param[0];
+    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_PERIOD */9) {
+      token$4(env, /* T_PERIOD */9);
+      var id = Curry._2(Parse.identifier, undefined, env);
+      var loc = btwn(q_loc, id[0]);
+      var qualification$1 = /* Qualified */Block.__(1, [/* tuple */[
+            loc,
+            {
+              qualification: qualification,
+              id: id
+            }
+          ]]);
+      _param = /* tuple */[
+        loc,
+        qualification$1
+      ];
+      continue ;
+    } else {
+      return /* tuple */[
+              q_loc,
+              qualification
+            ];
+    }
+  };
+}
+
+function raw_generic_with_identifier(env, id) {
+  var id_000 = id[0];
+  var id_001 = /* Unqualified */Block.__(0, [id]);
+  var id$1 = /* tuple */[
+    id_000,
+    id_001
+  ];
+  var match = identifier(env, id$1);
+  var id_loc = match[0];
+  var typeParameters = Curry._1(type_parameter_instantiation, env);
+  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
+  return /* tuple */[
+          loc,
+          {
+            id: match[1],
+            typeParameters: typeParameters
+          }
+        ];
 }
 
 var _type = union;
@@ -10424,19 +10424,46 @@ function class_expression(env) {
         ];
 }
 
-function declare_var(env, start_loc) {
-  token$4(env, /* T_VAR */22);
-  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
-  var match = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = match !== undefined ? match : id[0];
-  var loc = btwn(start_loc, end_loc);
-  semicolon(env);
-  return /* tuple */[
-          loc,
-          {
-            id: id
-          }
-        ];
+function export_source(env) {
+  contextual(env, "from");
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match !== "number" && match.tag === /* T_STRING */1) {
+    var match$1 = match[0];
+    var octal = match$1[3];
+    var raw = match$1[2];
+    var value = match$1[1];
+    var loc = match$1[0];
+    if (octal) {
+      strict_error(env, /* StrictOctalLiteral */31);
+    }
+    token$4(env, /* T_STRING */Block.__(1, [/* tuple */[
+              loc,
+              value,
+              raw,
+              octal
+            ]]));
+    var value$1 = /* String */Block.__(0, [value]);
+    return /* tuple */[
+            loc,
+            {
+              value: value$1,
+              raw: raw
+            }
+          ];
+  }
+  var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
+  var value$2 = /* String */Block.__(0, [raw$1]);
+  var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var ret_001 = {
+    value: value$2,
+    raw: raw$1
+  };
+  var ret = /* tuple */[
+    ret_000,
+    ret_001
+  ];
+  error_unexpected(env);
+  return ret;
 }
 
 function expression(env) {
@@ -10501,6 +10528,71 @@ function declare_function(env, start_loc) {
         ];
 }
 
+function export_specifiers_and_errs(env, _specifiers, _errs) {
+  while(true) {
+    var errs = _errs;
+    var specifiers = _specifiers;
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof match === "number" && !(match !== 2 && match !== 105)) {
+      return /* tuple */[
+              List.rev(specifiers),
+              List.rev(errs)
+            ];
+    }
+    var match$1 = Curry._1(Parse.identifier_or_reserved_keyword, env);
+    var id = match$1[0];
+    var match$2;
+    if (Curry._2(Parser_env_Peek.value, undefined, env) === "as") {
+      contextual(env, "as");
+      var match$3 = Curry._1(Parse.identifier_or_reserved_keyword, env);
+      var name = match$3[0];
+      record_export(env, /* tuple */[
+            name[0],
+            extract_ident_name(name)
+          ]);
+      match$2 = /* tuple */[
+        name,
+        undefined,
+        name[0]
+      ];
+    } else {
+      var loc = id[0];
+      record_export(env, /* tuple */[
+            loc,
+            extract_ident_name(id)
+          ]);
+      match$2 = /* tuple */[
+        undefined,
+        match$1[1],
+        loc
+      ];
+    }
+    var err = match$2[1];
+    var loc$1 = btwn(id[0], match$2[2]);
+    var specifier_001 = {
+      id: id,
+      name: match$2[0]
+    };
+    var specifier = /* tuple */[
+      loc$1,
+      specifier_001
+    ];
+    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
+      token$4(env, /* T_COMMA */8);
+    }
+    var errs$1 = err !== undefined ? /* :: */[
+        err,
+        errs
+      ] : errs;
+    _errs = errs$1;
+    _specifiers = /* :: */[
+      specifier,
+      specifiers
+    ];
+    continue ;
+  };
+}
+
 function type_alias_helper(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   if (!env.parse_options.types) {
@@ -10526,32 +10618,31 @@ function type_alias_helper(env) {
         ];
 }
 
-function type_alias(env) {
+function declare_var(env, start_loc) {
+  token$4(env, /* T_VAR */22);
+  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
+  var match = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = match !== undefined ? match : id[0];
+  var loc = btwn(start_loc, end_loc);
+  semicolon(env);
+  return /* tuple */[
+          loc,
+          {
+            id: id
+          }
+        ];
+}
+
+function $$interface(env) {
   if (Curry._2(Parser_env_Peek.is_identifier, 1, env)) {
-    var match = type_alias_helper(env);
+    var match = Curry._1(interface_helper, env);
     return /* tuple */[
             match[0],
-            /* TypeAlias */Block.__(7, [match[1]])
+            /* InterfaceDeclaration */Block.__(21, [match[1]])
           ];
   } else {
-    return Curry._1(Parse.statement, env);
+    return expression(env);
   }
-}
-
-function declare_var_statement(env, start_loc) {
-  var match = declare_var(env, start_loc);
-  return /* tuple */[
-          match[0],
-          /* DeclareVariable */Block.__(22, [match[1]])
-        ];
-}
-
-function declare_function_statement(env, start_loc) {
-  var match = declare_function(env, start_loc);
-  return /* tuple */[
-          match[0],
-          /* DeclareFunction */Block.__(23, [match[1]])
-        ];
 }
 
 function declare_export_declaration($staropt$star, env) {
@@ -10827,127 +10918,32 @@ function declare_export_declaration($staropt$star, env) {
   }
 }
 
-function $$interface(env) {
+function declare_function_statement(env, start_loc) {
+  var match = declare_function(env, start_loc);
+  return /* tuple */[
+          match[0],
+          /* DeclareFunction */Block.__(23, [match[1]])
+        ];
+}
+
+function type_alias(env) {
   if (Curry._2(Parser_env_Peek.is_identifier, 1, env)) {
-    var match = Curry._1(interface_helper, env);
+    var match = type_alias_helper(env);
     return /* tuple */[
             match[0],
-            /* InterfaceDeclaration */Block.__(21, [match[1]])
+            /* TypeAlias */Block.__(7, [match[1]])
           ];
   } else {
-    return expression(env);
+    return Curry._1(Parse.statement, env);
   }
 }
 
-function extract_ident_name(param) {
-  return param[1].name;
-}
-
-function export_specifiers_and_errs(env, _specifiers, _errs) {
-  while(true) {
-    var errs = _errs;
-    var specifiers = _specifiers;
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && !(match !== 2 && match !== 105)) {
-      return /* tuple */[
-              List.rev(specifiers),
-              List.rev(errs)
-            ];
-    }
-    var match$1 = Curry._1(Parse.identifier_or_reserved_keyword, env);
-    var id = match$1[0];
-    var match$2;
-    if (Curry._2(Parser_env_Peek.value, undefined, env) === "as") {
-      contextual(env, "as");
-      var match$3 = Curry._1(Parse.identifier_or_reserved_keyword, env);
-      var name = match$3[0];
-      record_export(env, /* tuple */[
-            name[0],
-            extract_ident_name(name)
-          ]);
-      match$2 = /* tuple */[
-        name,
-        undefined,
-        name[0]
-      ];
-    } else {
-      var loc = id[0];
-      record_export(env, /* tuple */[
-            loc,
-            extract_ident_name(id)
-          ]);
-      match$2 = /* tuple */[
-        undefined,
-        match$1[1],
-        loc
-      ];
-    }
-    var err = match$2[1];
-    var loc$1 = btwn(id[0], match$2[2]);
-    var specifier_001 = {
-      id: id,
-      name: match$2[0]
-    };
-    var specifier = /* tuple */[
-      loc$1,
-      specifier_001
-    ];
-    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
-      token$4(env, /* T_COMMA */8);
-    }
-    var errs$1 = err !== undefined ? /* :: */[
-        err,
-        errs
-      ] : errs;
-    _errs = errs$1;
-    _specifiers = /* :: */[
-      specifier,
-      specifiers
-    ];
-    continue ;
-  };
-}
-
-function export_source(env) {
-  contextual(env, "from");
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number" && match.tag === /* T_STRING */1) {
-    var match$1 = match[0];
-    var octal = match$1[3];
-    var raw = match$1[2];
-    var value = match$1[1];
-    var loc = match$1[0];
-    if (octal) {
-      strict_error(env, /* StrictOctalLiteral */31);
-    }
-    token$4(env, /* T_STRING */Block.__(1, [/* tuple */[
-              loc,
-              value,
-              raw,
-              octal
-            ]]));
-    var value$1 = /* String */Block.__(0, [value]);
-    return /* tuple */[
-            loc,
-            {
-              value: value$1,
-              raw: raw
-            }
-          ];
-  }
-  var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
-  var value$2 = /* String */Block.__(0, [raw$1]);
-  var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_001 = {
-    value: value$2,
-    raw: raw$1
-  };
-  var ret = /* tuple */[
-    ret_000,
-    ret_001
-  ];
-  error_unexpected(env);
-  return ret;
+function declare_var_statement(env, start_loc) {
+  var match = declare_var(env, start_loc);
+  return /* tuple */[
+          match[0],
+          /* DeclareVariable */Block.__(22, [match[1]])
+        ];
 }
 
 function declare($staropt$star, env) {
@@ -11105,6 +11101,10 @@ function declare($staropt$star, env) {
   }
 }
 
+function extract_ident_name(param) {
+  return param[1].name;
+}
+
 function supers(env, _acc) {
   while(true) {
     var acc = _acc;
@@ -11143,6 +11143,46 @@ function interface_helper(env) {
             body: body,
             extends: $$extends,
             mixins: /* [] */0
+          }
+        ];
+}
+
+function supers$1(env, _acc) {
+  while(true) {
+    var acc = _acc;
+    var $$super = wrap(generic, env);
+    var acc$1 = /* :: */[
+      $$super,
+      acc
+    ];
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof match === "number" && match === 8) {
+      token$4(env, /* T_COMMA */8);
+      _acc = acc$1;
+      continue ;
+    } else {
+      return List.rev(acc$1);
+    }
+  };
+}
+
+function declare_class(env, start_loc) {
+  var env$1 = with_strict(true, env);
+  token$4(env$1, /* T_CLASS */38);
+  var id = Curry._2(Parse.identifier, undefined, env$1);
+  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
+  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers$1(env$1, /* [] */0)) : /* [] */0;
+  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers$1(env$1, /* [] */0)) : /* [] */0;
+  var body = _object$1(true, env$1);
+  var loc = btwn(start_loc, body[0]);
+  return /* tuple */[
+          loc,
+          {
+            id: id,
+            typeParameters: typeParameters,
+            body: body,
+            extends: $$extends,
+            mixins: mixins
           }
         ];
 }
@@ -11230,46 +11270,6 @@ function module_items(env, _module_kind, _acc) {
     _module_kind = module_kind$1;
     continue ;
   };
-}
-
-function supers$1(env, _acc) {
-  while(true) {
-    var acc = _acc;
-    var $$super = wrap(generic, env);
-    var acc$1 = /* :: */[
-      $$super,
-      acc
-    ];
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && match === 8) {
-      token$4(env, /* T_COMMA */8);
-      _acc = acc$1;
-      continue ;
-    } else {
-      return List.rev(acc$1);
-    }
-  };
-}
-
-function declare_class(env, start_loc) {
-  var env$1 = with_strict(true, env);
-  token$4(env$1, /* T_CLASS */38);
-  var id = Curry._2(Parse.identifier, undefined, env$1);
-  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
-  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers$1(env$1, /* [] */0)) : /* [] */0;
-  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers$1(env$1, /* [] */0)) : /* [] */0;
-  var body = _object$1(true, env$1);
-  var loc = btwn(start_loc, body[0]);
-  return /* tuple */[
-          loc,
-          {
-            id: id,
-            typeParameters: typeParameters,
-            body: body,
-            extends: $$extends,
-            mixins: mixins
-          }
-        ];
 }
 
 function fold(acc, _param) {
@@ -12371,6 +12371,93 @@ function element_without_lt(env, start_loc) {
         ];
 }
 
+function statement_list_item($staropt$star, env) {
+  var decorators = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  if (!Curry._2(Parser_env_Peek.is_class, undefined, env)) {
+    error_on_decorators(env)(decorators);
+  }
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match === "number") {
+    if (match !== 25) {
+      if (match === 26) {
+        var env$1 = env;
+        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+        token$4(env$1, /* T_LET */26);
+        if (Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_LPAREN */3) {
+          token$4(env$1, /* T_LPAREN */3);
+          var match$1 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
+          var head = List.map((function (param) {
+                  var match = param[1];
+                  return {
+                          id: match.id,
+                          init: match.init
+                        };
+                }), match$1[1]);
+          token$4(env$1, /* T_RPAREN */4);
+          var body = Curry._1(Parse.statement, env$1);
+          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+          var end_loc = match$2 !== undefined ? match$2 : match$1[0];
+          semicolon(env$1);
+          List.iter((function (param) {
+                  return error_at(env$1, param);
+                }), match$1[2]);
+          return /* tuple */[
+                  btwn(start_loc, end_loc),
+                  /* Let */Block.__(17, [{
+                        head: head,
+                        body: body
+                      }])
+                ];
+        } else {
+          var match$3 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
+          var declaration = /* VariableDeclaration */Block.__(19, [{
+                declarations: match$3[1],
+                kind: /* Let */1
+              }]);
+          var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+          var end_loc$1 = match$4 !== undefined ? match$4 : match$3[0];
+          semicolon(env$1);
+          List.iter((function (param) {
+                  return error_at(env$1, param);
+                }), match$3[2]);
+          return /* tuple */[
+                  btwn(start_loc, end_loc$1),
+                  declaration
+                ];
+        }
+      }
+      
+    } else {
+      return var_or_const(env);
+    }
+  }
+  if (Curry._2(Parser_env_Peek.is_function, undefined, env)) {
+    return _function(env);
+  } else if (Curry._2(Parser_env_Peek.is_class, undefined, env)) {
+    return class_declaration$1(env, decorators);
+  } else if (typeof match === "number") {
+    switch (match) {
+      case /* T_INTERFACE */51 :
+          return $$interface(env);
+      case /* T_PACKAGE */52 :
+      case /* T_PRIVATE */53 :
+      case /* T_PROTECTED */54 :
+      case /* T_PUBLIC */55 :
+      case /* T_YIELD */56 :
+      case /* T_DEBUGGER */57 :
+          return statement(env);
+      case /* T_DECLARE */58 :
+          return declare(undefined, env);
+      case /* T_TYPE */59 :
+          return type_alias(env);
+      default:
+        return statement(env);
+    }
+  } else {
+    return statement(env);
+  }
+}
+
 function module_item(env) {
   var decorators = decorator_list(env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
@@ -13464,95 +13551,6 @@ function statement(env) {
   };
 }
 
-function statement_list_item($staropt$star, env) {
-  var decorators = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  if (!Curry._2(Parser_env_Peek.is_class, undefined, env)) {
-    error_on_decorators(env)(decorators);
-  }
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number") {
-    if (match !== 25) {
-      if (match === 26) {
-        var env$1 = env;
-        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-        token$4(env$1, /* T_LET */26);
-        if (Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_LPAREN */3) {
-          token$4(env$1, /* T_LPAREN */3);
-          var match$1 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
-          var head = List.map((function (param) {
-                  var match = param[1];
-                  return {
-                          id: match.id,
-                          init: match.init
-                        };
-                }), match$1[1]);
-          token$4(env$1, /* T_RPAREN */4);
-          var body = Curry._1(Parse.statement, env$1);
-          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-          var end_loc = match$2 !== undefined ? match$2 : match$1[0];
-          semicolon(env$1);
-          List.iter((function (param) {
-                  return error_at(env$1, param);
-                }), match$1[2]);
-          return /* tuple */[
-                  btwn(start_loc, end_loc),
-                  /* Let */Block.__(17, [{
-                        head: head,
-                        body: body
-                      }])
-                ];
-        } else {
-          var match$3 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
-          var declaration = /* VariableDeclaration */Block.__(19, [{
-                declarations: match$3[1],
-                kind: /* Let */1
-              }]);
-          var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-          var end_loc$1 = match$4 !== undefined ? match$4 : match$3[0];
-          semicolon(env$1);
-          List.iter((function (param) {
-                  return error_at(env$1, param);
-                }), match$3[2]);
-          return /* tuple */[
-                  btwn(start_loc, end_loc$1),
-                  declaration
-                ];
-        }
-      }
-      
-    } else {
-      return var_or_const(env);
-    }
-  }
-  if (Curry._2(Parser_env_Peek.is_function, undefined, env)) {
-    return _function(env);
-  } else if (Curry._2(Parser_env_Peek.is_class, undefined, env)) {
-    return class_declaration$1(env, decorators);
-  } else if (typeof match === "number") {
-    switch (match) {
-      case /* T_INTERFACE */51 :
-          return $$interface(env);
-      case /* T_PACKAGE */52 :
-      case /* T_PRIVATE */53 :
-      case /* T_PROTECTED */54 :
-      case /* T_PUBLIC */55 :
-      case /* T_YIELD */56 :
-      case /* T_DEBUGGER */57 :
-          return statement(env);
-      case /* T_DECLARE */58 :
-          return declare(undefined, env);
-      case /* T_TYPE */59 :
-          return type_alias(env);
-      default:
-        return statement(env);
-    }
-  } else {
-    return statement(env);
-  }
-}
-
-var class_declaration$1 = class_declaration;
-
 function module_body(term_fn, env) {
   var env$1 = env;
   var term_fn$1 = term_fn;
@@ -13706,6 +13704,26 @@ function statement_list$1(term_fn, env) {
   };
 }
 
+var class_declaration$1 = class_declaration;
+
+function statement_list_with_directives(term_fn, env) {
+  var match = Curry._3(directives, env, term_fn, (function (eta) {
+          return statement_list_item(undefined, eta);
+        }));
+  var env$1 = match[0];
+  var stmts = Curry._2(statement_list$1, term_fn, env$1);
+  var stmts$1 = List.fold_left((function (acc, stmt) {
+          return /* :: */[
+                  stmt,
+                  acc
+                ];
+        }), stmts, match[1]);
+  return /* tuple */[
+          stmts$1,
+          env$1.in_strict_mode
+        ];
+}
+
 function identifier$2(restricted_error, env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var name = Curry._2(Parser_env_Peek.value, undefined, env);
@@ -13759,24 +13777,6 @@ function module_body_with_directives(env, term_fn) {
                         acc
                       ];
               }), stmts, match[1]);
-}
-
-function statement_list_with_directives(term_fn, env) {
-  var match = Curry._3(directives, env, term_fn, (function (eta) {
-          return statement_list_item(undefined, eta);
-        }));
-  var env$1 = match[0];
-  var stmts = Curry._2(statement_list$1, term_fn, env$1);
-  var stmts$1 = List.fold_left((function (acc, stmt) {
-          return /* :: */[
-                  stmt,
-                  acc
-                ];
-        }), stmts, match[1]);
-  return /* tuple */[
-          stmts$1,
-          env$1.in_strict_mode
-        ];
 }
 
 function program(env) {
@@ -14185,27 +14185,34 @@ function parse(content, options) {
       if (typeof t === "number") {
         switch (t) {
           case /* Any */0 :
-              return node("AnyTypeAnnotation", loc, []);
+              var loc$1 = loc;
+              return node("AnyTypeAnnotation", loc$1, []);
           case /* Void */1 :
-              return node("VoidTypeAnnotation", loc, []);
+              var loc$2 = loc;
+              return node("VoidTypeAnnotation", loc$2, []);
           case /* Null */2 :
-              return node("NullTypeAnnotation", loc, []);
+              var loc$3 = loc;
+              return node("NullTypeAnnotation", loc$3, []);
           case /* Number */3 :
-              return node("NumberTypeAnnotation", loc, []);
+              var loc$4 = loc;
+              return node("NumberTypeAnnotation", loc$4, []);
           case /* String */4 :
-              return node("StringTypeAnnotation", loc, []);
+              var loc$5 = loc;
+              return node("StringTypeAnnotation", loc$5, []);
           case /* Boolean */5 :
-              return node("BooleanTypeAnnotation", loc, []);
+              var loc$6 = loc;
+              return node("BooleanTypeAnnotation", loc$6, []);
           case /* Exists */6 :
-              return node("ExistsTypeAnnotation", loc, []);
+              var loc$7 = loc;
+              return node("ExistsTypeAnnotation", loc$7, []);
           
         }
       } else {
         switch (t.tag | 0) {
           case /* Nullable */0 :
-              var loc$1 = loc;
+              var loc$8 = loc;
               var t$1 = t[0];
-              return node("NullableTypeAnnotation", loc$1, [/* tuple */[
+              return node("NullableTypeAnnotation", loc$8, [/* tuple */[
                             "typeAnnotation",
                             _type(t$1)
                           ]]);
@@ -14220,9 +14227,9 @@ function parse(content, options) {
                           t[0]
                         ]);
           case /* Array */3 :
-              var loc$2 = loc;
+              var loc$9 = loc;
               var t$2 = t[0];
-              return node("ArrayTypeAnnotation", loc$2, [/* tuple */[
+              return node("ArrayTypeAnnotation", loc$9, [/* tuple */[
                             "elementType",
                             _type(t$2)
                           ]]);
@@ -14333,6 +14340,662 @@ function parse(content, options) {
         }
       }
     };
+    var template_element = function (param) {
+      var element = param[1];
+      var value = obj([
+            /* tuple */[
+              "raw",
+              string(element.value.raw)
+            ],
+            /* tuple */[
+              "cooked",
+              string(element.value.cooked)
+            ]
+          ]);
+      return node("TemplateElement", param[0], [
+                  /* tuple */[
+                    "value",
+                    value
+                  ],
+                  /* tuple */[
+                    "tail",
+                    bool(element.tail)
+                  ]
+                ]);
+    };
+    var expression = function (param) {
+      var match = param[1];
+      var loc = param[0];
+      if (typeof match === "number") {
+        return node("ThisExpression", loc, []);
+      } else {
+        switch (match.tag | 0) {
+          case /* Array */0 :
+              return node("ArrayExpression", loc, [/* tuple */[
+                            "elements",
+                            array_of_list((function (param) {
+                                    return option(expression_or_spread, param);
+                                  }), match[0].elements)
+                          ]]);
+          case /* Object */1 :
+              return node("ObjectExpression", loc, [/* tuple */[
+                            "properties",
+                            array_of_list(object_property, match[0].properties)
+                          ]]);
+          case /* Function */2 :
+              return function_expression(/* tuple */[
+                          loc,
+                          match[0]
+                        ]);
+          case /* ArrowFunction */3 :
+              var arrow = match[0];
+              var match$1 = arrow.body;
+              var body;
+              body = match$1.tag ? expression(match$1[0]) : block(match$1[0]);
+              return node("ArrowFunctionExpression", loc, [
+                          /* tuple */[
+                            "id",
+                            option(identifier, arrow.id)
+                          ],
+                          /* tuple */[
+                            "params",
+                            array_of_list(pattern, arrow.params)
+                          ],
+                          /* tuple */[
+                            "defaults",
+                            array_of_list((function (param) {
+                                    return option(expression, param);
+                                  }), arrow.defaults)
+                          ],
+                          /* tuple */[
+                            "rest",
+                            option(identifier, arrow.rest)
+                          ],
+                          /* tuple */[
+                            "body",
+                            body
+                          ],
+                          /* tuple */[
+                            "async",
+                            bool(arrow.async)
+                          ],
+                          /* tuple */[
+                            "generator",
+                            bool(arrow.generator)
+                          ],
+                          /* tuple */[
+                            "expression",
+                            bool(arrow.expression)
+                          ],
+                          /* tuple */[
+                            "returnType",
+                            option(type_annotation, arrow.returnType)
+                          ],
+                          /* tuple */[
+                            "typeParameters",
+                            option(type_parameter_declaration, arrow.typeParameters)
+                          ]
+                        ]);
+          case /* Sequence */4 :
+              return node("SequenceExpression", loc, [/* tuple */[
+                            "expressions",
+                            array_of_list(expression, match[0].expressions)
+                          ]]);
+          case /* Unary */5 :
+              var unary = match[0];
+              var match$2 = unary.operator;
+              if (match$2 >= 7) {
+                return node("AwaitExpression", loc, [/* tuple */[
+                              "argument",
+                              expression(unary.argument)
+                            ]]);
+              } else {
+                var match$3 = unary.operator;
+                var operator;
+                switch (match$3) {
+                  case /* Minus */0 :
+                      operator = "-";
+                      break;
+                  case /* Plus */1 :
+                      operator = "+";
+                      break;
+                  case /* Not */2 :
+                      operator = "!";
+                      break;
+                  case /* BitNot */3 :
+                      operator = "~";
+                      break;
+                  case /* Typeof */4 :
+                      operator = "typeof";
+                      break;
+                  case /* Void */5 :
+                      operator = "void";
+                      break;
+                  case /* Delete */6 :
+                      operator = "delete";
+                      break;
+                  case /* Await */7 :
+                      throw [
+                            Caml_builtin_exceptions.failure,
+                            "matched above"
+                          ];
+                  
+                }
+                return node("UnaryExpression", loc, [
+                            /* tuple */[
+                              "operator",
+                              string(operator)
+                            ],
+                            /* tuple */[
+                              "prefix",
+                              bool(unary.prefix)
+                            ],
+                            /* tuple */[
+                              "argument",
+                              expression(unary.argument)
+                            ]
+                          ]);
+              }
+          case /* Binary */6 :
+              var binary = match[0];
+              var match$4 = binary.operator;
+              var operator$1;
+              switch (match$4) {
+                case /* Equal */0 :
+                    operator$1 = "==";
+                    break;
+                case /* NotEqual */1 :
+                    operator$1 = "!=";
+                    break;
+                case /* StrictEqual */2 :
+                    operator$1 = "===";
+                    break;
+                case /* StrictNotEqual */3 :
+                    operator$1 = "!==";
+                    break;
+                case /* LessThan */4 :
+                    operator$1 = "<";
+                    break;
+                case /* LessThanEqual */5 :
+                    operator$1 = "<=";
+                    break;
+                case /* GreaterThan */6 :
+                    operator$1 = ">";
+                    break;
+                case /* GreaterThanEqual */7 :
+                    operator$1 = ">=";
+                    break;
+                case /* LShift */8 :
+                    operator$1 = "<<";
+                    break;
+                case /* RShift */9 :
+                    operator$1 = ">>";
+                    break;
+                case /* RShift3 */10 :
+                    operator$1 = ">>>";
+                    break;
+                case /* Plus */11 :
+                    operator$1 = "+";
+                    break;
+                case /* Minus */12 :
+                    operator$1 = "-";
+                    break;
+                case /* Mult */13 :
+                    operator$1 = "*";
+                    break;
+                case /* Exp */14 :
+                    operator$1 = "**";
+                    break;
+                case /* Div */15 :
+                    operator$1 = "/";
+                    break;
+                case /* Mod */16 :
+                    operator$1 = "%";
+                    break;
+                case /* BitOr */17 :
+                    operator$1 = "|";
+                    break;
+                case /* Xor */18 :
+                    operator$1 = "^";
+                    break;
+                case /* BitAnd */19 :
+                    operator$1 = "&";
+                    break;
+                case /* In */20 :
+                    operator$1 = "in";
+                    break;
+                case /* Instanceof */21 :
+                    operator$1 = "instanceof";
+                    break;
+                
+              }
+              return node("BinaryExpression", loc, [
+                          /* tuple */[
+                            "operator",
+                            string(operator$1)
+                          ],
+                          /* tuple */[
+                            "left",
+                            expression(binary.left)
+                          ],
+                          /* tuple */[
+                            "right",
+                            expression(binary.right)
+                          ]
+                        ]);
+          case /* Assignment */7 :
+              var assignment = match[0];
+              var match$5 = assignment.operator;
+              var operator$2;
+              switch (match$5) {
+                case /* Assign */0 :
+                    operator$2 = "=";
+                    break;
+                case /* PlusAssign */1 :
+                    operator$2 = "+=";
+                    break;
+                case /* MinusAssign */2 :
+                    operator$2 = "-=";
+                    break;
+                case /* MultAssign */3 :
+                    operator$2 = "*=";
+                    break;
+                case /* ExpAssign */4 :
+                    operator$2 = "**=";
+                    break;
+                case /* DivAssign */5 :
+                    operator$2 = "/=";
+                    break;
+                case /* ModAssign */6 :
+                    operator$2 = "%=";
+                    break;
+                case /* LShiftAssign */7 :
+                    operator$2 = "<<=";
+                    break;
+                case /* RShiftAssign */8 :
+                    operator$2 = ">>=";
+                    break;
+                case /* RShift3Assign */9 :
+                    operator$2 = ">>>=";
+                    break;
+                case /* BitOrAssign */10 :
+                    operator$2 = "|=";
+                    break;
+                case /* BitXorAssign */11 :
+                    operator$2 = "^=";
+                    break;
+                case /* BitAndAssign */12 :
+                    operator$2 = "&=";
+                    break;
+                
+              }
+              return node("AssignmentExpression", loc, [
+                          /* tuple */[
+                            "operator",
+                            string(operator$2)
+                          ],
+                          /* tuple */[
+                            "left",
+                            pattern(assignment.left)
+                          ],
+                          /* tuple */[
+                            "right",
+                            expression(assignment.right)
+                          ]
+                        ]);
+          case /* Update */8 :
+              var update = match[0];
+              var match$6 = update.operator;
+              var operator$3 = match$6 ? "--" : "++";
+              return node("UpdateExpression", loc, [
+                          /* tuple */[
+                            "operator",
+                            string(operator$3)
+                          ],
+                          /* tuple */[
+                            "argument",
+                            expression(update.argument)
+                          ],
+                          /* tuple */[
+                            "prefix",
+                            bool(update.prefix)
+                          ]
+                        ]);
+          case /* Logical */9 :
+              var logical = match[0];
+              var match$7 = logical.operator;
+              var operator$4 = match$7 ? "&&" : "||";
+              return node("LogicalExpression", loc, [
+                          /* tuple */[
+                            "operator",
+                            string(operator$4)
+                          ],
+                          /* tuple */[
+                            "left",
+                            expression(logical.left)
+                          ],
+                          /* tuple */[
+                            "right",
+                            expression(logical.right)
+                          ]
+                        ]);
+          case /* Conditional */10 :
+              var conditional = match[0];
+              return node("ConditionalExpression", loc, [
+                          /* tuple */[
+                            "test",
+                            expression(conditional.test)
+                          ],
+                          /* tuple */[
+                            "consequent",
+                            expression(conditional.consequent)
+                          ],
+                          /* tuple */[
+                            "alternate",
+                            expression(conditional.alternate)
+                          ]
+                        ]);
+          case /* New */11 :
+              var _new = match[0];
+              return node("NewExpression", loc, [
+                          /* tuple */[
+                            "callee",
+                            expression(_new.callee)
+                          ],
+                          /* tuple */[
+                            "arguments",
+                            array_of_list(expression_or_spread, _new.arguments)
+                          ]
+                        ]);
+          case /* Call */12 :
+              var call = match[0];
+              return node("CallExpression", loc, [
+                          /* tuple */[
+                            "callee",
+                            expression(call.callee)
+                          ],
+                          /* tuple */[
+                            "arguments",
+                            array_of_list(expression_or_spread, call.arguments)
+                          ]
+                        ]);
+          case /* Member */13 :
+              var member = match[0];
+              var match$8 = member.property;
+              var property;
+              property = match$8.tag ? expression(match$8[0]) : identifier(match$8[0]);
+              return node("MemberExpression", loc, [
+                          /* tuple */[
+                            "object",
+                            expression(member._object)
+                          ],
+                          /* tuple */[
+                            "property",
+                            property
+                          ],
+                          /* tuple */[
+                            "computed",
+                            bool(member.computed)
+                          ]
+                        ]);
+          case /* Yield */14 :
+              var $$yield = match[0];
+              return node("YieldExpression", loc, [
+                          /* tuple */[
+                            "argument",
+                            option(expression, $$yield.argument)
+                          ],
+                          /* tuple */[
+                            "delegate",
+                            bool($$yield.delegate)
+                          ]
+                        ]);
+          case /* Comprehension */15 :
+              var comp = match[0];
+              return node("ComprehensionExpression", loc, [
+                          /* tuple */[
+                            "blocks",
+                            array_of_list(comprehension_block, comp.blocks)
+                          ],
+                          /* tuple */[
+                            "filter",
+                            option(expression, comp.filter)
+                          ]
+                        ]);
+          case /* Generator */16 :
+              var gen = match[0];
+              return node("GeneratorExpression", loc, [
+                          /* tuple */[
+                            "blocks",
+                            array_of_list(comprehension_block, gen.blocks)
+                          ],
+                          /* tuple */[
+                            "filter",
+                            option(expression, gen.filter)
+                          ]
+                        ]);
+          case /* Let */17 :
+              var _let = match[0];
+              return node("LetExpression", loc, [
+                          /* tuple */[
+                            "head",
+                            array_of_list(let_assignment, _let.head)
+                          ],
+                          /* tuple */[
+                            "body",
+                            expression(_let.body)
+                          ]
+                        ]);
+          case /* Identifier */18 :
+              return identifier(match[0]);
+          case /* Literal */19 :
+              return literal(/* tuple */[
+                          loc,
+                          match[0]
+                        ]);
+          case /* TemplateLiteral */20 :
+              return template_literal(/* tuple */[
+                          loc,
+                          match[0]
+                        ]);
+          case /* TaggedTemplate */21 :
+              var param$1 = /* tuple */[
+                loc,
+                match[0]
+              ];
+              var tagged = param$1[1];
+              return node("TaggedTemplateExpression", param$1[0], [
+                          /* tuple */[
+                            "tag",
+                            expression(tagged.tag)
+                          ],
+                          /* tuple */[
+                            "quasi",
+                            template_literal(tagged.quasi)
+                          ]
+                        ]);
+          case /* JSXElement */22 :
+              return jsx_element(/* tuple */[
+                          loc,
+                          match[0]
+                        ]);
+          case /* Class */23 :
+              var param$2 = /* tuple */[
+                loc,
+                match[0]
+              ];
+              var c = param$2[1];
+              return node("ClassExpression", param$2[0], [
+                          /* tuple */[
+                            "id",
+                            option(identifier, c.id)
+                          ],
+                          /* tuple */[
+                            "body",
+                            class_body(c.body)
+                          ],
+                          /* tuple */[
+                            "superClass",
+                            option(expression, c.superClass)
+                          ],
+                          /* tuple */[
+                            "typeParameters",
+                            option(type_parameter_declaration, c.typeParameters)
+                          ],
+                          /* tuple */[
+                            "superTypeParameters",
+                            option(type_parameter_instantiation, c.superTypeParameters)
+                          ],
+                          /* tuple */[
+                            "implements",
+                            array_of_list(class_implements, c.implements)
+                          ],
+                          /* tuple */[
+                            "decorators",
+                            array_of_list(expression, c.classDecorators)
+                          ]
+                        ]);
+          case /* TypeCast */24 :
+              var typecast = match[0];
+              return node("TypeCastExpression", loc, [
+                          /* tuple */[
+                            "expression",
+                            expression(typecast.expression)
+                          ],
+                          /* tuple */[
+                            "typeAnnotation",
+                            type_annotation(typecast.typeAnnotation)
+                          ]
+                        ]);
+          
+        }
+      }
+    };
+    var class_element = function (param) {
+      if (param.tag) {
+        var param$1 = param[0];
+        var prop = param$1[1];
+        var match = prop.key;
+        var match$1;
+        switch (match.tag | 0) {
+          case /* Literal */0 :
+              match$1 = /* tuple */[
+                literal(match[0]),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = /* tuple */[
+                identifier(match[0]),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = /* tuple */[
+                expression(match[0]),
+                true
+              ];
+              break;
+          
+        }
+        return node("ClassProperty", param$1[0], [
+                    /* tuple */[
+                      "key",
+                      match$1[0]
+                    ],
+                    /* tuple */[
+                      "value",
+                      option(expression, prop.value)
+                    ],
+                    /* tuple */[
+                      "typeAnnotation",
+                      option(type_annotation, prop.typeAnnotation)
+                    ],
+                    /* tuple */[
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    /* tuple */[
+                      "static",
+                      bool(prop.static)
+                    ]
+                  ]);
+      } else {
+        var param$2 = param[0];
+        var method_ = param$2[1];
+        var key = method_.key;
+        var match$2;
+        switch (key.tag | 0) {
+          case /* Literal */0 :
+              match$2 = /* tuple */[
+                literal(key[0]),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$2 = /* tuple */[
+                identifier(key[0]),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$2 = /* tuple */[
+                expression(key[0]),
+                true
+              ];
+              break;
+          
+        }
+        var kind;
+        switch (method_.kind) {
+          case /* Constructor */0 :
+              kind = "constructor";
+              break;
+          case /* Method */1 :
+              kind = "method";
+              break;
+          case /* Get */2 :
+              kind = "get";
+              break;
+          case /* Set */3 :
+              kind = "set";
+              break;
+          
+        }
+        return node("MethodDefinition", param$2[0], [
+                    /* tuple */[
+                      "key",
+                      match$2[0]
+                    ],
+                    /* tuple */[
+                      "value",
+                      function_expression(method_.value)
+                    ],
+                    /* tuple */[
+                      "kind",
+                      string(kind)
+                    ],
+                    /* tuple */[
+                      "static",
+                      bool(method_.static)
+                    ],
+                    /* tuple */[
+                      "computed",
+                      bool(match$2[1])
+                    ],
+                    /* tuple */[
+                      "decorators",
+                      array_of_list(expression, method_.decorators)
+                    ]
+                  ]);
+      }
+    };
+    var type_parameter_declaration = function (param) {
+      return node("TypeParameterDeclaration", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(type_param, param[1].params)
+                  ]]);
+    };
     var identifier = function (param) {
       var id = param[1];
       return node("Identifier", param[0], [
@@ -14349,41 +15012,6 @@ function parse(content, options) {
                     bool(id.optional)
                   ]
                 ]);
-    };
-    var export_specifier = function (param) {
-      var specifier = param[1];
-      return node("ExportSpecifier", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(specifier.id)
-                  ],
-                  /* tuple */[
-                    "name",
-                    option(identifier, specifier.name)
-                  ]
-                ]);
-    };
-    var generic_type_qualified_identifier = function (param) {
-      var q = param[1];
-      var match = q.qualification;
-      var qualification;
-      qualification = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-      return node("QualifiedTypeIdentifier", param[0], [
-                  /* tuple */[
-                    "qualification",
-                    qualification
-                  ],
-                  /* tuple */[
-                    "id",
-                    identifier(q.id)
-                  ]
-                ]);
-    };
-    var type_parameter_instantiation = function (param) {
-      return node("TypeParameterInstantiation", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(_type, param[1].params)
-                  ]]);
     };
     var jsx_name = function (param) {
       switch (param.tag | 0) {
@@ -14420,6 +15048,292 @@ function parse(content, options) {
                     ]
                   ]);
       }
+    };
+    var pattern = function (param) {
+      var match = param[1];
+      var loc = param[0];
+      switch (match.tag | 0) {
+        case /* Object */0 :
+            var obj = match[0];
+            return node("ObjectPattern", loc, [
+                        /* tuple */[
+                          "properties",
+                          array_of_list(object_pattern_property, obj.properties)
+                        ],
+                        /* tuple */[
+                          "typeAnnotation",
+                          option(type_annotation, obj.typeAnnotation)
+                        ]
+                      ]);
+        case /* Array */1 :
+            var arr = match[0];
+            return node("ArrayPattern", loc, [
+                        /* tuple */[
+                          "elements",
+                          array_of_list((function (param) {
+                                  return option(array_pattern_element, param);
+                                }), arr.elements)
+                        ],
+                        /* tuple */[
+                          "typeAnnotation",
+                          option(type_annotation, arr.typeAnnotation)
+                        ]
+                      ]);
+        case /* Assignment */2 :
+            var match$1 = match[0];
+            return node("AssignmentPattern", loc, [
+                        /* tuple */[
+                          "left",
+                          pattern(match$1.left)
+                        ],
+                        /* tuple */[
+                          "right",
+                          expression(match$1.right)
+                        ]
+                      ]);
+        case /* Identifier */3 :
+            return identifier(match[0]);
+        case /* Expression */4 :
+            return expression(match[0]);
+        
+      }
+    };
+    var block = function (param) {
+      return node("BlockStatement", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(statement, param[1].body)
+                  ]]);
+    };
+    var type_annotation = function (param) {
+      return node("TypeAnnotation", param[0], [/* tuple */[
+                    "typeAnnotation",
+                    _type(param[1])
+                  ]]);
+    };
+    var jsx_expression_container = function (param) {
+      var match = param[1].expression;
+      var expression$1;
+      expression$1 = match.tag ? node("JSXEmptyExpression", match[0], []) : expression(match[0]);
+      return node("JSXExpressionContainer", param[0], [/* tuple */[
+                    "expression",
+                    expression$1
+                  ]]);
+    };
+    var jsx_element = function (param) {
+      var element = param[1];
+      return node("JSXElement", param[0], [
+                  /* tuple */[
+                    "openingElement",
+                    jsx_opening(element.openingElement)
+                  ],
+                  /* tuple */[
+                    "closingElement",
+                    option(jsx_closing, element.closingElement)
+                  ],
+                  /* tuple */[
+                    "children",
+                    array_of_list(jsx_child, element.children)
+                  ]
+                ]);
+    };
+    var type_parameter_instantiation = function (param) {
+      return node("TypeParameterInstantiation", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(_type, param[1].params)
+                  ]]);
+    };
+    var generic_type_qualified_identifier = function (param) {
+      var q = param[1];
+      var match = q.qualification;
+      var qualification;
+      qualification = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
+      return node("QualifiedTypeIdentifier", param[0], [
+                  /* tuple */[
+                    "qualification",
+                    qualification
+                  ],
+                  /* tuple */[
+                    "id",
+                    identifier(q.id)
+                  ]
+                ]);
+    };
+    var function_type = function (param) {
+      var fn = param[1];
+      return node("FunctionTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "params",
+                    array_of_list(function_type_param, fn.params)
+                  ],
+                  /* tuple */[
+                    "returnType",
+                    _type(fn.returnType)
+                  ],
+                  /* tuple */[
+                    "rest",
+                    option(function_type_param, fn.rest)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, fn.typeParameters)
+                  ]
+                ]);
+    };
+    var object_type = function (param) {
+      var o = param[1];
+      return node("ObjectTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "properties",
+                    array_of_list(object_type_property, o.properties)
+                  ],
+                  /* tuple */[
+                    "indexers",
+                    array_of_list(object_type_indexer, o.indexers)
+                  ],
+                  /* tuple */[
+                    "callProperties",
+                    array_of_list(object_type_call_property, o.callProperties)
+                  ]
+                ]);
+    };
+    var interface_extends = function (param) {
+      var g = param[1];
+      var match = g.id;
+      var id;
+      id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
+      return node("InterfaceExtends", param[0], [
+                  /* tuple */[
+                    "id",
+                    id
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_instantiation, g.typeParameters)
+                  ]
+                ]);
+    };
+    var variable_declarator = function (param) {
+      var declarator = param[1];
+      return node("VariableDeclarator", param[0], [
+                  /* tuple */[
+                    "id",
+                    pattern(declarator.id)
+                  ],
+                  /* tuple */[
+                    "init",
+                    option(expression, declarator.init)
+                  ]
+                ]);
+    };
+    var interface_declaration = function (param) {
+      var i = param[1];
+      return node("InterfaceDeclaration", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(i.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, i.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(i.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, i.extends)
+                  ]
+                ]);
+    };
+    var export_specifiers = function (param) {
+      if (param !== undefined) {
+        var match = param;
+        if (match.tag) {
+          return array([node("ExportBatchSpecifier", match[0], [/* tuple */[
+                              "name",
+                              option(identifier, match[1])
+                            ]])]);
+        } else {
+          return array_of_list(export_specifier, match[0]);
+        }
+      } else {
+        return array([]);
+      }
+    };
+    var $$case = function (param) {
+      var c = param[1];
+      return node("SwitchCase", param[0], [
+                  /* tuple */[
+                    "test",
+                    option(expression, c.test)
+                  ],
+                  /* tuple */[
+                    "consequent",
+                    array_of_list(statement, c.consequent)
+                  ]
+                ]);
+    };
+    var type_alias = function (param) {
+      var alias = param[1];
+      return node("TypeAlias", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(alias.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, alias.typeParameters)
+                  ],
+                  /* tuple */[
+                    "right",
+                    _type(alias.right)
+                  ]
+                ]);
+    };
+    var $$catch = function (param) {
+      var c = param[1];
+      return node("CatchClause", param[0], [
+                  /* tuple */[
+                    "param",
+                    pattern(c.param)
+                  ],
+                  /* tuple */[
+                    "guard",
+                    option(expression, c.guard)
+                  ],
+                  /* tuple */[
+                    "body",
+                    block(c.body)
+                  ]
+                ]);
+    };
+    var declare_function = function (param) {
+      return node("DeclareFunction", param[0], [/* tuple */[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var declare_class = function (param) {
+      var d = param[1];
+      return node("DeclareClass", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(d.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, d.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(d.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, d.extends)
+                  ]
+                ]);
     };
     var literal = function (param) {
       var lit = param[1];
@@ -14492,33 +15406,23 @@ function parse(content, options) {
       }
       return node("Literal", loc, props);
     };
-    var type_param = function (param) {
-      var tp = param[1];
-      var variance = function (param) {
-        if (param) {
-          return string("minus");
-        } else {
-          return string("plus");
-        }
-      };
-      return node("TypeParameter", param[0], [
+    var let_assignment = function (assignment) {
+      return obj([
                   /* tuple */[
-                    "name",
-                    string(tp.name)
+                    "id",
+                    pattern(assignment.id)
                   ],
                   /* tuple */[
-                    "bound",
-                    option(type_annotation, tp.bound)
-                  ],
-                  /* tuple */[
-                    "variance",
-                    option(variance, tp.variance)
-                  ],
-                  /* tuple */[
-                    "default",
-                    option(_type, tp.default)
+                    "init",
+                    option(expression, assignment.init)
                   ]
                 ]);
+    };
+    var declare_variable = function (param) {
+      return node("DeclareVariable", param[0], [/* tuple */[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
     };
     var statement = function (param) {
       var match = param[1];
@@ -15046,704 +15950,30 @@ function parse(content, options) {
         }
       }
     };
-    var expression = function (param) {
-      var match = param[1];
-      var loc = param[0];
-      if (typeof match === "number") {
-        return node("ThisExpression", loc, []);
-      } else {
-        switch (match.tag | 0) {
-          case /* Array */0 :
-              return node("ArrayExpression", loc, [/* tuple */[
-                            "elements",
-                            array_of_list((function (param) {
-                                    return option(expression_or_spread, param);
-                                  }), match[0].elements)
-                          ]]);
-          case /* Object */1 :
-              return node("ObjectExpression", loc, [/* tuple */[
-                            "properties",
-                            array_of_list(object_property, match[0].properties)
-                          ]]);
-          case /* Function */2 :
-              return function_expression(/* tuple */[
-                          loc,
-                          match[0]
-                        ]);
-          case /* ArrowFunction */3 :
-              var arrow = match[0];
-              var match$1 = arrow.body;
-              var body;
-              body = match$1.tag ? expression(match$1[0]) : block(match$1[0]);
-              return node("ArrowFunctionExpression", loc, [
-                          /* tuple */[
-                            "id",
-                            option(identifier, arrow.id)
-                          ],
-                          /* tuple */[
-                            "params",
-                            array_of_list(pattern, arrow.params)
-                          ],
-                          /* tuple */[
-                            "defaults",
-                            array_of_list((function (param) {
-                                    return option(expression, param);
-                                  }), arrow.defaults)
-                          ],
-                          /* tuple */[
-                            "rest",
-                            option(identifier, arrow.rest)
-                          ],
-                          /* tuple */[
-                            "body",
-                            body
-                          ],
-                          /* tuple */[
-                            "async",
-                            bool(arrow.async)
-                          ],
-                          /* tuple */[
-                            "generator",
-                            bool(arrow.generator)
-                          ],
-                          /* tuple */[
-                            "expression",
-                            bool(arrow.expression)
-                          ],
-                          /* tuple */[
-                            "returnType",
-                            option(type_annotation, arrow.returnType)
-                          ],
-                          /* tuple */[
-                            "typeParameters",
-                            option(type_parameter_declaration, arrow.typeParameters)
-                          ]
-                        ]);
-          case /* Sequence */4 :
-              return node("SequenceExpression", loc, [/* tuple */[
-                            "expressions",
-                            array_of_list(expression, match[0].expressions)
-                          ]]);
-          case /* Unary */5 :
-              var unary = match[0];
-              var match$2 = unary.operator;
-              if (match$2 >= 7) {
-                return node("AwaitExpression", loc, [/* tuple */[
-                              "argument",
-                              expression(unary.argument)
-                            ]]);
-              } else {
-                var match$3 = unary.operator;
-                var operator;
-                switch (match$3) {
-                  case /* Minus */0 :
-                      operator = "-";
-                      break;
-                  case /* Plus */1 :
-                      operator = "+";
-                      break;
-                  case /* Not */2 :
-                      operator = "!";
-                      break;
-                  case /* BitNot */3 :
-                      operator = "~";
-                      break;
-                  case /* Typeof */4 :
-                      operator = "typeof";
-                      break;
-                  case /* Void */5 :
-                      operator = "void";
-                      break;
-                  case /* Delete */6 :
-                      operator = "delete";
-                      break;
-                  case /* Await */7 :
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "matched above"
-                          ];
-                  
-                }
-                return node("UnaryExpression", loc, [
-                            /* tuple */[
-                              "operator",
-                              string(operator)
-                            ],
-                            /* tuple */[
-                              "prefix",
-                              bool(unary.prefix)
-                            ],
-                            /* tuple */[
-                              "argument",
-                              expression(unary.argument)
-                            ]
-                          ]);
-              }
-          case /* Binary */6 :
-              var binary = match[0];
-              var match$4 = binary.operator;
-              var operator$1;
-              switch (match$4) {
-                case /* Equal */0 :
-                    operator$1 = "==";
-                    break;
-                case /* NotEqual */1 :
-                    operator$1 = "!=";
-                    break;
-                case /* StrictEqual */2 :
-                    operator$1 = "===";
-                    break;
-                case /* StrictNotEqual */3 :
-                    operator$1 = "!==";
-                    break;
-                case /* LessThan */4 :
-                    operator$1 = "<";
-                    break;
-                case /* LessThanEqual */5 :
-                    operator$1 = "<=";
-                    break;
-                case /* GreaterThan */6 :
-                    operator$1 = ">";
-                    break;
-                case /* GreaterThanEqual */7 :
-                    operator$1 = ">=";
-                    break;
-                case /* LShift */8 :
-                    operator$1 = "<<";
-                    break;
-                case /* RShift */9 :
-                    operator$1 = ">>";
-                    break;
-                case /* RShift3 */10 :
-                    operator$1 = ">>>";
-                    break;
-                case /* Plus */11 :
-                    operator$1 = "+";
-                    break;
-                case /* Minus */12 :
-                    operator$1 = "-";
-                    break;
-                case /* Mult */13 :
-                    operator$1 = "*";
-                    break;
-                case /* Exp */14 :
-                    operator$1 = "**";
-                    break;
-                case /* Div */15 :
-                    operator$1 = "/";
-                    break;
-                case /* Mod */16 :
-                    operator$1 = "%";
-                    break;
-                case /* BitOr */17 :
-                    operator$1 = "|";
-                    break;
-                case /* Xor */18 :
-                    operator$1 = "^";
-                    break;
-                case /* BitAnd */19 :
-                    operator$1 = "&";
-                    break;
-                case /* In */20 :
-                    operator$1 = "in";
-                    break;
-                case /* Instanceof */21 :
-                    operator$1 = "instanceof";
-                    break;
-                
-              }
-              return node("BinaryExpression", loc, [
-                          /* tuple */[
-                            "operator",
-                            string(operator$1)
-                          ],
-                          /* tuple */[
-                            "left",
-                            expression(binary.left)
-                          ],
-                          /* tuple */[
-                            "right",
-                            expression(binary.right)
-                          ]
-                        ]);
-          case /* Assignment */7 :
-              var assignment = match[0];
-              var match$5 = assignment.operator;
-              var operator$2;
-              switch (match$5) {
-                case /* Assign */0 :
-                    operator$2 = "=";
-                    break;
-                case /* PlusAssign */1 :
-                    operator$2 = "+=";
-                    break;
-                case /* MinusAssign */2 :
-                    operator$2 = "-=";
-                    break;
-                case /* MultAssign */3 :
-                    operator$2 = "*=";
-                    break;
-                case /* ExpAssign */4 :
-                    operator$2 = "**=";
-                    break;
-                case /* DivAssign */5 :
-                    operator$2 = "/=";
-                    break;
-                case /* ModAssign */6 :
-                    operator$2 = "%=";
-                    break;
-                case /* LShiftAssign */7 :
-                    operator$2 = "<<=";
-                    break;
-                case /* RShiftAssign */8 :
-                    operator$2 = ">>=";
-                    break;
-                case /* RShift3Assign */9 :
-                    operator$2 = ">>>=";
-                    break;
-                case /* BitOrAssign */10 :
-                    operator$2 = "|=";
-                    break;
-                case /* BitXorAssign */11 :
-                    operator$2 = "^=";
-                    break;
-                case /* BitAndAssign */12 :
-                    operator$2 = "&=";
-                    break;
-                
-              }
-              return node("AssignmentExpression", loc, [
-                          /* tuple */[
-                            "operator",
-                            string(operator$2)
-                          ],
-                          /* tuple */[
-                            "left",
-                            pattern(assignment.left)
-                          ],
-                          /* tuple */[
-                            "right",
-                            expression(assignment.right)
-                          ]
-                        ]);
-          case /* Update */8 :
-              var update = match[0];
-              var match$6 = update.operator;
-              var operator$3 = match$6 ? "--" : "++";
-              return node("UpdateExpression", loc, [
-                          /* tuple */[
-                            "operator",
-                            string(operator$3)
-                          ],
-                          /* tuple */[
-                            "argument",
-                            expression(update.argument)
-                          ],
-                          /* tuple */[
-                            "prefix",
-                            bool(update.prefix)
-                          ]
-                        ]);
-          case /* Logical */9 :
-              var logical = match[0];
-              var match$7 = logical.operator;
-              var operator$4 = match$7 ? "&&" : "||";
-              return node("LogicalExpression", loc, [
-                          /* tuple */[
-                            "operator",
-                            string(operator$4)
-                          ],
-                          /* tuple */[
-                            "left",
-                            expression(logical.left)
-                          ],
-                          /* tuple */[
-                            "right",
-                            expression(logical.right)
-                          ]
-                        ]);
-          case /* Conditional */10 :
-              var conditional = match[0];
-              return node("ConditionalExpression", loc, [
-                          /* tuple */[
-                            "test",
-                            expression(conditional.test)
-                          ],
-                          /* tuple */[
-                            "consequent",
-                            expression(conditional.consequent)
-                          ],
-                          /* tuple */[
-                            "alternate",
-                            expression(conditional.alternate)
-                          ]
-                        ]);
-          case /* New */11 :
-              var _new = match[0];
-              return node("NewExpression", loc, [
-                          /* tuple */[
-                            "callee",
-                            expression(_new.callee)
-                          ],
-                          /* tuple */[
-                            "arguments",
-                            array_of_list(expression_or_spread, _new.arguments)
-                          ]
-                        ]);
-          case /* Call */12 :
-              var call = match[0];
-              return node("CallExpression", loc, [
-                          /* tuple */[
-                            "callee",
-                            expression(call.callee)
-                          ],
-                          /* tuple */[
-                            "arguments",
-                            array_of_list(expression_or_spread, call.arguments)
-                          ]
-                        ]);
-          case /* Member */13 :
-              var member = match[0];
-              var match$8 = member.property;
-              var property;
-              property = match$8.tag ? expression(match$8[0]) : identifier(match$8[0]);
-              return node("MemberExpression", loc, [
-                          /* tuple */[
-                            "object",
-                            expression(member._object)
-                          ],
-                          /* tuple */[
-                            "property",
-                            property
-                          ],
-                          /* tuple */[
-                            "computed",
-                            bool(member.computed)
-                          ]
-                        ]);
-          case /* Yield */14 :
-              var $$yield = match[0];
-              return node("YieldExpression", loc, [
-                          /* tuple */[
-                            "argument",
-                            option(expression, $$yield.argument)
-                          ],
-                          /* tuple */[
-                            "delegate",
-                            bool($$yield.delegate)
-                          ]
-                        ]);
-          case /* Comprehension */15 :
-              var comp = match[0];
-              return node("ComprehensionExpression", loc, [
-                          /* tuple */[
-                            "blocks",
-                            array_of_list(comprehension_block, comp.blocks)
-                          ],
-                          /* tuple */[
-                            "filter",
-                            option(expression, comp.filter)
-                          ]
-                        ]);
-          case /* Generator */16 :
-              var gen = match[0];
-              return node("GeneratorExpression", loc, [
-                          /* tuple */[
-                            "blocks",
-                            array_of_list(comprehension_block, gen.blocks)
-                          ],
-                          /* tuple */[
-                            "filter",
-                            option(expression, gen.filter)
-                          ]
-                        ]);
-          case /* Let */17 :
-              var _let = match[0];
-              return node("LetExpression", loc, [
-                          /* tuple */[
-                            "head",
-                            array_of_list(let_assignment, _let.head)
-                          ],
-                          /* tuple */[
-                            "body",
-                            expression(_let.body)
-                          ]
-                        ]);
-          case /* Identifier */18 :
-              return identifier(match[0]);
-          case /* Literal */19 :
-              return literal(/* tuple */[
-                          loc,
-                          match[0]
-                        ]);
-          case /* TemplateLiteral */20 :
-              return template_literal(/* tuple */[
-                          loc,
-                          match[0]
-                        ]);
-          case /* TaggedTemplate */21 :
-              var param$1 = /* tuple */[
-                loc,
-                match[0]
-              ];
-              var tagged = param$1[1];
-              return node("TaggedTemplateExpression", param$1[0], [
-                          /* tuple */[
-                            "tag",
-                            expression(tagged.tag)
-                          ],
-                          /* tuple */[
-                            "quasi",
-                            template_literal(tagged.quasi)
-                          ]
-                        ]);
-          case /* JSXElement */22 :
-              return jsx_element(/* tuple */[
-                          loc,
-                          match[0]
-                        ]);
-          case /* Class */23 :
-              var param$2 = /* tuple */[
-                loc,
-                match[0]
-              ];
-              var c = param$2[1];
-              return node("ClassExpression", param$2[0], [
-                          /* tuple */[
-                            "id",
-                            option(identifier, c.id)
-                          ],
-                          /* tuple */[
-                            "body",
-                            class_body(c.body)
-                          ],
-                          /* tuple */[
-                            "superClass",
-                            option(expression, c.superClass)
-                          ],
-                          /* tuple */[
-                            "typeParameters",
-                            option(type_parameter_declaration, c.typeParameters)
-                          ],
-                          /* tuple */[
-                            "superTypeParameters",
-                            option(type_parameter_instantiation, c.superTypeParameters)
-                          ],
-                          /* tuple */[
-                            "implements",
-                            array_of_list(class_implements, c.implements)
-                          ],
-                          /* tuple */[
-                            "decorators",
-                            array_of_list(expression, c.classDecorators)
-                          ]
-                        ]);
-          case /* TypeCast */24 :
-              var typecast = match[0];
-              return node("TypeCastExpression", loc, [
-                          /* tuple */[
-                            "expression",
-                            expression(typecast.expression)
-                          ],
-                          /* tuple */[
-                            "typeAnnotation",
-                            type_annotation(typecast.typeAnnotation)
-                          ]
-                        ]);
-          
-        }
-      }
-    };
-    var object_type_indexer = function (param) {
-      var indexer = param[1];
-      return node("ObjectTypeIndexer", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(indexer.id)
-                  ],
-                  /* tuple */[
-                    "key",
-                    _type(indexer.key)
-                  ],
-                  /* tuple */[
-                    "value",
-                    _type(indexer.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(indexer.static)
-                  ]
-                ]);
-    };
-    var object_type_property = function (param) {
-      var prop = param[1];
-      var match = prop.key;
-      var key;
-      switch (match.tag | 0) {
-        case /* Literal */0 :
-            key = literal(match[0]);
+    var variable_declaration = function (param) {
+      var $$var = param[1];
+      var match = $$var.kind;
+      var kind;
+      switch (match) {
+        case /* Var */0 :
+            kind = "var";
             break;
-        case /* Identifier */1 :
-            key = identifier(match[0]);
+        case /* Let */1 :
+            kind = "let";
             break;
-        case /* Computed */2 :
-            throw [
-                  Caml_builtin_exceptions.failure,
-                  "There should not be computed object type property keys"
-                ];
+        case /* Const */2 :
+            kind = "const";
+            break;
         
       }
-      return node("ObjectTypeProperty", param[0], [
+      return node("VariableDeclaration", param[0], [
                   /* tuple */[
-                    "key",
-                    key
+                    "declarations",
+                    array_of_list(variable_declarator, $$var.declarations)
                   ],
                   /* tuple */[
-                    "value",
-                    _type(prop.value)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(prop.optional)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(prop.static)
-                  ]
-                ]);
-    };
-    var object_type_call_property = function (param) {
-      var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], [
-                  /* tuple */[
-                    "value",
-                    function_type(callProperty.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(callProperty.static)
-                  ]
-                ]);
-    };
-    var jsx_member_expression = function (param) {
-      var member_expression = param[1];
-      var match = member_expression._object;
-      var _object;
-      _object = match.tag ? jsx_member_expression(match[0]) : jsx_identifier(match[0]);
-      return node("JSXMemberExpression", param[0], [
-                  /* tuple */[
-                    "object",
-                    _object
-                  ],
-                  /* tuple */[
-                    "property",
-                    jsx_identifier(member_expression.property)
-                  ]
-                ]);
-    };
-    var jsx_identifier = function (param) {
-      return node("JSXIdentifier", param[0], [/* tuple */[
-                    "name",
-                    string(param[1].name)
-                  ]]);
-    };
-    var template_literal = function (param) {
-      var value = param[1];
-      return node("TemplateLiteral", param[0], [
-                  /* tuple */[
-                    "quasis",
-                    array_of_list(template_element, value.quasis)
-                  ],
-                  /* tuple */[
-                    "expressions",
-                    array_of_list(expression, value.expressions)
-                  ]
-                ]);
-    };
-    var class_implements = function (param) {
-      var $$implements = param[1];
-      return node("ClassImplements", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier($$implements.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_instantiation, $$implements.typeParameters)
-                  ]
-                ]);
-    };
-    var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(type_param, param[1].params)
-                  ]]);
-    };
-    var class_body = function (param) {
-      return node("ClassBody", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(class_element, param[1].body)
-                  ]]);
-    };
-    var pattern = function (param) {
-      var match = param[1];
-      var loc = param[0];
-      switch (match.tag | 0) {
-        case /* Object */0 :
-            var obj = match[0];
-            return node("ObjectPattern", loc, [
-                        /* tuple */[
-                          "properties",
-                          array_of_list(object_pattern_property, obj.properties)
-                        ],
-                        /* tuple */[
-                          "typeAnnotation",
-                          option(type_annotation, obj.typeAnnotation)
-                        ]
-                      ]);
-        case /* Array */1 :
-            var arr = match[0];
-            return node("ArrayPattern", loc, [
-                        /* tuple */[
-                          "elements",
-                          array_of_list((function (param) {
-                                  return option(array_pattern_element, param);
-                                }), arr.elements)
-                        ],
-                        /* tuple */[
-                          "typeAnnotation",
-                          option(type_annotation, arr.typeAnnotation)
-                        ]
-                      ]);
-        case /* Assignment */2 :
-            var match$1 = match[0];
-            return node("AssignmentPattern", loc, [
-                        /* tuple */[
-                          "left",
-                          pattern(match$1.left)
-                        ],
-                        /* tuple */[
-                          "right",
-                          expression(match$1.right)
-                        ]
-                      ]);
-        case /* Identifier */3 :
-            return identifier(match[0]);
-        case /* Expression */4 :
-            return expression(match[0]);
-        
-      }
-    };
-    var variable_declarator = function (param) {
-      var declarator = param[1];
-      return node("VariableDeclarator", param[0], [
-                  /* tuple */[
-                    "id",
-                    pattern(declarator.id)
-                  ],
-                  /* tuple */[
-                    "init",
-                    option(expression, declarator.init)
+                    "kind",
+                    string(kind)
                   ]
                 ]);
     };
@@ -15797,92 +16027,266 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], [/* tuple */[
-                    "typeAnnotation",
-                    _type(param[1])
-                  ]]);
-    };
-    var template_element = function (param) {
-      var element = param[1];
-      var value = obj([
-            /* tuple */[
-              "raw",
-              string(element.value.raw)
-            ],
-            /* tuple */[
-              "cooked",
-              string(element.value.cooked)
-            ]
-          ]);
-      return node("TemplateElement", param[0], [
-                  /* tuple */[
-                    "value",
-                    value
-                  ],
-                  /* tuple */[
-                    "tail",
-                    bool(element.tail)
-                  ]
-                ]);
-    };
-    var block = function (param) {
-      return node("BlockStatement", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(statement, param[1].body)
-                  ]]);
-    };
-    var object_type = function (param) {
-      var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], [
-                  /* tuple */[
-                    "properties",
-                    array_of_list(object_type_property, o.properties)
-                  ],
-                  /* tuple */[
-                    "indexers",
-                    array_of_list(object_type_indexer, o.indexers)
-                  ],
-                  /* tuple */[
-                    "callProperties",
-                    array_of_list(object_type_call_property, o.callProperties)
-                  ]
-                ]);
-    };
-    var interface_extends = function (param) {
-      var g = param[1];
-      var match = g.id;
-      var id;
-      id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-      return node("InterfaceExtends", param[0], [
+    var class_implements = function (param) {
+      var $$implements = param[1];
+      return node("ClassImplements", param[0], [
                   /* tuple */[
                     "id",
-                    id
+                    identifier($$implements.id)
                   ],
                   /* tuple */[
                     "typeParameters",
-                    option(type_parameter_instantiation, g.typeParameters)
+                    option(type_parameter_instantiation, $$implements.typeParameters)
                   ]
                 ]);
     };
-    var function_type = function (param) {
-      var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], [
+    var class_body = function (param) {
+      return node("ClassBody", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(class_element, param[1].body)
+                  ]]);
+    };
+    var jsx_member_expression = function (param) {
+      var member_expression = param[1];
+      var match = member_expression._object;
+      var _object;
+      _object = match.tag ? jsx_member_expression(match[0]) : jsx_identifier(match[0]);
+      return node("JSXMemberExpression", param[0], [
                   /* tuple */[
-                    "params",
-                    array_of_list(function_type_param, fn.params)
+                    "object",
+                    _object
                   ],
                   /* tuple */[
-                    "returnType",
-                    _type(fn.returnType)
+                    "property",
+                    jsx_identifier(member_expression.property)
+                  ]
+                ]);
+    };
+    var jsx_namespaced_name = function (param) {
+      var namespaced_name = param[1];
+      return node("JSXNamespacedName", param[0], [
+                  /* tuple */[
+                    "namespace",
+                    jsx_identifier(namespaced_name.namespace)
                   ],
                   /* tuple */[
-                    "rest",
-                    option(function_type_param, fn.rest)
+                    "name",
+                    jsx_identifier(namespaced_name.name)
+                  ]
+                ]);
+    };
+    var jsx_identifier = function (param) {
+      return node("JSXIdentifier", param[0], [/* tuple */[
+                    "name",
+                    string(param[1].name)
+                  ]]);
+    };
+    var template_literal = function (param) {
+      var value = param[1];
+      return node("TemplateLiteral", param[0], [
+                  /* tuple */[
+                    "quasis",
+                    array_of_list(template_element, value.quasis)
                   ],
                   /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, fn.typeParameters)
+                    "expressions",
+                    array_of_list(expression, value.expressions)
+                  ]
+                ]);
+    };
+    var comment = function (param) {
+      var c = param[1];
+      var match;
+      match = c.tag ? /* tuple */[
+          "Line",
+          c[0]
+        ] : /* tuple */[
+          "Block",
+          c[0]
+        ];
+      return node(match[0], param[0], [/* tuple */[
+                    "value",
+                    string(match[1])
+                  ]]);
+    };
+    var object_type_property = function (param) {
+      var prop = param[1];
+      var match = prop.key;
+      var key;
+      switch (match.tag | 0) {
+        case /* Literal */0 :
+            key = literal(match[0]);
+            break;
+        case /* Identifier */1 :
+            key = identifier(match[0]);
+            break;
+        case /* Computed */2 :
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "There should not be computed object type property keys"
+                ];
+        
+      }
+      return node("ObjectTypeProperty", param[0], [
+                  /* tuple */[
+                    "key",
+                    key
+                  ],
+                  /* tuple */[
+                    "value",
+                    _type(prop.value)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(prop.optional)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(prop.static)
+                  ]
+                ]);
+    };
+    var object_type_call_property = function (param) {
+      var callProperty = param[1];
+      return node("ObjectTypeCallProperty", param[0], [
+                  /* tuple */[
+                    "value",
+                    function_type(callProperty.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(callProperty.static)
+                  ]
+                ]);
+    };
+    var object_type_indexer = function (param) {
+      var indexer = param[1];
+      return node("ObjectTypeIndexer", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(indexer.id)
+                  ],
+                  /* tuple */[
+                    "key",
+                    _type(indexer.key)
+                  ],
+                  /* tuple */[
+                    "value",
+                    _type(indexer.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(indexer.static)
+                  ]
+                ]);
+    };
+    var jsx_child = function (param) {
+      var match = param[1];
+      var loc = param[0];
+      switch (match.tag | 0) {
+        case /* Element */0 :
+            return jsx_element(/* tuple */[
+                        loc,
+                        match[0]
+                      ]);
+        case /* ExpressionContainer */1 :
+            return jsx_expression_container(/* tuple */[
+                        loc,
+                        match[0]
+                      ]);
+        case /* Text */2 :
+            var param$1 = /* tuple */[
+              loc,
+              match[0]
+            ];
+            var text = param$1[1];
+            return node("JSXText", param$1[0], [
+                        /* tuple */[
+                          "value",
+                          string(text.value)
+                        ],
+                        /* tuple */[
+                          "raw",
+                          string(text.raw)
+                        ]
+                      ]);
+        
+      }
+    };
+    var jsx_closing = function (param) {
+      return node("JSXClosingElement", param[0], [/* tuple */[
+                    "name",
+                    jsx_name(param[1].name)
+                  ]]);
+    };
+    var jsx_opening = function (param) {
+      var opening = param[1];
+      return node("JSXOpeningElement", param[0], [
+                  /* tuple */[
+                    "name",
+                    jsx_name(opening.name)
+                  ],
+                  /* tuple */[
+                    "attributes",
+                    array_of_list(jsx_opening_attribute, opening.attributes)
+                  ],
+                  /* tuple */[
+                    "selfClosing",
+                    bool(opening.selfClosing)
+                  ]
+                ]);
+    };
+    var jsx_attribute_value = function (param) {
+      if (param.tag) {
+        return jsx_expression_container(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      } else {
+        return literal(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      }
+    };
+    var type_param = function (param) {
+      var tp = param[1];
+      var variance = function (param) {
+        if (param) {
+          return string("minus");
+        } else {
+          return string("plus");
+        }
+      };
+      return node("TypeParameter", param[0], [
+                  /* tuple */[
+                    "name",
+                    string(tp.name)
+                  ],
+                  /* tuple */[
+                    "bound",
+                    option(type_annotation, tp.bound)
+                  ],
+                  /* tuple */[
+                    "variance",
+                    option(variance, tp.variance)
+                  ],
+                  /* tuple */[
+                    "default",
+                    option(_type, tp.default)
+                  ]
+                ]);
+    };
+    var export_specifier = function (param) {
+      var specifier = param[1];
+      return node("ExportSpecifier", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(specifier.id)
+                  ],
+                  /* tuple */[
+                    "name",
+                    option(identifier, specifier.name)
                   ]
                 ]);
     };
@@ -15902,6 +16306,17 @@ function parse(content, options) {
                     bool(param$1.optional)
                   ]
                 ]);
+    };
+    var array_pattern_element = function (param) {
+      if (param.tag) {
+        var match = param[0];
+        return node("SpreadElementPattern", match[0], [/* tuple */[
+                      "argument",
+                      pattern(match[1].argument)
+                    ]]);
+      } else {
+        return pattern(param[0]);
+      }
     };
     var object_pattern_property = function (param) {
       if (param.tag) {
@@ -15956,316 +16371,33 @@ function parse(content, options) {
                   ]);
       }
     };
-    var array_pattern_element = function (param) {
-      if (param.tag) {
-        var match = param[0];
-        return node("SpreadElementPattern", match[0], [/* tuple */[
-                      "argument",
-                      pattern(match[1].argument)
-                    ]]);
-      } else {
-        return pattern(param[0]);
-      }
-    };
-    var class_element = function (param) {
-      if (param.tag) {
-        var param$1 = param[0];
-        var prop = param$1[1];
-        var match = prop.key;
-        var match$1;
-        switch (match.tag | 0) {
-          case /* Literal */0 :
-              match$1 = /* tuple */[
-                literal(match[0]),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match$1 = /* tuple */[
-                identifier(match[0]),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match$1 = /* tuple */[
-                expression(match[0]),
-                true
-              ];
-              break;
-          
-        }
-        return node("ClassProperty", param$1[0], [
-                    /* tuple */[
-                      "key",
-                      match$1[0]
-                    ],
-                    /* tuple */[
-                      "value",
-                      option(expression, prop.value)
-                    ],
-                    /* tuple */[
-                      "typeAnnotation",
-                      option(type_annotation, prop.typeAnnotation)
-                    ],
-                    /* tuple */[
-                      "computed",
-                      bool(match$1[1])
-                    ],
-                    /* tuple */[
-                      "static",
-                      bool(prop.static)
-                    ]
-                  ]);
-      } else {
-        var param$2 = param[0];
-        var method_ = param$2[1];
-        var key = method_.key;
-        var match$2;
-        switch (key.tag | 0) {
-          case /* Literal */0 :
-              match$2 = /* tuple */[
-                literal(key[0]),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match$2 = /* tuple */[
-                identifier(key[0]),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match$2 = /* tuple */[
-                expression(key[0]),
-                true
-              ];
-              break;
-          
-        }
-        var kind;
-        switch (method_.kind) {
-          case /* Constructor */0 :
-              kind = "constructor";
-              break;
-          case /* Method */1 :
-              kind = "method";
-              break;
-          case /* Get */2 :
-              kind = "get";
-              break;
-          case /* Set */3 :
-              kind = "set";
-              break;
-          
-        }
-        return node("MethodDefinition", param$2[0], [
-                    /* tuple */[
-                      "key",
-                      match$2[0]
-                    ],
-                    /* tuple */[
-                      "value",
-                      function_expression(method_.value)
-                    ],
-                    /* tuple */[
-                      "kind",
-                      string(kind)
-                    ],
-                    /* tuple */[
-                      "static",
-                      bool(method_.static)
-                    ],
-                    /* tuple */[
-                      "computed",
-                      bool(match$2[1])
-                    ],
-                    /* tuple */[
-                      "decorators",
-                      array_of_list(expression, method_.decorators)
-                    ]
-                  ]);
-      }
-    };
-    var jsx_expression_container = function (param) {
-      var match = param[1].expression;
-      var expression$1;
-      expression$1 = match.tag ? node("JSXEmptyExpression", match[0], []) : expression(match[0]);
-      return node("JSXExpressionContainer", param[0], [/* tuple */[
-                    "expression",
-                    expression$1
-                  ]]);
-    };
-    var interface_declaration = function (param) {
-      var i = param[1];
-      return node("InterfaceDeclaration", param[0], [
+    var comprehension_block = function (param) {
+      var b = param[1];
+      return node("ComprehensionBlock", param[0], [
                   /* tuple */[
-                    "id",
-                    identifier(i.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, i.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(i.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, i.extends)
-                  ]
-                ]);
-    };
-    var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var $$catch = function (param) {
-      var c = param[1];
-      return node("CatchClause", param[0], [
-                  /* tuple */[
-                    "param",
-                    pattern(c.param)
-                  ],
-                  /* tuple */[
-                    "guard",
-                    option(expression, c.guard)
-                  ],
-                  /* tuple */[
-                    "body",
-                    block(c.body)
-                  ]
-                ]);
-    };
-    var declare_class = function (param) {
-      var d = param[1];
-      return node("DeclareClass", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(d.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, d.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(d.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, d.extends)
-                  ]
-                ]);
-    };
-    var type_alias = function (param) {
-      var alias = param[1];
-      return node("TypeAlias", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(alias.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, alias.typeParameters)
+                    "left",
+                    pattern(b.left)
                   ],
                   /* tuple */[
                     "right",
-                    _type(alias.right)
+                    expression(b.right)
+                  ],
+                  /* tuple */[
+                    "each",
+                    bool(b.each)
                   ]
                 ]);
     };
-    var export_specifiers = function (param) {
-      if (param !== undefined) {
-        var match = param;
-        if (match.tag) {
-          return array([node("ExportBatchSpecifier", match[0], [/* tuple */[
-                              "name",
-                              option(identifier, match[1])
-                            ]])]);
-        } else {
-          return array_of_list(export_specifier, match[0]);
-        }
+    var expression_or_spread = function (param) {
+      if (param.tag) {
+        var match = param[0];
+        return node("SpreadElement", match[0], [/* tuple */[
+                      "argument",
+                      expression(match[1].argument)
+                    ]]);
       } else {
-        return array([]);
+        return expression(param[0]);
       }
-    };
-    var variable_declaration = function (param) {
-      var $$var = param[1];
-      var match = $$var.kind;
-      var kind;
-      switch (match) {
-        case /* Var */0 :
-            kind = "var";
-            break;
-        case /* Let */1 :
-            kind = "let";
-            break;
-        case /* Const */2 :
-            kind = "const";
-            break;
-        
-      }
-      return node("VariableDeclaration", param[0], [
-                  /* tuple */[
-                    "declarations",
-                    array_of_list(variable_declarator, $$var.declarations)
-                  ],
-                  /* tuple */[
-                    "kind",
-                    string(kind)
-                  ]
-                ]);
-    };
-    var $$case = function (param) {
-      var c = param[1];
-      return node("SwitchCase", param[0], [
-                  /* tuple */[
-                    "test",
-                    option(expression, c.test)
-                  ],
-                  /* tuple */[
-                    "consequent",
-                    array_of_list(statement, c.consequent)
-                  ]
-                ]);
-    };
-    var let_assignment = function (assignment) {
-      return obj([
-                  /* tuple */[
-                    "id",
-                    pattern(assignment.id)
-                  ],
-                  /* tuple */[
-                    "init",
-                    option(expression, assignment.init)
-                  ]
-                ]);
-    };
-    var declare_function = function (param) {
-      return node("DeclareFunction", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var jsx_element = function (param) {
-      var element = param[1];
-      return node("JSXElement", param[0], [
-                  /* tuple */[
-                    "openingElement",
-                    jsx_opening(element.openingElement)
-                  ],
-                  /* tuple */[
-                    "closingElement",
-                    option(jsx_closing, element.closingElement)
-                  ],
-                  /* tuple */[
-                    "children",
-                    array_of_list(jsx_child, element.children)
-                  ]
-                ]);
     };
     var object_property = function (param) {
       if (param.tag) {
@@ -16341,131 +16473,6 @@ function parse(content, options) {
                     ]
                   ]);
       }
-    };
-    var expression_or_spread = function (param) {
-      if (param.tag) {
-        var match = param[0];
-        return node("SpreadElement", match[0], [/* tuple */[
-                      "argument",
-                      expression(match[1].argument)
-                    ]]);
-      } else {
-        return expression(param[0]);
-      }
-    };
-    var comprehension_block = function (param) {
-      var b = param[1];
-      return node("ComprehensionBlock", param[0], [
-                  /* tuple */[
-                    "left",
-                    pattern(b.left)
-                  ],
-                  /* tuple */[
-                    "right",
-                    expression(b.right)
-                  ],
-                  /* tuple */[
-                    "each",
-                    bool(b.each)
-                  ]
-                ]);
-    };
-    var jsx_attribute_value = function (param) {
-      if (param.tag) {
-        return jsx_expression_container(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
-      } else {
-        return literal(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
-      }
-    };
-    var jsx_namespaced_name = function (param) {
-      var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], [
-                  /* tuple */[
-                    "namespace",
-                    jsx_identifier(namespaced_name.namespace)
-                  ],
-                  /* tuple */[
-                    "name",
-                    jsx_identifier(namespaced_name.name)
-                  ]
-                ]);
-    };
-    var comment = function (param) {
-      var c = param[1];
-      var match;
-      match = c.tag ? /* tuple */[
-          "Line",
-          c[0]
-        ] : /* tuple */[
-          "Block",
-          c[0]
-        ];
-      return node(match[0], param[0], [/* tuple */[
-                    "value",
-                    string(match[1])
-                  ]]);
-    };
-    var jsx_closing = function (param) {
-      return node("JSXClosingElement", param[0], [/* tuple */[
-                    "name",
-                    jsx_name(param[1].name)
-                  ]]);
-    };
-    var jsx_child = function (param) {
-      var match = param[1];
-      var loc = param[0];
-      switch (match.tag | 0) {
-        case /* Element */0 :
-            return jsx_element(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* ExpressionContainer */1 :
-            return jsx_expression_container(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* Text */2 :
-            var param$1 = /* tuple */[
-              loc,
-              match[0]
-            ];
-            var text = param$1[1];
-            return node("JSXText", param$1[0], [
-                        /* tuple */[
-                          "value",
-                          string(text.value)
-                        ],
-                        /* tuple */[
-                          "raw",
-                          string(text.raw)
-                        ]
-                      ]);
-        
-      }
-    };
-    var jsx_opening = function (param) {
-      var opening = param[1];
-      return node("JSXOpeningElement", param[0], [
-                  /* tuple */[
-                    "name",
-                    jsx_name(opening.name)
-                  ],
-                  /* tuple */[
-                    "attributes",
-                    array_of_list(jsx_opening_attribute, opening.attributes)
-                  ],
-                  /* tuple */[
-                    "selfClosing",
-                    bool(opening.selfClosing)
-                  ]
-                ]);
     };
     var program$2 = function (param) {
       return node("Program", param[0], [

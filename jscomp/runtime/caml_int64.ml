@@ -429,9 +429,7 @@ let discard_sign (x : int64) : int64 =
 *)
 
 let float_of_bits ( x : t) : float =  
-   (fun%raw lo hi -> {|
-   return (new Float64Array(new Int32Array([lo,hi]).buffer))[0]
-   |} : _ -> _ -> _ ) x.lo x.hi 
+   ([%raw{|function(lo,hi){ return (new Float64Array(new Int32Array([lo,hi]).buffer))[0]}|}] : _ -> _ -> _ ) x.lo x.hi 
 
   (* let to_int32 (x : nativeint) = x |> Caml_nativeint_extern.to_int32
   in
@@ -444,7 +442,7 @@ let float_of_bits ( x : t) : float =
    Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0 *)
 
 let  bits_of_float : float -> t  = fun x -> 
-    let buf = [%raw{|new Int32Array(new Float64Array([x]).buffer)|}] in 
+    let buf = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
     mk ~lo:(fst buf) ~hi:(snd buf)
   (* let to_nat (x : int32) = x |> Caml_int32_extern.to_int |>  Caml_nativeint_extern.of_int in
 
