@@ -157,7 +157,7 @@ type parser_env
 
 
 let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Caml_obj_extern.t -> Caml_obj_extern.t -> Caml_obj_extern.t = 
-    [%raw{|function (tables, /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Caml_obj_extern.t*/) {
+    [%raw{|function (tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Caml_obj_extern.t*/) {
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
