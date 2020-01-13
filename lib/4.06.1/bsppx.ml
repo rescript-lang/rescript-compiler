@@ -25077,6 +25077,27 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
             (s, (Some delim)))
           ->
             Ast_utf8_string_interp.transform e s delim
+        | Pexp_array [] when 
+          not (Ext_list.exists e.pexp_attributes (fun ({txt},_) -> txt = ""))->  
+        (* `ocamlfind query ppx_tools`/dumpast -loc_underscore -e 'let emptyArray () = [||] in emptyArray ()'*)          
+          let loc = e.pexp_loc in
+          let name =  "emptyArray" in 
+          let unit : _ Asttypes.loc  = {txt = Ast_literal.Lid.val_unit ; loc  } in 
+          let open Ast_helper in 
+          Exp.let_ Nonrecursive
+            [{pvb_pat =
+                Pat.var  {txt = name ; loc} ~loc ;
+              pvb_expr =
+                Exp.fun_ Nolabel None
+                  (Pat.construct unit None)
+                  (Exp.array [] ~attrs:[{txt = ""; loc}, PStr []]);
+              pvb_loc  = loc; pvb_attributes = []}]
+            (Exp.apply
+               (Exp.ident {txt = Lident name; loc})
+               [Nolabel,
+                Exp.construct unit None ~loc;
+               ])
+
         (** End rewriting *)
         | Pexp_function cases ->
           (* {[ function [@bs.exn]
