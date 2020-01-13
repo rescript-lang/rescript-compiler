@@ -80,8 +80,9 @@ let output_merlin_namespace buffer ns=
   match ns with 
   | None -> ()
   | Some x -> 
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Buffer.add_string buffer merlin_b ; 
-    Buffer.add_string buffer Bsb_config.lib_bs ; 
+    Buffer.add_string buffer lib_artifacts_dir ; 
     Buffer.add_string buffer merlin_flg ; 
     Buffer.add_string buffer "-open ";
     Buffer.add_string buffer x 
@@ -175,13 +176,14 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
             Buffer.add_string buffer merlin_b;
-            Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+            Buffer.add_string buffer (lib_artifacts_dir//x.dir) ;
           end
       ) ;
     Buffer.add_string buffer "\n";

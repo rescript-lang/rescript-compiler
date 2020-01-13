@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,43 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if BS_NATIVE then
+let cmdline_backend = ref None
+
+(* If cmdline_backend is set we use it, otherwise we use the first entry's backend. *)
+let backend = lazy
+  begin match !cmdline_backend with
+  | Some cmdline_backend -> cmdline_backend
+  | None -> 
+    let entries = Bsb_config_parse.entries_from_bsconfig Bsb_global_paths.cwd in 
+    let new_cmdline_backend = begin match entries with
+      | []                                       -> Bsb_config_types.Js
+      | (Bsb_config_types.JsTarget _) :: _       -> Bsb_config_types.Js
+      | (Bsb_config_types.NativeTarget _) :: _   -> Bsb_config_types.Native
+      | (Bsb_config_types.BytecodeTarget _) :: _ -> Bsb_config_types.Bytecode
+    end in
+    cmdline_backend := Some (new_cmdline_backend);
+    new_cmdline_backend
+  end
+#else
+let backend = lazy Bsb_config_types.Js
+
+(* No cost of using this variable below when compiled in JS mode. *)
+let cmdline_backend = ref (Some Bsb_config_types.Js)
+#end
 
 let (//) = Ext_path.combine
 
-
-let ninja_clean  proj_dir =
-  try
-    let cmd = Bsb_global_paths.vendor_ninja in
-    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
-    let cwd = proj_dir // lib_artifacts_dir in
-    if Sys.file_exists cwd then
-      let eid =
-        Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
-      if eid <> 0 then
-        Bsb_log.warn "@{<warning>ninja clean failed@}@."
-  with  e ->
-    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
-
-let clean_bs_garbage proj_dir =
-  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
-  let try_remove x =
-    let x = proj_dir // x in
-    if Sys.file_exists x then
-      Bsb_unix.remove_dir_recursive x  in
-  try
-    Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
-    ninja_clean  proj_dir ;
-    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-  with
-    e ->
-    Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
-
-
-let clean_bs_deps  proj_dir =
-  Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
-      (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.proj_dir
-    )
-
-let clean_self  proj_dir = 
-    clean_bs_garbage  proj_dir
+let lib_artifacts_dir = lazy
+  begin match Lazy.force backend with
+  | Bsb_config_types.Js       -> Bsb_config.lib_bs
+  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "native"
+  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bytecode"
+  end

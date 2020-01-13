@@ -212,6 +212,7 @@ let prune_staled_bs_js_files
     (context : cxt) 
     (cur_sources : _ Map_string.t ) 
      : unit =     
+     (* Doesn't need to use Bsb_global_backend.lib_artifacts_dir because this is only for JS. *)
   let lib_parent = 
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
       context.cwd in 

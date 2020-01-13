@@ -91,20 +91,21 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
-           path_ninja "-C" Bsb_config.lib_bs
+           path_ninja "-C" lib_artifacts_dir
        else   
          let args = 
            Array.append 
-             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             [| path_ninja ; "-C"; lib_artifacts_dir|]
              ninja_args in 
          Ext_string.concat_array Ext_string.single_space args)
   else
-    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let ninja_common_args = [|"ninja.exe"; "-C"; lib_artifacts_dir |] in 
     let args = 
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
