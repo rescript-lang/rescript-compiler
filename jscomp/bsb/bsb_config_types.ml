@@ -33,6 +33,7 @@ type dependencies = dependency list
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
+type compilation_kind_t = Js | Bytecode | Native
 
 type reason_react_jsx = 
   | Jsx_v2

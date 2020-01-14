@@ -28,4 +28,8 @@
 
 
 
-let main_entries = [Bsb_config_types.JsTarget "Index"]
+let main_entries = []
+
+let ocaml_flags = ["-g"; "-bin-annot"; "-color"; "always"]
+
+let ocaml_dependencies = ["unix"; "bigarray"; ]
