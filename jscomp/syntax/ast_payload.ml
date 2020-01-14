@@ -67,7 +67,14 @@ let is_single_int (x : t ) : int option =
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
-let as_string_exp ~check_js_regex (x : t ) = 
+type kind = 
+  | Re
+  | Exp
+  | Program
+
+let as_string_exp 
+  ~kind
+  ~loc (x : t ) : rtn = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
@@ -77,7 +84,38 @@ let as_string_exp ~check_js_regex (x : t ) =
                (Pconst_string (str,_))            
                ;
            _} as e ,_);
-      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
+      _}] -> 
+    (match kind with 
+     |  Re -> 
+      let l s = 
+        Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
+      in  
+      (match l str with 
+      | _, {lex_errors = []} -> ()
+      | _ , {lex_errors = (first_loc,first_error) :: _} -> 
+      Location.raise_errorf ~loc "%s"
+      (Parse_error.PP.error first_error)
+      );
+      Correct e 
+      (* (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed)  *)
+     | Exp -> begin 
+      (match Parser_flow.parse_expression (Parser_env.init_env None str) false with 
+      | _result, ((first_loc , first_error) :: _) -> 
+        Location.raise_errorf ~loc "%s"
+          (Parse_error.PP.error first_error)
+
+      | _, [] -> ());
+      Correct e
+    end
+    | Program -> begin 
+      (match Parser_flow.parse_program false None str with 
+      | _, [] -> ()
+      | _, ((first_loc,first_error) :: _)
+        ->
+        Location.raise_errorf ~loc "%s"
+        (Parse_error.PP.error first_error));
+        Correct e 
+    end)
   | _  -> Not_String_Lteral
 
 let as_core_type loc x =

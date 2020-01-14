@@ -9608,243 +9608,6 @@ type args  =
   (arg_label * Parsetree.expression) list 
 
 end
-module Ext_utf8 : sig 
-#1 "ext_utf8.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-
-val classify : char -> byte 
-
-val follow : 
-    string -> 
-    int -> 
-    int -> 
-    int ->
-    int * int 
-
-
-(** 
-  return [-1] if failed 
-*)
-val next :  string -> remaining:int -> int -> int 
-
-
-exception Invalid_utf8 of string 
- 
- 
-val decode_utf8_string : string -> int list
-end = struct
-#1 "ext_utf8.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-(** [classify chr] returns the {!byte} corresponding to [chr] *)
-let classify chr =
-  let c = int_of_char chr in
-  (* Classify byte according to leftmost 0 bit *)
-  if c land 0b1000_0000 = 0 then Single c else
-    (* c 0b0____*)
-  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
-    (* c 0b10___*)
-  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
-    (* c 0b110__*)
-  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
-    (* c 0b1110_ *)
-  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
-    (* c 0b1111_0___*)
-  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
-    (* c 0b1111_10__*)
-  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
-  (* c 0b1111_110__ *)
-  else Invalid
-
-exception Invalid_utf8 of string 
-
-(* when the first char is [Leading],
-  TODO: need more error checking 
-  when out of bond
- *)
-let rec follow s n (c : int) offset = 
-  if n = 0 then (c, offset)
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
-      | _ -> raise (Invalid_utf8 "Continuation byte expected")
-    end
-
-
-let rec next s ~remaining  offset = 
-  if remaining = 0 then offset 
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
-      | _ ->  -1 
-      | exception _ ->  -1 (* it can happen when out of bound *)
-    end
-
-
-
-
-let decode_utf8_string s =
-  let lst = ref [] in
-  let add elem = lst := elem :: !lst in
-  let rec  decode_utf8_cont s i s_len =
-    if i = s_len  then ()
-    else 
-      begin 
-        match classify s.[i] with
-        | Single c -> 
-          add c; decode_utf8_cont s (i+1) s_len
-        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
-        | Leading (n, c) ->
-          let (c', i') = follow s n c i in add c';
-          decode_utf8_cont s (i' + 1) s_len
-        | Invalid -> raise (Invalid_utf8 "Invalid byte")
-      end
-  in decode_utf8_cont s 0 (String.length s); 
-  List.rev !lst
-
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false
-end
-module Ext_js_regex : sig 
-#1 "ext_js_regex.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(* This is a module that checks if js regex is valid or not *)
-
-val js_regex_checker : string -> bool
-end = struct
-#1 "ext_js_regex.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let check_from_end al =
-  let rec aux l seen =
-    match l with
-    | [] -> false
-    | (e::r) ->
-      if e < 0 || e > 255 then false
-      else (let c = Char.chr e in
-            if c = '/' then true
-            else (if Ext_list.exists seen (fun x -> x = c)  then false (* flag should not be repeated *)
-                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-                        else false)))
-  in aux al []
-
-let js_regex_checker s =
-  match Ext_utf8.decode_utf8_string s with 
-  | [] -> false 
-  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    check_from_end (List.rev tail)       
-  | _ :: _ -> false 
-  | exception Ext_utf8.Invalid_utf8 _ -> false 
-
-end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11668,7 +11431,17 @@ val is_single_string_as_ast :
 val is_single_int : t -> int option 
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-val as_string_exp : check_js_regex: bool -> t -> rtn
+
+type kind = 
+  | Re
+  | Exp
+  | Program
+
+val as_string_exp :
+  kind: kind ->
+  loc:Location.t ->
+  t ->
+  rtn
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
@@ -11776,7 +11549,14 @@ let is_single_int (x : t ) : int option =
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
-let as_string_exp ~check_js_regex (x : t ) = 
+type kind = 
+  | Re
+  | Exp
+  | Program
+
+let as_string_exp 
+  ~kind
+  ~loc (x : t ) : rtn = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
@@ -11786,7 +11566,38 @@ let as_string_exp ~check_js_regex (x : t ) =
                (Pconst_string (str,_))            
                ;
            _} as e ,_);
-      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
+      _}] -> 
+    (match kind with 
+     |  Re -> 
+      let l s = 
+        Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
+      in  
+      (match l str with 
+      | _, {lex_errors = []} -> ()
+      | _ , {lex_errors = (first_loc,first_error) :: _} -> 
+      Location.raise_errorf ~loc "%s"
+      (Parse_error.PP.error first_error)
+      );
+      Correct e 
+      (* (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed)  *)
+     | Exp -> begin 
+      (match Parser_flow.parse_expression (Parser_env.init_env None str) false with 
+      | _result, ((first_loc , first_error) :: _) -> 
+        Location.raise_errorf ~loc "%s"
+          (Parse_error.PP.error first_error)
+
+      | _, [] -> ());
+      Correct e
+    end
+    | Program -> begin 
+      (match Parser_flow.parse_program false None str with 
+      | _, [] -> ()
+      | _, ((first_loc,first_error) :: _)
+        ->
+        Location.raise_errorf ~loc "%s"
+        (Parse_error.PP.error first_error));
+        Correct e 
+    end)
   | _  -> Not_String_Lteral
 
 let as_core_type loc x =
@@ -13532,6 +13343,165 @@ let is_lower_case c =
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
 
+end
+module Ext_utf8 : sig 
+#1 "ext_utf8.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
+
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
+end = struct
+#1 "ext_utf8.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+(** [classify chr] returns the {!byte} corresponding to [chr] *)
+let classify chr =
+  let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then Single c else
+    (* c 0b0____*)
+  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else Invalid
+
+exception Invalid_utf8 of string 
+
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
+
+let decode_utf8_string s =
+  let lst = ref [] in
+  let add elem = lst := elem :: !lst in
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
+        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -21640,7 +21610,8 @@ let handle_debugger loc (payload : Ast_payload.t) =
 
 
 let handle_raw ~check_js_regex loc payload =
-  begin match Ast_payload.as_string_exp ~check_js_regex payload with
+  begin match Ast_payload.as_string_exp ~loc 
+    ~kind:(if check_js_regex then Re else Exp) payload with
     | Not_String_Lteral ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
@@ -21687,7 +21658,8 @@ let handle_external loc (x : string) : Parsetree.expression =
 
 
 let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp ~check_js_regex:false payload with 
+  begin match Ast_payload.as_string_exp ~loc 
+    ~kind:Program payload with 
     | Correct exp 
       -> 
       let pexp_desc = 
