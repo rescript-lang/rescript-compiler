@@ -58,24 +58,7 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 
-let node_program ~output_dir f ( {program=myprog; modules} : J.deps_program) = 
-  P.string f L.strict_directive; 
-  P.newline f ;
-  let cxt = 
-    Js_dump_import_export.requires 
-      L.require
-      Ext_pp_scope.empty
-      f
-      (Ext_list.map modules 
-         (fun x -> 
-            Lam_module_ident.id x,
-            Js_name_of_module_id.string_of_module_id 
-              x
-              ~output_dir
-              NodeJS 
-         ))
-  in
-  program f cxt myprog
+
 
 
 
@@ -110,13 +93,13 @@ let es6_program  ~output_dir fmt f
 let pp_deps_program
     ~output_prefix
     (kind : Js_packages_info.module_system )
-    (program  : J.deps_program) (f : Ext_pp.t) = 
+    (myprog  : J.deps_program) (f : Ext_pp.t) = 
   if not !Js_config.no_version_header then 
     begin 
       P.string f Bs_version.header;
       P.newline f
     end ; 
-  if deps_program_is_empty program then 
+  if deps_program_is_empty myprog then 
     P.string f empty_explanation 
     (* This is empty module, it won't be referred anywhere *)
   else 
@@ -124,13 +107,31 @@ let pp_deps_program
     begin 
       ignore (match kind with 
           | Es6 | Es6_global -> 
-            es6_program ~output_dir kind f program
+            es6_program ~output_dir kind f myprog
           | NodeJS -> 
-            node_program ~output_dir f program
+            let node_program ~output_dir f ( {program=myprog; modules} : J.deps_program) = 
+              P.string f L.strict_directive; 
+              P.newline f ;
+              let cxt = 
+                Js_dump_import_export.requires 
+                  L.require
+                  Ext_pp_scope.empty
+                  f
+                  (Ext_list.map modules 
+                     (fun x -> 
+                        Lam_module_ident.id x,
+                        Js_name_of_module_id.string_of_module_id 
+                          x
+                          ~output_dir
+                          NodeJS 
+                     ))
+              in
+              program f cxt myprog in 
+            node_program ~output_dir f myprog
         ) ;
       P.newline f ;
       P.string f (
-        match program.side_effect with
+        match myprog.side_effect with
         | None -> "/* No side effect */"
         | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
       P.newline f;
