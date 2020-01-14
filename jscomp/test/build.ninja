@@ -491,6 +491,7 @@ build test/queue_test.cmi test/queue_test.cmj : cc test/queue_test.ml | test/mt.
 build test/random_test.cmi test/random_test.cmj : cc test/random_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 build test/raw_hash_tbl_bench.cmi test/raw_hash_tbl_bench.cmj : cc test/raw_hash_tbl_bench.ml | $stdlib
 build test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_test.ml | $stdlib
+build test/raw_pure_test.cmi test/raw_pure_test.cmj : cc test/raw_pure_test.ml | $stdlib
 build test/rbset.cmi test/rbset.cmj : cc test/rbset.ml | $stdlib
 build test/re_first_test.cmi test/re_first_test.cmj : cc test/re_first_test.re | test/mt.cmj $stdlib
 build test/rebind_module.cmi test/rebind_module.cmj : cc test/rebind_module.ml | $stdlib

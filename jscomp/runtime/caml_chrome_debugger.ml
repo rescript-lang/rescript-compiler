@@ -22,9 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type obj = Caml_obj_extern.t
-
- let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
+type obj = Caml_obj_extern.t
+open Js_internalRaw
+ let setupChromeDebugger : unit -> unit = [%raw{|function(_){
  
  // I don't know how to directly refer to the classes that chrome's built-in
  // formatters use. adding "class": "foo" doesn't seem to work
@@ -141,8 +141,8 @@ if (typeof window === "undefined"){
  window.devtoolsFormatters = [formatter]
 }
 return 0
-
-|}
+}
+|}]
 
 
 let setup = ref false 
@@ -155,10 +155,12 @@ let setupOnce () =
 
 type symbol
 
+type 'a t = { value : 'a} 
 
 external cacheSymbol : string -> symbol = "for"
  [@@bs.scope "Symbol"] [@@bs.val]
-external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a = 
+
+external addProp : 'a -> symbol -> 'b t  -> 'a = 
   "defineProperty"  [@@bs.scope "Object"] [@@bs.val]
 
 let __ = Block.__
@@ -167,13 +169,13 @@ let __ = Block.__
 let variant meta tag xs =     
   setupOnce ();
   xs |. Caml_obj_extern.set_tag tag;
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+  xs |. addProp (cacheSymbol "BsVariant") {value = meta }
 
 let simpleVariant meta xs =       
   setupOnce ();
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+  xs |. addProp (cacheSymbol "BsVariant") {value = meta }
   
 
 let polyVar meta xs =   
   setupOnce ();
-  xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
+  xs |. addProp (cacheSymbol "BsPolyVar") {value = meta}

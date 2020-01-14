@@ -15138,9 +15138,7 @@ val setter_suffix_len : int
 
 
 val debugger : string
-val raw_expr : string
-val raw_stmt : string
-val raw_function : string
+
 val unsafe_downgrade : string
 val fn_run : string
 val method_run : string
@@ -15278,9 +15276,6 @@ let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
-let raw_expr = "raw_expr"
-let raw_stmt = "raw_stmt"
-let raw_function = "raw_function"
 let unsafe_downgrade = "unsafe_downgrade"
 let fn_run = "fn_run"
 let method_run = "method_run"
@@ -20202,6 +20197,83 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   | _ -> false
 
 end
+module Ast_raw : sig 
+#1 "ast_raw.mli"
+(* Copyright (C) 2020 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val raw_expr_id : Longident.t 
+
+val raw_stmt_id : Longident.t 
+
+val raw_function_id : Longident.t
+end = struct
+#1 "ast_raw.ml"
+(* Copyright (C) 2020 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ let raw_expr = "raw_expr"
+ let raw_stmt = "raw_stmt"
+ let raw_function = "raw_function"
+ 
+ let raw_expr_id =   
+  Longident.Ldot 
+  (Lident "Js_internalRaw", 
+  raw_expr)  
+
+let raw_stmt_id = 
+  Longident.Ldot 
+  (Lident "Js_internalRaw", 
+  raw_stmt)     
+
+let raw_function_id = 
+    Longident.Ldot 
+    (Lident "Js_internalRaw", 
+    raw_function)      
+end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
 (**************************************************************************)
@@ -21464,6 +21536,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
+
 let handle_raw ~check_js_regex loc payload =
   begin match Ast_payload.as_string_exp ~check_js_regex payload with
     | Not_String_Lteral ->
@@ -21475,9 +21548,8 @@ let handle_raw ~check_js_regex loc payload =
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
-                     txt = 
-                       Ldot (Ast_literal.Lid.js_internal, 
-                             Literals.raw_expr)},
+                     txt = Ast_raw.raw_expr_id
+                       },
           [Ast_compatible.no_label,exp]
         )
       in
@@ -21488,8 +21560,7 @@ let handle_external loc (x : string) : Parsetree.expression =
   let raw_exp : Ast_exp.t = 
     Ast_compatible.app1
     (Exp.ident ~loc 
-         {loc; txt = Ldot (Ast_literal.Lid.js_internal, 
-                           Literals.raw_expr)})
+         {loc; txt = Ast_raw.raw_expr_id })
       ~loc 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
@@ -21519,7 +21590,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_internal,  Literals.raw_stmt); loc},
+          Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
           [ Ast_compatible.no_label,exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }

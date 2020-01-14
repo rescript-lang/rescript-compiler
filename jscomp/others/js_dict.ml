@@ -54,10 +54,11 @@ external empty : unit -> 'a t = "" [@@bs.obj]
 
 
 let unsafeDeleteKey : string t -> string -> unit [@bs] =
-  fun%raw dict key -> {|
+  [%raw {| function (dict,key){
      delete dict[key];
      return 0
-  |}
+     }
+  |}]
 
 
 external unsafeCreate : int -> 'a array = "Array" [@@bs.new]

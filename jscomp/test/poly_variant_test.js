@@ -29,7 +29,6 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-
 function hey_string (option){
   switch(option){
   case "on_closed" : 
@@ -48,7 +47,6 @@ function hey_int (option){
    default : throw Error("impossible")
   }
  }
-
 ;
 
 var uu = [

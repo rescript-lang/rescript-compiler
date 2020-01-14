@@ -31,12 +31,10 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-
 function hey(x, y) {
     if (x === void 0) { x = 3; }
     return x + y;
   }
-
 ;
 
 var u = hey(undefined, 3);
@@ -118,12 +116,10 @@ eq("File \"optional_ffi_test.ml\", line 43, characters 5-12", pair);
 
 eq("File \"optional_ffi_test.ml\", line 44, characters 5-12", pair2);
 
-
 function heystr(x, y) {
     if (x === void 0) { x = "3"; }
     return x + y;
   }
-  
 ;
 
 var pair_001$1 = heystr("name", "4");

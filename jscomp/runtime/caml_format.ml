@@ -26,7 +26,7 @@
 
 
 
-
+ open Js_internalRaw
 
 (** *)
 
@@ -581,8 +581,11 @@ let caml_format_float fmt x =
     end;
   finish_formatting f s.contents
 
+
+
+
 let caml_hexstring_of_float : float -> int -> char -> string =    
-  fun%raw x prec style -> {| 
+  [%raw{|function(x,prec,style){
   if (!isFinite(x)) {
     if (isNaN(x)) return "nan";
     return x > 0 ? "infinity":"-infinity";
@@ -626,11 +629,11 @@ let caml_hexstring_of_float : float -> int -> char -> string =
     }
   }
   return  (sign_str + '0x' + x_str + 'p' + exp_sign + exp.toString(10));
-|}  
+}|}]  
 
 
 let float_of_string : string -> exn ->  float  = 
-    fun%raw s exn -> {| 
+    [%raw{|function(s,exn){
 
     var res = +s;
     if ((s.length > 0) && (res === res))
@@ -654,8 +657,8 @@ let float_of_string : string -> exn ->  float  =
     if (/^-inf(inity)?$/i.test(s))
         return -Infinity;
     throw exn;
-
-|}
+}
+|}]
 
 
 

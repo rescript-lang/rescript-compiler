@@ -28,7 +28,6 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-
 function Make (){
   this.data = []
   for(var i = 0; i < arguments.length; ++i){
@@ -46,8 +45,7 @@ Make.prototype.sum = function(){
 
 Make.prototype.add = function(){
   
-} 
-
+}
 ;
 
 function f(x) {

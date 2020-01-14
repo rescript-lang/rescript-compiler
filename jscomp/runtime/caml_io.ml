@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+ open Js_internalRaw
 
 let stdin = Caml_undefined_extern.empty
 let stderr = Caml_undefined_extern.empty
@@ -77,9 +77,9 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.buffer <- ""      
     end      
 
-let node_std_output  : string -> bool = fun%raw s -> {|
-   return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
-|}
+let node_std_output  : string -> bool =  
+  [%raw{|function(s){ return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);}
+|}]
 
 
 (** note we need provide both [bytes] and [string] version 
@@ -88,9 +88,9 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
     if offset = 0 && len =Caml_string_extern.length str then str    
     else Caml_string_extern.slice str offset len in
-  if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
+  if [%raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
-    ([%bs.raw{| process.stdout.write |}] : string -> unit [@bs] ) str [@bs]
+    ([%raw{| process.stdout.write |}] : string -> unit [@bs] ) str [@bs]
 
   else
     begin     
