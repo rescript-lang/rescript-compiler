@@ -58,7 +58,7 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 
-let node_program ~output_dir f ( x : J.deps_program) = 
+let node_program ~output_dir f ( {program=myprog; modules} : J.deps_program) = 
   P.string f L.strict_directive; 
   P.newline f ;
   let cxt = 
@@ -66,7 +66,7 @@ let node_program ~output_dir f ( x : J.deps_program) =
       L.require
       Ext_pp_scope.empty
       f
-      (Ext_list.map x.modules 
+      (Ext_list.map modules 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id 
@@ -75,17 +75,18 @@ let node_program ~output_dir f ( x : J.deps_program) =
               NodeJS 
          ))
   in
-  program f cxt x.program  
+  program f cxt myprog
 
 
 
 
-let es6_program  ~output_dir fmt f (  x : J.deps_program) = 
+let es6_program  ~output_dir fmt f 
+  (  {modules; program } : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.imports
       Ext_pp_scope.empty
       f
-      (Ext_list.map x.modules
+      (Ext_list.map modules
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id x ~output_dir
@@ -93,9 +94,9 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
               ))
   in
   let () = P.force_newline f in 
-  let cxt = Js_dump.statement_list true cxt f x.program.block in 
+  let cxt = Js_dump.statement_list true cxt f program.block in 
   let () = P.force_newline f in 
-  Js_dump_import_export.es6_export cxt f x.program.exports
+  Js_dump_import_export.es6_export cxt f program.exports
 
 
 

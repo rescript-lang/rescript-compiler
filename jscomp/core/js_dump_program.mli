@@ -24,7 +24,8 @@
 
 
 (** only used for debugging purpose *)
-val dump_program : J.program -> out_channel -> unit
+val dump_program :
+   J.program -> out_channel -> unit
 
 
 val pp_deps_program :
