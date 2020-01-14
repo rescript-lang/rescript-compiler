@@ -16,7 +16,7 @@ if (match !== undefined) {
           ]
         ];
   }
-  var match$1 = (1);
+  var match$1 = 1;
   if (match$1 !== 1) {
     if (match$1 !== 2) {
       throw [

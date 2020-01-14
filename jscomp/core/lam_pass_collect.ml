@@ -78,10 +78,10 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
     | Lprim {primitive = Psome | Psome_not_nest; args = [v]} -> 
       Hash_ident.replace meta.ident_tbl ident (Normal_optional(v));
       collect v   
-    | Lprim{primitive = Praw_js_function(_,raw_args); args = _ }           
+    | Lprim{primitive = Praw_js_function{ arity} | Praw_js_code_exp {kind = Js_function {arity}}; args = _ }           
       ->
       Hash_ident.replace meta.ident_tbl ident 
-        (FunctionId {arity = Lam_arity.info [List.length raw_args] false; lambda = None} )
+        (FunctionId {arity = Lam_arity.info [arity] false; lambda = None} )
     | Lprim {primitive = Pnull_to_opt; 
              args = ([ Lvar _ as l ]  ) ; _}
       ->

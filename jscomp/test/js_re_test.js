@@ -8,7 +8,7 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var suites_000 = /* tuple */[
   "captures",
   (function (param) {
-      var re = (/(\d+)-(?:(\d+))?/g);
+      var re = /(\d+)-(?:(\d+))?/g;
       var match = re.exec("3-");
       if (match !== null) {
         var defined = Caml_array.caml_array_get(match, 1);
@@ -50,7 +50,7 @@ var suites_001 = /* :: */[
     /* tuple */[
       "exec_literal",
       (function (param) {
-          var match = (/[^.]+/).exec("http://xxx.domain.com");
+          var match = /[^.]+/.exec("http://xxx.domain.com");
           if (match !== null) {
             return /* Eq */Block.__(0, [
                       "http://xxx",
@@ -65,7 +65,7 @@ var suites_001 = /* :: */[
       /* tuple */[
         "exec_no_match",
         (function (param) {
-            var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
+            var match = /https:\/\/(.*)/.exec("http://xxx.domain.com");
             if (match !== null) {
               return /* FailWith */Block.__(9, ["regex should not match"]);
             } else {
@@ -115,7 +115,7 @@ var suites_001 = /* :: */[
                 "result_input",
                 (function (param) {
                     var input = "foobar";
-                    var match = (/foo/g).exec(input);
+                    var match = /foo/g.exec(input);
                     if (match !== null) {
                       return /* Eq */Block.__(0, [
                                 input,
@@ -132,7 +132,7 @@ var suites_001 = /* :: */[
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 "gi",
-                                (/./ig).flags
+                                /./ig.flags
                               ]);
                     })
                 ],
@@ -142,7 +142,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   true,
-                                  (/./ig).global
+                                  /./ig.global
                                 ]);
                       })
                   ],
@@ -152,7 +152,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
-                                    (/./ig).ignoreCase
+                                    /./ig.ignoreCase
                                   ]);
                         })
                     ],
@@ -160,7 +160,7 @@ var suites_001 = /* :: */[
                       /* tuple */[
                         "t_lastIndex",
                         (function (param) {
-                            var re = (/na/g);
+                            var re = /na/g;
                             re.exec("banana");
                             return /* Eq */Block.__(0, [
                                       4,
@@ -172,7 +172,7 @@ var suites_001 = /* :: */[
                         /* tuple */[
                           "t_setLastIndex",
                           (function (param) {
-                              var re = (/na/g);
+                              var re = /na/g;
                               var before = re.lastIndex;
                               re.lastIndex = 42;
                               var after = re.lastIndex;
@@ -194,7 +194,7 @@ var suites_001 = /* :: */[
                             (function (param) {
                                 return /* Eq */Block.__(0, [
                                           false,
-                                          (/./ig).multiline
+                                          /./ig.multiline
                                         ]);
                               })
                           ],
@@ -204,7 +204,7 @@ var suites_001 = /* :: */[
                               (function (param) {
                                   return /* Eq */Block.__(0, [
                                             "f.+o",
-                                            (/f.+o/ig).source
+                                            /f.+o/ig.source
                                           ]);
                                 })
                             ],
@@ -214,7 +214,7 @@ var suites_001 = /* :: */[
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               true,
-                                              (/./yg).sticky
+                                              /./yg.sticky
                                             ]);
                                   })
                               ],
@@ -224,7 +224,7 @@ var suites_001 = /* :: */[
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 false,
-                                                (/./yg).unicode
+                                                /./yg.unicode
                                               ]);
                                     })
                                 ],

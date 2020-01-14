@@ -2,7 +2,7 @@
 
 
 function f(x) {
-  return x + (1) | 0;
+  return x + 1 | 0;
 }
 
 var a = f(1);
@@ -10,7 +10,7 @@ var a = f(1);
 var b = f(2);
 
 function g(param) {
-  return (1);
+  return 1;
 }
 
 var c = g(/* () */0);

@@ -1591,6 +1591,7 @@ function nativeNinja() {
     "stubs",
     "ext",
     "common",
+    "js_parser",
     "syntax",
     "depends",
     "core",
@@ -1639,7 +1640,7 @@ ${generateVisitorPattern()}
 
 build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
-build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+build ../lib/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsppx.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
     libs = ocamlcommon.cmxa    

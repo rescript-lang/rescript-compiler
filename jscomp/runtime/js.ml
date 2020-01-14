@@ -64,9 +64,6 @@ module Internal = struct
  (** Js uncurried function *)
  external (!)  : 'a t -> 'a = "#unsafe_downgrade"
  external debugger : unit -> unit = "#debugger"
- external raw_expr : string -> 'a = "#raw_expr"
- external raw_stmt : string -> 'a = "#raw_stmt"
- external raw_function: string ->  'a = "#raw_function"
  external unsafe_downgrade : 'a t -> 'a = "#unsafe_downgrade"
 
  external fn_mk0 : (unit -> 'a0) -> (([`Arity_0], 'a0) fn) = "#fn_mk" "0"
