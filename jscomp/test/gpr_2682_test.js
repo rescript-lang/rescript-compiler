@@ -8,7 +8,7 @@ function sum (a,b){
 var v = sum(1, 2);
 
 function f(a) {
-  return a + (3) | 0;
+  return a + 3 | 0;
 }
 
 var b = f(1);

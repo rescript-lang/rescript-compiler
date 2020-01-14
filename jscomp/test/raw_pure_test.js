@@ -8,9 +8,9 @@
 
 var x0 = null;
 
-var x2 = ("荷兰");
+var x2 = "荷兰";
 
-var x3 = (/ghoghos/);
+var x3 = /ghoghos/;
 
 /**
  * copyright

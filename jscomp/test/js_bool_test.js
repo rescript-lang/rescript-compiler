@@ -27,7 +27,7 @@ function f4(x) {
   }
 }
 
-var u = (1);
+var u = 1;
 
 var v = true;
 

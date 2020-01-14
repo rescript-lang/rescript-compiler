@@ -647,14 +647,12 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | Raw_js_code (s,info) ->
     let s = String.trim s in             
     (match info with
-     | Exp _ ->
-       if raw_snippet_exp_simple_enough s then 
-         P.string f s        
-       else begin 
-         P.string f L.lparen;
-         P.string f s ;
-         P.string f L.rparen;
-       end;
+     | Exp exp_info ->
+       let raw_paren =
+          not (exp_info = Js_literal || raw_snippet_exp_simple_enough s) in 
+       if raw_paren then P.string f L.lparen;
+       P.string f s ;       
+       if raw_paren then  P.string f L.rparen;
        cxt
      | Stmt ->
        P.newline f  ;

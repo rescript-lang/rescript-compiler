@@ -6,7 +6,7 @@ var Curry = require("../../lib/js/curry.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ffi_js_test = require("./ffi_js_test.js");
 
-var x = ("\x01\x02\x03");
+var x = "\x01\x02\x03";
 
 var max = Math.max;
 

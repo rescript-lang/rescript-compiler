@@ -1,9 +1,9 @@
 'use strict';
 
 
-var v = (/b/ig);
+var v = /b/ig;
 
-var r = (/Bucklescript是一个程序语言/);
+var r = /Bucklescript是一个程序语言/;
 
 var c = v;
 
