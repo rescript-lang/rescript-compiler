@@ -370,7 +370,7 @@ function eq_at_i(loc, json, i, kind, expected) {
 
 var json$5 = JSON.parse(JSON.stringify($$Array.map((function (prim) {
                 return prim;
-              }), /* array */[
+              }), [
               "string 0",
               "string 1",
               "string 2"
@@ -382,7 +382,7 @@ eq_at_i("File \"js_json_test.ml\", line 194, characters 10-17", json$5, 1, /* St
 
 eq_at_i("File \"js_json_test.ml\", line 195, characters 10-17", json$5, 2, /* String */0, "string 2");
 
-var json$6 = JSON.parse(JSON.stringify(/* array */[
+var json$6 = JSON.parse(JSON.stringify([
           "string 0",
           "string 1",
           "string 2"
@@ -394,7 +394,7 @@ eq_at_i("File \"js_json_test.ml\", line 206, characters 10-17", json$6, 1, /* St
 
 eq_at_i("File \"js_json_test.ml\", line 207, characters 10-17", json$6, 2, /* String */0, "string 2");
 
-var a = /* array */[
+var a = [
   1.0000001,
   10000000000.1,
   123.0
@@ -408,7 +408,7 @@ eq_at_i("File \"js_json_test.ml\", line 220, characters 10-17", json$7, 1, /* Nu
 
 eq_at_i("File \"js_json_test.ml\", line 221, characters 10-17", json$7, 2, /* Number */1, Caml_array.caml_array_get(a, 2));
 
-var a$1 = /* array */[
+var a$1 = [
   0,
   -1347440721,
   -268391749
@@ -424,7 +424,7 @@ eq_at_i("File \"js_json_test.ml\", line 235, characters 10-17", json$8, 1, /* Nu
 
 eq_at_i("File \"js_json_test.ml\", line 236, characters 10-17", json$8, 2, /* Number */1, Caml_array.caml_array_get(a$1, 2));
 
-var a$2 = /* array */[
+var a$2 = [
   true,
   false,
   true
@@ -445,7 +445,7 @@ function make_d(s, i) {
   return d;
 }
 
-var a$3 = /* array */[
+var a$3 = [
   make_d("aaa", 123),
   make_d("bbb", 456)
 ];
@@ -500,7 +500,7 @@ catch (exn){
         }));
 }
 
-eq("File \"js_json_test.ml\", line 295, characters 12-19", JSON.stringify(/* array */[
+eq("File \"js_json_test.ml\", line 295, characters 12-19", JSON.stringify([
           1,
           2,
           3
@@ -522,7 +522,7 @@ eq("File \"js_json_test.ml\", line 308, characters 5-12", Js_json.decodeString("
 
 eq("File \"js_json_test.ml\", line 310, characters 5-12", Js_json.decodeString(true), undefined);
 
-eq("File \"js_json_test.ml\", line 312, characters 5-12", Js_json.decodeString(/* array */[]), undefined);
+eq("File \"js_json_test.ml\", line 312, characters 5-12", Js_json.decodeString([]), undefined);
 
 eq("File \"js_json_test.ml\", line 314, characters 5-12", Js_json.decodeString(null), undefined);
 
@@ -534,7 +534,7 @@ eq("File \"js_json_test.ml\", line 322, characters 5-12", Js_json.decodeNumber("
 
 eq("File \"js_json_test.ml\", line 324, characters 5-12", Js_json.decodeNumber(true), undefined);
 
-eq("File \"js_json_test.ml\", line 326, characters 5-12", Js_json.decodeNumber(/* array */[]), undefined);
+eq("File \"js_json_test.ml\", line 326, characters 5-12", Js_json.decodeNumber([]), undefined);
 
 eq("File \"js_json_test.ml\", line 328, characters 5-12", Js_json.decodeNumber(null), undefined);
 
@@ -546,7 +546,7 @@ eq("File \"js_json_test.ml\", line 336, characters 5-12", Js_json.decodeObject("
 
 eq("File \"js_json_test.ml\", line 338, characters 5-12", Js_json.decodeObject(true), undefined);
 
-eq("File \"js_json_test.ml\", line 340, characters 5-12", Js_json.decodeObject(/* array */[]), undefined);
+eq("File \"js_json_test.ml\", line 340, characters 5-12", Js_json.decodeObject([]), undefined);
 
 eq("File \"js_json_test.ml\", line 342, characters 5-12", Js_json.decodeObject(null), undefined);
 
@@ -558,7 +558,7 @@ eq("File \"js_json_test.ml\", line 351, characters 5-12", Js_json.decodeArray("t
 
 eq("File \"js_json_test.ml\", line 353, characters 5-12", Js_json.decodeArray(true), undefined);
 
-eq("File \"js_json_test.ml\", line 355, characters 5-12", Js_json.decodeArray(/* array */[]), /* array */[]);
+eq("File \"js_json_test.ml\", line 355, characters 5-12", Js_json.decodeArray([]), []);
 
 eq("File \"js_json_test.ml\", line 357, characters 5-12", Js_json.decodeArray(null), undefined);
 
@@ -570,7 +570,7 @@ eq("File \"js_json_test.ml\", line 365, characters 5-12", Js_json.decodeBoolean(
 
 eq("File \"js_json_test.ml\", line 367, characters 5-12", Js_json.decodeBoolean(true), true);
 
-eq("File \"js_json_test.ml\", line 369, characters 5-12", Js_json.decodeBoolean(/* array */[]), undefined);
+eq("File \"js_json_test.ml\", line 369, characters 5-12", Js_json.decodeBoolean([]), undefined);
 
 eq("File \"js_json_test.ml\", line 371, characters 5-12", Js_json.decodeBoolean(null), undefined);
 
@@ -582,7 +582,7 @@ eq("File \"js_json_test.ml\", line 379, characters 5-12", Js_json.decodeNull("te
 
 eq("File \"js_json_test.ml\", line 381, characters 5-12", Js_json.decodeNull(true), undefined);
 
-eq("File \"js_json_test.ml\", line 383, characters 5-12", Js_json.decodeNull(/* array */[]), undefined);
+eq("File \"js_json_test.ml\", line 383, characters 5-12", Js_json.decodeNull([]), undefined);
 
 eq("File \"js_json_test.ml\", line 385, characters 5-12", Js_json.decodeNull(null), null);
 

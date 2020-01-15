@@ -12,7 +12,7 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
-var of_string = /* array */[
+var of_string = [
   /* tuple */[
     0,
     "0"
@@ -144,7 +144,7 @@ var v = Curry._1(Printf.sprintf(/* Format */[
           "%3d"
         ]), 3333);
 
-var pairs = /* array */[
+var pairs = [
   /* tuple */[
     /* FP_infinite */3,
     "infinity"
@@ -167,7 +167,7 @@ var pairs = /* array */[
   ]
 ];
 
-var pairs$1 = /* array */[
+var pairs$1 = [
   /* tuple */[
     3232,
     "32_32.0"
@@ -1308,7 +1308,7 @@ var formatter_suites = /* :: */[
   formatter_suites_001
 ];
 
-var float_data = /* array */[
+var float_data = [
   /* tuple */[
     "%f",
     32,
@@ -1560,7 +1560,7 @@ var Lambda_suites = {
   string_of_lambda: string_of_lambda
 };
 
-var lambda_suites = /* array */[
+var lambda_suites = [
   /* tuple */[
     /* Var */Block.__(1, ["x"]),
     "x"
@@ -2268,7 +2268,7 @@ var int64_suites = /* :: */[
   int64_suites_001
 ];
 
-var of_string_data = /* array */[
+var of_string_data = [
   /* tuple */[
     /* int64 */{
       hi: 0,

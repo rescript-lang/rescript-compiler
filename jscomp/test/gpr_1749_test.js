@@ -28,11 +28,11 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var a = 0;
-
-eq("File \"gpr_1749_test.ml\", line 18, characters 6-13", 0, a);
+eq("File \"gpr_1749_test.ml\", line 18, characters 6-13", 0, 0);
 
 Mt.from_pair_suites("Gpr_1749_test", suites.contents);
+
+var a = 0;
 
 exports.suites = suites;
 exports.test_id = test_id;

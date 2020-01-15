@@ -118,7 +118,7 @@ eq("File \"name_mangle_test.ml\", line 89, characters 7-14", f4(({_open:0})), 1)
 
 eq("File \"name_mangle_test.ml\", line 90, characters 7-14", f5(({open:0})), 1);
 
-eq("File \"name_mangle_test.ml\", line 91, characters 7-14", f6(({ "'x" :0} )), 1);
+eq("File \"name_mangle_test.ml\", line 91, characters 7-14", f6(({ "'x" :0})), 1);
 
 eq("File \"name_mangle_test.ml\", line 92, characters 7-14", f7(({_Capital:0})), 1);
 

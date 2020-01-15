@@ -42,7 +42,7 @@ function add(prim, prim$1) {
   return prim + prim$1 | 0;
 }
 
-Belt_HashMap.mergeMany(empty, /* array */[
+Belt_HashMap.mergeMany(empty, [
       /* tuple */[
         1,
         1

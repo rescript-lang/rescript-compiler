@@ -114,7 +114,7 @@ external entries : (int * 'a) array_iter = "" [@@bs.send.pipe: 'a t as 'this] (*
 external every : ('a  -> bool[@bs.uncurry]) -> bool = "every" [@@bs.send.pipe: 'a t as 'this]
 external everyi : ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@@bs.send.pipe: 'a t as 'this]
 
-(** should we use [bool] or [boolan] seems they are intechangeable here *)
+(** should we use [bool] or [boolean] seems they are intechangeable here *)
 external filter : ('a -> bool [@bs.uncurry]) -> 'this = "filter" [@@bs.send.pipe: 'a t as 'this]
 external filteri : ('a -> int  -> bool[@bs.uncurry]) -> 'this = "filter" [@@bs.send.pipe: 'a t as 'this]
 

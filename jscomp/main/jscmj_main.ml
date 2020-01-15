@@ -42,7 +42,7 @@ let get_files ext dir =
 let from_cmj (files : string list) (output_file : string) = 
   let raw_to_str f str = 
     Ext_pp.string f "\""   ;
-    Ext_pp.string f (Ext_string.escaped str);
+    Ext_pp.string f (String.escaped str);
     Ext_pp.string f "\""
   in  
   let v = open_out_bin output_file in
@@ -115,11 +115,7 @@ let from_cmi (files : string list) (output_file : string) =
       Ext_pp.string f "let data_sets = Map_string.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
 *)
-let stdlib = 
-#if OCAML_VERSION =~ ">4.03" then "stdlib-406"
-#else 
-  "stdlib-402"
-#end
+let stdlib = "stdlib-406"
 
 let () = 
   from_cmj ( Ext_list.append (get_files Literals.suffix_cmj stdlib)

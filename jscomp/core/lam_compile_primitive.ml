@@ -53,12 +53,12 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
-  | Praw_js_function(arg,block) -> 
-    E.raw_js_function arg block
-  | Praw_js_code_exp s -> 
-    E.raw_js_code Exp s  
-  | Praw_js_code_stmt s -> 
-    E.raw_js_code Stmt s 
+  | Praw_js_function {args ; block} -> 
+    E.raw_js_function block args
+  | Praw_js_code_exp {code; kind} -> 
+    E.raw_js_code (Exp kind) code
+  | Praw_js_code_stmt {code} -> 
+    E.raw_js_code Stmt code 
   | Pjs_runtime_apply -> 
     (match args with 
      | [f ;  args] -> 
@@ -120,9 +120,8 @@ let translate  loc
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
+  | Pmethod_run
   | Pjs_fn_make _
-
-  | Pjs_fn_runmethod _ 
     -> assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method _ -> assert false
   | Pglobal_exception id ->
@@ -590,7 +589,6 @@ let translate  loc
      | Ostype_unix -> E.bool Sys.unix
      | Ostype_win32 -> E.bool Sys.win32      
      | Ostype_cygwin -> E.bool Sys.cygwin
-#if OCAML_VERSION =~ ">4.03.0" then
      | Int_size -> E.int 32l
      | Max_wosize ->
       (* max_array_length*)
@@ -602,11 +600,9 @@ let translate  loc
         E.zero_int_literal 
         (Blk_constructor ("Other",1))
         [E.str "BS"] Immutable
-#end
      )
   | Pduprecord Record_regular -> 
       Lam_dispatch_primitive.translate loc "caml_obj_dup" args
-#if OCAML_VERSION =~ ">4.03.0" then         
   | Pduprecord ((
                  Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
@@ -618,7 +614,6 @@ let translate  loc
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
     (* check dubug mode *)  
-#end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
     (* can be refined to 

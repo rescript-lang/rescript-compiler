@@ -3047,7 +3047,7 @@ var Labs = {
 
 var dummy_table = {
   size: 0,
-  methods: /* array */[/* () */0],
+  methods: [/* () */0],
   methods_by_name: /* Empty */0,
   methods_by_label: /* Empty */0,
   previous_states: /* [] */0,
@@ -3298,7 +3298,7 @@ function new_variable(table, name) {
 
 function to_array(arr) {
   if (Caml_obj.caml_equal(arr, 0)) {
-    return /* array */[];
+    return [];
   } else {
     return arr;
   }
@@ -3353,7 +3353,7 @@ function add_initializer(table, f) {
 
 function create_table(public_methods) {
   if (public_methods === 0) {
-    return new_table(/* array */[]);
+    return new_table([]);
   } else {
     var tags = $$Array.map(public_method_label, public_methods);
     var table = new_table(tags);
@@ -3379,7 +3379,7 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   var init = top ? Curry._2($$super, cla, param[3]) : Curry._1($$super, cla);
   widen(cla);
   return Caml_array.caml_array_concat(/* :: */[
-              /* array */[init],
+              [init],
               /* :: */[
                 $$Array.map((function (param) {
                         return get_variable(cla, param);

@@ -40,7 +40,7 @@ function $plus$plus(q, x) {
 
 var q = Belt_MutableQueue.make(/* () */0);
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[]) && q.length === 0)) {
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -51,7 +51,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[]) && q.leng
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), /* array */[1]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), [1]) && q.length === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -62,7 +62,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
           1,
           2
         ]) && q.length === 2)) {
@@ -76,7 +76,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
           1,
           2,
           3
@@ -91,7 +91,7 @@ if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3)
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
           1,
           2,
           3,
@@ -118,7 +118,7 @@ if (Belt_MutableQueue.popExn(q) !== 1) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), [
           2,
           3,
           4
@@ -144,7 +144,7 @@ if (Belt_MutableQueue.popExn(q) !== 2) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), [
           3,
           4
         ]) && q.length === 2)) {
@@ -169,7 +169,7 @@ if (Belt_MutableQueue.popExn(q) !== 3) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[4]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), [4]) && q.length === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -191,7 +191,7 @@ if (Belt_MutableQueue.popExn(q) !== 4) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), /* array */[]) && q.length === 0)) {
+if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -455,7 +455,7 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Belt_MutableQueue.copy(q1);
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1), [
         1,
         2,
         3,
@@ -477,7 +477,7 @@ if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1), /* array */[
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2), [
         1,
         2,
         3,
@@ -673,7 +673,7 @@ if (q1$1.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$1), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -695,7 +695,7 @@ if (q2$1.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$1), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -719,7 +719,7 @@ if (q1$1.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$1), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -741,7 +741,7 @@ if (q2$1.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$1), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -771,7 +771,7 @@ if (q1$2.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$2), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$2), [
         1,
         2,
         3,
@@ -798,7 +798,7 @@ if (q2$2.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$2), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$2), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -822,7 +822,7 @@ if (q1$2.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$2), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$2), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -844,7 +844,7 @@ if (q2$2.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$2), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$2), [
         1,
         2,
         3,
@@ -879,7 +879,7 @@ if (q1$3.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$3), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -901,7 +901,7 @@ if (q2$3.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$3), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$3), [
         5,
         6,
         7,
@@ -930,7 +930,7 @@ if (q1$3.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$3), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -952,7 +952,7 @@ if (q2$3.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$3), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$3), [
         5,
         6,
         7,
@@ -991,7 +991,7 @@ if (q1$4.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$4), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$4), [
         1,
         2,
         3,
@@ -1018,7 +1018,7 @@ if (q2$4.length !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$4), /* array */[
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$4), [
         5,
         6,
         7,
@@ -1047,7 +1047,7 @@ if (q1$4.length !== 0) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$4), /* array */[])) {
+if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$4), [])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -1058,7 +1058,7 @@ if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q1$4), /* array */[])) {
       ];
 }
 
-var v = /* array */[
+var v = [
   5,
   6,
   7,
@@ -1108,7 +1108,7 @@ if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
 
 console.log("OK");
 
-var q$6 = Belt_MutableQueue.fromArray(/* array */[
+var q$6 = Belt_MutableQueue.fromArray([
       1,
       2,
       3,
@@ -1119,18 +1119,18 @@ var q1$5 = Belt_MutableQueue.map(q$6, (function (x) {
         return x - 1 | 0;
       }));
 
-eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toArray(q1$5), /* array */[
+eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toArray(q1$5), [
       0,
       1,
       2,
       3
     ]);
 
-var q$7 = Belt_MutableQueue.fromArray(/* array */[]);
+var q$7 = Belt_MutableQueue.fromArray([]);
 
 b("File \"bs_queue_test.ml\", line 155, characters 4-11", q$7.length === 0);
 
-var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray(/* array */[]), (function (x) {
+var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), (function (x) {
         return x + 1 | 0;
       }));
 

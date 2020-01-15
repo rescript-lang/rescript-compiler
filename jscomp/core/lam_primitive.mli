@@ -28,10 +28,9 @@ type ident = Ident.t
 
 type record_representation = 
     | Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then
     | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
-#end  
+
 
 type t = 
   | Pbytes_to_string
@@ -134,17 +133,25 @@ type t =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade of string * Location.t
+  | Pjs_unsafe_downgrade of 
+    { 
+      name : string ; 
+      setter : bool;
+      loc : Location.t;
+    }
   | Pinit_mod
   | Pupdate_mod
 
-  | Praw_js_code_exp of string 
-  | Praw_js_code_stmt of string 
-  | Praw_js_function of string * string list
+  | Praw_js_code_exp of 
+    { code : string ; kind : Js_raw_exp_info.t}
+  | Praw_js_code_stmt of 
+    { code : string }
+  | Praw_js_function of 
+    { block : string ; args : string list; arity : int}
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
+  | Pmethod_run
   | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 

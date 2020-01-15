@@ -19,8 +19,8 @@ var B = Caml_module.init_mod(/* tuple */[
       "recursive_unbound_module_test.ml",
       18,
       0
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
+            /* Module */Block.__(0, [[/* tuple */[
                     /* Function */0,
                     "f"
                   ]]]),
@@ -35,8 +35,8 @@ var M = {
   f: f
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
-            /* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
+            /* Module */Block.__(0, [[/* tuple */[
                     /* Function */0,
                     "f"
                   ]]]),

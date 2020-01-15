@@ -15,7 +15,7 @@ var one_float = /* int64 */{
   lo: 0
 };
 
-var int32_pairs = /* array */[
+var int32_pairs = [
   /* tuple */[
     32,
     4.48415508583941463e-44

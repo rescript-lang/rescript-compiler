@@ -19,9 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
-#if OCAML_VERSION =~ ">4.03.0" then
-[@@@ocaml.warning "-57"] (* turn off such warning temporarily*)
-#end
+
+[@@@ocaml.warning "-57"] (* FIXME: turn off such warning temporarily*)
+
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
   ASI catch up
@@ -148,7 +148,7 @@ let rec iter_lst cxt (f : P.t) ls element inter =
 let raw_snippet_exp_simple_enough (s : string) =
   Ext_string.for_all s (fun c -> 
   match c with 
-  | 'a' .. 'z' | 'A' .. 'Z' | '_' -> true 
+  | 'a' .. 'z' | 'A' .. 'Z' | '_' | '.' -> true 
   | _ -> false
   )
 (* Parentheses are required when the expression
@@ -166,9 +166,10 @@ let raw_snippet_exp_simple_enough (s : string) =
 *)        
 let exp_need_paren  (e : J.expression) =
   match e.expression_desc with
-  | Call ({expression_desc = Fun _ | Raw_js_function _; },_,_) -> true
   (* | Caml_uninitialized_obj _  *)
-  | Raw_js_code (_, Exp)
+  | Call ({expression_desc = Fun _ | Raw_js_function _ | Raw_js_code _ },_,_) -> true
+
+  | Raw_js_code (_, Exp _)
   | Fun _ 
   | Raw_js_function _ 
   | Caml_block (_,_,_, (Blk_record _ | Blk_module _))
@@ -366,7 +367,7 @@ and  pp_function is_method
       *)
       not is_method &&
       Ext_list.for_all2_no_exn ls l  is_var  ->
-    let optimize  len p cxt f v =
+    let optimize  len ~p cxt f v =
       if p then try_optimize_curry cxt f len function_id
       else
         vident cxt f v in
@@ -374,13 +375,13 @@ and  pp_function is_method
     (match name with
      | Name_top i | Name_non_top i  ->       
        let cxt = pp_var_assign cxt f i in 
-       let cxt = optimize len (arity = NA && len <= 8) cxt f v in
+       let cxt = optimize len ~p:(arity = NA && len <= 8) cxt f v in
        semi f ;
        cxt
      | No_name ->
        if return then 
          return_sp f ;
-       optimize len (arity = NA && len <=8) cxt f v)
+       optimize len ~p:(arity = NA && len <=8) cxt f v)
 
   | _, _  ->
     let set_env : Set_ident.t = (** identifiers will be printed following*)
@@ -644,15 +645,14 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     pp_js_function_params_body f s params;
     cxt 
   | Raw_js_code (s,info) ->
+    let s = String.trim s in             
     (match info with
-     | Exp ->
-       if raw_snippet_exp_simple_enough s then 
-         P.string f s        
-       else begin 
-         P.string f L.lparen;
-         P.string f s ;
-         P.string f L.rparen;
-       end;
+     | Exp exp_info ->
+       let raw_paren =
+          not (exp_info = Js_literal || raw_snippet_exp_simple_enough s) in 
+       if raw_paren then P.string f L.lparen;
+       P.string f s ;       
+       if raw_paren then  P.string f L.rparen;
        cxt
      | Stmt ->
        P.newline f  ;
@@ -874,16 +874,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           end
 
           
-#if OCAML_VERSION =~ ">4.03.0" then                               
+
         | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
-#end
         | Blk_tuple
         | Blk_extension
         | Blk_class
         | Blk_array
-#if OCAML_VERSION =~ ">4.03.0" then     
         | Blk_record_ext _
-#end      
         | Blk_extension_slot
         | Blk_na _
            ->           

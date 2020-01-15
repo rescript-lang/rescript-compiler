@@ -9,11 +9,11 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = /* array */["x"];
+var shared = ["x"];
 
-var shared$1 = /* array */["m"];
+var shared$1 = ["m"];
 
-var shared$2 = /* array */[
+var shared$2 = [
   "move",
   "get_x"
 ];
@@ -49,7 +49,7 @@ function point_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$1) {
             return self$1[x];
@@ -73,10 +73,10 @@ var point = CamlinternalOO.make_class(shared$2, point_init);
 function colored_point_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var c = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.new_methods_variables($$class, /* array */["color"], /* array */["c"]);
+  var ids = CamlinternalOO.new_methods_variables($$class, ["color"], ["c"]);
   var color = ids[0];
   var c$1 = ids[1];
-  var inh = CamlinternalOO.inherits($$class, shared, 0, /* array */[
+  var inh = CamlinternalOO.inherits($$class, shared, 0, [
         "get_x",
         "move"
       ], point, true);
@@ -94,7 +94,7 @@ function colored_point_init($$class) {
     });
 }
 
-var colored_point = CamlinternalOO.make_class(/* array */[
+var colored_point = CamlinternalOO.make_class([
       "move",
       "color",
       "get_x"
@@ -138,7 +138,7 @@ function c_init($$class) {
 var c = CamlinternalOO.make_class(shared$1, c_init);
 
 function d_init($$class) {
-  var ids = CamlinternalOO.get_method_labels($$class, /* array */[
+  var ids = CamlinternalOO.get_method_labels($$class, [
         "n",
         "as_c"
       ]);
@@ -146,7 +146,7 @@ function d_init($$class) {
   var as_c = ids[1];
   var inh = CamlinternalOO.inherits($$class, 0, 0, shared$1, c, true);
   var obj_init = inh[0];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         n,
         (function (self$4) {
             return 2;
@@ -163,7 +163,7 @@ function d_init($$class) {
     });
 }
 
-var table = CamlinternalOO.create_table(/* array */[
+var table = CamlinternalOO.create_table([
       "as_c",
       "m",
       "n"
@@ -202,7 +202,7 @@ function functional_point_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$6) {
             return self$6[x];
@@ -244,7 +244,7 @@ function bad_functional_point_init($$class) {
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get_x,
         (function (self$7) {
             return self$7[x];

@@ -41,7 +41,7 @@ var XX = {
   f: f
 };
 
-var u = /* array */[$$String];
+var u = [$$String];
 
 var ghh = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
 

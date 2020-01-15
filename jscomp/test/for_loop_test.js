@@ -112,7 +112,7 @@ function for_6(x, u) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return /* array */[
+  return [
           v.contents,
           v4.contents,
           v5.contents,
@@ -223,7 +223,7 @@ function for_9(param) {
   $$Array.iter((function (f) {
           return Curry._1(f, /* () */0);
         }), arr2);
-  return /* array */[/* tuple */[
+  return [/* tuple */[
             vv.contents,
             $$Array.of_list(List.rev(v.contents)),
             vv2.contents
@@ -265,7 +265,7 @@ var suites_001 = /* :: */[
         "for_loop_test_6",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      /* array */[
+                      [
                         30,
                         1,
                         2,
@@ -300,9 +300,9 @@ var suites_001 = /* :: */[
               "for_loop_test_9",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            /* array */[/* tuple */[
+                            [/* tuple */[
                                 10,
-                                /* array */[
+                                [
                                   1,
                                   2,
                                   2,

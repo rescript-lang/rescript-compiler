@@ -63,7 +63,7 @@ var a = /* tuple */[
   3
 ];
 
-var c = /* array */[
+var c = [
   1,
   2,
   3,

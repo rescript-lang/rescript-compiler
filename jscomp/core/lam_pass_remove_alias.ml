@@ -114,11 +114,11 @@ let simplify_alias
     {var $$let=Make(funarg);
       return [0, $$let[5],... $$let[16]]}
     *)      
-    | Lapply{fn = 
+    | Lapply{ap_func = 
                Lprim {primitive = Pfield (index, Fld_module {name = fld_name}) ;
                       args = [ Lglobal_module ident ];
                       _} as l1;
-             args; loc ; status} ->
+             ap_args = args; ap_loc = loc ; ap_status = status} ->
       begin
         match  Lam_compile_env.query_external_id_info ident fld_name with                   
         | {closed_lambda=Some Lfunction{params; body; _} } 
@@ -149,7 +149,7 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply{fn = (Lvar v as fn);  args; loc ; status} ->
+    | Lapply{ap_func = (Lvar v as fn);  ap_args = args; ap_loc = loc ; ap_status = status } ->
       (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
@@ -211,7 +211,7 @@ let simplify_alias
 
       end
 
-    | Lapply{ fn = Lfunction{ params; body}; args; _}
+    | Lapply{ ap_func = Lfunction{ params; body}; ap_args = args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
     (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
@@ -222,7 +222,7 @@ let simplify_alias
     (*   when  Ext_list.same_length params args -> *)
     (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
-    | Lapply {fn = l1; args =  ll;  loc ; status} ->
+    | Lapply { ap_func = l1; ap_args =  ll;  ap_loc = loc; ap_status = status} ->
       Lam.apply (simpl  l1) (Ext_list.map ll simpl) loc status
     | Lfunction {arity; params; body = l}
       -> Lam.function_ ~arity ~params  ~body:(simpl  l)

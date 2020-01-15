@@ -19,7 +19,7 @@ function f(str) {
   }
 }
 
-f(("xx"));
+f("xx");
 
 f((Buffer.from ('xx')));
 

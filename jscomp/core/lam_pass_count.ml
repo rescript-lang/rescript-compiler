@@ -138,14 +138,14 @@ let collect_occurs  lam : occ_tbl =
       List.iter (fun (v, l) -> count bv l) bindings;
       count bv body
         (** Note there is a difference here when do beta reduction for *)
-    | Lapply{fn = Lfunction{params; body};  args; _}
+    | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
     (* | Lapply{fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*          args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
     (*   when  Ext_list.same_length params  args -> *)
     (*   count bv (Lam_beta_reduce.beta_reduce   params body args) *)
-    | Lapply{fn = l1; args= ll; _} ->
+    | Lapply{ap_func = l1; ap_args= ll; _} ->
       count bv l1; List.iter (count bv) ll 
     | Lconst cst -> ()
     | Lswitch(l, sw) ->

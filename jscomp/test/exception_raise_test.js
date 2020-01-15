@@ -63,7 +63,7 @@ var A = Caml_exceptions.create("Exception_raise_test.A");
 var f;
 
 try {
-  f = ( function () {throw (new Error ("x"))} ());
+  f = (function () {throw (new Error ("x"))} ());
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -73,7 +73,7 @@ catch (raw_exn){
 var ff;
 
 try {
-  ff = ( function () {throw 3} ());
+  ff = (function () {throw 3} ());
 }
 catch (raw_exn$1){
   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
@@ -83,7 +83,7 @@ catch (raw_exn$1){
 var fff;
 
 try {
-  fff = ( function () {throw 2} ());
+  fff = (function () {throw 2} ());
 }
 catch (raw_exn$2){
   var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
@@ -93,7 +93,7 @@ catch (raw_exn$2){
 var a0;
 
 try {
-  a0 = ( function (){throw 2} () );
+  a0 = (function (){throw 2} ());
 }
 catch (raw_exn$3){
   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
@@ -114,7 +114,7 @@ catch (raw_exn$3){
 var a1;
 
 try {
-  a1 = ( function (){throw 2} () );
+  a1 = (function (){throw 2} ());
 }
 catch (raw_e){
   a1 = Caml_js_exceptions.internalToOCamlException(raw_e);
@@ -123,7 +123,7 @@ catch (raw_e){
 var a2;
 
 try {
-  a2 = ( function (){throw (new Error("x"))} () );
+  a2 = (function (){throw (new Error("x"))} ());
 }
 catch (raw_e$1){
   a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);

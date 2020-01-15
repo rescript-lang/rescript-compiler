@@ -15,11 +15,9 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-
 require('../../lib/js/caml_external_polyfill.js').register("caml_fancy_add", function(x,y){
   return + ((""+x ) + (""+y))
 })
-
 ;
 
 var h = Caml_external_polyfill.resolve("caml_fancy_add")(1, 2);

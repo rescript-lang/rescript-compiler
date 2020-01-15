@@ -25,13 +25,13 @@
 
 
 
-
+open Js_internalRaw
 
 (** *)
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
 
-let repeat : int -> string -> string = fun%raw count self -> {|
+let repeat : int -> string -> string = [%raw{|function(count,self){
     if (self.repeat){
         return self.repeat(count)
     }
@@ -56,5 +56,4 @@ let repeat : int -> string -> string = fun%raw count self -> {|
             self += self;
     }
     return rpt;
-
-|}
+}|}]

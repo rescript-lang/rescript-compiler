@@ -25,6 +25,14 @@
 
 val setup : unit -> unit 
 
+type level = 
+  | Debug
+  | Info 
+  | Warn
+  | Error 
+
+val log_level : level ref
+
 type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a

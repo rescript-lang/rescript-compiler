@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+ open Js_internalRaw
 
 type obj = Caml_obj_extern.t
 
-let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
+let spliceApply : obj -> obj -> obj = [%raw{|function(fn,args){
   var i, argLen; 
   argLen = args.length
   var applied = []
@@ -37,9 +37,9 @@ let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
     applied.push(lastOne[i])
   }
   return fn.apply(null,applied)
-|} 
+}|}] 
 
-let spliceObjApply : obj -> obj -> obj -> obj = fun%raw obj name args -> {|
+let spliceObjApply : obj -> obj -> obj -> obj = [%raw{|function(obj,name,args){
   var i, argLen; 
   argLen = args.length
   var applied = []
@@ -51,4 +51,4 @@ let spliceObjApply : obj -> obj -> obj -> obj = fun%raw obj name args -> {|
     applied.push(lastOne[i])
   }
   return (obj[name]).apply(obj,applied)
-|}
+}|}]

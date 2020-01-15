@@ -66,4 +66,10 @@ let vendor_bsppx =
   
 ;; assert (Sys.file_exists bsc_dir)       
 
+let ocaml_version = "4.06.1"
 
+let ocaml_dir =
+  Filename.(concat (concat (dirname bsc_dir) "native") ocaml_version)
+
+let ocaml_lib_dir =
+  Filename.(concat (concat ocaml_dir "lib") "ocaml")

@@ -4,19 +4,19 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-var a = /* array */[
+var a = [
   0,
   1,
   2
 ];
 
-var b = /* array */[
+var b = [
   0,
   1,
   2
 ];
 
-var c = /* array */[
+var c = [
   0,
   1,
   2,
@@ -60,7 +60,7 @@ var suites_001 = /* :: */[
         Caml_array.caml_array_set(c, 0, 3);
         Caml_array.caml_array_set(c, 1, 4);
         return /* Eq */Block.__(0, [
-                  /* array */[
+                  [
                     3,
                     4,
                     2,

@@ -31,27 +31,27 @@ function $eq$star(a, b) {
   return Belt_SetInt.eq(Belt_SetInt.fromArray(a), Belt_SetInt.fromArray(b));
 }
 
-b("File \"bs_set_int_test.ml\", line 17, characters 4-11", $eq$star(/* array */[
+b("File \"bs_set_int_test.ml\", line 17, characters 4-11", $eq$star([
           1,
           2,
           3
-        ], /* array */[
+        ], [
           3,
           2,
           1
         ]));
 
-var u = Belt_SetInt.intersect(Belt_SetInt.fromArray(/* array */[
+var u = Belt_SetInt.intersect(Belt_SetInt.fromArray([
           1,
           2,
           3
-        ]), Belt_SetInt.fromArray(/* array */[
+        ]), Belt_SetInt.fromArray([
           3,
           4,
           5
         ]));
 
-b("File \"bs_set_int_test.ml\", line 23, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(/* array */[3]), u));
+b("File \"bs_set_int_test.ml\", line 23, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray([3]), u));
 
 function range(i, j) {
   return $$Array.init((j - i | 0) + 1 | 0, (function (k) {
@@ -131,7 +131,7 @@ var s$5 = Belt_SetInt.diff(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.
 
 b("File \"bs_set_int_test.ml\", line 66, characters 6-13", Belt_SetInt.eq(Belt_SetInt.fromArray(i$7), s$5));
 
-var ss = /* array */[
+var ss = [
   1,
   222,
   3,
@@ -142,7 +142,7 @@ var ss = /* array */[
   -1
 ];
 
-var v$1 = Belt_SetInt.fromArray(/* array */[
+var v$1 = Belt_SetInt.fromArray([
       1,
       222,
       3,
@@ -335,7 +335,7 @@ var v1 = Belt_SetInt.fromArray(Array_data_util.randomRange(1, 2001));
 
 var v2 = Belt_SetInt.fromArray(Array_data_util.randomRange(3, 2002));
 
-var v3 = Belt_SetInt.removeMany(v2, /* array */[
+var v3 = Belt_SetInt.removeMany(v2, [
       2002,
       2001
     ]);

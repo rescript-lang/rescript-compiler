@@ -706,7 +706,7 @@ function inter3(a, b, c) {
 }
 
 function inter4(a, b, c, d) {
-  return concat_array(single_space, /* array */[
+  return concat_array(single_space, [
               a,
               b,
               c,

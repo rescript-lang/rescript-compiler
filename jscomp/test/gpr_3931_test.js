@@ -9,7 +9,7 @@ var PA = Caml_module.init_mod(/* tuple */[
       "gpr_3931_test.ml",
       3,
       6
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "print"
           ]]]));
@@ -18,7 +18,7 @@ var P = Caml_module.init_mod(/* tuple */[
       "gpr_3931_test.ml",
       11,
       6
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "print"
           ]]]));
@@ -27,7 +27,7 @@ function print(a) {
   return $$Array.iter(P.print, a);
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "print"
           ]]]), PA, {
@@ -39,14 +39,14 @@ function print$1(i) {
   return /* () */0;
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "print"
           ]]]), P, {
       print: print$1
     });
 
-Curry._1(PA.print, /* array */[
+Curry._1(PA.print, [
       1,
       2
     ]);

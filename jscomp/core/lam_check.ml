@@ -58,8 +58,8 @@ let check file lam =
       | Lglobal_module _ -> ()
       | Lprim {args; _} ->
         check_list args cxt       
-      | Lapply{fn; args; _} ->
-        check_list (fn::args) cxt
+      | Lapply{ap_func; ap_args; _} ->
+        check_list (ap_func::ap_args) cxt
         (* check invariant that staticfaill does not cross function/while/for loop*)
       | Lfunction{body;params} ->        
         check_staticfails body Set_int.empty
@@ -113,8 +113,8 @@ let check file lam =
       | Lprim {args; _} ->
         iter_list args
       | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        iter fn; iter_list args
+      | Lapply{ap_func; ap_args; _} ->
+        iter ap_func; iter_list ap_args
       | Lfunction{body;params} ->
         List.iter def params;
         iter body

@@ -106,7 +106,7 @@ let namespace_of_package_name (s : string) : string =
   let add capital ch = 
     Ext_buffer.add_char buf 
       (if capital then 
-         (Ext_char.uppercase_ascii ch)
+         (Char.uppercase_ascii ch)
        else ch) in    
   let rec aux capital off len =     
     if off >= len then ()
@@ -116,6 +116,7 @@ let namespace_of_package_name (s : string) : string =
       | 'a' .. 'z' 
       | 'A' .. 'Z' 
       | '0' .. '9'
+      | '_'
         ->
         add capital ch ; 
         aux false (off + 1) len 

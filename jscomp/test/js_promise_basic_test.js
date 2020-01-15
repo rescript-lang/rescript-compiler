@@ -179,7 +179,7 @@ function allResolvedTest(param) {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(2);
   var p3 = Promise.resolve(3);
-  var promises = /* array */[
+  var promises = [
     p1,
     p2,
     p3
@@ -196,7 +196,7 @@ function allRejectTest(param) {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(3);
   var p3 = Promise.reject(Caml_builtin_exceptions.not_found);
-  var promises = /* array */[
+  var promises = [
     p1,
     p2,
     p3
@@ -211,7 +211,7 @@ function raceTest(param) {
   var p1 = Promise.resolve("first");
   var p2 = Promise.resolve("second");
   var p3 = Promise.resolve("third");
-  var promises = /* array */[
+  var promises = [
     p1,
     p2,
     p3

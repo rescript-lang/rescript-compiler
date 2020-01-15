@@ -53,7 +53,7 @@ for(var i = 0; i <= 9; ++i){
   Caml_array.caml_array_set(v, i, Random.bool(/* () */0));
 }
 
-var param$2 = /* array */[
+var param$2 = [
   true,
   true,
   true,

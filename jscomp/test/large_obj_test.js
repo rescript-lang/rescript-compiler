@@ -6,7 +6,7 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var shared = /* array */[
+var shared = [
   "get0",
   "get1",
   "get2",
@@ -29,7 +29,7 @@ var shared = /* array */[
   "get19"
 ];
 
-var shared$1 = /* array */[
+var shared$1 = [
   "get9",
   "get8",
   "get7",
@@ -52,7 +52,7 @@ var shared$1 = /* array */[
   "get0"
 ];
 
-var shared$2 = /* array */[
+var shared$2 = [
   "field0",
   "field1",
   "field2",
@@ -399,7 +399,7 @@ var field98 = ids[118];
 
 var field99 = ids[119];
 
-CamlinternalOO.set_methods($$class, /* array */[
+CamlinternalOO.set_methods($$class, [
       get0,
       (function (self$1) {
           return self$1[field0] + 0 | 0;
@@ -725,7 +725,7 @@ function raw_class_init($$class) {
   var field97 = ids[117];
   var field98 = ids[118];
   var field99 = ids[119];
-  CamlinternalOO.set_methods($$class, /* array */[
+  CamlinternalOO.set_methods($$class, [
         get0,
         (function (self$2) {
             return self$2[field0] + 0 | 0;

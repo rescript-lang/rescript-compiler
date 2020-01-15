@@ -28,10 +28,9 @@ type ident = Ident.t
   
 type record_representation = 
     | Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then
     | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
-#end  
+
 
 type t =
   | Pbytes_to_string
@@ -140,16 +139,22 @@ type t =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade of string * Location.t
+  | Pjs_unsafe_downgrade of 
+    { 
+      name : string ;
+      setter : bool;
+      loc : Location.t;
+     }
   | Pinit_mod
   | Pupdate_mod
-  | Praw_js_code_exp of string
-  | Praw_js_code_stmt of string
-  | Praw_js_function of string * string list
+  | Praw_js_code_exp of {code : string; kind : Js_raw_exp_info.t }
+  | Praw_js_code_stmt of {code : string}
+  | Praw_js_function of {block : string ; args : string list; arity : int}
   | Pjs_fn_make of int
   | Pjs_fn_run of int
+  | Pmethod_run
   | Pjs_fn_method of int
-  | Pjs_fn_runmethod of int
+  
 
   | Pundefined_to_opt
   | Pnull_to_opt
@@ -187,7 +192,6 @@ let eq_tag_info ( x : Lam_tag_info.t) y =
 let eq_record_representation ( p : record_representation) ( p1 : record_representation) = 
   match p with 
   | Record_regular -> p1 = Record_regular
-#if OCAML_VERSION =~ ">4.03.0" then 
   | Record_inlined {tag ; name ; num_nonconsts} -> 
     (match p1 with 
     |Record_inlined rhs ->
@@ -195,7 +199,7 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
     | _ -> false)
   | Record_extension -> 
     p1 = Record_extension   
-#end
+
 let eq_primitive_approx ( lhs : t) (rhs : t) = 
   match lhs with 
   | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
@@ -321,12 +325,11 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
   | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
-  | Pjs_unsafe_downgrade ( s,_loc) -> (match rhs with Pjs_unsafe_downgrade (s1,_) -> s = s1 | _ -> false)  
+  | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
-  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )
-  | Pjs_fn_runmethod i -> (match rhs with Pjs_fn_runmethod i1 -> i = i1 | _ -> false ) 
-
+  | Pmethod_run  -> rhs = Pmethod_run 
+  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )  
   | Pbigarrayref  _ 
   | Pbigarrayset _ 
   | Praw_js_function _

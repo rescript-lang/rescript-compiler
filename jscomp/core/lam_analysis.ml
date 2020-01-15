@@ -166,6 +166,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
       | Praw_js_function _
+      | Praw_js_code_exp {kind = Js_function _ | Js_literal }
         -> true
       | Pjs_apply
       | Pjs_runtime_apply
@@ -175,7 +176,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_unsafe_downgrade _
       | Pdebugger 
       | Pjs_fn_run _ 
-      | Pjs_fn_method _ | Pjs_fn_runmethod _
+      | Pmethod_run
+      | Pjs_fn_method _ 
       (* TODO *)
       | Praw_js_code_exp _ 
       | Praw_js_code_stmt _
@@ -297,8 +299,8 @@ let rec size (lam : Lam.t) =
         {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
      *)      
-    | Lapply{ fn;
-             args; _} -> size_lams (size fn) args
+    | Lapply{ ap_func;
+             ap_args; _} -> size_lams (size ap_func) ap_args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction {body} -> size body 
     | Lswitch _ -> really_big ()

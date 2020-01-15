@@ -130,14 +130,6 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
-let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-#if OCAML_VERSION =~ "<4.03.0" then
-      match ptyp_arg.ptyp_desc with 
-      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
-      | _ -> assert false
-#else    
-      ptyp_arg 
-#end      
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -150,9 +142,8 @@ let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =
 *)
 let get_opt_arg_type
     ~(nolabel : bool)
-    (ptyp_arg : Ast_core_type.t) :
+    (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  let ptyp = get_basic_type_from_option_label ptyp_arg in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
@@ -423,7 +414,7 @@ let process_obj
     let arg_kinds, new_arg_types_ty, result_types =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label = param_type.label in
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -483,7 +474,7 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
@@ -884,7 +875,7 @@ let handle_attributes
             | _ ->
               (* more error checking *)
               [External_arg_spec.empty_kind arg_type],
-              [{label = Ast_compatible.no_label;
+              [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} ],
@@ -893,7 +884,7 @@ let handle_attributes
         | None -> [],[], 0 in 
       Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label =  param_type.label in
            let ty = param_type.ty in 
            if i = 0 && splice  then
              begin match arg_label with 

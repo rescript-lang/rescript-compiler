@@ -197,7 +197,6 @@ end
 end
 module Config_whole_compiler : sig 
 #1 "config_whole_compiler.mli"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -386,7 +385,6 @@ val afl_instrument : bool
 
 end = struct
 #1 "config_whole_compiler.ml"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -572,7 +570,6 @@ let print_config oc =
 
   flush oc;
 ;;
-
 
 end
 module Config = Config_whole_compiler 
@@ -7269,15 +7266,10 @@ module Ext_bytes : sig
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]
-                     
     
 
 
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
 
 end = struct
 #1 "ext_bytes.ml"
@@ -7313,52 +7305,8 @@ end = struct
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]                     
 
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = Pervasives.ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
 
 end
 module Ext_list : sig 
@@ -8546,7 +8494,7 @@ val ends_with : string -> string -> bool
 val ends_with_then_chop : string -> string -> string option
 
 
-val escaped : string -> string
+
 
 (**
   [for_all_from  s start p]
@@ -8820,22 +8768,6 @@ let check_any_suffix_case_then_chop s suffixes =
 
 
 
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
@@ -8881,8 +8813,9 @@ let unsafe_is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-exception Local_exit 
+
 let find ?(start=0) ~sub s =
+  let exception Local_exit in
   let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
@@ -8913,9 +8846,9 @@ let non_overlap_count ~sub s =
 
 
 let rfind ~sub s =
+  let exception Local_exit in   
   let n = String.length sub in
   let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
   try
     while !i >= 0 do
       if unsafe_is_sub ~sub 0 s !i ~len:n then 
@@ -9174,14 +9107,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-
     String.uncapitalize_ascii
-      
 
-
- 
 let lowercase_ascii = String.lowercase_ascii
-
 
 
 
@@ -9991,9 +9919,7 @@ val setter_suffix_len : int
 
 
 val debugger : string
-val raw_expr : string
-val raw_stmt : string
-val raw_function : string
+
 val unsafe_downgrade : string
 val fn_run : string
 val method_run : string
@@ -10131,9 +10057,6 @@ let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
-let raw_expr = "raw_expr"
-let raw_stmt = "raw_stmt"
-let raw_function = "raw_function"
 let unsafe_downgrade = "unsafe_downgrade"
 let fn_run = "fn_run"
 let method_run = "method_run"
@@ -10773,7 +10696,7 @@ module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
 
- (* not suporting nested if here..*)
+
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
@@ -10788,11 +10711,10 @@ external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
 
 external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
 
-
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
-  
+
     
 
 end
@@ -10903,7 +10825,7 @@ type ('a, 'b) bucket =
   | Cons of {
       mutable key : 'a ; 
       mutable data : 'b ; 
-      mutable rest :  ('a, 'b) bucket
+      mutable next :  ('a, 'b) bucket
     }
 
 type ('a, 'b) t =
@@ -10942,16 +10864,16 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons {key; rest} as cell ->
+      | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
         | Empty -> 
           Array.unsafe_set ndata nidx cell
         | Cons tail ->
-          tail.rest <- cell  
+          tail.next <- cell  
         end;
         Array.unsafe_set ndata_tail nidx cell;
-        insert_bucket rest
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -10959,7 +10881,7 @@ let resize indexfun h =
     for i = 0 to nsize - 1 do 
       match Array.unsafe_get ndata_tail i with 
       | Empty -> ()  
-      | Cons tail -> tail.rest <- Empty
+      | Cons tail -> tail.next <- Empty
     done   
   end
 
@@ -10970,7 +10892,7 @@ let iter h f =
     | Empty ->
       ()
     | Cons l  ->
-      f l.key l.data; do_bucket l.rest in
+      f l.key l.data; do_bucket l.next in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -10982,7 +10904,7 @@ let fold h init f =
       Empty ->
       accu
     | Cons l ->
-      do_bucket l.rest (f l.key l.data accu) in
+      do_bucket l.next (f l.key l.data accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -11001,15 +10923,15 @@ let rec small_bucket_mem (lst : _ bucket) eq key  =
   | Empty -> false 
   | Cons lst -> 
     eq  key lst.key ||
-    match lst.rest with
+    match lst.next with
     | Empty -> false 
     | Cons lst -> 
       eq key lst.key  || 
-      match lst.rest with 
+      match lst.next with 
       | Empty -> false 
       | Cons lst -> 
         eq key lst.key  ||
-        small_bucket_mem lst.rest eq key 
+        small_bucket_mem lst.next eq key 
 
 
 let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
@@ -11017,31 +10939,31 @@ let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   | Empty -> None 
   | Cons lst -> 
     if eq  key lst.key then Some lst.data else 
-      match lst.rest with
+      match lst.next with
       | Empty -> None 
       | Cons lst -> 
         if eq key lst.key then Some lst.data else 
-          match lst.rest with 
+          match lst.next with 
           | Empty -> None 
           | Cons lst -> 
             if eq key lst.key  then Some lst.data else 
-              small_bucket_opt eq key lst.rest
+              small_bucket_opt eq key lst.next
 
 
 let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with 
   | Empty -> None 
-  | Cons {key=k1;  rest=rest1} -> 
-    if eq  key k1 then Some k1 else 
-      match rest1 with
+  | Cons {key=k;  next} -> 
+    if eq  key k then Some k else 
+      match next with
       | Empty -> None 
-      | Cons {key=k2; rest=rest2} -> 
-        if eq key k2 then Some k2 else 
-          match rest2 with 
+      | Cons {key=k; next} -> 
+        if eq key k then Some k else 
+          match next with 
           | Empty -> None 
-          | Cons {key=k3;  rest=rest3} -> 
-            if eq key k3  then Some k3 else 
-              small_bucket_key_opt eq key rest3
+          | Cons {key=k; next} -> 
+            if eq key k  then Some k else 
+              small_bucket_key_opt eq key next
 
 
 let rec small_bucket_default eq key default (lst : _ bucket) =
@@ -11049,16 +10971,43 @@ let rec small_bucket_default eq key default (lst : _ bucket) =
   | Empty -> default 
   | Cons lst -> 
     if eq  key lst.key then  lst.data else 
-      match lst.rest with
+      match lst.next with
       | Empty -> default 
       | Cons lst -> 
         if eq key lst.key then  lst.data else 
-          match lst.rest with 
+          match lst.next with 
           | Empty -> default 
           | Cons lst -> 
             if eq key lst.key  then lst.data else 
-              small_bucket_default eq key default lst.rest
+              small_bucket_default eq key default lst.next
 
+let rec remove_bucket 
+    h  (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
+  | Empty ->
+    ()
+  | Cons {key=k; next }  ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.next <- next
+    end
+    else remove_bucket h i key ~prec:buck next eq_key
+
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
+  match buck with   
+  | Empty ->
+    true
+  | Cons slot ->
+    if eq_key slot.key key
+    then (slot.key <- key; slot.data <- data; false)
+    else replace_bucket key data slot.next eq_key
 
 module type S = sig 
   type key
@@ -11068,10 +11017,10 @@ module type S = sig
   val reset: 'a t -> unit
 
   val add: 'a t -> key -> 'a -> unit
-  val modify_or_init: 
+  val add_or_update: 
     'a t -> 
     key -> 
-    ('a -> 'a) -> 
+    update:('a -> 'a) -> 
     'a -> unit 
   val remove: 'a t -> key -> unit
   val find_exn: 'a t -> key -> 'a
@@ -11146,7 +11095,7 @@ let key_index (h : _ t ) (key : key) =
 let eq_key = Ext_string.equal 
 
 # 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucketlist = ('a,'b) Hash_gen.bucket
+type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
 let create = Hash_gen.create
 let clear = Hash_gen.clear
 let reset = Hash_gen.reset
@@ -11161,76 +11110,56 @@ let length = Hash_gen.length
 let add (h : _ t) key data =
   let i = key_index h key in
   let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons{key; data; rest=Array.unsafe_get h_data i});
+  Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
   h.size <- h.size + 1;
   if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init 
+let add_or_update 
   (h : 'a t) 
   (key : key) 
-  (modf : 'a -> 'a) 
+  ~update:(modf : 'a -> 'a) 
   (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucketlist) : bool =
+  let rec find_bucket (bucketlist : _ bucket) : bool =
     match bucketlist with
     | Cons rhs  ->
       if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
-      else find_bucket rhs.rest
+      else find_bucket rhs.next
     | Empty -> true in
   let i = key_index h key in 
   let h_data = h.data in 
   if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      Array.unsafe_set h_data i  (Cons{key; data=default; rest=Array.unsafe_get h_data i});
+      Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
     end
 
-
-let rec remove_bucket 
-    (h : _ t) (i : int)
-    key 
-    ~(prec : _ bucketlist) 
-    (buck : _ bucketlist) 
-    eq_key = 
-  match buck with   
-  | Empty ->
-    ()
-  | (Cons {key=k; rest = next }) as c ->
-    if eq_key k key 
-    then begin
-      h.size <- h.size - 1;
-      match prec with
-      | Empty -> Array.unsafe_set h.data i  next
-      | Cons c -> c.rest <- next
-    end
-    else remove_bucket h i key ~prec:c next eq_key
-
 let remove (h : _ t ) key =
   let i = key_index h key in
   let h_data = h.data in 
-  remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
+  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
 
 (* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
   | Empty ->
     raise Not_found
   | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else find_rec key rhs.rest
+    if eq_key key rhs.key then rhs.data else find_rec key rhs.next
 
 let find_exn (h : _ t) key =
   match Array.unsafe_get h.data (key_index h key) with
   | Empty -> raise Not_found
   | Cons rhs  ->
     if eq_key key rhs.key then rhs.data else
-      match rhs.rest with
+      match rhs.next with
       | Empty -> raise Not_found
       | Cons rhs  ->
         if eq_key key rhs.key then rhs.data else
-          match rhs.rest with
+          match rhs.next with
           | Empty -> raise Not_found
           | Cons rhs ->
-            if eq_key key rhs.key  then rhs.data else find_rec key rhs.rest
+            if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
 
 let find_opt (h : _ t) key =
   Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
@@ -11240,32 +11169,25 @@ let find_key_opt (h : _ t) key =
   
 let find_default (h : _ t) key default = 
   Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+
 let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
     | Empty ->
       []
-    | Cons{key=k; data=d; rest} ->
-      if eq_key k key 
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
+    | Cons rhs  ->
+      if eq_key key rhs.key
+      then rhs.data :: find_in_bucket rhs.next
+      else find_in_bucket rhs.next in
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
-let rec replace_bucket key data (buck : _ bucketlist) eq_key = 
-  match buck with   
-  | Empty ->
-    true
-  | Cons ({key=k; rest = next} as slot) ->
-    if eq_key k key
-    then (slot.key <- key; slot.data <- data; false)
-    else replace_bucket key data next eq_key
 
 let replace h key data =
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
-  if replace_bucket key data l eq_key then 
+  if Hash_gen.replace_bucket key data l eq_key then 
     begin 
-      Array.unsafe_set h_data i (Cons{key; data; rest=l});
+      Array.unsafe_set h_data i (Cons{key; data; next=l});
       h.size <- h.size + 1;
       if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
     end 
@@ -11376,6 +11298,7 @@ val sort_imports : bool ref
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 val bs_suffix : bool ref
@@ -11394,6 +11317,7 @@ val is_reason : bool ref
 val js_stdout : bool ref 
 
 val all_module_aliases : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11490,6 +11414,7 @@ let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 let bs_suffix = ref false 
 
@@ -11510,6 +11435,7 @@ let is_reason = ref false
 let js_stdout = ref true
 
 let all_module_aliases = ref false
+
 end
 module Map_gen
 = struct
@@ -12338,7 +12264,6 @@ type module_name = private string
 module Set_string = Depend.StringSet
 
 (* FIXME: [Clflags.open_modules] seems not to be properly used *)
- 
 module SMap = Depend.StringMap
 let bound_vars = SMap.empty 
 
@@ -12351,9 +12276,7 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
   List.iter (* check *)
     (fun modname  ->
-
        ignore @@ 
-       
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with

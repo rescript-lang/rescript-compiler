@@ -1445,7 +1445,7 @@ function category(re, c) {
   }
 }
 
-var dummy_next = /* array */[];
+var dummy_next = [];
 
 var unknown_state = {
   idx: -2,
@@ -2889,7 +2889,7 @@ function compile(r) {
           ncol: ncol$2,
           lnl: lnl$1,
           tbl: {
-            contents: /* array */[false]
+            contents: [false]
           },
           states: Curry._1(Re_automata_State.Table.create, 97),
           group_count: group_count
@@ -2916,7 +2916,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   var tmp;
   if (groups$1) {
     var n = re$1.tbl.contents.length + 1 | 0;
-    tmp = n <= 10 ? /* array */[
+    tmp = n <= 10 ? [
         0,
         0,
         0,
@@ -2929,7 +2929,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
         0
       ] : Caml_array.caml_make_vect(n, 0);
   } else {
-    tmp = /* array */[];
+    tmp = [];
   }
   var info = {
     re: re$1,
@@ -3096,6 +3096,271 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               ]);
     }
   };
+  var atom = function (param) {
+    if (accept(/* "." */46)) {
+      if (dotall) {
+        return any;
+      } else {
+        return notnl;
+      }
+    } else if (accept(/* "(" */40)) {
+      if (accept(/* "?" */63)) {
+        if (accept(/* ":" */58)) {
+          var r = regexp$prime(branch$prime(/* [] */0));
+          if (!accept(/* ")" */41)) {
+            throw Parse_error;
+          }
+          return r;
+        } else if (accept(/* "#" */35)) {
+          var _param = /* () */0;
+          while(true) {
+            if (accept(/* ")" */41)) {
+              return epsilon;
+            } else {
+              i.contents = i.contents + 1 | 0;
+              _param = /* () */0;
+              continue ;
+            }
+          };
+        } else {
+          throw Parse_error;
+        }
+      } else {
+        var r$1 = regexp$prime(branch$prime(/* [] */0));
+        if (!accept(/* ")" */41)) {
+          throw Parse_error;
+        }
+        return /* Group */Block.__(6, [r$1]);
+      }
+    } else if (accept(/* "^" */94)) {
+      if (multiline) {
+        return /* Beg_of_line */0;
+      } else {
+        return /* Beg_of_str */5;
+      }
+    } else if (accept(/* "$" */36)) {
+      if (multiline) {
+        return /* End_of_line */1;
+      } else if (dollar_endonly) {
+        return /* Last_end_of_line */7;
+      } else {
+        return /* End_of_str */6;
+      }
+    } else if (accept(/* "[" */91)) {
+      if (accept(/* "^" */94)) {
+        return compl(bracket(/* [] */0));
+      } else {
+        return alt$1(bracket(/* [] */0));
+      }
+    } else if (accept(/* "\\" */92)) {
+      if (i.contents === l) {
+        throw Parse_error;
+      }
+      var c = get(/* () */0);
+      switch (c) {
+        case 48 :
+        case 49 :
+        case 50 :
+        case 51 :
+        case 52 :
+        case 53 :
+        case 54 :
+        case 55 :
+        case 56 :
+        case 57 :
+            throw Not_supported;
+        case 65 :
+            return /* Beg_of_str */5;
+        case 66 :
+            return /* Not_bound */4;
+        case 68 :
+            return compl(/* :: */[
+                        digit,
+                        /* [] */0
+                      ]);
+        case 71 :
+            return /* Start */8;
+        case 83 :
+            return compl(/* :: */[
+                        space,
+                        /* [] */0
+                      ]);
+        case 87 :
+            return compl(/* :: */[
+                        alnum,
+                        /* :: */[
+                          /* Set */Block.__(0, [/* :: */[
+                                /* tuple */[
+                                  /* "_" */95,
+                                  /* "_" */95
+                                ],
+                                /* [] */0
+                              ]]),
+                          /* [] */0
+                        ]
+                      ]);
+        case 90 :
+            return /* Last_end_of_line */7;
+        case 58 :
+        case 59 :
+        case 60 :
+        case 61 :
+        case 62 :
+        case 63 :
+        case 64 :
+        case 91 :
+        case 92 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
+            return /* Set */Block.__(0, [single(c)]);
+        case 98 :
+            return alt$1(/* :: */[
+                        /* Beg_of_word */2,
+                        /* :: */[
+                          /* End_of_word */3,
+                          /* [] */0
+                        ]
+                      ]);
+        case 100 :
+            return digit;
+        case 115 :
+            return space;
+        case 119 :
+            return alt$1(/* :: */[
+                        alnum,
+                        /* :: */[
+                          /* Set */Block.__(0, [/* :: */[
+                                /* tuple */[
+                                  /* "_" */95,
+                                  /* "_" */95
+                                ],
+                                /* [] */0
+                              ]]),
+                          /* [] */0
+                        ]
+                      ]);
+        case 67 :
+        case 69 :
+        case 70 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+        case 88 :
+        case 89 :
+        case 97 :
+        case 99 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 110 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 114 :
+        case 116 :
+        case 117 :
+        case 118 :
+        case 120 :
+        case 121 :
+            throw Parse_error;
+        case 122 :
+            return /* End_of_str */6;
+        default:
+          return /* Set */Block.__(0, [single(c)]);
+      }
+    } else {
+      if (i.contents === l) {
+        throw Parse_error;
+      }
+      var c$1 = get(/* () */0);
+      if (c$1 >= 64) {
+        if (c$1 !== 92) {
+          if (c$1 !== 123) {
+            return /* Set */Block.__(0, [single(c$1)]);
+          } else {
+            throw Parse_error;
+          }
+        } else {
+          throw Parse_error;
+        }
+      } else if (c$1 >= 44) {
+        if (c$1 >= 63) {
+          throw Parse_error;
+        }
+        return /* Set */Block.__(0, [single(c$1)]);
+      } else {
+        if (c$1 >= 42) {
+          throw Parse_error;
+        }
+        return /* Set */Block.__(0, [single(c$1)]);
+      }
+    }
+  };
+  var integer = function (param) {
+    if (i.contents === l) {
+      return ;
+    } else {
+      var d = get(/* () */0);
+      if (d > 57 || d < 48) {
+        i.contents = i.contents - 1 | 0;
+        return ;
+      } else {
+        var _i = d - /* "0" */48 | 0;
+        while(true) {
+          var i$1 = _i;
+          if (i.contents === l) {
+            return i$1;
+          } else {
+            var d$1 = get(/* () */0);
+            if (d$1 > 57 || d$1 < 48) {
+              i.contents = i.contents - 1 | 0;
+              return i$1;
+            } else {
+              var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
+              if (i$prime < i$1) {
+                throw Parse_error;
+              }
+              _i = i$prime;
+              continue ;
+            }
+          }
+        };
+      }
+    }
+  };
+  var branch$prime = function (_left) {
+    while(true) {
+      var left = _left;
+      if (i.contents === l || test(/* "|" */124) || test(/* ")" */41)) {
+        return seq$2(List.rev(left));
+      } else {
+        _left = /* :: */[
+          piece(/* () */0),
+          left
+        ];
+        continue ;
+      }
+    };
+  };
   var regexp$prime = function (_left) {
     while(true) {
       var left = _left;
@@ -3110,20 +3375,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         continue ;
       } else {
         return left;
-      }
-    };
-  };
-  var branch$prime = function (_left) {
-    while(true) {
-      var left = _left;
-      if (i.contents === l || test(/* "|" */124) || test(/* ")" */41)) {
-        return seq$2(List.rev(left));
-      } else {
-        _left = /* :: */[
-          piece(/* () */0),
-          left
-        ];
-        continue ;
       }
     };
   };
@@ -3194,34 +3445,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
       }
     };
-  };
-  var piece = function (param) {
-    var r = atom(/* () */0);
-    if (accept(/* "*" */42)) {
-      return greedy_mod(repn(r, 0, undefined));
-    } else if (accept(/* "+" */43)) {
-      return greedy_mod(repn(r, 1, undefined));
-    } else if (accept(/* "?" */63)) {
-      return greedy_mod(repn(r, 0, 1));
-    } else if (accept(/* "{" */123)) {
-      var match = integer(/* () */0);
-      if (match !== undefined) {
-        var i$1 = match;
-        var j = accept(/* "," */44) ? integer(/* () */0) : i$1;
-        if (!accept(/* "}" */125)) {
-          throw Parse_error;
-        }
-        if (j !== undefined && j < i$1) {
-          throw Parse_error;
-        }
-        return greedy_mod(repn(r, i$1, j));
-      } else {
-        i.contents = i.contents - 1 | 0;
-        return r;
-      }
-    } else {
-      return r;
-    }
   };
   var $$char = function (param) {
     if (i.contents === l) {
@@ -3485,255 +3708,32 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             ];
     }
   };
-  var atom = function (param) {
-    if (accept(/* "." */46)) {
-      if (dotall) {
-        return any;
-      } else {
-        return notnl;
-      }
-    } else if (accept(/* "(" */40)) {
-      if (accept(/* "?" */63)) {
-        if (accept(/* ":" */58)) {
-          var r = regexp$prime(branch$prime(/* [] */0));
-          if (!accept(/* ")" */41)) {
-            throw Parse_error;
-          }
-          return r;
-        } else if (accept(/* "#" */35)) {
-          var _param = /* () */0;
-          while(true) {
-            if (accept(/* ")" */41)) {
-              return epsilon;
-            } else {
-              i.contents = i.contents + 1 | 0;
-              _param = /* () */0;
-              continue ;
-            }
-          };
-        } else {
+  var piece = function (param) {
+    var r = atom(/* () */0);
+    if (accept(/* "*" */42)) {
+      return greedy_mod(repn(r, 0, undefined));
+    } else if (accept(/* "+" */43)) {
+      return greedy_mod(repn(r, 1, undefined));
+    } else if (accept(/* "?" */63)) {
+      return greedy_mod(repn(r, 0, 1));
+    } else if (accept(/* "{" */123)) {
+      var match = integer(/* () */0);
+      if (match !== undefined) {
+        var i$1 = match;
+        var j = accept(/* "," */44) ? integer(/* () */0) : i$1;
+        if (!accept(/* "}" */125)) {
           throw Parse_error;
         }
-      } else {
-        var r$1 = regexp$prime(branch$prime(/* [] */0));
-        if (!accept(/* ")" */41)) {
+        if (j !== undefined && j < i$1) {
           throw Parse_error;
         }
-        return /* Group */Block.__(6, [r$1]);
-      }
-    } else if (accept(/* "^" */94)) {
-      if (multiline) {
-        return /* Beg_of_line */0;
+        return greedy_mod(repn(r, i$1, j));
       } else {
-        return /* Beg_of_str */5;
-      }
-    } else if (accept(/* "$" */36)) {
-      if (multiline) {
-        return /* End_of_line */1;
-      } else if (dollar_endonly) {
-        return /* Last_end_of_line */7;
-      } else {
-        return /* End_of_str */6;
-      }
-    } else if (accept(/* "[" */91)) {
-      if (accept(/* "^" */94)) {
-        return compl(bracket(/* [] */0));
-      } else {
-        return alt$1(bracket(/* [] */0));
-      }
-    } else if (accept(/* "\\" */92)) {
-      if (i.contents === l) {
-        throw Parse_error;
-      }
-      var c = get(/* () */0);
-      switch (c) {
-        case 48 :
-        case 49 :
-        case 50 :
-        case 51 :
-        case 52 :
-        case 53 :
-        case 54 :
-        case 55 :
-        case 56 :
-        case 57 :
-            throw Not_supported;
-        case 65 :
-            return /* Beg_of_str */5;
-        case 66 :
-            return /* Not_bound */4;
-        case 68 :
-            return compl(/* :: */[
-                        digit,
-                        /* [] */0
-                      ]);
-        case 71 :
-            return /* Start */8;
-        case 83 :
-            return compl(/* :: */[
-                        space,
-                        /* [] */0
-                      ]);
-        case 87 :
-            return compl(/* :: */[
-                        alnum,
-                        /* :: */[
-                          /* Set */Block.__(0, [/* :: */[
-                                /* tuple */[
-                                  /* "_" */95,
-                                  /* "_" */95
-                                ],
-                                /* [] */0
-                              ]]),
-                          /* [] */0
-                        ]
-                      ]);
-        case 90 :
-            return /* Last_end_of_line */7;
-        case 58 :
-        case 59 :
-        case 60 :
-        case 61 :
-        case 62 :
-        case 63 :
-        case 64 :
-        case 91 :
-        case 92 :
-        case 93 :
-        case 94 :
-        case 95 :
-        case 96 :
-            return /* Set */Block.__(0, [single(c)]);
-        case 98 :
-            return alt$1(/* :: */[
-                        /* Beg_of_word */2,
-                        /* :: */[
-                          /* End_of_word */3,
-                          /* [] */0
-                        ]
-                      ]);
-        case 100 :
-            return digit;
-        case 115 :
-            return space;
-        case 119 :
-            return alt$1(/* :: */[
-                        alnum,
-                        /* :: */[
-                          /* Set */Block.__(0, [/* :: */[
-                                /* tuple */[
-                                  /* "_" */95,
-                                  /* "_" */95
-                                ],
-                                /* [] */0
-                              ]]),
-                          /* [] */0
-                        ]
-                      ]);
-        case 67 :
-        case 69 :
-        case 70 :
-        case 72 :
-        case 73 :
-        case 74 :
-        case 75 :
-        case 76 :
-        case 77 :
-        case 78 :
-        case 79 :
-        case 80 :
-        case 81 :
-        case 82 :
-        case 84 :
-        case 85 :
-        case 86 :
-        case 88 :
-        case 89 :
-        case 97 :
-        case 99 :
-        case 101 :
-        case 102 :
-        case 103 :
-        case 104 :
-        case 105 :
-        case 106 :
-        case 107 :
-        case 108 :
-        case 109 :
-        case 110 :
-        case 111 :
-        case 112 :
-        case 113 :
-        case 114 :
-        case 116 :
-        case 117 :
-        case 118 :
-        case 120 :
-        case 121 :
-            throw Parse_error;
-        case 122 :
-            return /* End_of_str */6;
-        default:
-          return /* Set */Block.__(0, [single(c)]);
-      }
-    } else {
-      if (i.contents === l) {
-        throw Parse_error;
-      }
-      var c$1 = get(/* () */0);
-      if (c$1 >= 64) {
-        if (c$1 !== 92) {
-          if (c$1 !== 123) {
-            return /* Set */Block.__(0, [single(c$1)]);
-          } else {
-            throw Parse_error;
-          }
-        } else {
-          throw Parse_error;
-        }
-      } else if (c$1 >= 44) {
-        if (c$1 >= 63) {
-          throw Parse_error;
-        }
-        return /* Set */Block.__(0, [single(c$1)]);
-      } else {
-        if (c$1 >= 42) {
-          throw Parse_error;
-        }
-        return /* Set */Block.__(0, [single(c$1)]);
-      }
-    }
-  };
-  var integer = function (param) {
-    if (i.contents === l) {
-      return ;
-    } else {
-      var d = get(/* () */0);
-      if (d > 57 || d < 48) {
         i.contents = i.contents - 1 | 0;
-        return ;
-      } else {
-        var _i = d - /* "0" */48 | 0;
-        while(true) {
-          var i$1 = _i;
-          if (i.contents === l) {
-            return i$1;
-          } else {
-            var d$1 = get(/* () */0);
-            if (d$1 > 57 || d$1 < 48) {
-              i.contents = i.contents - 1 | 0;
-              return i$1;
-            } else {
-              var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
-              if (i$prime < i$1) {
-                throw Parse_error;
-              }
-              _i = i$prime;
-              continue ;
-            }
-          }
-        };
+        return r;
       }
+    } else {
+      return r;
     }
   };
   var res = regexp$prime(branch$prime(/* [] */0));

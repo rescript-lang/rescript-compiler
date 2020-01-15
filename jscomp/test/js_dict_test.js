@@ -15,7 +15,7 @@ var suites_000 = /* tuple */[
   "empty",
   (function (param) {
       return /* Eq */Block.__(0, [
-                /* array */[],
+                [],
                 Object.keys({ })
               ]);
     })
@@ -80,7 +80,7 @@ var suites_001 = /* :: */[
             "keys",
             (function (param) {
                 return /* Eq */Block.__(0, [
-                          /* array */[
+                          [
                             "foo",
                             "bar"
                           ],
@@ -96,7 +96,7 @@ var suites_001 = /* :: */[
               "entries",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            /* array */[
+                            [
                               /* tuple */[
                                 "foo",
                                 43
@@ -118,7 +118,7 @@ var suites_001 = /* :: */[
                 "values",
                 (function (param) {
                     return /* Eq */Block.__(0, [
-                              /* array */[
+                              [
                                 43,
                                 86
                               ],
@@ -144,7 +144,7 @@ var suites_001 = /* :: */[
                     "fromList",
                     (function (param) {
                         return /* Eq */Block.__(0, [
-                                  /* array */[
+                                  [
                                     /* tuple */[
                                       "x",
                                       23
@@ -176,7 +176,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     { },
-                                    Js_dict.fromArray(/* array */[])
+                                    Js_dict.fromArray([])
                                   ]);
                         })
                     ],
@@ -185,7 +185,7 @@ var suites_001 = /* :: */[
                         "fromArray",
                         (function (param) {
                             return /* Eq */Block.__(0, [
-                                      /* array */[
+                                      [
                                         /* tuple */[
                                           "x",
                                           23
@@ -195,7 +195,7 @@ var suites_001 = /* :: */[
                                           46
                                         ]
                                       ],
-                                      Js_dict.entries(Js_dict.fromArray(/* array */[
+                                      Js_dict.entries(Js_dict.fromArray([
                                                 /* tuple */[
                                                   "x",
                                                   23

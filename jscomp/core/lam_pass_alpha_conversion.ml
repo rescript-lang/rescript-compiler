@@ -38,19 +38,19 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | x :: xs -> 
       if x = len 
       then 
-        Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_ml_full
+        Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_infer_full
       else if x > len  
       then 
         let fn = simpl fn in
         let args = Ext_list.map args simpl in
-        Lam_eta_conversion.transform_under_supply (x - len) loc App_ml_full
+        Lam_eta_conversion.transform_under_supply (x - len) loc App_infer_full
           fn args 
       else 
         let first,rest = Ext_list.split_at args x in 
         Lam.apply (
           Lam.apply (simpl fn) 
             (Ext_list.map first simpl ) 
-            loc App_ml_full
+            loc App_infer_full
         )
           (Ext_list.map rest simpl ) loc status (* TODO refien *)
     
@@ -58,7 +58,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
-    | Lapply {fn = l1; args =  ll;  loc ; status} 
+    | Lapply {ap_func = l1; ap_args =  ll;  ap_loc = loc ; ap_status = status} 
       -> (* detect functor application *)
       let args_arity =  Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta l1) in
       let len = List.length ll in         

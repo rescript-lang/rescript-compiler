@@ -44,7 +44,7 @@ let rec find_opt p = function
   | [] -> None
   | x :: l -> if p x then Some x else find_opt p l
 
-#if OCAML_VERSION >= (4,3,0)
+
 
 let nolabel = Nolabel
 let labelled str = Labelled str
@@ -65,22 +65,7 @@ let argIsKeyRef = function
   | _ -> false
 let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
 
-#else
 
-let nolabel = ""
-let labelled str = str
-let optional str = "?" ^ str
-let isOptional str = str <> "" && str.[0] = '?'
-let isLabelled str = str <> "" && not (isOptional str)
-let getLabel str = if (isOptional str) then (String.sub str 1 ((String.length str) - 1)) else str
-let optionIdent = Ldot (Lident "*predef*","option")
-
-let argIsKeyRef = function
-  | (("key" | "ref"), _) | (("?key" | "?ref"), _) -> true
-  | _ -> false
-let constantString ~loc str = Ast_helper.Exp.constant ~loc (Asttypes.Const_string (str, None))
-
-#endif
 let safeTypeFromValue valueStr =
 let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
@@ -132,13 +117,8 @@ let transformChildrenIfList ~loc ~mapper theList =
 let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-#if OCAML_VERSION >= (4,3,0)
     | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
     | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-#else
-    | ("", {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
-    | ("", _)::_rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-#endif
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -204,11 +184,7 @@ let filenameFromLoc (pstr_loc: Location.t) =
   let fileName = try
       Filename.chop_extension (Filename.basename fileName)
     with | Invalid_argument _-> fileName in
-#if OCAML_VERSION >= (4,3,0)
   let fileName = String.capitalize_ascii fileName in
-#else
-  let fileName = String.capitalize fileName in
-#endif
   fileName
 
 (* Build a string representation of a module name with segments separated by $ *)
@@ -239,65 +215,29 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     (match (label, interiorType, default) with
     (* ~foo=1 *)
     | (label, None, Some _) ->
-#if OCAML_VERSION >= (4,3,0)
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-#else
-    {
-      ptyp_loc = loc;
-      ptyp_attributes = [];
-      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
-        ptyp_desc = Ptyp_var (safeTypeFromValue label);
-        ptyp_loc = loc;
-        ptyp_attributes = [];
-      }]);
-    }
-#endif
     (* ~foo: int=1 *)
     | (label, Some type_, Some _) ->
-#if OCAML_VERSION >= (4,3,0)
     type_
-#else
-    {
-      type_ with
-      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
-    }
-#endif
+
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
-#if OCAML_VERSION >= (4,3,0)
     type_
-#else
-    {
-      type_ with
-      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
-    }
-#endif
     (* ~foo=? *)
     | (label, None, _) when isOptional label ->
-#if OCAML_VERSION >= (4,3,0)
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-#else
-    {
-      ptyp_loc = loc;
-      ptyp_attributes = [];
-      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
-        ptyp_desc = Ptyp_var (safeTypeFromValue label);
-        ptyp_loc = loc;
-        ptyp_attributes = [];
-      }]);
-    }
-#endif
+
     (* ~foo *)
     | (label, None, _) ->
     {
@@ -354,23 +294,19 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
-#if OCAML_VERSION >= (4,3,0)
+
 let makeObjectField loc (str, attrs, type_) =
   Otag ({ loc; txt = str }, attrs, type_)
-#endif
+
 
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
   Typ.mk ~loc (
     Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
-#if OCAML_VERSION >= (4,3,0)
         ptyp_desc = Ptyp_object(
           List.map (makeObjectField loc) namedTypeList,
           Closed
         );
-#else
-        ptyp_desc = Ptyp_object(namedTypeList, Closed);
-#endif
         ptyp_loc = loc;
         ptyp_attributes = [];
       }])
@@ -405,11 +341,7 @@ let jsxMapper () =
         [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
       @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
     let isCap str = let first = String.sub str 0 1 in
-#if OCAML_VERSION >= (4,3,0)
     let capped = String.uppercase_ascii first in first = capped in
-#else
-    let capped = String.uppercase first in first = capped in
-#endif
     let ident = match modulePath with
     | Lident _ -> Ldot (modulePath, "make")
     | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
@@ -570,17 +502,10 @@ let jsxMapper () =
     let expr = mapper.expr mapper expr in
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-#if OCAML_VERSION >= (4,3,0)
     | Pexp_fun (Labelled "key", _, _, _)
     | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-#else
-    | Pexp_fun ("key", _, _, _)
-    | Pexp_fun ("?key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
-    | Pexp_fun ("ref", _, _, _)
-    | Pexp_fun ("?ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-#endif
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
@@ -591,17 +516,12 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-#if OCAML_VERSION >= (4,3,0)
+
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
         (expression.pexp_desc, list, None)
     | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
         (expression.pexp_desc, list, Some txt)
-#else
-    | Pexp_fun ("", _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
-        (expression.pexp_desc, list, None)
-    | Pexp_fun ("", _, { ppat_desc = Ppat_var ({txt})}, expression) ->
-        (expression.pexp_desc, list, Some txt)
-#endif
+
     | innerExpression -> (innerExpression, list, None)
   in
 
@@ -643,11 +563,7 @@ let jsxMapper () =
     | name when isLabelled name ->
     (getLabel name, [], type_) :: types
     | name when isOptional name ->
-#if OCAML_VERSION >= (4,3,0)
   (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
-#else
-  (getLabel name, [], type_) :: types
-#endif
     | _ -> types
   in
 
@@ -669,11 +585,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-#if OCAML_VERSION >= (4,3,0)
       | Ptyp_arrow (Nolabel, _type, rest) ->
-#else
-      | Ptyp_arrow ("", _type, rest) ->
-#endif
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -734,11 +646,8 @@ let jsxMapper () =
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
-#if OCAML_VERSION >= (4,3,0)
+
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-#else
-          | { pexp_desc = Pexp_apply (wrapperExpression, [("", innerFunctionExpression)]) } ->
-#endif
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -880,11 +789,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-#if OCAML_VERSION >= (4,3,0)
       | Ptyp_arrow (Nolabel, _type, rest) ->
-#else
-      | Ptyp_arrow ("", _type, rest) ->
-#endif
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -1021,19 +926,10 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-#if OCAML_VERSION >= (4,3,0)
           | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
-#else
-          | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
-#endif
               (match version with
-#if OCAML_VERSION >= (4,3,0)
               | "2" -> jsxVersion := Some 2
               | "3" -> jsxVersion := Some 3
-#else
-              | 2 -> jsxVersion := Some 2
-              | 3 -> jsxVersion := Some 3
-#endif
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)

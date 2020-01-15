@@ -7,12 +7,12 @@ var Point = Caml_module.init_mod(/* tuple */[
       "gpr_1539_test.ml",
       10,
       6
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "add"
           ]]]));
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "add"
           ]]]), Point, {

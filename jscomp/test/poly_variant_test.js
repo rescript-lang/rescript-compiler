@@ -29,7 +29,6 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-
 function hey_string (option){
   switch(option){
   case "on_closed" : 
@@ -48,22 +47,21 @@ function hey_int (option){
    default : throw Error("impossible")
   }
  }
-
 ;
 
-var uu = /* array */[
+var uu = [
   hey_string("on_open"),
   hey_string("on_closed"),
   hey_string("in")
 ];
 
-var vv = /* array */[
+var vv = [
   hey_int(3),
   hey_int(0),
   hey_int(4)
 ];
 
-eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, /* array */[
+eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, [
       3,
       0,
       4
@@ -77,7 +75,7 @@ eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
       6
     ]);
 
-eq("File \"poly_variant_test.ml\", line 60, characters 5-12", uu, /* array */[
+eq("File \"poly_variant_test.ml\", line 60, characters 5-12", uu, [
       "on_open",
       "on_closed",
       "in"

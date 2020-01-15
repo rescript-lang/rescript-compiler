@@ -27,7 +27,7 @@ function reverse_in_place(a) {
 function reverse(a) {
   var b_len = a.length;
   if (b_len === 0) {
-    return /* array */[];
+    return [];
   } else {
     var b = $$Array.copy(a);
     for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
@@ -56,7 +56,7 @@ function reverse_of_list(l) {
       }
     };
   } else {
-    return /* array */[];
+    return [];
   }
 }
 
@@ -185,7 +185,7 @@ function of_list_map(f, a) {
       }
     };
   } else {
-    return /* array */[];
+    return [];
   }
 }
 

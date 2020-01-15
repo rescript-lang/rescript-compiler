@@ -229,11 +229,11 @@ var suites_001 = /* :: */[
                                               "match",
                                               (function (param) {
                                                   return /* Eq */Block.__(0, [
-                                                            /* array */[
+                                                            [
                                                               "na",
                                                               "na"
                                                             ],
-                                                            Caml_option.null_to_opt("banana".match((/na+/g)))
+                                                            Caml_option.null_to_opt("banana".match(/na+/g))
                                                           ]);
                                                 })
                                             ],
@@ -243,7 +243,7 @@ var suites_001 = /* :: */[
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               undefined,
-                                                              Caml_option.null_to_opt("banana".match((/nanana+/g)))
+                                                              Caml_option.null_to_opt("banana".match(/nanana+/g))
                                                             ]);
                                                   })
                                               ],
@@ -293,7 +293,7 @@ var suites_001 = /* :: */[
                                                           (function (param) {
                                                               return /* Eq */Block.__(0, [
                                                                         "fooBORKBORK",
-                                                                        "foobarbaz".replace((/ba./g), "BORK")
+                                                                        "foobarbaz".replace(/ba./g, "BORK")
                                                                       ]);
                                                             })
                                                         ],
@@ -310,7 +310,7 @@ var suites_001 = /* :: */[
                                                                 };
                                                                 return /* Eq */Block.__(0, [
                                                                           "fooBORKDORK",
-                                                                          "foobarbaz".replace((/ba./g), replace)
+                                                                          "foobarbaz".replace(/ba./g, replace)
                                                                         ]);
                                                               })
                                                           ],
@@ -327,7 +327,7 @@ var suites_001 = /* :: */[
                                                                   };
                                                                   return /* Eq */Block.__(0, [
                                                                             "fooBORKDORK",
-                                                                            "foobarbaz".replace((/ba./g), replace)
+                                                                            "foobarbaz".replace(/ba./g, replace)
                                                                           ]);
                                                                 })
                                                             ],
@@ -344,7 +344,7 @@ var suites_001 = /* :: */[
                                                                     };
                                                                     return /* Eq */Block.__(0, [
                                                                               "fooBORKDORK",
-                                                                              "foobarbaz".replace((/ba./g), replace)
+                                                                              "foobarbaz".replace(/ba./g, replace)
                                                                             ]);
                                                                   })
                                                               ],
@@ -361,7 +361,7 @@ var suites_001 = /* :: */[
                                                                       };
                                                                       return /* Eq */Block.__(0, [
                                                                                 "fooBORKDORK",
-                                                                                "foobarbaz".replace((/ba./g), replace)
+                                                                                "foobarbaz".replace(/ba./g, replace)
                                                                               ]);
                                                                     })
                                                                 ],
@@ -371,7 +371,7 @@ var suites_001 = /* :: */[
                                                                     (function (param) {
                                                                         return /* Eq */Block.__(0, [
                                                                                   3,
-                                                                                  "foobarbaz".search((/ba./g))
+                                                                                  "foobarbaz".search(/ba./g)
                                                                                 ]);
                                                                       })
                                                                   ],
@@ -400,7 +400,7 @@ var suites_001 = /* :: */[
                                                                           "split",
                                                                           (function (param) {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        /* array */[
+                                                                                        [
                                                                                           "foo",
                                                                                           "bar",
                                                                                           "baz"
@@ -414,7 +414,7 @@ var suites_001 = /* :: */[
                                                                             "splitAtMost",
                                                                             (function (param) {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          /* array */[
+                                                                                          [
                                                                                             "foo",
                                                                                             "bar"
                                                                                           ],
@@ -427,7 +427,7 @@ var suites_001 = /* :: */[
                                                                               "splitByRe",
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            /* array */[
+                                                                                            [
                                                                                               "a",
                                                                                               "#",
                                                                                               undefined,
@@ -436,7 +436,7 @@ var suites_001 = /* :: */[
                                                                                               ":",
                                                                                               "c"
                                                                                             ],
-                                                                                            "a#b#:c".split((/(#)(:)?/))
+                                                                                            "a#b#:c".split(/(#)(:)?/)
                                                                                           ]);
                                                                                 })
                                                                             ],
@@ -445,12 +445,12 @@ var suites_001 = /* :: */[
                                                                                 "splitByReAtMost",
                                                                                 (function (param) {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              /* array */[
+                                                                                              [
                                                                                                 "a",
                                                                                                 "#",
                                                                                                 undefined
                                                                                               ],
-                                                                                              "a#b#:c".split((/(#)(:)?/), 3)
+                                                                                              "a#b#:c".split(/(#)(:)?/, 3)
                                                                                             ]);
                                                                                   })
                                                                               ],

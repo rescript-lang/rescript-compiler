@@ -26,8 +26,8 @@ type ident = Ident.t
 
 type apply_status =
   | App_na
-  | App_ml_full
-  | App_js_full
+  | App_infer_full
+  | App_uncurry
 
 
 module Types = struct
@@ -75,10 +75,10 @@ module Types = struct
       loc : Location.t;
     }
   and apply_info =
-    { fn : t ;
-      args : t list ;
-      loc : Location.t;
-      status : apply_status
+    { ap_func : t ;
+      ap_args : t list ;
+      ap_loc : Location.t;
+      ap_status : apply_status
     }
 
   and t =
@@ -127,10 +127,10 @@ module X = struct
   and apply_info
     = Types.apply_info
     =
-      { fn : t ;
-        args : t list ;
-        loc : Location.t;
-        status : apply_status
+      { ap_func : t ;
+        ap_args : t list ;
+        ap_loc : Location.t;
+        ap_status : apply_status
       }
   and t
     = Types.t
@@ -171,10 +171,10 @@ let inner_map
   | Lvar (_ : ident)
   | Lconst (_ : Lam_constant.t) ->
     ( (* Obj.magic *) l : X.t)
-  | Lapply ({fn; args; loc; status} )  ->
-    let fn = f fn in
-    let args = Ext_list.map args f in
-    Lapply { fn ; args; loc; status }
+  | Lapply ({ap_func; ap_args; ap_loc; ap_status} )  ->
+    let ap_func = f ap_func in
+    let ap_args = Ext_list.map ap_args f in
+    Lapply { ap_func ; ap_args; ap_loc; ap_status }
   | Lfunction({body; arity;  params } ) ->
     let body = f body in
     Lfunction {body; arity;  params}
@@ -294,7 +294,7 @@ let apply fn args loc status : t =
         ->
         Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
       | exception Not_simple_form ->
-        Lapply { fn; args; loc; status }
+        Lapply { ap_func = fn; ap_args = args; ap_loc = loc; ap_status = status }
     end
   | Lfunction {
                params;
@@ -305,7 +305,7 @@ let apply fn args loc status : t =
         ->
         Lprim { primitive_call with args ; loc = loc }
       | exception _ ->
-        Lapply { fn; args;  loc;    status }
+        Lapply { ap_func = fn; ap_args = args;  ap_loc = loc;   ap_status = status }
     end
   | Lfunction {
                params;
@@ -316,14 +316,14 @@ let apply fn args loc status : t =
         ->
         Lsequence(Lprim { primitive_call with args ; loc = loc }, const)
       | exception _ ->
-        Lapply { fn; args;  loc;    status }
+        Lapply { ap_func = fn; ap_args = args;  ap_loc = loc;  ap_status = status }
     end
   (* | Lfunction {params;body} when Ext_list.same_length params args ->
       Ext_list.fold_right2 (fun p arg acc ->
         Llet(Strict,p,arg,acc)
       ) params args body *) (* TODO: more rigirous analysis on [let_kind] *)
   | _ ->
-    Lapply { fn; args;  loc  ; status }
+    Lapply { ap_func = fn; ap_args = args;  ap_loc = loc  ; ap_status = status }
 
 
 let rec 
@@ -337,7 +337,7 @@ let rec
     (match l2 with  Lconst c2 -> Lam_constant.eq_approx c1 c2  | _ -> false)
   | Lapply app1 -> 
     (match l2 with Lapply app2 ->
-    eq_approx app1.fn app2.fn  && eq_approx_list app1.args app2.args
+    eq_approx app1.ap_func app2.ap_func  && eq_approx_list app1.ap_args app2.ap_args
     |_ -> false)
   | Lifthenelse (a,b,c) -> 
     (match l2 with  

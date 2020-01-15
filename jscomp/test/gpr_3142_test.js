@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   /* tuple */[
     97,
     "x"

@@ -57,7 +57,7 @@ var v1 = {
   z: ""
 };
 
-var jsMapperConstantArray = /* array */[
+var jsMapperConstantArray = [
   /* tuple */[
     97,
     "a"
@@ -94,7 +94,7 @@ idx(/* b */98);
 
 idx(/* c */99);
 
-var jsMapperConstantArray$1 = /* array */[
+var jsMapperConstantArray$1 = [
   0,
   3,
   4

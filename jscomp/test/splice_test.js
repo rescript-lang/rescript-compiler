@@ -24,11 +24,11 @@ function f00(a, b) {
   return a.send(b);
 }
 
-var a = /* array */[];
+var a = [];
 
 a.push(1, 2, 3, 4);
 
-eq("File \"splice_test.ml\", line 29, characters 5-12", a, /* array */[
+eq("File \"splice_test.ml\", line 29, characters 5-12", a, [
       1,
       2,
       3,
@@ -36,13 +36,13 @@ eq("File \"splice_test.ml\", line 29, characters 5-12", a, /* array */[
     ]);
 
 function dynamic(arr) {
-  var a = /* array */[];
+  var a = [];
   Caml_splice_call.spliceObjApply(a, "push", [
         1,
         arr
       ]);
   return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.caml_array_concat(/* :: */[
-                  /* array */[1],
+                  [1],
                   /* :: */[
                     arr,
                     /* [] */0
@@ -50,25 +50,25 @@ function dynamic(arr) {
                 ]));
 }
 
-dynamic(/* array */[
+dynamic([
       2,
       3,
       4
     ]);
 
-dynamic(/* array */[]);
+dynamic([]);
 
-dynamic(/* array */[
+dynamic([
       1,
       1,
       3
     ]);
 
-var a$1 = /* array */[];
+var a$1 = [];
 
 a$1.push(1, 2, 3, 4);
 
-eq("File \"splice_test.ml\", line 51, characters 7-14", a$1, /* array */[
+eq("File \"splice_test.ml\", line 51, characters 7-14", a$1, [
       1,
       2,
       3,
@@ -76,13 +76,13 @@ eq("File \"splice_test.ml\", line 51, characters 7-14", a$1, /* array */[
     ]);
 
 function dynamic$1(arr) {
-  var a = /* array */[];
+  var a = [];
   Caml_splice_call.spliceObjApply(a, "push", [
         1,
         arr
       ]);
   return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.caml_array_concat(/* :: */[
-                  /* array */[1],
+                  [1],
                   /* :: */[
                     arr,
                     /* [] */0
@@ -90,15 +90,15 @@ function dynamic$1(arr) {
                 ]));
 }
 
-dynamic$1(/* array */[
+dynamic$1([
       2,
       3,
       4
     ]);
 
-dynamic$1(/* array */[]);
+dynamic$1([]);
 
-dynamic$1(/* array */[
+dynamic$1([
       1,
       1,
       3

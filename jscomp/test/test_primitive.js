@@ -35,7 +35,7 @@ var test_float = 3;
 
 var test_abs = Math.abs(3.0);
 
-var v = /* array */[
+var v = [
   1.0,
   2.0
 ];

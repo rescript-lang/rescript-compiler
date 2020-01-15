@@ -84,7 +84,7 @@ var T2 = {
 var suites_000 = /* tuple */[
   "File \"queue_test.ml\", line 26, characters 2-9",
   (function (param) {
-      var x = /* array */[
+      var x = [
         3,
         4,
         5,
@@ -101,7 +101,7 @@ var suites_001 = /* :: */[
   /* tuple */[
     "File \"queue_test.ml\", line 29, characters 2-9",
     (function (param) {
-        var x = /* array */[
+        var x = [
           3,
           4,
           5,

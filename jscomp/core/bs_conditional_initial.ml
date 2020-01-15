@@ -24,6 +24,7 @@
 
 
 let setup_env () =
+  Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
@@ -43,6 +44,8 @@ let setup_env () =
   Lambda.fld_record := Record_attributes_check.fld_record;
   Lambda.fld_record_set := Record_attributes_check.fld_record_set;
   Lambda.blk_record := Record_attributes_check.blk_record;
+  Matching.names_from_construct_pattern := 
+    Matching_polyfill.names_from_construct_pattern;
 #if undefined BS_RELEASE_BUILD then
     Printexc.record_backtrace true;
     (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 

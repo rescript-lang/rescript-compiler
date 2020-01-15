@@ -5,7 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 var BUI = require("@blp/ui");
 var Runtime = require("@runtime");
 
-var data = /* array */[
+var data = [
   {
     ticker: "GOOG",
     price: 700.0
@@ -57,7 +57,7 @@ function ui_layout(compile, lookup, appContext) {
     width: 200
   };
   grid.minHeight = 300;
-  grid.titleRows = /* array */[
+  grid.titleRows = [
     {
       label: {
         text: "Ticker"
@@ -79,7 +79,7 @@ function ui_layout(compile, lookup, appContext) {
       }
     }
   ];
-  grid.columns = /* array */[
+  grid.columns = [
     u,
     u,
     u,
@@ -112,7 +112,7 @@ function ui_layout(compile, lookup, appContext) {
                         bid: bid,
                         ask: ask
                       });
-                  return /* array */[
+                  return [
                           mk_titleRow(param.ticker),
                           mk_titleRow(bid.toFixed(2)),
                           mk_titleRow(ask.toFixed(2)),

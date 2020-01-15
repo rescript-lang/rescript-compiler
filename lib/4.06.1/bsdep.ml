@@ -260,7 +260,6 @@ end
 end
 module Config_whole_compiler : sig 
 #1 "config_whole_compiler.mli"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -449,7 +448,6 @@ val afl_instrument : bool
 
 end = struct
 #1 "config_whole_compiler.ml"
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -635,7 +633,6 @@ let print_config oc =
 
   flush oc;
 ;;
-
 
 end
 module Config = Config_whole_compiler 
@@ -26430,6 +26427,98 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
+module Matching_polyfill : sig 
+#1 "matching_polyfill.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+ val names_from_construct_pattern:
+  Typedtree.pattern -> 
+  Lambda.switch_names option
+end = struct
+#1 "matching_polyfill.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let is_nullary_variant (x : Types.constructor_arguments) = 
+  match x with 
+  | Types.Cstr_tuple [] -> true 
+  | _ -> false
+
+let names_from_construct_pattern (pat: Typedtree.pattern) =
+  let names_from_type_variant (cstrs : Types.constructor_declaration list) =
+    let (consts, blocks) = Ext_list.fold_left cstrs ([], [])  
+      (fun (consts, blocks) cstr ->
+        if is_nullary_variant cstr.cd_args 
+        then (Ident.name cstr.cd_id :: consts, blocks)
+        else (consts, Ident.name cstr.cd_id :: blocks))
+      in
+    Some {Lambda.consts = Ext_array.reverse_of_list consts;
+          blocks = Ext_array.reverse_of_list blocks } in
+  let rec resolve_path n (path : Path.t) =
+    match Env.find_type path pat.pat_env with
+    | {type_kind = Type_variant cstrs} ->
+      names_from_type_variant cstrs
+    | {type_kind = Type_abstract; type_manifest = Some t} ->
+      ( match (Ctype.unalias t).desc with
+        | Tconstr (pathn, _, _) ->
+          (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
+          resolve_path (n+1) pathn
+        | _ -> None)
+    | {type_kind = Type_abstract; type_manifest = None} ->
+      None
+    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
+      None in
+
+  match (Btype.repr pat.pat_type).desc with
+    | Tconstr (path, _, _) -> resolve_path 0 path
+    | _ -> assert false 
+end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -26462,15 +26551,10 @@ module Ext_bytes : sig
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]
-                     
     
 
 
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
 
 end = struct
 #1 "ext_bytes.ml"
@@ -26506,52 +26590,8 @@ end = struct
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" 
-
 [@@noalloc]                     
 
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = Pervasives.ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
 
 end
 module Ext_string : sig 
@@ -26628,7 +26668,7 @@ val ends_with : string -> string -> bool
 val ends_with_then_chop : string -> string -> string option
 
 
-val escaped : string -> string
+
 
 (**
   [for_all_from  s start p]
@@ -26902,22 +26942,6 @@ let check_any_suffix_case_then_chop s suffixes =
 
 
 
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
@@ -26963,8 +26987,9 @@ let unsafe_is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-exception Local_exit 
+
 let find ?(start=0) ~sub s =
+  let exception Local_exit in
   let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
@@ -26995,9 +27020,9 @@ let non_overlap_count ~sub s =
 
 
 let rfind ~sub s =
+  let exception Local_exit in   
   let n = String.length sub in
   let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
   try
     while !i >= 0 do
       if unsafe_is_sub ~sub 0 s !i ~len:n then 
@@ -27256,14 +27281,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-
     String.uncapitalize_ascii
-      
 
-
- 
 let lowercase_ascii = String.lowercase_ascii
-
 
 
 
@@ -28091,6 +28111,7 @@ end = struct
 
 
 let setup_env () =
+  Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
@@ -28110,6 +28131,8 @@ let setup_env () =
   Lambda.fld_record := Record_attributes_check.fld_record;
   Lambda.fld_record_set := Record_attributes_check.fld_record_set;
   Lambda.blk_record := Record_attributes_check.blk_record;
+  Matching.names_from_construct_pattern := 
+    Matching_polyfill.names_from_construct_pattern;
 
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
@@ -32637,16 +32660,15 @@ module Ast_compatible : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
+
 type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
-external convert: arg_label -> label = "%identity"
 
 
 
 
-val no_label: arg_label
+
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
@@ -32808,10 +32830,8 @@ val mk_fn_type:
   core_type
 
 type object_field = 
- 
   Parsetree.object_field 
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
-  
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
@@ -32850,21 +32870,21 @@ type attrs = Parsetree.attribute list
 open Parsetree
 let default_loc = Location.none
 
- 
+
 type poly_var_label = Asttypes.label Asttypes.loc
 
 type arg_label = Asttypes.arg_label = 
   | Nolabel
   | Labelled of string
   | Optional of string
-let no_label : arg_label = Nolabel
+
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
 type label = arg_label 
-external convert : arg_label -> label = "%identity"
+
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -32875,7 +32895,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map args (fun x -> no_label, x) ) ) }
+        (Ext_list.map args (fun x -> Nolabel, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -32886,7 +32906,7 @@ let app1
     pexp_desc = 
       Pexp_apply(
         fn, 
-        [no_label, arg1]
+        [Nolabel, arg1]
         ) }
 
 let app2
@@ -32899,8 +32919,8 @@ let app2
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2 ]
+          Nolabel, arg1;
+          Nolabel, arg2 ]
         ) }
 
 let app3
@@ -32913,9 +32933,9 @@ let app3
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2;
-          no_label, arg3
+          Nolabel, arg1;
+          Nolabel, arg2;
+          Nolabel, arg3
         ]
         ) }
 
@@ -32927,13 +32947,11 @@ let fun_
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+    pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
 let opt_label s =
-
   Asttypes.Optional s
-
 
 let label_fun
   ?(loc = default_loc)
@@ -32947,7 +32965,7 @@ let label_fun
     pexp_desc = Pexp_fun(label, None, pat, exp)
   }
 
- 
+
 
 let const_exp_string 
   ?(loc = default_loc)
@@ -32998,14 +33016,13 @@ let object_
     ptyp_attributes = attrs
   }
 
- 
+
 
 let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow(
- 
       Asttypes.Labelled s
-      
+  
       ,
       a,
       b);
@@ -33016,9 +33033,8 @@ let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
 let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow( 
- 
+
         Asttypes.Optional s
-        
         ,
         a,
         b);
@@ -33030,9 +33046,7 @@ let rec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
- 
       Recursive,
-      
       tds)
   }
 
@@ -33040,9 +33054,7 @@ let nonrec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
- 
       Nonrecursive,
-      
       tds)
   }  
 
@@ -33050,9 +33062,7 @@ let rec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
- 
       Recursive,
-      
       tds)
   }
 
@@ -33061,9 +33071,7 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
- 
       Nonrecursive,
-      
       tds)
   }  
 
@@ -33095,187 +33103,26 @@ type param_type =
   )
 
 type object_field = 
- 
   Parsetree.object_field 
-  
 
 let object_field   l attrs ty = 
 
   Parsetree.Otag 
- (l,attrs,ty)  
+  (l,attrs,ty)  
 
 
- 
+
 let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
-
 
 type args  = 
   (arg_label * Parsetree.expression) list 
 
 end
-module Ext_utf8 : sig 
-#1 "ext_utf8.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-
-val classify : char -> byte 
-
-val follow : 
-    string -> 
-    int -> 
-    int -> 
-    int ->
-    int * int 
-
-
-(** 
-  return [-1] if failed 
-*)
-val next :  string -> remaining:int -> int -> int 
-
-
-exception Invalid_utf8 of string 
- 
- 
-val decode_utf8_string : string -> int list
-end = struct
-#1 "ext_utf8.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-(** [classify chr] returns the {!byte} corresponding to [chr] *)
-let classify chr =
-  let c = int_of_char chr in
-  (* Classify byte according to leftmost 0 bit *)
-  if c land 0b1000_0000 = 0 then Single c else
-    (* c 0b0____*)
-  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
-    (* c 0b10___*)
-  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
-    (* c 0b110__*)
-  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
-    (* c 0b1110_ *)
-  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
-    (* c 0b1111_0___*)
-  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
-    (* c 0b1111_10__*)
-  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
-  (* c 0b1111_110__ *)
-  else Invalid
-
-exception Invalid_utf8 of string 
-
-(* when the first char is [Leading],
-  TODO: need more error checking 
-  when out of bond
- *)
-let rec follow s n (c : int) offset = 
-  if n = 0 then (c, offset)
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
-      | _ -> raise (Invalid_utf8 "Continuation byte expected")
-    end
-
-
-let rec next s ~remaining  offset = 
-  if remaining = 0 then offset 
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
-      | _ ->  -1 
-      | exception _ ->  -1 (* it can happen when out of bound *)
-    end
-
-
-
-
-let decode_utf8_string s =
-  let lst = ref [] in
-  let add elem = lst := elem :: !lst in
-  let rec  decode_utf8_cont s i s_len =
-    if i = s_len  then ()
-    else 
-      begin 
-        match classify s.[i] with
-        | Single c -> 
-          add c; decode_utf8_cont s (i+1) s_len
-        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
-        | Leading (n, c) ->
-          let (c', i') = follow s n c i in add c';
-          decode_utf8_cont s (i' + 1) s_len
-        | Invalid -> raise (Invalid_utf8 "Invalid byte")
-      end
-  in decode_utf8_cont s 0 (String.length s); 
-  List.rev !lst
-
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false
-end
-module Ext_js_regex : sig 
-#1 "ext_js_regex.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+module Js_raw_exp_info
+= struct
+#1 "js_raw_exp_info.ml"
+(* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33299,57 +33146,29 @@ module Ext_js_regex : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* This is a module that checks if js regex is valid or not *)
 
-val js_regex_checker : string -> bool
-end = struct
-#1 "ext_js_regex.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type t =
+  | Js_function of {arity : int ; arrow : bool}     
+  | Js_literal 
+  (* Flow ast module 
+  {[
+  and value =
+    | String of string
+    | Boolean of bool
+    | Null
+    | Number of float
+    | BigInt of float
+    | RegExp of RegExp.t
+  ]}
+  *)
+  | Js_unknown
 
 
-let check_from_end al =
-  let rec aux l seen =
-    match l with
-    | [] -> false
-    | (e::r) ->
-      if e < 0 || e > 255 then false
-      else (let c = Char.chr e in
-            if c = '/' then true
-            else (if Ext_list.exists seen (fun x -> x = c)  then false (* flag should not be repeated *)
-                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-                        else false)))
-  in aux al []
-
-let js_regex_checker s =
-  match Ext_utf8.decode_utf8_string s with 
-  | [] -> false 
-  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    check_from_end (List.rev tail)       
-  | _ :: _ -> false 
-  | exception Ext_utf8.Invalid_utf8 _ -> false 
-
+  type raw_kind = 
+    | Raw_re 
+    | Raw_exp
+    | Raw_program
+    
 end
 module Map_gen
 = struct
@@ -33992,8 +33811,14 @@ val is_single_string_as_ast :
 
 val is_single_int : t -> int option 
 
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-val as_string_exp : check_js_regex: bool -> t -> rtn
+
+
+(** Convert %raw into expression *)
+val raw_as_string_exp_exn :
+  kind: Js_raw_exp_info.raw_kind ->
+  t ->
+  Parsetree.expression option
+  
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
@@ -34065,9 +33890,7 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-
                 (Pconst_string(name,dec))
-               
               ;
            _},_);
       _}] -> Some (name,dec)
@@ -34081,9 +33904,7 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-
                 (Pconst_string(name,dec))
-               
               ;
            _} as e ,_);
       _}] -> Some e
@@ -34091,7 +33912,6 @@ let is_single_string_as_ast (x : t )
 
   
 (** TODO also need detect empty phrase case *)  
-
 let is_single_int (x : t ) : int option = 
   match x with  
   | PStr [ {
@@ -34104,22 +33924,65 @@ let is_single_int (x : t ) : int option =
       _}] -> Some (int_of_string name)
   | _  -> None
 
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
-let as_string_exp ~check_js_regex (x : t ) = 
+let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
+  if line = 1 then 
+    {loc with pos_cnum = pos_cnum + column + first_line_offset }
+  else {
+    loc with 
+    pos_lnum = pos_lnum + line - 1;
+    pos_cnum =  pos_bol + column
+  }
+
+
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+  deli (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+     _end },first_error) :: _ -> 
+    let offset =  
+      (match deli with 
+      | None -> 1  (* length of '"'*)
+      | Some deli ->
+         String.length deli + 2 (* length of "{|"*)
+      ) in   
+    Location.raise_errorf ~loc:{loc with 
+      loc_start = offset_pos loc.loc_start start 
+        offset ;
+      loc_end = offset_pos loc.loc_start _end 
+        offset } "%s"
+      (Parse_error.PP.error first_error)  
+;;      
+let raw_as_string_exp_exn 
+  ~(kind: Js_raw_exp_info.raw_kind)
+  (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
- 
-               (Pconst_string (str,_))
-               
+               (Pconst_string (str,deli))            
                ;
-           _} as e ,_);
-      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
-  | _  -> Not_String_Lteral
+           pexp_loc = loc} as e ,_);
+      _}] -> 
+    check_flow_errors ~loc deli (match kind with 
+        |  Raw_re -> 
+          let l s = 
+            Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
+          in  
+          (snd (l str)).lex_errors 
+        | Raw_exp ->  
+          snd (Parser_flow.parse_expression (Parser_env.init_env None str) false)
+        | Raw_program ->  
+          snd (Parser_flow.parse_program false None str)
+      );
+    Some e 
+  | _  -> None
 
 let as_core_type loc x =
   match  x with
@@ -34220,9 +34083,7 @@ let assert_strings loc (x : t) : string list
         Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
- 
               Pconst_string
-              
                (name,_)); _} -> 
              name
            | _ -> raise M.Not_str)
@@ -34234,15 +34095,11 @@ let assert_strings loc (x : t) : string list
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
- 
-               (Pconst_string(name,_)); 
-               
+               (Pconst_string(name,_));         
            _},_);
       _}] ->  [name] 
   | PStr [] ->  []
- 
   | PSig _ 
-
   | PStr _                
   | PTyp _ | PPat _ ->
     Location.raise_errorf ~loc "expect string tuple list"
@@ -35132,16 +34989,10 @@ module Ext_char : sig
 
 (** Extension to Standard char module, avoid locale sensitivity *)
 
-val escaped : char -> string
-
-
 val valid_hex : char -> bool
-
 val is_lower_case : char -> bool
 
-val uppercase_ascii : char -> char
 
-val lowercase_ascii : char -> char
 end = struct
 #1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -35175,8 +35026,6 @@ end = struct
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
  *)
- 
-let escaped = Char.escaped
 
 
 let valid_hex x = 
@@ -35192,16 +35041,166 @@ let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
-let uppercase_ascii =
 
-    Char.uppercase_ascii
-      
+end
+module Ext_utf8 : sig 
+#1 "ext_utf8.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let lowercase_ascii = 
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
 
-    Char.lowercase_ascii
-      
 
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
+
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
+end = struct
+#1 "ext_utf8.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+(** [classify chr] returns the {!byte} corresponding to [chr] *)
+let classify chr =
+  let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then Single c else
+    (* c 0b0____*)
+  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else Invalid
+
+exception Invalid_utf8 of string 
+
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
+
+let decode_utf8_string s =
+  let lst = ref [] in
+  let add elem = lst := elem :: !lst in
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
+        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -36083,9 +36082,7 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
         let js_str = Ast_utf8_string.transform e.pexp_loc s in
         { e with pexp_desc =
                        Pexp_constant (
-
             Pconst_string
-
                          (js_str, escaped))}
     else if Ext_string.equal delim unescaped_j_delimiter then
             transform_interp e.pexp_loc s
@@ -36189,6 +36186,7 @@ val sort_imports : bool ref
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 val bs_suffix : bool ref
@@ -36207,6 +36205,7 @@ val is_reason : bool ref
 val js_stdout : bool ref 
 
 val all_module_aliases : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -36303,6 +36302,7 @@ let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 let bs_suffix = ref false 
 
@@ -36323,6 +36323,7 @@ let is_reason = ref false
 let js_stdout = ref true
 
 let all_module_aliases = ref false
+
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
@@ -36611,7 +36612,7 @@ type 'a bucket =
   | Empty
   | Cons of {
       mutable key : 'a ; 
-      mutable rest : 'a bucket 
+      mutable next : 'a bucket 
     }
 
 type 'a t =
@@ -36650,16 +36651,16 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons {key; rest} as cell ->
+      | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
         | Empty ->
           Array.unsafe_set ndata nidx cell
         | Cons tail -> 
-          tail.rest <- cell
+          tail.next <- cell
         end;
         Array.unsafe_set ndata_tail nidx  cell;          
-        insert_bucket rest
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -36667,7 +36668,7 @@ let resize indexfun h =
     for i = 0 to nsize - 1 do 
       match Array.unsafe_get ndata_tail i with 
       | Empty -> ()
-      | Cons tail -> tail.rest <- Empty
+      | Cons tail -> tail.next <- Empty
     done 
   end
 
@@ -36676,7 +36677,7 @@ let iter h f =
     | Empty ->
       ()
     | Cons l  ->
-      f l.key  ; do_bucket l.rest in
+      f l.key  ; do_bucket l.next in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -36688,7 +36689,7 @@ let fold h init f =
       Empty ->
       accu
     | Cons l  ->
-      do_bucket l.rest (f l.key  accu) in
+      do_bucket l.next (f l.key  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -36708,24 +36709,35 @@ let rec small_bucket_mem eq key lst =
   | Empty -> false 
   | Cons lst -> 
     eq key lst.key ||
-    match lst.rest with 
+    match lst.next with 
     | Empty -> false 
     | Cons lst  -> 
       eq key   lst.key ||
-      match lst.rest with 
+      match lst.next with 
       | Empty -> false 
       | Cons lst  -> 
         eq key lst.key ||
-        small_bucket_mem eq key lst.rest 
+        small_bucket_mem eq key lst.next 
 
-let rec remove_bucket eq_key key (h : _ t) buckets = 
-  match buckets with 
+let rec remove_bucket 
+    (h : _ t) (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
   | Empty ->
-    Empty
-  | Cons l ->
-    if  eq_key l.key   key
-    then begin h.size <- h.size - 1; l.rest end
-    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
+    ()
+  | Cons {key=k; next } ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.next <- next
+    end
+    else remove_bucket h i key ~prec:buck next eq_key
+
 
 module type S =
 sig
@@ -36850,13 +36862,10 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : _ Hash_set_gen.t) key =  
+let remove (h : _ Hash_set_gen.t ) key =
   let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
+  let h_data = h.data in 
+  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
@@ -36866,7 +36875,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -36880,13 +36889,13 @@ let of_array arr =
   tbl 
   
     
-let check_add (h : _ Hash_set_gen.t) key =
+let check_add (h : _ Hash_set_gen.t) key : bool =
   let i = key_index h key  in 
   let h_data = h.data in  
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -36926,9 +36935,8 @@ module Bs_ast_invariant : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
-type iterator = Ast_iterator.iterator
 
+type iterator = Ast_iterator.iterator
 val mark_used_bs_attribute : 
   Parsetree.attribute -> unit 
 
@@ -37010,10 +37018,9 @@ let warn_discarded_unused_attributes (attrs : Parsetree.attributes) =
   if attrs <> [] then 
     Ext_list.iter attrs warn_unused_attribute
     
- 
+
 type iterator = Ast_iterator.iterator
 let default_iterator = Ast_iterator.default_iterator
-
 (* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
    rolling our own*)
 let emit_external_warnings : iterator=
@@ -37023,13 +37030,10 @@ let emit_external_warnings : iterator=
     expr = (fun self a -> 
         match a.pexp_desc with 
         | Pexp_constant (
-
           Pconst_string
-
           (_, Some s)) 
           when Ast_utf8_string_interp.is_unescaped s -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-
         | Pexp_constant(Pconst_integer(s,None)) -> 
           (* range check using int32 
             It is better to give a warning instead of error to avoid make people unhappy.
@@ -37045,7 +37049,6 @@ let emit_external_warnings : iterator=
             with _ ->              
               Bs_warnings.warn_literal_overflow a.pexp_loc
           )
-
         | _ -> default_iterator.expr self a 
       );
     label_declaration = (fun self lbl ->
@@ -37079,9 +37082,7 @@ let emit_external_warnings : iterator=
       pat = begin fun self (pat : Parsetree.pattern) -> 
                   match pat.ppat_desc with
                   |  Ppat_constant(
-
             Pconst_string
-                    
          (_, Some "j")) ->
         Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
       | _ -> default_iterator.pat self pat
@@ -37152,9 +37153,7 @@ val setter_suffix_len : int
 
 
 val debugger : string
-val raw_expr : string
-val raw_stmt : string
-val raw_function : string
+
 val unsafe_downgrade : string
 val fn_run : string
 val method_run : string
@@ -37292,9 +37291,6 @@ let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
-let raw_expr = "raw_expr"
-let raw_stmt = "raw_stmt"
-let raw_function = "raw_function"
 let unsafe_downgrade = "unsafe_downgrade"
 let fn_run = "fn_run"
 let method_run = "method_run"
@@ -37904,9 +37900,6 @@ let deprecated s : attr =
 end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
-
-
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -38019,13 +38012,11 @@ let () =
       argument the mapper to be applied to children in the syntax
       tree. *)
   
-  val default_mapper: mapper
-  (** A default mapper, which implements a "deep identity" mapping. *)
-  
+val default_mapper: mapper
+(** A default mapper, which implements a "deep identity" mapping. *)
+
 end = struct
 #1 "bs_ast_mapper.ml"
-
-
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -40352,9 +40343,7 @@ let is_enum_constructors
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
        | {pcd_args = 
- 
   Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
-        
         } -> true 
        | _ -> false 
     )
@@ -40845,10 +40834,8 @@ type t =
   | Blk_extension_slot
   | Blk_extension
   | Blk_na of string (* for debugging *)
-
   | Blk_record_inlined of string array * string * int
   | Blk_record_ext of string array
-
   | Blk_class
   | Blk_module_export
 end
@@ -41462,7 +41449,7 @@ module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
 
- (* not suporting nested if here..*)
+
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
@@ -41477,11 +41464,10 @@ external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
 
 external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
 
-
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
-  
+
     
 
 end
@@ -41561,13 +41547,10 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : _ Hash_set_gen.t) key =  
+let remove (h : _ Hash_set_gen.t ) key =
   let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
+  let h_data = h.data in 
+  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
@@ -41577,7 +41560,7 @@ let add (h : _ Hash_set_gen.t) key =
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i (Cons {key = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
@@ -41591,13 +41574,13 @@ let of_array arr =
   tbl 
   
     
-let check_add (h : _ Hash_set_gen.t) key =
+let check_add (h : _ Hash_set_gen.t) key : bool =
   let i = key_index h key  in 
   let h_data = h.data in  
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; rest =  old_bucket});
+      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
@@ -41997,10 +41980,6 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
-let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
-    
-      ptyp_arg 
-      
   
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -42013,9 +41992,8 @@ let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =
 *)
 let get_opt_arg_type
     ~(nolabel : bool)
-    (ptyp_arg : Ast_core_type.t) :
+    (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  let ptyp = get_basic_type_from_option_label ptyp_arg in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
@@ -42286,7 +42264,7 @@ let process_obj
     let arg_kinds, new_arg_types_ty, result_types =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label = param_type.label in
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -42346,7 +42324,7 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
@@ -42747,7 +42725,7 @@ let handle_attributes
             | _ ->
               (* more error checking *)
               [External_arg_spec.empty_kind arg_type],
-              [{label = Ast_compatible.no_label;
+              [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} ],
@@ -42756,7 +42734,7 @@ let handle_attributes
         | None -> [],[], 0 in 
       Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert param_type.label in
+           let arg_label =  param_type.label in
            let ty = param_type.ty in 
            if i = 0 && splice  then
              begin match arg_label with 
@@ -42986,6 +42964,83 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   | _ -> false
 
 end
+module Ast_raw : sig 
+#1 "ast_raw.mli"
+(* Copyright (C) 2020 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val raw_expr_id : Longident.t 
+
+val raw_stmt_id : Longident.t 
+
+val raw_function_id : Longident.t
+end = struct
+#1 "ast_raw.ml"
+(* Copyright (C) 2020 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ let raw_expr = "raw_expr"
+ let raw_stmt = "raw_stmt"
+ let raw_function = "raw_function"
+ 
+ let raw_expr_id =   
+  Longident.Ldot 
+  (Lident "Js_internalRaw", 
+  raw_expr)  
+
+let raw_stmt_id = 
+  Longident.Ldot 
+  (Lident "Js_internalRaw", 
+  raw_stmt)     
+
+let raw_function_id = 
+    Longident.Ldot 
+    (Lident "Js_internalRaw", 
+    raw_function)      
+end
 module Ast_util : sig 
 #1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -43103,7 +43158,10 @@ val handle_debugger :
   loc -> Ast_payload.t -> Parsetree.expression_desc
 
 val handle_raw : 
-  check_js_regex: bool -> loc -> Ast_payload.t -> Parsetree.expression
+  kind : Js_raw_exp_info.raw_kind ->
+  loc -> 
+  Ast_payload.t -> 
+  Parsetree.expression
 
 val handle_external :
   loc -> string -> Parsetree.expression 
@@ -43171,9 +43229,7 @@ let arity_lit = "Arity_"
 let mk_args loc (n : int) (tys : Parsetree.core_type list) : Parsetree.core_type = 
   Typ.variant ~loc 
     [ Rtag (
-
       {loc; txt = arity_lit ^ string_of_int n}
-      
       ,
        [], (n = 0),  tys)] Closed None
 
@@ -43221,9 +43277,7 @@ let js_property loc obj (name : string) =
            {loc;
             txt = Ldot (Ast_literal.Lid.js_internal, Literals.unsafe_downgrade)})
         obj), 
-
         {loc; txt = name}
-
         )
 
 (* TODO: 
@@ -43261,7 +43315,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_internal,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -43389,7 +43443,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
         Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
         Longident.Ldot (Ast_literal.Lid.js_internal,  Literals.fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Ast_compatible.no_label, body])
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
 
   else 
     let pval_prim =
@@ -43419,37 +43473,51 @@ let handle_debugger loc (payload : Ast_payload.t) =
   | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_internal, Literals.debugger ); loc}, 
-       [ Ast_compatible.no_label, Ast_literal.val_unit ~loc ()])
+       [ Nolabel, Ast_literal.val_unit ~loc ()])
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
-let handle_raw ~check_js_regex loc payload =
-  begin match Ast_payload.as_string_exp ~check_js_regex payload with
-    | Not_String_Lteral ->
+
+let handle_raw ~kind loc payload =
+  begin match Ast_payload.raw_as_string_exp_exn 
+    ~kind payload with
+    | None ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
-    | Ast_payload.JS_Regex_Check_Failed ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-    | Correct exp ->
+    | Some exp ->
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
-                     txt = 
-                       Ldot (Ast_literal.Lid.js_internal, 
-                             Literals.raw_expr)},
-          [Ast_compatible.no_label,exp]
+                     txt = Ast_raw.raw_expr_id
+                       },
+          [Nolabel,exp]
         )
       in
       { exp with pexp_desc }
+  end
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.raw_as_string_exp_exn 
+                ~kind:Raw_program payload with 
+  | Some exp 
+    -> 
+    let pexp_desc = 
+      Parsetree.Pexp_apply(
+        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
+        [ Nolabel,exp]) in 
+    Ast_helper.Str.eval 
+      { exp with pexp_desc }
+
+  | None
+    -> 
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
 
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
     Ast_compatible.app1
     (Exp.ident ~loc 
-         {loc; txt = Ldot (Ast_literal.Lid.js_internal, 
-                           Literals.raw_expr)})
+         {loc; txt = Ast_raw.raw_expr_id })
       ~loc 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
@@ -43473,24 +43541,6 @@ let handle_external loc (x : string) : Parsetree.expression =
   )
 
 
-let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp ~check_js_regex:false payload with 
-    | Correct exp 
-      -> 
-      let pexp_desc = 
-        Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_internal,  Literals.raw_stmt); loc},
-          [ Ast_compatible.no_label,exp]) in 
-      Ast_helper.Str.eval 
-        { exp with pexp_desc }
-
-    | Not_String_Lteral
-      -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-    | JS_Regex_Check_Failed 
-      ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-  end
 
 
 let ocaml_obj_as_js_object
@@ -43521,7 +43571,7 @@ let ocaml_obj_as_js_object
     ((val_name , [], result ) ::
      (if is_mutable then 
         [val_name ^ Literals.setter_suffix,[],
-         to_method_type loc mapper Ast_compatible.no_label result (Ast_literal.type_unit ~loc ()) ]
+         to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
   in 
@@ -43534,7 +43584,7 @@ let ocaml_obj_as_js_object
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
-      to_method_type loc mapper Ast_compatible.no_label (Ast_literal.type_unit ~loc ()) result 
+      to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
     else
       let tyvars =
@@ -43545,7 +43595,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          to_method_type loc mapper Ast_compatible.no_label x method_rest
+          to_method_type loc mapper Nolabel x method_rest
         | _ -> assert false
       end in          
 
@@ -43562,7 +43612,7 @@ let ocaml_obj_as_js_object
       | Some ty -> Typ.alias ~loc ty self_type_lit
     in  
     if arity = 0 then
-      to_method_callback_type loc mapper  Ast_compatible.no_label self_type result      
+      to_method_callback_type loc mapper  Nolabel self_type result      
     else
       let tyvars =
         Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
@@ -43572,7 +43622,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
+          (to_method_callback_type loc mapper  Nolabel self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
@@ -43981,9 +44031,7 @@ let process_getter_setter
     if st.set = None then get_acc 
     else
       set ty 
-
     ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
-
       pctf_attributes         
       :: get_acc 
 
@@ -44033,7 +44081,7 @@ let handle_class_type_field self
                       private_flag,
                       virtual_flag,
                       Ast_util.to_method_type
-                        loc self Ast_compatible.no_label ty
+                        loc self Nolabel ty
                         (Ast_literal.type_unit ~loc ())
                      );
        pctf_attributes} in
@@ -44091,10 +44139,8 @@ let typ_mapper
     let new_methods =
       Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
-
         | Parsetree.Oinherit _ -> meth_ :: acc 
         | Parsetree.Otag 
-        
           (label, ptyp_attrs, core_type) -> 
           let get ty name attrs =
             let attrs, core_type =
@@ -44119,7 +44165,7 @@ let typ_mapper
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
+            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Nolabel core_type 
               (Ast_literal.type_unit ~loc ())) in
           let not_getter_setter ty =
             let attrs, core_type =
@@ -45207,14 +45253,7 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
-(* #if OCAML_VERSION =~ ">4.03.0" then 
-let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
-  match xs with 
-  | Pcstr_tuple xs -> List.length xs 
-  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
-#else
-let constructor_arguments_length = List.length 
-#end *)
+
 let derivingName = "accessors" 
 let init () =
   
@@ -45243,12 +45282,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
                     -> (* TODO: add type annotations *)
-
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in  
-                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       let annotate_type = 
@@ -45306,12 +45343,10 @@ let init () =
                 Ext_list.map constructor_declarations
                   (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
                     -> 
-                                          
                       let pcd_args = 
                         match pcd_args with 
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in 
-                        
                       let annotate_type = 
                         match pcd_res with
                         | Some x -> x 
@@ -45599,15 +45634,18 @@ let app_exp_mapper
         a |. M.(f b c) --> M.f a M.b M.c
         a |. (g |. b)
         a |. M.Some
+        a |. `Variant
       *)
        let new_obj_arg = self.expr self obj_arg in
        let fn = self.expr self fn in 
        begin match fn with
          | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
            Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-           { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+           { pexp_desc = Pexp_apply(fn, (Nolabel, new_obj_arg) :: args);
              pexp_attributes = [];
              pexp_loc = pexp_loc}
+         | {pexp_desc = Pexp_variant(label,None); pexp_loc; pexp_attributes} -> 
+           {fn with pexp_desc = Pexp_variant(label, Some new_obj_arg)}
          | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
            {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
          | _ ->
@@ -45622,7 +45660,7 @@ let app_exp_mapper
                              | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                ->
                                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                               { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
+                               { Parsetree.pexp_desc = Pexp_apply(fn, (Nolabel, bounded_obj_arg) :: args);
                                  pexp_attributes = [];
                                  pexp_loc = pexp_loc}
                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
@@ -45638,7 +45676,7 @@ let app_exp_mapper
                let fn = Ast_open_cxt.restore_exp e wholes in 
                let args = Ext_list.map args (fun (lab,exp) -> lab, Ast_open_cxt.restore_exp exp wholes) in 
                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes; 
-               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+               { pexp_desc = Pexp_apply(fn, (Nolabel, new_obj_arg) :: args);
                  pexp_attributes = [];
                  pexp_loc = loc}
              | _ -> Ast_compatible.app1 ~loc fn new_obj_arg
@@ -45666,9 +45704,7 @@ let app_exp_mapper
               (Pexp_ident {txt = Lident name;_ } 
 
             | Pexp_constant (
-                           
               Pconst_string
-              
               (name,None))
             )
             ;
@@ -45701,9 +45737,7 @@ let app_exp_mapper
              pexp_desc = 
                Pexp_ident {txt = Lident name}
                | Pexp_constant (
-                           
               Pconst_string
-                         
                   (name, None)); pexp_loc
            }
            ]
@@ -45737,6 +45771,7 @@ let app_exp_mapper
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )
+
 end
 module Ast_exp_extension : sig 
 #1 "ast_exp_extension.mli"
@@ -45810,9 +45845,7 @@ let rec unroll_function_aux
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
   | Pexp_constant(
- 
     Pconst_string
-    
     (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,pat,cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
@@ -45857,13 +45890,11 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-
           Pconst_string
-           
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
+            (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})            
             (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
          | ppat_desc, _ -> 
             let txt = 
@@ -45875,14 +45906,14 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             in 
             let acc, block = unroll_function_aux [txt] body in 
             Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
+              (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
          end 
-      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
+      | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~check_js_regex:true loc payload)
+        (Ast_util.handle_raw ~kind:Raw_re loc payload)
         (Ast_comb.to_js_re_type loc)
     | "bs.external" | "external" ->
       begin match Ast_payload.as_ident payload with 
@@ -45968,9 +45999,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
              else 
                (raiseWithString locString)
            | Pexp_constant (
- 
     Pconst_string
-              
               (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
@@ -46392,9 +46421,7 @@ let handleTdcl
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
               (Ast_compatible.opt_arrow ~loc:pld_loc label_name 
-             pld_type  
-              
-
+                pld_type  
                 maker,
                 (Val.mk ~loc:pld_loc
                  (if light then pld_name else 
@@ -46954,12 +46981,31 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         | Pexp_extension extension ->
           Ast_exp_extension.handle_extension record_as_js_object e self extension
         | Pexp_constant (
-
             Pconst_string
-            
             (s, (Some delim)))
           ->
             Ast_utf8_string_interp.transform e s delim
+        | Pexp_array [] when 
+          not (Ext_list.exists e.pexp_attributes (fun ({txt},_) -> txt = ""))->  
+        (* `ocamlfind query ppx_tools`/dumpast -loc_underscore -e 'let emptyArray () = [||] in emptyArray ()'*)          
+          let loc = e.pexp_loc in
+          let name =  "emptyArray" in 
+          let unit : _ Asttypes.loc  = {txt = Ast_literal.Lid.val_unit ; loc  } in 
+          let open Ast_helper in 
+          Exp.let_ Nonrecursive
+            [{pvb_pat =
+                Pat.var  {txt = name ; loc} ~loc ;
+              pvb_expr =
+                Exp.fun_ Nolabel None
+                  (Pat.construct unit None)
+                  (Exp.array [] ~attrs:[{txt = ""; loc}, PStr []]);
+              pvb_loc  = loc; pvb_attributes = []}]
+            (Exp.apply
+               (Exp.ident {txt = Lident name; loc})
+               [Nolabel,
+                Exp.construct unit None ~loc;
+               ])
+
         (** End rewriting *)
         | Pexp_function cases ->
           (* {[ function [@bs.exn]
@@ -47024,6 +47070,18 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
               }
             | false , _ ->
               default_expr_mapper self e)
+        | Pexp_match(b,
+                     [
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "true"},None)};pc_guard=None;pc_rhs=t_exp};
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"false"}, None)};pc_guard=None;pc_rhs=f_exp}
+                     ]) 
+        | Pexp_match(b,
+                     [
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "false"},None)};pc_guard=None;pc_rhs=f_exp};
+                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"true"}, None)};pc_guard=None;pc_rhs=t_exp}
+                     ])   
+          -> 
+            default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}     
         | _ ->  default_expr_mapper self e
 
 
@@ -47046,9 +47104,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
            };
          pcty_attributes
         }               
- 
      | Pcty_open _ (* let open M in CT *)
-
       | Pcty_constr _
       | Pcty_extension _
       | Pcty_arrow _ ->
@@ -47065,9 +47121,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
       | Psig_type (
-        
           _rf, 
-          
            (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
       | Psig_value ({pval_attributes; pval_prim} as value_desc)
@@ -47084,9 +47138,7 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
          | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
            begin match pexp_desc with
              | Pexp_constant (
-
                Pconst_string
-               
                (s,dec)) -> 
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
                { sigi with 
@@ -47097,14 +47149,10 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                        pval_attributes = []
                      }}
              | Pexp_constant(
-               
                Pconst_integer (s,None)
-               
                ) ->         
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
-                
                let s = int_of_string s in  
-
                { sigi with 
                  psig_desc = Psig_value
                      { 
@@ -47143,9 +47191,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     ->          
     Ast_structure.dummy_item loc
   | Pstr_type (
-
           _rf, 
-          
           (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
    | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
@@ -47165,10 +47211,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
     begin match pvb_expr.pexp_desc, has_inline_property with 
     | Pexp_constant(
-
                Pconst_string
-               
-
               (s,dec)), true 
     ->      
         Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
@@ -47180,14 +47223,10 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
              pval_prim = External_ffi_types.inline_string_primitive s dec
            } } 
     | Pexp_constant(
-      
       Pconst_integer (s,None)
-      
       ), true   
       -> 
-     
       let s = int_of_string s in  
-
       Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
       {str with pstr_desc = Pstr_primitive  {
            pval_name = pval_name ;
@@ -47348,7 +47387,7 @@ let rec find_opt p = function
   | x :: l -> if p x then Some x else find_opt p l
 
 
-# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let nolabel = Nolabel
 let labelled str = Labelled str
 let optional str = Optional str
@@ -47368,7 +47407,7 @@ let argIsKeyRef = function
   | _ -> false
 let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
 
-# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let safeTypeFromValue valueStr =
 let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
@@ -47420,12 +47459,8 @@ let transformChildrenIfList ~loc ~mapper theList =
 let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-    
-# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
     | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
     | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-    
-# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -47491,11 +47526,7 @@ let filenameFromLoc (pstr_loc: Location.t) =
   let fileName = try
       Filename.chop_extension (Filename.basename fileName)
     with | Invalid_argument _-> fileName in
-  
-# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
   let fileName = String.capitalize_ascii fileName in
-  
-# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
   fileName
 
 (* Build a string representation of a module name with segments separated by $ *)
@@ -47526,43 +47557,29 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     (match (label, interiorType, default) with
     (* ~foo=1 *)
     | (label, None, Some _) ->
-    
-# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    
-# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: int=1 *)
     | (label, Some type_, Some _) ->
-    
-# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
     type_
-    
-# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
-    
-# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
     type_
-    
-# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
     | (label, None, _) when isOptional label ->
-    
-# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    
-# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     (* ~foo *)
     | (label, None, _) ->
     {
@@ -47619,23 +47636,19 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
-# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let makeObjectField loc (str, attrs, type_) =
   Otag ({ loc; txt = str }, attrs, type_)
 
-# 362 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
   Typ.mk ~loc (
     Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
-        
-# 367 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_desc = Ptyp_object(
           List.map (makeObjectField loc) namedTypeList,
           Closed
         );
-        
-# 374 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_loc = loc;
         ptyp_attributes = [];
       }])
@@ -47670,11 +47683,7 @@ let jsxMapper () =
         [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
       @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
     let isCap str = let first = String.sub str 0 1 in
-    
-# 409 "syntax/reactjs_jsx_ppx.cppo.ml"
     let capped = String.uppercase_ascii first in first = capped in
-    
-# 413 "syntax/reactjs_jsx_ppx.cppo.ml"
     let ident = match modulePath with
     | Lident _ -> Ldot (modulePath, "make")
     | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
@@ -47835,14 +47844,10 @@ let jsxMapper () =
     let expr = mapper.expr mapper expr in
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-    
-# 574 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun (Labelled "key", _, _, _)
     | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-    
-# 584 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
@@ -47853,14 +47858,12 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-    
-# 595 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
         (expression.pexp_desc, list, None)
     | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
         (expression.pexp_desc, list, Some txt)
-    
-# 605 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     | innerExpression -> (innerExpression, list, None)
   in
 
@@ -47902,11 +47905,7 @@ let jsxMapper () =
     | name when isLabelled name ->
     (getLabel name, [], type_) :: types
     | name when isOptional name ->
-  
-# 647 "syntax/reactjs_jsx_ppx.cppo.ml"
   (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
-    
-# 651 "syntax/reactjs_jsx_ppx.cppo.ml"
     | _ -> types
   in
 
@@ -47928,11 +47927,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      
-# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (Nolabel, _type, rest) ->
-        
-# 677 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -47993,11 +47988,8 @@ let jsxMapper () =
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
-          
-# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-            
-# 742 "syntax/reactjs_jsx_ppx.cppo.ml"
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -48139,11 +48131,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (Nolabel, _type, rest) ->
-        
-# 888 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -48191,11 +48179,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 935 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 840 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           
-# 941 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 846 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48205,11 +48193,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 950 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 855 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           
-# 956 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 861 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48278,18 +48266,10 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-          
-# 1025 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
-              
-# 1029 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
-              
-# 1031 "syntax/reactjs_jsx_ppx.cppo.ml"
               | "2" -> jsxVersion := Some 2
               | "3" -> jsxVersion := Some 3
-              
-# 1037 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
@@ -48423,7 +48403,7 @@ let rec find_opt p = function
   | x :: l -> if p x then Some x else find_opt p l
 
 
-# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let nolabel = Nolabel
 let labelled str = Labelled str
 let optional str = Optional str
@@ -48443,7 +48423,7 @@ let argIsKeyRef = function
   | _ -> false
 let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
 
-# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let safeTypeFromValue valueStr =
 let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
@@ -48495,12 +48475,8 @@ let transformChildrenIfList ~loc ~mapper theList =
 let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-    
-# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
     | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
     | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-    
-# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -48566,11 +48542,7 @@ let filenameFromLoc (pstr_loc: Location.t) =
   let fileName = try
       Filename.chop_extension (Filename.basename fileName)
     with | Invalid_argument _-> fileName in
-  
-# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
   let fileName = String.capitalize_ascii fileName in
-  
-# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
   fileName
 
 (* Build a string representation of a module name with segments separated by $ *)
@@ -48601,43 +48573,29 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     (match (label, interiorType, default) with
     (* ~foo=1 *)
     | (label, None, Some _) ->
-    
-# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    
-# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: int=1 *)
     | (label, Some type_, Some _) ->
-    
-# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
     type_
-    
-# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
-    
-# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
     type_
-    
-# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
     | (label, None, _) when isOptional label ->
-    
-# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    
-# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     (* ~foo *)
     | (label, None, _) ->
     {
@@ -48694,23 +48652,19 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
-# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 let makeObjectField loc (str, attrs, type_) =
   Otag ({ loc; txt = str }, attrs, type_)
 
-# 362 "syntax/reactjs_jsx_ppx.cppo.ml"
+
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
   Typ.mk ~loc (
     Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
-        
-# 367 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_desc = Ptyp_object(
           List.map (makeObjectField loc) namedTypeList,
           Closed
         );
-        
-# 374 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_loc = loc;
         ptyp_attributes = [];
       }])
@@ -48745,11 +48699,7 @@ let jsxMapper () =
         [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
       @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
     let isCap str = let first = String.sub str 0 1 in
-    
-# 409 "syntax/reactjs_jsx_ppx.cppo.ml"
     let capped = String.uppercase_ascii first in first = capped in
-    
-# 413 "syntax/reactjs_jsx_ppx.cppo.ml"
     let ident = match modulePath with
     | Lident _ -> Ldot (modulePath, "make")
     | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
@@ -48910,14 +48860,10 @@ let jsxMapper () =
     let expr = mapper.expr mapper expr in
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-    
-# 574 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun (Labelled "key", _, _, _)
     | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-    
-# 584 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
@@ -48928,14 +48874,12 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-    
-# 595 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
         (expression.pexp_desc, list, None)
     | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
         (expression.pexp_desc, list, Some txt)
-    
-# 605 "syntax/reactjs_jsx_ppx.cppo.ml"
+
     | innerExpression -> (innerExpression, list, None)
   in
 
@@ -48977,11 +48921,7 @@ let jsxMapper () =
     | name when isLabelled name ->
     (getLabel name, [], type_) :: types
     | name when isOptional name ->
-  
-# 647 "syntax/reactjs_jsx_ppx.cppo.ml"
   (getLabel name, [], Typ.constr ~loc {loc; txt=optionIdent} [type_]) :: types
-    
-# 651 "syntax/reactjs_jsx_ppx.cppo.ml"
     | _ -> types
   in
 
@@ -49003,11 +48943,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      
-# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (Nolabel, _type, rest) ->
-        
-# 677 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -49068,11 +49004,8 @@ let jsxMapper () =
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
-          
-# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-            
-# 742 "syntax/reactjs_jsx_ppx.cppo.ml"
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -49214,11 +49147,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (Nolabel, _type, rest) ->
-        
-# 888 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -49266,11 +49195,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 938 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 843 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           
-# 941 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 846 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -49280,11 +49209,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 953 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 858 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           
-# 956 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 861 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -49353,18 +49282,10 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-          
-# 1025 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
-              
-# 1029 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
-              
-# 1031 "syntax/reactjs_jsx_ppx.cppo.ml"
               | "2" -> jsxVersion := Some 2
               | "3" -> jsxVersion := Some 3
-              
-# 1037 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)

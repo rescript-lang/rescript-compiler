@@ -60,8 +60,8 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     | Lfor(v, e1, e2, dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
-    | Lapply{fn; args; _} ->
-      hit fn || hit_list args
+    | Lapply{ap_func; ap_args; _} ->
+      hit ap_func || hit_list ap_args
     | Lglobal_module id (* playsafe *)
       -> false
     | Lprim {args; _} ->
@@ -103,8 +103,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array   
     )  ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in
   let node_vec = Array.make (Array.length int_mapping) (Vec_int.empty ()) in
-  domain
-  |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->
+  Ordered_hash_map_local_ident.iter domain ( fun id lam key_index ->
       let base_key =  node_vec.(key_index) in
       ignore (hit_mask mask lam) ;
       Hash_set_ident_mask.iter_and_unmask mask (fun ident hit  ->

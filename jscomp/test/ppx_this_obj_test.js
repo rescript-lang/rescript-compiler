@@ -87,7 +87,7 @@ var v4 = {
     })
 };
 
-var collection = /* array */[
+var collection = [
   v,
   v2,
   v3,

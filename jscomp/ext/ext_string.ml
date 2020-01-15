@@ -130,22 +130,6 @@ let check_any_suffix_case_then_chop s suffixes =
 
 
 
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
@@ -191,8 +175,9 @@ let unsafe_is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-exception Local_exit 
+
 let find ?(start=0) ~sub s =
+  let exception Local_exit in
   let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
@@ -223,9 +208,9 @@ let non_overlap_count ~sub s =
 
 
 let rfind ~sub s =
+  let exception Local_exit in   
   let n = String.length sub in
   let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
   try
     while !i >= 0 do
       if unsafe_is_sub ~sub 0 s !i ~len:n then 
@@ -350,10 +335,8 @@ let empty = ""
 
 #if BS_COMPILER_IN_BROWSER then
 let compare = Bs_hash_stubs.string_length_based_compare
-#elif OCAML_VERSION =~ ">4.3.0" then
+#else
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-#else    
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 #end
 let single_space = " "
 let single_colon = ":"
@@ -488,22 +471,9 @@ let capitalize_sub (s : string) len : string =
     
 
 let uncapitalize_ascii =
-#if OCAML_VERSION =~ ">4.3.0" then
     String.uncapitalize_ascii
-#else
-    String.uncapitalize
-#end      
 
-
-#if OCAML_VERSION =~ ">4.03.0" then 
 let lowercase_ascii = String.lowercase_ascii
-#else
-
-
-let lowercase_ascii (s : string) = 
-    Bytes.unsafe_to_string 
-      (Bytes.map Ext_char.lowercase_ascii (Bytes.unsafe_of_string s))
-#end
 
 
 

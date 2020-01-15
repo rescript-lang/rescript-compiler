@@ -59,7 +59,7 @@ var array_suites_000 = /* tuple */[
                 $$Array.init(5, (function (x) {
                         return x;
                       })),
-                /* array */[
+                [
                   0,
                   1,
                   2,
@@ -87,7 +87,7 @@ var array_suites_001 = /* :: */[
         };
         var match = List.split(aux(/* :: */[
                   /* tuple */[
-                    /* array */[],
+                    [],
                     /* [] */0
                   ],
                   /* [] */0
@@ -103,7 +103,7 @@ var array_suites_001 = /* :: */[
       "concat",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    /* array */[
+                    [
                       0,
                       1,
                       2,
@@ -112,20 +112,20 @@ var array_suites_001 = /* :: */[
                       5
                     ],
                     Caml_array.caml_array_concat(/* :: */[
-                          /* array */[
+                          [
                             0,
                             1,
                             2
                           ],
                           /* :: */[
-                            /* array */[
+                            [
                               3,
                               4
                             ],
                             /* :: */[
-                              /* array */[],
+                              [],
                               /* :: */[
-                                /* array */[5],
+                                [5],
                                 /* [] */0
                               ]
                             ]
@@ -159,14 +159,14 @@ var array_suites_001 = /* :: */[
           "sub",
           (function (param) {
               return /* Eq */Block.__(0, [
-                        $$Array.sub(/* array */[
+                        $$Array.sub([
                               0,
                               1,
                               2,
                               3,
                               4
                             ], 2, 2),
-                        /* array */[
+                        [
                           2,
                           3
                         ]
@@ -177,7 +177,7 @@ var array_suites_001 = /* :: */[
           /* tuple */[
             "blit",
             (function (param) {
-                var u = /* array */[
+                var u = [
                   100,
                   0,
                   0
@@ -188,12 +188,12 @@ var array_suites_001 = /* :: */[
                 $$Array.blit(v, 1, u, 1, 2);
                 return /* Eq */Block.__(0, [
                           /* tuple */[
-                            /* array */[
+                            [
                               0,
                               2,
                               4
                             ],
-                            /* array */[
+                            [
                               100,
                               2,
                               4
@@ -216,7 +216,7 @@ var array_suites_001 = /* :: */[
                   $$Array.blit(a0, 10, a0, 5, 20);
                   return /* Eq */Block.__(0, [
                             true,
-                            starts_with(a0, /* array */[
+                            starts_with(a0, [
                                   0,
                                   1,
                                   2,
@@ -257,7 +257,7 @@ var array_suites_001 = /* :: */[
                     $$Array.blit(a0, 5, a0, 10, 20);
                     return /* Eq */Block.__(0, [
                               true,
-                              starts_with(a0, /* array */[
+                              starts_with(a0, [
                                     0,
                                     1,
                                     2,
@@ -296,7 +296,7 @@ var array_suites_001 = /* :: */[
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 Caml_array.caml_make_vect(2, 1),
-                                /* array */[
+                                [
                                   1,
                                   1
                                 ]
@@ -307,14 +307,14 @@ var array_suites_001 = /* :: */[
                   /* tuple */[
                     "sort",
                     (function (param) {
-                        var u = /* array */[
+                        var u = [
                           3,
                           0,
                           1
                         ];
                         $$Array.sort(Caml_primitive.caml_int_compare, u);
                         return /* Eq */Block.__(0, [
-                                  Caml_obj.caml_equal(/* array */[
+                                  Caml_obj.caml_equal([
                                         0,
                                         1,
                                         3

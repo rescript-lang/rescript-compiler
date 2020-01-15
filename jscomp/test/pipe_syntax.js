@@ -86,6 +86,11 @@ function hi(x) {
               }));
 }
 
+var with_poly = /* `Foo */[
+  3505894,
+  1
+];
+
 exports.t0 = t0;
 exports.t1 = t1;
 exports.t2 = t2;
@@ -100,4 +105,5 @@ exports.f6 = f6;
 exports.f7 = f7;
 exports.f8 = f8;
 exports.hi = hi;
+exports.with_poly = with_poly;
 /* No side effect */

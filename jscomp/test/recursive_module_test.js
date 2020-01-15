@@ -43,12 +43,12 @@ var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       13,
       6
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "u"
           ]]]));
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "u"
           ]]]), Int3, Int3);
@@ -57,7 +57,7 @@ var M = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       20,
       20
-    ], /* Module */Block.__(0, [/* array */[/* tuple */[
+    ], /* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "fact"
           ]]]));
@@ -70,7 +70,7 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [/* array */[/* tuple */[
+Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Function */0,
             "fact"
           ]]]), M, {

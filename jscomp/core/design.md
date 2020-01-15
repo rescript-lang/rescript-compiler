@@ -178,10 +178,10 @@ Note this also interacts with `[@bs.uncurry]`
 for example
 
 ```ocaml
-external filter : ('a -> bool [@bs.uncurry]) -> 'a array = "" [@@bs.send.pipe: 'a array]
+external filter : 'a array -> ('a -> bool [@bs.uncurry]) -> 'a array = "filter"
 
 let f xs =
-    xs |> filter (fun x -> x > 2)
+    xs |. filter (fun x -> x > 2)
 ```
 
 Here whether the callback gets inlined to the call of `filter` will have an effect on how `Pjs_fn_make` gets cancelled.

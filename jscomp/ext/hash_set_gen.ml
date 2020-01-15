@@ -30,7 +30,7 @@ type 'a bucket =
   | Empty
   | Cons of {
       mutable key : 'a ; 
-      mutable rest : 'a bucket 
+      mutable next : 'a bucket 
     }
 
 type 'a t =
@@ -69,16 +69,16 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons {key; rest} as cell ->
+      | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
         | Empty ->
           Array.unsafe_set ndata nidx cell
         | Cons tail -> 
-          tail.rest <- cell
+          tail.next <- cell
         end;
         Array.unsafe_set ndata_tail nidx  cell;          
-        insert_bucket rest
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -86,7 +86,7 @@ let resize indexfun h =
     for i = 0 to nsize - 1 do 
       match Array.unsafe_get ndata_tail i with 
       | Empty -> ()
-      | Cons tail -> tail.rest <- Empty
+      | Cons tail -> tail.next <- Empty
     done 
   end
 
@@ -95,7 +95,7 @@ let iter h f =
     | Empty ->
       ()
     | Cons l  ->
-      f l.key  ; do_bucket l.rest in
+      f l.key  ; do_bucket l.next in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -107,7 +107,7 @@ let fold h init f =
       Empty ->
       accu
     | Cons l  ->
-      do_bucket l.rest (f l.key  accu) in
+      do_bucket l.next (f l.key  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -127,24 +127,35 @@ let rec small_bucket_mem eq key lst =
   | Empty -> false 
   | Cons lst -> 
     eq key lst.key ||
-    match lst.rest with 
+    match lst.next with 
     | Empty -> false 
     | Cons lst  -> 
       eq key   lst.key ||
-      match lst.rest with 
+      match lst.next with 
       | Empty -> false 
       | Cons lst  -> 
         eq key lst.key ||
-        small_bucket_mem eq key lst.rest 
+        small_bucket_mem eq key lst.next 
 
-let rec remove_bucket eq_key key (h : _ t) buckets = 
-  match buckets with 
+let rec remove_bucket 
+    (h : _ t) (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
   | Empty ->
-    Empty
-  | Cons l ->
-    if  eq_key l.key   key
-    then begin h.size <- h.size - 1; l.rest end
-    else Cons { l with rest =  remove_bucket eq_key key h l.rest}   
+    ()
+  | Cons {key=k; next } ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.next <- next
+    end
+    else remove_bucket h i key ~prec:buck next eq_key
+
 
 module type S =
 sig
@@ -170,7 +181,7 @@ end
 #if 0 then 
 let rec bucket_length accu = function
   | Empty -> accu
-  | Cons l -> bucket_length (accu + 1) l.rest
+  | Cons l -> bucket_length (accu + 1) l.next
 
 
 

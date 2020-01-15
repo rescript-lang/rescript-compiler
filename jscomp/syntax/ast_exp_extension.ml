@@ -29,11 +29,7 @@ let rec unroll_function_aux
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
   | Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then 
     Pconst_string
-#else    
-    Const_string
-#end    
     (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,pat,cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
@@ -78,15 +74,11 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-#if OCAML_VERSION =~ ">4.03.0" then
           Pconst_string
-#else          
-           Const_string
-#end           
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
+            (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})            
             (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
          | ppat_desc, _ -> 
             let txt = 
@@ -98,14 +90,14 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             in 
             let acc, block = unroll_function_aux [txt] body in 
             Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
+              (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
          end 
-      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
+      | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~check_js_regex:true loc payload)
+        (Ast_util.handle_raw ~kind:Raw_re loc payload)
         (Ast_comb.to_js_re_type loc)
     | "bs.external" | "external" ->
       begin match Ast_payload.as_ident payload with 
@@ -191,11 +183,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
              else 
                (raiseWithString locString)
            | Pexp_constant (
-#if OCAML_VERSION =~ ">4.03.0" then 
     Pconst_string
-#else    
-    Const_string
-#end              
               (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)

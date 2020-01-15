@@ -9,12 +9,12 @@ Caml_array.caml_make_float_vect(30);
 
 var h = $$Array.sub(v, 0, 2);
 
-var hhh = $$Array.append(/* array */[
+var hhh = $$Array.append([
       1,
       2,
       3,
       4
-    ], /* array */[
+    ], [
       1,
       2,
       3,
@@ -22,17 +22,17 @@ var hhh = $$Array.append(/* array */[
     ]);
 
 var u = Caml_array.caml_array_concat(/* :: */[
-      /* array */[
+      [
         1,
         2
       ],
       /* :: */[
-        /* array */[
+        [
           2,
           3
         ],
         /* :: */[
-          /* array */[
+          [
             3,
             4
           ],

@@ -34,8 +34,8 @@ let rec
   | Lconst _ -> true
   | Lassign(_id, e) ->
     no_bounded_variables e
-  | Lapply{fn; args; _} ->
-    no_bounded_variables fn && no_list args
+  | Lapply{ap_func; ap_args; _} ->
+    no_bounded_variables ap_func && no_list ap_args
   | Lglobal_module _ -> true
   | Lprim {args; primitive = _ ; } ->
     no_list args
@@ -215,8 +215,8 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
        | None -> Lam.staticraise i ls
       )
     | Lvar _|Lconst _  -> lam
-    | Lapply {fn; args;  loc; status } -> 
-      Lam.apply (simplif fn) (Ext_list.map args simplif) loc status
+    | Lapply {ap_func; ap_args;  ap_loc; ap_status } -> 
+      Lam.apply (simplif ap_func) (Ext_list.map ap_args simplif) ap_loc ap_status
     | Lfunction {arity; params; body} -> 
       Lam.function_ ~arity  ~params ~body:(simplif body)
     | Llet (kind, v, l1, l2) -> 

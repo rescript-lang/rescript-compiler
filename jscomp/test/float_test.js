@@ -42,7 +42,7 @@ var match$1 = Caml_float.caml_frexp_float(0);
 
 var match$2 = Caml_float.caml_frexp_float(-12.0);
 
-var results = $$Array.append(/* array */[
+var results = $$Array.append([
       /* tuple */[
         Math.log10(2),
         0.301029995663981198
@@ -95,7 +95,7 @@ var results = $$Array.append(/* array */[
         Math.log1p(1e-10),
         9.9999999995000007e-11
       ]
-    ], /* array */[
+    ], [
       /* tuple */[
         match$1[0],
         0
@@ -178,7 +178,7 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characte
       true
     ]);
 
-var param$3 = /* array */[
+var param$3 = [
   -1,
   1,
   1
@@ -194,7 +194,7 @@ var param$4 = $$Array.map((function (x) {
         }
       }), $$Array.map((function (param) {
             return Caml_primitive.caml_float_compare(param[0], param[1]);
-          }), /* array */[
+          }), [
           /* tuple */[
             1,
             3

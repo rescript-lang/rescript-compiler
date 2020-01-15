@@ -19,7 +19,7 @@ function viaInt8(f, arr) {
     });
 }
 
-var x = new Int8Array(/* array */[
+var x = new Int8Array([
       1,
       2,
       3
@@ -71,7 +71,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         4,
-                        new Int8Array(/* array */[
+                        new Int8Array([
                                 1,
                                 2,
                                 3,
@@ -85,7 +85,7 @@ var suites_001 = /* :: */[
           /* tuple */[
             "typed_array - unsafe_set",
             (function (param) {
-                var a = new Int8Array(/* array */[
+                var a = new Int8Array([
                       1,
                       2,
                       3,
@@ -104,12 +104,12 @@ var suites_001 = /* :: */[
               "typed_array - buffer",
               (function (param) {
                   return /* Eq */Block.__(0, [
-                            new Int8Array(/* array */[
+                            new Int8Array([
                                   3,
                                   4,
                                   5
                                 ]),
-                            new Int8Array(new Int8Array(/* array */[
+                            new Int8Array(new Int8Array([
                                       1,
                                       2,
                                       3,
@@ -125,7 +125,7 @@ var suites_001 = /* :: */[
                 (function (param) {
                     return /* Eq */Block.__(0, [
                               10,
-                              new Int16Array(/* array */[
+                              new Int16Array([
                                     1,
                                     2,
                                     3,
@@ -141,7 +141,7 @@ var suites_001 = /* :: */[
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 0,
-                                new Int8Array(/* array */[
+                                new Int8Array([
                                       1,
                                       2,
                                       3,
@@ -156,7 +156,7 @@ var suites_001 = /* :: */[
                     "typed_array - setArray",
                     (function (param) {
                         var f = function (a) {
-                          a.set(/* array */[
+                          a.set([
                                 9,
                                 8,
                                 7
@@ -164,14 +164,14 @@ var suites_001 = /* :: */[
                           return a;
                         };
                         return /* Eq */Block.__(0, [
-                                  new Int8Array(/* array */[
+                                  new Int8Array([
                                         9,
                                         8,
                                         7,
                                         4,
                                         5
                                       ]),
-                                  f(new Int8Array(/* array */[
+                                  f(new Int8Array([
                                             1,
                                             2,
                                             3,
@@ -186,7 +186,7 @@ var suites_001 = /* :: */[
                       "typed_array - setArrayOffset",
                       (function (param) {
                           var f = function (a) {
-                            a.set(/* array */[
+                            a.set([
                                   9,
                                   8,
                                   7
@@ -194,14 +194,14 @@ var suites_001 = /* :: */[
                             return a;
                           };
                           return /* Eq */Block.__(0, [
-                                    new Int8Array(/* array */[
+                                    new Int8Array([
                                           1,
                                           2,
                                           9,
                                           8,
                                           7
                                         ]),
-                                    f(new Int8Array(/* array */[
+                                    f(new Int8Array([
                                               1,
                                               2,
                                               3,
@@ -217,7 +217,7 @@ var suites_001 = /* :: */[
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       5,
-                                      new Int8Array(/* array */[
+                                      new Int8Array([
                                             1,
                                             2,
                                             3,
@@ -232,14 +232,14 @@ var suites_001 = /* :: */[
                           "typed_array - copyWithin",
                           (function (param) {
                               return /* Eq */Block.__(0, [
-                                        new Int8Array(/* array */[
+                                        new Int8Array([
                                               1,
                                               2,
                                               3,
                                               1,
                                               2
                                             ]),
-                                        new Int8Array(/* array */[
+                                        new Int8Array([
                                                 1,
                                                 2,
                                                 3,
@@ -254,14 +254,14 @@ var suites_001 = /* :: */[
                             "typed_array - copyWithinFrom",
                             (function (param) {
                                 return /* Eq */Block.__(0, [
-                                          new Int8Array(/* array */[
+                                          new Int8Array([
                                                 4,
                                                 5,
                                                 3,
                                                 4,
                                                 5
                                               ]),
-                                          new Int8Array(/* array */[
+                                          new Int8Array([
                                                   1,
                                                   2,
                                                   3,
@@ -276,14 +276,14 @@ var suites_001 = /* :: */[
                               "typed_array - copyWithinFromRange",
                               (function (param) {
                                   return /* Eq */Block.__(0, [
-                                            new Int8Array(/* array */[
+                                            new Int8Array([
                                                   4,
                                                   2,
                                                   3,
                                                   4,
                                                   5
                                                 ]),
-                                            new Int8Array(/* array */[
+                                            new Int8Array([
                                                     1,
                                                     2,
                                                     3,
@@ -298,12 +298,12 @@ var suites_001 = /* :: */[
                                 "typed_array - fillInPlace",
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
-                                              new Int8Array(/* array */[
+                                              new Int8Array([
                                                     4,
                                                     4,
                                                     4
                                                   ]),
-                                              new Int8Array(/* array */[
+                                              new Int8Array([
                                                       1,
                                                       2,
                                                       3
@@ -316,12 +316,12 @@ var suites_001 = /* :: */[
                                   "typed_array - fillFromInPlace",
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
-                                                new Int8Array(/* array */[
+                                                new Int8Array([
                                                       1,
                                                       4,
                                                       4
                                                     ]),
-                                                new Int8Array(/* array */[
+                                                new Int8Array([
                                                         1,
                                                         2,
                                                         3
@@ -334,12 +334,12 @@ var suites_001 = /* :: */[
                                     "typed_array - fillRangeInPlace",
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
-                                                  new Int8Array(/* array */[
+                                                  new Int8Array([
                                                         1,
                                                         4,
                                                         3
                                                       ]),
-                                                  new Int8Array(/* array */[
+                                                  new Int8Array([
                                                           1,
                                                           2,
                                                           3
@@ -352,12 +352,12 @@ var suites_001 = /* :: */[
                                       "typed_array - reverseInPlace",
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
-                                                    new Int8Array(/* array */[
+                                                    new Int8Array([
                                                           3,
                                                           2,
                                                           1
                                                         ]),
-                                                    new Int8Array(/* array */[
+                                                    new Int8Array([
                                                             1,
                                                             2,
                                                             3
@@ -370,12 +370,12 @@ var suites_001 = /* :: */[
                                         "typed_array - sortInPlace",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
-                                                      new Int8Array(/* array */[
+                                                      new Int8Array([
                                                             1,
                                                             2,
                                                             3
                                                           ]),
-                                                      new Int8Array(/* array */[
+                                                      new Int8Array([
                                                               3,
                                                               1,
                                                               2
@@ -388,12 +388,12 @@ var suites_001 = /* :: */[
                                           "typed_array - sortInPlaceWith",
                                           (function (param) {
                                               return /* Eq */Block.__(0, [
-                                                        new Int8Array(/* array */[
+                                                        new Int8Array([
                                                               3,
                                                               2,
                                                               1
                                                             ]),
-                                                        new Int8Array(/* array */[
+                                                        new Int8Array([
                                                                 3,
                                                                 1,
                                                                 2
@@ -409,7 +409,7 @@ var suites_001 = /* :: */[
                                             (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           true,
-                                                          new Int8Array(/* array */[
+                                                          new Int8Array([
                                                                   1,
                                                                   2,
                                                                   3
@@ -423,7 +423,7 @@ var suites_001 = /* :: */[
                                               (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             1,
-                                                            new Int8Array(/* array */[
+                                                            new Int8Array([
                                                                     1,
                                                                     2,
                                                                     3
@@ -437,7 +437,7 @@ var suites_001 = /* :: */[
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               3,
-                                                              new Int8Array(/* array */[
+                                                              new Int8Array([
                                                                       1,
                                                                       2,
                                                                       3,
@@ -452,7 +452,7 @@ var suites_001 = /* :: */[
                                                   (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 "1,2,3",
-                                                                new Int8Array(/* array */[
+                                                                new Int8Array([
                                                                         1,
                                                                         2,
                                                                         3
@@ -466,7 +466,7 @@ var suites_001 = /* :: */[
                                                     (function (param) {
                                                         return /* Eq */Block.__(0, [
                                                                   "1;2;3",
-                                                                  new Int8Array(/* array */[
+                                                                  new Int8Array([
                                                                           1,
                                                                           2,
                                                                           3
@@ -480,7 +480,7 @@ var suites_001 = /* :: */[
                                                       (function (param) {
                                                           return /* Eq */Block.__(0, [
                                                                     1,
-                                                                    new Int8Array(/* array */[
+                                                                    new Int8Array([
                                                                             1,
                                                                             2,
                                                                             3
@@ -494,7 +494,7 @@ var suites_001 = /* :: */[
                                                         (function (param) {
                                                             return /* Eq */Block.__(0, [
                                                                       1,
-                                                                      new Int8Array(/* array */[
+                                                                      new Int8Array([
                                                                               1,
                                                                               2,
                                                                               3,
@@ -508,11 +508,11 @@ var suites_001 = /* :: */[
                                                           "typed_array - slice",
                                                           (function (param) {
                                                               return /* Eq */Block.__(0, [
-                                                                        new Int8Array(/* array */[
+                                                                        new Int8Array([
                                                                               2,
                                                                               3
                                                                             ]),
-                                                                        new Int8Array(/* array */[
+                                                                        new Int8Array([
                                                                                 1,
                                                                                 2,
                                                                                 3,
@@ -527,14 +527,14 @@ var suites_001 = /* :: */[
                                                             "typed_array - copy",
                                                             (function (param) {
                                                                 return /* Eq */Block.__(0, [
-                                                                          new Int8Array(/* array */[
+                                                                          new Int8Array([
                                                                                 1,
                                                                                 2,
                                                                                 3,
                                                                                 4,
                                                                                 5
                                                                               ]),
-                                                                          new Int8Array(/* array */[
+                                                                          new Int8Array([
                                                                                   1,
                                                                                   2,
                                                                                   3,
@@ -549,12 +549,12 @@ var suites_001 = /* :: */[
                                                               "typed_array - sliceFrom",
                                                               (function (param) {
                                                                   return /* Eq */Block.__(0, [
-                                                                            new Int8Array(/* array */[
+                                                                            new Int8Array([
                                                                                   3,
                                                                                   4,
                                                                                   5
                                                                                 ]),
-                                                                            new Int8Array(/* array */[
+                                                                            new Int8Array([
                                                                                     1,
                                                                                     2,
                                                                                     3,
@@ -569,11 +569,11 @@ var suites_001 = /* :: */[
                                                                 "typed_array - subarray",
                                                                 (function (param) {
                                                                     return /* Eq */Block.__(0, [
-                                                                              new Int8Array(/* array */[
+                                                                              new Int8Array([
                                                                                     2,
                                                                                     3
                                                                                   ]),
-                                                                              new Int8Array(/* array */[
+                                                                              new Int8Array([
                                                                                       1,
                                                                                       2,
                                                                                       3,
@@ -588,12 +588,12 @@ var suites_001 = /* :: */[
                                                                   "typed_array - subarrayFrom",
                                                                   (function (param) {
                                                                       return /* Eq */Block.__(0, [
-                                                                                new Int8Array(/* array */[
+                                                                                new Int8Array([
                                                                                       3,
                                                                                       4,
                                                                                       5
                                                                                     ]),
-                                                                                new Int8Array(/* array */[
+                                                                                new Int8Array([
                                                                                         1,
                                                                                         2,
                                                                                         3,
@@ -609,7 +609,7 @@ var suites_001 = /* :: */[
                                                                     (function (param) {
                                                                         return /* Eq */Block.__(0, [
                                                                                   "1,2,3",
-                                                                                  new Int8Array(/* array */[
+                                                                                  new Int8Array([
                                                                                           1,
                                                                                           2,
                                                                                           3
@@ -623,7 +623,7 @@ var suites_001 = /* :: */[
                                                                       (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     "1,2,3",
-                                                                                    new Int8Array(/* array */[
+                                                                                    new Int8Array([
                                                                                             1,
                                                                                             2,
                                                                                             3
@@ -637,7 +637,7 @@ var suites_001 = /* :: */[
                                                                         (function (param) {
                                                                             return /* Eq */Block.__(0, [
                                                                                       true,
-                                                                                      new Int8Array(/* array */[
+                                                                                      new Int8Array([
                                                                                               1,
                                                                                               2,
                                                                                               3
@@ -653,7 +653,7 @@ var suites_001 = /* :: */[
                                                                           (function (param) {
                                                                               return /* Eq */Block.__(0, [
                                                                                         false,
-                                                                                        new Int8Array(/* array */[
+                                                                                        new Int8Array([
                                                                                                 1,
                                                                                                 2,
                                                                                                 3
@@ -668,11 +668,11 @@ var suites_001 = /* :: */[
                                                                             "typed_array - filter",
                                                                             (function (param) {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          new Int8Array(/* array */[
+                                                                                          new Int8Array([
                                                                                                 2,
                                                                                                 4
                                                                                               ]),
-                                                                                          new Int8Array(/* array */[
+                                                                                          new Int8Array([
                                                                                                   1,
                                                                                                   2,
                                                                                                   3,
@@ -688,11 +688,11 @@ var suites_001 = /* :: */[
                                                                               "typed_array - filteri",
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            new Int8Array(/* array */[
+                                                                                            new Int8Array([
                                                                                                   1,
                                                                                                   3
                                                                                                 ]),
-                                                                                            new Int8Array(/* array */[
+                                                                                            new Int8Array([
                                                                                                     1,
                                                                                                     2,
                                                                                                     3,
@@ -709,7 +709,7 @@ var suites_001 = /* :: */[
                                                                                 (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               2,
-                                                                                              new Int8Array(/* array */[
+                                                                                              new Int8Array([
                                                                                                       1,
                                                                                                       2,
                                                                                                       3,
@@ -726,7 +726,7 @@ var suites_001 = /* :: */[
                                                                                   (function (param) {
                                                                                       return /* Eq */Block.__(0, [
                                                                                                 1,
-                                                                                                new Int8Array(/* array */[
+                                                                                                new Int8Array([
                                                                                                         1,
                                                                                                         2,
                                                                                                         3,
@@ -743,7 +743,7 @@ var suites_001 = /* :: */[
                                                                                     (function (param) {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   1,
-                                                                                                  new Int8Array(/* array */[
+                                                                                                  new Int8Array([
                                                                                                           1,
                                                                                                           2,
                                                                                                           3,
@@ -760,7 +760,7 @@ var suites_001 = /* :: */[
                                                                                       (function (param) {
                                                                                           return /* Eq */Block.__(0, [
                                                                                                     0,
-                                                                                                    new Int8Array(/* array */[
+                                                                                                    new Int8Array([
                                                                                                             1,
                                                                                                             2,
                                                                                                             3,
@@ -778,7 +778,7 @@ var suites_001 = /* :: */[
                                                                                             var sum = {
                                                                                               contents: 0
                                                                                             };
-                                                                                            new Int8Array(/* array */[
+                                                                                            new Int8Array([
                                                                                                     1,
                                                                                                     2,
                                                                                                     3
@@ -799,7 +799,7 @@ var suites_001 = /* :: */[
                                                                                               var sum = {
                                                                                                 contents: 0
                                                                                               };
-                                                                                              new Int8Array(/* array */[
+                                                                                              new Int8Array([
                                                                                                       1,
                                                                                                       2,
                                                                                                       3
@@ -818,13 +818,13 @@ var suites_001 = /* :: */[
                                                                                             "typed_array - map",
                                                                                             (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          new Int8Array(/* array */[
+                                                                                                          new Int8Array([
                                                                                                                 2,
                                                                                                                 4,
                                                                                                                 6,
                                                                                                                 8
                                                                                                               ]),
-                                                                                                          new Int8Array(/* array */[
+                                                                                                          new Int8Array([
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
@@ -840,13 +840,13 @@ var suites_001 = /* :: */[
                                                                                               "typed_array - map",
                                                                                               (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            new Int8Array(/* array */[
+                                                                                                            new Int8Array([
                                                                                                                   0,
                                                                                                                   2,
                                                                                                                   4,
                                                                                                                   6
                                                                                                                 ]),
-                                                                                                            new Int8Array(/* array */[
+                                                                                                            new Int8Array([
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
@@ -863,7 +863,7 @@ var suites_001 = /* :: */[
                                                                                                 (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               -10,
-                                                                                                              new Int8Array(/* array */[
+                                                                                                              new Int8Array([
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
@@ -880,7 +880,7 @@ var suites_001 = /* :: */[
                                                                                                   (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 -6,
-                                                                                                                new Int8Array(/* array */[
+                                                                                                                new Int8Array([
                                                                                                                         1,
                                                                                                                         2,
                                                                                                                         3,
@@ -897,7 +897,7 @@ var suites_001 = /* :: */[
                                                                                                     (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   -10,
-                                                                                                                  new Int8Array(/* array */[
+                                                                                                                  new Int8Array([
                                                                                                                           1,
                                                                                                                           2,
                                                                                                                           3,
@@ -914,7 +914,7 @@ var suites_001 = /* :: */[
                                                                                                       (function (param) {
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     -6,
-                                                                                                                    new Int8Array(/* array */[
+                                                                                                                    new Int8Array([
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
@@ -931,7 +931,7 @@ var suites_001 = /* :: */[
                                                                                                         (function (param) {
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       false,
-                                                                                                                      new Int8Array(/* array */[
+                                                                                                                      new Int8Array([
                                                                                                                               1,
                                                                                                                               2,
                                                                                                                               3,
@@ -948,7 +948,7 @@ var suites_001 = /* :: */[
                                                                                                           (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                         true,
-                                                                                                                        new Int8Array(/* array */[
+                                                                                                                        new Int8Array([
                                                                                                                                 1,
                                                                                                                                 2,
                                                                                                                                 3,
@@ -975,7 +975,7 @@ var suites_001 = /* :: */[
                                                                                                               (function (param) {
                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                             3,
-                                                                                                                            new Int8Array(/* array */[
+                                                                                                                            new Int8Array([
                                                                                                                                   1,
                                                                                                                                   2,
                                                                                                                                   3
@@ -1029,7 +1029,7 @@ var suites_001 = /* :: */[
                                                                                                                       /* tuple */[
                                                                                                                         "int8_array - unsafe_set - typed_array sanity check",
                                                                                                                         (function (param) {
-                                                                                                                            var a = new Int8Array(/* array */[
+                                                                                                                            var a = new Int8Array([
                                                                                                                                   1,
                                                                                                                                   2,
                                                                                                                                   3,
@@ -1059,7 +1059,7 @@ var suites_001 = /* :: */[
                                                                                                                             (function (param) {
                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                           3,
-                                                                                                                                          new Uint8Array(/* array */[
+                                                                                                                                          new Uint8Array([
                                                                                                                                                 1,
                                                                                                                                                 2,
                                                                                                                                                 3
@@ -1113,7 +1113,7 @@ var suites_001 = /* :: */[
                                                                                                                                     /* tuple */[
                                                                                                                                       "uint8_array - unsafe_set - typed_array sanity check",
                                                                                                                                       (function (param) {
-                                                                                                                                          var a = new Uint8Array(/* array */[
+                                                                                                                                          var a = new Uint8Array([
                                                                                                                                                 1,
                                                                                                                                                 2,
                                                                                                                                                 3,
@@ -1143,7 +1143,7 @@ var suites_001 = /* :: */[
                                                                                                                                           (function (param) {
                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                         3,
-                                                                                                                                                        new Uint8ClampedArray(/* array */[
+                                                                                                                                                        new Uint8ClampedArray([
                                                                                                                                                               1,
                                                                                                                                                               2,
                                                                                                                                                               3
@@ -1197,7 +1197,7 @@ var suites_001 = /* :: */[
                                                                                                                                                   /* tuple */[
                                                                                                                                                     "uint8clamped_array - unsafe_set - typed_array sanity check",
                                                                                                                                                     (function (param) {
-                                                                                                                                                        var a = new Uint8ClampedArray(/* array */[
+                                                                                                                                                        var a = new Uint8ClampedArray([
                                                                                                                                                               1,
                                                                                                                                                               2,
                                                                                                                                                               3,
@@ -1227,7 +1227,7 @@ var suites_001 = /* :: */[
                                                                                                                                                         (function (param) {
                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                       6,
-                                                                                                                                                                      new Int16Array(/* array */[
+                                                                                                                                                                      new Int16Array([
                                                                                                                                                                             1,
                                                                                                                                                                             2,
                                                                                                                                                                             3
@@ -1281,7 +1281,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                 /* tuple */[
                                                                                                                                                                   "int16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                   (function (param) {
-                                                                                                                                                                      var a = new Int16Array(/* array */[
+                                                                                                                                                                      var a = new Int16Array([
                                                                                                                                                                             1,
                                                                                                                                                                             2,
                                                                                                                                                                             3,
@@ -1311,7 +1311,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                       (function (param) {
                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                     6,
-                                                                                                                                                                                    new Uint16Array(/* array */[
+                                                                                                                                                                                    new Uint16Array([
                                                                                                                                                                                           1,
                                                                                                                                                                                           2,
                                                                                                                                                                                           3
@@ -1365,7 +1365,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                 "uint16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                 (function (param) {
-                                                                                                                                                                                    var a = new Uint16Array(/* array */[
+                                                                                                                                                                                    var a = new Uint16Array([
                                                                                                                                                                                           1,
                                                                                                                                                                                           2,
                                                                                                                                                                                           3,
@@ -1397,7 +1397,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                   12,
                                                                                                                                                                                                   new Int32Array($$Array.map((function (prim) {
                                                                                                                                                                                                               return prim;
-                                                                                                                                                                                                            }), /* array */[
+                                                                                                                                                                                                            }), [
                                                                                                                                                                                                             1,
                                                                                                                                                                                                             2,
                                                                                                                                                                                                             3
@@ -1453,7 +1453,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                   var a = new Int32Array($$Array.map((function (prim) {
                                                                                                                                                                                                               return prim;
-                                                                                                                                                                                                            }), /* array */[
+                                                                                                                                                                                                            }), [
                                                                                                                                                                                                             1,
                                                                                                                                                                                                             2,
                                                                                                                                                                                                             3,
@@ -1483,7 +1483,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                 12,
-                                                                                                                                                                                                                new Uint32Array(/* array */[
+                                                                                                                                                                                                                new Uint32Array([
                                                                                                                                                                                                                       1,
                                                                                                                                                                                                                       2,
                                                                                                                                                                                                                       3
@@ -1537,7 +1537,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                             "uint32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                             (function (param) {
-                                                                                                                                                                                                                var a = new Uint32Array(/* array */[
+                                                                                                                                                                                                                var a = new Uint32Array([
                                                                                                                                                                                                                       1,
                                                                                                                                                                                                                       2,
                                                                                                                                                                                                                       3,
@@ -1567,7 +1567,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                                                                               12,
-                                                                                                                                                                                                                              new Float32Array(/* array */[
+                                                                                                                                                                                                                              new Float32Array([
                                                                                                                                                                                                                                     1,
                                                                                                                                                                                                                                     2,
                                                                                                                                                                                                                                     3
@@ -1621,7 +1621,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                           "float32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                           (function (param) {
-                                                                                                                                                                                                                              var a = new Float32Array(/* array */[
+                                                                                                                                                                                                                              var a = new Float32Array([
                                                                                                                                                                                                                                     1,
                                                                                                                                                                                                                                     2,
                                                                                                                                                                                                                                     3,
@@ -1651,7 +1651,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                             24,
-                                                                                                                                                                                                                                            new Float64Array(/* array */[
+                                                                                                                                                                                                                                            new Float64Array([
                                                                                                                                                                                                                                                   1,
                                                                                                                                                                                                                                                   2,
                                                                                                                                                                                                                                                   3
@@ -1705,7 +1705,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                                         "float64_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                                         (function (param) {
-                                                                                                                                                                                                                                            var a = new Float64Array(/* array */[
+                                                                                                                                                                                                                                            var a = new Float64Array([
                                                                                                                                                                                                                                                   1,
                                                                                                                                                                                                                                                   2,
                                                                                                                                                                                                                                                   3,

@@ -7,7 +7,7 @@ var Curry$1 = { };
 
 var Block = { };
 
-var xbs = Array.prototype.map.call(/* array */[
+var xbs = Array.prototype.map.call([
       1,
       2,
       3,
@@ -17,7 +17,7 @@ var xbs = Array.prototype.map.call(/* array */[
       }));
 
 function f(cb) {
-  return Array.prototype.map.call(/* array */[
+  return Array.prototype.map.call([
               1,
               2,
               3,
@@ -25,7 +25,7 @@ function f(cb) {
             ], Curry.__1(cb));
 }
 
-var xs = Array.prototype.map.call(/* array */[
+var xs = Array.prototype.map.call([
       1,
       1,
       2

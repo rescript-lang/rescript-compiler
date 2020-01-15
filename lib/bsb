@@ -29,6 +29,7 @@ var verbose = false
  */
 var postBuild = undefined
 var useWebSocket = false
+var webSocketHost = 'localhost'
 var webSocketPort = 9999
 
 /**
@@ -41,7 +42,7 @@ function getDateAsString(){
 /**
  * @time{[number,number]}
  */
-var startTime 
+var startTime
 function updateStartTime(){
     startTime = process.hrtime()
     return ''
@@ -51,8 +52,8 @@ function updateFinishTime(){
     return diff[0] * 1e9 + diff[1]
 }
 /**
- * 
- * @param {*} str 
+ *
+ * @param {*} str
  */
 function dlog(str){
     if(verbose){
@@ -62,7 +63,7 @@ function dlog(str){
 function notifyClients() {
     wsClients = wsClients.filter(x => !x.closed && !x.socket.destroyed )
     var wsClientsLen = wsClients.length
-    dlog(`Alive sockets number: ${wsClientsLen}`)    
+    dlog(`Alive sockets number: ${wsClientsLen}`)
     var data = JSON.stringify(
                     {
                         LAST_SUCCESS_BUILD_STAMP: LAST_SUCCESS_BUILD_STAMP
@@ -70,7 +71,7 @@ function notifyClients() {
                 )
     for (var i = 0; i < wsClientsLen; ++ i ) {
         // in reverse order, the last pushed get notified earlier
-        var client = wsClients[wsClientsLen - i - 1] 
+        var client = wsClients[wsClientsLen - i - 1]
         if (!client.closed) {
             client.sendText(data)
         }
@@ -93,7 +94,7 @@ function setUpWebSocket() {
             console.error(err)
             process.exit(2)
         })
-        .listen(webSocketPort, "localhost");
+        .listen(webSocketPort, webSocketHost);
 }
 
 
@@ -110,13 +111,19 @@ for (var i = 2; i < process_argv.length; ++i) {
         // Not really needed
         postBuild = process_argv[++i]
     } else if (current === "-ws") {
-        var portNumber = parseInt(process_argv[++i])
-        dlog(`WebSocket port number: ${portNumber}`)
-        if (!isNaN (portNumber )){
+        var hostAndPortNumber = (process_argv[++i] || '').split(':');
+        var portNumber;
+        if (hostAndPortNumber.length === 1) {
+            portNumber = parseInt(hostAndPortNumber[0])
+        } else {
+            webSocketHost = hostAndPortNumber[0]
+            portNumber = parseInt(hostAndPortNumber[1])
+        }
+        if (!isNaN (portNumber)) {
             webSocketPort = portNumber
         }
+        dlog(`WebSocket host & port number: ${webSocketHost}:${webSocketPort}`)
         useWebSocket = true
-
     } else {
         delegate_args.push(current)
         if (current === '-w') {
@@ -130,13 +137,13 @@ for (var i = 2; i < process_argv.length; ++i) {
 
 
 if(
-    process.env.NINJA_ANSI_FORCED === undefined 
+    process.env.NINJA_ANSI_FORCED === undefined
   ){
 
     if(require ('tty').isatty(1)){
         process.env.NINJA_ANSI_FORCED = '1'
     }
-    
+
 } else {
     dlog(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`)
 }
@@ -199,7 +206,7 @@ if (watch_mode) {
     function acquireLockFile() {
         try {
             // We use [~perm:0o664] rather than our usual default perms, [0o666], because
-            // lock files shouldn't rely on the umask to disallow tampering by other.        
+            // lock files shouldn't rely on the umask to disallow tampering by other.
             var fd = fs.openSync(lockFileName, 'wx', 0o664)
             try {
                 fs.writeFileSync(fd, String(process.pid), 'ascii')
@@ -280,14 +287,14 @@ if (watch_mode) {
 
 
     /**
-     * 
-     * @param {string} eventType 
-     * @param {string} fileName 
+     *
+     * @param {string} eventType
+     * @param {string} fileName
      */
     function validEvent(eventType, fileName) {
         // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
         // On other systems, we just have to assume that any change is valid.
-        // This could cause problems if source builds (generating js files in the same directory) are supported. 
+        // This could cause problems if source builds (generating js files in the same directory) are supported.
         if (!fileName)
             return true;
 
@@ -331,7 +338,7 @@ if (watch_mode) {
 
     }
     /**
-     * 
+     *
      * @param code {number}
      * @param signal {string}
      */
@@ -392,18 +399,23 @@ if (watch_mode) {
         }
     }
     /**
-     * 
-     * @param {string} event 
-     * @param {string} reason 
+     *
+     * @param {string} event
+     * @param {string} reason
      */
     function on_change(event, reason) {
         if (validEvent(event, reason)) {
             dlog(`Event ${event} ${reason}`);
             reasons_to_rebuild.push([event, reason])
-            if (needRebuild()) {
-                if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
-                build()
-            }
+            // Some editors are using temporary files to store edits.
+            // This results in two sync change events: change + rename and two sync builds.
+            // Using setImmediate will ensure that only one build done.
+            setImmediate(() => {
+                if (needRebuild()) {
+                    if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
+                    build()
+                }
+            })
         }
 
     }
@@ -417,7 +429,7 @@ if (watch_mode) {
     }
 
     /**
-     * 
+     *
      * @param potential_pid {number}
      */
     function existPid(potential_pid) {
@@ -438,7 +450,7 @@ if (watch_mode) {
                 var content = fs.readFileSync(lockFileName, 'ascii')
                 potential_pid = parseInt(content)
             } catch (err) {
-                // ignore   
+                // ignore
             }
             var validPid = potential_pid !== undefined && !isNaN(potential_pid)
 

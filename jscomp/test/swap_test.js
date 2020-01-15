@@ -11,7 +11,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var tests_16 = /* array */[
+var tests_16 = [
   /* tuple */[
     1,
     256
@@ -78,7 +78,7 @@ var tests_16 = /* array */[
   ]
 ];
 
-var tests_32 = /* array */[
+var tests_32 = [
   /* tuple */[
     1,
     16777216
@@ -209,7 +209,7 @@ var tests_32 = /* array */[
   ]
 ];
 
-var tests_64 = /* array */[
+var tests_64 = [
   /* tuple */[
     /* int64 */{
       hi: 0,
@@ -939,7 +939,7 @@ var d16_000 = /* Format */[
 
 var d16_001 = Caml_int32.caml_bswap16;
 
-var d16_002 = /* array */[
+var d16_002 = [
   /* tuple */[
     287454020,
     "4433"
@@ -968,7 +968,7 @@ var d32_000 = /* Format */[
 
 var d32_001 = Caml_int32.caml_int32_bswap;
 
-var d32_002 = /* array */[
+var d32_002 = [
   /* tuple */[
     287454020,
     "44332211"

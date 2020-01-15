@@ -26,6 +26,49 @@ module E = Js_exp_make
 
 module S = Js_stmt_make
 
+let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =  
+  match  ap_status with
+  | App_infer_full ->
+    {arity = Full ; call_info = Call_ml}
+  |  App_uncurry ->
+    {arity = Full ; call_info = Call_na}
+  |  App_na ->
+    {arity = NA; call_info = Call_ml }
+
+let rec apply_with_arity_aux (fn : J.expression)
+    (arity : int list) (args : E.t list) (len : int)  : E.t =
+  if len = 0 then fn (** All arguments consumed so far *)
+  else 
+    match arity with 
+    |  x :: rest   ->
+      let x =
+        if x = 0
+        then 1
+        else x in (* Relax when x = 0 *)
+      if  len >= x
+      then
+        let first_part, continue =  Ext_list.split_at args x in
+        apply_with_arity_aux
+          (E.call ~info:{arity=Full; call_info = Call_ml} fn first_part)
+          rest
+          continue (len - x)
+      else (* GPR #1423 *)
+      if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
+        let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
+        E.ocaml_fun params
+          [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
+                            fn (Ext_list.append args @@ Ext_list.map params E.var))]
+      else E.call ~info:Js_call_info.dummy fn args
+    (* alpha conversion now? --
+       Since we did an alpha conversion before so it is not here
+    *)
+    | [] ->
+      (* can not happen, unless it's an exception ? *)
+      E.call ~info:Js_call_info.dummy fn args
+
+let apply_with_arity ~arity fn args  = 
+  apply_with_arity_aux fn arity args (List.length args)  
+
 let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
 let change_tail_type_in_try 
@@ -93,46 +136,9 @@ type default_case =
 let no_effects_const  = lazy true
 let has_effects_const = lazy false
 
-let is_nullary_variant x = 
-  match x with 
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Types.Cstr_tuple [] -> true 
-#else  
-  |  [] -> true 
-#end  
-  | _ -> false
 
-let names_from_construct_pattern (pat: Typedtree.pattern) =
-  let names_from_type_variant cstrs =
-    let (consts, blocks) = List.fold_left
-      (fun (consts, blocks) cstr ->
-        if is_nullary_variant cstr.Types.cd_args 
-        then (Ident.name cstr.Types.cd_id :: consts, blocks)
-        else (consts, Ident.name cstr.Types.cd_id :: blocks))
-      ([], []) cstrs in
-    Some {Lambda.consts = consts |> List.rev |> Array.of_list;
-          blocks = blocks |> List.rev |> Array.of_list } in
 
-  let rec resolve_path n path =
-    match Env.find_type path pat.pat_env with
-    | {type_kind = Type_variant cstrs} ->
-      names_from_type_variant cstrs
-    | {type_kind = Type_abstract; type_manifest = Some t} ->
-      ( match (Ctype.unalias t).desc with
-        | Tconstr (pathn, _, _) ->
-          (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
-          resolve_path (n+1) pathn
-        | _ -> None)
-    | {type_kind = Type_abstract; type_manifest = None} ->
-      None
-    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
-      None in
-
-  match (Btype.repr pat.pat_type).desc with
-    | Tconstr (path, _, _) -> resolve_path 0 path
-    | _ -> assert false
-
- let () = Matching.names_from_construct_pattern := names_from_construct_pattern
+ 
 
 (** We drop the ability of cross-compiling
         the compiler has to be the same running
@@ -211,76 +217,51 @@ let rec
 *)
 
 and compile_external_field_apply    
-    (args_lambda : Lam.t list)
-    (id : Ident.t)
-    pos
+    (appinfo : Lam.apply_info)
+    (module_id : Ident.t)
+    (field_name : string)
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
 
   let ident_info =  
-    Lam_compile_env.query_external_id_info id pos  in 
-  let args_code, args =
-      let dummy = [], [] in 
-      if args_lambda = [] then dummy
-      else 
-        let arg_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
-        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
-           match compile_lambda arg_cxt arg_lambda with
-           | {block; value = Some b} ->
-             (Ext_list.append block args_code), (b :: args )
-           | _ -> assert false
-        )  in
+    Lam_compile_env.query_external_id_info module_id field_name  in 
+  let ap_args = appinfo.ap_args in 
   match ident_info.closed_lambda with
   | Some (Lfunction{ params; body; _})
-      when Ext_list.same_length params args_lambda ->
+      when Ext_list.same_length params ap_args ->
       (* TODO: serialize it when exporting to save compile time *)
       let (_, param_map)  =
         Lam_closure.is_closed_with_map Set_ident.empty params body in
       compile_lambda lambda_cxt
         (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
-           params body args_lambda)
+           params body ap_args)
   | _ ->
-      let rec aux (acc : J.expression)
-          arity args (len : int)  : E.t =
-          if len = 0 then         
-          acc (** All arguments consumed so far *)
-          else match arity with 
-          |  x :: rest   ->
-          let x =
-            if x = 0
-            then 1
-            else x in (* Relax when x = 0 *)
-          if  len >= x
-          then
-            let first_part, continue =  Ext_list.split_at args x in
-            aux
-              (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-              rest
-              continue (len - x)
-          else (* GPR #1423 *)
-          if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
-            let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
-            E.ocaml_fun params
-              [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
-                                acc (Ext_list.append args @@ Ext_list.map params E.var))]
-          else E.call ~info:Js_call_info.dummy acc args
-        (* alpha conversion now? --
-           Since we did an alpha conversion before so it is not here
-        *)
-        | [] ->
-          (* can not happen, unless it's an exception ? *)
-          E.call ~info:Js_call_info.dummy acc args
-      in
-      let fn = E.ml_var_dot id ident_info.name in 
-      let initial_args_len = List.length args in 
-      let expression = 
+    let args_code, args =
+      let dummy = [], [] in 
+      if ap_args = [] then dummy
+      else 
+        let arg_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
+        Ext_list.fold_right ap_args dummy (fun arg_lambda  (args_code, args)  ->
+            match compile_lambda arg_cxt arg_lambda with
+            | {block; value = Some b} ->
+              (Ext_list.append block args_code), (b :: args )
+            | _ -> assert false
+          )  in
+
+    let fn = E.ml_var_dot module_id ident_info.name in     
+    let expression = 
+      match appinfo.ap_status with 
+      | App_infer_full | App_uncurry as ap_status -> 
+        E.call ~info:(call_info_of_ap_status ap_status) fn args 
+      | App_na ->   
         match ident_info.arity with 
         | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
         | Single x -> 
-          aux fn (Lam_arity.extract_arity x) args initial_args_len
-      in   
-      Js_output.output_of_block_and_expression
-        lambda_cxt.continuation
-        args_code expression
+          apply_with_arity
+            fn ~arity:(Lam_arity.extract_arity x) args         
+    in   
+    Js_output.output_of_block_and_expression
+      lambda_cxt.continuation
+      args_code expression
 
 
 (**
@@ -729,11 +710,6 @@ and compile_staticraise i (largs : Lam.t list) (lambda_cxt : Lam_compile_context
                     {lambda_cxt with continuation = Assign bind } larg
             in Js_output.append_output new_output acc
            )
-#if undefined BS_RELEASE_BUILD then            
-    | exception Not_found ->
-          assert false          
-    (* Invariant: staticraise is always enclosed by catch  *)
-#end
     (* Invariant: exit_code can not be reused
         (catch l with (32)
         (handler))
@@ -1320,41 +1296,35 @@ and compile_apply
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      fn = Lapply{ fn; args =  fn_args; status = App_na ; };
-      args;
-      status = App_na; loc }
+      ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; };    
+      ap_status = App_na;}
       ->
-      (* After inlining we can generate such code,
-         see {!Ari_regress_test}
-      *)
-      compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
-    (* External function calll *)
-    | { fn =
+      (* After inlining, we can generate such code, see {!Ari_regress_test}*)
+      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na )
+    (* External function call: it can not be tailcall in this case*)
+    | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
                 args = [  Lglobal_module id];_};
-        args ;
-        status = App_na | App_ml_full} ->
-      (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
-         this information, we should fix [get_exp_with_args]
-      *)
+        } ->   
       begin match fld_info with 
-        | Fld_module {name = fld_name} -> 
-          compile_external_field_apply  args id fld_name  lambda_cxt
+        | Fld_module {name } -> 
+          compile_external_field_apply  appinfo id name  lambda_cxt
         | _ -> assert false
       end     
-    | { fn; args = args_lambda;   status} ->
+    | _ ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
          2. no need create names
       *)
+      let ap_func = appinfo.ap_func in 
       let new_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
       let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) =
-        Ext_list.fold_right (fn::args_lambda) ([],[]) (fun x  (args_code, fn_code )->
+        Ext_list.fold_right (ap_func::appinfo.ap_args) ([],[]) (fun x  (args_code, fn_code )->
             match compile_lambda new_cxt x with
             | {block ; value =  Some b} -> Ext_list.append block  args_code , b:: fn_code
             | {value = None} -> assert false
           )  in
-      match fn, lambda_cxt.continuation with
+      match ap_func, lambda_cxt.continuation with
       | (Lvar fn_id,
          (EffectCall (Maybe_tail_is_return (Tail_with_name ( {label = Some ret}))) | NeedValue (Maybe_tail_is_return (Tail_with_name ( {label = Some ret})))))
         when Ident.same ret.id fn_id ->
@@ -1383,7 +1353,7 @@ and compile_apply
                   match Map_ident.find_opt ret.new_params param  with
                   | None ->
                     ret.immutable_mask.(i)<- false;
-                    let v = Ext_ident.create ("_"^param.Ident.name) in
+                    let v = Ext_ident.create ("_"^param.name) in
                     v, (Map_ident.add new_params param v)
                   | Some v -> v, new_params  in
                 (i+1, (new_param, arg) :: assigns, m)
@@ -1394,14 +1364,7 @@ and compile_apply
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)
       | _ ->
         Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
-          (E.call ~info:(match fn, status with
-               | _,  App_ml_full ->
-                 {arity = Full ; call_info = Call_ml}
-               | _,  App_js_full ->
-                 {arity = Full ; call_info = Call_na}
-               | _,   App_na ->
-                 {arity = NA; call_info = Call_ml }
-             ) fn_code args)
+          (E.call ~info:(call_info_of_ap_status  appinfo.ap_status) fn_code args)
 and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
     match prim_info with 
     | {primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _}
@@ -1436,13 +1399,14 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    |  {primitive = Pjs_unsafe_downgrade (name,loc); args = [obj]}
-      when not (Ext_string.ends_with name Literals.setter_suffix)
+    |  {primitive = Pjs_unsafe_downgrade {name = property;loc; setter }; args = [obj]}
+      
       ->
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
-      let property =  Lam_methname.translate ~loc name  in      
+      assert (not setter);
+    
       (match compile_lambda {lambda_cxt with continuation = NeedValue Not_tail} obj
        with
        | {value = None} -> assert false
@@ -1455,80 +1419,56 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pjs_fn_run arity;  args = args_lambda}
+    | {primitive = Pmethod_run;  args = [Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        args = [obj]} ;
+       setter_val]} ->        
+       let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
+       let obj_output = compile_lambda  need_value_no_return_cxt obj in
+       let arg_output = compile_lambda need_value_no_return_cxt setter_val in
+       let cont obj_block arg_block obj_code =
+         Js_output.output_of_block_and_expression lambda_cxt.continuation  
+           (
+             match obj_code with
+             | None -> Ext_list.append obj_block  arg_block
+             | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
+           )
+       in
+       (match obj_output, arg_output with
+        | {value = None}, _ | _, {value = None} -> assert false
+        | {block = obj_block; value = Some obj },
+          {block = arg_block; value = Some value}
+          ->            
+          match Js_ast_util.named_expression  obj with
+          | None ->
+            cont obj_block arg_block None
+              (E.seq (E.assign (E.dot obj property) value) E.unit)
+          | Some (obj_code, obj)
+            ->
+            cont obj_block arg_block (Some obj_code)
+              (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
+       )
+    | {primitive = Pmethod_run;  args = Lprim{
+        primitive =
+          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+        } :: _
+       } -> assert false        
+    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args; loc}
       ->
-      (* 1. prevent eta-conversion
-         by using [App_js_full]
+      (* 1. uncurried call should not do eta-conversion
+            since `fn.length` will broken 
          2. invariant: `external` declaration will guarantee
          the function application is saturated
          3. we need a location for Pccall in the call site
       *)
 
-      (match args_lambda with
-       | [Lprim{
-           primitive =
-             Pjs_unsafe_downgrade(method_name,loc);
-           args = [obj]} as fn;
-          arg]
-         ->
-         let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
-         let obj_output = compile_lambda  need_value_no_return_cxt obj in
-         let arg_output = compile_lambda need_value_no_return_cxt arg in
-         let cont obj_block arg_block obj_code =
-           Js_output.output_of_block_and_expression lambda_cxt.continuation  
-             (
-               match obj_code with
-               | None -> Ext_list.append obj_block  arg_block
-               | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
-             )
-         in
-         (match obj_output, arg_output with
-          | {value = None}, _ | _, {value = None} -> assert false
-          | {block = obj_block; value = Some obj },
-            {block = arg_block; value = Some value}
-            ->
-            if  Ext_string.ends_with method_name Literals.setter_suffix then
-              let property =
-                Lam_methname.translate ~loc
-                  (String.sub method_name 0
-                     (String.length method_name - Literals.setter_suffix_len)) in
-              match Js_ast_util.named_expression  obj with
-              | None ->
-                cont obj_block arg_block None
-                  (E.seq (E.assign (E.dot obj property) value) E.unit)
-              | Some (obj_code, obj)
-                ->
-                cont obj_block arg_block (Some obj_code)
-                  (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
-            else
-              compile_lambda lambda_cxt
-                (Lam.apply fn [arg]
-                   Location.none (* TODO *) App_js_full))
+      (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
-           (Lam.apply fn rest
-              Location.none (*TODO*)
-              App_js_full)
+           (Lam.apply fn rest loc App_uncurry)
        | [] -> assert false)
       
-    | {primitive = Pjs_fn_runmethod arity ; args }
-      ->
-      (match args with
-       | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
-                args = [ _ ]} as fn)
-         :: _obj
-         :: rest ->
-         (* assert (Ident.same id2 id) ;  *)
-         (* we ignore the computation of [_obj],
-            since our ast writer
-            {[ obj#.f (x,y)
-            ]}
-            -->
-            {[ runmethod2 f obj#.f x y]}
-         *)
-         compile_lambda lambda_cxt (Lam.apply fn rest loc App_js_full)
-       | _ -> assert false)
-
     | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       (match args_lambda with
        | [Lfunction{arity = len; params; body} ]
