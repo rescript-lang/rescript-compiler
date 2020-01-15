@@ -82,13 +82,13 @@ add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 18, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
-                        Caml_int64.div(/* int64 */{
-                              hi: 0,
-                              lo: 3
-                            }, /* int64 */{
-                              hi: 0,
-                              lo: 0
-                            });
+                        Caml_int64.div(/* int64 */[
+                              /* hi */0,
+                              /* lo */3
+                            ], /* int64 */[
+                              /* hi */0,
+                              /* lo */0
+                            ]);
                         return /* () */0;
                       })]);
         })
@@ -98,13 +98,13 @@ add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 19, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
-                        Caml_int64.mod_(/* int64 */{
-                              hi: 0,
-                              lo: 3
-                            }, /* int64 */{
-                              hi: 0,
-                              lo: 0
-                            });
+                        Caml_int64.mod_(/* int64 */[
+                              /* hi */0,
+                              /* lo */3
+                            ], /* int64 */[
+                              /* hi */0,
+                              /* lo */0
+                            ]);
                         return /* () */0;
                       })]);
         })

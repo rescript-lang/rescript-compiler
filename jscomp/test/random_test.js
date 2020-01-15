@@ -70,10 +70,10 @@ Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5
 
 var f = Random.int64(Int64.max_int);
 
-var h = Random.int64(/* int64 */{
-      hi: 0,
-      lo: 3
-    });
+var h = Random.int64(/* int64 */[
+      /* hi */0,
+      /* lo */3
+    ]);
 
 var vv = Random.bits(/* () */0);
 

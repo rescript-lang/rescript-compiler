@@ -42,10 +42,10 @@ b("File \"equal_box_test.ml\", line 26, characters 4-11", "3" !== null);
 
 b("File \"equal_box_test.ml\", line 27, characters 4-11", /* "3" */51 !== null);
 
-b("File \"equal_box_test.ml\", line 28, characters 4-11", !Caml_int64.equal_null(/* int64 */{
-          hi: 0,
-          lo: 0
-        }, null));
+b("File \"equal_box_test.ml\", line 28, characters 4-11", !Caml_int64.equal_null(/* int64 */[
+          /* hi */0,
+          /* lo */0
+        ], null));
 
 b("File \"equal_box_test.ml\", line 29, characters 4-11", 0 !== null);
 
@@ -71,10 +71,10 @@ b("File \"equal_box_test.ml\", line 41, characters 4-11", "3" !== v);
 
 b("File \"equal_box_test.ml\", line 42, characters 4-11", /* "3" */51 !== v);
 
-b("File \"equal_box_test.ml\", line 43, characters 4-11", !Caml_int64.equal_nullable(/* int64 */{
-          hi: 0,
-          lo: 0
-        }, v));
+b("File \"equal_box_test.ml\", line 43, characters 4-11", !Caml_int64.equal_nullable(/* int64 */[
+          /* hi */0,
+          /* lo */0
+        ], v));
 
 b("File \"equal_box_test.ml\", line 44, characters 4-11", 0 !== v);
 
@@ -98,10 +98,10 @@ b("File \"equal_box_test.ml\", line 57, characters 4-11", "3" !== undefined);
 
 b("File \"equal_box_test.ml\", line 58, characters 4-11", /* "3" */51 !== undefined);
 
-b("File \"equal_box_test.ml\", line 59, characters 4-11", !Caml_int64.equal_undefined(/* int64 */{
-          hi: 0,
-          lo: 0
-        }, undefined));
+b("File \"equal_box_test.ml\", line 59, characters 4-11", !Caml_int64.equal_undefined(/* int64 */[
+          /* hi */0,
+          /* lo */0
+        ], undefined));
 
 b("File \"equal_box_test.ml\", line 60, characters 4-11", 0 !== undefined);
 

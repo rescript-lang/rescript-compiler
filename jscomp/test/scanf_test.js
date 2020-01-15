@@ -53,10 +53,10 @@ eq("File \"scanf_test.ml\", line 7, characters 5-12", /* tuple */[
               ]), (function (i) {
               return i;
             })),
-      /* int64 */{
-        hi: -1429646511,
-        lo: 235324607
-      }
+      /* int64 */[
+        /* hi */-1429646511,
+        /* lo */235324607
+      ]
     ]);
 
 Mt.from_pair_suites("Scanf_test", suites.contents);
