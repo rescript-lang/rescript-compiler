@@ -22,7 +22,7 @@ build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe
 
 
 build $SNAP/bsppx.ml: bspack | ./bin/bspack.exe
-    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
+    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I js_parser -I main 
     main = Bsppx_main
 
 

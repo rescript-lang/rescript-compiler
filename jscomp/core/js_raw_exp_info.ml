@@ -38,3 +38,10 @@ type t =
   ]}
   *)
   | Js_unknown
+
+
+  type raw_kind = 
+    | Raw_re 
+    | Raw_exp
+    | Raw_program
+    

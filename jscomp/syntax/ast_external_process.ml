@@ -875,7 +875,7 @@ let handle_attributes
             | _ ->
               (* more error checking *)
               [External_arg_spec.empty_kind arg_type],
-              [{label = Ast_compatible.no_label;
+              [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} ],

@@ -30,7 +30,7 @@ type label = arg_label
 
 
 
-val no_label: arg_label
+
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 

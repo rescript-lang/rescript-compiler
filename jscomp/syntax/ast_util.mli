@@ -113,7 +113,10 @@ val handle_debugger :
   loc -> Ast_payload.t -> Parsetree.expression_desc
 
 val handle_raw : 
-  check_js_regex: bool -> loc -> Ast_payload.t -> Parsetree.expression
+  kind : Js_raw_exp_info.raw_kind ->
+  loc -> 
+  Ast_payload.t -> 
+  Parsetree.expression
 
 val handle_external :
   loc -> string -> Parsetree.expression 

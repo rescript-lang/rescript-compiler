@@ -65,20 +65,65 @@ let is_single_int (x : t ) : int option =
       _}] -> Some (int_of_string name)
   | _  -> None
 
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
-let as_string_exp ~check_js_regex (x : t ) = 
+let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
+  if line = 1 then 
+    {loc with pos_cnum = pos_cnum + column + first_line_offset }
+  else {
+    loc with 
+    pos_lnum = pos_lnum + line - 1;
+    pos_cnum =  pos_bol + column
+  }
+
+
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+  deli (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+     _end },first_error) :: _ -> 
+    let offset =  
+      (match deli with 
+      | None -> 1  (* length of '"'*)
+      | Some deli ->
+         String.length deli + 2 (* length of "{|"*)
+      ) in   
+    Location.raise_errorf ~loc:{loc with 
+      loc_start = offset_pos loc.loc_start start 
+        offset ;
+      loc_end = offset_pos loc.loc_start _end 
+        offset } "%s"
+      (Parse_error.PP.error first_error)  
+;;      
+let raw_as_string_exp_exn 
+  ~(kind: Js_raw_exp_info.raw_kind)
+  (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Pconst_string (str,_))            
+               (Pconst_string (str,deli))            
                ;
-           _} as e ,_);
-      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
-  | _  -> Not_String_Lteral
+           pexp_loc = loc} as e ,_);
+      _}] -> 
+    check_flow_errors ~loc deli (match kind with 
+        |  Raw_re -> 
+          let l s = 
+            Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
+          in  
+          (snd (l str)).lex_errors 
+        | Raw_exp ->  
+          snd (Parser_flow.parse_expression (Parser_env.init_env None str) false)
+        | Raw_program ->  
+          snd (Parser_flow.parse_program false None str)
+      );
+    Some e 
+  | _  -> None
 
 let as_core_type loc x =
   match  x with

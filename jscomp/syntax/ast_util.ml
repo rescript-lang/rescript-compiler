@@ -137,7 +137,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_internal,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -265,7 +265,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
         Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
         Longident.Ldot (Ast_literal.Lid.js_internal,  Literals.fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Ast_compatible.no_label, body])
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
 
   else 
     let pval_prim =
@@ -295,29 +295,44 @@ let handle_debugger loc (payload : Ast_payload.t) =
   | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_internal, Literals.debugger ); loc}, 
-       [ Ast_compatible.no_label, Ast_literal.val_unit ~loc ()])
+       [ Nolabel, Ast_literal.val_unit ~loc ()])
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
 
-let handle_raw ~check_js_regex loc payload =
-  begin match Ast_payload.as_string_exp ~check_js_regex payload with
-    | Not_String_Lteral ->
+let handle_raw ~kind loc payload =
+  begin match Ast_payload.raw_as_string_exp_exn 
+    ~kind payload with
+    | None ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
-    | Ast_payload.JS_Regex_Check_Failed ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-    | Correct exp ->
+    | Some exp ->
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
                      txt = Ast_raw.raw_expr_id
                        },
-          [Ast_compatible.no_label,exp]
+          [Nolabel,exp]
         )
       in
       { exp with pexp_desc }
+  end
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.raw_as_string_exp_exn 
+                ~kind:Raw_program payload with 
+  | Some exp 
+    -> 
+    let pexp_desc = 
+      Parsetree.Pexp_apply(
+        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
+        [ Nolabel,exp]) in 
+    Ast_helper.Str.eval 
+      { exp with pexp_desc }
+
+  | None
+    -> 
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
 
 let handle_external loc (x : string) : Parsetree.expression = 
@@ -348,24 +363,6 @@ let handle_external loc (x : string) : Parsetree.expression =
   )
 
 
-let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp ~check_js_regex:false payload with 
-    | Correct exp 
-      -> 
-      let pexp_desc = 
-        Parsetree.Pexp_apply(
-          Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-          [ Ast_compatible.no_label,exp]) in 
-      Ast_helper.Str.eval 
-        { exp with pexp_desc }
-
-    | Not_String_Lteral
-      -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-    | JS_Regex_Check_Failed 
-      ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-  end
 
 
 let ocaml_obj_as_js_object
@@ -396,7 +393,7 @@ let ocaml_obj_as_js_object
     ((val_name , [], result ) ::
      (if is_mutable then 
         [val_name ^ Literals.setter_suffix,[],
-         to_method_type loc mapper Ast_compatible.no_label result (Ast_literal.type_unit ~loc ()) ]
+         to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
   in 
@@ -409,7 +406,7 @@ let ocaml_obj_as_js_object
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
-      to_method_type loc mapper Ast_compatible.no_label (Ast_literal.type_unit ~loc ()) result 
+      to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
     else
       let tyvars =
@@ -420,7 +417,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          to_method_type loc mapper Ast_compatible.no_label x method_rest
+          to_method_type loc mapper Nolabel x method_rest
         | _ -> assert false
       end in          
 
@@ -437,7 +434,7 @@ let ocaml_obj_as_js_object
       | Some ty -> Typ.alias ~loc ty self_type_lit
     in  
     if arity = 0 then
-      to_method_callback_type loc mapper  Ast_compatible.no_label self_type result      
+      to_method_callback_type loc mapper  Nolabel self_type result      
     else
       let tyvars =
         Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
@@ -447,7 +444,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
+          (to_method_callback_type loc mapper  Nolabel self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          

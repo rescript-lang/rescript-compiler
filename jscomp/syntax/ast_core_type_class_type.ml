@@ -106,7 +106,7 @@ let handle_class_type_field self
                       private_flag,
                       virtual_flag,
                       Ast_util.to_method_type
-                        loc self Ast_compatible.no_label ty
+                        loc self Nolabel ty
                         (Ast_literal.type_unit ~loc ())
                      );
        pctf_attributes} in
@@ -190,7 +190,7 @@ let typ_mapper
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
+            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Nolabel core_type 
               (Ast_literal.type_unit ~loc ())) in
           let not_getter_setter ty =
             let attrs, core_type =
