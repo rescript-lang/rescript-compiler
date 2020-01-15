@@ -28,3 +28,8 @@ let real_path p =
     | "." -> dir
     | base -> dir // base
 
+
+let is_same_paths_via_io a b =
+  if a = b
+  then true
+  else (real_path a) = (real_path b)
