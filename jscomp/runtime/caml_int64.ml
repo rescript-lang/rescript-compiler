@@ -54,7 +54,12 @@ let to_unsigned (x : nativeint) =
    x >>> 0
 
 let mk ~lo ~hi = {lo = to_unsigned lo ; hi}
-
+(*
+module N = struct 
+type nonrec t = t = private {  hi : nativeint; lo : nativeint ;  }
+end 
+open N
+*)
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 
 let max_int =
@@ -111,7 +116,7 @@ let lsl_ ({lo; hi} as x) numBits =
   if numBits = 0 then
     x
   else if numBits >= 32 then
-    {lo =0n; hi = Caml_nativeint_extern.shift_left lo (numBits - 32) }
+    mk ~lo:0n ~hi:(Caml_nativeint_extern.shift_left lo (numBits - 32))
   else
     mk ~lo:(Caml_nativeint_extern.shift_left lo numBits)
      ~hi:
@@ -413,8 +418,11 @@ let to_hex (x : int64) =
     else
       aux x_hi ^ Caml_utils.repeat pad "0"  ^ lo
 
+
 let discard_sign (x : int64) : int64 = 
-  unsafe_to_int64 { (unsafe_of_int64 x) with hi = Caml_nativeint_extern.logand 0x7fff_ffffn (unsafe_of_int64 x).hi }
+  let v = unsafe_of_int64 x in   
+  unsafe_to_int64 
+  {  v with hi = Caml_nativeint_extern.logand 0x7fff_ffffn v.hi }
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
