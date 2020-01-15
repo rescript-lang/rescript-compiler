@@ -8811,7 +8811,7 @@ type label = arg_label
 
 
 
-val no_label: arg_label
+
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
@@ -9020,14 +9020,14 @@ type arg_label = Asttypes.arg_label =
   | Nolabel
   | Labelled of string
   | Optional of string
-let no_label : arg_label = Nolabel
+
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
 type label = arg_label 
 
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -9038,7 +9038,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map args (fun x -> no_label, x) ) ) }
+        (Ext_list.map args (fun x -> Nolabel, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -9049,7 +9049,7 @@ let app1
     pexp_desc = 
       Pexp_apply(
         fn, 
-        [no_label, arg1]
+        [Nolabel, arg1]
         ) }
 
 let app2
@@ -9062,8 +9062,8 @@ let app2
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2 ]
+          Nolabel, arg1;
+          Nolabel, arg2 ]
         ) }
 
 let app3
@@ -9076,9 +9076,9 @@ let app3
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2;
-          no_label, arg3
+          Nolabel, arg1;
+          Nolabel, arg2;
+          Nolabel, arg3
         ]
         ) }
 
@@ -9090,7 +9090,7 @@ let fun_
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+    pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
 let opt_label s =
@@ -9262,168 +9262,10 @@ type args  =
   (arg_label * Parsetree.expression) list 
 
 end
-module Ext_utf8 : sig 
-#1 "ext_utf8.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-
-val classify : char -> byte 
-
-val follow : 
-    string -> 
-    int -> 
-    int -> 
-    int ->
-    int * int 
-
-
-(** 
-  return [-1] if failed 
-*)
-val next :  string -> remaining:int -> int -> int 
-
-
-exception Invalid_utf8 of string 
- 
- 
-val decode_utf8_string : string -> int list
-end = struct
-#1 "ext_utf8.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type byte =
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
-
-(** [classify chr] returns the {!byte} corresponding to [chr] *)
-let classify chr =
-  let c = int_of_char chr in
-  (* Classify byte according to leftmost 0 bit *)
-  if c land 0b1000_0000 = 0 then Single c else
-    (* c 0b0____*)
-  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
-    (* c 0b10___*)
-  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
-    (* c 0b110__*)
-  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
-    (* c 0b1110_ *)
-  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
-    (* c 0b1111_0___*)
-  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
-    (* c 0b1111_10__*)
-  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
-  (* c 0b1111_110__ *)
-  else Invalid
-
-exception Invalid_utf8 of string 
-
-(* when the first char is [Leading],
-  TODO: need more error checking 
-  when out of bond
- *)
-let rec follow s n (c : int) offset = 
-  if n = 0 then (c, offset)
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
-      | _ -> raise (Invalid_utf8 "Continuation byte expected")
-    end
-
-
-let rec next s ~remaining  offset = 
-  if remaining = 0 then offset 
-  else 
-    begin match classify s.[offset+1] with
-      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
-      | _ ->  -1 
-      | exception _ ->  -1 (* it can happen when out of bound *)
-    end
-
-
-
-
-let decode_utf8_string s =
-  let lst = ref [] in
-  let add elem = lst := elem :: !lst in
-  let rec  decode_utf8_cont s i s_len =
-    if i = s_len  then ()
-    else 
-      begin 
-        match classify s.[i] with
-        | Single c -> 
-          add c; decode_utf8_cont s (i+1) s_len
-        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
-        | Leading (n, c) ->
-          let (c', i') = follow s n c i in add c';
-          decode_utf8_cont s (i' + 1) s_len
-        | Invalid -> raise (Invalid_utf8 "Invalid byte")
-      end
-  in decode_utf8_cont s 0 (String.length s); 
-  List.rev !lst
-
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false
-end
-module Ext_js_regex : sig 
-#1 "ext_js_regex.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+module Js_raw_exp_info
+= struct
+#1 "js_raw_exp_info.ml"
+(* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9447,57 +9289,29 @@ module Ext_js_regex : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* This is a module that checks if js regex is valid or not *)
 
-val js_regex_checker : string -> bool
-end = struct
-#1 "ext_js_regex.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type t =
+  | Js_function of {arity : int ; arrow : bool}     
+  | Js_literal 
+  (* Flow ast module 
+  {[
+  and value =
+    | String of string
+    | Boolean of bool
+    | Null
+    | Number of float
+    | BigInt of float
+    | RegExp of RegExp.t
+  ]}
+  *)
+  | Js_unknown
 
 
-let check_from_end al =
-  let rec aux l seen =
-    match l with
-    | [] -> false
-    | (e::r) ->
-      if e < 0 || e > 255 then false
-      else (let c = Char.chr e in
-            if c = '/' then true
-            else (if Ext_list.exists seen (fun x -> x = c)  then false (* flag should not be repeated *)
-                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-                        else false)))
-  in aux al []
-
-let js_regex_checker s =
-  match Ext_utf8.decode_utf8_string s with 
-  | [] -> false 
-  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    check_from_end (List.rev tail)       
-  | _ :: _ -> false 
-  | exception Ext_utf8.Invalid_utf8 _ -> false 
-
+  type raw_kind = 
+    | Raw_re 
+    | Raw_exp
+    | Raw_program
+    
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -11321,8 +11135,14 @@ val is_single_string_as_ast :
 
 val is_single_int : t -> int option 
 
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-val as_string_exp : check_js_regex: bool -> t -> rtn
+
+
+(** Convert %raw into expression *)
+val raw_as_string_exp_exn :
+  kind: Js_raw_exp_info.raw_kind ->
+  t ->
+  Parsetree.expression option
+  
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
@@ -11428,20 +11248,65 @@ let is_single_int (x : t ) : int option =
       _}] -> Some (int_of_string name)
   | _  -> None
 
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 
-let as_string_exp ~check_js_regex (x : t ) = 
+let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
+  if line = 1 then 
+    {loc with pos_cnum = pos_cnum + column + first_line_offset }
+  else {
+    loc with 
+    pos_lnum = pos_lnum + line - 1;
+    pos_cnum =  pos_bol + column
+  }
+
+
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+  deli (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+     _end },first_error) :: _ -> 
+    let offset =  
+      (match deli with 
+      | None -> 1  (* length of '"'*)
+      | Some deli ->
+         String.length deli + 2 (* length of "{|"*)
+      ) in   
+    Location.raise_errorf ~loc:{loc with 
+      loc_start = offset_pos loc.loc_start start 
+        offset ;
+      loc_end = offset_pos loc.loc_start _end 
+        offset } "%s"
+      (Parse_error.PP.error first_error)  
+;;      
+let raw_as_string_exp_exn 
+  ~(kind: Js_raw_exp_info.raw_kind)
+  (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Pconst_string (str,_))            
+               (Pconst_string (str,deli))            
                ;
-           _} as e ,_);
-      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
-  | _  -> Not_String_Lteral
+           pexp_loc = loc} as e ,_);
+      _}] -> 
+    check_flow_errors ~loc deli (match kind with 
+        |  Raw_re -> 
+          let l s = 
+            Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
+          in  
+          (snd (l str)).lex_errors 
+        | Raw_exp ->  
+          snd (Parser_flow.parse_expression (Parser_env.init_env None str) false)
+        | Raw_program ->  
+          snd (Parser_flow.parse_program false None str)
+      );
+    Some e 
+  | _  -> None
 
 let as_core_type loc x =
   match  x with
@@ -13186,6 +13051,165 @@ let is_lower_case c =
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
 
+end
+module Ext_utf8 : sig 
+#1 "ext_utf8.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
+
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
+end = struct
+#1 "ext_utf8.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+(** [classify chr] returns the {!byte} corresponding to [chr] *)
+let classify chr =
+  let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then Single c else
+    (* c 0b0____*)
+  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else Invalid
+
+exception Invalid_utf8 of string 
+
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
+
+let decode_utf8_string s =
+  let lst = ref [] in
+  let add elem = lst := elem :: !lst in
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
+        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -19958,7 +19982,7 @@ let handle_attributes
             | _ ->
               (* more error checking *)
               [External_arg_spec.empty_kind arg_type],
-              [{label = Ast_compatible.no_label;
+              [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} ],
@@ -21219,7 +21243,10 @@ val handle_debugger :
   loc -> Ast_payload.t -> Parsetree.expression_desc
 
 val handle_raw : 
-  check_js_regex: bool -> loc -> Ast_payload.t -> Parsetree.expression
+  kind : Js_raw_exp_info.raw_kind ->
+  loc -> 
+  Ast_payload.t -> 
+  Parsetree.expression
 
 val handle_external :
   loc -> string -> Parsetree.expression 
@@ -21373,7 +21400,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_internal,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -21501,7 +21528,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
         Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
         Longident.Ldot (Ast_literal.Lid.js_internal,  Literals.fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Ast_compatible.no_label, body])
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
 
   else 
     let pval_prim =
@@ -21531,29 +21558,44 @@ let handle_debugger loc (payload : Ast_payload.t) =
   | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_internal, Literals.debugger ); loc}, 
-       [ Ast_compatible.no_label, Ast_literal.val_unit ~loc ()])
+       [ Nolabel, Ast_literal.val_unit ~loc ()])
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
 
-let handle_raw ~check_js_regex loc payload =
-  begin match Ast_payload.as_string_exp ~check_js_regex payload with
-    | Not_String_Lteral ->
+let handle_raw ~kind loc payload =
+  begin match Ast_payload.raw_as_string_exp_exn 
+    ~kind payload with
+    | None ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
-    | Ast_payload.JS_Regex_Check_Failed ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-    | Correct exp ->
+    | Some exp ->
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
                      txt = Ast_raw.raw_expr_id
                        },
-          [Ast_compatible.no_label,exp]
+          [Nolabel,exp]
         )
       in
       { exp with pexp_desc }
+  end
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.raw_as_string_exp_exn 
+                ~kind:Raw_program payload with 
+  | Some exp 
+    -> 
+    let pexp_desc = 
+      Parsetree.Pexp_apply(
+        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
+        [ Nolabel,exp]) in 
+    Ast_helper.Str.eval 
+      { exp with pexp_desc }
+
+  | None
+    -> 
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
 
 let handle_external loc (x : string) : Parsetree.expression = 
@@ -21584,24 +21626,6 @@ let handle_external loc (x : string) : Parsetree.expression =
   )
 
 
-let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp ~check_js_regex:false payload with 
-    | Correct exp 
-      -> 
-      let pexp_desc = 
-        Parsetree.Pexp_apply(
-          Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-          [ Ast_compatible.no_label,exp]) in 
-      Ast_helper.Str.eval 
-        { exp with pexp_desc }
-
-    | Not_String_Lteral
-      -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-    | JS_Regex_Check_Failed 
-      ->
-      Location.raise_errorf ~loc "this is an invalid js regex"
-  end
 
 
 let ocaml_obj_as_js_object
@@ -21632,7 +21656,7 @@ let ocaml_obj_as_js_object
     ((val_name , [], result ) ::
      (if is_mutable then 
         [val_name ^ Literals.setter_suffix,[],
-         to_method_type loc mapper Ast_compatible.no_label result (Ast_literal.type_unit ~loc ()) ]
+         to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
   in 
@@ -21645,7 +21669,7 @@ let ocaml_obj_as_js_object
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
-      to_method_type loc mapper Ast_compatible.no_label (Ast_literal.type_unit ~loc ()) result 
+      to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
     else
       let tyvars =
@@ -21656,7 +21680,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          to_method_type loc mapper Ast_compatible.no_label x method_rest
+          to_method_type loc mapper Nolabel x method_rest
         | _ -> assert false
       end in          
 
@@ -21673,7 +21697,7 @@ let ocaml_obj_as_js_object
       | Some ty -> Typ.alias ~loc ty self_type_lit
     in  
     if arity = 0 then
-      to_method_callback_type loc mapper  Ast_compatible.no_label self_type result      
+      to_method_callback_type loc mapper  Nolabel self_type result      
     else
       let tyvars =
         Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
@@ -21683,7 +21707,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
+          (to_method_callback_type loc mapper  Nolabel self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
@@ -22018,7 +22042,7 @@ let app_exp_mapper
        begin match fn with
          | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
            Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-           { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+           { pexp_desc = Pexp_apply(fn, (Nolabel, new_obj_arg) :: args);
              pexp_attributes = [];
              pexp_loc = pexp_loc}
          | {pexp_desc = Pexp_variant(label,None); pexp_loc; pexp_attributes} -> 
@@ -22037,7 +22061,7 @@ let app_exp_mapper
                              | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                ->
                                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                               { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
+                               { Parsetree.pexp_desc = Pexp_apply(fn, (Nolabel, bounded_obj_arg) :: args);
                                  pexp_attributes = [];
                                  pexp_loc = pexp_loc}
                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
@@ -22053,7 +22077,7 @@ let app_exp_mapper
                let fn = Ast_open_cxt.restore_exp e wholes in 
                let args = Ext_list.map args (fun (lab,exp) -> lab, Ast_open_cxt.restore_exp exp wholes) in 
                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes; 
-               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+               { pexp_desc = Pexp_apply(fn, (Nolabel, new_obj_arg) :: args);
                  pexp_attributes = [];
                  pexp_loc = loc}
              | _ -> Ast_compatible.app1 ~loc fn new_obj_arg

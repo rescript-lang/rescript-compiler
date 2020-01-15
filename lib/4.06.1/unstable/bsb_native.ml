@@ -7518,6 +7518,7 @@ type dependencies = dependency list
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
+type compilation_kind_t = Js | Bytecode | Native
 
 type reason_react_jsx = 
   | Jsx_v2
@@ -7751,6 +7752,14 @@ module Bsb_log : sig
 
 val setup : unit -> unit 
 
+type level = 
+  | Debug
+  | Info 
+  | Warn
+  | Error 
+
+val log_level : level ref
+
 type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
@@ -7762,6 +7771,7 @@ val warn : 'a log
 val error : 'a log
 
 val info_args : string array -> unit
+
 end = struct
 #1 "bsb_log.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -9775,6 +9785,13 @@ val vendor_ninja : string
 val vendor_bsdep : string
 
 val vendor_bsppx : string
+
+val vendor_bsppx : string
+
+val ocaml_dir : string
+
+val ocaml_lib_dir : string
+
 end = struct
 #1 "bsb_global_paths.ml"
 (* Copyright (C) 2019 - Authors of BuckleScript
@@ -9845,7 +9862,13 @@ let vendor_bsppx =
   
 ;; assert (Sys.file_exists bsc_dir)       
 
+let ocaml_version = "4.06.1"
 
+let ocaml_dir =
+  Filename.(concat (concat (dirname bsc_dir) "native") ocaml_version)
+
+let ocaml_lib_dir =
+  Filename.(concat (concat ocaml_dir "lib") "ocaml")
 
 end
 module Bsb_db_util : sig 
@@ -10958,6 +10981,10 @@ module Bsb_default : sig
 
 val main_entries : Bsb_config_types.entries_t list
 
+val ocaml_flags : string list
+
+val ocaml_dependencies : string list
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10990,7 +11017,11 @@ end = struct
 
 
 
-let main_entries = [Bsb_config_types.JsTarget "Index"]
+let main_entries = []
+
+let ocaml_flags = ["-g"; "-bin-annot"; "-color"; "always"]
+
+let ocaml_dependencies = ["unix"; "bigarray"; ]
 
 end
 module Bsb_config_parse : sig 

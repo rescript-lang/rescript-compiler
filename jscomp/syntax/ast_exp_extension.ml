@@ -93,11 +93,11 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
               (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
          end 
-      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
+      | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~check_js_regex:true loc payload)
+        (Ast_util.handle_raw ~kind:Raw_re loc payload)
         (Ast_comb.to_js_re_type loc)
     | "bs.external" | "external" ->
       begin match Ast_payload.as_ident payload with 

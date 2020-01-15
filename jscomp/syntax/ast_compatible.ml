@@ -34,14 +34,14 @@ type arg_label = Asttypes.arg_label =
   | Nolabel
   | Labelled of string
   | Optional of string
-let no_label : arg_label = Nolabel
+
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
 type label = arg_label 
 
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -52,7 +52,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map args (fun x -> no_label, x) ) ) }
+        (Ext_list.map args (fun x -> Nolabel, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -63,7 +63,7 @@ let app1
     pexp_desc = 
       Pexp_apply(
         fn, 
-        [no_label, arg1]
+        [Nolabel, arg1]
         ) }
 
 let app2
@@ -76,8 +76,8 @@ let app2
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2 ]
+          Nolabel, arg1;
+          Nolabel, arg2 ]
         ) }
 
 let app3
@@ -90,9 +90,9 @@ let app3
       Pexp_apply(
         fn, 
         [
-          no_label, arg1;
-          no_label, arg2;
-          no_label, arg3
+          Nolabel, arg1;
+          Nolabel, arg2;
+          Nolabel, arg3
         ]
         ) }
 
@@ -104,7 +104,7 @@ let fun_
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+    pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
 let opt_label s =

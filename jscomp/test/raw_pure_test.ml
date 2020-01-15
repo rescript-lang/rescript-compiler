@@ -23,7 +23,24 @@ let x3 = [%raw{|/ghoghos/|}]
 */
 |}]
 
+(* let s = [%raw                                           {hgosgho| (a,x) => {
 
+  return a +x + a
+}
+
+
+|hgosgho} *)
+
+
+
+
+(* ] *)
+
+(* let error0 = [%raw {hgosgho| x => x      + ;|hgosgho}] *)
+(* let error1 = [%raw " x => x      + ;"] *)
+(* let error2 = [%raw {hgosgho| //
+x => x      + 
+;|hgosgho}] *)
 (* let v = [%raw{| /* comment */ |}] 
   this is not good 
 *)

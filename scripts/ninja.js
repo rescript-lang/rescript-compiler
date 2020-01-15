@@ -1642,7 +1642,7 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../lib/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../lib/bsppx.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
+build ../lib/bsppx.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
     libs = ocamlcommon.cmxa    
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
