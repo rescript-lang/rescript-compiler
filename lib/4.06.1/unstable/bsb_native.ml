@@ -7889,6 +7889,8 @@ module Bsb_real_path : sig
 #1 "bsb_real_path.mli"
 val real_path : string -> string 
 
+val is_same_paths_via_io : string -> string -> bool 
+
 end = struct
 #1 "bsb_real_path.ml"
 let (//) = Filename.concat
@@ -7921,6 +7923,11 @@ let real_path p =
     | "." -> dir
     | base -> dir // base
 
+
+let is_same_paths_via_io a b =
+  if a = b
+  then true
+  else (real_path a) = (real_path b)
 
 end
 module Hash_gen
@@ -8408,11 +8415,6 @@ let check_dir dir =
   | true -> Some(dir)
   | false -> None
 
-let is_same_paths a b =
-  if a = b
-  then true
-  else (Bsb_real_path.real_path a) = (Bsb_real_path.real_path b)
-
 let  resolve_bs_package_aux  ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
   let sub_path = make_sub_path pkg   in
@@ -8518,7 +8520,7 @@ let resolve_bs_package ~cwd (package : t) =
     | Some x
       ->
       let result = resolve_bs_package_aux ~cwd package in
-      if not (is_same_paths result x) then
+      if not (Bsb_real_path.is_same_paths_via_io result x) then
         begin
           Bsb_log.warn
             "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
