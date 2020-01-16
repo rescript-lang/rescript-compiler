@@ -151,7 +151,7 @@ let resolve_bs_package ~cwd (package : t) =
     | Some x
       ->
       let result = resolve_bs_package_aux ~cwd package in
-      if result <> x then
+      if not (Bsb_real_path.is_same_paths_via_io result x) then
         begin
           Bsb_log.warn
             "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
