@@ -77,7 +77,12 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-where",
     Arg.Unit (fun _ -> 
         print_endline (Filename.dirname Sys.executable_name)),
-    " Show where bsb.exe is located"
+    " Show where bsb.exe is located";
+(** Below flags are only for bsb script, it is not available for bsb.exe 
+  we make it at this time to make `bsb -help` easier
+*)
+    "-ws", Arg.Bool ignore, 
+    " [host:]port specify the websocket number so that when a build is finished, we send such websocket port number a signal" 
   ]
 
 
