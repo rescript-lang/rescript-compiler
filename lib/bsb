@@ -91,7 +91,13 @@ function setUpWebSocket() {
             wsClients.push(ws)
         })
         .on('error', function (err) {
-            console.error(err)
+            if(err !== undefined && err.code === "EADDRINUSE" ){
+                var error = std_is_tty?`\x1b[1;31mERROR:\x1b[0m` : `ERROR:`
+                console.error(`${error} The websocket port number ${webSocketPort} is already used, 
+please pick a different one using "-ws port" syntax`)
+            } else {            
+                console.error(err)            
+            }            
             process.exit(2)
         })
         .listen(webSocketPort, webSocketHost);
@@ -112,6 +118,9 @@ for (var i = 2; i < process_argv.length; ++i) {
         postBuild = process_argv[++i]
     } else if (current === "-ws") {
         var hostAndPortNumber = (process_argv[++i] || '').split(':');
+        /**
+         * @type {number}
+         */
         var portNumber;
         if (hostAndPortNumber.length === 1) {
             portNumber = parseInt(hostAndPortNumber[0])
