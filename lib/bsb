@@ -94,7 +94,7 @@ function setUpWebSocket() {
             if(err !== undefined && err.code === "EADDRINUSE" ){
                 var error = std_is_tty?`\x1b[1;31mERROR:\x1b[0m` : `ERROR:`
                 console.error(`${error} The websocket port number ${webSocketPort} is already used, 
-please pick a different one using "-ws port" syntax`)
+please pick a different one using "-ws [host:]port" syntax`)
             } else {            
                 console.error(err)            
             }            
