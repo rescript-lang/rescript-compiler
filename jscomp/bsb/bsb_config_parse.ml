@@ -218,18 +218,18 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
   match Map_string.find_opt map Bsb_build_schemas.refmt with 
   | Some (Flo {flo} as config) -> 
     begin match flo with 
-      | "3" -> Bsb_config_types.Refmt_v3
+      | "3" -> None
       | _ -> Bsb_exception.config_error config "expect version 3 only"
     end
   | Some (Str {str}) 
     -> 
-    Refmt_custom
+    Some
       (Bsb_build_util.resolve_bsb_magic_file 
               ~cwd ~desc:Bsb_build_schemas.refmt str).path
   | Some config  -> 
     Bsb_exception.config_error config "expect version 2 or 3"
   | None ->
-    Refmt_none 
+    None
 
 let extract_string (map : json_map) (field : string) cb = 
   match Map_string.find_opt map field with 

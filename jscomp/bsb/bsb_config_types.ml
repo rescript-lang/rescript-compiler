@@ -40,10 +40,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = 
-  | Refmt_none
-  | Refmt_v3 
-  | Refmt_custom of string 
+type refmt = string option
 
 type gentype_config = {
   path : string (* resolved *)
