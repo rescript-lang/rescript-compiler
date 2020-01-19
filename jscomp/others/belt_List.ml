@@ -509,14 +509,14 @@ let mapReverse l f = mapReverseU l (fun [@bs] x -> f x)
 let rec forEachU xs f  =
   match xs with
     [] -> ()
-  | a::l -> f a [@bs]; forEachU l f
+  | a::l -> f a [@bs] |. ignore ; forEachU l f
 
 let forEach xs f = forEachU xs (fun [@bs] x -> f x)
 
 let rec iteri xs i f  =
   match xs with
     [] -> ()
-  | a::l -> f i a [@bs]; iteri l (i + 1) f
+  | a::l -> f i a [@bs] |. ignore ; iteri l (i + 1) f
 
 let forEachWithIndexU l f  = iteri l 0 f
 let forEachWithIndex l f = forEachWithIndexU l (fun [@bs] i x -> f i x)
@@ -566,7 +566,7 @@ let mapReverse2 l1 l2 f = mapReverse2U l1 l2 (fun [@bs] a b -> f a b)
 
 let rec forEach2U  l1 l2 f =
   match (l1, l2) with
-  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; forEach2U  l1 l2 f
+  | (a1::l1, a2::l2) -> f a1 a2 [@bs] |. ignore ; forEach2U  l1 l2 f
   | [],_ | _, [] -> ()
 
 let forEach2 l1 l2 f = forEach2U l1 l2 (fun [@bs] a b -> f a b)

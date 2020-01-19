@@ -82,7 +82,7 @@ let rec do_bucket_iter ~f buckets =
   | None ->
     ()
   | Some cell ->
-    f (keyGet cell)  (valueGet cell) [@bs]; do_bucket_iter ~f (nextGet cell)
+    f (keyGet cell)  (valueGet cell) [@bs] |. ignore ; do_bucket_iter ~f (nextGet cell)
 
 let forEachU h f =
   let d = C.bucketsGet h in

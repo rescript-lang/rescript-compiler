@@ -32,9 +32,9 @@ external reraise: exn -> 'a = "%reraise"
 let finally v action f   = 
   match f v with
   | exception e -> 
-      action v ;
+      action v |. ignore ;
       reraise e 
-  | e ->  action v ; e 
+  | e ->  action v |. ignore; e 
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
