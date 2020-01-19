@@ -155,7 +155,7 @@ let make_custom_rules
     (match refmt with 
     | None -> ()
     | Some x ->
-      Buffer.add_string buf " -refmt ";
+      Buffer.add_string buf " -bs-refmt ";
       Buffer.add_string buf (Ext_filename.maybe_quote x);
     );
     if has_pp then
