@@ -41,8 +41,8 @@ type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 (* TODO: node is used in [subset] *)
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "#null"
-
+external empty : 'a t = "#null" (* shadowed*)
+(* val empty : 'a t *)
 
 
 val copy : 'a t -> 'a t
@@ -59,7 +59,7 @@ val maxUndefined : 'a t -> 'a Js.undefined
 val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t
 (* [removeMinAuxWithRef n cell] return a new node with
    minimum removed and stored in cell *)
-val empty : 'a t
+
 val isEmpty : 'a t -> bool
 
 val stackAllLeft : 'a t -> 'a node list -> 'a node list

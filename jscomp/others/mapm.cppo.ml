@@ -21,7 +21,7 @@ type 'a t = {
 let make () = t ~data:N.empty
 let isEmpty m = N.isEmpty (dataGet m)
 let clear m = dataSet m N.empty
-let singleton k v = t ~data:(N.singleton k v)
+(* let singleton k v = t ~data:(N.singleton k v) *)
 
 let minKeyUndefined m = N.minKeyUndefined (dataGet m)
 let minKey m = N.minKey (dataGet m)
@@ -144,7 +144,7 @@ let rec removeArrayMutateAux t xs i len   =
     | Some t -> removeArrayMutateAux t xs (i+1) len 
   else N.return t    
 
-let removeMany (type key) (type id) (d : _ t) xs =  
+let removeMany (d : _ t) xs =  
   let oldRoot = dataGet d in 
   match N.toOpt oldRoot with 
   | None -> ()

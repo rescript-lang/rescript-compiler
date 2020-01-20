@@ -197,7 +197,7 @@ let isEmpty = C.isEmpty
 
 let fromArray arr = 
   let len = A.length arr in 
-  let v = make len in 
+  let v = make ~hintSize:len in 
   for i = 0 to len - 1 do 
     let k,value = (A.getUnsafe arr i) in
     set v k value

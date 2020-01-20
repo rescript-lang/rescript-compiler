@@ -102,8 +102,8 @@ let decodeNull json : _ Js.null option =
   then Some Js.null
   else None
 
-external parse : string -> t = "parse"
-  [@@bs.val][@@bs.scope "JSON"]
+(* external parse : string -> t = "parse"
+  [@@bs.val][@@bs.scope "JSON"] *)
 
 external parseExn : string -> t = "parse"
   [@@bs.val] [@@bs.scope "JSON"]
@@ -118,7 +118,7 @@ external number : float -> t = "%identity"
 external boolean : bool -> t = "%identity"
 external object_ : t Js_dict.t -> t = "%identity"
 
-external array_ : t array -> t = "%identity"
+(* external array_ : t array -> t = "%identity" *)
 
 external array : t array -> t = "%identity"
 external stringArray : string array -> t = "%identity"

@@ -1,10 +1,9 @@
 'use strict';
 
 var Belt_MutableSetInt = require("../../lib/js/belt_MutableSetInt.js");
-var Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 
 var mySet = {
-  data: Belt_internalAVLset.empty
+  data: null
 };
 
 Belt_MutableSetInt.add(mySet, 1);

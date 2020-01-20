@@ -3778,8 +3778,8 @@ let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
 let max_elt = Set_gen.max_elt
 let choose = Set_gen.choose 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
+(* let of_sorted_list = Set_gen.of_sorted_list *)
+(* let of_sorted_array = Set_gen.of_sorted_array *)
 let partition = Set_gen.partition 
 let filter = Set_gen.filter 
 let of_sorted_list = Set_gen.of_sorted_list
@@ -3820,8 +3820,8 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
+  | (Empty, _) -> Empty
+  | (_, Empty) -> Empty
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -3832,7 +3832,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
+  | (Empty, _) -> Empty
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with
@@ -6892,6 +6892,56 @@ let list_dirs_by
       f (prefix_of_format spec.format) 
   ) package_specs 
 end
+module Bsc_warnings
+= struct
+#1 "bsc_warnings.ml"
+(* Copyright (C) 2020- Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
+
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*) 
+let defaults_w = "-30-40+6+7+27+32..39+44+45+101"
+let defaults_warn_error = "-a+5+101";;
+
+end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6923,23 +6973,21 @@ module Bsb_warning : sig
 
 type t
 
-val get_warning_flag : t option -> string
+(** Extra work is need to make merlin happy *)
+val to_merlin_string : t  -> string
 
-val default_warning : string
 
-val default_warning_flag : string
-(* default_warning, including the -w prefix, for command-line arguments *)
 
-val from_map : Ext_json_types.t Map_string.t -> t option
+val from_map : Ext_json_types.t Map_string.t -> t 
 
-(** [opt_warning_to_string not_dev warning]
+(** [to_bsb_string not_dev warning]
 *)
-val opt_warning_to_string : 
+val to_bsb_string : 
   toplevel:bool -> 
-  t option -> 
+  t  -> 
   string
 
-
+val use_default : t
 end = struct
 #1 "bsb_warning.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6973,70 +7021,25 @@ type warning_error =
   | Warn_error_true
   | Warn_error_number of string
 
-type t = {
+type t0 = {
   number : string option;
   error : warning_error
 }
 
-(**
-  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+type nonrec t = t0 option 
 
-  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
-  - 40 Constructor or label name used out of scope.
+let use_default = None
 
-  - 6 Label omitted in function application.
-  - 7 Method overridden.
-  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
-  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
-  - 29 Unescaped end-of-line in a string constant (non-portable code).
-  - 32 .. 39 Unused blabla
-  - 44 Open statement shadows an already defined identifier.
-  - 45 Open statement shadows an already defined label or constructor.
-  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
-  - 101 (bsb-specific) unsafe polymorphic comparison.
-*)
-let default_warning = "-30-40+6+7+27+32..39+44+45+101"
-
-let default_warning_flag = "-w " ^ default_warning
-
-let get_warning_flag x =
-  default_warning_flag ^
+let to_merlin_string x =
+  "-w " ^ Bsc_warnings.defaults_w
+  ^
   (match x with
    | Some {number =None}
    | None ->  Ext_string.empty
    | Some {number = Some x} -> Ext_string.trim x )
 
 
-let warn_error = " -warn-error A"
-
-let warning_to_string ~toplevel
-    warning : string =
-  default_warning_flag  ^
-  (match warning.number with
-   | None ->
-     Ext_string.empty
-   | Some x ->
-    let content = 
-     Ext_string.trim x in 
-    if content = "" then content 
-    else 
-      match content.[0] with 
-      | '0' .. '9' -> "+" ^ content
-      | _ -> content
-    ) ^
-  if toplevel then 
-    match warning.error with
-    | Warn_error_true ->
-      warn_error
-
-    | Warn_error_number y ->
-      " -warn-error " ^ y
-    | Warn_error_false ->
-      Ext_string.empty
- else Ext_string.empty     
-
-
-
+   
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
   let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
@@ -7061,10 +7064,32 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string ~toplevel warning =
+let to_bsb_string ~toplevel warning =
   match warning with
-  | None -> default_warning_flag
-  | Some w -> warning_to_string ~toplevel w
+  | None -> Ext_string.empty
+  | Some warning -> 
+    "-w " ^ Bsc_warnings.defaults_w ^
+    (match warning.number with
+     | None ->
+       Ext_string.empty
+     | Some x ->
+       let content = 
+         Ext_string.trim x in 
+       if content = "" then content 
+       else 
+         match content.[0] with 
+         | '0' .. '9' -> "+" ^ content
+         | _ -> content
+    ) ^
+    if toplevel then 
+      match warning.error with
+      | Warn_error_true ->
+        " -warn-error A"
+      | Warn_error_number y ->
+        " -warn-error " ^ y
+      | Warn_error_false ->
+        Ext_string.empty
+    else Ext_string.empty     
 
 
 end
@@ -7525,10 +7550,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = 
-  | Refmt_none
-  | Refmt_v3 
-  | Refmt_custom of string 
+type refmt = string option
 
 type gentype_config = {
   path : string (* resolved *)
@@ -7552,7 +7574,7 @@ type t =
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
-    warning : Bsb_warning.t option;
+    warning : Bsb_warning.t;
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]
@@ -11355,18 +11377,18 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
   match Map_string.find_opt map Bsb_build_schemas.refmt with 
   | Some (Flo {flo} as config) -> 
     begin match flo with 
-      | "3" -> Bsb_config_types.Refmt_v3
+      | "3" -> None
       | _ -> Bsb_exception.config_error config "expect version 3 only"
     end
   | Some (Str {str}) 
     -> 
-    Refmt_custom
+    Some
       (Bsb_build_util.resolve_bsb_magic_file 
               ~cwd ~desc:Bsb_build_schemas.refmt str).path
   | Some config  -> 
     Bsb_exception.config_error config "expect version 2 or 3"
   | None ->
-    Refmt_none 
+    None
 
 let extract_string (map : json_map) (field : string) cb = 
   match Map_string.find_opt map field with 
@@ -11405,7 +11427,7 @@ let extract_reason_react_jsx (map : json_map) =
 
 let extract_warning (map : json_map) = 
   match Map_string.find_opt map Bsb_build_schemas.warnings with 
-  | None -> None 
+  | None -> Bsb_warning.use_default 
   | Some (Obj {map }) -> Bsb_warning.from_map map 
   | Some config -> Bsb_exception.config_error config "expect an object"
 
@@ -11836,12 +11858,12 @@ let output_merlin_namespace buffer ns=
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   merlin_flg ^ 
   String.concat Ext_string.single_space 
-    (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
-     Literals.dash_nostdlib::bsc_flags) 
+    ("-strict-sequence" :: List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
+     Literals.dash_nostdlib::bsc_flags)) 
 
 (* No need for [-warn-error] in merlin  *)     
-let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
-  merlin_flg ^ Bsb_warning.get_warning_flag warning
+let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=     
+  merlin_flg ^ Bsb_warning.to_merlin_string warning
 
 
 let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
@@ -13538,7 +13560,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.opt_warning_to_string ~toplevel warning ;
+        Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
         Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
@@ -13594,9 +13616,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
-      ~refmt:(match refmt with 
-        | Refmt_none | Refmt_v3 -> None 
-        | Refmt_custom x -> Some x)
+      ~refmt
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> [])

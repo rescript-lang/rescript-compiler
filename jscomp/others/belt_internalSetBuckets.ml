@@ -88,7 +88,7 @@ let rec doBucketIter ~f buckets =
 let forEachU h f =
   let d = C.bucketsGet h in
   for i = 0 to A.length d - 1 do
-    doBucketIter f (A.getUnsafe d i)
+    doBucketIter ~f (A.getUnsafe d i)
   done
 
 let forEach h f = forEachU h (fun[@bs] a -> f a )

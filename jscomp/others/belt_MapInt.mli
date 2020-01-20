@@ -90,12 +90,7 @@ val getUndefined: 'v t -> key -> 'v Js.undefined
 val getWithDefault: 'v t -> key -> 'v -> 'v
 
 val getExn: 'v t -> key -> 'v
-
-val checkInvariantInternal: _ t -> unit
-(**
-   {b raise} when invariant is not held
-*)  
-
+ 
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held

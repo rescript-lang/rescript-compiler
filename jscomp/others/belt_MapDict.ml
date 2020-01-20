@@ -198,14 +198,14 @@ let rec splitAuxPivot n x pres  ~cmp =
   if c < 0 then
     match N.toOpt l with 
     | None -> 
-      N.(empty, return n)
+      N.empty, N.return n
     | Some l -> 
       let (ll,rl) = splitAuxPivot ~cmp l x pres in
       (ll,  N.join rl v d r)
   else
     match N.toOpt r with 
     | None ->
-      N.(return n, empty)
+      N.return n, N.empty
     | Some r -> 
       let (lr,  rr) = splitAuxPivot ~cmp r x pres in
       (N.join l v d lr,  rr)
@@ -214,7 +214,7 @@ let rec splitAuxPivot n x pres  ~cmp =
 let split  n x ~cmp = 
   match N.toOpt n with 
   | None ->     
-    N.(empty, empty), None
+    (N.empty, N.empty), None
   | Some n  ->
     let pres = ref None in
     let v = splitAuxPivot ~cmp n x pres in 

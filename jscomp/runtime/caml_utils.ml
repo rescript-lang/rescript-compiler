@@ -25,7 +25,7 @@
 
 
 
-open Js_internalRaw
+module Use =  Js_internalRaw
 
 (** *)
 

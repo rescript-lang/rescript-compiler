@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- open Js_internalRaw
+ module Use =  Js_internalRaw
 
 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
@@ -64,8 +64,10 @@ let caml_sys_random_seed () : nativeint array =
      ((Caml_nativeint_extern.to_float (Caml_nativeint_extern.logxor (Caml_nativeint_extern.of_float (now ()))
                              0xffffffffn)) *. random ()) |]
 
-type spawnResult
 
+
+(*
+type spawnResult
 external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
 
 external readAs : spawnResult -> 
@@ -73,7 +75,7 @@ external readAs : spawnResult ->
     status : int Js.null;
   > Js.t = 
   "%identity"
-
+*)
 
 
 let caml_sys_system_command _cmd = 127

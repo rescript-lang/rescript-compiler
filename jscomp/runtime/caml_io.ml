@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- open Js_internalRaw
+ module Use = Js_internalRaw
 
 let stdin = Caml_undefined_extern.empty
-let stderr = Caml_undefined_extern.empty
+(* let stderr = Caml_undefined_extern.empty *)
 
 type out_channel  = {
   mutable buffer :  string;
@@ -77,10 +77,11 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.buffer <- ""      
     end      
 
+(*
 let node_std_output  : string -> bool =  
   [%raw{|function(s){ return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);}
 |}]
-
+*)
 
 (** note we need provide both [bytes] and [string] version 
 *)

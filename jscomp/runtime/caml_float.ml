@@ -113,13 +113,13 @@ let  caml_expm1_float : float -> float = function x ->
   if abs_float x > 1. then z
   else if z = 0. then x else x *. z /. log y
 
-#if 0 then  
+(* 
 (* http://blog.csdn.net/liyuanbhu/article/details/8544644 *)
 let caml_log1p_float : float -> float = function x ->
   let y = 1. +.  x  in
   let z =  y -. 1. in
-  if z = 0. then x else x *. log y /. z
-#end
+  if z = 0. then x else x *. log y /. z *)
+
 
 let caml_hypot_float (x: float) (y: float): float =
   let x0, y0 = abs_float x, abs_float y in
@@ -131,11 +131,10 @@ let caml_hypot_float (x: float) (y: float): float =
 let caml_log10_float (x: float): float =
    _LOG10E *. log x
 
-#if 0 then
+(* 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2.
 let caml_sin_float x = exp x -. exp (-. x) /. 2.
 let caml_tan_float x =
   let y = exp x in
   let z = exp (-. x) in
-  (y +. z) /. (y -. z   )
-#end
+  (y +. z) /. (y -. z   ) *)

@@ -21,8 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-open Js_internalRaw
-let  getGlobalThis= [%raw{| function(){
+module Use  =  Js_internalRaw
+
+
+type global 
+let  getGlobalThis : unit -> global [@bs]= [%raw{| function(){
   if (typeof globalThis !== 'undefined') return globalThis;
 	if (typeof self !== 'undefined') return self;
 	if (typeof window !== 'undefined') return window;
@@ -31,7 +34,8 @@ let  getGlobalThis= [%raw{| function(){
 	throw new Error('Unable to locate global `this`');
 }|}]
 
-let resolve  = [%raw {|function(s){
+type dyn
+let resolve : string -> dyn [@bs] = [%raw {|function(s){
   var myGlobal = getGlobalThis();
   if (myGlobal[s] === undefined){
     throw new Error(s + " not polyfilled by BuckleScript yet\n")

@@ -63,14 +63,14 @@ let merge (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
       if i1 < src1r then
         loop i1 (A.getUnsafe src i1) i2 s2 (d + 1)
       else
-        A.blitUnsafe src2 i2 dst (d + 1) (src2r - i2)
+        A.blitUnsafe ~src:src2 ~srcOffset:i2 ~dst ~dstOffset:(d + 1) ~len:(src2r - i2)
     end else begin
       A.setUnsafe dst d s2;
       let i2 = i2 + 1 in
       if i2 < src2r then
         loop i1 s1 i2 (A.getUnsafe src2 i2) (d + 1)
       else
-        A.blitUnsafe src i1 dst (d + 1) (src1r - i1)
+        A.blitUnsafe ~src ~srcOffset:i1 ~dst ~dstOffset:(d + 1) ~len:(src1r - i1)
     end
   in 
   loop src1ofs (A.getUnsafe src src1ofs) src2ofs (A.getUnsafe src2 src2ofs) dstofs
@@ -91,7 +91,7 @@ let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
         loop i1 (A.getUnsafe src i1) i2 s2 d
       else
         begin 
-          A.blitUnsafe src2 i2 dst d (src2r - i2);
+          A.blitUnsafe ~src:src2 ~srcOffset:i2 ~dst ~dstOffset:d ~len:(src2r - i2);
           d + src2r - i2   
         end
     end 
@@ -103,10 +103,10 @@ let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
       if i1 < src1r && i2 < src2r then 
         loop i1 (A.getUnsafe src i1) i2 (A.getUnsafe src2 i2) d
       else if i1 = src1r then   
-        (A.blitUnsafe src2 i2 dst d (src2r - i2);
+        (A.blitUnsafe ~src:src2 ~srcOffset:i2 ~dst ~dstOffset:d ~len:(src2r - i2);
          d + src2r - i2)
       else    
-        (A.blitUnsafe src i1 dst d (src1r - i1);
+        (A.blitUnsafe ~src ~srcOffset:i1 ~dst ~dstOffset:d ~len:(src1r - i1);
          d + src1r - i1)
     end 
     else begin
@@ -116,7 +116,7 @@ let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
       if i2 < src2r then
         loop i1 s1 i2 (A.getUnsafe src2 i2) d
       else
-        (A.blitUnsafe src i1 dst d (src1r - i1);
+        (A.blitUnsafe ~src ~srcOffset:i1 ~dst ~dstOffset:d ~len:(src1r - i1);
          d + src1r - i1
         )
     end
@@ -184,7 +184,7 @@ let diff (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  
       else if i1 = src1r then 
         d
       else 
-      (A.blitUnsafe src i1 dst d (src1r - i1);
+      (A.blitUnsafe ~src ~srcOffset:i1 ~dst ~dstOffset:d ~len:(src1r - i1);
         d + src1r - i1)
     end 
     else begin
@@ -192,7 +192,7 @@ let diff (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  
       if i2 < src2r then
         loop i1 s1 i2 (A.getUnsafe src2 i2) d
       else
-        (A.blitUnsafe src i1 dst d (src1r - i1);
+        (A.blitUnsafe ~src ~srcOffset:i1 ~dst ~dstOffset:d ~len:(src1r - i1);
         d + src1r - i1)        
     end
   in 

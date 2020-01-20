@@ -333,7 +333,7 @@ let finish_formatting (config : fmt) rawbuffer =
     buffer .contents<- buffer.contents ^ "0x";
 
   if justify = "+" && filter = "0" then 
-    for _i = len.contents to width - 1 do 
+    for _ = len.contents to width - 1 do 
       buffer .contents<- buffer.contents ^ filter;
     done;
   begin 

@@ -37,8 +37,8 @@ and ('k,  'v) node  = private {
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "#null"
-
+external empty : _ t = "#null"
+(* val empty : _ t *)
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     
 val copy : ('k, 'v) t -> ('k, 'v) t
@@ -65,7 +65,7 @@ val maxUndefined : ('a,'b) t -> ('a * 'b) Js.undefined
 
 val removeMinAuxWithRef : ('a, 'b) node -> 'a ref -> 'b ref -> ('a,'b) t
 
-val empty : _ t
+
 val isEmpty : _ t -> bool
 
 val stackAllLeft :

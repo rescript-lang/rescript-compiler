@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type obj = Caml_obj_extern.t
-open Js_internalRaw
+module Use =  Js_internalRaw
  let setupChromeDebugger : unit -> unit = [%raw{|function(_){
  
  // I don't know how to directly refer to the classes that chrome's built-in
