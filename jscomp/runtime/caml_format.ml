@@ -26,18 +26,18 @@
 
 
 
- open Js_internalRaw
+ module Use =  Js_internalRaw
 
 (** *)
 
 let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
-let caml_invalid_argument s= raise (Invalid_argument s )
+(* let caml_invalid_argument s= raise (Invalid_argument s ) *)
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
 
 let to_nat x = Caml_nativeint_extern.of_int x 
-let of_nat x = Caml_nativeint_extern.to_int x 
+(* let of_nat x = Caml_nativeint_extern.to_int x  *)
 let (+~) = Caml_nativeint_extern.add 
 let ( *~ ) = Caml_nativeint_extern.mul  
 
@@ -297,8 +297,8 @@ let finish_formatting (config : fmt) rawbuffer =
     width;
     uppercase;
     sign;
-    prec;
-    conv
+    prec = _ ;
+    conv = _ ; 
   } = config in  
   let len = ref (Caml_string_extern.length rawbuffer) in 
   if signedconv && (sign < 0 || signstyle <> "-") then 
@@ -318,7 +318,7 @@ let finish_formatting (config : fmt) rawbuffer =
   *)
   (* let (+:) s = buffer .contents<- buffer.contents ^ s in *)
   if justify = "+" && filter = " " then
-    for i = len.contents to width - 1 do 
+    for _ = len.contents to width - 1 do 
       buffer.contents<- buffer.contents ^ filter
     done;
   if signedconv then 
@@ -333,7 +333,7 @@ let finish_formatting (config : fmt) rawbuffer =
     buffer .contents<- buffer.contents ^ "0x";
 
   if justify = "+" && filter = "0" then 
-    for i = len.contents to width - 1 do 
+    for _i = len.contents to width - 1 do 
       buffer .contents<- buffer.contents ^ filter;
     done;
   begin 
@@ -343,7 +343,7 @@ let finish_formatting (config : fmt) rawbuffer =
       buffer .contents<- buffer.contents ^ rawbuffer
   end;
   if justify = "-" then 
-    for i = len.contents to width - 1 do 
+    for _ = len.contents to width - 1 do 
       buffer .contents<- buffer.contents ^ " ";
     done;
   buffer.contents

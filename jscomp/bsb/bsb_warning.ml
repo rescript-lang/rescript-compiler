@@ -29,70 +29,25 @@ type warning_error =
   | Warn_error_true
   | Warn_error_number of string
 
-type t = {
+type t0 = {
   number : string option;
   error : warning_error
 }
 
-(**
-  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+type nonrec t = t0 option 
 
-  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
-  - 40 Constructor or label name used out of scope.
+let use_default = None
 
-  - 6 Label omitted in function application.
-  - 7 Method overridden.
-  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
-  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
-  - 29 Unescaped end-of-line in a string constant (non-portable code).
-  - 32 .. 39 Unused blabla
-  - 44 Open statement shadows an already defined identifier.
-  - 45 Open statement shadows an already defined label or constructor.
-  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
-  - 101 (bsb-specific) unsafe polymorphic comparison.
-*)
-let default_warning = "-30-40+6+7+27+32..39+44+45+101"
-
-let default_warning_flag = "-w " ^ default_warning
-
-let get_warning_flag x =
-  default_warning_flag ^
+let to_merlin_string x =
+  "-w " ^ Bsc_warnings.defaults_w
+  ^
   (match x with
    | Some {number =None}
    | None ->  Ext_string.empty
    | Some {number = Some x} -> Ext_string.trim x )
 
 
-let warn_error = " -warn-error A"
-
-let warning_to_string ~toplevel
-    warning : string =
-  default_warning_flag  ^
-  (match warning.number with
-   | None ->
-     Ext_string.empty
-   | Some x ->
-    let content = 
-     Ext_string.trim x in 
-    if content = "" then content 
-    else 
-      match content.[0] with 
-      | '0' .. '9' -> "+" ^ content
-      | _ -> content
-    ) ^
-  if toplevel then 
-    match warning.error with
-    | Warn_error_true ->
-      warn_error
-
-    | Warn_error_number y ->
-      " -warn-error " ^ y
-    | Warn_error_false ->
-      Ext_string.empty
- else Ext_string.empty     
-
-
-
+   
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
   let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
@@ -117,8 +72,30 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     in
     Some {number; error }
 
-let opt_warning_to_string ~toplevel warning =
+let to_bsb_string ~toplevel warning =
   match warning with
-  | None -> default_warning_flag
-  | Some w -> warning_to_string ~toplevel w
+  | None -> Ext_string.empty
+  | Some warning -> 
+    "-w " ^ Bsc_warnings.defaults_w ^
+    (match warning.number with
+     | None ->
+       Ext_string.empty
+     | Some x ->
+       let content = 
+         Ext_string.trim x in 
+       if content = "" then content 
+       else 
+         match content.[0] with 
+         | '0' .. '9' -> "+" ^ content
+         | _ -> content
+    ) ^
+    if toplevel then 
+      match warning.error with
+      | Warn_error_true ->
+        " -warn-error A"
+      | Warn_error_number y ->
+        " -warn-error " ^ y
+      | Warn_error_false ->
+        Ext_string.empty
+    else Ext_string.empty     
 

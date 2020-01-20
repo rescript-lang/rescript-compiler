@@ -27,19 +27,18 @@
 
 type t
 
-val get_warning_flag : t option -> string
+(** Extra work is need to make merlin happy *)
+val to_merlin_string : t  -> string
 
-val default_warning : string
 
-val default_warning_flag : string
-(* default_warning, including the -w prefix, for command-line arguments *)
 
-val from_map : Ext_json_types.t Map_string.t -> t option
+val from_map : Ext_json_types.t Map_string.t -> t 
 
-(** [opt_warning_to_string not_dev warning]
+(** [to_bsb_string not_dev warning]
 *)
-val opt_warning_to_string : 
+val to_bsb_string : 
   toplevel:bool -> 
-  t option -> 
+  t  -> 
   string
 
+val use_default : t
