@@ -15,7 +15,7 @@ type 'a t = (key, 'a) N.t
 
 let empty = N.empty      
 let isEmpty = N.isEmpty
-let singleton = N.singleton
+(* let singleton = N.singleton *)
 
 let minKey = N.minKey
 let minKeyUndefined = N.minKeyUndefined
@@ -157,7 +157,7 @@ let mergeMany h arr =
   done ;
   v.contents 
 
-let mergeArray = mergeMany
+(* let mergeArray = mergeMany *)
 
 let has = I.has
 let cmpU = I.cmpU

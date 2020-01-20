@@ -432,7 +432,8 @@ let rec fillArray n i arr =
 type cursor =
   { mutable forward : int; mutable backward : int } [@@bs.deriving abstract]
 
-let rec fillArrayWithPartition n cursor arr p =
+
+(* let rec fillArrayWithPartition n cursor arr p =
   let l,v,r = leftGet n, keyGet n, rightGet n in
   (match toOpt l with
    | None -> ()
@@ -470,7 +471,7 @@ let rec fillArrayWithFilter n i arr p =
   | None -> rnext
   | Some r ->
     fillArrayWithFilter r rnext arr  p
-
+ *)
 
 let toArray n =
   match toOpt n with

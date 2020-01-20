@@ -425,12 +425,12 @@ let shuffle xs =
   A.shuffleInPlace v ;
   fromArray v
 
-let rec fillAuxMap arr i x f =
+(* let rec fillAuxMap arr i x f =
   match x with
   | [] -> ()
   | h::t ->
     A.setUnsafe arr i (f h [@bs]) ;
-    fillAuxMap arr (i + 1) t f
+    fillAuxMap arr (i + 1) t f *)
 
 (* module J = Js_json *)
 (* type json = J.t  *)
@@ -509,14 +509,14 @@ let mapReverse l f = mapReverseU l (fun [@bs] x -> f x)
 let rec forEachU xs f  =
   match xs with
     [] -> ()
-  | a::l -> f a [@bs]; forEachU l f
+  | a::l -> f a [@bs] |. ignore ; forEachU l f
 
 let forEach xs f = forEachU xs (fun [@bs] x -> f x)
 
 let rec iteri xs i f  =
   match xs with
     [] -> ()
-  | a::l -> f i a [@bs]; iteri l (i + 1) f
+  | a::l -> f i a [@bs] |. ignore ; iteri l (i + 1) f
 
 let forEachWithIndexU l f  = iteri l 0 f
 let forEachWithIndex l f = forEachWithIndexU l (fun [@bs] i x -> f i x)
@@ -566,7 +566,7 @@ let mapReverse2 l1 l2 f = mapReverse2U l1 l2 (fun [@bs] a b -> f a b)
 
 let rec forEach2U  l1 l2 f =
   match (l1, l2) with
-  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; forEach2U  l1 l2 f
+  | (a1::l1, a2::l2) -> f a1 a2 [@bs] |. ignore ; forEach2U  l1 l2 f
   | [],_ | _, [] -> ()
 
 let forEach2 l1 l2 f = forEach2U l1 l2 (fun [@bs] a b -> f a b)
@@ -679,7 +679,7 @@ let getAssoc xs x eq = getAssocU xs x (fun[@bs] a b -> eq  a b)
 let rec hasAssocU xs x eq =
   match xs with
   | [] -> false
-  | (a, b) :: l -> eq a x [@bs] || hasAssocU l x eq
+  | (a, _) :: l -> eq a x [@bs] || hasAssocU l x eq
 
 let hasAssoc xs x eq = hasAssocU xs x (fun[@bs] a b -> eq a b)
 
@@ -795,7 +795,7 @@ let partitionU l p  =
 
 let partition l p = partitionU l (fun [@bs] x -> p x)
 
-let rec unzip xs =
+let  unzip xs =
   match xs with
   | [] -> ([], [])
   | (x,y)::l ->
@@ -805,7 +805,7 @@ let rec unzip xs =
     cellX, cellY
 
 
-let rec zip l1 l2 =
+let  zip l1 l2 =
   match (l1, l2) with
     _, [] | [], _ -> []
   | (a1::l1, a2::l2) ->

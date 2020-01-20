@@ -22,8 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-open Js_internalRaw
-(** *)
+module Use =  Js_internalRaw
+
 
 (* borrowed from others/js_math.ml *)
 external _LOG2E : float = "Math.LOG2E" [@@bs.val]
@@ -113,11 +113,12 @@ let  caml_expm1_float : float -> float = function x ->
   if abs_float x > 1. then z
   else if z = 0. then x else x *. z /. log y
 
+(* 
 (* http://blog.csdn.net/liyuanbhu/article/details/8544644 *)
 let caml_log1p_float : float -> float = function x ->
   let y = 1. +.  x  in
   let z =  y -. 1. in
-  if z = 0. then x else x *. log y /. z
+  if z = 0. then x else x *. log y /. z *)
 
 
 let caml_hypot_float (x: float) (y: float): float =
@@ -130,10 +131,10 @@ let caml_hypot_float (x: float) (y: float): float =
 let caml_log10_float (x: float): float =
    _LOG10E *. log x
 
-
+(* 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2.
 let caml_sin_float x = exp x -. exp (-. x) /. 2.
 let caml_tan_float x =
   let y = exp x in
   let z = exp (-. x) in
-  (y +. z) /. (y -. z   )
+  (y +. z) /. (y -. z   ) *)

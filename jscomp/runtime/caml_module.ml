@@ -26,7 +26,7 @@
   Note we can replace {!CamlinternalMod} completely, but it is not replaced 
   due to we believe this is an even low level dependency
 *)
-
+[@@@warning "-37"] (* `Function` may be used in runtime *)
 
 type shape = 
    | Function

@@ -82,12 +82,12 @@ let rec do_bucket_iter ~f buckets =
   | None ->
     ()
   | Some cell ->
-    f (keyGet cell)  (valueGet cell) [@bs]; do_bucket_iter ~f (nextGet cell)
+    f (keyGet cell)  (valueGet cell) [@bs] |. ignore ; do_bucket_iter ~f (nextGet cell)
 
 let forEachU h f =
   let d = C.bucketsGet h in
   for i = 0 to A.length d - 1 do
-    do_bucket_iter f (A.getUnsafe d i)
+    do_bucket_iter ~f (A.getUnsafe d i)
   done
 
 let forEach h f = forEachU h (fun [@bs] a b -> f a b)
@@ -151,7 +151,7 @@ let rec filterMapInplaceBucket f h i prec cell =
       let bucket = C.return cell in 
       begin match C.toOpt prec with
         | None -> A.setUnsafe (C.bucketsGet h) i  bucket 
-        | Some c -> nextSet cell bucket
+        | Some _ -> nextSet cell bucket
       end;
       valueSet cell data;
       match C.toOpt n with 
@@ -177,7 +177,7 @@ let rec fillArray i arr cell =
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
 
-let toArray h = 
+(* let toArray h = 
   let d = C.bucketsGet h in 
   let current = ref 0 in 
   let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
@@ -188,7 +188,7 @@ let toArray h =
     | Some cell -> 
       current .contents<- fillArray current.contents arr cell
   done;
-  arr 
+  arr  *)
 
 let rec fillArrayMap i arr cell f =  
   A.setUnsafe arr i (f cell [@bs]);

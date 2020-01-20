@@ -29,7 +29,7 @@ type 'a t = 'a list
 
 let rec lengthAux len = function
   | [] -> len
-  | a::l -> lengthAux (len + 1) l
+  | _::l -> lengthAux (len + 1) l
 
 let length l = lengthAux 0 l
 
@@ -39,11 +39,11 @@ let isEmpty x =  x = []
 
 let hd = function
   | [] -> None
-  | a::l -> Some a
+  | a::_ -> Some a
 
 let tl = function
   | [] -> None
-  | a::l -> Some l
+  | _::l -> Some l
 
 let nth l n =
   if n < 0 then None else
@@ -71,7 +71,7 @@ let rec mapRevAux f acc ls =
 
 let mapRev f ls = mapRevAux f [] ls
 
-let rec map f ls = rev (mapRevAux f [] ls )
+let map f ls = rev (mapRevAux f [] ls )
 
 let rec iter f = function
     [] -> ()
@@ -136,7 +136,7 @@ let rec filterMapRevAux (f:  'a -> 'b option [@bs]) acc xs =
       | Some z -> filterMapRevAux f  (z::acc) ys
     end
 
-let rec filterMap f xs =
+let filterMap f xs =
   rev (filterMapRevAux f [] xs)
 
 
@@ -146,7 +146,7 @@ let rec countByAux f acc xs =
   | y::ys ->
     countByAux f (if f y [@bs] then acc + 1 else acc) ys
 
-let rec countBy f xs = countByAux f 0 xs
+let countBy f xs = countByAux f 0 xs
 
 let init n f =
   Js_vector.toList (Js_vector.init n f )

@@ -24,7 +24,7 @@
 
 
 
- open Js_internalRaw
+ module Use =  Js_internalRaw
 
 (* This module would  only work with js backend, since it requires
    [nativeint] behaves as js  numbers
@@ -32,7 +32,7 @@
 
 (* TODO: see GPR#333
    the encoding of nativeint is platform dependent *)
-open Caml_nativeint_extern
+   
 
 
 
@@ -103,7 +103,7 @@ let equal_nullable x y =
   | None -> false 
   | Some y -> eq x y 
 
-let neg (Int64 {lo; hi} as x) =
+let neg x =
   if eq x  min_int then
     min_int
   else add (not x) one

@@ -1,3 +1,4 @@
+[@@@warning "-a"]
 module Loc
 = struct
 #1 "loc.ml"

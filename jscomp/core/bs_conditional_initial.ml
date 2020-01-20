@@ -24,6 +24,8 @@
 
 
 let setup_env () =
+  Warnings.parse_options false Bsc_warnings.defaults_w;
+  Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
@@ -35,7 +37,8 @@ let setup_env () =
   Clflags.unsafe_string := false;
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
-  Clflags.binary_annotations := true; 
+  Clflags.binary_annotations := true;
+  Clflags.strict_sequence := true;
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;

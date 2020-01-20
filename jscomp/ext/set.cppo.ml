@@ -68,8 +68,8 @@ let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
 let max_elt = Set_gen.max_elt
 let choose = Set_gen.choose 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
+(* let of_sorted_list = Set_gen.of_sorted_list *)
+(* let of_sorted_array = Set_gen.of_sorted_array *)
 let partition = Set_gen.partition 
 let filter = Set_gen.filter 
 let of_sorted_list = Set_gen.of_sorted_list
@@ -110,8 +110,8 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
+  | (Empty, _) -> Empty
+  | (_, Empty) -> Empty
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -122,7 +122,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
+  | (Empty, _) -> Empty
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with

@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2020- Authors of BuckleScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
@@ -24,21 +24,22 @@
 
 
 
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
 
-type t
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
 
-(** Extra work is need to make merlin happy *)
-val to_merlin_string : t  -> string
-
-
-
-val from_map : Ext_json_types.t Map_string.t -> t 
-
-(** [to_bsb_string not_dev warning]
-*)
-val to_bsb_string : 
-  toplevel:bool -> 
-  t  -> 
-  string
-
-val use_default : t
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*) 
+let defaults_w = "-30-40+6+7+27+32..39+44+45+101"
+let defaults_warn_error = "-a+5+101";;

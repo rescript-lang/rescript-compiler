@@ -105,7 +105,7 @@ let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =
       let (lr, pres, rr) = splitAux x r in (N.join l v d lr, pres, rr)
 
 
-let rec split (x : key) n =
+let split (x : key) n =
   match N.toOpt n with 
     None ->
     N.(empty, None, empty)

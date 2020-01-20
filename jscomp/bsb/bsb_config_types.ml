@@ -40,10 +40,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = 
-  | Refmt_none
-  | Refmt_v3 
-  | Refmt_custom of string 
+type refmt = string option
 
 type gentype_config = {
   path : string (* resolved *)
@@ -67,7 +64,7 @@ type t =
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
-    warning : Bsb_warning.t option;
+    warning : Bsb_warning.t;
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]

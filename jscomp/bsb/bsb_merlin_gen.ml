@@ -89,12 +89,12 @@ let output_merlin_namespace buffer ns=
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   merlin_flg ^ 
   String.concat Ext_string.single_space 
-    (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
-     Literals.dash_nostdlib::bsc_flags) 
+    ("-strict-sequence" :: List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
+     Literals.dash_nostdlib::bsc_flags)) 
 
 (* No need for [-warn-error] in merlin  *)     
-let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
-  merlin_flg ^ Bsb_warning.get_warning_flag warning
+let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=     
+  merlin_flg ^ Bsb_warning.to_merlin_string warning
 
 
 let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)

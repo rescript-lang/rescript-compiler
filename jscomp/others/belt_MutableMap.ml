@@ -180,9 +180,9 @@ let keysToArray d =
 let valuesToArray d =   
   N.valuesToArray (S.dataGet d)
     
-let fromSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
+(* let fromSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
   let module M = (val id) in 
-  S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp
+  S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp *)
     
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.dataGet d)  

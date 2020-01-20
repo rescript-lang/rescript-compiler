@@ -61,6 +61,56 @@ let header =
 let package_name = "bs-platform"   
     
 end
+module Bsc_warnings
+= struct
+#1 "bsc_warnings.ml"
+(* Copyright (C) 2020- Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
+
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*) 
+let defaults_w = "-30-40+6+7+27+32..39+44+45+101"
+let defaults_warn_error = "-a+5+101";;
+
+end
 module Arg_helper : sig 
 #1 "arg_helper.mli"
 (**************************************************************************)
@@ -27807,8 +27857,8 @@ let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
 let max_elt = Set_gen.max_elt
 let choose = Set_gen.choose 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
+(* let of_sorted_list = Set_gen.of_sorted_list *)
+(* let of_sorted_array = Set_gen.of_sorted_array *)
 let partition = Set_gen.partition 
 let filter = Set_gen.filter 
 let of_sorted_list = Set_gen.of_sorted_list
@@ -27849,8 +27899,8 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
+  | (Empty, _) -> Empty
+  | (_, Empty) -> Empty
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -27861,7 +27911,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> Empty
+  | (Empty, _) -> Empty
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, _), t2) ->
     begin match split t2 v1 with
@@ -28111,6 +28161,8 @@ end = struct
 
 
 let setup_env () =
+  Warnings.parse_options false Bsc_warnings.defaults_w;
+  Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Clflags.bs_only := true;  
@@ -28122,7 +28174,8 @@ let setup_env () =
   Clflags.unsafe_string := false;
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
-  Clflags.binary_annotations := true; 
+  Clflags.binary_annotations := true;
+  Clflags.strict_sequence := true;
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
