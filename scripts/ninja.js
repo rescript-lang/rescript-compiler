@@ -1608,12 +1608,14 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -w a-50+6-40-30-23 -warn-error +a -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
+    description = arcive -> $out
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
+    description = linking -> $out
 rule mk_bsversion
     command = node $in
     generator = true

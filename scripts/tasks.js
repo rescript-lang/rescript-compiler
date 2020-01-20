@@ -28,10 +28,10 @@ var isBuilding = false;
 var ninjaFile = require("./ninja.js");
 var jscompDir = path.join("..", "jscomp");
 function rebuild() {
-  console.log(">>>> Start compiling");
   if (isBuilding) {
     buildAppending = true;
   } else {
+    console.log(">>>> Start compiling");
     isBuilding = true;
     var p = cp.spawn(ninjaFile.vendorNinjaPath, [], {
       stdio: ["inherit", "inherit", "pipe"]
@@ -54,7 +54,7 @@ function buildFinished(code, signal) {
       console.log(`File "BUILD", line 1, characters 1-1:`);
       console.log(`Error: Failed to build`);
     }
-    console.log(">>>> Finish compiling");
+    console.log(">>>> Finish compiling (options: R|clean|config)");
     // TODO: check ninja exit error code
     if (code === 0) {
       // This is not always correct
@@ -78,3 +78,45 @@ sourceDirs.forEach(x => {
   fs.watch(path.join(jscompDir, x), "utf8", onSourceChange);
 });
 rebuild();
+
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+var child_process = require("child_process");
+rl.on("line", input => {
+  switch (input.toLowerCase()) {
+    case "r":
+      rebuild();
+      break;
+    case "config":
+      if (isBuilding) {
+        console.log(`it's building`);
+      } else {
+        isBuilding = true;
+        child_process
+          .fork(path.join(__dirname, "ninja.js"), ["config"])
+          .on("close", () => {
+            isBuilding = false;
+            rebuild();
+          });
+      }
+      break;
+    case "clean":
+      if (isBuilding) {
+        console.log(`it's building`);
+      } else {
+        isBuilding = true;
+        child_process
+          .fork(path.join(__dirname, "ninja.js"), ["cleanbuild"])
+          .on("close", () => {
+            isBuilding = false;
+          });
+      }
+
+      break;
+  }
+});
