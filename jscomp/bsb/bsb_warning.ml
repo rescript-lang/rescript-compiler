@@ -38,13 +38,25 @@ type nonrec t = t0 option
 
 let use_default = None
 
+let prepare_warning_concat ~(beg : bool) s =
+  let s = Ext_string.trim s in 
+  if s = "" then s 
+  else 
+    match s.[0] with 
+    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
+    | 'a' .. 'z' -> 
+      if beg then "-w " ^ s else "+" ^ s 
+    | _ -> 
+      if beg then "-w " ^ s else s
+
 let to_merlin_string x =
   "-w " ^ Bsc_warnings.defaults_w
   ^
   (match x with
    | Some {number =None}
    | None ->  Ext_string.empty
-   | Some {number = Some x} -> Ext_string.trim x )
+   | Some {number = Some x} -> 
+    prepare_warning_concat ~beg:false x )
 
 
    
@@ -75,19 +87,12 @@ let from_map (m : Ext_json_types.t Map_string.t) =
 let to_bsb_string ~toplevel warning =
   match warning with
   | None -> Ext_string.empty
-  | Some warning -> 
-    "-w " ^ Bsc_warnings.defaults_w ^
+  | Some warning ->     
     (match warning.number with
      | None ->
        Ext_string.empty
      | Some x ->
-       let content = 
-         Ext_string.trim x in 
-       if content = "" then content 
-       else 
-         match content.[0] with 
-         | '0' .. '9' -> "+" ^ content
-         | _ -> content
+       prepare_warning_concat ~beg:true x  
     ) ^
     if toplevel then 
       match warning.error with
