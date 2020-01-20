@@ -79,44 +79,43 @@ sourceDirs.forEach(x => {
 });
 rebuild();
 
-const readline = require("readline");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 var child_process = require("child_process");
-rl.on("line", input => {
-  switch (input.toLowerCase()) {
-    case "r":
-      rebuild();
-      break;
-    case "config":
-      if (isBuilding) {
-        console.log(`it's building`);
-      } else {
-        isBuilding = true;
-        child_process
-          .fork(path.join(__dirname, "ninja.js"), ["config"])
-          .on("close", () => {
-            isBuilding = false;
-            rebuild();
-          });
-      }
-      break;
-    case "clean":
-      if (isBuilding) {
-        console.log(`it's building`);
-      } else {
-        isBuilding = true;
-        child_process
-          .fork(path.join(__dirname, "ninja.js"), ["cleanbuild"])
-          .on("close", () => {
-            isBuilding = false;
-          });
-      }
+var readline = require("readline");
+readline
+  .createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  .on("line", input => {
+    switch (input.toLowerCase()) {
+      case "r":
+        rebuild();
+        break;
+      case "config":
+        if (isBuilding) {
+          console.log(`it's building`);
+        } else {
+          isBuilding = true;
+          child_process
+            .fork(path.join(__dirname, "ninja.js"), ["config"])
+            .on("close", () => {
+              isBuilding = false;
+              rebuild();
+            });
+        }
+        break;
+      case "clean":
+        if (isBuilding) {
+          console.log(`it's building`);
+        } else {
+          isBuilding = true;
+          child_process
+            .fork(path.join(__dirname, "ninja.js"), ["cleanbuild"])
+            .on("close", () => {
+              isBuilding = false;
+            });
+        }
 
-      break;
-  }
-});
+        break;
+    }
+  });
