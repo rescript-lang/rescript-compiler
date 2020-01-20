@@ -56,8 +56,7 @@ let implementation ?prefix ~use_super_errors ?(react_ppx_version=V3) impl str  :
     Lazy.force Super_main.setup ;
   end;
 
-  (* copied over from Bsb_warning.default_warning_flag *)
-  Warnings.parse_options false Bsb_warning.default_warning;
+
 
   try
     let code = match prefix with

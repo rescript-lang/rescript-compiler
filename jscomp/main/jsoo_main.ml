@@ -61,8 +61,6 @@ let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : 
     Lazy.force Super_main.setup ;
   end;
 
-  (* copied over from Bsb_warning.default_warning_flag *)
-  Warnings.parse_options false Bsb_warning.default_warning;
 
   try
     let ast = impl 
