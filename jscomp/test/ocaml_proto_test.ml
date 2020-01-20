@@ -1,3 +1,4 @@
+[@@@warning "-a"]
 module 
 Pbpt
 = struct
