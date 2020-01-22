@@ -93,8 +93,8 @@ function setUpWebSocket() {
         .on('error', function (err) {
             if(err !== undefined && err.code === "EADDRINUSE" ){
                 var error = std_is_tty?`\x1b[1;31mERROR:\x1b[0m` : `ERROR:`
-                console.error(`${error} The websocket port number ${webSocketPort} is already used, 
-please pick a different one using "-ws [host:]port" syntax`)
+                console.error(`${error} The websocket port number ${webSocketPort} is in use. 
+Please pick a different one using the \`-ws [host:]port\` flag from bsb.`)
             } else {            
                 console.error(err)            
             }            
