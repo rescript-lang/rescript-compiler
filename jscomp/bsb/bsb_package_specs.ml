@@ -27,7 +27,11 @@ let ( // ) = Ext_path.combine
 (* TODO: sync up with {!Js_package_info.module_system} *)
 type format = NodeJS | Es6 | Es6_global
 
-type spec = { format : format; in_source : bool }
+type spec = {
+  format : format;
+  in_source : bool;
+  suffix : string
+}
 
 module Spec_set = Set.Make (struct
   type t = spec
@@ -64,6 +68,29 @@ let prefix_of_format (x : format) =
   | Es6_global -> Bsb_config.lib_es6_global
 
 
+let bad_suffix_message_warn suffix =
+  Bsb_log.warn
+    "@{<warning>UNSUPPORTED@}: package-specs: extension `%s` is unsupported@;\
+     ; consider one of: %s, %s, %s, or %s@." suffix Literals.suffix_js
+    Literals.suffix_mjs Literals.suffix_bs_js Literals.suffix_bs_mjs
+
+
+let supported_suffix (x : string) =
+  if not (List.mem x Literals.[ suffix_js; suffix_bs_js; suffix_bs_mjs ]) then
+    bad_suffix_message_warn x;
+  x
+
+
+let default_suffix format in_source =
+  (* In the absence of direction to the contrary, the suffix depends on
+   * [format] and [in_source]. *)
+  match (format, in_source) with
+  | NodeJS, false -> Literals.suffix_js
+  | NodeJS, true -> Literals.suffix_bs_js
+  | _, false -> Literals.suffix_mjs
+  | _, true -> Literals.suffix_bs_mjs
+
+
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
@@ -83,16 +110,27 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
 and from_json_single (x : Ext_json_types.t) : spec =
   match x with
   | Str { str = format; loc } ->
-      { format = supported_format format loc; in_source = false }
+      let format = supported_format format loc in
+      { format; in_source = false; suffix = default_suffix format false }
   | Obj { map; loc } -> (
-      match Map_string.find_exn map "module" with
+      match Map_string.find_exn map Bsb_build_schemas._module with
       | Str { str = format } ->
+          let format = supported_format format loc in
           let in_source =
             match Map_string.find_opt map Bsb_build_schemas.in_source with
             | Some (True _) -> true
             | Some _ | None -> false
           in
-          { format = supported_format format loc; in_source }
+          let suffix =
+            match Map_string.find_opt map Bsb_build_schemas.suffix with
+            | Some (Str { str = suffix; loc }) -> supported_suffix suffix
+            | Some _ ->
+                Bsb_exception.errorf ~loc
+                  "package-specs: the `suffix` field of the configuration \
+                   object must be absent, or a string."
+            | None -> default_suffix format in_source
+          in
+          { format; in_source; suffix }
       | Arr _ ->
           Bsb_exception.errorf ~loc
             "package-specs: when the configuration is an object, `module` \
@@ -137,7 +175,8 @@ let package_flag_of_package_specs (package_specs : t) (dirname : string) :
 
 
 let default_package_specs =
-  Spec_set.singleton { format = NodeJS; in_source = false }
+  Spec_set.singleton
+    { format = NodeJS; in_source = false; suffix = default_suffix NodeJS false }
 
 
 (** [get_list_of_output_js specs true "src/hi/hello"] *)
