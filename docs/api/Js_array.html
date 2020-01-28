@@ -68,6 +68,7 @@
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_internalRaw.html">Js_internalRaw</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
@@ -116,67 +117,15 @@
 
 
 <pre><span id="VALfrom"><span class="keyword">val</span> from</span> : <code class="type">'a <a href="Js_array.html#TYPEarray_like">array_like</a> -> 'b array</code></pre>
-<pre><span id="VALfromMap"><span class="keyword">val</span> fromMap</span> : <code class="type">'a <a href="Js_array.html#TYPEarray_like">array_like</a> -> ('a -> 'b) -> 'b array</code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<pre><span id="VALisArray"><span class="keyword">val</span> isArray</span> : <code class="type">'a -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>ES2015</p>
-<p>ES2015</p>
-
+<pre><span id="VALfromMap"><span class="keyword">val</span> fromMap</span> : <code class="type">'a <a href="Js_array.html#TYPEarray_like">array_like</a> -> ('a -> 'b) -> 'b array</code></pre>
+<pre><span id="VALisArray"><span class="keyword">val</span> isArray</span> : <code class="type">'a -> bool</code></pre>
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a array -> int</code></pre>
 <pre><span id="VALcopyWithin"><span class="keyword">val</span> copyWithin</span> : <code class="type">to_:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
-<pre><span id="VALcopyWithinFrom"><span class="keyword">val</span> copyWithinFrom</span> : <code class="type">to_:int -> from:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<pre><span id="VALcopyWithinFromRange"><span class="keyword">val</span> copyWithinFromRange</span> : <code class="type">to_:int -> start:int -> end_:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>ES2015</p>
-
+<pre><span id="VALcopyWithinFrom"><span class="keyword">val</span> copyWithinFrom</span> : <code class="type">to_:int -> from:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcopyWithinFromRange"><span class="keyword">val</span> copyWithinFromRange</span> : <code class="type">to_:int -> start:int -> end_:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfillInPlace"><span class="keyword">val</span> fillInPlace</span> : <code class="type">'a -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfillFromInPlace"><span class="keyword">val</span> fillFromInPlace</span> : <code class="type">'a -> from:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<pre><span id="VALfillRangeInPlace"><span class="keyword">val</span> fillRangeInPlace</span> : <code class="type">'a -> start:int -> end_:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>ES2015</p>
-
+<pre><span id="VALfillFromInPlace"><span class="keyword">val</span> fillFromInPlace</span> : <code class="type">'a -> from:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfillRangeInPlace"><span class="keyword">val</span> fillRangeInPlace</span> : <code class="type">'a -> start:int -> end_:int -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpop"><span class="keyword">val</span> pop</span> : <code class="type">'a <a href="Js_array.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
                     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push<br>
@@ -229,27 +178,9 @@
                   
 <pre><span id="VALfilteri"><span class="keyword">val</span> filteri</span> : <code class="type">('a -> int -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a <a href="Js_array.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type">('a -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a option</code></pre>
-<pre><span id="VALfindi"><span class="keyword">val</span> findi</span> : <code class="type">('a -> int -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>ES2015</p>
-
+<pre><span id="VALfindi"><span class="keyword">val</span> findi</span> : <code class="type">('a -> int -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'a option</code></pre>
 <pre><span id="VALfindIndex"><span class="keyword">val</span> findIndex</span> : <code class="type">('a -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALfindIndexi"><span class="keyword">val</span> findIndexi</span> : <code class="type">('a -> int -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>ES2015</p>
-
+<pre><span id="VALfindIndexi"><span class="keyword">val</span> findIndexi</span> : <code class="type">('a -> int -> bool) -> 'a <a href="Js_array.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('a -> unit) -> 'a <a href="Js_array.html#TYPEt">t</a> -> unit</code></pre>
 <pre><span id="VALforEachi"><span class="keyword">val</span> forEachi</span> : <code class="type">('a -> int -> unit) -> 'a <a href="Js_array.html#TYPEt">t</a> -> unit</code></pre>
 <pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b) -> 'a <a href="Js_array.html#TYPEt">t</a> -> 'b <a href="Js_array.html#TYPEt">t</a></code></pre>

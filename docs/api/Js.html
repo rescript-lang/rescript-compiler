@@ -68,6 +68,7 @@
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_internalRaw.html">Js_internalRaw</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
@@ -207,19 +208,12 @@
 <pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><p><code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
     Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection</p>
 
-<pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre>
+<pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre><p>A convenience function to log everything</p>
+
 <pre><span id="VALlog2"><span class="keyword">val</span> log2</span> : <code class="type">'a -> 'b -> unit</code></pre>
 <pre><span id="VALlog3"><span class="keyword">val</span> log3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
 <pre><span id="VALlog4"><span class="keyword">val</span> log4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
-<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre><div class="info ">
-                    <div class="not-examples">
-                    A convenience function to log everything<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <p>A convenience function to log more than 4 arguments</p>
+<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre><p>A convenience function to log more than 4 arguments</p>
 
 <pre><span id="VALeqNull"><span class="keyword">val</span> eqNull</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnull">null</a> -> bool</code></pre>
 <pre><span id="VALeqUndefined"><span class="keyword">val</span> eqUndefined</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEundefined">undefined</a> -> bool</code></pre>
@@ -354,17 +348,17 @@
                 <div class="not-examples">
                      
                 </div>
-                </div> 
+                </div> <p>Provide utilities for manipulating JS types</p>
+
 <pre><span id="MODULEFloat"><span class="keyword">module</span> <a href="Js.Float.html">Float</a></span>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for manipulating JS types<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <p>Provide utilities for JS float</p>
+
 <pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Js.Int.html">Int</a></span>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for JS float<br>
- 
+                     
                 </div>
                 </div> <p>Provide utilities for int</p>
 

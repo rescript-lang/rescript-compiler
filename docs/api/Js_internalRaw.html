@@ -7,8 +7,8 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js.Result.html"><link rel="next" href="Js.Vector.html">
-                 <title> Js.List </title></head> 
+                 <link rel="previous" href="Js_int.html"><link rel="next" href="Js_json.html">
+                 <title> Js_internalRaw </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -94,52 +94,19 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Js.Result.html" title="Js.Result">Previous</a>
-&nbsp;<a class="up" href="Js.html" title="Js">Up</a>
-&nbsp;<a class="post" href="Js.Vector.html" title="Js.Vector">Next</a>
+<div class="navbar"><a class="pre" href="Js_int.html" title="Js_int">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Js_json.html" title="Js_json">Next</a>
 </div>
-<h1>Module <a href="type_Js.List.html">Js.List</a></h1>
+<h1>Module <a href="type_Js_internalRaw.html">Js_internalRaw</a></h1>
 
-<pre><span id="MODULEList"><span class="keyword">module</span> List</span>: <code class="type"><a href="Js_list.html">Js_list</a></code></pre><hr width="100%">
-
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a list</code> </pre>
-
-
-<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALcons"><span class="keyword">val</span> cons</span> : <code class="type">'a -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALhd"><span class="keyword">val</span> hd</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a option</code></pre>
-<pre><span id="VALtl"><span class="keyword">val</span> tl</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a> option</code></pre>
-<pre><span id="VALnth"><span class="keyword">val</span> nth</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> int -> 'a option</code></pre>
-<pre><span id="VALrevAppend"><span class="keyword">val</span> revAppend</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALrev"><span class="keyword">val</span> rev</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmapRev"><span class="keyword">val</span> mapRev</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">('a -> unit [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">(int -> 'a -> unit [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a</code></pre><div class="info ">
+<pre><span id="MODULEJs_internalRaw"><span class="keyword">module</span> Js_internalRaw</span>: <code class="code">sig</code> <a href="Js_internalRaw.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    Application order is left to right, tail recurisve<br>
+                    Intenral only<br>
  
                     </div>
                     
                     </div>
 
-                  
-<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b</code></pre><div class="info ">
-                    <div class="not-examples">
-                    Application order is right to left
-    tail-recursive.<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<pre><span id="VALflatten"><span class="keyword">val</span> flatten</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">('a -> bool [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfilterMap"><span class="keyword">val</span> filterMap</span> : <code class="type">('a -> 'b option [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALcountBy"><span class="keyword">val</span> countBy</span> : <code class="type">('a -> bool [@bs]) -> 'a list -> int</code></pre>
-<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtoVector"><span class="keyword">val</span> toVector</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_vector.html#TYPEt">Js_vector.t</a></code></pre>
-<pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool</code></pre></body></html>
+                  <hr width="100%">
+</body></html>

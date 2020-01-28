@@ -22,8 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Intenral only *)
 
- external raw_expr : string -> 'a = "#raw_expr"
- external raw_stmt : string -> 'a = "#raw_stmt"
- external raw_function: string ->  'a = "#raw_function"
-  
+(**/**)
+external raw_expr : string -> 'a = "#raw_expr"
+external raw_stmt : string -> 'a = "#raw_stmt"
+external raw_function: string ->  'a = "#raw_function"
+(**/**)  
