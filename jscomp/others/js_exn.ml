@@ -25,6 +25,7 @@
 
 type t = Caml_js_exceptions.t 
 
+[@@@warning "-38"] (* unused extension constructor*)
 exception Error = Caml_js_exceptions.Error
 
 external asJsExn : exn -> t option = 
