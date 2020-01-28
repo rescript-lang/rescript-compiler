@@ -22,6 +22,9 @@ val version: string
 
 val standard_library: string
         (* The directory containing the standard libraries *)
+
+val bs_only : bool ref
+
 val standard_runtime: string
         (* The full path to the standard bytecode interpreter ocamlrun *)
 val ccomp_type: string
@@ -208,7 +211,7 @@ let version = "4.06.1+BS"
 let standard_library =
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
 let standard_library_default = standard_library
-
+let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
 let c_compiler = "gcc"
@@ -2833,7 +2836,6 @@ val assume_no_mli : mli_status ref
 val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
-val bs_only : bool ref (* set true on bs top*)
 val bs_gentype : string option ref
 val no_assert_false : bool ref
 val bs_quiet : bool ref 
@@ -3259,7 +3261,6 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_only = ref false
 let bs_gentype = ref None
 let no_assert_false = ref false
 let bs_quiet = ref false

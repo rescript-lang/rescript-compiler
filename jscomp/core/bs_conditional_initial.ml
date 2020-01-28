@@ -28,7 +28,7 @@ let setup_env () =
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
-  Clflags.bs_only := true;  
+  Config.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
   (* default true 
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path

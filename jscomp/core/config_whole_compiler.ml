@@ -18,7 +18,7 @@ let version = "4.06.1+BS"
 let standard_library =
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
 let standard_library_default = standard_library
-
+let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
 let c_compiler = "gcc"

@@ -16588,7 +16588,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
   we make it at this time to make `bsb -help` easier
 *)
     "-ws", Arg.Bool ignore, 
-    " [host:]port specify the websocket number so that when a build is finished, we send such websocket port number a signal" 
+    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." 
   ]
 
 
