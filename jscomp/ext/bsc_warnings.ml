@@ -41,5 +41,5 @@
   - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
   - 101 (bsb-specific) unsafe polymorphic comparison.
 *) 
-let defaults_w = "-30-40+6+7+27+32..39+44+45+101"
+let defaults_w = "+a-30-40+6+7+27+32..39+44+45+101"
 let defaults_warn_error = "-a+5+101";;
