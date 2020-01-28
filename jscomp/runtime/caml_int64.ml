@@ -24,8 +24,6 @@
 
 
 
- module Use =  Js_internalRaw
-
 (* This module would  only work with js backend, since it requires
    [nativeint] behaves as js  numbers
  *)
@@ -479,3 +477,5 @@ let get64 (s : string) (i:int) : t =
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+6]) << 48 )
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+7]) << 56 )))
 
+[@@@ocaml.warning "-60"]
+module Use =  Js_internalRaw

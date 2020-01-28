@@ -22,7 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module Use =  Js_internalRaw
 
 
 (* borrowed from others/js_math.ml *)
@@ -138,3 +137,7 @@ let caml_tan_float x =
   let y = exp x in
   let z = exp (-. x) in
   (y +. z) /. (y -. z   ) *)
+  
+[@@@ocaml.warning "-60"] 
+module Use =  Js_internalRaw
+  

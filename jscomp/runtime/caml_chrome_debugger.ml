@@ -22,9 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
 type obj = Caml_obj_extern.t
-module Use =  Js_internalRaw
- let setupChromeDebugger : unit -> unit = [%raw{|function(_){
+
+let setupChromeDebugger : unit -> unit = [%raw{|function(_){
  
  // I don't know how to directly refer to the classes that chrome's built-in
  // formatters use. adding "class": "foo" doesn't seem to work
@@ -179,3 +180,9 @@ let simpleVariant meta xs =
 let polyVar meta xs =   
   setupOnce ();
   xs |. addProp (cacheSymbol "BsPolyVar") {value = meta}
+
+
+[@@@warning "-60"]
+module  Use =  Js_internalRaw 
+  
+    

@@ -62,6 +62,7 @@ module Internal = struct
  type (-'arg, + 'result) meth
  type (-'arg, + 'result) fn
  (** Js uncurried function *)
+
  external (!)  : 'a t -> 'a = "#unsafe_downgrade"
  external debugger : unit -> unit = "#debugger"
  external unsafe_downgrade : 'a t -> 'a = "#unsafe_downgrade"
@@ -156,13 +157,15 @@ external typeof : 'a -> string = "#typeof"
 
 external log : 'a -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
+(** A convenience function to log everything *)
+
 external log2 : 'a -> 'b -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
 external log3 : 'a -> 'b -> 'c -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
 external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-(** A convenience function to log everything *)
+
 external logMany : 'a array -> unit = "log"
 [@@bs.val] [@@bs.scope "console"] [@@bs.splice]
 (** A convenience function to log more than 4 arguments *)
@@ -258,8 +261,10 @@ module TypedArray2 = Js_typed_array2
 
 module Types = Js_types
 (** Provide utilities for manipulating JS types  *)
+
 module Float = Js_float
 (** Provide utilities for JS float *)
+
 module Int = Js_int
 (** Provide utilities for int *)
 

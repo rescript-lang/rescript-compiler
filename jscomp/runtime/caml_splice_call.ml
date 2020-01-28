@@ -21,8 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
- module Use =  Js_internalRaw
-
+ 
 type obj = Caml_obj_extern.t
 
 let spliceApply : obj -> obj -> obj = [%raw{|function(fn,args){
@@ -52,3 +51,6 @@ let spliceObjApply : obj -> obj -> obj -> obj = [%raw{|function(obj,name,args){
   }
   return (obj[name]).apply(obj,applied)
 }|}]
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

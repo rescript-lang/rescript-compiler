@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-module Use =  Js_internalRaw
-
 type lex_tables 
 type lexbuf
 
@@ -367,3 +365,5 @@ let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
   = fun tbl i buf -> 
 caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)
 
+[@@@warning "-60"]
+module Use =  Js_internalRaw
