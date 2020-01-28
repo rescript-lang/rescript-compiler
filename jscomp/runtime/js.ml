@@ -52,6 +52,7 @@ type +'a t
     ]}
  *)
 
+[@@@warning "-49"]
 (* internal types for FFI, these types are not used by normal users *)
 
 (**/**)

@@ -402,7 +402,7 @@ let caml_int64_format fmt x =
         begin         
           let y = Caml_int64.discard_sign  x in
           (* 2 ^  63 + y `div_mod` 8 *)        
-          let quotient_l  = 1152921504606846976L (**)
+          let quotient_l  = 1152921504606846976L 
             (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
           in 
 
