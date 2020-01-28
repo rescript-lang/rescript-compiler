@@ -98,9 +98,10 @@ val partition: t -> (value -> bool) ->  t * t
 
 val size: t -> int
 val toList: t -> value list
- (** In increasing order with respect *)
-val toArray: t -> value array
+(** In increasing order with respect *)
 
+val toArray: t -> value array
+(** In increasing order with respect *)
 
 val minimum: t -> value option
 val minUndefined: t -> value Js.undefined

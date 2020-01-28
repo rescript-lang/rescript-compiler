@@ -54,6 +54,7 @@ val cmp:
     First compare by size, if size is the same,
     compare by key, value pair
 *)
+
 val eqU:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
 val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool) -> bool
 (** [eq m1 m2 eqf] tests whether the maps [m1] and [m2] are
@@ -86,12 +87,16 @@ val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) ->  bool
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p].
 *)
+
 val size: ('k, 'a, 'id) t -> int
 
 
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
+
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
+(** In increasing order*)
+
 val fromArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t
 val keysToArray: ('k, _, _) t -> 'k array
 val valuesToArray: (_, 'a, _) t -> 'a array
@@ -121,6 +126,7 @@ val checkInvariantInternal: _ t -> unit
 val remove:  ('k, 'a, 'id) t -> 'k -> unit
 (** [remove m x] do the in-place modification,
 *)
+
 val removeMany: ('k, 'a, 'id) t -> 'k array -> unit
 
 val set: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
