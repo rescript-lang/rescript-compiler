@@ -41,5 +41,36 @@
   - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
   - 101 (bsb-specific) unsafe polymorphic comparison.
 *) 
-let defaults_w = "+a-30-40+6+7+27+32..39+44+45+101"
+
+
+(*
+  The purpose of default warning set is to make it strict while
+  not annoy user too much
+
+  -4 Fragile pattern matching: matching that will remain complete even if additional con- structors are added to one of the variant types matched.
+  We turn it off since common pattern
+  {[
+    match x with | A -> .. |  _ -> false
+  ]}
+
+  -9 Missing fields in a record pattern.
+  only in some special cases that we need all fields being listed
+
+  We encourage people to write code based on type based disambigution
+  40,41,42 are enabled for compatiblity reasons  
+  -40 Constructor or label name used out of scope
+  This is intentional, we should never warn it
+  - 41 Ambiguous constructor or label name.
+  It is turned off since it prevents such cases below:
+  {[
+    type a = A |B 
+    type b = A | B | C
+  ]}
+  - 42 Disambiguated constructor or label name (compatibility warning).
+  
+  - 50 Unexpected documentation comment.
+
+  - 102 Bs_polymorphic_comparison
+*)
+let defaults_w = "+a-4-9-40-41-42-50-102"
 let defaults_warn_error = "-a+5+101";;

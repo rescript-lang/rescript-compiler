@@ -121,6 +121,9 @@ module Bsc_warnings
 
   -9 Missing fields in a record pattern.
   only in some special cases that we need all fields being listed
+
+  We encourage people to write code based on type based disambigution
+  40,41,42 are enabled for compatiblity reasons  
   -40 Constructor or label name used out of scope
   This is intentional, we should never warn it
   - 41 Ambiguous constructor or label name.
@@ -130,7 +133,9 @@ module Bsc_warnings
     type b = A | B | C
   ]}
   - 42 Disambiguated constructor or label name (compatibility warning).
+  
   - 50 Unexpected documentation comment.
+
   - 102 Bs_polymorphic_comparison
 *)
 let defaults_w = "+a-4-9-40-41-42-50-102"
