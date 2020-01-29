@@ -41,7 +41,7 @@ The extension requires using an opam switch for ocaml 4.02.3, where `merlin` and
 ### Building docs
 
 ```
-./script/ninja.js docs
+./scripts/ninja.js docs
 ```
 
 #### Edit file and test changes
