@@ -29,8 +29,8 @@ var verbose = false
  */
 var postBuild = undefined
 var useWebSocket = false
-var webSocketHost = 'localhost'
-var webSocketPort = 9999
+var webSocketHost = process.env.BSB_WEBSOCKET_HOST || 'localhost'
+var webSocketPort = process.env.BSB_WEBSOCKET_PORT || 9999
 
 /**
  * @returns {string}
