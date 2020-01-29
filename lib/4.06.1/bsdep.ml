@@ -138,7 +138,7 @@ module Bsc_warnings
 
   - 102 Bs_polymorphic_comparison
 *)
-let defaults_w = "+a-4-9-40-41-42-50-102"
+let defaults_w = "+a-4-40-41-42-50-102"
 let defaults_warn_error = "-a+5+101";;
 
 end

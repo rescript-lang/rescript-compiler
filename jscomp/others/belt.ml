@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+[@@@warning "-49"]
 (** A stdlib shipped with BuckleScript
 
     This stdlib is still in {i beta} but we encourage you to try it out and

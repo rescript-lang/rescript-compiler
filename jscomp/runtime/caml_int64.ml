@@ -168,8 +168,8 @@ let rec mul this
   | Int64 {lo = 0n ; hi = 0n}, _
   | _, Int64 {lo = 0n; hi = 0n}
     -> zero
-  | Int64 {lo = 0n; hi = - 0x80000000n}, Int64 {lo }
-  | Int64 {lo}, Int64 {lo = 0n; hi = - 0x80000000n}
+  | Int64 {lo = 0n; hi = - 0x80000000n}, Int64 {lo;_ }
+  | Int64 {lo;_}, Int64 {lo = 0n; hi = - 0x80000000n}
     ->
     if  (lo & 0x1n) = 0n then
       zero
@@ -329,7 +329,7 @@ let rec div self other =
       if eq other one || eq other neg_one then self
       else if eq other min_int then one
       else
-        let (Int64 {hi = other_hi}) = other in
+        let (Int64 {hi = other_hi;_}) = other in
       (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
         let half_this = asr_ self 1  in
         let approx = lsl_ (div half_this other) 1 in
@@ -365,7 +365,7 @@ let rec div self other =
           else 2. ** (log2 -. 48.) in
         let approxRes = ref (of_float approx.contents) in
         let approxRem = ref (mul approxRes.contents other) in
-        while (match approxRem.contents with Int64 {hi}-> hi) < 0n || gt approxRem.contents rem.contents do
+        while (match approxRem.contents with Int64 {hi;_}-> hi) < 0n || gt approxRem.contents rem.contents do
           approx.contents <- approx.contents -. delta;
           approxRes.contents <- of_float approx.contents;
           approxRem.contents <- mul approxRes.contents other
