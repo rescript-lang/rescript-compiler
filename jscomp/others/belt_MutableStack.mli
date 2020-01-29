@@ -35,6 +35,7 @@ val make: unit -> 'a t
 
 val clear: 'a t -> unit
 (** Discard all elements from the stack. *)
+
 val copy : 'a t -> 'a t
 (** [copy x] O(1) operation, return a new stack  *)
 

@@ -23,12 +23,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
 
-module Use =  Js_internalRaw
-
-(** *)
-
-[@@@ocaml.warning "-22"]
 
 [%%bs.raw{|
 
@@ -394,3 +390,6 @@ let caml_set_parser_trace : bool -> bool = [%raw{|function (v) {
     PARSER_TRACE = v;
     return old;
 }|}]
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

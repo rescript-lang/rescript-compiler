@@ -111,7 +111,9 @@ val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value,
 val size:  ('value, 'id) t -> int
 val toList: ('value, 'id) t -> 'value list
 (** In increasing order*)
+
 val toArray: ('value, 'id) t -> 'value array
+(** In increasing order*)
 
 val minimum: ('value, 'id) t -> 'value option
 val minUndefined: ('value, 'id) t -> 'value Js.undefined

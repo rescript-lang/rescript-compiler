@@ -79,8 +79,9 @@ val some:  'a t -> (key -> 'a -> bool) -> bool
 val size: 'a t -> int
 val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
-val toArray: 'a t -> (key * 'a) array   
 
+val toArray: 'a t -> (key * 'a) array   
+(** In increasing order *)
 
 val fromArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 
@@ -110,6 +111,7 @@ val checkInvariantInternal: _ t -> unit
 
 val remove: 'a t -> key -> unit  
 (** [remove m x] do the in-place modification *)
+
 val removeMany: 'a t -> key array -> unit
     
 val set: 'a t -> key -> 'a -> unit  

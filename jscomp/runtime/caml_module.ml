@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
 (** This module replaced camlinternalMod completely. 
   Note we can replace {!CamlinternalMod} completely, but it is not replaced 
   due to we believe this is an even low level dependency
 *)
+
 [@@@warning "-37"] (* `Function` may be used in runtime *)
 
 type shape = 

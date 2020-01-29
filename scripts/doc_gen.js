@@ -33,6 +33,10 @@ const capitalize = (s) => {
  */
 const strip = filename => filename.split('.').slice(0, -1).join('.')
 function main() {
+
+        /**
+         * @type {string[]}
+         */
         var hidden_list = []
         var runtime_files =
                 fs.readdirSync(runtime_dir)

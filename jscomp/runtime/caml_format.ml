@@ -25,9 +25,6 @@
 
 
 
-
- module Use =  Js_internalRaw
-
 (** *)
 
 let repeat = Caml_utils.repeat
@@ -405,7 +402,7 @@ let caml_int64_format fmt x =
         begin         
           let y = Caml_int64.discard_sign  x in
           (* 2 ^  63 + y `div_mod` 8 *)        
-          let quotient_l  = 1152921504606846976L (**)
+          let quotient_l  = 1152921504606846976L 
             (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
           in 
 
@@ -681,3 +678,6 @@ let caml_int32_format = caml_format_int
 let caml_int32_of_string = caml_int_of_string
 let caml_nativeint_of_string = caml_int32_of_string
 
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

@@ -58,28 +58,35 @@ external parseAsFloat : string -> float = "" [@@bs.val "parse"] [@@bs.scope "Dat
 
 external getDate : t -> float = "getDate" [@@bs.send]
 (** return the day of the month (1-31) *)
+
 external getDay : t -> float = "getDay" [@@bs.send]
 (** returns the day of the week (0-6) *)
+
 external getFullYear : t -> float = "getFullYear" [@@bs.send]
 external getHours : t -> float = "getHours" [@@bs.send]
 external getMilliseconds : t -> float = "getMilliseconds" [@@bs.send]
 external getMinutes : t -> float = "getMinutes" [@@bs.send]
 external getMonth : t -> float = "getMonth" [@@bs.send]
 (** returns the month (0-11) *)
+
 external getSeconds : t -> float = "getSeconds" [@@bs.send]
 external getTime : t -> float = "getTime" [@@bs.send]
 (** returns the number of milliseconds since Unix epoch *)
+
 external getTimezoneOffset : t -> float = "getTimezoneOffset" [@@bs.send]
 external getUTCDate : t -> float = "getUTCDate" [@@bs.send]
 (** return the day of the month (1-31) *)
+
 external getUTCDay : t -> float = "getUTCDay" [@@bs.send]
 (** returns the day of the week (0-6) *)
+
 external getUTCFullYear : t -> float = "getUTCFullYear" [@@bs.send]
 external getUTCHours : t -> float = "getUTCHours" [@@bs.send]
 external getUTCMilliseconds : t -> float = "getUTCMilliseconds" [@@bs.send]
 external getUTCMinutes : t -> float = "getUTCMinutes" [@@bs.send]
 external getUTCMonth : t -> float = "getUTCMonth" [@@bs.send]
 (** returns the month (0-11) *)
+
 external getUTCSeconds : t -> float = "getUTCSeconds" [@@bs.send]
 external getYear : t -> float = "getYear" [@@bs.send]
 [@@ocaml.deprecated "use `getFullYear` instead"]

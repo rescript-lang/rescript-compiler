@@ -55,6 +55,7 @@ type ('a, 'id) cmp
     Its runtime representation is a [cmp] function, but signed with a
     type parameter, so that different hash functions type mismatch
 *)
+
 module type Comparable = sig
   type identity
   type t

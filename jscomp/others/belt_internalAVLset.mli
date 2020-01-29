@@ -95,10 +95,12 @@ val lengthNode: 'a node -> int
 val size: 'a t -> int
 
 val toList: 'a t -> 'a list
+
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
 *)  
+
 val fillArray: 'a node -> int -> 'a array -> int 
 val toArray: 'a t -> 'a array
 val fromSortedArrayAux : 'a array -> int -> int -> 'a t

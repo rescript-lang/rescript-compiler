@@ -16,6 +16,8 @@
     than the generic type
 *)
 module Int = Belt_MapInt
+
+
 (** specalized when key type is [string], more efficient
     than the generic type *)
 module String = Belt_MapString
@@ -25,8 +27,8 @@ module String = Belt_MapString
 *)
 module Dict = Belt_MapDict
 
-module N = Belt_MapDict
-module A = Belt_Array
+(* module N = Belt_MapDict
+module A = Belt_Array *)
 
 type ('key, 'id ) id = ('key, 'id) Belt_Id.comparable
 type ('key, 'id ) cmp = ('key, 'id) Belt_Id.cmp

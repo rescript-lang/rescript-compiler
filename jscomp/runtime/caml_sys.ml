@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- module Use =  Js_internalRaw
-
 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
@@ -108,3 +106,6 @@ let caml_sys_is_directory _s =
 *)
 let caml_sys_file_exists _s = 
   raise ( Failure "caml_sys_file_exists not implemented")
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

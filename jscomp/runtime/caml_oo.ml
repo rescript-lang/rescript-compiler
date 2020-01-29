@@ -57,7 +57,7 @@ let caml_get_public_method
   let offs =  caml_methods_cache.(cacheid) in
   if (Caml_obj_extern.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else
-    (** TODO: binary search *)    
+    (* TODO: binary search *)    
     let rec aux (i : int) : int =     
       if i < 3 then assert false       
       else if (Caml_obj_extern.magic meths.(i) : int) = tag then

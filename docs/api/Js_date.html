@@ -68,6 +68,7 @@
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_internalRaw.html">Js_internalRaw</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
@@ -133,80 +134,31 @@
 <pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
 <pre><span id="VALparseAsFloat"><span class="keyword">val</span> parseAsFloat</span> : <code class="type">string -> float</code></pre><p>returns NaN if passed invalid date string</p>
 
-<pre><span id="VALgetDate"><span class="keyword">val</span> getDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetDay"><span class="keyword">val</span> getDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    return the day of the month (1-31)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetDate"><span class="keyword">val</span> getDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>return the day of the month (1-31)</p>
 
-                  
-<pre><span id="VALgetFullYear"><span class="keyword">val</span> getFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    returns the day of the week (0-6)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetDay"><span class="keyword">val</span> getDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the day of the week (0-6)</p>
 
-                  
+<pre><span id="VALgetFullYear"><span class="keyword">val</span> getFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetHours"><span class="keyword">val</span> getHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetMilliseconds"><span class="keyword">val</span> getMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetMinutes"><span class="keyword">val</span> getMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetMonth"><span class="keyword">val</span> getMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetSeconds"><span class="keyword">val</span> getSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    returns the month (0-11)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetMonth"><span class="keyword">val</span> getMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the month (0-11)</p>
 
-                  
-<pre><span id="VALgetTime"><span class="keyword">val</span> getTime</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetTimezoneOffset"><span class="keyword">val</span> getTimezoneOffset</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    returns the number of milliseconds since Unix epoch<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetSeconds"><span class="keyword">val</span> getSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetTime"><span class="keyword">val</span> getTime</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the number of milliseconds since Unix epoch</p>
 
-                  
-<pre><span id="VALgetUTCDate"><span class="keyword">val</span> getUTCDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetUTCDay"><span class="keyword">val</span> getUTCDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    return the day of the month (1-31)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetTimezoneOffset"><span class="keyword">val</span> getTimezoneOffset</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALgetUTCDate"><span class="keyword">val</span> getUTCDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>return the day of the month (1-31)</p>
 
-                  
-<pre><span id="VALgetUTCFullYear"><span class="keyword">val</span> getUTCFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    returns the day of the week (0-6)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetUTCDay"><span class="keyword">val</span> getUTCDay</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the day of the week (0-6)</p>
 
-                  
+<pre><span id="VALgetUTCFullYear"><span class="keyword">val</span> getUTCFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetUTCHours"><span class="keyword">val</span> getUTCHours</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetUTCMilliseconds"><span class="keyword">val</span> getUTCMilliseconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetUTCMinutes"><span class="keyword">val</span> getUTCMinutes</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetUTCMonth"><span class="keyword">val</span> getUTCMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALgetUTCSeconds"><span class="keyword">val</span> getUTCSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><div class="info ">
-                    <div class="not-examples">
-                    returns the month (0-11)<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALgetUTCMonth"><span class="keyword">val</span> getUTCMonth</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre><p>returns the month (0-11)</p>
 
-                  
+<pre><span id="VALgetUTCSeconds"><span class="keyword">val</span> getUTCSeconds</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALgetYear"><span class="keyword">val</span> getYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALsetDate"><span class="keyword">val</span> setDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>
 <pre><span id="VALsetFullYear"><span class="keyword">val</span> setFullYear</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float -> float</code></pre>

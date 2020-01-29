@@ -24,6 +24,8 @@
 
 (** Placeholder for Node bindings *)
 
+[@@@warning "-49"]
+
 module Path = Node_path
 
 module Fs = Node_fs

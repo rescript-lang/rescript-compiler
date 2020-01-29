@@ -54,6 +54,7 @@ val head: 'a t -> 'a option
      head [1;2;3] = Some 1 ;;
    ]}
 *)
+
 val headExn: 'a t -> 'a  
 (** [headExn xs]
 
@@ -90,6 +91,7 @@ val add: 'a t -> 'a -> 'a t
      add [1] 3 = [3;1];;
    ]}
 *)
+
 val get: 'a t -> int -> 'a option
 (** [get xs n]
 
@@ -618,6 +620,7 @@ val keepMap: 'a t -> ('a -> 'b option) -> 'b t
       [-2;-4]
     ]}
 *)
+
 val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
 (** [partition xs p] creates a pair of lists; the first list consists of all elements of [xs] that satisfy the predicate function [p]; the second list consists of all elements of [xs] that do not satisfy [p]
@@ -627,6 +630,7 @@ val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
       ([2;4], [1;3])
     ]}
 *)
+
 val unzip: ('a * 'b) t -> 'a t * 'b t
 (** [unzip xs] takes a list of pairs and creates a pair of lists. The first list contains all the first items of the pairs; the second list contains all the second items.
 
@@ -635,6 +639,7 @@ val unzip: ('a * 'b) t -> 'a t * 'b t
       unzip [(1,2) ; (3,4) ; (5,6) ; (7,8)] = ([1;3;5;7], [2;4;6;8]);;
     ]}
 *)
+
 val getAssocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 val getAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool)  -> 'c option
 (** [getAssoc xs k eq]

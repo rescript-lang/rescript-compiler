@@ -197,7 +197,7 @@ end
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]\
   \
   (* Accessor functions *)\
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)\
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)\
   \
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]\
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]\
@@ -210,11 +210,13 @@ end
   \
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]\
   (** [start] is inclusive, [end_] exclusive *)\
+  \
   external copy : t = "slice" [@@bs.send.pipe: t]\
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]\
   \
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]\
   (** [start] is inclusive, [end_] exclusive *)\
+  \
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]\
   \
   external toString : string = "toString" [@@bs.send.pipe: t]\
@@ -227,7 +229,7 @@ end
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]\
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]\
   \
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)\
+  \
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]\
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]\
   \
@@ -261,12 +263,15 @@ end
   external make : elt array -> t = STRINGIFY(moduleName) [@@bs.new]\
   external fromBuffer : array_buffer -> t = STRINGIFY(moduleName) [@@bs.new]\
   (** can throw *)\
+  \
   external fromBufferOffset : array_buffer -> int -> t = STRINGIFY(moduleName) [@@bs.new]\
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)\
+  \
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = STRINGIFY(moduleName) [@@bs.new]\
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)\
+  \
   external fromLength : int -> t = STRINGIFY(moduleName) [@@bs.new]\
   external from : elt array_like -> t = STRINGIFY(moduleName.from) [@@bs.val]\
   (* *Array.of is redundant, use make *)
@@ -339,12 +344,13 @@ end
 module Float64_array = Float64Array
 [@ocaml.deprecated "use `Float64Array` instead"]
 
-module DataView = struct
-  (** The DataView view provides a low-level interface for reading and writing
-      multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+
+(** The DataView view provides a low-level interface for reading and writing
+    multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
-  *)
+*)
+module DataView = struct
 
   type t = Js_typed_array2.DataView.t
 

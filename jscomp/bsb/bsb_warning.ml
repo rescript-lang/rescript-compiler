@@ -45,7 +45,9 @@ let prepare_warning_concat ~(beg : bool) s =
     match s.[0] with 
     | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
     | 'a' .. 'z' -> 
-      if beg then "-w " ^ s else "+" ^ s 
+      if beg then "-w " ^ s else "-" ^ s 
+    | 'A' .. 'Z' -> 
+      if beg then "-w " ^ s else "+" ^ s  
     | _ -> 
       if beg then "-w " ^ s else s
 

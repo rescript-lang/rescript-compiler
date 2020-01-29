@@ -219,6 +219,9 @@ val version: string
 
 val standard_library: string
         (* The directory containing the standard libraries *)
+
+val bs_only : bool ref
+
 val standard_runtime: string
         (* The full path to the standard bytecode interpreter ocamlrun *)
 val ccomp_type: string
@@ -405,7 +408,7 @@ let version = "4.06.1+BS"
 let standard_library =
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
 let standard_library_default = standard_library
-
+let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
 let c_compiler = "gcc"
@@ -2833,7 +2836,6 @@ val assume_no_mli : mli_status ref
 val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
-val bs_only : bool ref (* set true on bs top*)
 val bs_gentype : string option ref
 val no_assert_false : bool ref
 val bs_quiet : bool ref 
@@ -3259,7 +3261,6 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_only = ref false
 let bs_gentype = ref None
 let no_assert_false = ref false
 let bs_quiet = ref false
@@ -3782,8 +3783,11 @@ let parse_options errflag s =
 let defaults_w = "+a-4-6-7-9-27-29-32..42-44-45-48-50-60-102";;
 let defaults_warn_error = "-a+31";;
 
-let () = parse_options false defaults_w;;
-let () = parse_options true defaults_warn_error;;
+let () = 
+  if not !Config.bs_only then (
+    parse_options false defaults_w;
+    parse_options true defaults_warn_error;
+  )
 
 let message = function
   | Comment_start -> "this is the start of a comment."
@@ -22167,7 +22171,7 @@ let app_exp_mapper
            Ast_attributes.is_bs with
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
-         if !Clflags.bs_only then 
+         if !Config.bs_only then 
            {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)

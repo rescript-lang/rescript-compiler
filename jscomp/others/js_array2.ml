@@ -31,23 +31,23 @@ type 'a array_like
 type 'a array_iter = 'a array_like
 *)
 
-external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
-external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
-external isArray : 'a -> bool = "Array.isArray" [@@bs.val] (** ES2015 *)
-(* Array.of: seems pointless unless you can bind *) (** ES2015 *)
+external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (* ES2015 *)
+external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Array.from" [@@bs.val] (* ES2015 *)
+external isArray : 'a -> bool = "Array.isArray" [@@bs.val] (* ES2015 *)
+(* Array.of: seems pointless unless you can bind *) (* ES2015 *)
 
 external length : 'a array -> int = "length" [@@bs.get]
 
 
 (* Mutator functions
 *)
-external copyWithin : 'a t -> to_:int -> 'a t = "copyWithin" [@@bs.send] (** ES2015 *)
-external copyWithinFrom : 'a t -> to_:int -> from:int -> 'a t = "copyWithin" [@@bs.send] (** ES2015 *)
-external copyWithinFromRange : 'a t -> to_:int -> start:int -> end_:int -> 'a t = "copyWithin" [@@bs.send] (** ES2015 *)
+external copyWithin : 'a t -> to_:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
+external copyWithinFrom : 'a t -> to_:int -> from:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
+external copyWithinFromRange : 'a t -> to_:int -> start:int -> end_:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
 
-external fillInPlace : 'a t -> 'a -> 'a t = "fill" [@@bs.send] (** ES2015 *)
-external fillFromInPlace : 'a t -> 'a -> from:int -> 'a t = "fill" [@@bs.send] (** ES2015 *)
-external fillRangeInPlace : 'a t -> 'a -> start:int -> end_:int -> 'a t = "fill" [@@bs.send] (** ES2015 *)
+external fillInPlace : 'a t -> 'a -> 'a t = "fill" [@@bs.send] (* ES2015 *)
+external fillFromInPlace : 'a t -> 'a -> from:int -> 'a t = "fill" [@@bs.send] (* ES2015 *)
+external fillRangeInPlace : 'a t -> 'a -> start:int -> end_:int -> 'a t = "fill" [@@bs.send] (* ES2015 *)
 
 (** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push *)
 external pop : 'a t -> 'a option = "pop" [@@bs.send] [@@bs.return undefined_to_opt]
@@ -100,7 +100,7 @@ external toLocaleString : 'a t -> string = "toLocaleString" [@@bs.send]
 (* Iteration functions
 *)
 (* commented out until bs has a plan for iterators
-external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (** ES2015 *)
+external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 
 external every : 'a t -> ('a  -> bool[@bs.uncurry]) -> bool = "every" [@@bs.send]
@@ -110,17 +110,17 @@ external everyi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@
 external filter : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
 external filteri : 'a t -> ('a -> int  -> bool[@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
 
-external find : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a option = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (** ES2015 *)
-external findi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> 'a option  = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (** ES2015 *)
+external find : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a option = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (* ES2015 *)
+external findi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> 'a option  = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (* ES2015 *)
 
-external findIndex : 'a t -> ('a -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (** ES2015 *)
-external findIndexi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (** ES2015 *)
+external findIndex : 'a t -> ('a -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (* ES2015 *)
+external findIndexi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (* ES2015 *)
 
 external forEach : 'a t -> ('a -> unit [@bs.uncurry]) -> unit = "forEach" [@@bs.send]
 external forEachi : 'a t -> ('a -> int -> unit [@bs.uncurry]) -> unit  = "forEach" [@@bs.send]
 
 (* commented out until bs has a plan for iterators
-external keys : 'a t -> int array_iter = "" [@@bs.send] (** ES2015 *)
+external keys : 'a t -> int array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 
 external map : 'a t -> ('a  -> 'b [@bs.uncurry]) -> 'b t = "map" [@@bs.send]
@@ -136,7 +136,7 @@ external some : 'a t -> ('a  -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send]
 external somei : 'a t -> ('a  -> int -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send]
 
 (* commented out until bs has a plan for iterators
-external values : 'a t -> 'a array_iter = "" [@@bs.send] (** ES2015 *)
+external values : 'a t -> 'a array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"

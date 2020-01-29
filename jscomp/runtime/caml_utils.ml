@@ -25,8 +25,6 @@
 
 
 
-module Use =  Js_internalRaw
-
 (** *)
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
@@ -57,3 +55,6 @@ let repeat : int -> string -> string = [%raw{|function(count,self){
     }
     return rpt;
 }|}]
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

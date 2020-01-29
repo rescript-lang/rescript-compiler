@@ -205,6 +205,7 @@ val size: ('k, 'v, 'id) t -> int
       size (fromArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     ]}
 *)
+
 val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
 (** [toArray s]
 
@@ -213,6 +214,7 @@ val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
     ]}
 
 *)
+
 val toList: ('k, 'v, 'id) t -> ('k * 'v) list
 (** In increasing order
 
@@ -226,6 +228,7 @@ val fromArray:  ('k * 'v) array -> id:('k,'id) id -> ('k,'v,'id) t
       toArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 *)
+
 val keysToArray: ('k, 'v, 'id) t -> 'k  array
 (** [keysToArray s]
     @example {[
@@ -233,6 +236,7 @@ val keysToArray: ('k, 'v, 'id) t -> 'k  array
       [|1;2;3|];;
     ]}
 *)
+
 val valuesToArray: ('k, 'v, 'id) t -> 'v  array
 (** [valuesToArray s]
     @example {[
@@ -291,6 +295,7 @@ val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
 
     @return [undefined] when not found
 *)
+
 val getWithDefault:
     ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** [getWithDefault s k default]
@@ -300,6 +305,7 @@ val getWithDefault:
     @return [default] when [k] is not found
 
 *)
+
 val getExn:  ('k, 'v, 'id) t -> 'k -> 'v
 (** [getExn s k]
 

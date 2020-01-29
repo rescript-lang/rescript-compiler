@@ -42,6 +42,7 @@ val peek: 'a t -> 'a option
 
 val peekUndefined: 'a t -> 'a Js.undefined
 (** [peekUndefined q] returns [undefined] if not found *)
+
 val peekExn: 'a t -> 'a 
 (** [peekExn q]
 

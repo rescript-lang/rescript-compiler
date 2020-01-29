@@ -115,6 +115,7 @@ val isEmpty: _ t -> bool
      isEmpty (fromArray [|1|] ~id:(module IntCmp)) = true;;
    ]}
 *)
+
 val has: ('value, 'id) t -> 'value ->  bool
 (**
    @example {[
@@ -149,6 +150,7 @@ val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
     exist [s]
 
 *)
+
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged.
 
@@ -193,6 +195,7 @@ val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
    ]}
 
 *)
+
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** [diff s0 s1]
     @example {[
@@ -314,6 +317,7 @@ val maximum: ('value, 'id) t -> 'value option
 
     @return the maximum element of the collection, [None] if it is empty
 *)
+
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 (** [maxUndefined s0]
 

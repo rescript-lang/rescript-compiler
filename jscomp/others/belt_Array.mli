@@ -139,6 +139,7 @@ val range: int -> int -> int array
       range 3 3 = [|3|];;
     ]}
 *)
+
 val rangeBy: int -> int -> step:int -> int array
 (** [rangeBy start finish ~step]
 

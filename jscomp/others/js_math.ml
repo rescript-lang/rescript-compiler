@@ -50,6 +50,7 @@ external _SQRT2 : float = "SQRT2" [@@bs.val] [@@bs.scope "Math"]
 
 (** absolute value *)
 external abs_int : int -> int = "abs" [@@bs.val] [@@bs.scope "Math"]
+
 (** absolute value *)
 external abs_float : float -> float = "abs" [@@bs.val] [@@bs.scope "Math"]
 
@@ -81,6 +82,7 @@ external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
 external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
 let unsafe_ceil = unsafe_ceil_int
 [@@ocaml.deprecated "Please use `unsafe_ceil_int` instead"]
+
 (** smallest int greater than or equal to the argument *)
 let ceil_int (f : float) : int =
   if f > Js_int.toFloat Js_int.max then Js_int.max
@@ -88,7 +90,8 @@ let ceil_int (f : float) : int =
   else unsafe_ceil_int f
 let ceil = ceil_int
 [@@ocaml.deprecated "Please use `ceil_int` instead"]
-(** smallest int greater than or equal to the argument *)
+
+(** smallest float greater than or equal to the argument *)
 external ceil_float : float -> float = "ceil" [@@bs.val] [@@bs.scope "Math"]
 
 (** number of leading zero bits of the argument's 32 bit int representation, ES2015 *)
@@ -111,6 +114,7 @@ external expm1 : float -> float = "expm1" [@@bs.val] [@@bs.scope "Math"]
 external unsafe_floor_int : float -> int = "floor" [@@bs.val] [@@bs.scope "Math"]
 let unsafe_floor = unsafe_floor_int
 [@@ocaml.deprecated "Please use `unsafe_floor_int` instead"]
+
 (** largest int greater than or equal to the arugment *)
 let floor_int f =
   if f > Js_int.toFloat Js_int.max then Js_int.max
@@ -146,40 +150,50 @@ external log2 : float -> float = "log2" [@@bs.val] [@@bs.scope "Math"]
 
 (** max value *)
 external max_int : int -> int -> int = "max" [@@bs.val] [@@bs.scope "Math"]
+
 (** max value *)
 external maxMany_int : int array -> int = "max" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
+
 (** max value *)
 external max_float : float -> float -> float = "max" [@@bs.val] [@@bs.scope "Math"]
+
 (** max value *)
 external maxMany_float : float array -> float = "max" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
 
 (** min value *)
 external min_int : int -> int -> int = "min" [@@bs.val] [@@bs.scope "Math"]
+
 (** min value *)
 external minMany_int : int array -> int = "min" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
+
 (** min value *)
 external min_float : float -> float -> float = "min" [@@bs.val] [@@bs.scope "Math"]
+
 (** min value *)
 external minMany_float : float array -> float = "min" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
 
 (** base to the power of the exponent *)
 external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Math"]
+
 (** base to the power of the exponent *)
 external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
 
 (** random number in \[0,1) *)
 external random : unit -> float = "random" [@@bs.val] [@@bs.scope "Math"]
+
 (** random number in \[min,max) *)
 let random_int min max =
   floor ((random ()) *. (Js_int.toFloat (max - min))) + min
 
 (** rounds to nearest integer, returns a value not representable as [int] if NaN *)
 external unsafe_round : float -> int = "round" [@@bs.val] [@@bs.scope "Math"]
+
 (** rounds to nearest integer *)
 external round : float -> float = "round" [@@bs.val] [@@bs.scope "Math"]
 
 (** the sign of the argument, 1, -1 or 0, ES2015 *)
 external sign_int : int -> int = "sign" [@@bs.val][@@bs.scope "Math"]
+
 (** the sign of the argument, 1, -1, 0, -0 or NaN, ES2015 *)
 external sign_float : float -> float = "sign" [@@bs.val][@@bs.scope "Math"]
 
@@ -200,5 +214,6 @@ external tanh : float -> float = "tanh" [@@bs.val][@@bs.scope "Math"]
 
 (** truncate, ie. remove fractional digits, returns a value not representable as [int] if NaN, ES2015 *)
 external unsafe_trunc : float -> int = "trunc" [@@bs.val][@@bs.scope "Math"]
+
 (** truncate, ie. remove fractional digits, returns a value not representable as [int] if NaN, ES2015 *)
 external trunc : float -> float = "trunc" [@@bs.val][@@bs.scope "Math"]

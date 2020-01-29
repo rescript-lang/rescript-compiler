@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-module Use =  Js_internalRaw
-
 
 
 
@@ -175,7 +173,7 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
   match a_type, b_type with 
   | "undefined", _ -> - 1
   | _, "undefined" -> 1 
-  (** [a] is of type string, b can not be None,
+  (* [a] is of type string, b can not be None,
       [a] could be (Some (Some x)) in that case [b] could be [Some None] or [null]
        so [b] has to be of type string or null *)       
   | "string", "string" ->   
@@ -203,7 +201,7 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
       else 1
   | _ ->        
       if a == Caml_obj_extern.repr Js.null then 
-        (** [b] could not be null otherwise would equal *)
+        (* [b] could not be null otherwise would equal *)
         if Caml_obj_extern.tag b = 256 then 1 else -1
      else if b == Caml_obj_extern.repr Js.null then 
         if Caml_obj_extern.tag a = 256 then -1 else 1    
@@ -389,3 +387,6 @@ let caml_max (x : Caml_obj_extern.t) y =
   if caml_compare x y >= 0 then x else y 
 
 let caml_obj_set_tag = Caml_obj_extern.set_tag  
+
+[@@@warning "-60"]
+module Use =  Js_internalRaw

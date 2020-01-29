@@ -26,7 +26,7 @@ module Int = Belt_SetInt
 module String = Belt_SetString
 module Dict = Belt_SetDict
   
-module A = Belt_Array
+(* module A = Belt_Array *)
 
 
 type ('value, 'id) id = ('value, 'id) Belt_Id.comparable

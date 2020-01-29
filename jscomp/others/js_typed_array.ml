@@ -165,14 +165,14 @@ end
 
 
   
-# 274 "others/js_typed_array.cppo.ml"
+# 279 "others/js_typed_array.cppo.ml"
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 
 module Int8Array = struct
   
-# 279 "others/js_typed_array.cppo.ml"
+# 284 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -208,7 +208,7 @@ module Int8Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -221,11 +221,13 @@ module Int8Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -238,7 +240,7 @@ module Int8Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -272,22 +274,25 @@ module Int8Array = struct
   external make : elt array -> t = "Int8Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Int8Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Int8Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int8Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 280 "others/js_typed_array.cppo.ml"
+# 285 "others/js_typed_array.cppo.ml"
 end
 
 
 module Uint8Array = struct
   
-# 284 "others/js_typed_array.cppo.ml"
+# 289 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -323,7 +328,7 @@ module Uint8Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -336,11 +341,13 @@ module Uint8Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -353,7 +360,7 @@ module Uint8Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -387,21 +394,24 @@ module Uint8Array = struct
   external make : elt array -> t = "Uint8Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Uint8Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Uint8Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 285 "others/js_typed_array.cppo.ml"
+# 290 "others/js_typed_array.cppo.ml"
 end
 
 module Uint8ClampedArray = struct
   
-# 288 "others/js_typed_array.cppo.ml"
+# 293 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -437,7 +447,7 @@ module Uint8ClampedArray = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -450,11 +460,13 @@ module Uint8ClampedArray = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -467,7 +479,7 @@ module Uint8ClampedArray = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -501,21 +513,24 @@ module Uint8ClampedArray = struct
   external make : elt array -> t = "Uint8ClampedArray" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Uint8ClampedArray" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Uint8ClampedArray" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8ClampedArray" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 289 "others/js_typed_array.cppo.ml"
+# 294 "others/js_typed_array.cppo.ml"
 end
 
 module Int16Array = struct
   
-# 292 "others/js_typed_array.cppo.ml"
+# 297 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -551,7 +566,7 @@ module Int16Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -564,11 +579,13 @@ module Int16Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -581,7 +598,7 @@ module Int16Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -615,21 +632,24 @@ module Int16Array = struct
   external make : elt array -> t = "Int16Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Int16Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Int16Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int16Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 293 "others/js_typed_array.cppo.ml"
+# 298 "others/js_typed_array.cppo.ml"
 end
 
 module Uint16Array = struct
   
-# 296 "others/js_typed_array.cppo.ml"
+# 301 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -665,7 +685,7 @@ module Uint16Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -678,11 +698,13 @@ module Uint16Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -695,7 +717,7 @@ module Uint16Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -729,21 +751,24 @@ module Uint16Array = struct
   external make : elt array -> t = "Uint16Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Uint16Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Uint16Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint16Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 297 "others/js_typed_array.cppo.ml"
+# 302 "others/js_typed_array.cppo.ml"
 end
 
 module Int32Array = struct
   
-# 300 "others/js_typed_array.cppo.ml"
+# 305 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int32
@@ -779,7 +804,7 @@ module Int32Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -792,11 +817,13 @@ module Int32Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -809,7 +836,7 @@ module Int32Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -843,18 +870,21 @@ module Int32Array = struct
   external make : elt array -> t = "Int32Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Int32Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Int32Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int32Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Int32Array" [@@bs.new]
   external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 302 "others/js_typed_array.cppo.ml"
+# 307 "others/js_typed_array.cppo.ml"
   external create : int32 array -> t = "Int32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
@@ -866,7 +896,7 @@ module Int32_array = Int32Array
 
 module Uint32Array = struct
   
-# 312 "others/js_typed_array.cppo.ml"
+# 317 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -902,7 +932,7 @@ module Uint32Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -915,11 +945,13 @@ module Uint32Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -932,7 +964,7 @@ module Uint32Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -966,16 +998,19 @@ module Uint32Array = struct
   external make : elt array -> t = "Uint32Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Uint32Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Uint32Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint32Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 313 "others/js_typed_array.cppo.ml"
+# 318 "others/js_typed_array.cppo.ml"
 end
 
 
@@ -984,7 +1019,7 @@ end
 *)
 module Float32Array = struct
   
-# 320 "others/js_typed_array.cppo.ml"
+# 325 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1020,7 +1055,7 @@ module Float32Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -1033,11 +1068,13 @@ module Float32Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -1050,7 +1087,7 @@ module Float32Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -1084,18 +1121,21 @@ module Float32Array = struct
   external make : elt array -> t = "Float32Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Float32Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Float32Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float32Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Float32Array" [@@bs.new]
   external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 322 "others/js_typed_array.cppo.ml"
+# 327 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
@@ -1107,7 +1147,7 @@ module Float32_array = Float32Array
 
 module Float64Array = struct
   
-# 332 "others/js_typed_array.cppo.ml"
+# 337 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1143,7 +1183,7 @@ module Float64Array = struct
   external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
   
   (* Accessor functions *)
-  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "includes" [@@bs.send.pipe: t] (* ES2016 *)
   
   external indexOf : elt  -> int = "indexOf" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -1156,11 +1196,13 @@ module Float64Array = struct
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
   (** [start] is inclusive, [end_] exclusive *)
+  
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
   external toString : string = "toString" [@@bs.send.pipe: t]
@@ -1173,7 +1215,7 @@ module Float64Array = struct
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   
@@ -1207,18 +1249,21 @@ module Float64Array = struct
   external make : elt array -> t = "Float64Array" [@@bs.new]
   external fromBuffer : array_buffer -> t = "Float64Array" [@@bs.new]
   (** can throw *)
+  
   external fromBufferOffset : array_buffer -> int -> t = "Float64Array" [@@bs.new]
   (** @raise Js.Exn.Error raise Js exception
       @param offset is in bytes *)
+  
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float64Array" [@@bs.new]
   (** @raise Js.Exn.Error raises Js exception
       @param offset is in bytes, length in elements *)
+  
   external fromLength : int -> t = "Float64Array" [@@bs.new]
   external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 334 "others/js_typed_array.cppo.ml"
+# 339 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float64Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
@@ -1227,12 +1272,13 @@ end
 module Float64_array = Float64Array
 [@ocaml.deprecated "use `Float64Array` instead"]
 
-module DataView = struct
-  (** The DataView view provides a low-level interface for reading and writing
-      multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+
+(** The DataView view provides a low-level interface for reading and writing
+    multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
-  *)
+*)
+module DataView = struct
 
   type t = Js_typed_array2.DataView.t
 
