@@ -145,7 +145,30 @@ let emit_external_warnings : iterator=
       end 
   }
 
-let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
+let rec iter_warnings_on_stru (stru : Parsetree.structure) = 
+  match stru with 
+  | [] -> ()  
+  | head :: rest -> 
+    begin match head.pstr_desc with 
+      | Pstr_attribute attr -> 
+        Builtin_attributes.warning_attribute attr;
+        iter_warnings_on_stru rest 
+      |  _ -> ()
+    end
+
+let rec iter_warnings_on_sigi (stru : Parsetree.signature) = 
+  match stru with 
+  | [] -> ()  
+  | head :: rest -> 
+    begin match head.psig_desc with 
+      | Psig_attribute attr -> 
+        Builtin_attributes.warning_attribute attr;
+        iter_warnings_on_sigi rest 
+      |  _ -> ()
+    end
+
+
+let emit_external_warnings_on_structure  (stru : Parsetree.structure) =   
   if Warnings.is_active dummy_unused_attribute then 
     emit_external_warnings.structure emit_external_warnings stru
 

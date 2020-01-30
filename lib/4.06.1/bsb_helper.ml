@@ -347,28 +347,28 @@ let create n =
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
-let to_bytes b = Bytes.sub b.buffer 0 b.position 
+(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
 
-let sub b ofs len =
+(* let sub b ofs len =
   if ofs < 0 || len < 0 || ofs > b.position - len
   then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len
+  else Bytes.sub_string b.buffer ofs len *)
 
 
-let blit src srcoff dst dstoff len =
+(* let blit src srcoff dst dstoff len =
   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
   then invalid_arg "Ext_buffer.blit"
   else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
 let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
-let reset b =
+(* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer
+  b.length <- Bytes.length b.buffer *)
 
 let resize b more =
   let len = b.length in
@@ -1682,7 +1682,7 @@ type spec =
   | Set_int of int ref         
 
 exception Bad of string
-exception Help of string
+(* exception Help of string *)
 
 type error =
   | Unknown of string
@@ -1698,14 +1698,14 @@ type t = (string * spec * string) list
 let rec assoc3 (x : string) (l : t) =
   match l with
   | [] -> None
-  | (y1, y2, y3) :: t when y1 = x -> Some y2
+  | (y1, y2, _y3) :: _t when y1 = x -> Some y2
   | _ :: t -> assoc3 x t
 ;;
 
 
 
 let usage_b (buf : Ext_buffer.t) speclist errmsg =
-  let print_spec buf (key, spec, doc) =
+  let print_spec buf (key, _spec, doc) =
     if  doc <> "" then begin 
       Ext_buffer.add_string buf "  ";
       Ext_buffer.add_string_char buf key ' ';  
@@ -1769,7 +1769,7 @@ let parse_exn  (speclist : t) anonfun errmsg =
         | None -> stop_raise (Unknown s)
       in
       begin try
-        let rec treat_action = function
+        let treat_action = function
         | Unit f -> f ();
         | Set r -> r := true;
         | String f when !current + 1 < l ->
@@ -2481,13 +2481,13 @@ let ends_with_then_chop s beg =
   if i >= 0 then Some (String.sub s 0 i) 
   else None
 
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
+(* let check_suffix_case = ends_with  *)
+(* let check_suffix_case_then_chop = ends_with_then_chop *)
 
-let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
+(* let check_any_suffix_case s suffixes = 
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
-let check_any_suffix_case_then_chop s suffixes = 
+(* let check_any_suffix_case_then_chop s suffixes = 
   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
@@ -2495,7 +2495,7 @@ let check_any_suffix_case_then_chop s suffixes =
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes    
+  aux suffixes     *)
 
 
 

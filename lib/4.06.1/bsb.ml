@@ -89,7 +89,7 @@ module Bsb_build_schemas
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let files = "files"
+(* let files = "files" *)
 let version = "version"
 let name = "name"
 (* let ocaml_config = "ocaml-config" *)
@@ -2049,13 +2049,13 @@ let ends_with_then_chop s beg =
   if i >= 0 then Some (String.sub s 0 i) 
   else None
 
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
+(* let check_suffix_case = ends_with  *)
+(* let check_suffix_case_then_chop = ends_with_then_chop *)
 
-let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
+(* let check_any_suffix_case s suffixes = 
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
-let check_any_suffix_case_then_chop s suffixes = 
+(* let check_any_suffix_case_then_chop s suffixes = 
   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
@@ -2063,7 +2063,7 @@ let check_any_suffix_case_then_chop s suffixes =
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes    
+  aux suffixes     *)
 
 
 
@@ -3319,7 +3319,7 @@ let rec cons_enum s e =
   | Empty -> e 
   | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
 
-let rec height = function
+let  height = function
   | Empty -> 0 
   | Node(_,_,_,h) -> h   
 
@@ -3666,8 +3666,6 @@ module type S = sig
   val min_elt: t -> elt
   val max_elt: t -> elt
   val choose: t -> elt
-  val of_sorted_list : elt list -> t 
-  val of_sorted_array : elt array -> t
   val partition: t -> (elt -> bool) ->  t * t
 
   val mem: t -> elt -> bool
@@ -4321,9 +4319,7 @@ module Ext_sys : sig
 
 val is_windows_or_cygwin : bool 
 
-val getenv_opt : 
-  string -> 
-  string option 
+
 end = struct
 #1 "ext_sys.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4351,14 +4347,13 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
+(* let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false  *)
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 
-let getenv_opt = Sys.getenv_opt
 
 end
 module Literals : sig 
@@ -6010,28 +6005,28 @@ let create n =
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
-let to_bytes b = Bytes.sub b.buffer 0 b.position 
+(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
 
-let sub b ofs len =
+(* let sub b ofs len =
   if ofs < 0 || len < 0 || ofs > b.position - len
   then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len
+  else Bytes.sub_string b.buffer ofs len *)
 
 
-let blit src srcoff dst dstoff len =
+(* let blit src srcoff dst dstoff len =
   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
   then invalid_arg "Ext_buffer.blit"
   else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
 let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
-let reset b =
+(* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer
+  b.length <- Bytes.length b.buffer *)
 
 let resize b more =
   let len = b.length in
@@ -7109,26 +7104,29 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     in
     Some {number; error }
 
-let to_bsb_string ~toplevel warning =
-  match warning with
-  | None -> Ext_string.empty
-  | Some warning ->     
-    (match warning.number with
-     | None ->
-       Ext_string.empty
-     | Some x ->
-       prepare_warning_concat ~beg:true x  
-    ) ^
-    if toplevel then 
-      match warning.error with
-      | Warn_error_true ->
-        " -warn-error A"
-      | Warn_error_number y ->
-        " -warn-error " ^ y
-      | Warn_error_false ->
-        Ext_string.empty
-    else Ext_string.empty     
 
+let to_bsb_string ~toplevel warning =
+  if toplevel then
+    match warning with
+    | None -> Ext_string.empty
+    | Some warning ->     
+      (match warning.number with
+       | None ->
+         Ext_string.empty
+       | Some x ->
+         prepare_warning_concat ~beg:true x  
+      ) ^
+      (
+        match warning.error with
+        | Warn_error_true ->
+          " -warn-error A"
+        | Warn_error_number y ->
+          " -warn-error " ^ y
+        | Warn_error_false ->
+          Ext_string.empty
+      )
+  else " -w a" 
+  (* TODO: this is the current default behavior *)
 
 end
 module Bs_hash_stubs
@@ -7726,7 +7724,7 @@ type style
   | Dim
 
 
-let ansi_of_color = function
+(* let ansi_of_color = function
   | Black -> "0"
   | Red -> "1"
   | Green -> "2"
@@ -7734,7 +7732,7 @@ let ansi_of_color = function
   | Blue -> "4"
   | Magenta -> "5"
   | Cyan -> "6"
-  | White -> "7"
+  | White -> "7" *)
 
 let code_of_style = function
   | FG Black -> "30"
@@ -9912,8 +9910,6 @@ val vendor_bsc : string
 val vendor_ninja : string
 
 val vendor_bsdep : string
-
-val vendor_bsppx : string
 
 val vendor_bsppx : string
 
@@ -13368,11 +13364,10 @@ let dash_i = "-I"
 
 
 let get_bsc_flags 
-    ~(toplevel : bool)     
     (bsc_flags : string list)
   : string =       
-  String.concat Ext_string.single_space 
-    (if toplevel then bsc_flags else "-bs-quiet" :: bsc_flags )
+  String.concat Ext_string.single_space bsc_flags
+
 
 
 let emit_bsc_lib_includes 
@@ -13492,7 +13487,7 @@ let output_ninja_and_namespace_map
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
@@ -16376,7 +16371,7 @@ let install_if_exists ~destdir input_name =
     if Sys.file_exists input_name then 
       let output_name = (Filename.concat destdir (Filename.basename input_name)) in
       match Unix.stat output_name , Unix.stat input_name with
-      | {st_mtime = output_stamp}, {st_mtime = input_stamp} when input_stamp <= output_stamp 
+      | {st_mtime = output_stamp;_}, {st_mtime = input_stamp;_} when input_stamp <= output_stamp 
         -> false
       | _ -> copy_with_permission input_name output_name; true 
       | exception _ -> copy_with_permission input_name output_name; true

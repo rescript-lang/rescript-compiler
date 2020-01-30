@@ -26,7 +26,7 @@ let rec cons_enum s e =
   | Empty -> e 
   | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
 
-let rec height = function
+let  height = function
   | Empty -> 0 
   | Node(_,_,_,h) -> h   
 
@@ -373,8 +373,6 @@ module type S = sig
   val min_elt: t -> elt
   val max_elt: t -> elt
   val choose: t -> elt
-  val of_sorted_list : elt list -> t 
-  val of_sorted_array : elt array -> t
   val partition: t -> (elt -> bool) ->  t * t
 
   val mem: t -> elt -> bool

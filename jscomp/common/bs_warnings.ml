@@ -39,92 +39,25 @@ let to_string t =
     -> 
     "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
-let warning_formatter = Format.err_formatter
-
-let print_string_warning (loc : Location.t) x =   
-  if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
-  else 
-    Location.print warning_formatter loc ; 
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
 let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
-
-let unimplemented_primitive = "Unimplemented primitive used:" 
-type error = 
-  | Uninterpreted_delimiters of string
-  | Unimplemented_primitive of string 
-exception  Error of Location.t * error
-
-let pp_error fmt x =
-  match x with 
-  | Unimplemented_primitive str -> 
-    Format.pp_print_string fmt unimplemented_primitive;
-    Format.pp_print_string fmt str
-  
-  | Uninterpreted_delimiters str -> 
-    Format.pp_print_string fmt "Uninterpreted delimiters" ;
-    Format.pp_print_string fmt str
-
-
-
-let () = 
-  Location.register_error_of_exn (function 
-      | Error (loc,err) -> 
-        Some (Location.error_of_printer loc pp_error err)
-      | _ -> None
-    )
+    Location.prerr_warning loc (Bs_ffi_warning (to_string x))
 
 
 
 
-let warn_missing_primitive loc txt =      
-  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
+
+let warn_missing_primitive loc txt =  
+  Location.prerr_warning loc (Bs_unimplemented_primitive txt)      
 
 let warn_literal_overflow loc = 
-  if not !Clflags.bs_quiet then
-  begin 
-    print_string_warning loc 
-      "Integer literal exceeds the range of representable integers of type int";
-    Format.pp_print_flush warning_formatter ()  
-  end 
+  Location.prerr_warning loc Bs_integer_literal_overflow
 
 
 
 let error_unescaped_delimiter loc txt = 
-  raise (Error(loc, Uninterpreted_delimiters txt))
+  Location.prerr_warning loc (Bs_uninterpreted_delimiters txt)
+  
 
 
-
-
-
-
-(**
-   Note the standard way of reporting error in compiler:
-
-   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-   val Location.error_of_printer : Location.t ->
-   (Format.formatter -> error -> unit) -> error -> Location.error
-
-   Define an error type
-
-   type error 
-   exception Error of Location.t * error 
-
-   Provide a printer to error
-
-   {[
-     let () = 
-       Location.register_error_of_exn
-         (function 
-           | Error(loc,err) -> 
-             Some (Location.error_of_printer loc pp_error err)
-           | _ -> None
-         )
-   ]}
-*)
+  

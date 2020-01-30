@@ -40,17 +40,17 @@ let names_from_construct_pattern (pat: Typedtree.pattern) =
           blocks = Ext_array.reverse_of_list blocks } in
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
-    | {type_kind = Type_variant cstrs} ->
+    | {type_kind = Type_variant cstrs;_} ->
       names_from_type_variant cstrs
-    | {type_kind = Type_abstract; type_manifest = Some t} ->
+    | {type_kind = Type_abstract; type_manifest = Some t;_} ->
       ( match (Ctype.unalias t).desc with
         | Tconstr (pathn, _, _) ->
           (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
           resolve_path (n+1) pathn
         | _ -> None)
-    | {type_kind = Type_abstract; type_manifest = None} ->
+    | {type_kind = Type_abstract; type_manifest = None;_} ->
       None
-    | {type_kind = Type_record _ | Type_open (* Exceptions *) } ->          
+    | {type_kind = Type_record _ | Type_open (* Exceptions *) ;_} ->          
       None in
 
   match (Btype.repr pat.pat_type).desc with

@@ -2838,7 +2838,6 @@ val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_gentype : string option ref
 val no_assert_false : bool ref
-val bs_quiet : bool ref 
 val dump_location : bool ref
 
 
@@ -3263,7 +3262,6 @@ let bs_vscode =
 let dont_record_crc_unit : string option ref = ref None
 let bs_gentype = ref None
 let no_assert_false = ref false
-let bs_quiet = ref false
 let dump_location = ref true
 
 
@@ -3419,6 +3417,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
         
 ;;
 
@@ -3563,6 +3564,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
   
 ;;
 
@@ -3642,10 +3646,13 @@ let number = function
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
   | Bs_fragile_external _ -> 105
+  | Bs_unimplemented_primitive _ -> 106
+  | Bs_integer_literal_overflow -> 107
+  | Bs_uninterpreted_delimiters _ -> 108
   
 ;;
 
-let last_warning_number = 105
+let last_warning_number = 108
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -4011,6 +4018,12 @@ let message = function
       "BuckleScript bs.deriving warning: " ^ s 
   | Bs_fragile_external s ->     
       "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+  | Bs_unimplemented_primitive s -> 
+      "BuckleScript warning: Unimplemented primitive used:" ^ s
+  | Bs_integer_literal_overflow -> 
+      "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
+  | Bs_uninterpreted_delimiters s -> 
+      "BuckleScript warning: Uninterpreted delimiters" ^ s  
       
 ;;
 
@@ -4141,10 +4154,14 @@ let descriptions =
    62, "Type constraint on GADT type declaration";
     
     
-   101, "Unused bs attributes";
-   102, "polymorphic comparison introduced (maybe unsafe)";
-   103, "BuckleScript FFI warning: " ;
-   104, "BuckleScript bs.deriving warning: "
+   101, "BuckleScript warning: Unused bs attributes";
+   102, "BuckleScript warning: polymorphic comparison introduced (maybe unsafe)";
+   103, "BuckleScript warning: about fragile FFI definitions" ;
+   104, "BuckleScript warning: bs.deriving warning with customized message ";
+   105, "BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name";
+   106, "BuckleScript warning: Unimplemented primitive used:";
+   107, "BuckleScript warning: Integer literal exceeds the range of representable integers of type int";
+   108, "BuckleScript warning: Uninterpreted delimiters (for unicode)"  
    
   ]
 ;;
@@ -4665,8 +4682,7 @@ let print_warning loc ppf w =
 
 let formatter_for_warnings = ref err_formatter;;
 let prerr_warning loc w = 
-    if not !Clflags.bs_quiet then
-      print_warning loc !formatter_for_warnings w;;
+    print_warning loc !formatter_for_warnings w;;
 
 let echo_eof () =
   print_newline ();

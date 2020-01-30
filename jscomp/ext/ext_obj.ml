@@ -122,7 +122,7 @@ let bt () =
        | Some bt ->
          (match !acc with 
           | [] -> acc := [bt]
-          | hd::tl -> if hd <> bt then acc := bt :: !acc )
+          | hd::_ -> if hd <> bt then acc := bt :: !acc )
 
      done); 
     Ext_list.iter !acc (fun bt ->       

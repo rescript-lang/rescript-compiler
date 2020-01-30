@@ -5,6 +5,7 @@ process.env["BS_VSCODE"] = "1";
 var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
+var child_process = require("child_process");
 var sourceDirs = [
   "ext",
   "common",
@@ -58,7 +59,9 @@ function buildFinished(code, signal) {
     // TODO: check ninja exit error code
     if (code === 0) {
       // This is not always correct
-      ninjaFile.updateDev();
+      // ninjaFile.updateDev();
+      // This file is cached 
+      child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
     }
   }
 }
@@ -79,7 +82,6 @@ sourceDirs.forEach(x => {
 });
 rebuild();
 
-var child_process = require("child_process");
 var readline = require("readline");
 readline
   .createInterface({

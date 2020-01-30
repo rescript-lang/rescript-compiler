@@ -40,7 +40,6 @@ sig
   val make : int -> t 
   val init : int -> (int -> elt) -> t
   val is_empty : t -> bool
-  val of_array : elt array -> t
   val of_sub_array : elt array -> int -> int -> t
 
   (** Exposed for some APIs which only take array as input, 

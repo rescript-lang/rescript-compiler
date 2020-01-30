@@ -36,11 +36,10 @@ let dash_i = "-I"
 
 
 let get_bsc_flags 
-    ~(toplevel : bool)     
     (bsc_flags : string list)
   : string =       
-  String.concat Ext_string.single_space 
-    (if toplevel then bsc_flags else "-bs-quiet" :: bsc_flags )
+  String.concat Ext_string.single_space bsc_flags
+
 
 
 let emit_bsc_lib_includes 
@@ -160,7 +159,7 @@ let output_ninja_and_namespace_map
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags ~toplevel  bsc_flags) ;
+        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags bsc_flags) ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 

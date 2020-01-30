@@ -24,12 +24,12 @@ type backend_type =
   | Other of string
 (* System interface *)
 
-external get_config: unit -> string * int * bool = "caml_sys_get_config"
+(* external get_config: unit -> string * int * bool = "caml_sys_get_config" *)
 external get_argv: unit -> string * string array = "caml_sys_get_argv"
 external big_endian : unit -> bool = "%big_endian"
 external word_size : unit -> int = "%word_size"
 external int_size : unit -> int = "%int_size"
-external max_wosize : unit -> int = "%max_wosize"
+(* external max_wosize : unit -> int = "%max_wosize" *)
 external unix : unit -> bool = "%ostype_unix"
 external win32 : unit -> bool = "%ostype_win32"
 external cygwin : unit -> bool = "%ostype_cygwin"

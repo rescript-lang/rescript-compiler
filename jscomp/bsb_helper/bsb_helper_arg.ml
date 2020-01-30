@@ -13,7 +13,7 @@ type spec =
   | Set_int of int ref         
 
 exception Bad of string
-exception Help of string
+(* exception Help of string *)
 
 type error =
   | Unknown of string
@@ -29,14 +29,14 @@ type t = (string * spec * string) list
 let rec assoc3 (x : string) (l : t) =
   match l with
   | [] -> None
-  | (y1, y2, y3) :: t when y1 = x -> Some y2
+  | (y1, y2, _y3) :: _t when y1 = x -> Some y2
   | _ :: t -> assoc3 x t
 ;;
 
 
 
 let usage_b (buf : Ext_buffer.t) speclist errmsg =
-  let print_spec buf (key, spec, doc) =
+  let print_spec buf (key, _spec, doc) =
     if  doc <> "" then begin 
       Ext_buffer.add_string buf "  ";
       Ext_buffer.add_string_char buf key ' ';  
@@ -100,7 +100,7 @@ let parse_exn  (speclist : t) anonfun errmsg =
         | None -> stop_raise (Unknown s)
       in
       begin try
-        let rec treat_action = function
+        let treat_action = function
         | Unit f -> f ();
         | Set r -> r := true;
         | String f when !current + 1 < l ->

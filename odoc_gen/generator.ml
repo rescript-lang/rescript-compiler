@@ -525,7 +525,7 @@ struct
               [] -> ()
             | e :: _ ->
                 let s =
-                  match (Char.uppercase (Name.simple (name e)).[0]) with
+                  match (Char.uppercase_ascii (Name.simple (name e)).[0]) with
                     'A'..'Z' as c -> String.make 1 c
                   | _ -> ""
                 in

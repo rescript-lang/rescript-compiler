@@ -1,6 +1,6 @@
 (* the entry point. This is used by js_main.ml *)
 let setup =
-  lazy (match Ext_sys.getenv_opt "BS_VSCODE" with 
+  lazy (match Sys.getenv_opt "BS_VSCODE" with 
   | Some ("true" | "1") -> 
     ()
   | Some _ | None -> 

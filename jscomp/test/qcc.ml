@@ -1,4 +1,4 @@
-let dbg = ref true
+[@@@warning "-107"] let dbg = ref true
 and inch = ref stdin
 
 type tok =

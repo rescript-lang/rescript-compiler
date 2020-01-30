@@ -181,7 +181,7 @@ let () = eq __LOC__ hhh 35
 class point_again3 x =
     object
       inherit restricted_point x as super
-      method move = super#move
+      method! move = super#move
     end;;
 
 

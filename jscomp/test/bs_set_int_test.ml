@@ -1,4 +1,4 @@
-let suites :  Mt.pair_suites ref  = ref []
+[@@@warning "-44"] let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y 
 

@@ -116,7 +116,7 @@ type bigarray_kind = Lambda.bigarray_kind =
   | Pbigarray_complex32 | Pbigarray_complex64
 
 
-let eq_bigarray_kind (p : bigarray_kind) (p1 : bigarray_kind) = 
+(* let eq_bigarray_kind (p : bigarray_kind) (p1 : bigarray_kind) = 
   match p with   
   | Pbigarray_unknown -> p1 = Pbigarray_unknown
   | Pbigarray_float32 -> p1 = Pbigarray_float32
@@ -130,7 +130,7 @@ let eq_bigarray_kind (p : bigarray_kind) (p1 : bigarray_kind) =
   | Pbigarray_caml_int -> p1 = Pbigarray_caml_int
   | Pbigarray_native_int -> p1 = Pbigarray_native_int
   | Pbigarray_complex32  -> p1 = Pbigarray_complex32
-  | Pbigarray_complex64 -> p1 = Pbigarray_complex64
+  | Pbigarray_complex64 -> p1 = Pbigarray_complex64 *)
   
   
 type bigarray_layout = Lambda.bigarray_layout = 
@@ -141,11 +141,11 @@ type bigarray_layout = Lambda.bigarray_layout =
 
 
 
-let eq_bigarray_layout (p : bigarray_layout) (p1 : bigarray_layout) = 
+(* let eq_bigarray_layout (p : bigarray_layout) (p1 : bigarray_layout) = 
   match p with 
   | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
   | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
-  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout  
+  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout   *)
 
 type compile_time_constant = Lambda.compile_time_constant = 
     | Big_endian
@@ -191,8 +191,8 @@ let str_of_field_info (x : field_dbg_info) : string option =
   | Fld_poly_var_content
   | Fld_tuple 
   | Fld_extension_slot -> None   
-  | Fld_record {name } 
-  | Fld_module {name}
+  | Fld_record {name ; _} 
+  | Fld_module {name ; _}
   | Fld_record_inline {name}
   | Fld_record_extension {name}
      -> 

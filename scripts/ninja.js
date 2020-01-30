@@ -1103,10 +1103,11 @@ async function stdlibNinja(devmode = true) {
    */
   var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
   // It is interesting `-w -a` would generate not great code sometimes
-  var warnings = devmode ? "-w -40-49-103" : "-w -40-49-103-3";
+  // deprecations diabled due to string_of_float
+  var warnings =  "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
 ${BSC_COMPILER}
-${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings} -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
+${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   [
@@ -1241,7 +1242,7 @@ async function testNinja() {
   var ninjaCwd = `test`;
   var templateTestRules = `
 ${BSC_COMPILER}
-bsc_flags = -absname -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52  -bin-annot -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
 
@@ -1569,7 +1570,7 @@ ${cppoList("syntax", [
 ])}
 build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
-    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
+    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
     generator = true
 `;
   var cppoNinjaFile = getPreprocessorFileName();

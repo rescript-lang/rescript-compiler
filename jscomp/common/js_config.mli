@@ -63,7 +63,7 @@ val no_builtin_ppx_mli : bool ref
 
 
 
-val no_warn_unimplemented_external : bool ref 
+
 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 

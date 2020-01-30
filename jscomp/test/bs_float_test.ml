@@ -37,7 +37,7 @@ let () =
   eq __LOC__ (F.toString (-1.5)) "-1.5"
 
 let () =
-  let open F in
+  let open! F in
   eq __LOC__ (2.0 + 3.0) 5.0;
   eq __LOC__ (2.0 - 3.0) (-1.0);
   eq __LOC__ (2.0 * 3.0) 6.0;

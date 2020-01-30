@@ -17,8 +17,8 @@
 
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" [@@noalloc]
-external old_hash_param :
-  int -> int -> 'a -> int = "caml_hash_univ_param" [@@noalloc]
+(* external old_hash_param :
+  int -> int -> 'a -> int = "caml_hash_univ_param" [@@noalloc] *)
 
 let hash x = seeded_hash_param 10 100 0 x
 let hash_param n1 n2 x = seeded_hash_param n1 n2 0 x

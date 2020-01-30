@@ -61,16 +61,13 @@ let diagnose = ref false
 let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
-let (//) = Filename.concat
+(* let (//) = Filename.concat *)
 
 (* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
 
 let debug_file = ref ""
 
