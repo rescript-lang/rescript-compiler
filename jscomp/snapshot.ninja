@@ -1,10 +1,10 @@
 releaseMode = -D BS_RELEASE_BUILD=true
 rule bspack    
-    command = ./bin/bspack.exe $flags -bs-main $main -o $out
+    command = ./bin/bspack.exe $flags -bs-main $main -o $out  $post_process
     depfile = $out.d
     generator = true
 
-
+LTO= ../scripts/buckle_lto.js
 OCAML_SRC_UTILS=$native_ocaml_path/utils
 OCAML_SRC_PARSING=$native_ocaml_path/parsing
 OCAML_SRC_TYPING=$native_ocaml_path/typing
@@ -19,12 +19,12 @@ build snapshot: phony  $SNAP/whole_compiler.ml $SNAP/bsppx.ml $SNAP/bsdep.ml $SN
 build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe
     flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
     main = Js_main
-
+    post_process = && node $LTO $SNAP/whole_compiler.ml
 
 build $SNAP/bsppx.ml: bspack | ./bin/bspack.exe
     flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I js_parser -I main 
     main = Bsppx_main
-
+    post_process = && node $LTO $SNAP/bsppx.ml
 
 build $SNAP/bsdep.ml: bspack | ./bin/bspack.exe
     flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
