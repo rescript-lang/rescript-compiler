@@ -1,5 +1,5 @@
 
-  [1;31mWe've found a bug for you![0m
+  [1;31mWarning number 5[0m (configured as error) 
   [36m/.../fixtures/warnings1.re[0m [2m3:3-7[0m
   
   1 [2m│[0m let x = (a, b) => a + b;
@@ -8,7 +8,5 @@
   4 [2m│[0m   10
   5 [2m│[0m };
   
-  This has type:
-    [1;31mint => int[0m
-  But somewhere wanted:
-    [1;33munit[0m
+  this function application is partial,
+maybe some arguments are missing.

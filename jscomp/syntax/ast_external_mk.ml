@@ -24,11 +24,11 @@
 
 let local_external_apply loc 
      ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
+     ~(pval_prim : string list)
+     ~(pval_type : Parsetree.core_type)
      ?(local_module_name = "J")
      ?(local_fun_name = "unsafe_expr")
-     args
+     (args : Parsetree.expression list)
   : Parsetree.expression_desc = 
   Pexp_letmodule
     ({txt = local_module_name; loc},

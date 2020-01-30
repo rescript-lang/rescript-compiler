@@ -6964,8 +6964,9 @@ module Bsc_warnings
 
   - 102 Bs_polymorphic_comparison
 *)
-let defaults_w = "+a-4-40-41-42-50-102"
+let defaults_w = "+a-4-9-40-41-42-50-102"
 let defaults_warn_error = "-a+5+101";;
+(*TODO: add +10*)
 
 end
 module Bsb_warning : sig 
@@ -11785,7 +11786,7 @@ let output_merlin_namespace buffer ns=
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   merlin_flg ^ 
   String.concat Ext_string.single_space 
-    ("-strict-sequence" :: List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
+    (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
      Literals.dash_nostdlib::bsc_flags)) 
 
 (* No need for [-warn-error] in merlin  *)     

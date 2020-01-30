@@ -39,8 +39,8 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
     (s, (Some delim)))
   ->
     Ast_utf8_string_interp.transform e s delim
-  | Pexp_fun (arg_label, _, pat , body)
-    when Ast_compatible.is_arg_label_simple arg_label ->
+  | Pexp_fun (Nolabel, _, pat , body)
+    ->
     begin match Ext_list.exclude_with_val
           e.pexp_attributes
           Ast_attributes.is_bs with

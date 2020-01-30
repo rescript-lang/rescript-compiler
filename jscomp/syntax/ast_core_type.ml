@@ -141,8 +141,8 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
 *)
 let get_uncurry_arity (ty : t ) =
   match ty.ptyp_desc  with
-  | Ptyp_arrow(arg_label, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
-     rest  ) when Ast_compatible.is_arg_label_simple arg_label -> 
+  | Ptyp_arrow(Nolabel, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
+     rest  )  -> 
      begin match rest with 
      | {ptyp_desc = Ptyp_arrow _ } ->  
       `Arity (get_uncurry_arity_aux rest 1 )

@@ -38,7 +38,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Ast_compatible.arg_label -> (* label for error checking *)
+  (Asttypes.arg_label -> (* label for error checking *)
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt

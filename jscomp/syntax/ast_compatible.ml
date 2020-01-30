@@ -30,13 +30,10 @@ let default_loc = Location.none
 
 type poly_var_label = Asttypes.label Asttypes.loc
 
-type arg_label = Asttypes.arg_label = 
-  | Nolabel
-  | Labelled of string
-  | Optional of string
 
-let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
-type label = arg_label 
+
+
+
 
 
 
@@ -46,13 +43,14 @@ let arrow ?(loc=default_loc) ?(attrs = []) a b  =
 let apply_simple
  ?(loc = default_loc) 
  ?(attrs = [])
-  fn args : expression = 
+  (fn : expression) 
+  (args : expression list) : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map args (fun x -> Nolabel, x) ) ) }
+        (Ext_list.map args (fun x -> Asttypes.Nolabel, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -242,7 +240,7 @@ let const_exp_string_list_as_array xs =
   (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 type param_type = 
-  {label : arg_label ;
+  {label : Asttypes.arg_label ;
    ty :  Parsetree.core_type ; 
    attr :Parsetree.attributes;
    loc : loc
@@ -273,4 +271,4 @@ let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
-  (arg_label * Parsetree.expression) list 
+  (Asttypes.arg_label * Parsetree.expression) list 

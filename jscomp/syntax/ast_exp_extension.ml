@@ -31,8 +31,8 @@ let rec unroll_function_aux
   | Pexp_constant(
     Pconst_string
     (block,_)) -> acc, block
-  | Pexp_fun(arg_label,_,pat,cont)
-    when Ast_compatible.is_arg_label_simple arg_label -> 
+  | Pexp_fun(Nolabel,_,pat,cont)
+     -> 
     (match pat.ppat_desc with 
     | Ppat_var s -> 
       unroll_function_aux (s.txt::acc) cont
@@ -69,8 +69,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     | "bs.raw" | "raw" -> 
       begin match payload with 
       | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(arg_label,_,pat,body)},_)}]
-        when Ast_compatible.is_arg_label_simple arg_label
+        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)},_)}]        
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
