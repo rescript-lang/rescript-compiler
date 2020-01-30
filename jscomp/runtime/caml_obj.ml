@@ -37,8 +37,8 @@ module O = struct
     [%raw{|function(o,foo){
         for (var x in o) { foo(x) }}
       |}]
-    
-  let hasOwnProperty (o: Caml_obj_extern.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
+  external hasOwnProperty :    
+    t -> key -> bool = "hasOwnProperty" [@@bs.send]
   external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
   external shallowCopy :
     (_ [@bs.as {json|{}|json}]) -> t -> t = "assign" 

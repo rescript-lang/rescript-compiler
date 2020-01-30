@@ -78,9 +78,12 @@ external readAs : spawnResult ->
 
 let caml_sys_system_command _cmd = 127
 
-let caml_sys_getcwd () = 
-  if Js.typeof [%raw{|process|}] = "undefined" then "/"
-  else [%raw{|process|}]##cwd ()  
+let caml_sys_getcwd : unit -> string = [%raw{|function(param){
+    if (typeof process === "undefined" || process.cwd === undefined){
+      return "/"  
+    }
+    return process.cwd()
+  }|}]
 
 
 (* Called by {!Sys} in the toplevel, should never fail*)
