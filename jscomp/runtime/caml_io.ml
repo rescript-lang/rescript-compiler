@@ -113,5 +113,3 @@ let caml_ml_out_channels_list () : out_channel list  =
   [stdout; stderr]  
 
 
-[@@@warning "-60"]
-module Use = Js_internalRaw

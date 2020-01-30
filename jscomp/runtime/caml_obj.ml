@@ -388,5 +388,3 @@ let caml_max (x : Caml_obj_extern.t) y =
 
 let caml_obj_set_tag = Caml_obj_extern.set_tag  
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

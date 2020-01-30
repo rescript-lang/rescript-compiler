@@ -365,5 +365,3 @@ let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
   = fun tbl i buf -> 
 caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

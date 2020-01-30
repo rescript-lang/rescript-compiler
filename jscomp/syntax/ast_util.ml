@@ -308,27 +308,23 @@ let handle_raw ~kind loc payload =
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
     | Some exp ->
-      let pexp_desc = 
-        Parsetree.Pexp_apply (
-          Exp.ident {loc; 
-                     txt = Ast_raw.raw_expr_id
-                       },
-          [Nolabel,exp]
-        )
-      in
-      { exp with pexp_desc }
+      { exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [exp]}
   end
 let handle_raw_structure loc payload = 
   begin match Ast_payload.raw_as_string_exp_exn 
                 ~kind:Raw_program payload with 
   | Some exp 
-    -> 
-    let pexp_desc = 
-      Parsetree.Pexp_apply(
-        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-        [ Nolabel,exp]) in 
+    ->     
     Ast_helper.Str.eval 
-      { exp with pexp_desc }
+      { exp with pexp_desc =
+                   Ast_external_mk.local_external_apply
+                     loc ~pval_prim:["#raw_stmt"]
+                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                     [exp]
+      }
 
   | None
     -> 
@@ -337,11 +333,13 @@ let handle_raw_structure loc payload =
 
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
-    Ast_compatible.app1
-    (Exp.ident ~loc 
-         {loc; txt = Ast_raw.raw_expr_id })
-      ~loc 
+    let str_exp = 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [str_exp]}   
+  in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    

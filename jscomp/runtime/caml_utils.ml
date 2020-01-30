@@ -56,5 +56,3 @@ let repeat : int -> string -> string = [%raw{|function(count,self){
     return rpt;
 }|}]
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

@@ -42791,83 +42791,6 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   | _ -> false
 
 end
-module Ast_raw : sig 
-#1 "ast_raw.mli"
-(* Copyright (C) 2020 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val raw_expr_id : Longident.t 
-
-val raw_stmt_id : Longident.t 
-
-val raw_function_id : Longident.t
-end = struct
-#1 "ast_raw.ml"
-(* Copyright (C) 2020 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
- let raw_expr = "raw_expr"
- let raw_stmt = "raw_stmt"
- let raw_function = "raw_function"
- 
- let raw_expr_id =   
-  Longident.Ldot 
-  (Lident "Js_internalRaw", 
-  raw_expr)  
-
-let raw_stmt_id = 
-  Longident.Ldot 
-  (Lident "Js_internalRaw", 
-  raw_stmt)     
-
-let raw_function_id = 
-    Longident.Ldot 
-    (Lident "Js_internalRaw", 
-    raw_function)      
-end
 module Ast_util : sig 
 #1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -43313,27 +43236,23 @@ let handle_raw ~kind loc payload =
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
     | Some exp ->
-      let pexp_desc = 
-        Parsetree.Pexp_apply (
-          Exp.ident {loc; 
-                     txt = Ast_raw.raw_expr_id
-                       },
-          [Nolabel,exp]
-        )
-      in
-      { exp with pexp_desc }
+      { exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [exp]}
   end
 let handle_raw_structure loc payload = 
   begin match Ast_payload.raw_as_string_exp_exn 
                 ~kind:Raw_program payload with 
   | Some exp 
-    -> 
-    let pexp_desc = 
-      Parsetree.Pexp_apply(
-        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-        [ Nolabel,exp]) in 
+    ->     
     Ast_helper.Str.eval 
-      { exp with pexp_desc }
+      { exp with pexp_desc =
+                   Ast_external_mk.local_external_apply
+                     loc ~pval_prim:["#raw_stmt"]
+                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                     [exp]
+      }
 
   | None
     -> 
@@ -43342,11 +43261,13 @@ let handle_raw_structure loc payload =
 
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
-    Ast_compatible.app1
-    (Exp.ident ~loc 
-         {loc; txt = Ast_raw.raw_expr_id })
-      ~loc 
+    let str_exp = 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [str_exp]}   
+  in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
@@ -45710,16 +45631,15 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     | "bs.raw" | "raw" -> 
       begin match payload with 
       | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)},_)}]        
+        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)} as e,_)}]        
          -> 
+        let str_exp : Parsetree.expression = 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
           Pconst_string
            (block,_))
            -> 
-            Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})            
-            (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
+           Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } )             
          | ppat_desc, _ -> 
             let txt = 
               match ppat_desc with 
@@ -45729,10 +45649,13 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                 Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
             in 
             let acc, block = unroll_function_aux [txt] body in 
-            Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})
-              (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
-         end 
+            Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block })
+         end in 
+        let any_type = Typ.any () in 
+        {e with pexp_desc = Ast_external_mk.local_external_apply
+                    loc ~pval_prim:["#raw_function"]
+                    ~pval_type:(Typ.arrow Nolabel any_type any_type)
+                    [str_exp]} 
       | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->

@@ -107,5 +107,3 @@ let caml_sys_is_directory _s =
 let caml_sys_file_exists _s = 
   raise ( Failure "caml_sys_file_exists not implemented")
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

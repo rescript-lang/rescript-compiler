@@ -391,5 +391,3 @@ let caml_set_parser_trace : bool -> bool = [%raw{|function (v) {
     return old;
 }|}]
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

@@ -679,5 +679,3 @@ let caml_int32_of_string = caml_int_of_string
 let caml_nativeint_of_string = caml_int32_of_string
 
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

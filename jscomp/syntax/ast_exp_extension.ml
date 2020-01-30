@@ -69,16 +69,15 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     | "bs.raw" | "raw" -> 
       begin match payload with 
       | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)},_)}]        
+        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)} as e,_)}]        
          -> 
+        let str_exp : Parsetree.expression = 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
           Pconst_string
            (block,_))
            -> 
-            Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})            
-            (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
+           Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } )             
          | ppat_desc, _ -> 
             let txt = 
               match ppat_desc with 
@@ -88,10 +87,13 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                 Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
             in 
             let acc, block = unroll_function_aux [txt] body in 
-            Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ast_raw.raw_function_id;loc})
-              (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
-         end 
+            Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block })
+         end in 
+        let any_type = Typ.any () in 
+        {e with pexp_desc = Ast_external_mk.local_external_apply
+                    loc ~pval_prim:["#raw_function"]
+                    ~pval_type:(Typ.arrow Nolabel any_type any_type)
+                    [str_exp]} 
       | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
