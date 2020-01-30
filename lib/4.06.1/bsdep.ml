@@ -138,8 +138,9 @@ module Bsc_warnings
 
   - 102 Bs_polymorphic_comparison
 *)
-let defaults_w = "+a-4-40-41-42-50-102"
+let defaults_w = "+a-4-9-40-41-42-50-102"
 let defaults_warn_error = "-a+5+101";;
+(*TODO: add +10*)
 
 end
 module Arg_helper : sig 
@@ -28224,7 +28225,7 @@ let setup_env () =
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true;
-  Clflags.strict_sequence := true;
+  (* Clflags.strict_sequence := true; *)
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
