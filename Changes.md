@@ -2,6 +2,8 @@
 
 # current
 
+- #4117 Upgrade to Reason 3.6.0 @ 8f71db0
+
 # 7.0.2
 
 - #4060 #4057 add unboxed type support 
