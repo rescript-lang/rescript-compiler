@@ -1,3 +1,4 @@
+[@@@warning "a"]
 module Cppo_command : sig 
 #1 "cppo_command.mli"
 type command_token =
