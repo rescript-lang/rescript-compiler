@@ -16,7 +16,7 @@ end
 class memo_fib = object (self)
    val cache = Hashtbl.create 31 
    inherit fib as super 
-   method calc x =
+   method! calc x =
     match Hashtbl.find cache x with 
     | exception Not_found -> 
       let v = (super#calc x) in 

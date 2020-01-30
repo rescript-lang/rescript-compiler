@@ -1,4 +1,4 @@
-
+[@@@warning "-107"]
 
 let overflow_dec_i32_number = 949_460_645_006
 

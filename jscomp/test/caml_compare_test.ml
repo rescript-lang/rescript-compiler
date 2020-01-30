@@ -1,10 +1,10 @@
-
+[@@@warning "-45"]
 type  u  = A of int | B of int * bool | C of int 
 
 let function_equal_test = try ((fun x -> x + 1) = (fun x -> x + 2)) with
                          | Invalid_argument "equal: functional value" -> true
                          | _ -> false
-
+                        
 let suites = ref Mt.[
     __LOC__ , (fun _ -> Eq(true, None < Some 1)); 
     "option2", (fun _ -> Eq(true, Some 1 < Some 2));

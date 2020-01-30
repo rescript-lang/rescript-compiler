@@ -36,7 +36,7 @@ let () =
   eq __LOC__ (I.toString (-1)) "-1"
 
 let () =
-  let open I in
+  let open! I in
   eq __LOC__ (2 + 3) 5;
   eq __LOC__ (2 - 3) (-1);
   eq __LOC__ (2 * 3) 6;

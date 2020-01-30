@@ -86,7 +86,7 @@ module Md = Belt.Map
 module Md0 = Belt.Map.Dict
 let bench3 (type t) (m : (string,t) Belt.Id.comparable) =
 
-  let empty = Md.make m in
+  let empty = Md.make ~id:m in
   let module String = (val m) in
   let cmp = String.cmp in
   let table = ref (Md.getData empty) in
@@ -108,7 +108,7 @@ module Sx = (val Belt.Id.comparable ~cmp:(fun  (x : string) y -> compare x y ))
 module H = Belt.HashMap.String
 let bench4 () =
   let table =
-    H.make initial_size in
+    H.make ~hintSize:initial_size in
 
   for i  = 0 to  count do
     H.set
@@ -146,7 +146,7 @@ let bench5 () =
 module HI = Belt.HashMap.Int
 let bench6 () =
   let table =
-    HI.make initial_size in
+    HI.make ~hintSize:initial_size in
 
   for i  = 0 to  count do
     HI.set
@@ -165,7 +165,7 @@ module S = Belt.HashSet.Int
 let bench7 () =
   let table =
     (* [%time  *)
-    S.make (initial_size* 2)
+    S.make ~hintSize:(initial_size* 2)
     (* ]  *)
     in
 

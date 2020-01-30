@@ -1,4 +1,4 @@
-let hash_variant s =
+[@@@warning "-107"] let hash_variant s =
   let accu = ref 0 in
   for i = 0 to String.length s - 1 do
     accu := (223 * !accu + Char.code s.[i]) land (1 lsl 31 - 1)

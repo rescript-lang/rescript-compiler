@@ -1,4 +1,4 @@
-
+[@@@warning "-30"]
 type a =  
   { u_x : int}
 [@@bs.deriving { accessors }]

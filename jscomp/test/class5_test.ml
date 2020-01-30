@@ -19,7 +19,7 @@ class printable_colored_point y c =
       val c = c
       method color = c
       inherit printable_point y as super
-      method print =
+      method! print =
          "(" ^
         super#print ^
          ", " ^
