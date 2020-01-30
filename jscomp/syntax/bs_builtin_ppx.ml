@@ -382,6 +382,7 @@ let signature_config_table : action_table =
 
 
 let rewrite_signature (x : Parsetree.signature) =  
+  Bs_ast_invariant.iter_warnings_on_sigi x;  
   let result = 
     match x with
     | {psig_desc = Psig_attribute ({txt = "ocaml.ppx.context"},_)}
@@ -399,7 +400,8 @@ let rewrite_signature (x : Parsetree.signature) =
   result
 
 (* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
-let rewrite_implementation (x : Parsetree.structure) =  
+let rewrite_implementation (x : Parsetree.structure) = 
+  Bs_ast_invariant.iter_warnings_on_stru x ;   
   let result =
     match x with
     | {pstr_desc = Pstr_attribute ({txt = "ocaml.ppx.context"},_)}

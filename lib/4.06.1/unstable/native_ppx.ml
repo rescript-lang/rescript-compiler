@@ -2838,7 +2838,6 @@ val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_gentype : string option ref
 val no_assert_false : bool ref
-val bs_quiet : bool ref 
 val dump_location : bool ref
 
 
@@ -3263,7 +3262,6 @@ let bs_vscode =
 let dont_record_crc_unit : string option ref = ref None
 let bs_gentype = ref None
 let no_assert_false = ref false
-let bs_quiet = ref false
 let dump_location = ref true
 
 
@@ -3419,6 +3417,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
         
 ;;
 
@@ -3563,6 +3564,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
   
 ;;
 
@@ -3642,10 +3646,13 @@ let number = function
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
   | Bs_fragile_external _ -> 105
+  | Bs_unimplemented_primitive _ -> 106
+  | Bs_integer_literal_overflow -> 107
+  | Bs_uninterpreted_delimiters _ -> 108
   
 ;;
 
-let last_warning_number = 105
+let last_warning_number = 108
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -4011,6 +4018,12 @@ let message = function
       "BuckleScript bs.deriving warning: " ^ s 
   | Bs_fragile_external s ->     
       "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+  | Bs_unimplemented_primitive s -> 
+      "BuckleScript warning: Unimplemented primitive used:" ^ s
+  | Bs_integer_literal_overflow -> 
+      "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
+  | Bs_uninterpreted_delimiters s -> 
+      "BuckleScript warning: Uninterpreted delimiters" ^ s  
       
 ;;
 
@@ -4141,10 +4154,14 @@ let descriptions =
    62, "Type constraint on GADT type declaration";
     
     
-   101, "Unused bs attributes";
-   102, "polymorphic comparison introduced (maybe unsafe)";
-   103, "BuckleScript FFI warning: " ;
-   104, "BuckleScript bs.deriving warning: "
+   101, "BuckleScript warning: Unused bs attributes";
+   102, "BuckleScript warning: polymorphic comparison introduced (maybe unsafe)";
+   103, "BuckleScript warning: about fragile FFI definitions" ;
+   104, "BuckleScript warning: bs.deriving warning with customized message ";
+   105, "BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name";
+   106, "BuckleScript warning: Unimplemented primitive used:";
+   107, "BuckleScript warning: Integer literal exceeds the range of representable integers of type int";
+   108, "BuckleScript warning: Uninterpreted delimiters (for unicode)"  
    
   ]
 ;;
@@ -4665,8 +4682,7 @@ let print_warning loc ppf w =
 
 let formatter_for_warnings = ref err_formatter;;
 let prerr_warning loc w = 
-    if not !Clflags.bs_quiet then
-      print_warning loc !formatter_for_warnings w;;
+    print_warning loc !formatter_for_warnings w;;
 
 let echo_eof () =
   print_newline ();
@@ -10105,13 +10121,13 @@ let ends_with_then_chop s beg =
   if i >= 0 then Some (String.sub s 0 i) 
   else None
 
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
+(* let check_suffix_case = ends_with  *)
+(* let check_suffix_case_then_chop = ends_with_then_chop *)
 
-let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
+(* let check_any_suffix_case s suffixes = 
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
-let check_any_suffix_case_then_chop s suffixes = 
+(* let check_any_suffix_case_then_chop s suffixes = 
   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
@@ -10119,7 +10135,7 @@ let check_any_suffix_case_then_chop s suffixes =
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes    
+  aux suffixes     *)
 
 
 
@@ -13180,7 +13196,7 @@ let rec next s ~remaining  offset =
   if remaining = 0 then offset 
   else 
     begin match classify s.[offset+1] with
-      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | Cont _cc -> next s ~remaining:(remaining-1) (offset+1)
       | _ ->  -1 
       | exception _ ->  -1 (* it can happen when out of bound *)
     end
@@ -13212,8 +13228,8 @@ let decode_utf8_string s =
     location, then we do the decode later
 *)  
 
-let verify s loc = 
-  assert false
+(* let verify s loc = 
+  assert false *)
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -13538,7 +13554,7 @@ let merge (l: t) (r : t) =
   if is_ghost l then r 
   else if is_ghost r then l 
   else match l,r with 
-  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
+  | {loc_start ; _}, {loc_end; _} (* TODO: improve*)
     -> 
     {loc_start ;loc_end; loc_ghost = false}
 
@@ -14107,237 +14123,6 @@ let is_unescaped s =
   Ext_string.equal s unescaped_j_delimiter
   || Ext_string.equal s unescaped_js_delimiter
 end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-
-
-
-val no_warn_unimplemented_external : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-
-
-
-
-
-
-
-val set_debug_file : string -> unit
-
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-
-val syntax_only  : bool ref
-val binary_ast : bool ref
-val simple_binary_ast : bool ref
-
-
-val bs_suffix : bool ref
-val debug : bool ref
-
-val cmi_only  : bool ref
-val cmj_only : bool ref 
-(* stopped after generating cmj *)
-val force_cmi : bool ref 
-val force_cmj : bool ref
-
-val jsx_version : int ref
-val refmt : string option ref
-val is_reason : bool ref 
-
-val js_stdout : bool ref 
-
-val all_module_aliases : bool ref 
-
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_arg.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
-
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
-
-let debug_file = ref ""
-
-
-let set_debug_file  f = debug_file := f
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !Location.input_name
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-
-
-
-let sort_imports = ref true
-
-let syntax_only = ref false
-let binary_ast = ref false
-let simple_binary_ast = ref false
-
-let bs_suffix = ref false 
-
-let debug = ref false
-
-let cmi_only = ref false  
-let cmj_only = ref false
-
-let force_cmi = ref false
-let force_cmj = ref false
-
-let jsx_version = ref (-1)
-
-let refmt = ref None
-
-let is_reason = ref false
-
-let js_stdout = ref true
-
-let all_module_aliases = ref false
-
-end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14421,95 +14206,327 @@ let to_string t =
     -> 
     "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
-let warning_formatter = Format.err_formatter
-
-let print_string_warning (loc : Location.t) x =   
-  if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
-  else 
-    Location.print warning_formatter loc ; 
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
 let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
-
-let unimplemented_primitive = "Unimplemented primitive used:" 
-type error = 
-  | Uninterpreted_delimiters of string
-  | Unimplemented_primitive of string 
-exception  Error of Location.t * error
-
-let pp_error fmt x =
-  match x with 
-  | Unimplemented_primitive str -> 
-    Format.pp_print_string fmt unimplemented_primitive;
-    Format.pp_print_string fmt str
-  
-  | Uninterpreted_delimiters str -> 
-    Format.pp_print_string fmt "Uninterpreted delimiters" ;
-    Format.pp_print_string fmt str
-
-
-
-let () = 
-  Location.register_error_of_exn (function 
-      | Error (loc,err) -> 
-        Some (Location.error_of_printer loc pp_error err)
-      | _ -> None
-    )
+    Location.prerr_warning loc (Bs_ffi_warning (to_string x))
 
 
 
 
-let warn_missing_primitive loc txt =      
-  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
+
+let warn_missing_primitive loc txt =  
+  Location.prerr_warning loc (Bs_unimplemented_primitive txt)      
 
 let warn_literal_overflow loc = 
-  if not !Clflags.bs_quiet then
-  begin 
-    print_string_warning loc 
-      "Integer literal exceeds the range of representable integers of type int";
-    Format.pp_print_flush warning_formatter ()  
-  end 
+  Location.prerr_warning loc Bs_integer_literal_overflow
 
 
 
 let error_unescaped_delimiter loc txt = 
-  raise (Error(loc, Uninterpreted_delimiters txt))
+  Location.prerr_warning loc (Bs_uninterpreted_delimiters txt)
+  
 
 
+  
+end
+module Builtin_attributes : sig 
+#1 "builtin_attributes.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
 
+(* Support for some of the builtin attributes:
 
-
-
-(**
-   Note the standard way of reporting error in compiler:
-
-   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-   val Location.error_of_printer : Location.t ->
-   (Format.formatter -> error -> unit) -> error -> Location.error
-
-   Define an error type
-
-   type error 
-   exception Error of Location.t * error 
-
-   Provide a printer to error
-
-   {[
-     let () = 
-       Location.register_error_of_exn
-         (function 
-           | Error(loc,err) -> 
-             Some (Location.error_of_printer loc pp_error err)
-           | _ -> None
-         )
-   ]}
+   ocaml.deprecated
+   ocaml.error
+   ocaml.ppwarning
+   ocaml.warning
+   ocaml.warnerror
+   ocaml.explicit_arity (for camlp4/camlp5)
+   ocaml.warn_on_literal_pattern
+   ocaml.deprecated_mutable
+   ocaml.immediate
+   ocaml.boxed / ocaml.unboxed
 *)
+
+
+val check_deprecated: Location.t -> Parsetree.attributes -> string -> unit
+val check_deprecated_inclusion:
+  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
+  Parsetree.attributes -> string -> unit
+val deprecated_of_attrs: Parsetree.attributes -> string option
+val deprecated_of_sig: Parsetree.signature -> string option
+val deprecated_of_str: Parsetree.structure -> string option
+
+val check_deprecated_mutable:
+    Location.t -> Parsetree.attributes -> string -> unit
+val check_deprecated_mutable_inclusion:
+  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
+  Parsetree.attributes -> string -> unit
+
+val check_bs_attributes_inclusion:
+  (Parsetree.attributes ->
+  Parsetree.attributes -> string -> (string*string) option ) ref
+
+val check_duplicated_labels: 
+  (Parsetree.label_declaration list ->
+    string Asttypes.loc option
+  ) ref    
+val error_of_extension: Parsetree.extension -> Location.error
+
+val warning_attribute: ?ppwarning:bool -> Parsetree.attribute -> unit
+  (** Apply warning settings from the specified attribute.
+      "ocaml.warning"/"ocaml.warnerror" (and variants without the prefix)
+      are processed and other attributes are ignored.
+
+      Also implement ocaml.ppwarning (unless ~ppwarning:false is
+      passed).
+  *)
+
+val warning_scope:
+  ?ppwarning:bool ->
+  Parsetree.attributes -> (unit -> 'a) -> 'a
+  (** Execute a function in a new scope for warning settings.  This
+      means that the effect of any call to [warning_attribute] during
+      the execution of this function will be discarded after
+      execution.
+
+      The function also takes a list of attributes which are processed
+      with [warning_attribute] in the fresh scope before the function
+      is executed.
+  *)
+
+val warn_on_literal_pattern: Parsetree.attributes -> bool
+val explicit_arity: Parsetree.attributes -> bool
+
+
+val immediate: Parsetree.attributes -> bool
+
+val has_unboxed: Parsetree.attributes -> bool
+val has_boxed: Parsetree.attributes -> bool
+
+end = struct
+#1 "builtin_attributes.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+open Asttypes
+open Parsetree
+
+let string_of_cst = function
+  | Pconst_string(s, _) -> Some s
+  | _ -> None
+
+let string_of_payload = function
+  | PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant c},_)}] ->
+      string_of_cst c
+  | _ -> None
+
+let string_of_opt_payload p =
+  match string_of_payload p with
+  | Some s -> s
+  | None -> ""
+
+let rec error_of_extension ext =
+  match ext with
+  | ({txt = ("ocaml.error"|"error") as txt; loc}, p) ->
+    let rec sub_from inner =
+      match inner with
+      | {pstr_desc=Pstr_extension (ext, _)} :: rest ->
+          error_of_extension ext :: sub_from rest
+      | _ :: rest ->
+          (Location.errorf ~loc
+             "Invalid syntax for sub-error of extension '%s'." txt) ::
+            sub_from rest
+      | [] -> []
+    in
+    begin match p with
+    | PStr [] -> raise Location.Already_displayed_error
+    | PStr({pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::
+           {pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(if_highlight,_))}, _)}::
+           inner) ->
+        Location.error ~loc ~if_highlight ~sub:(sub_from inner) msg
+    | PStr({pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::inner) ->
+        Location.error ~loc ~sub:(sub_from inner) msg
+    | _ -> Location.errorf ~loc "Invalid syntax for extension '%s'." txt
+    end
+  | ({txt; loc}, _) ->
+      Location.errorf ~loc "Uninterpreted extension '%s'." txt
+
+let cat s1 s2 =
+  if s2 = "" then s1 else
+ 
+    if Clflags.bs_vscode then s1 ^ " " ^ s2
+    else s1 ^ "\n" ^ s2 
+    
+
+let rec deprecated_of_attrs = function
+  | [] -> None
+  | ({txt = "ocaml.deprecated"|"deprecated"; _}, p) :: _ ->
+      Some (string_of_opt_payload p)
+  | _ :: tl -> deprecated_of_attrs tl
+
+let check_deprecated loc attrs s =
+  match deprecated_of_attrs attrs with
+  | None -> ()
+  | Some txt -> Location.deprecated loc (cat s txt)
+
+let check_deprecated_inclusion ~def ~use loc attrs1 attrs2 s =
+  match deprecated_of_attrs attrs1, deprecated_of_attrs attrs2 with
+  | None, _ | Some _, Some _ -> ()
+  | Some txt, None -> Location.deprecated ~def ~use loc (cat s txt)
+
+let rec deprecated_mutable_of_attrs = function
+  | [] -> None
+  | ({txt = "ocaml.deprecated_mutable"|"deprecated_mutable"; _}, p) :: _ ->
+      Some (string_of_opt_payload p)
+  | _ :: tl -> deprecated_mutable_of_attrs tl
+
+let check_deprecated_mutable loc attrs s =
+  match deprecated_mutable_of_attrs attrs with
+  | None -> ()
+  | Some txt ->
+      Location.deprecated loc (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_deprecated_mutable_inclusion ~def ~use loc attrs1 attrs2 s =
+  match deprecated_mutable_of_attrs attrs1,
+        deprecated_mutable_of_attrs attrs2
+  with
+  | None, _ | Some _, Some _ -> ()
+  | Some txt, None ->
+      Location.deprecated ~def ~use loc
+        (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_bs_attributes_inclusion = 
+  ref (fun _attrs1 _attrs2 _s -> 
+      None
+    )  
+
+let check_duplicated_labels = ref (fun _lbls -> 
+  failwith "check_duplicated_label not implemented"
+)
+
+let rec deprecated_of_sig = function
+  | {psig_desc = Psig_attribute a} :: tl ->
+      begin match deprecated_of_attrs [a] with
+      | None -> deprecated_of_sig tl
+      | Some _ as r -> r
+      end
+  | _ -> None
+
+
+let rec deprecated_of_str = function
+  | {pstr_desc = Pstr_attribute a} :: tl ->
+      begin match deprecated_of_attrs [a] with
+      | None -> deprecated_of_str tl
+      | Some _ as r -> r
+      end
+  | _ -> None
+
+
+let warning_attribute ?(ppwarning = true) =
+  let process loc txt errflag payload =
+    match string_of_payload payload with
+    | Some s ->
+        begin try Warnings.parse_options errflag s
+        with Arg.Bad _ ->
+          Location.prerr_warning loc
+            (Warnings.Attribute_payload
+               (txt, "Ill-formed list of warnings"))
+        end
+    | None ->
+        Location.prerr_warning loc
+          (Warnings.Attribute_payload
+             (txt, "A single string literal is expected"))
+  in
+  function
+  | ({txt = ("ocaml.warning"|"warning") as txt; loc}, payload) ->
+      process loc txt false payload
+  | ({txt = ("ocaml.warnerror"|"warnerror") as txt; loc}, payload) ->
+      process loc txt true payload
+  | {txt="ocaml.ppwarning"|"ppwarning"},
+    PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant
+                                   (Pconst_string (s, _))},_);
+          pstr_loc}] when ppwarning ->
+      Location.prerr_warning pstr_loc (Warnings.Preprocessor s)
+  | _ ->
+      ()
+
+let warning_scope ?ppwarning attrs f =
+  let prev = Warnings.backup () in
+  try
+    List.iter (warning_attribute ?ppwarning) (List.rev attrs);
+    let ret = f () in
+    Warnings.restore prev;
+    ret
+  with exn ->
+    Warnings.restore prev;
+    raise exn
+
+
+let warn_on_literal_pattern =
+  List.exists
+    (function
+      | ({txt="ocaml.warn_on_literal_pattern"|"warn_on_literal_pattern"; _}, _)
+        -> true
+      | _ -> false
+    )
+
+let explicit_arity =
+  List.exists
+    (function
+      | ({txt="ocaml.explicit_arity"|"explicit_arity"; _}, _) -> true
+      | _ -> false
+    )
+
+let immediate =
+  List.exists
+    (function
+      | ({txt="ocaml.immediate"|"immediate"; _}, _) -> true
+      | _ -> false
+    )
+
+(* The "ocaml.boxed (default)" and "ocaml.unboxed (default)"
+   attributes cannot be input by the user, they are added by the
+   compiler when applying the default setting. This is done to record
+   in the .cmi the default used by the compiler when compiling the
+   source file because the default can change between compiler
+   invocations. *)
+
+let check l (x, _) = List.mem x.txt l
+
+let has_unboxed attr =
+  List.exists (check ["ocaml.unboxed"; "unboxed"])
+    attr
+
+let has_boxed attr =
+  List.exists (check ["ocaml.boxed"; "boxed"]) attr
 
 end
 module Ext_util : sig 
@@ -14960,6 +14977,13 @@ val warn_discarded_unused_attributes :
   Parsetree.attributes -> unit 
 (** Ast invariant checking for detecting errors *)
 
+
+val iter_warnings_on_stru:
+  Parsetree.structure -> unit 
+
+val iter_warnings_on_sigi: 
+  Parsetree.signature -> unit 
+  
 val emit_external_warnings_on_structure:
   Parsetree.structure -> unit 
 
@@ -15102,7 +15126,30 @@ let emit_external_warnings : iterator=
       end 
   }
 
-let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
+let rec iter_warnings_on_stru (stru : Parsetree.structure) = 
+  match stru with 
+  | [] -> ()  
+  | head :: rest -> 
+    begin match head.pstr_desc with 
+      | Pstr_attribute attr -> 
+        Builtin_attributes.warning_attribute attr;
+        iter_warnings_on_stru rest 
+      |  _ -> ()
+    end
+
+let rec iter_warnings_on_sigi (stru : Parsetree.signature) = 
+  match stru with 
+  | [] -> ()  
+  | head :: rest -> 
+    begin match head.psig_desc with 
+      | Psig_attribute attr -> 
+        Builtin_attributes.warning_attribute attr;
+        iter_warnings_on_sigi rest 
+      |  _ -> ()
+    end
+
+
+let emit_external_warnings_on_structure  (stru : Parsetree.structure) =   
   if Warnings.is_active dummy_unused_attribute then 
     emit_external_warnings.structure emit_external_warnings stru
 
@@ -23107,6 +23154,234 @@ let handleTdclsInStru
   end
 
 
+
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** cross module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** options for builtin ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+
+
+
+
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+
+
+
+
+
+
+
+val set_debug_file : string -> unit
+
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+
+val syntax_only  : bool ref
+val binary_ast : bool ref
+val simple_binary_ast : bool ref
+
+
+val bs_suffix : bool ref
+val debug : bool ref
+
+val cmi_only  : bool ref
+val cmj_only : bool ref 
+(* stopped after generating cmj *)
+val force_cmi : bool ref 
+val force_cmj : bool ref
+
+val jsx_version : int ref
+val refmt : string option ref
+val is_reason : bool ref 
+
+val js_stdout : bool ref 
+
+val all_module_aliases : bool ref 
+
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_arg.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_arg.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+(* let (//) = Filename.concat *)
+
+(* let get_packages_info () = !packages_info *)
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+
+
+let debug_file = ref ""
+
+
+let set_debug_file  f = debug_file := f
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !Location.input_name
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+
+
+
+let sort_imports = ref true
+
+let syntax_only = ref false
+let binary_ast = ref false
+let simple_binary_ast = ref false
+
+let bs_suffix = ref false 
+
+let debug = ref false
+
+let cmi_only = ref false  
+let cmj_only = ref false
+
+let force_cmi = ref false
+let force_cmj = ref false
+
+let jsx_version = ref (-1)
+
+let refmt = ref None
+
+let is_reason = ref false
+
+let js_stdout = ref true
+
+let all_module_aliases = ref false
 
 end
 module Ppx_driver : sig 

@@ -201,9 +201,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
   )
-  :: 
-  ("-bs-quiet", Arg.Set Clflags.bs_quiet,
-    " Quiet mode (no warnings printed)"
+  ::
+  ("-bs-quiet", Arg.Unit (fun _ -> ()),
+    " (Deprecated using -w a) Quiet mode (no warnings printed)"
   )
   ::
   ("-bs-list-conditionals",
@@ -294,8 +294,8 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
   ("-bs-no-warn-unimplemented-external",
-    Arg.Set Js_config.no_warn_unimplemented_external,
-    " disable warnings on unimplmented c externals"
+    Arg.Unit (fun _ -> ()),
+    " Deprecated: use warning 106"
   )
   ::
   ("-bs-no-builtin-ppx-ml", 

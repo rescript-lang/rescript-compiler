@@ -69,9 +69,6 @@ let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
 
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
-
 let debug_file = ref ""
 
 

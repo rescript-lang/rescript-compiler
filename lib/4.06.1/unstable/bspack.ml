@@ -2838,7 +2838,6 @@ val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_gentype : string option ref
 val no_assert_false : bool ref
-val bs_quiet : bool ref 
 val dump_location : bool ref
 
 
@@ -3263,7 +3262,6 @@ let bs_vscode =
 let dont_record_crc_unit : string option ref = ref None
 let bs_gentype = ref None
 let no_assert_false = ref false
-let bs_quiet = ref false
 let dump_location = ref true
 
 
@@ -3419,6 +3417,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
         
 ;;
 
@@ -3563,6 +3564,9 @@ type t =
   | Bs_ffi_warning of string                (* 103 *)
   | Bs_derive_warning of string             (* 104 *)
   | Bs_fragile_external of string           (* 105 *)
+  | Bs_unimplemented_primitive of string    (* 106 *)
+  | Bs_integer_literal_overflow              (* 107 *)
+  | Bs_uninterpreted_delimiters of string   (* 108 *)
   
 ;;
 
@@ -3642,10 +3646,13 @@ let number = function
   | Bs_ffi_warning _ -> 103
   | Bs_derive_warning _ -> 104
   | Bs_fragile_external _ -> 105
+  | Bs_unimplemented_primitive _ -> 106
+  | Bs_integer_literal_overflow -> 107
+  | Bs_uninterpreted_delimiters _ -> 108
   
 ;;
 
-let last_warning_number = 105
+let last_warning_number = 108
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -4011,6 +4018,12 @@ let message = function
       "BuckleScript bs.deriving warning: " ^ s 
   | Bs_fragile_external s ->     
       "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+  | Bs_unimplemented_primitive s -> 
+      "BuckleScript warning: Unimplemented primitive used:" ^ s
+  | Bs_integer_literal_overflow -> 
+      "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
+  | Bs_uninterpreted_delimiters s -> 
+      "BuckleScript warning: Uninterpreted delimiters" ^ s  
       
 ;;
 
@@ -4141,10 +4154,14 @@ let descriptions =
    62, "Type constraint on GADT type declaration";
     
     
-   101, "Unused bs attributes";
-   102, "polymorphic comparison introduced (maybe unsafe)";
-   103, "BuckleScript FFI warning: " ;
-   104, "BuckleScript bs.deriving warning: "
+   101, "BuckleScript warning: Unused bs attributes";
+   102, "BuckleScript warning: polymorphic comparison introduced (maybe unsafe)";
+   103, "BuckleScript warning: about fragile FFI definitions" ;
+   104, "BuckleScript warning: bs.deriving warning with customized message ";
+   105, "BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name";
+   106, "BuckleScript warning: Unimplemented primitive used:";
+   107, "BuckleScript warning: Integer literal exceeds the range of representable integers of type int";
+   108, "BuckleScript warning: Uninterpreted delimiters (for unicode)"  
    
   ]
 ;;
@@ -4665,8 +4682,7 @@ let print_warning loc ppf w =
 
 let formatter_for_warnings = ref err_formatter;;
 let prerr_warning loc w = 
-    if not !Clflags.bs_quiet then
-      print_warning loc !formatter_for_warnings w;;
+    print_warning loc !formatter_for_warnings w;;
 
 let echo_eof () =
   print_newline ();
@@ -7313,6 +7329,1177 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 
 end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, fixed some bugs like
+    avoiding locale sensitivity *) 
+
+(** default is false *)    
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+
+
+(** remove whitespace letters ('\t', '\n', ' ') on both side*)
+val trim : string -> string 
+
+
+(** default is false *)
+val split : ?keep_empty:bool -> string -> char -> string list
+
+(** split by space chars for quick scripting *)
+val quick_split_by_ws : string -> string list 
+
+
+
+val starts_with : string -> string -> bool
+
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
+val ends_with : string -> string -> bool
+
+(**
+  [ends_with_then_chop name ext]
+  @example:
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
+
+
+
+(**
+  [for_all_from  s start p]
+  if [start] is negative, it raises,
+  if [start] is too large, it returns true
+*)
+val for_all_from:
+  string -> 
+  int -> 
+  (char -> bool) -> 
+  bool 
+
+val for_all : 
+  string -> 
+  (char -> bool) -> 
+  bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+(**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+(* val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string *)
+
+val index_count:  
+  string -> 
+  int ->
+  char -> 
+  int -> 
+  int 
+
+(* val index_next :
+  string -> 
+  int ->
+  char -> 
+  int  *)
+
+  
+(**
+  [find ~start ~sub s]
+  returns [-1] if not found
+*)
+val find : ?start:int -> sub:string -> string -> int
+
+val contain_substring : string -> string -> bool 
+
+val non_overlap_count : sub:string -> string -> int 
+
+val rfind : sub:string -> string -> int
+
+(** [tail_from s 1]
+  return a substring from offset 1 (inclusive)
+*)
+val tail_from : string -> int -> string
+
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option
+
+
+val no_char : string -> char -> int -> int -> bool 
+
+
+val no_slash : string -> bool 
+
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
+val no_slash_idx_from : string -> int -> int 
+
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
+(** if no conversion happens, reference equality holds *)
+val replace_backward_slash : string -> string 
+
+val empty : string 
+
+
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
+  
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+val concat5 : string -> string -> string -> string -> string -> string  
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+val inter4 : string -> string -> string -> string -> string
+val concat_array : string -> string array -> string 
+
+val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
+
+val capitalize_ascii : string -> string
+
+val capitalize_sub:
+  string -> 
+  int -> 
+  string
+  
+val uncapitalize_ascii : string -> string
+
+val lowercase_ascii : string -> string 
+
+(** Play parity to {!Ext_buffer.add_int_1} *)
+val get_int_1 : string -> int -> int 
+val get_int_2 : string -> int -> int 
+val get_int_3 : string -> int -> int 
+val get_int_4 : string -> int -> int 
+
+val get_1_2_3_4 : 
+  string -> 
+  off:int ->  
+  int -> 
+  int 
+
+val unsafe_sub :   
+  string -> 
+  int -> 
+  int -> 
+  string
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(*
+   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+*)
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      if last_pos = 0 && not keep_empty then
+
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
+    else
+    if is_delim str.[pos] then
+      let new_len = (last_pos - pos - 1) in
+      if new_len <> 0 || keep_empty then 
+        let v = String.sub str (pos + 1) new_len in
+        loop ( v :: acc)
+          pos (pos - 1)
+      else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  
+        let u = String.unsafe_get s !i in 
+        u = '\t' || u = '\n' || u = ' ' 
+  do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && 
+        let u = String.unsafe_get s !k in 
+        u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let quick_split_by_ws str : string list = 
+  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  beg_len <=  s_len &&
+  (let i = ref 0 in
+   while !i <  beg_len 
+         && String.unsafe_get s !i =
+            String.unsafe_get beg !i do 
+     incr i 
+   done;
+   !i = beg_len
+  )
+
+let rec ends_aux s end_ j k = 
+  if k < 0 then (j + 1)
+  else if String.unsafe_get s j = String.unsafe_get end_ k then 
+    ends_aux s end_ (j - 1) (k - 1)
+  else  -1   
+
+(** return an index which is minus when [s] does not 
+    end with [beg]
+*)
+let ends_with_index s end_ : int = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length end_ - 1 in
+  if s_beg > s_finish then -1
+  else
+    ends_aux s end_ s_finish s_beg
+
+let ends_with s end_ = ends_with_index s end_ >= 0 
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
+
+(* let check_suffix_case = ends_with  *)
+(* let check_suffix_case_then_chop = ends_with_then_chop *)
+
+(* let check_any_suffix_case s suffixes = 
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
+
+(* let check_any_suffix_case_then_chop s suffixes = 
+  let rec aux suffixes = 
+    match suffixes with 
+    | [] -> None 
+    | x::xs -> 
+      let id = ends_with_index s x in 
+      if id >= 0 then Some (String.sub s 0 id)
+      else aux xs in 
+  aux suffixes     *)
+
+
+
+
+(* it is unsafe to expose such API as unsafe since 
+   user can provide bad input range 
+
+*)
+let rec unsafe_for_all_range s ~start ~finish p =     
+  start > finish ||
+  p (String.unsafe_get s start) && 
+  unsafe_for_all_range s ~start:(start + 1) ~finish p
+
+let for_all_from s start  p = 
+  let len = String.length s in 
+  if start < 0  then invalid_arg "Ext_string.for_all_from"
+  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
+
+
+let for_all s (p : char -> bool)  =   
+  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let unsafe_is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let exception Local_exit in
+  let n = String.length sub in
+  let s_len = String.length s in 
+  let i = ref start in  
+  try
+    while !i + n <= s_len do
+      if unsafe_is_sub ~sub 0 s !i ~len:n then
+        raise_notrace Local_exit;
+      incr i
+    done;
+    -1
+  with Local_exit ->
+    !i
+
+let contain_substring s sub = 
+  find s ~sub >= 0 
+
+(** TODO: optimize 
+    avoid nonterminating when string is empty 
+*)
+let non_overlap_count ~sub s = 
+  let sub_len = String.length sub in 
+  let rec aux  acc off = 
+    let i = find ~start:off ~sub s  in 
+    if i < 0 then acc 
+    else aux (acc + 1) (i + sub_len) in
+  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  else aux 0 0  
+
+
+let rfind ~sub s =
+  let exception Local_exit in   
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  try
+    while !i >= 0 do
+      if unsafe_is_sub ~sub 0 s !i ~len:n then 
+        raise_notrace Local_exit;
+      decr i
+    done;
+    -1
+  with Local_exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+let equal (x : string) y  = x = y
+
+(* let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c *)
+
+
+
+let rec index_rec_count s lim i c count =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then 
+    if count = 1 then i 
+    else index_rec_count s lim (i + 1) c (count - 1)
+  else index_rec_count s lim (i + 1) c count
+
+let index_count s i c count =     
+  let lim = String.length s in 
+  if i < 0 || i >= lim || count < 1 then 
+    invalid_arg ("index_count: ( " ^string_of_int i ^ "," ^string_of_int count ^ ")" );
+  index_rec_count s lim i c count 
+
+(* let index_next s i c =   
+  index_count s i c 1  *)
+
+(* let extract_until s cursor c =       
+  let len = String.length s in   
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start) *)
+  
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+
+let rec rindex_rec_opt s i c =
+  if i < 0 then None else
+  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
+
+let rindex_neg s c = 
+  rindex_rec s (String.length s - 1) c;;
+
+let rindex_opt s c = 
+  rindex_rec_opt s (String.length s - 1) c;;
+
+
+(** TODO: can be improved to return a positive integer instead *)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
+
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+  if String.unsafe_get x i <> ch then 
+    unsafe_no_char_idx x ch (i + 1)  last_idx
+  else i
+
+let no_char x ch i len  : bool =
+  let str_len = String.length x in 
+  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
+  else unsafe_no_char x ch i len 
+
+
+let no_slash x = 
+  unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
+
+let no_slash_idx_from x from = 
+  let last_idx = String.length x - 1  in 
+  assert (from >= 0); 
+  unsafe_no_char_idx x '/' from last_idx
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if unsafe_no_char x '/' 0  (len - 1) then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if unsafe_no_char x '\\' 0  (len -1) then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
+
+let empty = ""
+
+
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
+
+let single_space = " "
+let single_colon = ":"
+
+let concat_array sep (s : string array) =   
+  let s_len = Array.length s in 
+  match s_len with 
+  | 0 -> empty 
+  | 1 -> Array.unsafe_get s 0
+  | _ ->     
+    let sep_len = String.length sep in 
+    let len = ref 0 in 
+    for i = 0 to  s_len - 1 do 
+      len := !len + String.length (Array.unsafe_get s i)
+    done;
+    let target = 
+      Bytes.create 
+        (!len + (s_len - 1) * sep_len ) in    
+    let hd = (Array.unsafe_get s 0) in     
+    let hd_len = String.length hd in 
+    String.unsafe_blit hd  0  target 0 hd_len;   
+    let current_offset = ref hd_len in     
+    for i = 1 to s_len - 1 do 
+      String.unsafe_blit sep 0 target  !current_offset sep_len;
+      let cur = Array.unsafe_get s i in 
+      let cur_len = String.length cur in     
+      let new_off_set = (!current_offset + sep_len ) in
+      String.unsafe_blit cur 0 target new_off_set cur_len; 
+      current_offset := 
+        new_off_set + cur_len ; 
+    done;
+    Bytes.unsafe_to_string target   
+
+let concat3 a b c = 
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let len = a_len + b_len + c_len in 
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  Bytes.unsafe_to_string target
+
+let concat4 a b c d =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let len = a_len + b_len + c_len + d_len in 
+
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  Bytes.unsafe_to_string target
+
+
+let concat5 a b c d e =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let e_len = String.length e in 
+  let len = a_len + b_len + c_len + d_len + e_len in 
+
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
+  Bytes.unsafe_to_string target
+
+
+
+let inter2 a b = 
+  concat3 a single_space b 
+
+
+let inter3 a b c = 
+  concat5 a  single_space  b  single_space  c 
+
+
+
+
+
+let inter4 a b c d =
+  concat_array single_space [| a; b ; c; d|]
+
+
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
+
+
+(* reference {!Bytes.unppercase} *)
+let capitalize_ascii (s : string) : string = 
+  if String.length s = 0 then s 
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Bytes.unsafe_to_string bytes 
+      else s 
+    end
+
+let capitalize_sub (s : string) len : string = 
+  let slen = String.length s in 
+  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
+  else 
+  if len = 0 then ""
+  else 
+    let bytes = Bytes.create len in 
+    let uc = 
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        Char.unsafe_chr (Char.code c - 32) else c in 
+    Bytes.unsafe_set bytes 0 uc;
+    for i = 1 to len - 1 do 
+      Bytes.unsafe_set bytes i (String.unsafe_get s i)
+    done ;
+    Bytes.unsafe_to_string bytes 
+
+    
+
+let uncapitalize_ascii =
+    String.uncapitalize_ascii
+
+let lowercase_ascii = String.lowercase_ascii
+
+
+
+let get_int_1 (x : string) off : int = 
+  Char.code x.[off]
+
+let get_int_2 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8
+  
+let get_int_3 (x : string) off : int = 
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16
+
+let get_int_4 (x : string) off : int =   
+  Char.code x.[off] lor   
+  Char.code x.[off+1] lsl 8  lor 
+  Char.code x.[off+2] lsl 16 lor
+  Char.code x.[off+3] lsl 24 
+
+let get_1_2_3_4 (x : string) ~off len : int =  
+  if len = 1 then get_int_1 x off 
+  else if len = 2 then get_int_2 x off 
+  else if len = 3 then get_int_3 x off 
+  else if len = 4 then get_int_4 x off 
+  else assert false
+
+let unsafe_sub  x offs len =
+  let b = Bytes.create len in 
+  Ext_bytes.unsafe_blit_string x offs b 0 len;
+  (Bytes.unsafe_to_string b);
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+val is_dir_sep : 
+  char -> bool 
+  
+val maybe_quote:
+  string -> 
+  string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' 
+        | '@' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
+
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
+
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
+    else 
+    if String.unsafe_get name i = '.' then 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
+    else 
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
+end
+module Ext_format : sig 
+#1 "ext_format.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Simplified wrapper module for the standard library [Format] module. 
+  *) 
+
+type t = private Format.formatter
+
+val string : t -> string -> unit
+
+val break : t -> unit
+
+val break1 : t -> unit
+
+val space :  t -> unit
+
+val group : t -> int -> (unit -> 'a) -> 'a
+(** [group] will record current indentation 
+    and indent futher
+ *)
+
+val vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val paren : t -> (unit -> 'a) -> 'a
+
+val paren_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val bracket_group : t -> int -> (unit -> 'a) -> 'a
+
+val newline : t -> unit
+
+val to_out_channel : out_channel -> t
+
+val flush : t -> unit -> unit
+
+val pp_print_queue :
+  ?pp_sep:(Format.formatter -> unit -> unit) ->
+  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+
+end = struct
+#1 "ext_format.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+open Format
+
+type t = formatter
+
+let string = pp_print_string
+
+let break = fun fmt -> pp_print_break fmt 0 0
+
+let break1 =
+  fun fmt -> pp_print_break fmt 0 1 
+
+let space  fmt  = 
+  pp_print_break fmt 1 0
+
+let vgroup fmt indent u = 
+  pp_open_vbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+
+let group fmt indent u = 
+  pp_open_hovbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+  
+let paren fmt u = 
+  string fmt "(";
+  let v = u () in
+  string fmt ")";
+  v
+
+let brace fmt u = 
+  string fmt "{";
+  (* break1 fmt ; *)
+  let v = u () in
+  string fmt "}";
+  v 
+
+let bracket fmt u = 
+  string fmt "[";
+  let v = u () in
+  string fmt "]";
+  v 
+
+let paren_group st n action = 
+  group st n (fun _ -> paren st action)
+
+let brace_group st n action = 
+  group st n (fun _ -> brace st action )
+
+let brace_vgroup st n action = 
+  vgroup st n (fun _ -> 
+    string st "{";
+    pp_print_break st 0 2;
+    let v = vgroup st 0 action in
+    pp_print_break st 0 0;
+    string st "}";
+    v
+              )
+let bracket_group st n action = 
+  group st n (fun _ -> bracket st action)
+
+let newline fmt = pp_print_newline fmt ()
+
+let to_out_channel = formatter_of_out_channel
+
+(* let non_breaking_space  fmt = string fmt " " *)
+(* let set_needed_space_function _ _ = () *)
+let flush = pp_print_flush
+
+(* let list = pp_print_list *)
+
+let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
+
+end
 module Ext_list : sig 
 #1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8424,1177 +9611,6 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
-module Ext_string : sig 
-#1 "ext_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [String] module, fixed some bugs like
-    avoiding locale sensitivity *) 
-
-(** default is false *)    
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-
-
-(** remove whitespace letters ('\t', '\n', ' ') on both side*)
-val trim : string -> string 
-
-
-(** default is false *)
-val split : ?keep_empty:bool -> string -> char -> string list
-
-(** split by space chars for quick scripting *)
-val quick_split_by_ws : string -> string list 
-
-
-
-val starts_with : string -> string -> bool
-
-(**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
-
-val ends_with : string -> string -> bool
-
-(**
-  [ends_with_then_chop name ext]
-  @example:
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-
-
-(**
-  [for_all_from  s start p]
-  if [start] is negative, it raises,
-  if [start] is too large, it returns true
-*)
-val for_all_from:
-  string -> 
-  int -> 
-  (char -> bool) -> 
-  bool 
-
-val for_all : 
-  string -> 
-  (char -> bool) -> 
-  bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-(**
-  [extract_until s cursor sep]
-   When [sep] not found, the cursor is updated to -1,
-   otherwise cursor is increased to 1 + [sep_position]
-   User can not determine whether it is found or not by
-   telling the return string is empty since 
-   "\n\n" would result in an empty string too.
-*)
-(* val extract_until:
-  string -> 
-  int ref -> (* cursor to be updated *)
-  char -> 
-  string *)
-
-val index_count:  
-  string -> 
-  int ->
-  char -> 
-  int -> 
-  int 
-
-(* val index_next :
-  string -> 
-  int ->
-  char -> 
-  int  *)
-
-  
-(**
-  [find ~start ~sub s]
-  returns [-1] if not found
-*)
-val find : ?start:int -> sub:string -> string -> int
-
-val contain_substring : string -> string -> bool 
-
-val non_overlap_count : sub:string -> string -> int 
-
-val rfind : sub:string -> string -> int
-
-(** [tail_from s 1]
-  return a substring from offset 1 (inclusive)
-*)
-val tail_from : string -> int -> string
-
-
-(** returns negative number if not found *)
-val rindex_neg : string -> char -> int 
-
-val rindex_opt : string -> char -> int option
-
-
-val no_char : string -> char -> int -> int -> bool 
-
-
-val no_slash : string -> bool 
-
-(** return negative means no slash, otherwise [i] means the place for first slash *)
-val no_slash_idx : string -> int 
-
-val no_slash_idx_from : string -> int -> int 
-
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 
-
-(** if no conversion happens, reference equality holds *)
-val replace_backward_slash : string -> string 
-
-val empty : string 
-
-
-external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
-  
-val single_space : string
-
-val concat3 : string -> string -> string -> string 
-val concat4 : string -> string -> string -> string -> string 
-val concat5 : string -> string -> string -> string -> string -> string  
-val inter2 : string -> string -> string
-val inter3 : string -> string -> string -> string 
-val inter4 : string -> string -> string -> string -> string
-val concat_array : string -> string array -> string 
-
-val single_colon : string 
-
-val parent_dir_lit : string
-val current_dir_lit : string
-
-val capitalize_ascii : string -> string
-
-val capitalize_sub:
-  string -> 
-  int -> 
-  string
-  
-val uncapitalize_ascii : string -> string
-
-val lowercase_ascii : string -> string 
-
-(** Play parity to {!Ext_buffer.add_int_1} *)
-val get_int_1 : string -> int -> int 
-val get_int_2 : string -> int -> int 
-val get_int_3 : string -> int -> int 
-val get_int_4 : string -> int -> int 
-
-val get_1_2_3_4 : 
-  string -> 
-  off:int ->  
-  int -> 
-  int 
-
-val unsafe_sub :   
-  string -> 
-  int -> 
-  int -> 
-  string
-end = struct
-#1 "ext_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(*
-   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-*)
-let split_by ?(keep_empty=false) is_delim str =
-  let len = String.length str in
-  let rec loop acc last_pos pos =
-    if pos = -1 then
-      if last_pos = 0 && not keep_empty then
-
-        acc
-      else 
-        String.sub str 0 last_pos :: acc
-    else
-    if is_delim str.[pos] then
-      let new_len = (last_pos - pos - 1) in
-      if new_len <> 0 || keep_empty then 
-        let v = String.sub str (pos + 1) new_len in
-        loop ( v :: acc)
-          pos (pos - 1)
-      else loop acc pos (pos - 1)
-    else loop acc last_pos (pos - 1)
-  in
-  loop [] len (len - 1)
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  
-        let u = String.unsafe_get s !i in 
-        u = '\t' || u = '\n' || u = ' ' 
-  do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && 
-        let u = String.unsafe_get s !k in 
-        u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-let split ?keep_empty  str on = 
-  if str = "" then [] else 
-    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
-
-let quick_split_by_ws str : string list = 
-  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
-
-let starts_with s beg = 
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  beg_len <=  s_len &&
-  (let i = ref 0 in
-   while !i <  beg_len 
-         && String.unsafe_get s !i =
-            String.unsafe_get beg !i do 
-     incr i 
-   done;
-   !i = beg_len
-  )
-
-let rec ends_aux s end_ j k = 
-  if k < 0 then (j + 1)
-  else if String.unsafe_get s j = String.unsafe_get end_ k then 
-    ends_aux s end_ (j - 1) (k - 1)
-  else  -1   
-
-(** return an index which is minus when [s] does not 
-    end with [beg]
-*)
-let ends_with_index s end_ : int = 
-  let s_finish = String.length s - 1 in
-  let s_beg = String.length end_ - 1 in
-  if s_beg > s_finish then -1
-  else
-    ends_aux s end_ s_finish s_beg
-
-let ends_with s end_ = ends_with_index s end_ >= 0 
-
-let ends_with_then_chop s beg = 
-  let i =  ends_with_index s beg in 
-  if i >= 0 then Some (String.sub s 0 i) 
-  else None
-
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
-
-let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
-
-let check_any_suffix_case_then_chop s suffixes = 
-  let rec aux suffixes = 
-    match suffixes with 
-    | [] -> None 
-    | x::xs -> 
-      let id = ends_with_index s x in 
-      if id >= 0 then Some (String.sub s 0 id)
-      else aux xs in 
-  aux suffixes    
-
-
-
-
-(* it is unsafe to expose such API as unsafe since 
-   user can provide bad input range 
-
-*)
-let rec unsafe_for_all_range s ~start ~finish p =     
-  start > finish ||
-  p (String.unsafe_get s start) && 
-  unsafe_for_all_range s ~start:(start + 1) ~finish p
-
-let for_all_from s start  p = 
-  let len = String.length s in 
-  if start < 0  then invalid_arg "Ext_string.for_all_from"
-  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
-
-
-let for_all s (p : char -> bool)  =   
-  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
-
-let is_empty s = String.length s = 0
-
-
-let repeat n s  =
-  let len = String.length s in
-  let res = Bytes.create(n * len) in
-  for i = 0 to pred n do
-    String.blit s 0 res (i * len) len
-  done;
-  Bytes.to_string res
-
-let equal (x : string) y  = x = y
-
-
-
-let unsafe_is_sub ~sub i s j ~len =
-  let rec check k =
-    if k = len
-    then true
-    else 
-      String.unsafe_get sub (i+k) = 
-      String.unsafe_get s (j+k) && check (k+1)
-  in
-  j+len <= String.length s && check 0
-
-
-
-let find ?(start=0) ~sub s =
-  let exception Local_exit in
-  let n = String.length sub in
-  let s_len = String.length s in 
-  let i = ref start in  
-  try
-    while !i + n <= s_len do
-      if unsafe_is_sub ~sub 0 s !i ~len:n then
-        raise_notrace Local_exit;
-      incr i
-    done;
-    -1
-  with Local_exit ->
-    !i
-
-let contain_substring s sub = 
-  find s ~sub >= 0 
-
-(** TODO: optimize 
-    avoid nonterminating when string is empty 
-*)
-let non_overlap_count ~sub s = 
-  let sub_len = String.length sub in 
-  let rec aux  acc off = 
-    let i = find ~start:off ~sub s  in 
-    if i < 0 then acc 
-    else aux (acc + 1) (i + sub_len) in
-  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
-  else aux 0 0  
-
-
-let rfind ~sub s =
-  let exception Local_exit in   
-  let n = String.length sub in
-  let i = ref (String.length s - n) in
-  try
-    while !i >= 0 do
-      if unsafe_is_sub ~sub 0 s !i ~len:n then 
-        raise_notrace Local_exit;
-      decr i
-    done;
-    -1
-  with Local_exit ->
-    !i
-
-let tail_from s x = 
-  let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else String.sub s x (len - x)
-
-let equal (x : string) y  = x = y
-
-(* let rec index_rec s lim i c =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c *)
-
-
-
-let rec index_rec_count s lim i c count =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then 
-    if count = 1 then i 
-    else index_rec_count s lim (i + 1) c (count - 1)
-  else index_rec_count s lim (i + 1) c count
-
-let index_count s i c count =     
-  let lim = String.length s in 
-  if i < 0 || i >= lim || count < 1 then 
-    invalid_arg ("index_count: ( " ^string_of_int i ^ "," ^string_of_int count ^ ")" );
-  index_rec_count s lim i c count 
-
-(* let index_next s i c =   
-  index_count s i c 1  *)
-
-(* let extract_until s cursor c =       
-  let len = String.length s in   
-  let start = !cursor in 
-  if start < 0 || start >= len then (
-    cursor := -1;
-    ""
-    )
-  else 
-    let i = index_rec s len start c in   
-    let finish = 
-      if i < 0 then (      
-        cursor := -1 ;
-        len 
-      )
-      else (
-        cursor := i + 1;
-        i 
-      ) in 
-    String.sub s start (finish - start) *)
-  
-let rec rindex_rec s i c =
-  if i < 0 then i else
-  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
-
-let rec rindex_rec_opt s i c =
-  if i < 0 then None else
-  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
-
-let rindex_neg s c = 
-  rindex_rec s (String.length s - 1) c;;
-
-let rindex_opt s c = 
-  rindex_rec_opt s (String.length s - 1) c;;
-
-
-(** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  last_idx = 
-  i > last_idx  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
-
-let rec unsafe_no_char_idx x ch i last_idx = 
-  if i > last_idx  then -1 
-  else 
-  if String.unsafe_get x i <> ch then 
-    unsafe_no_char_idx x ch (i + 1)  last_idx
-  else i
-
-let no_char x ch i len  : bool =
-  let str_len = String.length x in 
-  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
-  else unsafe_no_char x ch i len 
-
-
-let no_slash x = 
-  unsafe_no_char x '/' 0 (String.length x - 1)
-
-let no_slash_idx x = 
-  unsafe_no_char_idx x '/' 0 (String.length x - 1)
-
-let no_slash_idx_from x from = 
-  let last_idx = String.length x - 1  in 
-  assert (from >= 0); 
-  unsafe_no_char_idx x '/' from last_idx
-
-let replace_slash_backward (x : string ) = 
-  let len = String.length x in 
-  if unsafe_no_char x '/' 0  (len - 1) then x 
-  else 
-    String.map (function 
-        | '/' -> '\\'
-        | x -> x ) x 
-
-let replace_backward_slash (x : string)=
-  let len = String.length x in
-  if unsafe_no_char x '\\' 0  (len -1) then x 
-  else  
-    String.map (function 
-        |'\\'-> '/'
-        | x -> x) x
-
-let empty = ""
-
-
-external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-
-let single_space = " "
-let single_colon = ":"
-
-let concat_array sep (s : string array) =   
-  let s_len = Array.length s in 
-  match s_len with 
-  | 0 -> empty 
-  | 1 -> Array.unsafe_get s 0
-  | _ ->     
-    let sep_len = String.length sep in 
-    let len = ref 0 in 
-    for i = 0 to  s_len - 1 do 
-      len := !len + String.length (Array.unsafe_get s i)
-    done;
-    let target = 
-      Bytes.create 
-        (!len + (s_len - 1) * sep_len ) in    
-    let hd = (Array.unsafe_get s 0) in     
-    let hd_len = String.length hd in 
-    String.unsafe_blit hd  0  target 0 hd_len;   
-    let current_offset = ref hd_len in     
-    for i = 1 to s_len - 1 do 
-      String.unsafe_blit sep 0 target  !current_offset sep_len;
-      let cur = Array.unsafe_get s i in 
-      let cur_len = String.length cur in     
-      let new_off_set = (!current_offset + sep_len ) in
-      String.unsafe_blit cur 0 target new_off_set cur_len; 
-      current_offset := 
-        new_off_set + cur_len ; 
-    done;
-    Bytes.unsafe_to_string target   
-
-let concat3 a b c = 
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let len = a_len + b_len + c_len in 
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  Bytes.unsafe_to_string target
-
-let concat4 a b c d =
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let d_len = String.length d in 
-  let len = a_len + b_len + c_len + d_len in 
-
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
-  Bytes.unsafe_to_string target
-
-
-let concat5 a b c d e =
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let d_len = String.length d in 
-  let e_len = String.length e in 
-  let len = a_len + b_len + c_len + d_len + e_len in 
-
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
-  String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
-  Bytes.unsafe_to_string target
-
-
-
-let inter2 a b = 
-  concat3 a single_space b 
-
-
-let inter3 a b c = 
-  concat5 a  single_space  b  single_space  c 
-
-
-
-
-
-let inter4 a b c d =
-  concat_array single_space [| a; b ; c; d|]
-
-
-let parent_dir_lit = ".."    
-let current_dir_lit = "."
-
-
-(* reference {!Bytes.unppercase} *)
-let capitalize_ascii (s : string) : string = 
-  if String.length s = 0 then s 
-  else 
-    begin
-      let c = String.unsafe_get s 0 in 
-      if (c >= 'a' && c <= 'z')
-      || (c >= '\224' && c <= '\246')
-      || (c >= '\248' && c <= '\254') then 
-        let uc = Char.unsafe_chr (Char.code c - 32) in 
-        let bytes = Bytes.of_string s in
-        Bytes.unsafe_set bytes 0 uc;
-        Bytes.unsafe_to_string bytes 
-      else s 
-    end
-
-let capitalize_sub (s : string) len : string = 
-  let slen = String.length s in 
-  if  len < 0 || len > slen then invalid_arg "Ext_string.capitalize_sub"
-  else 
-  if len = 0 then ""
-  else 
-    let bytes = Bytes.create len in 
-    let uc = 
-      let c = String.unsafe_get s 0 in 
-      if (c >= 'a' && c <= 'z')
-      || (c >= '\224' && c <= '\246')
-      || (c >= '\248' && c <= '\254') then 
-        Char.unsafe_chr (Char.code c - 32) else c in 
-    Bytes.unsafe_set bytes 0 uc;
-    for i = 1 to len - 1 do 
-      Bytes.unsafe_set bytes i (String.unsafe_get s i)
-    done ;
-    Bytes.unsafe_to_string bytes 
-
-    
-
-let uncapitalize_ascii =
-    String.uncapitalize_ascii
-
-let lowercase_ascii = String.lowercase_ascii
-
-
-
-let get_int_1 (x : string) off : int = 
-  Char.code x.[off]
-
-let get_int_2 (x : string) off : int = 
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8
-  
-let get_int_3 (x : string) off : int = 
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8  lor 
-  Char.code x.[off+2] lsl 16
-
-let get_int_4 (x : string) off : int =   
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8  lor 
-  Char.code x.[off+2] lsl 16 lor
-  Char.code x.[off+3] lsl 24 
-
-let get_1_2_3_4 (x : string) ~off len : int =  
-  if len = 1 then get_int_1 x off 
-  else if len = 2 then get_int_2 x off 
-  else if len = 3 then get_int_3 x off 
-  else if len = 4 then get_int_4 x off 
-  else assert false
-
-let unsafe_sub  x offs len =
-  let b = Bytes.create len in 
-  Ext_bytes.unsafe_blit_string x offs b 0 len;
-  (Bytes.unsafe_to_string b);
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-val is_dir_sep : 
-  char -> bool 
-  
-val maybe_quote:
-  string -> 
-  string
-
-val chop_extension_maybe:
-  string -> 
-  string
-
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
-
-
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
-
-(* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
-
-
-
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
-  c = '/' || c = '\\' || c = ':'
-
-let is_dir_sep = 
-  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
-
-(* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
-    Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' 
-        | '@' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-
-
-let chop_extension_maybe name =
-  let rec search_dot i =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
-    else if String.unsafe_get name i = '.' then String.sub name 0 i
-    else search_dot (i - 1) in
-  search_dot (String.length name - 1)
-
-let get_extension_maybe name =   
-  let name_len = String.length name in  
-  let rec search_dot name i name_len =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
-    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
-    else search_dot name (i - 1) name_len in
-  search_dot name (name_len - 1) name_len
-
-let chop_all_extensions_maybe name =
-  let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
-      search_dot (i - 1) (Some i)
-    else search_dot (i - 1) last in
-  search_dot (String.length name - 1) None
-
-
-let new_extension name (ext : string) = 
-  let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
-      let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
-      Bytes.blit_string name 0 buf 0 i;
-      Bytes.blit_string ext 0 buf i ext_len;
-      Bytes.unsafe_to_string buf
-    else search_dot name (i - 1) ext  in
-  search_dot name (String.length name - 1) ext
-
-
-
-(** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
-*)
-let module_name name = 
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-} 
-
-
-
-let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
-      valid_module_name_aux name (off + 1) len 
-    | _ -> false
-
-type state = 
-  | Invalid
-  | Upper
-  | Lower
-
-let valid_module_name name len =     
-  if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
-    | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
-        Upper
-      else Invalid  
-    | 'a' .. 'z' 
-      -> 
-      if valid_module_name_aux name 1 len then
-        Lower
-      else Invalid
-    | _ -> Invalid
-
-
-let as_module ~basename =
-  let rec search_dot i  name name_len =
-    if i < 0  then
-      (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
-      | Upper ->  Some {module_name = name; case = true }
-      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
-      (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
-  search_dot (name_len - 1)  basename name_len
-    
-end
-module Ext_format : sig 
-#1 "ext_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
-
-type t = private Format.formatter
-
-val string : t -> string -> unit
-
-val break : t -> unit
-
-val break1 : t -> unit
-
-val space :  t -> unit
-
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
-
-val vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val paren : t -> (unit -> 'a) -> 'a
-
-val paren_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
-val newline : t -> unit
-
-val to_out_channel : out_channel -> t
-
-val flush : t -> unit -> unit
-
-val pp_print_queue :
-  ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
-
-end = struct
-#1 "ext_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-open Format
-
-type t = formatter
-
-let string = pp_print_string
-
-let break = fun fmt -> pp_print_break fmt 0 0
-
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
-
-let space  fmt  = 
-  pp_print_break fmt 1 0
-
-let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
-
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
-
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v 
-
-let paren_group st n action = 
-  group st n (fun _ -> paren st action)
-
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
-
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
-    string st "{";
-    pp_print_break st 0 2;
-    let v = vgroup st 0 action in
-    pp_print_break st 0 0;
-    string st "}";
-    v
-              )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
-
-let newline fmt = pp_print_newline fmt ()
-
-let to_out_channel = formatter_of_out_channel
-
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
-
-let list = pp_print_list
-
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
-  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9827,9 +9843,7 @@ module Ext_sys : sig
 
 val is_windows_or_cygwin : bool 
 
-val getenv_opt : 
-  string -> 
-  string option 
+
 end = struct
 #1 "ext_sys.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9857,14 +9871,13 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
+(* let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false  *)
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 
-let getenv_opt = Sys.getenv_opt
 
 end
 module Literals : sig 
@@ -10685,7 +10698,7 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 let protect_list rvs body = 
-  let olds =  Ext_list.map  rvs (fun (x,y) -> !x) in 
+  let olds =  Ext_list.map  rvs (fun (x,_) -> !x) in 
   let () = List.iter (fun (x,y) -> x:=y) rvs in 
   try 
     let res = body () in 
@@ -11277,7 +11290,7 @@ val no_builtin_ppx_mli : bool ref
 
 
 
-val no_warn_unimplemented_external : bool ref 
+
 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
@@ -11387,16 +11400,13 @@ let diagnose = ref false
 let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
-let (//) = Filename.concat
+(* let (//) = Filename.concat *)
 
 (* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
 
 let debug_file = ref ""
 
