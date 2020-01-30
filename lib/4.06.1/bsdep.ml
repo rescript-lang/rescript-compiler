@@ -47725,6 +47725,8 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
     (makePropsType ~loc namedTypeList)
 
+let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
+
 (* TODO: some line number might still be wrong *)
 let jsxMapper () =
 
@@ -47921,13 +47923,12 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
-        (expression.pexp_desc, list, None)
+        (list, None)
     | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
-        (expression.pexp_desc, list, Some txt)
+        (list, Some txt)
 
-    | innerExpression -> (innerExpression, list, None)
+    | _ -> (list, None)
   in
 
 
@@ -48029,53 +48030,80 @@ let jsxMapper () =
         valueBindings
       )
     } ->
+      let fileName = filenameFromLoc pstr_loc in
+      let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
         let fnName = getFnName binding in
-        let fileName = filenameFromLoc pstr_loc in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
-        let emptyLoc = Location.in_file fileName in
-        let modifiedBinding binding =
+        let modifiedBindingOld binding =
           let expression = binding.pvb_expr in
-          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
           (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
           let rec spelunkForFunExpression expression = (match expression with
           (* let make = (~prop) => ... *)
           | {
             pexp_desc = Pexp_fun _
-          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          } -> expression
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
               pexp_desc = Pexp_let (recursive, vbs, returnExpression)
             } ->
             (* here's where we spelunk! *)
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
-            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+            spelunkForFunExpression returnExpression
           (* let make = React.forwardRef((~prop) => ...) *)
 
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
-            ((fun expressionDesc -> {
-              expression with pexp_desc =
-                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
-              }),
-              realReturnExpression
-            )
+            spelunkForFunExpression innerFunctionExpression
           | {
               pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
             } ->
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
-            ((fun expressionDesc -> {
-              expression with pexp_desc =
-                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
-              }),
-              realReturnExpression
-            )
+            spelunkForFunExpression innerFunctionExpression
           | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
           ) in
-          let (wrapExpression, expression) = spelunkForFunExpression expression in
-          (wrapExpressionWithBinding wrapExpression, expression)
+          spelunkForFunExpression expression
         in
-        let (bindingWrapper, expression) = modifiedBinding binding in
+        let modifiedBinding binding =
+          let wrapExpressionWithBinding expressionFn expression = Vb.mk ~attrs:(List.filter otherAttrsPure binding.pvb_attributes) (Pat.var {loc = emptyLoc; txt = fnName}) (expressionFn expression) in
+          let expression = binding.pvb_expr in
+          let unerasableIgnoreExp exp = { exp with pexp_attributes = (unerasableIgnore emptyLoc) :: exp.pexp_attributes } in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... with no final unit *)
+          | {
+            pexp_desc = Pexp_fun ((Labelled(_) | Optional(_) as label), default, pattern, ({pexp_desc = Pexp_fun _} as internalExpression))
+          } ->
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, unerasableIgnoreExp {expression with pexp_desc = Pexp_fun (label, default, pattern, exp)})
+          (* let make = (()) => ... *)
+          (* let make = (_) => ... *)
+          | {
+            pexp_desc = Pexp_fun (Nolabel, default, { ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any}, internalExpression)
+            } -> ((fun a -> a), true, expression)
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun (label, default, pattern, internalExpression)
+          } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, internalExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, {expression with pexp_desc = Pexp_let (recursive, vbs, exp)})
+          (* let make = React.forwardRef((~prop) => ...) *)
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, internalExpression)]) } ->
+            let (_, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            ((fun exp -> Exp.apply wrapperExpression [(nolabel, exp)]), hasUnit, exp)
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, internalExpression)
+            } ->
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, {expression with pexp_desc = Pexp_sequence (wrapperExpression, exp)})
+          | e -> ((fun a -> a), false, e)
+          ) in
+          let (wrapExpression, hasUnit, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, hasUnit, expression)
+        in
+        let (bindingWrapper, hasUnit, expression) = modifiedBinding binding in
         let reactComponentAttribute = try
           Some(List.find hasAttr binding.pvb_attributes)
         with | Not_found -> None in
@@ -48084,41 +48112,43 @@ let jsxMapper () =
         | None -> (emptyLoc, None) in
         let props = getPropsAttr payload in
         (* do stuff here! *)
-        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let (namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper (modifiedBindingOld binding) [] in
+        let binding = { binding with pvb_expr = expression; pvb_attributes = [] } in
         let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
         | None -> namedArgListWithKeyAndRef
         in
-        let namedTypeList = List.fold_left argToType [] namedArgList in
-        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
-        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
-          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
-          let expression = (Exp.apply ~loc
-            (Exp.ident ~loc {txt = (Lident "##"); loc })
-            [
-              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
-              (nolabel, Exp.ident ~loc {
-                txt = (Lident labelString);
+        let namedArgListWithKeyAndRefForNew = match forwardRef with
+        | Some(_) -> namedArgList @ [(nolabel, None, Pat.var {txt = "ref"; loc = emptyLoc}, "ref", emptyLoc, None)]
+        | None -> namedArgList
+        in
+        let pluckArg (label, _, _, alias, loc, _) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> "") in
+          (label,
+            (match labelString with
+              | "" ->  (Exp.ident ~loc {
+                txt = (Lident alias);
                 loc
               })
-            ]
+              | labelString -> (Exp.apply ~loc
+                (Exp.ident ~loc {txt = (Lident "##"); loc })
+                [
+                  (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+                  (nolabel, Exp.ident ~loc {
+                    txt = (Lident labelString);
+                    loc
+                  })
+                ]
+              )
+            )
           ) in
-          let expression = match (default) with
-          | (Some default) -> Exp.match_ expression [
-            Exp.case
-              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
-              (Exp.ident ~loc {txt = (Lident labelString); loc = { loc with Location.loc_ghost = true }});
-            Exp.case
-              (Pat.construct {loc; txt=Lident "None"} None)
-              default
-          ]
-          | None -> expression in
-          let letExpression = Vb.mk
-            pattern
-            expression in
-          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
-        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let loc = emptyLoc in
+        let externalDecl = makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList in
+        let innerExpressionArgs = (List.map pluckArg namedArgListWithKeyAndRefForNew) @
+          if hasUnit then [(Nolabel, Exp.construct {loc; txt = Lident "()"} None)] else [] in
+        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(fnName)}) innerExpressionArgs in
         let innerExpressionWithRef = match (forwardRef) with
         | Some txt ->
           {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
@@ -48128,9 +48158,9 @@ let jsxMapper () =
           }, innerExpression)}
         | None -> innerExpression
         in
-        let fullExpression = (Pexp_fun (
-          nolabel,
-          None,
+        let fullExpression = Exp.fun_
+          nolabel
+          None
           {
             ppat_desc = Ppat_constraint (
               makePropsName ~loc:emptyLoc props.propsName,
@@ -48138,41 +48168,49 @@ let jsxMapper () =
             );
             ppat_loc = emptyLoc;
             ppat_attributes = [];
-          },
-          innerExpressionWithRef
-        )) in
+          }
+          innerExpressionWithRef in
         let fullExpression = match (fullModuleName) with
         | ("") -> fullExpression
-        | (txt) -> Pexp_let (
-            Nonrecursive,
+        | (txt) -> Exp.let_
+            Nonrecursive
             [Vb.mk
               ~loc:emptyLoc
               (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
-              (Exp.mk ~loc:emptyLoc fullExpression)
-            ],
-            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
-          )
-        in
+              fullExpression
+            ]
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt}) in
         let newBinding = bindingWrapper fullExpression in
-        (Some externalDecl, newBinding)
+        (Some externalDecl, binding, Some newBinding)
       else
-        (None, binding)
+        (None, binding, None)
       in
       let structuresAndBinding = List.map mapBinding valueBindings in
-      let otherStructures (extern, binding) (externs, bindings) =
+      let otherStructures (extern, binding, newBinding) (externs, bindings, newBindings) =
         let externs = match extern with
         | Some extern -> extern :: externs
         | None -> externs in
-        (externs, binding :: bindings)
+        let newBindings = match newBinding with
+        | Some newBinding -> newBinding :: newBindings
+        | None -> newBindings in
+        (externs, binding :: bindings, newBindings)
       in
-      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
-      externs @ {
+      let (externs, bindings, newBindings) = List.fold_right otherStructures structuresAndBinding ([], [], []) in
+      externs @ [{
         pstr_loc;
         pstr_desc = Pstr_value (
           recFlag,
           bindings
         )
-      } :: returnStructures
+      }] @ (match newBindings with
+      | [] -> []
+      | newBindings -> [{
+        pstr_loc = emptyLoc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          newBindings
+        )
+      }]) @ returnStructures
     | structure -> structure :: returnStructures in
 
   let reactComponentTransform mapper structures =
@@ -48242,11 +48280,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 840 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 878 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           
-# 846 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48256,11 +48294,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 855 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 893 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           
-# 861 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 899 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48741,6 +48779,8 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
     (makePropsType ~loc namedTypeList)
 
+let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
+
 (* TODO: some line number might still be wrong *)
 let jsxMapper () =
 
@@ -48937,13 +48977,12 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
-        (expression.pexp_desc, list, None)
+        (list, None)
     | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
-        (expression.pexp_desc, list, Some txt)
+        (list, Some txt)
 
-    | innerExpression -> (innerExpression, list, None)
+    | _ -> (list, None)
   in
 
 
@@ -49045,53 +49084,80 @@ let jsxMapper () =
         valueBindings
       )
     } ->
+      let fileName = filenameFromLoc pstr_loc in
+      let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
         let fnName = getFnName binding in
-        let fileName = filenameFromLoc pstr_loc in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
-        let emptyLoc = Location.in_file fileName in
-        let modifiedBinding binding =
+        let modifiedBindingOld binding =
           let expression = binding.pvb_expr in
-          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
           (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
           let rec spelunkForFunExpression expression = (match expression with
           (* let make = (~prop) => ... *)
           | {
             pexp_desc = Pexp_fun _
-          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          } -> expression
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
               pexp_desc = Pexp_let (recursive, vbs, returnExpression)
             } ->
             (* here's where we spelunk! *)
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
-            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+            spelunkForFunExpression returnExpression
           (* let make = React.forwardRef((~prop) => ...) *)
 
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
-            ((fun expressionDesc -> {
-              expression with pexp_desc =
-                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
-              }),
-              realReturnExpression
-            )
+            spelunkForFunExpression innerFunctionExpression
           | {
               pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
             } ->
-            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
-            ((fun expressionDesc -> {
-              expression with pexp_desc =
-                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
-              }),
-              realReturnExpression
-            )
+            spelunkForFunExpression innerFunctionExpression
           | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
           ) in
-          let (wrapExpression, expression) = spelunkForFunExpression expression in
-          (wrapExpressionWithBinding wrapExpression, expression)
+          spelunkForFunExpression expression
         in
-        let (bindingWrapper, expression) = modifiedBinding binding in
+        let modifiedBinding binding =
+          let wrapExpressionWithBinding expressionFn expression = Vb.mk ~attrs:(List.filter otherAttrsPure binding.pvb_attributes) (Pat.var {loc = emptyLoc; txt = fnName}) (expressionFn expression) in
+          let expression = binding.pvb_expr in
+          let unerasableIgnoreExp exp = { exp with pexp_attributes = (unerasableIgnore emptyLoc) :: exp.pexp_attributes } in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... with no final unit *)
+          | {
+            pexp_desc = Pexp_fun ((Labelled(_) | Optional(_) as label), default, pattern, ({pexp_desc = Pexp_fun _} as internalExpression))
+          } ->
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, unerasableIgnoreExp {expression with pexp_desc = Pexp_fun (label, default, pattern, exp)})
+          (* let make = (()) => ... *)
+          (* let make = (_) => ... *)
+          | {
+            pexp_desc = Pexp_fun (Nolabel, default, { ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any}, internalExpression)
+            } -> ((fun a -> a), true, expression)
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun (label, default, pattern, internalExpression)
+          } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, internalExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, {expression with pexp_desc = Pexp_let (recursive, vbs, exp)})
+          (* let make = React.forwardRef((~prop) => ...) *)
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, internalExpression)]) } ->
+            let (_, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            ((fun exp -> Exp.apply wrapperExpression [(nolabel, exp)]), hasUnit, exp)
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, internalExpression)
+            } ->
+            let (wrap, hasUnit, exp) = spelunkForFunExpression internalExpression in
+            (wrap, hasUnit, {expression with pexp_desc = Pexp_sequence (wrapperExpression, exp)})
+          | e -> ((fun a -> a), false, e)
+          ) in
+          let (wrapExpression, hasUnit, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, hasUnit, expression)
+        in
+        let (bindingWrapper, hasUnit, expression) = modifiedBinding binding in
         let reactComponentAttribute = try
           Some(List.find hasAttr binding.pvb_attributes)
         with | Not_found -> None in
@@ -49100,41 +49166,43 @@ let jsxMapper () =
         | None -> (emptyLoc, None) in
         let props = getPropsAttr payload in
         (* do stuff here! *)
-        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let (namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper (modifiedBindingOld binding) [] in
+        let binding = { binding with pvb_expr = expression; pvb_attributes = [] } in
         let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
         | None -> namedArgListWithKeyAndRef
         in
-        let namedTypeList = List.fold_left argToType [] namedArgList in
-        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
-        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
-          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
-          let expression = (Exp.apply ~loc
-            (Exp.ident ~loc {txt = (Lident "##"); loc })
-            [
-              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
-              (nolabel, Exp.ident ~loc {
-                txt = (Lident labelString);
+        let namedArgListWithKeyAndRefForNew = match forwardRef with
+        | Some(_) -> namedArgList @ [(nolabel, None, Pat.var {txt = "ref"; loc = emptyLoc}, "ref", emptyLoc, None)]
+        | None -> namedArgList
+        in
+        let pluckArg (label, _, _, alias, loc, _) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> "") in
+          (label,
+            (match labelString with
+              | "" ->  (Exp.ident ~loc {
+                txt = (Lident alias);
                 loc
               })
-            ]
+              | labelString -> (Exp.apply ~loc
+                (Exp.ident ~loc {txt = (Lident "##"); loc })
+                [
+                  (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+                  (nolabel, Exp.ident ~loc {
+                    txt = (Lident labelString);
+                    loc
+                  })
+                ]
+              )
+            )
           ) in
-          let expression = match (default) with
-          | (Some default) -> Exp.match_ expression [
-            Exp.case
-              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
-              (Exp.ident ~loc {txt = (Lident labelString); loc = { loc with Location.loc_ghost = true }});
-            Exp.case
-              (Pat.construct {loc; txt=Lident "None"} None)
-              default
-          ]
-          | None -> expression in
-          let letExpression = Vb.mk
-            pattern
-            expression in
-          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
-        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let loc = emptyLoc in
+        let externalDecl = makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList in
+        let innerExpressionArgs = (List.map pluckArg namedArgListWithKeyAndRefForNew) @
+          if hasUnit then [(Nolabel, Exp.construct {loc; txt = Lident "()"} None)] else [] in
+        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(fnName)}) innerExpressionArgs in
         let innerExpressionWithRef = match (forwardRef) with
         | Some txt ->
           {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
@@ -49144,9 +49212,9 @@ let jsxMapper () =
           }, innerExpression)}
         | None -> innerExpression
         in
-        let fullExpression = (Pexp_fun (
-          nolabel,
-          None,
+        let fullExpression = Exp.fun_
+          nolabel
+          None
           {
             ppat_desc = Ppat_constraint (
               makePropsName ~loc:emptyLoc props.propsName,
@@ -49154,41 +49222,49 @@ let jsxMapper () =
             );
             ppat_loc = emptyLoc;
             ppat_attributes = [];
-          },
-          innerExpressionWithRef
-        )) in
+          }
+          innerExpressionWithRef in
         let fullExpression = match (fullModuleName) with
         | ("") -> fullExpression
-        | (txt) -> Pexp_let (
-            Nonrecursive,
+        | (txt) -> Exp.let_
+            Nonrecursive
             [Vb.mk
               ~loc:emptyLoc
               (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
-              (Exp.mk ~loc:emptyLoc fullExpression)
-            ],
-            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
-          )
-        in
+              fullExpression
+            ]
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt}) in
         let newBinding = bindingWrapper fullExpression in
-        (Some externalDecl, newBinding)
+        (Some externalDecl, binding, Some newBinding)
       else
-        (None, binding)
+        (None, binding, None)
       in
       let structuresAndBinding = List.map mapBinding valueBindings in
-      let otherStructures (extern, binding) (externs, bindings) =
+      let otherStructures (extern, binding, newBinding) (externs, bindings, newBindings) =
         let externs = match extern with
         | Some extern -> extern :: externs
         | None -> externs in
-        (externs, binding :: bindings)
+        let newBindings = match newBinding with
+        | Some newBinding -> newBinding :: newBindings
+        | None -> newBindings in
+        (externs, binding :: bindings, newBindings)
       in
-      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
-      externs @ {
+      let (externs, bindings, newBindings) = List.fold_right otherStructures structuresAndBinding ([], [], []) in
+      externs @ [{
         pstr_loc;
         pstr_desc = Pstr_value (
           recFlag,
           bindings
         )
-      } :: returnStructures
+      }] @ (match newBindings with
+      | [] -> []
+      | newBindings -> [{
+        pstr_loc = emptyLoc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          newBindings
+        )
+      }]) @ returnStructures
     | structure -> structure :: returnStructures in
 
   let reactComponentTransform mapper structures =
@@ -49258,11 +49334,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 843 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 881 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           
-# 846 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -49272,11 +49348,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 858 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 896 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           
-# 861 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 899 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
