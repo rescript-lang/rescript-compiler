@@ -29,6 +29,3 @@
 
 val is_windows_or_cygwin : bool 
 
-val getenv_opt : 
-  string -> 
-  string option 

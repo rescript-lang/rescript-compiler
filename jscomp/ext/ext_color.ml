@@ -42,7 +42,7 @@ type style
   | Dim
 
 
-let ansi_of_color = function
+(* let ansi_of_color = function
   | Black -> "0"
   | Red -> "1"
   | Green -> "2"
@@ -50,7 +50,7 @@ let ansi_of_color = function
   | Blue -> "4"
   | Magenta -> "5"
   | Cyan -> "6"
-  | White -> "7"
+  | White -> "7" *)
 
 let code_of_style = function
   | FG Black -> "30"

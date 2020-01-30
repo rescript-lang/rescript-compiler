@@ -100,7 +100,7 @@ let to_out_channel = formatter_of_out_channel
 (* let set_needed_space_function _ _ = () *)
 let flush = pp_print_flush
 
-let list = pp_print_list
+(* let list = pp_print_list *)
 
 let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
   Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 

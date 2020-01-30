@@ -35,8 +35,6 @@ val vendor_bsdep : string
 
 val vendor_bsppx : string
 
-val vendor_bsppx : string
-
 val ocaml_dir : string
 
 val ocaml_lib_dir : string

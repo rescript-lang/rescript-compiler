@@ -31,28 +31,28 @@ let create n =
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
-let to_bytes b = Bytes.sub b.buffer 0 b.position 
+(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
 
-let sub b ofs len =
+(* let sub b ofs len =
   if ofs < 0 || len < 0 || ofs > b.position - len
   then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len
+  else Bytes.sub_string b.buffer ofs len *)
 
 
-let blit src srcoff dst dstoff len =
+(* let blit src srcoff dst dstoff len =
   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
   then invalid_arg "Ext_buffer.blit"
   else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
 let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
-let reset b =
+(* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer
+  b.length <- Bytes.length b.buffer *)
 
 let resize b more =
   let len = b.length in

@@ -112,13 +112,13 @@ let ends_with_then_chop s beg =
   if i >= 0 then Some (String.sub s 0 i) 
   else None
 
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
+(* let check_suffix_case = ends_with  *)
+(* let check_suffix_case_then_chop = ends_with_then_chop *)
 
-let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x) 
+(* let check_any_suffix_case s suffixes = 
+  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
-let check_any_suffix_case_then_chop s suffixes = 
+(* let check_any_suffix_case_then_chop s suffixes = 
   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
@@ -126,7 +126,7 @@ let check_any_suffix_case_then_chop s suffixes =
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes    
+  aux suffixes     *)
 
 
 

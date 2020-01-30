@@ -74,7 +74,7 @@ let newline t =
   if not t.last_new_line then
     begin
       t.output_char  '\n';
-      for i = 0 to t.indent_level - 1 do
+      for _ = 0 to t.indent_level - 1 do
         t.output_string  L.indent_str;
       done;
       t.last_new_line <- true
@@ -82,7 +82,7 @@ let newline t =
 
 let force_newline t =
   t.output_char  '\n';
-  for i = 0 to t.indent_level - 1 do
+  for _ = 0 to t.indent_level - 1 do
     t.output_string  L.indent_str;
   done
 
@@ -170,7 +170,7 @@ let cond_paren_group st b n action =
 let brace_group st n action =
   group st n (fun _ -> brace st action )
 
-let indent t n =
-  t.indent_level <- t.indent_level + n
+(* let indent t n =
+  t.indent_level <- t.indent_level + n *)
 
 let flush t () = t.flush ()
