@@ -415,6 +415,7 @@ let process_obj
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
+           let loc = param_type.loc in 
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -436,22 +437,22 @@ let process_obj
                    {arg_label = External_arg_spec.label s (Some i);
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty}::arg_types,
-                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty }::arg_types,
-                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
@@ -474,17 +475,17 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type :: arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type::arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"

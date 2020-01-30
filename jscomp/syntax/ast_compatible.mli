@@ -145,8 +145,7 @@ val opt_arrow:
 val object_: 
   ?loc:loc -> 
   ?attrs:attrs ->
-  (string * attributes * core_type) list -> 
-  (*FIXME shall we use [string loc] instead?*)
+  (string Asttypes.loc * attributes * core_type) list -> 
   Asttypes.closed_flag ->
   core_type  
 

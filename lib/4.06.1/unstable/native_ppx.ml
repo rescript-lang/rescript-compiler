@@ -8946,8 +8946,7 @@ val opt_arrow:
 val object_: 
   ?loc:loc -> 
   ?attrs:attrs ->
-  (string * attributes * core_type) list -> 
-  (*FIXME shall we use [string loc] instead?*)
+  (string Asttypes.loc * attributes * core_type) list -> 
   Asttypes.closed_flag ->
   core_type  
 
@@ -9161,14 +9160,13 @@ let apply_labels
 let object_ 
   ?(loc= default_loc)
   ?(attrs = [])
-  (fields : (string * attributes * core_type) list)
-  (* FIXME after upgrade *)
+  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
   flg : core_type = 
   {
     ptyp_desc = 
       Ptyp_object(
         Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
+          Parsetree.Otag (a,b,c)),flg);
     ptyp_loc = loc;
     ptyp_attributes = attrs
   }
@@ -12075,7 +12073,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
+  (string Asttypes.loc * Parsetree.attributes * t) list ->
   t
 
 val is_user_option : t -> bool
@@ -12210,7 +12208,7 @@ let from_labels ~loc arity labels
   let result_type =
     Ast_comb.to_js_type loc
       (Ast_compatible.object_ ~loc
-         (Ext_list.map2 labels tyvars (fun x y -> x.Asttypes.txt ,[], y)) Closed)
+         (Ext_list.map2 labels tyvars (fun x y -> x ,[], y)) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
     (fun label (* {loc ; txt = label }*)
@@ -19567,6 +19565,7 @@ let process_obj
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
+           let loc = param_type.loc in 
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -19588,22 +19587,22 @@ let process_obj
                    {arg_label = External_arg_spec.label s (Some i);
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty}::arg_types,
-                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty }::arg_types,
-                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
@@ -19626,17 +19625,17 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type :: arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type::arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"
@@ -21694,13 +21693,13 @@ let ocaml_obj_as_js_object
 
   let generate_val_method_pair 
       loc (mapper : Bs_ast_mapper.mapper)
-      val_name  is_mutable = 
+      (val_name : string Asttypes.loc) is_mutable = 
 
-    let result = Typ.var ~loc val_name in 
+    let result = Typ.var ~loc val_name.txt in 
     result , 
     ((val_name , [], result ) ::
      (if is_mutable then 
-        [val_name ^ Literals.setter_suffix,[],
+        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
          to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
@@ -21783,9 +21782,9 @@ let ocaml_obj_as_js_object
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
                 generate_arg_type x.pcf_loc mapper label.txt arity in 
-              ((label.Asttypes.txt, [], method_type) :: label_attr_types),
+              ((label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label.Asttypes.txt, [], method_type) :: public_label_attr_types
+                 (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
@@ -21800,7 +21799,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
@@ -21872,7 +21871,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (label::labels,
