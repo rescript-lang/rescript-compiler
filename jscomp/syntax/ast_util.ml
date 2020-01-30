@@ -32,7 +32,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Ast_compatible.arg_label ->
+  (Asttypes.arg_label ->
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
@@ -165,10 +165,10 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
+let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  if not (Ast_compatible.is_arg_label_simple label) then
+  if label <> Nolabel then
     Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
 
   let rec aux acc (typ : Parsetree.core_type) = 
@@ -182,7 +182,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
-          if not (Ast_compatible.is_arg_label_simple label) then
+          if label <> Nolabel then
             Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
@@ -226,7 +226,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if not (Ast_compatible.is_arg_label_simple arg_label)  then
+          if arg_label <> Nolabel  then
             Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
@@ -469,9 +469,8 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (arg_label, _, pat, e)} ),
+                (({pexp_desc = Pexp_fun (Nolabel, _, pat, e)} ),
                  None) 
-              when Ast_compatible.is_arg_label_simple arg_label
               ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
@@ -533,9 +532,8 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (arg_label, None, pat, e)} as f),
+                (({pexp_desc = Pexp_fun (Nolabel, None, pat, e)} as f),
                  None)
-              when Ast_compatible.is_arg_label_simple arg_label   
               ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let alias_type = 

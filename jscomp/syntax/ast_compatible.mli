@@ -24,8 +24,7 @@
 
 
 type poly_var_label = Asttypes.label Asttypes.loc
-type arg_label = Asttypes.arg_label
-type label = arg_label
+
 
 
 
@@ -110,18 +109,15 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string -> arg_label
+val opt_label : string -> Asttypes.arg_label
 
 val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
-  label:arg_label ->
+  label:Asttypes.arg_label ->
   pattern ->
   expression ->
   expression
-
-val is_arg_label_simple :
-  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
@@ -180,7 +176,7 @@ val rec_type_sig:
   signature_item
 
 type param_type = 
-  {label : arg_label ;
+  {label : Asttypes.arg_label ;
    ty :  Parsetree.core_type ; 
    attr :Parsetree.attributes;
    loc : loc
@@ -199,4 +195,4 @@ val hash_label : poly_var_label -> int
 val label_of_name : poly_var_label -> string 
 
 type args  = 
-  (arg_label * Parsetree.expression) list 
+  (Asttypes.arg_label * Parsetree.expression) list 

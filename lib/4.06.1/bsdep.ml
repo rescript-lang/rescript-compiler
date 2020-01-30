@@ -32765,8 +32765,7 @@ module Ast_compatible : sig
 
 
 type poly_var_label = Asttypes.label Asttypes.loc
-type arg_label = Asttypes.arg_label
-type label = arg_label
+
 
 
 
@@ -32851,18 +32850,15 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string -> arg_label
+val opt_label : string -> Asttypes.arg_label
 
 val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
-  label:arg_label ->
+  label:Asttypes.arg_label ->
   pattern ->
   expression ->
   expression
-
-val is_arg_label_simple :
-  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
@@ -32921,7 +32917,7 @@ val rec_type_sig:
   signature_item
 
 type param_type = 
-  {label : arg_label ;
+  {label : Asttypes.arg_label ;
    ty :  Parsetree.core_type ; 
    attr :Parsetree.attributes;
    loc : loc
@@ -32940,7 +32936,7 @@ val hash_label : poly_var_label -> int
 val label_of_name : poly_var_label -> string 
 
 type args  = 
-  (arg_label * Parsetree.expression) list 
+  (Asttypes.arg_label * Parsetree.expression) list 
 
 end = struct
 #1 "ast_compatible.ml"
@@ -32976,13 +32972,10 @@ let default_loc = Location.none
 
 type poly_var_label = Asttypes.label Asttypes.loc
 
-type arg_label = Asttypes.arg_label = 
-  | Nolabel
-  | Labelled of string
-  | Optional of string
 
-let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
-type label = arg_label 
+
+
+
 
 
 
@@ -32992,13 +32985,14 @@ let arrow ?(loc=default_loc) ?(attrs = []) a b  =
 let apply_simple
  ?(loc = default_loc) 
  ?(attrs = [])
-  fn args : expression = 
+  (fn : expression) 
+  (args : expression list) : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map args (fun x -> Nolabel, x) ) ) }
+        (Ext_list.map args (fun x -> Asttypes.Nolabel, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -33188,7 +33182,7 @@ let const_exp_string_list_as_array xs =
   (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 type param_type = 
-  {label : arg_label ;
+  {label : Asttypes.arg_label ;
    ty :  Parsetree.core_type ; 
    attr :Parsetree.attributes;
    loc : loc
@@ -33219,7 +33213,7 @@ let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
-  (arg_label * Parsetree.expression) list 
+  (Asttypes.arg_label * Parsetree.expression) list 
 
 end
 module Js_raw_exp_info
@@ -35011,8 +35005,8 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
 *)
 let get_uncurry_arity (ty : t ) =
   match ty.ptyp_desc  with
-  | Ptyp_arrow(arg_label, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
-     rest  ) when Ast_compatible.is_arg_label_simple arg_label -> 
+  | Ptyp_arrow(Nolabel, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
+     rest  )  -> 
      begin match rest with 
      | {ptyp_desc = Ptyp_arrow _ } ->  
       `Arity (get_uncurry_arity_aux rest 1 )
@@ -38829,11 +38823,11 @@ end = struct
 
 let local_external_apply loc 
      ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
+     ~(pval_prim : string list)
+     ~(pval_type : Parsetree.core_type)
      ?(local_module_name = "J")
      ?(local_fun_name = "unsafe_expr")
-     args
+     (args : Parsetree.expression list)
   : Parsetree.expression_desc = 
   Pexp_letmodule
     ({txt = local_module_name; loc},
@@ -42777,8 +42771,8 @@ let arity_of_fun
     (e : Parsetree.expression) =
   let rec aux (e : Parsetree.expression)  =
     match e.pexp_desc with
-    | Pexp_fun (arg_label, _, pat, e) 
-      when Ast_compatible.is_arg_label_simple arg_label ->
+    | Pexp_fun (Nolabel, _, pat, e) 
+     ->
       1 + aux e       
     | Pexp_fun _
       -> Location.raise_errorf
@@ -42917,7 +42911,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Ast_compatible.arg_label -> (* label for error checking *)
+  (Asttypes.arg_label -> (* label for error checking *)
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
@@ -43044,7 +43038,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Ast_compatible.arg_label ->
+  (Asttypes.arg_label ->
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
@@ -43177,10 +43171,10 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
+let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  if not (Ast_compatible.is_arg_label_simple label) then
+  if label <> Nolabel then
     Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
 
   let rec aux acc (typ : Parsetree.core_type) = 
@@ -43194,7 +43188,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
-          if not (Ast_compatible.is_arg_label_simple label) then
+          if label <> Nolabel then
             Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
@@ -43238,7 +43232,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if not (Ast_compatible.is_arg_label_simple arg_label)  then
+          if arg_label <> Nolabel  then
             Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
@@ -43481,9 +43475,8 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (arg_label, _, pat, e)} ),
+                (({pexp_desc = Pexp_fun (Nolabel, _, pat, e)} ),
                  None) 
-              when Ast_compatible.is_arg_label_simple arg_label
               ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
@@ -43545,9 +43538,8 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (arg_label, None, pat, e)} as f),
+                (({pexp_desc = Pexp_fun (Nolabel, None, pat, e)} as f),
                  None)
-              when Ast_compatible.is_arg_label_simple arg_label   
               ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let alias_type = 
@@ -45411,7 +45403,7 @@ let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 
 let check_and_discard (args : Ast_compatible.args) = 
   Ext_list.map args (fun (label,x) -> 
-      if not (Ast_compatible.is_arg_label_simple label) then 
+      if label <> Nolabel then 
         Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
       x  
     )
@@ -45681,8 +45673,8 @@ let rec unroll_function_aux
   | Pexp_constant(
     Pconst_string
     (block,_)) -> acc, block
-  | Pexp_fun(arg_label,_,pat,cont)
-    when Ast_compatible.is_arg_label_simple arg_label -> 
+  | Pexp_fun(Nolabel,_,pat,cont)
+     -> 
     (match pat.ppat_desc with 
     | Ppat_var s -> 
       unroll_function_aux (s.txt::acc) cont
@@ -45719,8 +45711,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     | "bs.raw" | "raw" -> 
       begin match payload with 
       | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(arg_label,_,pat,body)},_)}]
-        when Ast_compatible.is_arg_label_simple arg_label
+        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)},_)}]        
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
@@ -46852,8 +46843,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
            | true, pexp_attributes ->
              Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
           
-        | Pexp_fun (arg_label, _, pat , body)
-          when Ast_compatible.is_arg_label_simple arg_label
+        | Pexp_fun (Nolabel, _, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
             | Nothing, _

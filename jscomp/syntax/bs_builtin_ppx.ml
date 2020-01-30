@@ -113,8 +113,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
            | true, pexp_attributes ->
              Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
           
-        | Pexp_fun (arg_label, _, pat , body)
-          when Ast_compatible.is_arg_label_simple arg_label
+        | Pexp_fun (Nolabel, _, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
             | Nothing, _
