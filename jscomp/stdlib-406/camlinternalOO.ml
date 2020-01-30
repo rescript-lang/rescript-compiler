@@ -468,7 +468,7 @@ let create_object_and_run_initializers obj_0 table =
 let sendself obj lab =
   (magic obj : (obj -> t) array array).(0).(lab) obj
 *)
-external send : obj -> tag -> 'a = "%send"
+(* external send : obj -> tag -> 'a = "%send" *)
 external sendcache : obj -> tag -> t -> int -> 'a = "%sendcache"
 external sendself : obj -> label -> 'a = "%sendself"
 external get_public_method : obj -> tag -> closure
