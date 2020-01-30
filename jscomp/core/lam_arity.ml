@@ -63,7 +63,7 @@ let print_arities_tbl
     (fmt : Format.formatter) 
     (arities_tbl : (Ident.t, t ref) Hashtbl.t) = 
   Hashtbl.fold (fun (i:Ident.t) (v : t ref) _ -> 
-      pp Format.err_formatter "@[%s -> %a@]@."i.name print !v ) arities_tbl ()
+      pp fmt "@[%s -> %a@]@."i.name print !v ) arities_tbl ()
 
 
 

@@ -16,9 +16,9 @@ let mk_absname f =
   "-absname", Arg.Unit f, " Show absolute filenames in error messages"
 ;;
 
-let mk_annot f =
+(* let mk_annot f =
   "-annot", Arg.Unit f, " Save information in <filename>.annot"
-;;
+;; *)
 
 let mk_binannot f =
   "-bin-annot", Arg.Unit f, " Save typedtree in <filename>.cmt"
@@ -32,9 +32,9 @@ let mk_config f =
   "-config", Arg.Unit f, " Print configuration values and exit"
 ;;
 
-let mk_g_byt f =
+(* let mk_g_byt f =
   "-g", Arg.Unit f, " Save debugging information"
-;;
+;; *)
 
 let mk_i f =
   "-i", Arg.Unit f, " Print inferred interface"
@@ -78,9 +78,9 @@ let mk_no_app_funct f =
   "-no-app-funct", Arg.Unit f, " Deactivate applicative functors"
 ;;
 
-let mk_no_check_prims f =
+(* let mk_no_check_prims f =
   "-no-check-prims", Arg.Unit f, " Do not check runtime for primitives"
-;;
+;; *)
 
 let mk_noassert f =
   "-noassert", Arg.Unit f, " Do not compile assertion checks"
@@ -119,17 +119,17 @@ let mk_rectypes f =
   "-rectypes", Arg.Unit f, " Allow arbitrary recursive types"
 ;;
 
-let mk_safe_string f =
+(* let mk_safe_string f =
   "-safe-string", Arg.Unit f, " Make strings immutable"
-;;
+;; *)
 
 let mk_short_paths f =
   "-short-paths", Arg.Unit f, " Shorten paths in types"
 ;;
 
-let mk_stdin f =
+(* let mk_stdin f =
   "-stdin", Arg.Unit f, " Read script from standard input"
-;;
+;; *)
 
 let mk_strict_sequence f =
   "-strict-sequence", Arg.Unit f,
@@ -226,11 +226,11 @@ let mk_dlambda f =
   "-dlambda", Arg.Unit f, " (undocumented)"
 ;;
 
-let mk_opaque f =
+(* let mk_opaque f =
   "-opaque", Arg.Unit f,
   " Does not generate cross-module optimization information\n\
   \     (reduces necessary recompilation on module change)"
-;;
+;; *)
 
 let mk_strict_formats f =
   "-strict-formats", Arg.Unit f,
