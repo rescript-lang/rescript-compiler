@@ -47,7 +47,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
+  (string Asttypes.loc * Parsetree.attributes * t) list ->
   t
 
 val is_user_option : t -> bool

@@ -8946,8 +8946,7 @@ val opt_arrow:
 val object_: 
   ?loc:loc -> 
   ?attrs:attrs ->
-  (string * attributes * core_type) list -> 
-  (*FIXME shall we use [string loc] instead?*)
+  (string Asttypes.loc * attributes * core_type) list -> 
   Asttypes.closed_flag ->
   core_type  
 
@@ -9161,14 +9160,13 @@ let apply_labels
 let object_ 
   ?(loc= default_loc)
   ?(attrs = [])
-  (fields : (string * attributes * core_type) list)
-  (* FIXME after upgrade *)
+  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
   flg : core_type = 
   {
     ptyp_desc = 
       Ptyp_object(
         Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
+          Parsetree.Otag (a,b,c)),flg);
     ptyp_loc = loc;
     ptyp_attributes = attrs
   }
@@ -12075,7 +12073,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
+  (string Asttypes.loc * Parsetree.attributes * t) list ->
   t
 
 val is_user_option : t -> bool
@@ -12210,7 +12208,7 @@ let from_labels ~loc arity labels
   let result_type =
     Ast_comb.to_js_type loc
       (Ast_compatible.object_ ~loc
-         (Ext_list.map2 labels tyvars (fun x y -> x.Asttypes.txt ,[], y)) Closed)
+         (Ext_list.map2 labels tyvars (fun x y -> x ,[], y)) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
     (fun label (* {loc ; txt = label }*)
@@ -19567,6 +19565,7 @@ let process_obj
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
+           let loc = param_type.loc in 
            let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
@@ -19588,22 +19587,22 @@ let process_obj
                    {arg_label = External_arg_spec.label s (Some i);
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
-                   ((name , [], new_ty) :: result_types)
+                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty}::arg_types,
-                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty }::arg_types,
-                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
@@ -19626,17 +19625,17 @@ let process_obj
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
-                   ( (name, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type :: arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type::arg_types,
-                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"
@@ -20265,83 +20264,6 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   
   | _ -> false
 
-end
-module Ast_raw : sig 
-#1 "ast_raw.mli"
-(* Copyright (C) 2020 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val raw_expr_id : Longident.t 
-
-val raw_stmt_id : Longident.t 
-
-val raw_function_id : Longident.t
-end = struct
-#1 "ast_raw.ml"
-(* Copyright (C) 2020 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
- let raw_expr = "raw_expr"
- let raw_stmt = "raw_stmt"
- let raw_function = "raw_function"
- 
- let raw_expr_id =   
-  Longident.Ldot 
-  (Lident "Js_internalRaw", 
-  raw_expr)  
-
-let raw_stmt_id = 
-  Longident.Ldot 
-  (Lident "Js_internalRaw", 
-  raw_stmt)     
-
-let raw_function_id = 
-    Longident.Ldot 
-    (Lident "Js_internalRaw", 
-    raw_function)      
 end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
@@ -21616,27 +21538,23 @@ let handle_raw ~kind loc payload =
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
     | Some exp ->
-      let pexp_desc = 
-        Parsetree.Pexp_apply (
-          Exp.ident {loc; 
-                     txt = Ast_raw.raw_expr_id
-                       },
-          [Nolabel,exp]
-        )
-      in
-      { exp with pexp_desc }
+      { exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [exp]}
   end
 let handle_raw_structure loc payload = 
   begin match Ast_payload.raw_as_string_exp_exn 
                 ~kind:Raw_program payload with 
   | Some exp 
-    -> 
-    let pexp_desc = 
-      Parsetree.Pexp_apply(
-        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-        [ Nolabel,exp]) in 
+    ->     
     Ast_helper.Str.eval 
-      { exp with pexp_desc }
+      { exp with pexp_desc =
+                   Ast_external_mk.local_external_apply
+                     loc ~pval_prim:["#raw_stmt"]
+                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                     [exp]
+      }
 
   | None
     -> 
@@ -21645,11 +21563,13 @@ let handle_raw_structure loc payload =
 
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
-    Ast_compatible.app1
-    (Exp.ident ~loc 
-         {loc; txt = Ast_raw.raw_expr_id })
-      ~loc 
+    let str_exp = 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [str_exp]}   
+  in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
@@ -21694,13 +21614,13 @@ let ocaml_obj_as_js_object
 
   let generate_val_method_pair 
       loc (mapper : Bs_ast_mapper.mapper)
-      val_name  is_mutable = 
+      (val_name : string Asttypes.loc) is_mutable = 
 
-    let result = Typ.var ~loc val_name in 
+    let result = Typ.var ~loc val_name.txt in 
     result , 
     ((val_name , [], result ) ::
      (if is_mutable then 
-        [val_name ^ Literals.setter_suffix,[],
+        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
          to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
@@ -21783,9 +21703,9 @@ let ocaml_obj_as_js_object
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
                 generate_arg_type x.pcf_loc mapper label.txt arity in 
-              ((label.Asttypes.txt, [], method_type) :: label_attr_types),
+              ((label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label.Asttypes.txt, [], method_type) :: public_label_attr_types
+                 (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
@@ -21800,7 +21720,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
@@ -21872,7 +21792,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (label::labels,

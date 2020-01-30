@@ -52,5 +52,3 @@ let spliceObjApply : obj -> obj -> obj -> obj = [%raw{|function(obj,name,args){
   return (obj[name]).apply(obj,applied)
 }|}]
 
-[@@@warning "-60"]
-module Use =  Js_internalRaw

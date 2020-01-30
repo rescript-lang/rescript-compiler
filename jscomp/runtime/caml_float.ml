@@ -138,6 +138,3 @@ let caml_tan_float x =
   let z = exp (-. x) in
   (y +. z) /. (y -. z   ) *)
   
-[@@@ocaml.warning "-60"] 
-module Use =  Js_internalRaw
-  

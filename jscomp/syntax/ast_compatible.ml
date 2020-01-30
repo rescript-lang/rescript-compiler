@@ -159,14 +159,13 @@ let apply_labels
 let object_ 
   ?(loc= default_loc)
   ?(attrs = [])
-  (fields : (string * attributes * core_type) list)
-  (* FIXME after upgrade *)
+  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
   flg : core_type = 
   {
     ptyp_desc = 
       Ptyp_object(
         Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
+          Parsetree.Otag (a,b,c)),flg);
     ptyp_loc = loc;
     ptyp_attributes = attrs
   }

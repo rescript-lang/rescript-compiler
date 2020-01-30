@@ -308,27 +308,23 @@ let handle_raw ~kind loc payload =
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
     | Some exp ->
-      let pexp_desc = 
-        Parsetree.Pexp_apply (
-          Exp.ident {loc; 
-                     txt = Ast_raw.raw_expr_id
-                       },
-          [Nolabel,exp]
-        )
-      in
-      { exp with pexp_desc }
+      { exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [exp]}
   end
 let handle_raw_structure loc payload = 
   begin match Ast_payload.raw_as_string_exp_exn 
                 ~kind:Raw_program payload with 
   | Some exp 
-    -> 
-    let pexp_desc = 
-      Parsetree.Pexp_apply(
-        Exp.ident {txt = Ast_raw.raw_stmt_id; loc},
-        [ Nolabel,exp]) in 
+    ->     
     Ast_helper.Str.eval 
-      { exp with pexp_desc }
+      { exp with pexp_desc =
+                   Ast_external_mk.local_external_apply
+                     loc ~pval_prim:["#raw_stmt"]
+                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                     [exp]
+      }
 
   | None
     -> 
@@ -337,11 +333,13 @@ let handle_raw_structure loc payload =
 
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
-    Ast_compatible.app1
-    (Exp.ident ~loc 
-         {loc; txt = Ast_raw.raw_expr_id })
-      ~loc 
+    let str_exp = 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [str_exp]}   
+  in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
@@ -386,13 +384,13 @@ let ocaml_obj_as_js_object
 
   let generate_val_method_pair 
       loc (mapper : Bs_ast_mapper.mapper)
-      val_name  is_mutable = 
+      (val_name : string Asttypes.loc) is_mutable = 
 
-    let result = Typ.var ~loc val_name in 
+    let result = Typ.var ~loc val_name.txt in 
     result , 
     ((val_name , [], result ) ::
      (if is_mutable then 
-        [val_name ^ Literals.setter_suffix,[],
+        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
          to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
@@ -475,9 +473,9 @@ let ocaml_obj_as_js_object
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
                 generate_arg_type x.pcf_loc mapper label.txt arity in 
-              ((label.Asttypes.txt, [], method_type) :: label_attr_types),
+              ((label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label.Asttypes.txt, [], method_type) :: public_label_attr_types
+                 (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
@@ -492,7 +490,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
@@ -564,7 +562,7 @@ let ocaml_obj_as_js_object
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
           let  label_type, label_attr  = 
-            generate_val_method_pair x.pcf_loc mapper label.txt  
+            generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (label::labels,

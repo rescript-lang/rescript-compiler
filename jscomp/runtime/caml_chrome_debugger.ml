@@ -182,7 +182,3 @@ let polyVar meta xs =
   xs |. addProp (cacheSymbol "BsPolyVar") {value = meta}
 
 
-[@@@warning "-60"]
-module  Use =  Js_internalRaw 
-  
-    
