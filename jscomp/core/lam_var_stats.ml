@@ -44,7 +44,7 @@ type stats =
 
 let fresh_stats  : stats = { top = true; times = 0 }  
 let sink_stats : stats = { top = false; times = loop_use}
-let stats top times = {top; times}
+(* let stats top times = {top; times} *)
 let top_and_used_zero_or_one x = 
   match x with
   | {top = true; times = 0 | 1} -> true

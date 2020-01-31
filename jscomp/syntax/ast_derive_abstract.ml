@@ -26,7 +26,7 @@
 (* let derivingName = "abstract" *)
 module U = Ast_derive_util
 open Ast_helper
-type tdcls = Parsetree.type_declaration list
+(* type tdcls = Parsetree.type_declaration list *)
 
 type abstractKind = 
   | Not_abstract

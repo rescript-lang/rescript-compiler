@@ -194,7 +194,7 @@ let valid_global_name ?loc txt =
   it also helps with the implementation deriving abstract [@bs.as]
 *)
 
-let valid_method_name ?loc txt =
+let valid_method_name ?loc:_  _txt  =
     ()
   (* if not (valid_ident txt) then
     Location.raise_errorf ?loc "Not a valid method name %s"  txt *)

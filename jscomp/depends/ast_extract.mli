@@ -87,7 +87,6 @@ val build_queue :
   (Format.formatter -> string -> string -> 'c -> unit) -> unit
   
 val handle_queue :
-  Format.formatter ->
   string Queue.t ->
   ('a, 'b) t Map_string.t ->
   (string -> string -> 'a -> unit) ->

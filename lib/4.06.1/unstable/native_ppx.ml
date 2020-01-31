@@ -8950,10 +8950,6 @@ val object_:
   Asttypes.closed_flag ->
   core_type  
 
-val rec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
 
 val nonrec_type_str:  
   ?loc:loc -> 
@@ -10161,7 +10157,6 @@ let repeat n s  =
   done;
   Bytes.to_string res
 
-let equal (x : string) y  = x = y
 
 
 
@@ -10624,19 +10619,19 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
 
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
     Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
+  | Node(Empty, _, _, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
@@ -10695,12 +10690,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
@@ -11028,14 +11023,14 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, d, r, _) ->
+  | Node(l, v, _, r, _) ->
     let c = compare_key x v in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
       Map_gen.merge l r
@@ -11062,7 +11057,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
@@ -11078,7 +11073,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
@@ -11240,7 +11235,7 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-                (Pconst_string(name,dec))
+                (Pconst_string(_,_))
               ;
            _} as e ,_);
       _}] -> Some e
@@ -12276,7 +12271,7 @@ let list_of_arrow
         )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
-    | return_type -> ty, List.rev acc
+    | _ -> ty, List.rev acc
   in aux ty []
 
 
@@ -13746,10 +13741,10 @@ let valid_identifier s =
     Ext_string.for_all_from s 1  valid_identifier_char
 
 
-let is_space x =
+(* let is_space x =
   match x with
   | ' ' | '\n' | '\t' -> true
-  | _ -> false
+  | _ -> false *)
 
 
 
@@ -14860,7 +14855,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 51 "ext/hash_set.cppo.ml"
+[@@@warning "-32"] (* FIXME *)
+# 52 "ext/hash_set.cppo.ml"
 [@@@ocaml.warning "-3"]
 (* we used cppo the mixture does not work*)
 external seeded_hash_param :
@@ -14871,7 +14867,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -15610,7 +15606,7 @@ let process_method_attributes_rev (attrs : t) =
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
-            (fun st ({txt ; loc}, opt_expr)  ->
+            (fun _st ({txt ; loc}, opt_expr)  -> (*FIXME*)
                if txt =  "no_get" then
                  match opt_expr with
                  | None -> `No_get
@@ -15652,7 +15648,7 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
     ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc=_}, _) as attr ) ->
       match txt  with
       | "bs.open"
         ->
@@ -15663,7 +15659,7 @@ let process_pexp_fun_attributes_rev (attrs : t) =
 
 
 let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc=_}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
@@ -15762,7 +15758,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       st := v ;
     end  
     else Bs_syntaxerr.err loc Conflict_attributes  in 
-  Ext_list.iter attrs (fun (({txt ; loc}, (payload : _ ) ) as attr)  ->
+  Ext_list.iter attrs (fun (({txt ; loc=_}, (payload : _ ) ) as attr)  ->
       match  txt with
       | "bs.string"
         -> assign `String attr
@@ -17110,7 +17106,7 @@ let
 
 
 
-let rec parse_json lexbuf =
+let  parse_json lexbuf =
   let buf = Buffer.create 64 in 
   let look_ahead = ref None in
   let token () : token = 
@@ -18626,7 +18622,7 @@ let valid_global_name ?loc txt =
   it also helps with the implementation deriving abstract [@bs.as]
 *)
 
-let valid_method_name ?loc txt =
+let valid_method_name ?loc:_  _txt  =
     ()
   (* if not (valid_ident txt) then
     Location.raise_errorf ?loc "Not a valid method name %s"  txt *)
@@ -18826,7 +18822,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31 "ext/hash_set.cppo.ml"
+[@@@warning "-32"] (* FIXME *)
+# 32 "ext/hash_set.cppo.ml"
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
@@ -18834,7 +18831,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -18922,7 +18919,8 @@ module Lam_methname : sig
 
 
 
-val translate : ?loc:Location.t -> string -> string
+val translate : 
+  string -> string
 
 end = struct
 #1 "lam_methname.ml"
@@ -19059,7 +19057,7 @@ let valid_start_char x =
   match x with 
   | '_' | 'a' .. 'z' -> true 
   | _ -> false 
-let translate ?loc name = 
+let translate name = 
   assert (not @@ Ext_string.is_empty name);
   let i = Ext_string.rfind ~sub:double_underscore name in 
   if i < 0 then 
@@ -19495,7 +19493,7 @@ let parse_external_attributes
     
 
 
-let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+let has_bs_uncurry (attrs : Ast_attributes.t) = 
   Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
 
 
@@ -19583,23 +19581,23 @@ let process_obj
                    External_arg_spec.empty_kind arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
                  | Arg_cst  i  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s (Some i);
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
-                   let s = (Lam_methname.translate ~loc name) in
+                   let s = (Lam_methname.translate  name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
@@ -19622,17 +19620,17 @@ let process_obj
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
                  | Nothing ->
-                   let s = (Lam_methname.translate ~loc name) in
+                   let s = (Lam_methname.translate  name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
                    ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
@@ -20129,7 +20127,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
         ->
           let arg_label =
             External_arg_spec.label
-              (Lam_methname.translate ~loc txt) None in
+              (Lam_methname.translate txt) None in
           {arg_type = Nothing ;
            arg_label  } :: arg_kinds
       ) in
@@ -20148,7 +20146,7 @@ let pval_prim_of_option_labels
        else [])
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
-          let label_name = Lam_methname.translate ~loc txt in
+          let label_name = Lam_methname.translate  txt in
           let arg_label =
             if is_option then
               External_arg_spec.optional label_name
@@ -20244,7 +20242,7 @@ let arity_of_fun
     (e : Parsetree.expression) =
   let rec aux (e : Parsetree.expression)  =
     match e.pexp_desc with
-    | Pexp_fun (Nolabel, _, pat, e) 
+    | Pexp_fun (Nolabel, _, _, e) 
      ->
       1 + aux e       
     | Pexp_fun _
@@ -22691,7 +22689,7 @@ end = struct
 (* let derivingName = "abstract" *)
 module U = Ast_derive_util
 open Ast_helper
-type tdcls = Parsetree.type_declaration list
+(* type tdcls = Parsetree.type_declaration list *)
 
 type abstractKind = 
   | Not_abstract

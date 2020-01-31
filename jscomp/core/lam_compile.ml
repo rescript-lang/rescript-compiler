@@ -80,7 +80,7 @@ let change_tail_type_in_try
   | Not_tail | Maybe_tail_is_return Tail_in_try
     -> x
 
-let change_tail_type_in_static
+(* let change_tail_type_in_static
   (x : Lam_compile_context.tail_type)
   : Lam_compile_context.tail_type = 
   match x with 
@@ -88,7 +88,7 @@ let change_tail_type_in_static
     Maybe_tail_is_return (Tail_with_name {z with in_staticcatch=true})
   | Maybe_tail_is_return (Tail_with_name {in_staticcatch=true} ) 
   | Not_tail | Maybe_tail_is_return Tail_in_try
-    -> x
+    -> x *)
 
 (* assume outer is [Lstaticcatch] *)
 let rec flat_catches 
@@ -134,7 +134,7 @@ type default_case =
   | NonComplete
 
 let no_effects_const  = lazy true
-let has_effects_const = lazy false
+(* let has_effects_const = lazy false *)
 
 
 

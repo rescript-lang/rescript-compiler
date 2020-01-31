@@ -8,7 +8,7 @@ let suites =
   [
     __LOC__ >:: begin fun _ -> 
       let set = Hash_set_ident_mask.create 0  in
-      let a,b,c,d = 
+      let a,b,_,_ = 
         Ident.create "a", 
         Ident.create "b", 
         Ident.create "c",
@@ -40,7 +40,7 @@ let suites =
                 OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ; 
          OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
-         Hash_set_ident_mask.iter_and_unmask set(fun id mask -> ()) ;
+         Hash_set_ident_mask.iter_and_unmask set(fun _ _ -> ()) ;
         for i = 0 to len - 2 do 
                 OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ;

@@ -11,7 +11,7 @@ let bench () =
     for i = 0 to  count do 
       Hash_set_int.add  v i
     done ;
-    for i = 0 to 3 do 
+    for _ = 0 to 3 do 
       for i = 0 to count do 
         assert (Hash_set_int.mem v i)
       done
@@ -22,7 +22,7 @@ let bench () =
     for i = 0 to  count do 
       Hash_set_poly.add  v i
     done ;
-    for i = 0 to 3 do 
+    for _ = 0 to 3 do 
       for i = 0 to count do 
         assert (Hash_set_poly.mem v i)
      done

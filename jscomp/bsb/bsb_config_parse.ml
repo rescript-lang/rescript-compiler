@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let get_list_string = Bsb_build_util.get_list_string
+(* let get_list_string = Bsb_build_util.get_list_string *)
 let (//) = Ext_path.combine
 let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
 let resolve_package cwd  package_name = 
@@ -39,9 +39,9 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 
-
-let extract_main_entries (map :json_map) =  
 #if BS_NATIVE then  
+let extract_main_entries (map :json_map) =  
+
   let extract_entries (field : Ext_json_types.t array) =
     Ext_array.to_list_map (function
         | Ext_json_types.Obj {map} ->
@@ -76,7 +76,7 @@ let extract_main_entries (map :json_map) =
     | _ -> ()
   end; !entries
 #else 
-  []  
+let extract_main_entries (_ :json_map) = []  
 #end
 
 

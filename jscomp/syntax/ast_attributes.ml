@@ -67,7 +67,7 @@ let process_method_attributes_rev (attrs : t) =
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
-            (fun st ({txt ; loc}, opt_expr)  ->
+            (fun _st ({txt ; loc}, opt_expr)  -> (*FIXME*)
                if txt =  "no_get" then
                  match opt_expr with
                  | None -> `No_get
@@ -109,7 +109,7 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
     ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc=_}, _) as attr ) ->
       match txt  with
       | "bs.open"
         ->
@@ -120,7 +120,7 @@ let process_pexp_fun_attributes_rev (attrs : t) =
 
 
 let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc=_}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
@@ -219,7 +219,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       st := v ;
     end  
     else Bs_syntaxerr.err loc Conflict_attributes  in 
-  Ext_list.iter attrs (fun (({txt ; loc}, (payload : _ ) ) as attr)  ->
+  Ext_list.iter attrs (fun (({txt ; loc=_}, (payload : _ ) ) as attr)  ->
       match  txt with
       | "bs.string"
         -> assign `String attr

@@ -29,13 +29,13 @@
 
 
 
-module E = Js_exp_make  
+(* module E = Js_exp_make  
 module S = Js_stmt_make
-
+ *)
 
 type env_value = 
   | Ml of Js_cmj_load.cmj_load_info
-  | Runtime  of Js_cmj_load.cmj_load_info
+  (* | Runtime  of Js_cmj_load.cmj_load_info *)
   (** 
      [Runtime (pure, path, cmj_format)]
      A built in module probably from our runtime primitives, 
@@ -124,7 +124,7 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
       cmj_load_info.cmj_table
     | Some (Ml { cmj_table } )
       -> cmj_table
-    | Some (Runtime _) -> assert false
+    (* | Some (Runtime _) -> assert false *)
     | Some External  -> assert false in 
   let arity , closed_lambda =  
     Js_cmj_format.query_by_name cmj_table name 
@@ -155,8 +155,8 @@ let get_package_path_from_cmj
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
   | Some (
-   External | 
-   Runtime _ ) -> 
+   External (*| 
+   Runtime _ *) ) -> 
     assert false  
       (* called by {!Js_name_of_module_id.string_of_module_id}
         can not be External
@@ -193,7 +193,7 @@ let is_pure_module (oid : Lam_module_ident.t)  =
           Js_cmj_format.is_pure cmj_load_info.cmj_table
         | exception _ -> false 
       end 
-    | Some (Ml{cmj_table}|Runtime {cmj_table}) ->
+    | Some (Ml{cmj_table}(*|Runtime {cmj_table}*)) ->
        Js_cmj_format.is_pure cmj_table
     | Some External ->  false
     end 

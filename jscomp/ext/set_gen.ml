@@ -34,13 +34,13 @@ let  height = function
 
 let rec min_elt = function
     Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
+  | Node(Empty, v, _, _) -> v
+  | Node(l, _, _, _) -> min_elt l
 
 let rec max_elt = function
     Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
+  | Node(_, v, Empty, _) -> v
+  | Node(_, _, r, _) -> max_elt r
 
 
 
@@ -173,7 +173,7 @@ let internal_bal l v r =
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, v, r, _) -> r
+  | Node(Empty, _, r, _) -> r
   | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
 
 let singleton x = Node(Empty, x, Empty, 1)    
@@ -199,12 +199,12 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal l x (add_max_element v r)
 
 (** 

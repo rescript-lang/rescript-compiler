@@ -1,10 +1,10 @@
-open Misc
-open Asttypes
-open Parsetree
+(* open Misc
+open Asttypes *)
+(* open Parsetree *)
 open Types
-open Typedtree
+(* open Typedtree
 open Btype
-open Ctype
+open Ctype *)
 
 open Format
 open Printtyp

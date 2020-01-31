@@ -29,8 +29,8 @@
 
 
 
-module E = Js_exp_make 
-module S = Js_stmt_make  
+(* module E = Js_exp_make  *)
+(* module S = Js_stmt_make   *)
 
 let get_cmj_case output_prefix : Ext_namespace.file_kind = 
   let little = 

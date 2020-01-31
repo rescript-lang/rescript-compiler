@@ -173,7 +173,7 @@ let list_of_arrow
         )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
-    | return_type -> ty, List.rev acc
+    | _ -> ty, List.rev acc
   in aux ty []
 
 

@@ -43,9 +43,9 @@ let const_char (i : char) =
   E.int  ~comment:("\"" ^ String.escaped (String.make 1 i) ^ "\"") 
     ~c:i (Int32.of_int @@ Char.code i)
 
-let caml_char_of_int ?comment (v : J.expression)  =  v
+let caml_char_of_int  (v : J.expression)  =  v
 
-let caml_char_to_int ?comment v =  v
+let caml_char_to_int  v =  v
 
 (* string [s[i]] expects to return a [ocaml_char] *)
 let ref_string e e1 = 

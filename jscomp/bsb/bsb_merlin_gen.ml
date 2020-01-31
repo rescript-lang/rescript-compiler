@@ -110,7 +110,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
       external_includes; 
       reason_react_jsx ; 
       namespace;
-      package_name;
+      package_name = _;
       warning; 
      } : Bsb_config_types.t)
   =

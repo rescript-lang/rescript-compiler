@@ -208,7 +208,6 @@ val assign_by_int :
   t
 
 val assign_by_exp : 
-  ?comment:string -> 
   t -> 
   t -> 
   t -> 
@@ -351,7 +350,6 @@ val for_sure_js_null_undefined : J.expression -> bool
 val is_null_undefined : ?comment:string -> t -> t 
 
 val resolve_and_apply : 
-  ?comment:string -> 
   string ->
   t list ->
   t

@@ -437,7 +437,7 @@ let () =
        let task_length = Queue.length tasks in 
        emit_header out_chan ;
        begin 
-         Ast_extract.handle_queue Format.err_formatter tasks ast_table
+         Ast_extract.handle_queue tasks ast_table
            (fun base ml_name (lazy(_, ml_content)) -> 
               incr count ;  
               if collect_module_by_filenames then 
@@ -535,7 +535,7 @@ let () =
        let tasks = Ast_extract.sort fst  fst ast_table in
        let out_chan = (Lazy.force out_chan) in
        emit_header out_chan ;
-       Ast_extract.handle_queue Format.err_formatter tasks ast_table 
+       Ast_extract.handle_queue tasks ast_table 
          (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
          (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (_, mli_content) (_, ml_content)

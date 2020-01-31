@@ -140,7 +140,7 @@ let to_break_block (x : t) : J.block * bool =
 (*   -> *)
 (*     append x { y with block = []; value = Some e} *)
 
-let rec append_output  (x : t ) (y : t ) : t =
+let  append_output  (x : t ) (y : t ) : t =
     match x , y with (* ATTTENTION: should not optimize [opt_e2], it has to conform to [NeedValue]*)
     | { output_finished = True; _ }, _ -> x
     | _, {block = []; value= None; output_finished = Dummy } -> x

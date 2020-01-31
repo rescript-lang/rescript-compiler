@@ -2097,7 +2097,6 @@ let repeat n s  =
   done;
   Bytes.to_string res
 
-let equal (x : string) y  = x = y
 
 
 
@@ -2560,19 +2559,19 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
 
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
     Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
+  | Node(Empty, _, _, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
@@ -2631,12 +2630,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
@@ -2964,14 +2963,14 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, d, r, _) ->
+  | Node(l, v, _, r, _) ->
     let c = compare_key x v in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
       Map_gen.merge l r
@@ -2998,7 +2997,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
@@ -3014,7 +3013,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
@@ -3327,13 +3326,13 @@ let  height = function
 
 let rec min_elt = function
     Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
+  | Node(Empty, v, _, _) -> v
+  | Node(l, _, _, _) -> min_elt l
 
 let rec max_elt = function
     Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
+  | Node(_, v, Empty, _) -> v
+  | Node(_, _, r, _) -> max_elt r
 
 
 
@@ -3466,7 +3465,7 @@ let internal_bal l v r =
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, v, r, _) -> r
+  | Node(Empty, _, r, _) -> r
   | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
 
 let singleton x = Node(Empty, x, Empty, 1)    
@@ -3492,12 +3491,12 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal l x (add_max_element v r)
 
 (** 
@@ -3747,7 +3746,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+[@@@warning "-34"]
 # 27 "ext/set.cppo.ml"
 type elt = string
 let compare_elt = Ext_string.compare 
@@ -4760,9 +4759,10 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
-  | File of string 
-  | Dir of string 
+(* [@@@warning "-37"] *)
+type t =  
+  (* | File of string  *)
+  | Dir of string  [@@unboxed]
 
 
 let simple_convert_node_path_to_os_path =
@@ -4810,11 +4810,11 @@ let node_relative_path
   let relevant_dir1 = 
     match file_or_dir_1 with 
     | Dir x -> x 
-    | File file1 ->  Filename.dirname file1 in
+    (* | File file1 ->  Filename.dirname file1 *) in
   let relevant_dir2 = 
     match file_or_dir_2 with 
     | Dir x -> x 
-    | File file2 -> Filename.dirname file2  in
+    (* | File file2 -> Filename.dirname file2  *) in
   let dir1 = split_by_sep_per_os relevant_dir1 in
   let dir2 = split_by_sep_per_os relevant_dir2 in
   let rec go (dir1 : string list) (dir2 : string list) = 
@@ -4946,7 +4946,7 @@ let rel_normalized_absolute_path ~from to_ =
           Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | x::xs, [] ->
+      | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
      in
     let v =  go paths1 paths2  in 
@@ -5029,10 +5029,10 @@ let absolute_path cwd s =
 let absolute_cwd_path s = 
   absolute_path cwd  s 
 
-let absolute cwd s =   
+(* let absolute cwd s =   
   match s with 
   | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x)
+  | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
@@ -5166,7 +5166,7 @@ let proj_rel path = lazy_src_root_dir // path
 
 
 
-let cmd_package_specs = ref None 
+(* let cmd_package_specs = ref None  *)
 
 
 end
@@ -5538,7 +5538,6 @@ val test:
   -> Ext_json_types.t Map_string.t
    -> Ext_json_types.t Map_string.t
 
-val query : path -> Ext_json_types.t ->  status
 
 val loc_of : Ext_json_types.t -> Ext_position.t
 
@@ -5616,18 +5615,6 @@ let test   ?(fail=(fun () -> ())) key
     | _, _ -> fail () 
   end;
   m
-let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      match json with 
-      | Obj {map } -> 
-        (match Map_string.find_opt map p with 
-         | Some m  -> aux (p::acc) rest m
-         | None ->  No_path)          
-      | _ -> Wrong_type acc       
-  in aux [] path json
 
 
 let loc_of (x : Ext_json_types.t) =
@@ -7474,7 +7461,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31 "ext/hash_set.cppo.ml"
+[@@@warning "-32"] (* FIXME *)
+# 32 "ext/hash_set.cppo.ml"
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
@@ -7482,7 +7470,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -7884,8 +7872,8 @@ let color_functions : Format.formatter_tag_functions = {
   print_close_tag = (fun _ -> ())
 }
 
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions
+(* let set_color ppf =
+  Format.pp_set_formatter_tag_functions ppf color_functions *)
 
 
 let setup () = 
@@ -9269,7 +9257,7 @@ let
 
 
 
-let rec parse_json lexbuf =
+let  parse_json lexbuf =
   let buf = Buffer.create 64 in 
   let look_ahead = ref None in
   let token () : token = 
@@ -10076,7 +10064,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
 type t = Bsb_db.t
-type case = Bsb_db.case
+(* type case = Bsb_db.case *)
 
 
      
@@ -10355,7 +10343,7 @@ type build_generator = Bsb_file_groups.build_generator
 
 
 
-type file_group = Bsb_file_groups.file_group
+(* type file_group = Bsb_file_groups.file_group *)
 
 type t = Bsb_file_groups.t 
 
@@ -10461,7 +10449,7 @@ type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
   match Map_string.find_opt input  Bsb_build_schemas.generators with
-  | Some (Arr { content ; loc_start}) ->
+  | Some (Arr { content ; loc_start= _}) ->
     (* Need check is dev build or not *)
     Ext_array.fold_left content [] (fun acc x ->
         match x with
@@ -10621,7 +10609,7 @@ let rec
               Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
             | _ -> acc
           ) 
-      | Some (Obj {map = map; loc} ) -> (* { excludes : [], slow_re : "" }*)
+      | Some (Obj {map = map; loc = _} ) -> (* { excludes : [], slow_re : "" }*)
         let predicate = extract_predicate map in 
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
             if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
@@ -10923,7 +10911,7 @@ let run_command_execv_unix  cmd : int =
     Unix.execv cmd.cmd cmd.args 
   | pid -> 
     match Unix.waitpid [] pid  with 
-    | pid, process_status ->       
+    | _, process_status ->       
       match process_status with 
       | Unix.WEXITED eid ->
         eid    
@@ -11144,7 +11132,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let get_list_string = Bsb_build_util.get_list_string
+(* let get_list_string = Bsb_build_util.get_list_string *)
 let (//) = Ext_path.combine
 let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
 let resolve_package cwd  package_name = 
@@ -11160,10 +11148,8 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 
-
-let extract_main_entries (map :json_map) =  
  
-  []  
+let extract_main_entries (_ :json_map) = []  
 
 
 
@@ -11807,7 +11793,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
       external_includes; 
       reason_react_jsx ; 
       namespace;
-      package_name;
+      package_name = _;
       warning; 
      } : Bsb_config_types.t)
   =
@@ -13360,7 +13346,7 @@ let (//) = Ext_path.combine
 
 
 
-let dash_i = "-I"
+(* let dash_i = "-I" *)
 
 
 
@@ -13513,8 +13499,8 @@ let output_ninja_and_namespace_map
       Bsb_db_util.sanity_check bs_group;
       [|bs_group|], source_dirs, static_resources
     else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> Map_string.empty) in
-      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
+      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun _ -> Map_string.empty) in
+      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun _ -> []) in
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
@@ -16448,7 +16434,7 @@ let (//) = Ext_path.combine
 (** TODO: create the animation effect 
     logging installed files
 *)
-let install_targets cwd ({files_to_install; namespace; package_name} : Bsb_config_types.t ) =  
+let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
@@ -16560,10 +16546,9 @@ end = struct
 
 
 let () =  Bsb_log.setup () 
-let (//) = Ext_path.combine
+
 let force_regenerate = ref false
-let exec = ref false
-let node_lit = "node"
+
 let current_theme = ref "basic"
 let set_theme s = current_theme := s 
 let generate_theme_with_path = ref None

@@ -152,8 +152,8 @@ let free_variables
   !fv 
 
 
-let is_closed_by (set : Set_ident.t) (lam : Lam.t) : bool = 
-  Map_ident.is_empty (free_variables set (Map_ident.empty ) lam   )
+(* let is_closed_by (set : Set_ident.t) (lam : Lam.t) : bool = 
+  Map_ident.is_empty (free_variables set (Map_ident.empty ) lam   ) *)
 
 
 (** A bit consverative , it should be empty *)

@@ -22,9 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
-  | File of string 
-  | Dir of string 
+(* [@@@warning "-37"] *)
+type t =  
+  (* | File of string  *)
+  | Dir of string  [@@unboxed]
 
 
 let simple_convert_node_path_to_os_path =
@@ -72,11 +73,11 @@ let node_relative_path
   let relevant_dir1 = 
     match file_or_dir_1 with 
     | Dir x -> x 
-    | File file1 ->  Filename.dirname file1 in
+    (* | File file1 ->  Filename.dirname file1 *) in
   let relevant_dir2 = 
     match file_or_dir_2 with 
     | Dir x -> x 
-    | File file2 -> Filename.dirname file2  in
+    (* | File file2 -> Filename.dirname file2  *) in
   let dir1 = split_by_sep_per_os relevant_dir1 in
   let dir2 = split_by_sep_per_os relevant_dir2 in
   let rec go (dir1 : string list) (dir2 : string list) = 
@@ -208,7 +209,7 @@ let rel_normalized_absolute_path ~from to_ =
           Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | x::xs, [] ->
+      | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
      in
     let v =  go paths1 paths2  in 
@@ -291,10 +292,10 @@ let absolute_path cwd s =
 let absolute_cwd_path s = 
   absolute_path cwd  s 
 
-let absolute cwd s =   
+(* let absolute cwd s =   
   match s with 
   | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x)
+  | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname

@@ -77,7 +77,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Blk_module s -> 
       let t : Lam_tag_info.t = Blk_module s in 
       Const_block (i,t, Ext_list.map xs convert_constant )    
-     | Blk_module_export s -> 
+     | Blk_module_export _ -> 
       let t : Lam_tag_info.t = Blk_module_export in 
       Const_block (i,t, Ext_list.map xs convert_constant )     
     | Blk_extension_slot -> 

@@ -240,7 +240,7 @@ let suites =
         if x = 0 then y = 0 
         else if x < 0 then y < 0 
         else y > 0 in 
-      for i = 0 to 3000 do
+      for _ = 0 to 3000 do
         let chars = [|'a';'b';'c';'d'|] in 
         let x = Ounit_data_random.random_string chars 129 in 
         let y = Ounit_data_random.random_string chars 129 in 

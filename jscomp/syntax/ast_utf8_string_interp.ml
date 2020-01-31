@@ -104,10 +104,10 @@ let valid_identifier s =
     Ext_string.for_all_from s 1  valid_identifier_char
 
 
-let is_space x =
+(* let is_space x =
   match x with
   | ' ' | '\n' | '\t' -> true
-  | _ -> false
+  | _ -> false *)
 
 
 

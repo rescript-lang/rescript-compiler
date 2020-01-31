@@ -53,7 +53,7 @@
 
 module P = Ext_pp
 module E = Js_exp_make
-module S = Js_stmt_make
+(* module S = Js_stmt_make *)
 
 module L = Js_dump_lit
 
@@ -226,12 +226,12 @@ let pp_paren_params
 
 (** Print as underscore for unused vars, may not be 
     needed in the future *)  
-let ipp_ident cxt f id (un_used : bool) =
+(* let ipp_ident cxt f id (un_used : bool) =
   Ext_pp_scope.ident cxt f (
     if un_used then
       Ext_ident.make_unused () 
     else
-      id)
+      id) *)
 
 let pp_var_assign cxt f id  =       
   P.string f L.var ; 
@@ -279,9 +279,10 @@ let comma_sp f =
 let comma_nl f = 
   comma f ; P.newline f 
 
-let drop_comment (x : J.expression) = 
+(* let drop_comment (x : J.expression) = 
   if x.comment = None then x 
-  else {x with comment = None}  
+  else {x with comment = None}   *)
+
 let debugger_nl f =   
   P.newline f ; 
   P.string f L.debugger;
@@ -300,7 +301,8 @@ let continue f s =
   P.string f s;
   semi f
 
-let formal_parameter_list cxt f offset l env  = 
+
+let formal_parameter_list cxt f  l   = 
     iter_lst cxt f l Ext_pp_scope.ident comma_sp 
 (* IdentMap *)
 (*
@@ -406,7 +408,7 @@ and  pp_function is_method
         | [] -> assert false 
         | this::arguments -> 
           let cxt = P.paren_group f 1 (fun _ ->
-              formal_parameter_list inner_cxt  f 1 arguments env )
+              formal_parameter_list inner_cxt  f  arguments )
           in
           P.space f ;
           P.brace_vgroup f 1 (fun _ ->
@@ -417,7 +419,7 @@ and  pp_function is_method
             );
       else 
         let cxt = 
-          P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt  f 0 l env ) in
+          P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt  f  l  ) in
         P.space f ;
         P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) 
     in
@@ -1014,7 +1016,7 @@ and variable_declaration top cxt f
         cxt
 
     
-and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment ->
+and ipp_comment : 'a . P.t -> 'a  -> unit = fun   _f _comment ->
   ()
 
 

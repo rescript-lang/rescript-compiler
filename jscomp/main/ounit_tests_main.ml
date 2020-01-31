@@ -1,6 +1,6 @@
 
 
-
+[@@@warning "-32"]
 
 module Int_array = Vec.Make(struct type t = int let null = 0 end);;
 let v = Int_array.init 10 (fun i -> i);;

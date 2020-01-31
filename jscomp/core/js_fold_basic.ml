@@ -58,7 +58,7 @@ class count_hard_dependencies =
       match vid with 
       | Qualified (id,kind,_) ->
           add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
-      | Id id -> 
+      | Id _ -> 
         self
     method! expression x : 'self_type  = 
       (* check {!Js_pass_scope} when making changes *)

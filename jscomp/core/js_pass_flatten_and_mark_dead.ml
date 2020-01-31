@@ -32,7 +32,7 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-class count  var = object (self : 'self)
+(* class count  var = object (self : 'self)
   val mutable appears = 0
   inherit Js_fold.fold as super
   method! ident  x =
@@ -40,12 +40,12 @@ class count  var = object (self : 'self)
       appears <- appears + 1); 
     self
   method get_appears = appears 
-end
+end *)
 
 (* rewrite return for current block, but don't go into
    inner function, mostly for inlinning
  *)
-class rewrite_return ?return_value ()=
+(* class rewrite_return ?return_value ()=
   let mk_return  = 
     match return_value with 
     | None -> fun e -> S.exp e 
@@ -59,7 +59,7 @@ class rewrite_return ?return_value ()=
           mk_return e 
       | _ -> super#statement x 
     method! expression x = x (* don't go inside *)
-  end  
+  end   *)
 
 (* 
     HERE we are using an object , so make sure to clean it up, 
@@ -206,11 +206,11 @@ let subst_map () = object (self)
 
   method! statement v = 
     match v.statement_desc with 
-    | Variable ({ident; ident_info = {used_stats = Dead_pure } ; _}) -> 
+    | Variable ({ident = _; ident_info = {used_stats = Dead_pure } ; _}) -> 
       {v with statement_desc = Block []}
-    | Variable ({ident; ident_info = {used_stats = Dead_non_pure } ; value = None}) -> 
+    | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = None}) -> 
       {v with statement_desc = Block []}
-    | Variable ({ident; ident_info = {used_stats = Dead_non_pure } ; value = Some x}) -> 
+    | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = Some x}) -> 
       {v with statement_desc =  (Exp x)}
 
     | Variable ({ ident ; 

@@ -15,7 +15,7 @@ let time ?nums description  f  =
   | Some nums -> 
     begin 
         let start = Unix.gettimeofday () in 
-        for i = 0 to nums - 1 do 
+        for _i = 0 to nums - 1 do 
           ignore @@ f ();
         done  ;
       let finish = Unix.gettimeofday () in

@@ -10,7 +10,7 @@ let test_eq x y  =
     Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
         (fun _ groups -> 
             match groups with 
-            | x::xs -> x 
+            | x::_ -> x 
             | _ -> assert false 
         )  =~ y 
 

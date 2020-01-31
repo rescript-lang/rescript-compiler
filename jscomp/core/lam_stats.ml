@@ -45,7 +45,7 @@
 
 
 
-type alias_tbl =  Ident.t Hash_ident.t
+(* type alias_tbl =  Ident.t Hash_ident.t *)
 
 
 
@@ -65,8 +65,8 @@ type t = {
 
 let pp = Format.fprintf
 
-let pp_alias_tbl fmt (tbl : alias_tbl) = 
-  Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+(* let pp_alias_tbl fmt (tbl : alias_tbl) = 
+  Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v) *)
   
 
 
