@@ -1,35 +1,37 @@
-
-
-
 //@ts-check
+
+// -inline 1000 makes size too large
+// # TODO: make sure it can be bootstrapped, at least is a very good
+// # test case of our optimizations
+// # build bsdep.exe: cc bsdep.mli bsdep.ml
 /**
- * 
- * @param {{ocamlopt : string ; ext : string ; INCL : string, isWin : boolean}} config 
- * 
+ *
+ * @param {{ocamlopt : string ; ext : string ; INCL : string, isWin : boolean}} config
+ *
  */
-function libNinja(config){
-    return `
+function libNinja(config) {
+  return `
 ocamlopt = ${config.ocamlopt}
 ext = ${config.ext}
 INCL = ${config.INCL}
 flags = -nodynlink -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 rule cc
-    command = $ocamlopt -O2 $flags $in -o $out ${config.isWin? '' : '&& strip $out'}
+    command = $ocamlopt -O2  $flags $in -o $out ${
+      config.isWin ? "" : "&& strip $out"
+    }
     description = Making $out
-# -inline 1000 makes size too large
-# TODO: make sure it can be bootstrapped, at least is a very good
-# test case of our optimizations
-# build bsdep.exe: cc bsdep.mli bsdep.ml
 build bsppx$ext: cc $INCL/bsppx.mli $INCL/bsppx.ml
+    flags = $flags -unboxed-types 
 # build bspp.exe:  cc bspp.mli bspp.ml
 build bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
-    flags = $flags unix.cmxa str.cmxa
+    flags = $flags -unboxed-types unix.cmxa str.cmxa
 build bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
-    flags = $flags  -w -a
+    flags = $flags  -unboxed-types -w -a
 build refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
-    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
+    flags = $flags  -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
 build bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
-`
+    flags = $flags -unboxed-types 
+`;
 }
 
-exports.libNinja = libNinja
+exports.libNinja = libNinja;

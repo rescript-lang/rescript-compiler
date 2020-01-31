@@ -93,7 +93,7 @@ let rec
   we should refresh
  *)
 type lam_subst = 
-  | Id of Lam.t [@@unboxed]
+  | Id of Lam.t 
   (* | Refresh of Lam.t *)
 
 type subst_tbl = (Ident.t list * lam_subst ) Hash_int.t
