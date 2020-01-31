@@ -9,11 +9,11 @@
 (*  under the terms of the Q Public License version 1.0.               *)
 (*                                                                     *)
 (***********************************************************************)
-[@@@ocaml.warning "-40"]
+
 open Format
 open Asttypes
 open Primitive
-open Types
+
 
 
 
@@ -53,8 +53,8 @@ let boxed_integer_name (i : Lam_compat.boxed_integer) =
   | Pint32 -> "int32"
   | Pint64 -> "int64"
 
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s_%s" (boxed_integer_name bi) name
+(* let print_boxed_integer name ppf bi =
+  fprintf ppf "%s_%s" (boxed_integer_name bi) name *)
 
 let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
@@ -99,13 +99,13 @@ let record_rep ppf (r : Lam_primitive.record_representation) =
 
 ;;
 
-let string_of_loc_kind (loc : Lambda.loc_kind) =
+(* let string_of_loc_kind (loc : Lambda.loc_kind) =
   match loc with 
   | Loc_FILE -> "loc_FILE"
   | Loc_LINE -> "loc_LINE"
   | Loc_MODULE -> "loc_MODULE"
   | Loc_POS -> "loc_POS"
-  | Loc_LOC -> "loc_LOC"
+  | Loc_LOC -> "loc_LOC" *)
 
 let primitive ppf (prim : Lam_primitive.t) = match prim with 
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
@@ -344,15 +344,15 @@ let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) =
         (fun (id,l) -> (Recursive,id,l)) ) body
   | e ->  (acc , e) 
 
-type left_var = 
+(* type left_var = 
   {
     kind : print_kind ;
     id : Ident.t
-  }
+  } *)
 
-type left = 
-  | Id of left_var
-  | Nop
+(* type left = 
+  | Id of left_var *)
+  (* | Nop *)
 
 
 
@@ -368,7 +368,7 @@ let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t =
   | _ -> assert false
 
 
-let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
+(* let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
   match  Env.find_module (Pident id) env with 
   | {md_type = Mty_signature signature  ; _ } -> 
     (* Env.prefix_idents, could be cached  *)
@@ -393,7 +393,7 @@ let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string =
        | None -> assert false
      end).name
   | _ -> assert false
-
+ *)
 
 
 let lambda ppf v  =
@@ -528,18 +528,18 @@ let lambda ppf v  =
   in 
   lam ppf v
 
-let structured_constant = struct_const
+(* let structured_constant = struct_const *)
 
 
-let rec flatten_seq acc (lam : Lam.t) =
+(* let rec flatten_seq acc (lam : Lam.t) =
   match lam with 
   | Lsequence(l1,l2) -> 
     flatten_seq (flatten_seq acc l1) l2
-  | x -> x :: acc 
+  | x -> x :: acc  *)
 
-exception Not_a_module
+(* exception Not_a_module *)
 
-let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
+(* let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
   match lam with 
   | Llet (str,id,arg,body) ->
     flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
@@ -550,9 +550,9 @@ let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) =
       body 
   | Lsequence (l,r) -> 
     flat (flat acc l) r
-  | x -> (Nop, x) :: acc 
+  | x -> (Nop, x) :: acc  *)
 
-let lambda_as_module env  ppf (lam : Lam.t) = 
+(* let lambda_as_module env  ppf (lam : Lam.t) = 
   try
     (* match lam with *)
     (* | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _} *)
@@ -581,7 +581,7 @@ let lambda_as_module env  ppf (lam : Lam.t) =
   (* | _ -> raise Not_a_module *)
   with _ -> 
     lambda ppf lam;
-    fprintf ppf "; lambda-failure"
+    fprintf ppf "; lambda-failure" *)
 
 let seriaize (filename : string) (lam : Lam.t) : unit =
   let ou = open_out filename  in

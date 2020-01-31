@@ -22,8 +22,8 @@ module Js = struct
 end
 
 let mk_js_error (loc: Location.t) (msg: string) = 
-  let (file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
-  let (file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
+  let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
+  let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
   Js.Unsafe.(obj
   [|
   "js_error_msg",

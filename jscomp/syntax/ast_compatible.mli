@@ -149,10 +149,6 @@ val object_:
   Asttypes.closed_flag ->
   core_type  
 
-val rec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
 
 val nonrec_type_str:  
   ?loc:loc -> 

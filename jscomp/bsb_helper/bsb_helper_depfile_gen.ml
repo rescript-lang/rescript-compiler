@@ -80,12 +80,12 @@ let deps_of_channel (ic : in_channel) : string list =
     mostly for cutting the dependency so that [bsb_helper.exe] does
     not depend on compler-libs
 *)
-let read_deps (fn : string) : string list = 
+(* let read_deps (fn : string) : string list = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
   v
-
+ *)
 
 type kind = Js | Bytecode | Native
 

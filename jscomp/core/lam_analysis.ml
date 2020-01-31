@@ -245,7 +245,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       for example [String.contains], 
       [Format.make_queue_elem]
   *)
-  | Ltrywith (body,exn,handler) 
+  | Ltrywith (body,_exn,handler) 
     -> no_side_effects body && no_side_effects handler
 
   | Lifthenelse  (a,b,c) -> 
@@ -269,7 +269,7 @@ exception Too_big_to_inline
 
 let really_big () = raise_notrace Too_big_to_inline
 
-let big_lambda = 1000
+(* let big_lambda = 1000 *)
 
 let rec size (lam : Lam.t) = 
   try 
@@ -305,14 +305,14 @@ let rec size (lam : Lam.t) =
     | Lfunction {body} -> size body 
     | Lswitch _ -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
-    | Lstaticraise (i,ls) -> 
+    | Lstaticraise (_i,ls) -> 
         Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 
-    | Lstaticcatch(l1, (i,x), l2) -> really_big () 
-    | Ltrywith(l1, v, l2) -> really_big ()
+    | Lstaticcatch _ -> really_big () 
+    | Ltrywith _ -> really_big ()
     | Lifthenelse(l1, l2, l3) -> 1 + size  l1 + size  l2 +  size  l3
     | Lsequence(l1, l2) -> size  l1  +  size  l2
-    | Lwhile(l1, l2) -> really_big ()
-    | Lfor(flag, l1, l2, dir, l3) -> really_big () 
+    | Lwhile _ -> really_big ()
+    | Lfor _ -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
     | Lsend _  ->  really_big ()
 
@@ -359,7 +359,7 @@ let destruct_pattern (body : Lam.t) params args =
       if Ident.same x v then Some b
       else aux v xs bs
     | [] , _ -> None
-    | x::xs, [] -> assert false                  
+    | _::_, [] -> assert false                  
   in   
   match body with
   | Lswitch (Lvar v , switch)

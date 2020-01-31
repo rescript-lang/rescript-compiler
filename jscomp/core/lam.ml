@@ -286,7 +286,7 @@ let apply fn args loc status : t =
                                 Pis_null |
                                 Pis_null_undefined |
                                 Pjs_typeof ) as wrap;
-                             args = [Lprim ({primitive; args = inner_args} as primitive_call)]
+                             args = [Lprim ({primitive = _; args = inner_args} as primitive_call)]
                             }
               } ->
     begin match is_eta_conversion_exn params inner_args args with
@@ -298,7 +298,7 @@ let apply fn args loc status : t =
     end
   | Lfunction {
                params;
-               body =Lprim ({primitive; args = inner_args}as primitive_call) }
+               body =Lprim ({primitive = _; args = inner_args}as primitive_call) }
     ->
     begin match is_eta_conversion_exn params inner_args args with
       | args
@@ -309,7 +309,7 @@ let apply fn args loc status : t =
     end
   | Lfunction {
                params;
-               body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
+               body = Lsequence (Lprim ({primitive = _; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->
     begin match is_eta_conversion_exn params inner_args args with
       | args
@@ -452,19 +452,19 @@ module Lift = struct
     Lconst ((Const_int i))
 
 
-  let int32 i : t =
-    Lconst ((Const_int32 i))
+  (* let int32 i : t =
+    Lconst ((Const_int32 i)) *)
 
   let bool b = if b then true_ else false_
 
   (* ATTENTION: [float, nativeint] constant propogaton is not done
      yet , due to cross platform problem
   *)
-  let float b  : t =
-    Lconst ((Const_float b))
+  (* let float b  : t =
+    Lconst ((Const_float b)) *)
 
-  let nativeint b : t =
-    Lconst ((Const_nativeint b))
+  (* let nativeint b : t =
+    Lconst ((Const_nativeint b)) *)
 
   let int32 b : t =
     Lconst ((Const_int32 b))
@@ -642,7 +642,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
     end
   | _ -> 
     match prim with 
-    | Pmakeblock(size,Blk_module fields,_)->
+    | Pmakeblock(_size,Blk_module fields,_)->
       let rec aux fields args (var : Ident.t) i =
         match fields, args with 
         | [], [] -> true 
@@ -755,7 +755,7 @@ let if_ (a : t) (b : t) (c : t) : t =
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
                        ({sw_blocks = []; sw_numblocks = true; sw_consts ;
-                         sw_numconsts; sw_failaction = None} as body)
+                         sw_numconsts = _; sw_failaction = None} as body)
                      )
              when Ident.same xx yy 
                && complete_range sw_consts ~start:0 ~finish:range

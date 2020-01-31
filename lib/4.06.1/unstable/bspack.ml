@@ -7707,7 +7707,6 @@ let repeat n s  =
   done;
   Bytes.to_string res
 
-let equal (x : string) y  = x = y
 
 
 
@@ -8496,7 +8495,7 @@ let flush = pp_print_flush
 
 (* let list = pp_print_list *)
 
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
   Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
 
 end
@@ -10284,7 +10283,8 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
+[@@@warning "-37"]
+type t =  
   | File of string 
   | Dir of string 
 
@@ -10470,7 +10470,7 @@ let rel_normalized_absolute_path ~from to_ =
           Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | x::xs, [] ->
+      | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
      in
     let v =  go paths1 paths2  in 
@@ -10553,10 +10553,10 @@ let absolute_path cwd s =
 let absolute_cwd_path s = 
   absolute_path cwd  s 
 
-let absolute cwd s =   
+(* let absolute cwd s =   
   match s with 
   | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x)
+  | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
@@ -11569,19 +11569,19 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
 
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
     Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
+  | Node(Empty, _, _, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
@@ -11640,12 +11640,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
@@ -11973,14 +11973,14 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, d, r, _) ->
+  | Node(l, v, _, r, _) ->
     let c = compare_key x v in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
       Map_gen.merge l r
@@ -12007,7 +12007,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
@@ -12023,7 +12023,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
@@ -12273,7 +12273,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type module_name = private string
+(* type module_name = private string *)
 
 module Set_string = Depend.StringSet
 
@@ -12558,7 +12558,7 @@ let build_queue ppf queue
 
 
 let handle_queue 
-  ppf 
+  _ppf (* FIXME *)
   queue ast_table 
   decorate_module_only 
   decorate_interface_only 

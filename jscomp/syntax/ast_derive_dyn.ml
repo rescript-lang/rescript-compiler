@@ -28,11 +28,11 @@ let not_supported loc =
   Bs_syntaxerr.err loc Not_supported_in_bs_deriving
 
 
-let current_name_set : string list ref = ref []
+(* let current_name_set : string list ref = ref [] *)
 
 let loc = Location.none 
 
-let (+>) = Ast_compatible.arrow
+(* let (+>) = Ast_compatible.arrow *)
 
 type lid = Longident.t Asttypes.loc
 
@@ -42,12 +42,12 @@ let variant_to_value = "variant_to_value"
 let shape = "shape"
 let js_dyn = "Bs_dyn"
 let value = "value"
-let record_shape = "record_shape"
+(* let record_shape = "record_shape" *)
 let to_value = "_to_value"
 let to_value_ = "_to_value_"
 let shape_of_variant = "shape_of_variant"
 let shape_of_record = "shape_of_record"
-let option_to_value = "option_to_value"
+(* let option_to_value = "option_to_value" *)
 (**
    {[Ptyp_constr of Longident.t loc * core_type list ]}
    ['u M.t]
@@ -64,23 +64,23 @@ let bs_attrs = [Ast_attributes.bs]
 *)
 let js_dyn_value_type () =
   Typ.constr {txt = Longident.Ldot ((Lident  js_dyn), value) ; loc} []
-let get_js_dyn_record_shape_type () = 
-  Typ.constr {txt = Ldot (Lident js_dyn, record_shape); loc} []
+(* let get_js_dyn_record_shape_type () = 
+  Typ.constr {txt = Ldot (Lident js_dyn, record_shape); loc} [] *)
 let js_dyn_shape_of_variant () = 
   Exp.ident {txt = Ldot (Lident js_dyn, shape_of_variant); loc}
 let js_dyn_shape_of_record () = 
   Exp.ident {txt = Ldot (Lident js_dyn, shape_of_record); loc}
 
-let js_dyn_to_value_type ty  = 
-  Ast_compatible.arrow ty  (js_dyn_value_type ())
+(* let js_dyn_to_value_type ty  = 
+  Ast_compatible.arrow ty  (js_dyn_value_type ()) *)
 let js_dyn_to_value_uncurry_type ty = 
   Ast_compatible.arrow ~attrs:bs_attrs ty (js_dyn_value_type ())
 
 let js_dyn_variant_to_value () = 
   Exp.ident {txt = Ldot (Lident js_dyn, variant_to_value); loc}
 
-let js_dyn_option_to_value () = 
-  Exp.ident {txt = Ldot (Lident js_dyn, option_to_value); loc}
+(* let js_dyn_option_to_value () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, option_to_value); loc} *)
 
 let js_dyn_tuple_to_value i = 
   Exp.ident {txt = Ldot (
@@ -132,7 +132,7 @@ let rec exp_of_core_type prefix
          {x with 
           ptyp_desc =
             Ptyp_constr ({txt =  Ldot(Lident js_dyn,name);loc}, params)}
-  | Ptyp_constr ({txt ; loc} as lid, []) -> 
+  | Ptyp_constr (lid, []) -> 
     Exp.ident (fn_of_lid prefix lid)       
   | Ptyp_constr (lid, params)
     -> 
@@ -325,7 +325,7 @@ let init ()  =
 
                    |{ptype_params = [];
                      ptype_kind  = Ptype_record labels;
-                     ptype_loc = loc;
+                     ptype_loc = _;
                     } -> 
                      if explict_nonrec then constraint_ (record_exp name core_type labels) 
                      else []
@@ -343,7 +343,7 @@ let init ()  =
            signature_gen = 
              begin fun 
                (tdcls : Parsetree.type_declaration list)
-               (explict_nonrec : bool) -> 
+               (_explict_nonrec : bool) -> 
                let handle_tdcl tdcl = 
                  let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
                  let name = tdcl.ptype_name.txt in

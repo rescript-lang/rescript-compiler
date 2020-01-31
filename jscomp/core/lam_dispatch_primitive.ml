@@ -31,7 +31,7 @@
 
 
 module E = Js_exp_make  
-module S = Js_stmt_make
+(* module S = Js_stmt_make *)
 
 (** not exhaustive *)
 let args_const_unbox_approx_int_zero (args : J.expression list) = 
@@ -487,7 +487,7 @@ let translate loc (prim_name : string)
             else 
             Ext_list.init 
               (Int32.to_int i)
-              (fun i -> E.zero_int_literal)
+              (fun _ -> E.zero_int_literal)
             )
         | _ -> 
           E.runtime_call Js_runtime_modules.bytes

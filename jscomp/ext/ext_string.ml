@@ -160,7 +160,6 @@ let repeat n s  =
   done;
   Bytes.to_string res
 
-let equal (x : string) y  = x = y
 
 
 

@@ -45,7 +45,7 @@ let nop_cons (x : Lam.t) acc =
     ->  acc
   | _ -> Nop x :: acc
 
-let pp = Format.fprintf
+(* let pp = Format.fprintf *)
 
 let str_of_kind (kind : Lam_compat.let_kind) =
   match kind with

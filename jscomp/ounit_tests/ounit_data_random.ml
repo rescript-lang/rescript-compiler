@@ -6,4 +6,4 @@ let min_int x y =
 let random_string chars upper = 
     let len = Array.length chars in 
     let string_len = (Random.int (min_int upper len)) in
-    String.init string_len (fun i -> chars.(Random.int len ))
+    String.init string_len (fun _i -> chars.(Random.int len ))

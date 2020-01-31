@@ -24,7 +24,7 @@
 
 [@@@ocaml.warning "+9"]
 
-type path = string
+
 
 type module_system =
   | NodeJS 

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type module_name = private string
+(* type module_name = private string *)
 
 module Set_string = Depend.StringSet
 
@@ -307,7 +307,7 @@ let build_queue ppf queue
 
 
 let handle_queue 
-  ppf 
+  _ppf (* FIXME *)
   queue ast_table 
   decorate_module_only 
   decorate_interface_only 

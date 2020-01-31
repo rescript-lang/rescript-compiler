@@ -158,7 +158,7 @@ let happens_to_be_diff
 
 let prim = Lam.prim 
 
-type required_modules = Lam_module_ident.Hash_set.t
+(* type required_modules = Lam_module_ident.Hash_set.t *)
 
 
 (** drop Lseq (List! ) etc 
@@ -648,10 +648,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
               let setter = Ext_string.ends_with name Literals.setter_suffix in 
               let property = 
                 if setter then   
-                  Lam_methname.translate ~loc
+                  Lam_methname.translate 
                     (String.sub name 0
                        (String.length name - Literals.setter_suffix_len))
-                else Lam_methname.translate ~loc name in 
+                else Lam_methname.translate  name in 
               prim ~primitive:(Pjs_unsafe_downgrade {name = property;loc; setter})
                 ~args loc
             | _ -> assert false

@@ -131,7 +131,7 @@ let valid_start_char x =
   match x with 
   | '_' | 'a' .. 'z' -> true 
   | _ -> false 
-let translate ?loc name = 
+let translate name = 
   assert (not @@ Ext_string.is_empty name);
   let i = Ext_string.rfind ~sub:double_underscore name in 
   if i < 0 then 

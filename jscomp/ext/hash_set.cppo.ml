@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+[@@@warning "-32"]
 #ifdef TYPE_INT
 type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =

@@ -69,7 +69,7 @@ let test   ?(fail=(fun () -> ())) key
   end;
   m
 let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
+  let rec aux acc _paths json = (* FIXME *)
     match path with 
     | [] ->  Found json
     | p :: rest -> 

@@ -1609,7 +1609,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w -4-9-29-50+6-40-30-23 -warn-error A -absname -c $in
+    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A-44-45-48 -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out

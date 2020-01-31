@@ -243,7 +243,7 @@ and scan_string buf start = parse
 
 
 
-let rec parse_json lexbuf =
+let  parse_json lexbuf =
   let buf = Buffer.create 64 in 
   let look_ahead = ref None in
   let token () : token = 

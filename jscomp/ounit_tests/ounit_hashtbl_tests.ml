@@ -22,7 +22,7 @@ let suites =
     "add semantics " >:: begin fun _ -> 
       let h = Hash_string.create 0 in 
       let count = 1000 in 
-      for j = 0 to 1 do  
+      for _ = 0 to 1 do  
         for i = 0 to count - 1 do                 
           Hash_string.add h (string_of_int i) i 
         done
@@ -32,7 +32,7 @@ let suites =
     "replace semantics" >:: begin fun _ -> 
       let h = Hash_string.create 0 in 
       let count = 1000 in 
-      for j = 0 to 1 do  
+      for _ = 0 to 1 do  
         for i = 0 to count - 1 do                 
           Hash_string.replace h (string_of_int i) i 
         done

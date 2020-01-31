@@ -188,11 +188,11 @@ http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html
 
 let handle_lines tiny_test_cases = 
   match Ext_string.split  tiny_test_cases '\n' with 
-  | nodes :: edges :: rest -> 
+  | nodes :: _edges :: rest -> 
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () )
+        (fun _ -> Vec_int.empty () )
     in 
     begin 
     Ext_list.iter rest (fun x ->
@@ -209,7 +209,7 @@ let handle_lines tiny_test_cases =
 let read_file file = 
   let in_chan = open_in_bin file in 
   let nodes_sum = int_of_string (input_line in_chan) in 
-  let node_array = Array.init nodes_sum (fun i -> Vec_int.empty () ) in 
+  let node_array = Array.init nodes_sum (fun _ -> Vec_int.empty () ) in 
   let rec aux () = 
     match input_line in_chan with 
     | exception End_of_file -> ()
@@ -242,7 +242,7 @@ let test  (input : (string * string list) list) =
   let nodes_num = Hash_string.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () ) in 
+        (fun _ -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hash_string.find_exn tbl  x  in 
@@ -270,7 +270,7 @@ let test2  (input : (string * string list) list) =
   
   let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () ) in 
+        (fun _ -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hash_string.find_exn tbl  x  in 

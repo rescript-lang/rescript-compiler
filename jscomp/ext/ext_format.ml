@@ -102,5 +102,5 @@ let flush = pp_print_flush
 
 (* let list = pp_print_list *)
 
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
   Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 

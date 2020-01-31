@@ -182,12 +182,12 @@ let rec eq_expression
         | Number (Int j)   -> i = j 
         | _ -> false 
       end
-    | Number (Float i) -> 
-      begin match y0 with 
+    | Number (Float _) -> false
+      (* begin match y0 with 
         | Number (Float j) ->
           false (* conservative *)
         | _ -> false 
-      end    
+      end     *)
     | String_index (a0,a1) -> 
       begin match y0 with 
         | String_index(b0,b1) -> 
@@ -358,7 +358,7 @@ let rec is_constant (x : J.expression)  =
   | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
   | Caml_block(xs, Immutable, tag, _) 
     -> Ext_list.for_all xs is_constant && is_constant tag 
-  | Bin (op, a, b) -> 
+  | Bin (_op, a, b) -> 
     is_constant a && is_constant b     
   | _ -> false 
 

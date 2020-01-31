@@ -632,7 +632,7 @@ end = struct
 (*                                                                     *)
 (* See LICENSE for details.                                            *)
 (***********************************************************************)
-
+[@@@warning "a"]
 open OUnitUtils
 include OUnitTypes
 
@@ -2083,7 +2083,6 @@ let repeat n s  =
   done;
   Bytes.to_string res
 
-let equal (x : string) y  = x = y
 
 
 
@@ -2541,7 +2540,7 @@ let time ?nums description  f  =
   | Some nums -> 
     begin 
         let start = Unix.gettimeofday () in 
-        for i = 0 to nums - 1 do 
+        for _i = 0 to nums - 1 do 
           ignore @@ f ();
         done  ;
       let finish = Unix.gettimeofday () in
@@ -2589,13 +2588,13 @@ let  height = function
 
 let rec min_elt = function
     Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
+  | Node(Empty, v, _, _) -> v
+  | Node(l, _, _, _) -> min_elt l
 
 let rec max_elt = function
     Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
+  | Node(_, v, Empty, _) -> v
+  | Node(_, _, r, _) -> max_elt r
 
 
 
@@ -2728,7 +2727,7 @@ let internal_bal l v r =
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, v, r, _) -> r
+  | Node(Empty, _, r, _) -> r
   | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
 
 let singleton x = Node(Empty, x, Empty, 1)    
@@ -2754,12 +2753,12 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, h) ->
+  | Node (l, x, r, _) ->
     internal_bal l x (add_max_element v r)
 
 (** 
@@ -3049,7 +3048,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+[@@@warning "-34"]
 # 42 "ext/set.cppo.ml"
 type elt = int 
 let compare_elt = Ext_int.compare 
@@ -3248,7 +3247,7 @@ let suites =
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_array (Array.init 1000 (fun n -> Random.int 1000))))
+           (Set_poly.of_array (Array.init 1000 (fun _ -> Random.int 1000))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
@@ -3286,7 +3285,7 @@ let suites =
      __LOC__ >:: begin fun _ ->
       let arr_size = 1_00_000 in
       let v = ref Set_int.empty in 
-      for i = 0 to arr_size - 1 do
+      for _ = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
          v := Set_int.add !v size                       
       done;       
@@ -3708,7 +3707,7 @@ let test_eq x y  =
     Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
         (fun _ groups -> 
             match groups with 
-            | x::xs -> x 
+            | x::_ -> x 
             | _ -> assert false 
         )  =~ y 
 
@@ -4203,7 +4202,7 @@ let others_dir = jscomp // "others"
 
 let stdlib_dir = jscomp // "stdlib-406"
 
-let rec safe_dup fd =
+(* let rec safe_dup fd =
   let new_fd = Unix.dup fd in
   if (Obj.magic new_fd : int) >= 3 then
     new_fd (* [dup] can not be 0, 1, 2*)
@@ -4211,7 +4210,7 @@ let rec safe_dup fd =
     let res = safe_dup fd in
     Unix.close new_fd;
     res
-  end
+  end *)
 
 let safe_close fd =
   try Unix.close fd with Unix.Unix_error(_,_,_) -> ()
@@ -5197,7 +5196,7 @@ let flush = pp_print_flush
 
 (* let list = pp_print_list *)
 
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
   Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
 
 end
@@ -6710,7 +6709,8 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
+[@@@warning "-37"]
+type t =  
   | File of string 
   | Dir of string 
 
@@ -6896,7 +6896,7 @@ let rel_normalized_absolute_path ~from to_ =
           Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | x::xs, [] ->
+      | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
      in
     let v =  go paths1 paths2  in 
@@ -6979,10 +6979,10 @@ let absolute_path cwd s =
 let absolute_cwd_path s = 
   absolute_path cwd  s 
 
-let absolute cwd s =   
+(* let absolute cwd s =   
   match s with 
   | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x)
+  | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
@@ -7995,19 +7995,19 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
 
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
     Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
+  | Node(Empty, _, _, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
@@ -8066,12 +8066,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
@@ -8399,14 +8399,14 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, d, r, _) ->
+  | Node(l, v, _, r, _) ->
     let c = compare_key x v in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
       Map_gen.merge l r
@@ -8433,7 +8433,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
@@ -8449,7 +8449,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
@@ -8699,7 +8699,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type module_name = private string
+(* type module_name = private string *)
 
 module Set_string = Depend.StringSet
 
@@ -8984,7 +8984,7 @@ let build_queue ppf queue
 
 
 let handle_queue 
-  ppf 
+  _ppf (* FIXME *)
   queue ast_table 
   decorate_module_only 
   decorate_interface_only 
@@ -9386,7 +9386,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 43 "ext/hash_set.cppo.ml"
+[@@@warning "-32"]
+# 44 "ext/hash_set.cppo.ml"
 module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
 type key = H.t 
 let eq_key = H.equal
@@ -9396,7 +9397,7 @@ type t = key Hash_set_gen.t
 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -9453,7 +9454,7 @@ let check_add (h : _ Hash_set_gen.t) key : bool =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 121 "ext/hash_set.cppo.ml"
+# 122 "ext/hash_set.cppo.ml"
 end
   
 
@@ -9534,7 +9535,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 51 "ext/hash_set.cppo.ml"
+[@@@warning "-32"]
+# 52 "ext/hash_set.cppo.ml"
 [@@@ocaml.warning "-3"]
 (* we used cppo the mixture does not work*)
 external seeded_hash_param :
@@ -9545,7 +9547,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -9660,7 +9662,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31 "ext/hash_set.cppo.ml"
+[@@@warning "-32"]
+# 32 "ext/hash_set.cppo.ml"
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
@@ -9668,7 +9671,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -9766,7 +9769,7 @@ let suites =
     end ;
     __LOC__ >:: begin fun _ ->
       let v = Hash_set_poly.create 31 in
-      for i = 0 to 1_0_000 do
+      for _ = 0 to 1_0_000 do
         Hash_set_poly.add v 0
       done  ;
       OUnit.assert_equal (Hash_set_poly.length v) 1
@@ -9910,7 +9913,8 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25 "ext/hash_set.cppo.ml"
+[@@@warning "-32"]
+# 26 "ext/hash_set.cppo.ml"
 type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
@@ -9918,7 +9922,7 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 64 "ext/hash_set.cppo.ml"
+# 65 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -9994,7 +9998,7 @@ let bench () =
     for i = 0 to  count do 
       Hash_set_int.add  v i
     done ;
-    for i = 0 to 3 do 
+    for _ = 0 to 3 do 
       for i = 0 to count do 
         assert (Hash_set_int.mem v i)
       done
@@ -10005,7 +10009,7 @@ let bench () =
     for i = 0 to  count do 
       Hash_set_poly.add  v i
     done ;
-    for i = 0 to 3 do 
+    for _ = 0 to 3 do 
       for i = 0 to count do 
         assert (Hash_set_poly.mem v i)
      done
@@ -10246,7 +10250,7 @@ let suites =
     "add semantics " >:: begin fun _ -> 
       let h = Hash_string.create 0 in 
       let count = 1000 in 
-      for j = 0 to 1 do  
+      for _ = 0 to 1 do  
         for i = 0 to count - 1 do                 
           Hash_string.add h (string_of_int i) i 
         done
@@ -10256,7 +10260,7 @@ let suites =
     "replace semantics" >:: begin fun _ -> 
       let h = Hash_string.create 0 in 
       let count = 1000 in 
-      for j = 0 to 1 do  
+      for _ = 0 to 1 do  
         for i = 0 to count - 1 do                 
           Hash_string.replace h (string_of_int i) i 
         done
@@ -11191,7 +11195,7 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
    Given a name, if duplicated, they should  have the same id
 *)
-let create_js_module (name : string) : Ident.t =
+(* let create_js_module (name : string) : Ident.t =
   let name =
     String.concat "" @@ Ext_list.map
     (Ext_string.split name '-')  Ext_string.capitalize_ascii in
@@ -11209,7 +11213,7 @@ let create_js_module (name : string) : Ident.t =
   | v -> (* v *) Ident.rename v
 
 
-
+ *)
 
 
 
@@ -11553,7 +11557,7 @@ let suites =
   [
     __LOC__ >:: begin fun _ -> 
       let set = Hash_set_ident_mask.create 0  in
-      let a,b,c,d = 
+      let a,b,_,_ = 
         Ident.create "a", 
         Ident.create "b", 
         Ident.create "c",
@@ -11585,7 +11589,7 @@ let suites =
                 OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ; 
          OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_and_check_all_hit  set idents.(len - 1)) ;
-         Hash_set_ident_mask.iter_and_unmask set(fun id mask -> ()) ;
+         Hash_set_ident_mask.iter_and_unmask set(fun _ _ -> ()) ;
         for i = 0 to len - 2 do 
                 OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_and_check_all_hit set idents.(i) );
         done ;
@@ -12885,7 +12889,7 @@ let test   ?(fail=(fun () -> ())) key
   end;
   m
 let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
+  let rec aux acc _paths json = (* FIXME *)
     match path with 
     | [] ->  Found json
     | p :: rest -> 
@@ -13817,7 +13821,7 @@ let
 
 
 
-let rec parse_json lexbuf =
+let  parse_json lexbuf =
   let buf = Buffer.create 64 in 
   let look_ahead = ref None in
   let token () : token = 
@@ -14338,14 +14342,14 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, d, r, _) ->
+  | Node(l, v, _, r, _) ->
     let c = compare_key x v in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
       Map_gen.merge l r
@@ -14372,7 +14376,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
@@ -14388,7 +14392,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
+  | (_, Node (l2, v2, d2, r2, _)) ->
     begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
@@ -15578,11 +15582,11 @@ http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html
 
 let handle_lines tiny_test_cases = 
   match Ext_string.split  tiny_test_cases '\n' with 
-  | nodes :: edges :: rest -> 
+  | nodes :: _edges :: rest -> 
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () )
+        (fun _ -> Vec_int.empty () )
     in 
     begin 
     Ext_list.iter rest (fun x ->
@@ -15599,7 +15603,7 @@ let handle_lines tiny_test_cases =
 let read_file file = 
   let in_chan = open_in_bin file in 
   let nodes_sum = int_of_string (input_line in_chan) in 
-  let node_array = Array.init nodes_sum (fun i -> Vec_int.empty () ) in 
+  let node_array = Array.init nodes_sum (fun _ -> Vec_int.empty () ) in 
   let rec aux () = 
     match input_line in_chan with 
     | exception End_of_file -> ()
@@ -15632,7 +15636,7 @@ let test  (input : (string * string list) list) =
   let nodes_num = Hash_string.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () ) in 
+        (fun _ -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hash_string.find_exn tbl  x  in 
@@ -15660,7 +15664,7 @@ let test2  (input : (string * string list) list) =
   
   let node_array = 
       Array.init nodes_num
-        (fun i -> Vec_int.empty () ) in 
+        (fun _ -> Vec_int.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hash_string.find_exn tbl  x  in 
@@ -16540,7 +16544,7 @@ let min_int x y =
 let random_string chars upper = 
     let len = Array.length chars in 
     let string_len = (Random.int (min_int upper len)) in
-    String.init string_len (fun i -> chars.(Random.int len ))
+    String.init string_len (fun _i -> chars.(Random.int len ))
 end
 module Ounit_string_tests
 = struct
@@ -16787,7 +16791,7 @@ let suites =
         if x = 0 then y = 0 
         else if x < 0 then y < 0 
         else y > 0 in 
-      for i = 0 to 3000 do
+      for _ = 0 to 3000 do
         let chars = [|'a';'b';'c';'d'|] in 
         let x = Ounit_data_random.random_string chars 129 in 
         let y = Ounit_data_random.random_string chars 129 in 
@@ -17742,10 +17746,6 @@ val object_:
   Asttypes.closed_flag ->
   core_type  
 
-val rec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item
 
 val nonrec_type_str:  
   ?loc:loc -> 
@@ -18342,10 +18342,10 @@ let valid_identifier s =
     Ext_string.for_all_from s 1  valid_identifier_char
 
 
-let is_space x =
+(* let is_space x =
   match x with
   | ' ' | '\n' | '\t' -> true
-  | _ -> false
+  | _ -> false *)
 
 
 
@@ -20230,7 +20230,7 @@ module Ounit_vec_test
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-open Ext_json
+(* open Ext_json *)
 
 let v = Vec_int.init 10 (fun i -> i);;
 let (=~) x y = OUnit.assert_equal ~cmp:(Vec_int.equal  (fun (x: int) y -> x=y)) x y
@@ -20389,7 +20389,7 @@ end = struct
 #1 "ounit_tests_main.ml"
 
 
-
+[@@@warning "a"]
 
 module Int_array = Vec.Make(struct type t = int let null = 0 end);;
 let v = Int_array.init 10 (fun i -> i);;

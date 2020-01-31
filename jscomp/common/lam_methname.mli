@@ -24,4 +24,5 @@
 
 
 
-val translate : ?loc:Location.t -> string -> string
+val translate : 
+  string -> string

@@ -130,7 +130,7 @@ let choose h =
     else 
       match Array.unsafe_get arr offset with 
       | Empty -> aux arr (offset + 1) len 
-      | Cons {key = k; next = rest} -> k 
+      | Cons {key = k; _} -> k 
   in
   aux h.data 0 (Array.length h.data)
 

@@ -345,7 +345,7 @@ let parse_external_attributes
     
 
 
-let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+let has_bs_uncurry (attrs : Ast_attributes.t) = 
   Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
 
 
@@ -433,23 +433,23 @@ let process_obj
                    External_arg_spec.empty_kind arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
                  | Arg_cst  i  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s (Some i);
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
-                   let s = (Lam_methname.translate ~loc name) in
+                   let s = (Lam_methname.translate  name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.label s None; arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
@@ -472,17 +472,17 @@ let process_obj
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
                  | Nothing ->
-                   let s = (Lam_methname.translate ~loc name) in
+                   let s = (Lam_methname.translate  name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
                    ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
-                   let s = Lam_methname.translate ~loc name in
+                   let s = Lam_methname.translate  name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
                    param_type::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
@@ -979,7 +979,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
         ->
           let arg_label =
             External_arg_spec.label
-              (Lam_methname.translate ~loc txt) None in
+              (Lam_methname.translate txt) None in
           {arg_type = Nothing ;
            arg_label  } :: arg_kinds
       ) in
@@ -998,7 +998,7 @@ let pval_prim_of_option_labels
        else [])
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
-          let label_name = Lam_methname.translate ~loc txt in
+          let label_name = Lam_methname.translate  txt in
           let arg_label =
             if is_option then
               External_arg_spec.optional label_name
