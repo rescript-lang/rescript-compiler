@@ -179,6 +179,7 @@ for example
 
 ```ocaml
 external filter : 'a array -> ('a -> bool [@bs.uncurry]) -> 'a array = "filter"
+[@@bs.send]
 
 let f xs =
     xs |. filter (fun x -> x > 2)

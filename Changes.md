@@ -2,11 +2,53 @@
 
 # current
 
-- #4117 Upgrade to Reason 3.6.0 @ 8f71db0
+
 
 # 7.0.2
 
+- #4117 Upgrade to Reason 3.6.0 @ 8f71db0
+- #4097 introduce a js parser for syntax checking inside raw.
+
+    We can now tell whether the code inside raw is a function or not and  the arity of raw function, so 
+    ```ocaml
+    let f = [%raw{|function(x){return x}|}]
+    ```
+    ```ocaml
+    let f = fun%raw x -> {|x|}
+    ```
+    will be treated the same, to make FFI simpler, the special form `fun%raw` will be discouraged.
+
+- #4090 #4087 fix the unsoundess issue of Js.Array.push
+    now the empty array `[||]` won't have a polymorophic type, it will have a concrete type.
+
+- #41112 #4111 #4067 #4101 provide websocket error better error message and better docs
+
+- #4108 fix warning concat in some edge cases (bsb)
+- #4100 make node process exit return 'a instead of unit
+- #4098 restore encoding int64 using a tuple for compatibility reasons
+
+- #4114 fix SPA mode watcher path in react-hooks template
+
+- #4199 Change ReactJS PPX to avoid modifying locations of existing code (better integration with editors)
+- #4122 toplevel [@@@warning "+101"] works for bucklescript warnings
+
+    `bsc -warn-help` listed several warnings for BuckleScript
+    ```
+    101 BuckleScript warning: Unused bs attributes
+    102 BuckleScript warning: polymorphic comparison introduced (maybe unsafe)
+    103 BuckleScript warning: about fragile FFI definitions
+    104 BuckleScript warning: bs.deriving warning with customized message 
+    105 BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name
+    106 BuckleScript warning: Unimplemented primitive used:
+    107 BuckleScript warning: Integer literal exceeds the range of representable integers of type int
+    108 BuckleScript warning: Uninterpreted delimiters (for unicode)
+    ```
 - #4060 #4057 add unboxed type support 
+
+- #4078, #4069 better code generated for cases like `match x with true -> ..| false -> ..`
+- #4075, #4065 allow emoji in folder name
+- #4074 allow defining a custom hostname for websocket
+- #4064 fix shake_compile prefix & code param order 
 - #4053 use setImmediate for rebuilding to fix watch mode for some specific editors
 - #4050 support pipe first poly variant
 - #4049 Add support for custom underscored namespace
