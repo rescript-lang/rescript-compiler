@@ -21,13 +21,21 @@ var sourceDirs = [
   "runtime",
   "test",
   "ounit_tests",
-  "bsb_helper"
+  "bsb_helper",
+  "refmt"
 ];
 
 var buildAppending = false;
 var isBuilding = false;
 var ninjaFile = require("./ninja.js");
 var jscompDir = path.join("..", "jscomp");
+/**
+ *
+ * @param {Date} d
+ */
+function showDate(d) {
+  return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+}
 function rebuild() {
   if (isBuilding) {
     buildAppending = true;
@@ -53,14 +61,14 @@ function buildFinished(code, signal) {
   } else {
     if (code !== 0) {
       console.log(`File "BUILD", line 1, characters 1-1:`);
-      console.log(`Error: Failed to build`);
+      console.log(`Error: Failed to build ${showDate(new Date())}`);
     }
     console.log(">>>> Finish compiling (options: R|clean|config)");
     // TODO: check ninja exit error code
     if (code === 0) {
       // This is not always correct
       // ninjaFile.updateDev();
-      // This file is cached 
+      // This file is cached
       child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
     }
   }
