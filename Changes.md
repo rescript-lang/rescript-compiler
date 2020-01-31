@@ -20,7 +20,7 @@
 
 - #4090 #4087 fix the unsoundess issue of Js.Array.push
     now the empty array `[||]` won't have a polymorophic type, it will have a concrete type.
-
+- #4038 Duplicated package warning for symlinked folders
 - #41112 #4111 #4067 #4101 provide websocket error better error message and better docs
 
 - #4108 fix warning concat in some edge cases (bsb)
