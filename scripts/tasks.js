@@ -21,7 +21,8 @@ var sourceDirs = [
   "runtime",
   "test",
   "ounit_tests",
-  "bsb_helper"
+  "bsb_helper",
+  "refmt"
 ];
 
 var buildAppending = false;
@@ -29,11 +30,11 @@ var isBuilding = false;
 var ninjaFile = require("./ninja.js");
 var jscompDir = path.join("..", "jscomp");
 /**
- * 
- * @param {Date} d 
+ *
+ * @param {Date} d
  */
-function showDate(d){
-  return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`
+function showDate(d) {
+  return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
 }
 function rebuild() {
   if (isBuilding) {
@@ -67,7 +68,7 @@ function buildFinished(code, signal) {
     if (code === 0) {
       // This is not always correct
       // ninjaFile.updateDev();
-      // This file is cached 
+      // This file is cached
       child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
     }
   }
