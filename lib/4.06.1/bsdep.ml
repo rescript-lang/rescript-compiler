@@ -37772,7 +37772,7 @@ let () =
 
   *)
 
-  open Parsetree
+  open! Parsetree
 
   (** {1 A generic Parsetree mapper} *)
   
@@ -37862,7 +37862,7 @@ end = struct
 *)
 
 
-open Parsetree
+open! Parsetree
 open Ast_helper
 open Location
 

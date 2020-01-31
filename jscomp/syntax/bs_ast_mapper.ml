@@ -21,7 +21,7 @@
 *)
 
 
-open Parsetree
+open! Parsetree
 open Ast_helper
 open Location
 
