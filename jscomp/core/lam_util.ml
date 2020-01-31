@@ -211,13 +211,12 @@ let generate_label ?(name="") ()  =
   incr count; 
   Printf.sprintf "%s_tailcall_%04d" name !count
 
-let log_counter = ref 0
-
-
+#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then  
 let dump ext  lam = 
-#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then
-      ()
+  ()
 #else
+let log_counter = ref 0
+let dump ext  lam = 
    if Js_config.is_same_file ()
     then 
       (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
