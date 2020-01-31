@@ -234,9 +234,9 @@ function tryLocation(ps) {
   let index = process.argv.indexOf(`-C`);
   if (index >= 0) {
     let p = process.argv[index + 1];
-    tryLocation([p]);
+    tryLocation([p, path.join(p, "lib", "bs")]);
   } else {
-    tryLocation([path.join("lib", "bs"), "."]);
+    tryLocation([".", path.join("lib", "bs")]);
   }
 }
 console.log("loading build log", file, "is used");
