@@ -509,6 +509,19 @@ let jsxMapper () =
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let () =
+      (match (isOptional arg, pattern, default) with
+      | (true, { ppat_desc = Ppat_constraint (_, { ptyp_desc })}, None) ->
+        (match ptyp_desc with
+         | Ptyp_constr({txt=(Lident "option")}, [{ ptyp_desc }]) -> ()
+         | _ ->
+             let currentType = (match ptyp_desc with
+             | Ptyp_constr({txt}, []) -> String.concat "." (Longident.flatten txt)
+             | Ptyp_constr({txt}, _innerTypeArgs) -> String.concat "." (Longident.flatten txt) ^ "(...)"
+             | _ -> "...")
+             in
+             Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)
+      | _ -> ()) in
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
       | {ppat_desc = Ppat_any} -> "_"
