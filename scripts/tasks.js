@@ -22,7 +22,8 @@ var sourceDirs = [
   "test",
   "ounit_tests",
   "bsb_helper",
-  "refmt"
+  "refmt",
+  "js_parser"
 ];
 
 var buildAppending = false;

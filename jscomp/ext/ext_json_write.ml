@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** poor man's serialization *)
-
+(* 
 let quot x = 
-    "\"" ^ String.escaped x ^ "\""
+    "\"" ^ String.escaped x ^ "\"" *)
 
-let rec encode_aux (x : Ext_json_types.t ) 
+(* let rec encode_aux (x : Ext_json_types.t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
   match x with 
@@ -73,9 +73,9 @@ let rec encode_aux (x : Ext_json_types.t )
           ) in 
           a " }"
       end
+ *)
 
-
-let to_string (x : Ext_json_types.t) = 
+(* let to_string (x : Ext_json_types.t) = 
     let buf = Buffer.create 1024 in 
     encode_aux x buf ;
     Buffer.contents buf 
@@ -83,4 +83,4 @@ let to_string (x : Ext_json_types.t) =
 let to_channel (oc : out_channel) x  = 
     let buf = Buffer.create 1024 in 
     encode_aux x buf ;
-    Buffer.output_buffer oc buf 
+    Buffer.output_buffer oc buf  *)

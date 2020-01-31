@@ -54,7 +54,7 @@ type t = {
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
 }
-let empty_values = [||]
+(* let empty_values = [||] *)
 let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
   {
     values = Map_string.to_sorted_array values; 
@@ -108,7 +108,7 @@ let from_string s : t =
 
 let fixed_length = cmj_magic_number_length + digest_length
 
-let rec for_sure_not_changed (name : string) (header : string) =   
+let for_sure_not_changed (name : string) (header : string) =   
   if Sys.file_exists name then 
     let ic = open_in_bin name in 
     let holder =

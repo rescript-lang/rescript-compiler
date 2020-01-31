@@ -41,7 +41,7 @@ let make_const ~lo ~hi =
   E.make_block 
     ~comment:"int64" (E.zero_int_literal) 
     record_info
-    [E.int hi; E.to_uint32 @@ E.int lo ; ]
+    [E.int hi; E.to_uint32 (E.int lo) ; ]
     (* If we use unsigned int for lo field, 
        then we can not use [E.int] which is 
        assumed to to be signed int.
@@ -49,11 +49,12 @@ let make_const ~lo ~hi =
        in the ast node?
     *)
     Immutable
-let make ~lo ~hi = 
+
+(* let make ~lo ~hi = 
   E.make_block 
     ~comment:"int64" (E.zero_int_literal) 
     record_info [   hi; E.to_uint32 lo ]
-    Immutable
+    Immutable *)
 
 
 
@@ -110,7 +111,7 @@ let div args =
     which is  a statement [var x = ... ; x ], it does not fit 
     current pipe-line fall back to a function call
 *)
-let bit_op  (op : E.t -> E.t -> E.t) runtime_call args = 
+let bit_op  (* op : E.t -> E.t -> E.t*) runtime_call args = 
   int64_call runtime_call args 
   (*disable optimizations relying on int64 representations
     this maybe outdated when we switch to bigint
@@ -125,9 +126,9 @@ let bit_op  (op : E.t -> E.t -> E.t) runtime_call args =
     else 
   | _ -> assert false *)
 
-let xor  = bit_op E.int32_bxor "xor"
-let or_ = bit_op E.int32_bor "or_"
-let and_ = bit_op E.int32_band "and_"
+let xor  = bit_op  "xor"
+let or_ = bit_op  "or_"
+let and_ = bit_op  "and_"
 
 
 let lsl_ args = 

@@ -27,12 +27,12 @@
 
 
 
-module E = Js_exp_make 
+(* module E = Js_exp_make  *)
 
 module S = Js_stmt_make  
 
 
-let rec named_expression (e : J.expression)
+let named_expression (e : J.expression)
   :  (J.statement  * Ident.t) option = 
   if Js_analyzer.is_okay_to_duplicate e then 
     None 

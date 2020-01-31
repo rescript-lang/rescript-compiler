@@ -43,7 +43,7 @@ type value =
 let param_hash :  _ Hash_ident.t = Hash_ident.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
-  let rec find_param v  opt = 
+  let find_param v  opt = 
     match Hash_ident.find_opt param_hash v with 
     | Some exp ->  
       if exp.used then raise E.Not_simple_apply

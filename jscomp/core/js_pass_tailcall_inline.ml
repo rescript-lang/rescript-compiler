@@ -38,7 +38,7 @@
 *)
 
 module S = Js_stmt_make
-module E = Js_exp_make
+(* module E = Js_exp_make *)
 
 
 (** Update ident info use cases, it is a non pure function, 
@@ -67,7 +67,7 @@ let count_collects () =
 
       super#program x
     method! variable_declaration 
-        ({ident; value ; property  ; ident_info }  as v)
+        ({ident; value ; property = _ ; ident_info = _}  as v)
       =  
       Hash_ident.add defined_idents ident v; 
       match value with 

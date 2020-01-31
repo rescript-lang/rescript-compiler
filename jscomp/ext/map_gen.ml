@@ -113,19 +113,19 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
 
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
     Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
+  | Node(Empty, _, _, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
@@ -184,12 +184,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
+  | Node (l, x, d, r, _) ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the

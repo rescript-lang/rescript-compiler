@@ -92,12 +92,12 @@ let state_escape_scope = check_each_trace_chunk_bottom_up (function
 let trace_both_component_spec = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
-      ([state1; _; _; _; action1] | [state1; _; action1]),
+      ([_state1; _; _; _; _action1] | [_state1; _; _action1]),
       _
     )},
     {desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
-      ([state2; _; _; _; action2] | [state2; _; action2]),
+      ([_state2; _; _; _; _action2] | [_state2; _; _action2]),
       _
     )})
     -> true
@@ -107,7 +107,7 @@ let trace_both_component_spec = check_each_trace_chunk_bottom_up (function
 let is_component_spec_wanted_react_element = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
-      ([state1; _; _; _; action1] | [state1; _; action1]),
+      ([_state1; _; _; _; _action1] | [_state1; _; _action1]),
       _
     )},
     {desc = Tconstr (

@@ -6,7 +6,7 @@
 (*                                                                     *)
 (* See LICENSE for details.                                            *)
 (***********************************************************************)
-
+[@@@warning "a"]
 open OUnitUtils
 include OUnitTypes
 

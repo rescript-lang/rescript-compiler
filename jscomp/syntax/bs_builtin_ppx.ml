@@ -345,7 +345,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 
 
     
-let rec unsafe_mapper : mapper =
+let  unsafe_mapper : mapper =
   { default_mapper with
     expr = expr_mapper;
     typ = typ_mapper ;

@@ -20,7 +20,7 @@ let suites =
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_array (Array.init 1000 (fun n -> Random.int 1000))))
+           (Set_poly.of_array (Array.init 1000 (fun _ -> Random.int 1000))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
@@ -58,7 +58,7 @@ let suites =
      __LOC__ >:: begin fun _ ->
       let arr_size = 1_00_000 in
       let v = ref Set_int.empty in 
-      for i = 0 to arr_size - 1 do
+      for _ = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
          v := Set_int.add !v size                       
       done;       

@@ -67,14 +67,14 @@ let set_position lexbuf position =
 let set_filename lexbuf fname =
   lexbuf.filename <- fname
 
-let fill_buf_from_gen f gen buf pos len =
+(* let fill_buf_from_gen f gen buf pos len =
   let rec aux i =
     if i >= len then len
     else match gen () with
       | Some c -> buf.(pos + i) <- f c ; aux (i+1)
       | None -> i
   in
-  aux 0
+  aux 0 *)
 
 
 

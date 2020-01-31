@@ -31,7 +31,7 @@ let (//) = Ext_path.combine
 
 
 
-let dash_i = "-I"
+(* let dash_i = "-I" *)
 
 
 
@@ -184,8 +184,8 @@ let output_ninja_and_namespace_map
       Bsb_db_util.sanity_check bs_group;
       [|bs_group|], source_dirs, static_resources
     else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> Map_string.empty) in
-      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
+      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun _ -> Map_string.empty) in
+      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun _ -> []) in
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->

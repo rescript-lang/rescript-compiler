@@ -34,7 +34,7 @@ let init () =
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
+                  (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc = _; pcd_res }
                     -> (* TODO: add type annotations *)
                       let pcd_args = 
                         match pcd_args with 
@@ -95,7 +95,7 @@ let init () =
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
+                  (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc = _; pcd_res}
                     -> 
                       let pcd_args = 
                         match pcd_args with 

@@ -3,7 +3,7 @@ let fprintf = Format.fprintf
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/env.ml#L1842 *)
 (* modified branches are commented *)
 let report_error ppf = function
-  | Env.Illegal_renaming(name, modname, filename) ->
+  | Env.Illegal_renaming(name, modname, _filename) ->
       (* modified *)
       fprintf ppf
         "@[You referred to the module %s, but we've found one called %s instead.@ \

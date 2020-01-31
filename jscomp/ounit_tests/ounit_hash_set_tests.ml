@@ -33,7 +33,7 @@ let suites =
     end ;
     __LOC__ >:: begin fun _ ->
       let v = Hash_set_poly.create 31 in
-      for i = 0 to 1_0_000 do
+      for _ = 0 to 1_0_000 do
         Hash_set_poly.add v 0
       done  ;
       OUnit.assert_equal (Hash_set_poly.length v) 1

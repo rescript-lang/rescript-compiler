@@ -98,7 +98,7 @@ let get_otherlibs_dependencies dependency_graph file_extension =
     else
       acc
   in
-  let set_of_otherlib_deps = Map_string.fold dependency_graph Set_string.empty (fun k v acc ->
+  let set_of_otherlib_deps = Map_string.fold dependency_graph Set_string.empty (fun _k v acc ->
     let addIfPresent = addIfPresentInSet v in
     acc
       |> addIfPresent "Unix"     "unix"

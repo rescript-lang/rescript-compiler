@@ -22,13 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+#if BS_NATIVE then 
+ let (//) = Ext_path.combine
+ let exec = ref false
+ let node_lit = "node"
+#end
 
 let () =  Bsb_log.setup () 
-let (//) = Ext_path.combine
+
 let force_regenerate = ref false
-let exec = ref false
-let node_lit = "node"
+
 let current_theme = ref "basic"
 let set_theme s = current_theme := s 
 let generate_theme_with_path = ref None

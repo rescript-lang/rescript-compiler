@@ -16,7 +16,7 @@ let others_dir = jscomp // "others"
 
 let stdlib_dir = jscomp // "stdlib-406"
 
-let rec safe_dup fd =
+(* let rec safe_dup fd =
   let new_fd = Unix.dup fd in
   if (Obj.magic new_fd : int) >= 3 then
     new_fd (* [dup] can not be 0, 1, 2*)
@@ -24,7 +24,7 @@ let rec safe_dup fd =
     let res = safe_dup fd in
     Unix.close new_fd;
     res
-  end
+  end *)
 
 let safe_close fd =
   try Unix.close fd with Unix.Unix_error(_,_,_) -> ()

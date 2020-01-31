@@ -49,7 +49,7 @@ let run_command_execv_unix  cmd : int =
     Unix.execv cmd.cmd cmd.args 
   | pid -> 
     match Unix.waitpid [] pid  with 
-    | pid, process_status ->       
+    | _, process_status ->       
       match process_status with 
       | Unix.WEXITED eid ->
         eid    

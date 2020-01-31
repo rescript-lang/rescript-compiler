@@ -49,8 +49,8 @@ let color_functions : Format.formatter_tag_functions = {
   print_close_tag = (fun _ -> ())
 }
 
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions
+(* let set_color ppf =
+  Format.pp_set_formatter_tag_functions ppf color_functions *)
 
 
 let setup () = 

@@ -48,7 +48,7 @@ let () =
 
   *)
 
-  open Parsetree
+  open! Parsetree
 
   (** {1 A generic Parsetree mapper} *)
   

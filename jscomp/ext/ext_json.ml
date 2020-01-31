@@ -68,18 +68,6 @@ let test   ?(fail=(fun () -> ())) key
     | _, _ -> fail () 
   end;
   m
-let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      match json with 
-      | Obj {map } -> 
-        (match Map_string.find_opt map p with 
-         | Some m  -> aux (p::acc) rest m
-         | None ->  No_path)          
-      | _ -> Wrong_type acc       
-  in aux [] path json
 
 
 let loc_of (x : Ext_json_types.t) =

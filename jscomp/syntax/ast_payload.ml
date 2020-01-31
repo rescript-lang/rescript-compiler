@@ -45,7 +45,7 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-                (Pconst_string(name,dec))
+                (Pconst_string(_,_))
               ;
            _} as e ,_);
       _}] -> Some e

@@ -28,7 +28,7 @@ let (//) = Ext_path.combine
 (** TODO: create the animation effect 
     logging installed files
 *)
-let install_targets cwd ({files_to_install; namespace; package_name} : Bsb_config_types.t ) =  
+let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in

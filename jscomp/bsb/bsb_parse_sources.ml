@@ -28,7 +28,7 @@ type build_generator = Bsb_file_groups.build_generator
 
 
 
-type file_group = Bsb_file_groups.file_group
+(* type file_group = Bsb_file_groups.file_group *)
 
 type t = Bsb_file_groups.t 
 
@@ -134,7 +134,7 @@ type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
   match Map_string.find_opt input  Bsb_build_schemas.generators with
-  | Some (Arr { content ; loc_start}) ->
+  | Some (Arr { content ; loc_start= _}) ->
     (* Need check is dev build or not *)
     Ext_array.fold_left content [] (fun acc x ->
         match x with
@@ -294,7 +294,7 @@ let rec
               Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
             | _ -> acc
           ) 
-      | Some (Obj {map = map; loc} ) -> (* { excludes : [], slow_re : "" }*)
+      | Some (Obj {map = map; loc = _} ) -> (* { excludes : [], slow_re : "" }*)
         let predicate = extract_predicate map in 
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
             if is_input_or_output scanned_generators basename || not (predicate basename) then acc 

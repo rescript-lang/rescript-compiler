@@ -94,14 +94,14 @@ let rec
  *)
 type lam_subst = 
   | Id of Lam.t 
-  | Refresh of Lam.t
+  (* | Refresh of Lam.t *)
 
 type subst_tbl = (Ident.t list * lam_subst ) Hash_int.t
 
 let to_lam x = 
   match x with 
   | Id x -> x 
-  | Refresh x -> Lam_bounded_vars.refresh x 
+  (* | Refresh x -> Lam_bounded_vars.refresh x  *)
 
 (**
    Simplify  ``catch body with (i ...) handler''

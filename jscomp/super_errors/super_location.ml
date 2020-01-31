@@ -1,13 +1,13 @@
-open Misc
+(* open Misc
 open Asttypes
 open Parsetree
 open Types
 open Typedtree
 open Btype
-open Ctype
+open Ctype *)
 
 open Format
-open Printtyp
+(* open Printtyp *)
 
 open Location
 
@@ -115,7 +115,7 @@ let print ~message_kind intro ppf loc =
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
     if if_highlight <> "" then
-      let rec collect_locs locs {Location.loc; sub; if_highlight; _} =
+      let rec collect_locs locs {Location.loc; sub; if_highlight = _; _} =
         List.fold_left collect_locs (loc :: locs) sub
       in
       let locs = collect_locs [] err in
@@ -138,7 +138,7 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 let super_warning_printer loc ppf w =
   match Warnings.report w with
   | `Inactive -> ()
-  | `Active { Warnings. number; message; is_error; sub_locs } ->
+  | `Active { Warnings. number = _; message = _; is_error; sub_locs = _} ->
     setup_colors ();
     let message_kind = if is_error then `warning_as_error else `warning in
     Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]"

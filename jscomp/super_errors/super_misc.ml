@@ -6,7 +6,7 @@ let string_slice ~start str =
   let last = String.length str in
   if last <= start then "" else String.sub str start (last - start)
 
-let sp = Printf.sprintf
+(* let sp = Printf.sprintf *)
 
 let number_of_digits n =
   let digits = ref 1 in
@@ -62,7 +62,7 @@ ppf
         columns_to_cut := Some current_line_leading_space_count
       | Some n when n > current_line_leading_space_count ->
         columns_to_cut := Some current_line_leading_space_count
-      | Some n -> ()
+      | Some _ -> ()
   done;
   let columns_to_cut = match !columns_to_cut with
   | None -> 0

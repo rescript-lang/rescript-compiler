@@ -430,7 +430,7 @@ let assign ?comment e0 e1 : t =
     
 
 let assign_by_exp
-  ?comment (e : t)  index
+   (e : t)  index
   value : t = 
   match e.expression_desc with
   | Array _  (*
@@ -449,7 +449,7 @@ let assign_by_exp
 let assign_by_int
   ?comment
   e0 (index : int32) value = 
-  assign_by_exp ?comment e0 (int ?comment index) value
+  assign_by_exp  e0 (int ?comment index) value
 
 let record_assign  
   (e : t) 
@@ -611,8 +611,8 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
-  | Char_to_int a , Number (Int {i; c = Some v}) 
-  | Number (Int {i; c = Some v}), Char_to_int a  -> 
+  | Char_to_int a , Number (Int {i=_; c = Some v}) 
+  | Number (Int {i=_; c = Some v}), Char_to_int a  -> 
     triple_equal ?comment a (str (String.make 1 v))
   | Number (Int {i = i0; _}), Number (Int {i = i1; _}) 
     -> 
@@ -635,7 +635,7 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
   | EqEqEq,_,_ -> triple_equal ?comment e0 e1
   | Ge, Length (e,_), Number (Int {i = 0l}) when no_side_effect e -> 
     true_ (** x.length >=0 | [x] is pure  -> true*)
-  | Gt, Length (e,_), Number (Int {i = 0l}) -> 
+  | Gt, Length (_,_), Number (Int {i = 0l}) -> 
     (* [e] is kept so no side effect check needed *)
     {expression_desc = Bin(NotEqEq,e0, e1); comment }
   | _ -> {expression_desc = Bin(op,e0,e1); comment}
@@ -664,7 +664,7 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect        
 *)
 
-let rec and_ ?comment (e1 : t) (e2 : t) : t = 
+let and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
@@ -684,7 +684,7 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
     { expression_desc = Bin(And, e1,e2) ; comment }
 
 
-let rec or_ ?comment (e1 : t) (e2 : t) = 
+let  or_ ?comment (e1 : t) (e2 : t) = 
   match e1.expression_desc, e2.expression_desc with 
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
@@ -706,7 +706,7 @@ let rec or_ ?comment (e1 : t) (e2 : t) =
 (* TODO: 
      when comparison with Int
      it is right that !(x > 3 ) -> x <= 3 *)
-let rec not ( e : t) : t =
+let  not ( e : t) : t =
   match e.expression_desc with 
   | Number (Int {i; _}) -> bool (i = 0l )
   | Js_not e -> e 
@@ -717,7 +717,7 @@ let rec not ( e : t) : t =
   | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}
   | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
   | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
-  | x -> {expression_desc = Js_not e ; comment = None}
+  | _ -> {expression_desc = Js_not e ; comment = None}
 
 
 
@@ -806,8 +806,8 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 
   | Char_to_int a , Char_to_int b ->
     float_equal ?comment a b
-  | Char_to_int a , Number (Int {i; c = Some v})
-  | Number (Int {i; c = Some v}), Char_to_int a  ->
+  | Char_to_int a , Number (Int {i = _; c = Some v})
+  | Number (Int {i = _; c = Some v}), Char_to_int a  ->
     float_equal ?comment a (str (String.make 1 v))
   | Char_of_int a , Char_of_int b ->
     float_equal ?comment a b
@@ -820,7 +820,7 @@ let int_equal = float_equal
 
 
 
-let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
+let  string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
   | Str (_, a0), Str(_, b0) 
     -> bool  (Ext_string.equal a0 b0)
@@ -849,8 +849,8 @@ let tag ?comment e : t =
 (* according to the compiler, [Btype.hash_variant], 
    it's reduced to 31 bits for hash
 *)
-
-let public_method_call meth_name obj label cache args = 
+(* FIXME: unused meth_name *)
+let public_method_call _meth_name obj label cache args = 
   let len = List.length args in 
   (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
   if len <= 7 then          
@@ -945,7 +945,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
         Var (Qualified 
                (ident, Runtime, 
                 Some ("caml_compare"))); _} as fn, 
-      ([l;r] as args), call_info), 
+      ([_;_] as args), call_info), 
     Number (Int {i = 0l})
     -> 
       {e0 with expression_desc =
@@ -1072,9 +1072,9 @@ let rec is_out ?comment (e : t) (range : t) : t  =
     | _, Bin (Bor ,
               ({expression_desc =
                   (Bin((Plus | Minus ) ,
-                       {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
+                       {expression_desc = Number (Int {i = _; _}) }, {expression_desc = Var _; _})
                   |Bin((Plus | Minus ) ,
-                       {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) } ))
+                       {expression_desc = Var _; _}, {expression_desc = Number (Int {i = _ ; _}) } ))
                } as e), {expression_desc = Number (Int {i=0l} | Uint 0l | Nint 0n); _})
       ->  
       (* TODO: check correctness *)
@@ -1128,11 +1128,11 @@ let unchecked_int32_add ?comment e1 e2 =
   float_add ?comment e1 e2
 
 let int32_add ?comment e1 e2 = 
-  to_int32 @@ float_add ?comment e1 e2
+  to_int32 (float_add ?comment e1 e2)
 
 
 let int32_minus ?comment e1 e2 : J.expression = 
-  to_int32 @@  float_minus ?comment e1 e2
+  to_int32 (float_minus ?comment e1 e2)
 
 let unchecked_int32_minus ?comment e1 e2 : J.expression = 
   float_minus ?comment e1 e2
@@ -1370,7 +1370,7 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
   to set globalThis
 *)       
 let resolve_and_apply 
-    ?comment (s : string) (args : t list) : t =  
+    (s : string) (args : t list) : t =  
   call ~info:Js_call_info.builtin_runtime_call
     (runtime_call
        Js_runtime_modules.external_polyfill

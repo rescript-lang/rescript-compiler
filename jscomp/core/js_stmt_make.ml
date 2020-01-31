@@ -208,7 +208,7 @@ let string_switch
   ]}
   Not clear the benefit
 *)
-let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
+let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
   let common_prefix_blocks = ref [] in 
   let add_prefix b = common_prefix_blocks := b :: !common_prefix_blocks in 
@@ -317,7 +317,7 @@ let declare_unit ?comment  id :  t =
     comment
   }
 
-let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
+let while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   let env = 
     match env with 
     | None -> Js_closure.empty ()
@@ -350,7 +350,7 @@ let try_ ?comment   ?with_ ?finally body : t =
 (* TODO: 
     actually, only loops can be labelled
 *)    
-let continue_stmt  ?comment   ?(label="") unit  : t = 
+let continue_stmt  ?comment   ?(label="") ()  : t = 
   { 
     statement_desc = J.Continue  label;
     comment;

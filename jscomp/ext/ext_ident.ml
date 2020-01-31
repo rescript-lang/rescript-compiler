@@ -77,7 +77,7 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
    Given a name, if duplicated, they should  have the same id
 *)
-let create_js_module (name : string) : Ident.t =
+(* let create_js_module (name : string) : Ident.t =
   let name =
     String.concat "" @@ Ext_list.map
     (Ext_string.split name '-')  Ext_string.capitalize_ascii in
@@ -95,7 +95,7 @@ let create_js_module (name : string) : Ident.t =
   | v -> (* v *) Ident.rename v
 
 
-
+ *)
 
 
 

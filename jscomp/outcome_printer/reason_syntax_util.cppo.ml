@@ -18,10 +18,10 @@
 open Ast_404
 #endif
 
-open Asttypes
+(* open Asttypes
 open Ast_mapper
 open Parsetree
-open Longident
+open Longident *)
 
 (** Check to see if the string `s` is made up of `keyword` and zero or more
     trailing `_` characters. *)
@@ -86,7 +86,7 @@ let string_drop_suffix x = String.sub x 0 (String.length x - 1)
     match__: match_
 *)
 
-let reason_to_ml_swap = function
+(* let reason_to_ml_swap = function
   | "!" -> "not"
   | "^" -> "!"
   | "++" -> "^"
@@ -108,7 +108,7 @@ let reason_to_ml_swap = function
     potentially_conflicts_with ~keyword:"switch_" x
     || potentially_conflicts_with ~keyword:"pub_" x
     || potentially_conflicts_with ~keyword:"pri_" x) -> string_drop_suffix x
-  | everything_else -> everything_else
+  | everything_else -> everything_else *)
 
 let ml_to_reason_swap = function
   | "not" -> "!"

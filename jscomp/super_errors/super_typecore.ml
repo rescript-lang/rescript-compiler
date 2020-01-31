@@ -1,9 +1,9 @@
-open Misc
+(* open Misc
 open Asttypes
 open Parsetree
 open Types
 open Typedtree
-open Btype
+open Btype *)
 open Ctype
 
 let fprintf = Format.fprintf
@@ -45,9 +45,9 @@ let print_simple_message ppf = function
   | ("int", "float") -> fprintf ppf "@[If this is a literal, you want a number with a trailing dot (e.g. @{<info>20.@}).@]"
   | _ -> ()
 
-let show_extra_help ppf env trace = begin
+let show_extra_help ppf _env trace = begin
   match bottom_aliases trace with
-  | Some ({desc = Tconstr (actualPath, actualArgs, _)}, {desc = Tconstr (expectedPath, expextedArgs, _)}) -> begin
+  | Some ({Types.desc = Tconstr (actualPath, actualArgs, _)}, {desc = Tconstr (expectedPath, expextedArgs, _)}) -> begin
     match (actualPath, actualArgs, expectedPath, expextedArgs) with
     | (Pident {name = actualName}, [], Pident {name = expectedName}, []) -> begin
       print_simple_conversion ppf (actualName, expectedName);
@@ -61,7 +61,7 @@ end
 (* given type1 is foo => bar => baz(qux) and type 2 is bar => baz(qux), return Some(foo) *)
 let rec collect_missing_arguments env type1 type2 = match type1 with
   (* why do we use Ctype.matches here? Please see https://github.com/BuckleScript/bucklescript/pull/2554 *)
-  | {desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
+  | {Types.desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
     Some [(label, argtype)]
   | {desc=Tarrow (label, argtype, typ, _)} -> begin
     match collect_missing_arguments env typ type2 with
@@ -71,7 +71,7 @@ let rec collect_missing_arguments env type1 type2 = match type1 with
   | _ -> None
 
 let check_bs_arity_mismatch ppf trace =
-  let arity t = match t.desc with
+  let arity t = match t.Types.desc with
     | Tvariant { row_fields = [(label,_)] } ->
         let label_len = String.length label in
         let arity_str = "Arity_" in
@@ -128,7 +128,7 @@ let print_expr_type_clash env trace ppf =
         ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
         (fun ppf (label, argtype) ->
           match label with
-          | Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
+          | Asttypes.Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
           | Labelled label ->
             fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
           | Optional label ->
@@ -210,7 +210,7 @@ let report_error env ppf = function
       reset_and_mark_loops typ;
       begin match (repr typ).desc with
         Tarrow (_, _inputType, returnType, _) ->
-          let rec countNumberOfArgs count {desc} = match desc with
+          let rec countNumberOfArgs count {Types.desc} = match desc with
           | Tarrow (_, _inputType, returnType, _) -> countNumberOfArgs (count + 1) returnType
           | _ -> count
           in
