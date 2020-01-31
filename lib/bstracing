@@ -160,14 +160,14 @@ function category(target, obj) {
   return obj;
 }
 /**
- *
+ * @param {string} file
  * @param {boolean} showAll
  */
-function readTargets(showAll) {
+function readTargets(file, showAll) {
   let lastEndSeen = 0;
   let targets = new Map();
   processEntry(
-    path.join("lib", "bs", ".ninja_log"),
+    file,
     line => {
       let lineTrim = line.trim();
       if (lineTrim.startsWith("#")) {
@@ -200,12 +200,44 @@ function readTargets(showAll) {
           })
         );
       }
-      let curDate = new Date ()
-      let file = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDate.getSeconds()}.json`
+      let curDate = new Date();
+      let file = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDate.getSeconds()}.json`;
       console.log(` ${file} is produced, loade it via chrome://tracing/`);
       fs.writeFileSync(file, JSON.stringify(jsonArray), "utf8");
     }
   );
 }
+let logName = ".ninja_log";
 
-readTargets(false);
+/**
+ * @type {string}
+ */
+var file;
+/**
+ *
+ * @param ps {string[]}
+ */
+function tryLocation(ps) {
+  for (let p of ps) {
+    let log = path.join(p, logName);
+    if (fs.existsSync(log)) {
+      file = log;
+      return;
+    }
+  }
+  console.error(
+    `no .ninja_log found in specified paths, make sure you set bstracing to the proper directory`
+  );
+  process.exit(2);
+}
+{
+  let index = process.argv.indexOf(`-C`);
+  if (index >= 0) {
+    let p = process.argv[index + 1];
+    tryLocation([p, path.join(p, "lib", "bs")]);
+  } else {
+    tryLocation([".", path.join("lib", "bs")]);
+  }
+}
+console.log("loading build log", file, "is used");
+readTargets(file, false);
