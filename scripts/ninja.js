@@ -1104,7 +1104,7 @@ async function stdlibNinja(devmode = true) {
   var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
   // It is interesting `-w -a` would generate not great code sometimes
   // deprecations diabled due to string_of_float
-  var warnings =  "-w -9-3-106 -warn-error A";
+  var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
 ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings}  -I runtime  -I others
@@ -1489,9 +1489,10 @@ function test(dir) {
  * @param {Set<string>} xs
  * @returns {string}
  */
-function setSortedToString(xs) {
+function setSortedToStringAsNativeDeps(xs) {
   var arr = Array.from(xs).sort();
-  return arr.join(" ");
+  // it relies on we have -opaque, so that .cmx is dummy file
+  return arr.join(" ").replace(/\.cmx/g,'.cmi');
 }
 
 /**
@@ -1706,9 +1707,14 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
 
       var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
       pairs.forEach(pair => {
+        /**
+         * @type {string[]|string}
+         */
+
         var deps;
         var key = pair[0];
         if (pair[1] !== undefined && (deps = pair[1].trim())) {
+          // deps = deps.replace(/.cmx/g, ".cmi");
           deps = deps.split(" ");
           map.set(key, new Set(deps));
         }
@@ -1736,11 +1742,11 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
             var ml = path.join(y.dir, y.name + ".ml");
             return `build ${
               deps.has(intf) ? target : [target, intf].join(" ")
-            } : optc ${ml} | ${setSortedToString(deps)}`;
+            } : optc ${ml} | ${setSortedToStringAsNativeDeps(deps)}`;
           } else {
             // === 'cmi'
             var mli = path.join(y.dir, y.name + ".mli");
-            return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`;
+            return `build ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(deps)}`;
           }
         }
       });

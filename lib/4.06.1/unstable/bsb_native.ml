@@ -4762,7 +4762,7 @@ end = struct
 (* [@@@warning "-37"] *)
 type t =  
   (* | File of string  *)
-  | Dir of string  [@@unboxed]
+  | Dir of string  
 
 
 let simple_convert_node_path_to_os_path =

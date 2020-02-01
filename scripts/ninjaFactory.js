@@ -4,6 +4,7 @@
 // # TODO: make sure it can be bootstrapped, at least is a very good
 // # test case of our optimizations
 // # build bsdep.exe: cc bsdep.mli bsdep.ml
+// ../native/4.06.1/bin/ocamlopt.opt -c -O2 -nodynlink -I 4.06.1 -g -w a+32  4.06.1/whole_compiler.mli 4.06.1/whole_compiler.ml  &> warning.log
 /**
  *
  * @param {{ocamlopt : string ; ext : string ; INCL : string, isWin : boolean}} config

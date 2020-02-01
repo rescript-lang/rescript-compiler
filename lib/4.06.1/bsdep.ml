@@ -47825,6 +47825,19 @@ let jsxMapper () =
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let () =
+      (match (isOptional arg, pattern, default) with
+      | (true, { ppat_desc = Ppat_constraint (_, { ptyp_desc })}, None) ->
+        (match ptyp_desc with
+         | Ptyp_constr({txt=(Lident "option")}, [{ ptyp_desc }]) -> ()
+         | _ ->
+             let currentType = (match ptyp_desc with
+             | Ptyp_constr({txt}, []) -> String.concat "." (Longident.flatten txt)
+             | Ptyp_constr({txt}, _innerTypeArgs) -> String.concat "." (Longident.flatten txt) ^ "(...)"
+             | _ -> "...")
+             in
+             Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)
+      | _ -> ()) in
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
       | {ppat_desc = Ppat_any} -> "_"
@@ -48191,11 +48204,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 878 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 891 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 897 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48205,11 +48218,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 893 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 906 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           
-# 899 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 912 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48879,6 +48892,19 @@ let jsxMapper () =
     | Pexp_fun (Labelled "ref", _, _, _)
     | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let () =
+      (match (isOptional arg, pattern, default) with
+      | (true, { ppat_desc = Ppat_constraint (_, { ptyp_desc })}, None) ->
+        (match ptyp_desc with
+         | Ptyp_constr({txt=(Lident "option")}, [{ ptyp_desc }]) -> ()
+         | _ ->
+             let currentType = (match ptyp_desc with
+             | Ptyp_constr({txt}, []) -> String.concat "." (Longident.flatten txt)
+             | Ptyp_constr({txt}, _innerTypeArgs) -> String.concat "." (Longident.flatten txt) ^ "(...)"
+             | _ -> "...")
+             in
+             Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)
+      | _ -> ()) in
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
       | {ppat_desc = Ppat_any} -> "_"
@@ -49245,11 +49271,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 881 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 894 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 897 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -49259,11 +49285,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 896 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 909 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           
-# 899 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 912 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
