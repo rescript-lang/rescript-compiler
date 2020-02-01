@@ -52,8 +52,10 @@ type +'a t
     ]}
  *)
 
-[@@@warning "-49"]
-(* internal types for FFI, these types are not used by normal users *)
+[@@@warning "-49"] 
+(* internal types for FFI, these types are not used by normal users 
+    Absent cmi file when looking up module alias.
+*)
 
 (**/**)
 module MapperRt = Js_mapperRt
@@ -65,7 +67,7 @@ module Internal = struct
  (** Js uncurried function *)
 
  external (!)  : 'a t -> 'a = "#unsafe_downgrade"
- external debugger : unit -> unit = "#debugger"
+ 
  external unsafe_downgrade : 'a t -> 'a = "#unsafe_downgrade"
 
  external fn_mk0 : (unit -> 'a0) -> (([`Arity_0], 'a0) fn) = "#fn_mk" "0"
