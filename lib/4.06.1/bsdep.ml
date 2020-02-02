@@ -43219,9 +43219,13 @@ let to_method_callback  =
 let handle_debugger loc (payload : Ast_payload.t) = 
   match payload with 
   | PStr [] -> 
-    Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_internal, Literals.debugger ); loc}, 
-       [ Nolabel, Ast_literal.val_unit ~loc ()])
+    Ast_external_mk.local_external_apply
+    loc 
+    ~pval_prim:["#debugger"]
+    ~pval_type:(Typ.arrow Nolabel (Typ.any ()) 
+      (Ast_literal.type_unit ())
+      )
+    [Ast_literal.val_unit ~loc ()]
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
