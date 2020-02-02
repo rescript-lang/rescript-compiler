@@ -47,7 +47,7 @@ let is_any (ty : t) =
 
 open Ast_helper
 
-let replace_result (ty : t) (result : t) : t =
+(* let replace_result (ty : t) (result : t) : t =
   let rec aux (ty : Parsetree.core_type) =
     match ty with
     | { ptyp_desc =
@@ -56,17 +56,17 @@ let replace_result (ty : t) (result : t) : t =
     | {ptyp_desc = Ptyp_poly(fs,ty)}
       ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
     | _ -> result in
-  aux ty
+  aux ty *)
 
 let is_unit (ty : t ) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "unit"}, []) -> true
   | _ -> false
 
-let is_array (ty : t) =
+(* let is_array (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false
+  | _ -> false *)
 
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
@@ -76,15 +76,15 @@ let is_user_option (ty : t) =
     [_]) -> true
   | _ -> false
 
-let is_user_bool (ty : t) =
+(* let is_user_bool (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt = Lident "bool"},[]) -> true
-  | _ -> false
+  | _ -> false *)
 
-let is_user_int (ty : t) =
+(* let is_user_int (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt = Lident "int"},[]) -> true
-  | _ -> false
+  | _ -> false *)
 
 
 

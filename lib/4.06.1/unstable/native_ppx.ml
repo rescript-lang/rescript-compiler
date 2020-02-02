@@ -8854,9 +8854,9 @@ val const_exp_int_list_as_array:
   int list -> 
   expression 
 
-val const_exp_string_list_as_array:  
+(* val const_exp_string_list_as_array:  
   string list -> 
-  expression 
+  expression  *)
 
   
 val apply_simple:
@@ -8910,15 +8910,15 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string -> Asttypes.arg_label
+(* val opt_label : string -> Asttypes.arg_label *)
 
-val label_fun :
+(* val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
   label:Asttypes.arg_label ->
   pattern ->
   expression ->
-  expression
+  expression *)
 
 val arrow :
   ?loc:Location.t -> 
@@ -8951,20 +8951,20 @@ val object_:
   core_type  
 
 
-val nonrec_type_str:  
+(* val nonrec_type_str:  
   ?loc:loc -> 
   type_declaration list -> 
-  structure_item
+  structure_item *)
 
 val rec_type_str:  
   ?loc:loc -> 
   type_declaration list -> 
   structure_item
 
-val nonrec_type_sig:  
+(* val nonrec_type_sig:  
   ?loc:loc -> 
   type_declaration list -> 
-  signature_item 
+  signature_item  *)
 
 val rec_type_sig:  
   ?loc:loc -> 
@@ -9102,10 +9102,10 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-let opt_label s =
-  Asttypes.Optional s
+(* let opt_label s =
+  Asttypes.Optional s *)
 
-let label_fun
+(* let label_fun
   ?(loc = default_loc)
   ?(attrs = [])
   ~label
@@ -9115,7 +9115,7 @@ let label_fun
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun(label, None, pat, exp)
-  }
+  } *)
 
 
 
@@ -9201,13 +9201,13 @@ let rec_type_str ?(loc=default_loc)  tds : structure_item =
       tds)
   }
 
-let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
+(* let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
       Nonrecursive,
       tds)
-  }  
+  }   *)
 
 let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
   {
@@ -9218,22 +9218,22 @@ let rec_type_sig ?(loc=default_loc)  tds : signature_item =
   }
 
 (* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
-let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
+(* let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
       Nonrecursive,
       tds)
-  }  
+  }   *)
 
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
   (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
-let const_exp_string_list_as_array xs =   
+(* let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map xs (fun x -> const_exp_string x ) )  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )   *)
 
 type param_type = 
   {label : Asttypes.arg_label ;
@@ -11153,7 +11153,7 @@ val raw_as_string_exp_exn :
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
-val raw_string_payload : Location.t -> string -> t 
+(* val raw_string_payload : Location.t -> string -> t  *)
 val assert_strings :
   Location.t -> t -> string list  
 
@@ -11333,10 +11333,10 @@ let as_ident (x : t ) =
       }
     ] -> Some ident
   | _ -> None
-open Ast_helper
+(* open Ast_helper *)
 
-let raw_string_payload loc (s : string) : t =
-  PStr [ Str.eval ~loc (Ast_compatible.const_exp_string ~loc s) ]
+(* let raw_string_payload loc (s : string) : t =
+  PStr [ Str.eval ~loc (Ast_compatible.const_exp_string ~loc s) ] *)
 
 
 type lid = string Asttypes.loc
@@ -11701,8 +11701,8 @@ module Ast_comb : sig
    we can use [unit] value (though very little chance) 
    sometimes
 *)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
+(* val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression *)
 
 
 val tuple_type_pair : 
@@ -11764,11 +11764,11 @@ open Ast_helper
   Ast_compatible.fun_ ?loc ?attrs  pat body *)
 
 
-let discard_exp_as_unit loc e = 
+(* let discard_exp_as_unit loc e = 
   Ast_compatible.apply_simple ~loc     
     (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
     [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
+       (Ast_literal.type_unit ~loc ())] *)
 
 
 let tuple_type_pair ?loc kind arity = 
@@ -12050,12 +12050,12 @@ type t = Parsetree.core_type
 
 val lift_option_type : t -> t
 val is_any : t -> bool
-val replace_result : t -> t -> t
+(* val replace_result : t -> t -> t *)
 
 (* val opt_arrow: Location.t -> string -> t -> t -> t *)
 
 val is_unit : t -> bool
-val is_array : t -> bool
+(* val is_array : t -> bool *)
 
 
 (** return a function type
@@ -12073,9 +12073,9 @@ val make_obj :
 
 val is_user_option : t -> bool
 
-val is_user_bool : t -> bool
+(* val is_user_bool : t -> bool
 
-val is_user_int : t -> bool
+val is_user_int : t -> bool *)
 
 
 
@@ -12145,7 +12145,7 @@ let is_any (ty : t) =
 
 open Ast_helper
 
-let replace_result (ty : t) (result : t) : t =
+(* let replace_result (ty : t) (result : t) : t =
   let rec aux (ty : Parsetree.core_type) =
     match ty with
     | { ptyp_desc =
@@ -12154,17 +12154,17 @@ let replace_result (ty : t) (result : t) : t =
     | {ptyp_desc = Ptyp_poly(fs,ty)}
       ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
     | _ -> result in
-  aux ty
+  aux ty *)
 
 let is_unit (ty : t ) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "unit"}, []) -> true
   | _ -> false
 
-let is_array (ty : t) =
+(* let is_array (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false
+  | _ -> false *)
 
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
@@ -12174,15 +12174,15 @@ let is_user_option (ty : t) =
     [_]) -> true
   | _ -> false
 
-let is_user_bool (ty : t) =
+(* let is_user_bool (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt = Lident "bool"},[]) -> true
-  | _ -> false
+  | _ -> false *)
 
-let is_user_int (ty : t) =
+(* let is_user_int (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt = Lident "int"},[]) -> true
-  | _ -> false
+  | _ -> false *)
 
 
 
@@ -15517,14 +15517,14 @@ val iter_process_bs_string_or_int_as :
 val process_derive_type :
   t -> derive_attr * t
 
-val iter_process_derive_type :
+(* val iter_process_derive_type :
   t -> derive_attr
 
 
-val bs : attr
+val bs : attr *)
 val is_bs : attr -> bool
-val is_optional : attr -> bool
-val is_bs_as : attr -> bool
+(* val is_optional : attr -> bool
+val is_bs_as : attr -> bool *)
 
 
 
@@ -15533,7 +15533,7 @@ val bs_get_arity : attr
 val bs_set : attr
 val bs_return_undefined : attr
 
-val deprecated : string -> attr
+(* val deprecated : string -> attr *)
 
 end = struct
 #1 "ast_attributes.ml"
@@ -15718,7 +15718,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
         st, attr::acc
     ) 
 
-let iter_process_derive_type (attrs : t) =
+(* let iter_process_derive_type (attrs : t) =
   let st = ref {explict_nonrec = false; bs_deriving = None } in
   Ext_list.iter attrs
     (fun ({txt ; loc}, payload  as attr)  ->
@@ -15742,7 +15742,7 @@ let iter_process_derive_type (attrs : t) =
       (* non bs attribute, no need to mark its use *)
       | _ -> ()
     ) ;
-  !st
+  !st *)
 
 
 (* duplicated [bs.uncurry] [bs.string] not allowed,
@@ -15884,23 +15884,17 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 let locg = Location.none
-let bs : attr
-  =  {txt = "bs" ; loc = locg}, Ast_payload.empty
+(* let bs : attr
+  =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
 
 let is_bs (attr : attr) =
   match attr with
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
-let is_optional (attr : attr) =
-  match attr with
-  | {Location.txt = "bs.optional"; _}, _ -> true
-  | _ -> false
 
-let is_bs_as (attr : attr) =
-  match attr with
-  | {Location.txt = "bs.as"; _}, _ -> true
-  | _ -> false
+
+
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
@@ -15935,15 +15929,6 @@ let bs_return_undefined : attr
            },[])
       ; pstr_loc = locg}]
 
-let deprecated s : attr =       
-  {txt = "ocaml.deprecated"; loc = locg },
-  PStr
-    [
-      {pstr_desc =
-         Pstr_eval (
-           Ast_compatible.const_exp_string ~loc:locg s, 
-           [])
-      ; pstr_loc = locg}]
 
 end
 module Ast_open_cxt : sig 
@@ -17426,9 +17411,9 @@ val map_row_fields_into_strings:
   External_arg_spec.attr
 
 
-val is_enum :   
+(* val is_enum :   
   Parsetree.row_field list -> 
-  bool
+  bool *)
 
 val is_enum_polyvar :   
   Parsetree.type_declaration ->
@@ -18403,7 +18388,7 @@ type t  =
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : external_spec -> string
+(* val name_of_ffi : external_spec -> string *)
 
 val check_ffi : ?loc:Location.t ->  external_spec -> bool
 
@@ -18537,7 +18522,7 @@ type external_spec =
 (* let not_inlineable (x : external_spec) =     *)
 
 
-let name_of_ffi ffi =
+(* let name_of_ffi ffi =
   match ffi with
   | Js_get_index _scope -> "[@@bs.get_index ..]"
   | Js_set_index _scope -> "[@@bs.set_index ..]"
@@ -18554,7 +18539,7 @@ let name_of_ffi ffi =
     Printf.sprintf "[@@bs.module] %S " v.bundle
   | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
-    Printf.sprintf "[@@bs.val] %S " v.name
+    Printf.sprintf "[@@bs.val] %S " v.name *)
 
 type return_wrapper =
   | Return_unset
@@ -22514,7 +22499,7 @@ val new_type_of_type_declaration :
   Parsetree.core_type * Parsetree.type_declaration
 
 
-val mk_fun :
+(* val mk_fun :
   loc:Location.t ->
   Parsetree.core_type ->
   string -> Parsetree.expression -> Parsetree.expression
@@ -22522,7 +22507,7 @@ val destruct_label_declarations :
   loc:Location.t ->
   string ->
   Parsetree.label_declaration list ->
-  (Parsetree.core_type * Parsetree.expression) list * string list
+  (Parsetree.core_type * Parsetree.expression) list * string list *)
 
 val notApplicable:   
   Location.t ->
@@ -22586,7 +22571,7 @@ let new_type_of_type_declaration
     )
       
 
-let mk_fun ~loc (typ : Parsetree.core_type) 
+(* let mk_fun ~loc (typ : Parsetree.core_type) 
     (value : string) body
   : Parsetree.expression = 
   Ast_compatible.fun_
@@ -22605,7 +22590,7 @@ let destruct_label_declarations ~loc
         Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
-    ) 
+    )  *)
 
 let notApplicable 
   loc derivingName = 

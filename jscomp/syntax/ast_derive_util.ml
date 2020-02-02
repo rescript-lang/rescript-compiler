@@ -52,7 +52,7 @@ let new_type_of_type_declaration
     )
       
 
-let mk_fun ~loc (typ : Parsetree.core_type) 
+(* let mk_fun ~loc (typ : Parsetree.core_type) 
     (value : string) body
   : Parsetree.expression = 
   Ast_compatible.fun_
@@ -71,7 +71,7 @@ let destruct_label_declarations ~loc
         Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
-    ) 
+    )  *)
 
 let notApplicable 
   loc derivingName = 

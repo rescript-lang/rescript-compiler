@@ -29,12 +29,12 @@ type t = Parsetree.core_type
 
 val lift_option_type : t -> t
 val is_any : t -> bool
-val replace_result : t -> t -> t
+(* val replace_result : t -> t -> t *)
 
 (* val opt_arrow: Location.t -> string -> t -> t -> t *)
 
 val is_unit : t -> bool
-val is_array : t -> bool
+(* val is_array : t -> bool *)
 
 
 (** return a function type
@@ -52,9 +52,9 @@ val make_obj :
 
 val is_user_option : t -> bool
 
-val is_user_bool : t -> bool
+(* val is_user_bool : t -> bool
 
-val is_user_int : t -> bool
+val is_user_int : t -> bool *)
 
 
 

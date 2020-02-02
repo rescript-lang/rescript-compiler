@@ -31,8 +31,8 @@
    we can use [unit] value (though very little chance) 
    sometimes
 *)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
+(* val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression *)
 
 
 val tuple_type_pair : 

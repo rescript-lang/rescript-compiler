@@ -17635,9 +17635,9 @@ val const_exp_int_list_as_array:
   int list -> 
   expression 
 
-val const_exp_string_list_as_array:  
+(* val const_exp_string_list_as_array:  
   string list -> 
-  expression 
+  expression  *)
 
   
 val apply_simple:
@@ -17691,15 +17691,15 @@ val fun_ :
   expression -> 
   expression
 
-val opt_label : string -> Asttypes.arg_label
+(* val opt_label : string -> Asttypes.arg_label *)
 
-val label_fun :
+(* val label_fun :
   ?loc:Location.t ->
   ?attrs:attrs ->
   label:Asttypes.arg_label ->
   pattern ->
   expression ->
-  expression
+  expression *)
 
 val arrow :
   ?loc:Location.t -> 
@@ -17732,20 +17732,20 @@ val object_:
   core_type  
 
 
-val nonrec_type_str:  
+(* val nonrec_type_str:  
   ?loc:loc -> 
   type_declaration list -> 
-  structure_item
+  structure_item *)
 
 val rec_type_str:  
   ?loc:loc -> 
   type_declaration list -> 
   structure_item
 
-val nonrec_type_sig:  
+(* val nonrec_type_sig:  
   ?loc:loc -> 
   type_declaration list -> 
-  signature_item 
+  signature_item  *)
 
 val rec_type_sig:  
   ?loc:loc -> 
@@ -17883,10 +17883,10 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-let opt_label s =
-  Asttypes.Optional s
+(* let opt_label s =
+  Asttypes.Optional s *)
 
-let label_fun
+(* let label_fun
   ?(loc = default_loc)
   ?(attrs = [])
   ~label
@@ -17896,7 +17896,7 @@ let label_fun
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun(label, None, pat, exp)
-  }
+  } *)
 
 
 
@@ -17982,13 +17982,13 @@ let rec_type_str ?(loc=default_loc)  tds : structure_item =
       tds)
   }
 
-let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
+(* let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
       Nonrecursive,
       tds)
-  }  
+  }   *)
 
 let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
   {
@@ -17999,22 +17999,22 @@ let rec_type_sig ?(loc=default_loc)  tds : signature_item =
   }
 
 (* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
-let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
+(* let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
       Nonrecursive,
       tds)
-  }  
+  }   *)
 
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
   (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
-let const_exp_string_list_as_array xs =   
+(* let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map xs (fun x -> const_exp_string x ) )  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )   *)
 
 type param_type = 
   {label : Asttypes.arg_label ;
