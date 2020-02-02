@@ -3,6 +3,9 @@
 # current
 
 
+# 7.1.0
+(it was 7.0.2 but bumped into 7.1.0 due to a breaking  change introduced in 7.0.2)
+- #4131 support `bstracing -C`
 
 # 7.0.2
 
@@ -20,6 +23,7 @@
 
 - #4090 #4087 fix the unsoundess issue of Js.Array.push
     now the empty array `[||]` won't have a polymorophic type, it will have a concrete type.
+    This is a bug fix but also a breaking change
 - #4038 Duplicated package warning for symlinked folders
 - #41112 #4111 #4067 #4101 provide websocket error better error message and better docs
 
