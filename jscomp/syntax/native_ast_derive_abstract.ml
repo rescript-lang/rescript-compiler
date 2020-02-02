@@ -2,6 +2,27 @@ module U = Ast_derive_util
 open Ast_helper
 type tdcls = Parsetree.type_declaration list
 
+module Ast_attributes = struct 
+  include Ast_attributes  
+  let deprecated s : Ast_attributes.attr =       
+    {txt = "ocaml.deprecated"; loc = Location.none },
+    PStr
+      [
+        {pstr_desc =
+           Pstr_eval (
+             Ast_compatible.const_exp_string ~loc:Location.none s, 
+             [])
+        ; pstr_loc = Location.none}]
+  let is_optional (attr : attr) =
+    match attr with
+    | {Location.txt = "bs.optional"; _}, _ -> true
+    | _ -> false
+
+  let is_bs_as (attr : attr) =
+    match attr with
+    | {Location.txt = "bs.as"; _}, _ -> true
+    | _ -> false
+end
 let deprecated name =
   Ast_attributes.deprecated
     ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
@@ -60,7 +81,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
 
            let newLabel = 
             if is_optional
-              then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} 
+              then {pld_name with txt = Asttypes.Optional pld_name.Asttypes.txt} 
               else {pld_name with txt = Asttypes.Labelled pld_name.Asttypes.txt}
             in
 

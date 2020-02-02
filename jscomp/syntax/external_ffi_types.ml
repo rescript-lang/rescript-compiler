@@ -109,7 +109,7 @@ type external_spec =
 (* let not_inlineable (x : external_spec) =     *)
 
 
-let name_of_ffi ffi =
+(* let name_of_ffi ffi =
   match ffi with
   | Js_get_index _scope -> "[@@bs.get_index ..]"
   | Js_set_index _scope -> "[@@bs.set_index ..]"
@@ -126,7 +126,7 @@ let name_of_ffi ffi =
     Printf.sprintf "[@@bs.module] %S " v.bundle
   | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
-    Printf.sprintf "[@@bs.val] %S " v.name
+    Printf.sprintf "[@@bs.val] %S " v.name *)
 
 type return_wrapper =
   | Return_unset

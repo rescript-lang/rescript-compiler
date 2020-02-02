@@ -22,7 +22,7 @@ val none : t
 
 val btwn : t -> t -> t
 
-val char_before : t -> t
+(* val char_before : t -> t
 
 val first_char : t -> t
 
@@ -32,16 +32,16 @@ val lines_intersect : t -> t -> bool
 
 val pos_cmp : position -> position -> int
 
-val span_compare : t -> t -> int
+val span_compare : t -> t -> int *)
 
 val compare : t -> t -> int
 
-val equal : t -> t -> bool
+(* val equal : t -> t -> bool
 
-val debug_to_string : ?include_source:bool -> t -> string
+val debug_to_string : ?include_source:bool -> t -> string *)
 
 (* Relatively compact; suitable for use as a unique string identifier *)
-val to_string_no_source : t -> string
+(* val to_string_no_source : t -> string
 
 val source : t -> File_key.t option
 
@@ -52,4 +52,4 @@ val make : File_key.t -> int -> int -> t
 val start_loc : t -> t
 
 (* Produces a location at the end of the input location *)
-val end_loc : t -> t
+val end_loc : t -> t *)

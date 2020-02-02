@@ -19,7 +19,7 @@ module Lex_mode : sig
     | TEMPLATE
     | REGEXP
 
-  val debug_string_of_lex_mode : t -> string
+  (* val debug_string_of_lex_mode : t -> string *)
 end
 
 type token_sink_result = {
@@ -40,7 +40,7 @@ type parse_options = {
   use_strict: bool;
 }
 
-val default_parse_options : parse_options
+(* val default_parse_options : parse_options *)
 
 type env
 
@@ -100,7 +100,7 @@ val errors : env -> (Loc.t * Parse_error.t) list
 
 val parse_options : env -> parse_options
 
-val source : env -> File_key.t option
+(* val source : env -> File_key.t option *)
 
 val should_parse_types : env -> bool
 
@@ -137,7 +137,7 @@ val with_strict : bool -> env -> env
 
 val with_in_formal_parameters : bool -> env -> env
 
-val with_in_function : bool -> env -> env
+(* val with_in_function : bool -> env -> env *)
 
 val with_allow_yield : bool -> env -> env
 
@@ -204,9 +204,9 @@ module Peek : sig
 
   val is_identifier : env -> bool
 
-  val is_type_identifier : env -> bool
+  (* val is_type_identifier : env -> bool *)
 
-  val is_identifier_name : env -> bool
+  (* val is_identifier_name : env -> bool *)
 
   val is_function : env -> bool
 
@@ -216,9 +216,9 @@ module Peek : sig
 
   val ith_loc : i:int -> env -> Loc.t
 
-  val ith_errors : i:int -> env -> (Loc.t * Parse_error.t) list
+  (* val ith_errors : i:int -> env -> (Loc.t * Parse_error.t) list
 
-  val ith_comments : i:int -> env -> Loc.t Flow_ast.Comment.t list
+  val ith_comments : i:int -> env -> Loc.t Flow_ast.Comment.t list *)
 
   val ith_is_line_terminator : i:int -> env -> bool
 
@@ -226,7 +226,7 @@ module Peek : sig
 
   val ith_is_identifier_name : i:int -> env -> bool
 
-  val ith_is_type_identifier : i:int -> env -> bool
+  (* val ith_is_type_identifier : i:int -> env -> bool *)
 end
 
 module Eat : sig

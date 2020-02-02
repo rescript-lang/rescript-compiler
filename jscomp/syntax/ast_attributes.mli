@@ -93,14 +93,14 @@ val iter_process_bs_string_or_int_as :
 val process_derive_type :
   t -> derive_attr * t
 
-val iter_process_derive_type :
+(* val iter_process_derive_type :
   t -> derive_attr
 
 
-val bs : attr
+val bs : attr *)
 val is_bs : attr -> bool
-val is_optional : attr -> bool
-val is_bs_as : attr -> bool
+(* val is_optional : attr -> bool
+val is_bs_as : attr -> bool *)
 
 
 
@@ -109,4 +109,4 @@ val bs_get_arity : attr
 val bs_set : attr
 val bs_return_undefined : attr
 
-val deprecated : string -> attr
+(* val deprecated : string -> attr *)

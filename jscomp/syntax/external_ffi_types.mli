@@ -124,7 +124,7 @@ type t  =
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : external_spec -> string
+(* val name_of_ffi : external_spec -> string *)
 
 val check_ffi : ?loc:Location.t ->  external_spec -> bool
 

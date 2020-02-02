@@ -50,11 +50,11 @@ let get_and_clear_state env =
   in
   (env, state)
 
-let lexbuf env = env.lex_lb
+(* let lexbuf env = env.lex_lb *)
 
 let source env = env.lex_source
 
-let state env = env.lex_state
+(* let state env = env.lex_state *)
 
 let line env = env.lex_bol.line
 
@@ -71,9 +71,9 @@ let in_comment_syntax is_in env =
     env
 
 (* TODO *)
-let debug_string_of_lexbuf _lb = ""
+(* let debug_string_of_lexbuf _lb = "" *)
 
-let debug_string_of_lex_env (env : t) =
+(* let debug_string_of_lex_env (env : t) =
   let source =
     match source env with
     | None -> "None"
@@ -85,4 +85,4 @@ let debug_string_of_lex_env (env : t) =
     (debug_string_of_lexbuf env.lex_lb)
     (is_in_comment_syntax env)
     (is_comment_syntax_enabled env)
-    (List.length (state env).lex_errors_acc)
+    (List.length (state env).lex_errors_acc) *)

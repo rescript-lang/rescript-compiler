@@ -11,5 +11,5 @@ type codepoint =
 
 type 'a folder = 'a -> int -> codepoint -> 'a
 
-val fold_wtf_8 : ?pos:int -> ?len:int -> 'a folder -> 'a -> string -> 'a
+(* val fold_wtf_8 : ?pos:int -> ?len:int -> 'a folder -> 'a -> string -> 'a *)
 val add_wtf_8 : Buffer.t -> int -> unit

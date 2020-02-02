@@ -38,9 +38,9 @@ val map_row_fields_into_strings:
   External_arg_spec.attr
 
 
-val is_enum :   
+(* val is_enum :   
   Parsetree.row_field list -> 
-  bool
+  bool *)
 
 val is_enum_polyvar :   
   Parsetree.type_declaration ->

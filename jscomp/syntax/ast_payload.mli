@@ -51,7 +51,7 @@ val raw_as_string_exp_exn :
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
-val raw_string_payload : Location.t -> string -> t 
+(* val raw_string_payload : Location.t -> string -> t  *)
 val assert_strings :
   Location.t -> t -> string list  
 

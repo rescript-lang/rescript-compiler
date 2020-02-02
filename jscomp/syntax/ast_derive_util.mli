@@ -34,7 +34,7 @@ val new_type_of_type_declaration :
   Parsetree.core_type * Parsetree.type_declaration
 
 
-val mk_fun :
+(* val mk_fun :
   loc:Location.t ->
   Parsetree.core_type ->
   string -> Parsetree.expression -> Parsetree.expression
@@ -42,7 +42,7 @@ val destruct_label_declarations :
   loc:Location.t ->
   string ->
   Parsetree.label_declaration list ->
-  (Parsetree.core_type * Parsetree.expression) list * string list
+  (Parsetree.core_type * Parsetree.expression) list * string list *)
 
 val notApplicable:   
   Location.t ->

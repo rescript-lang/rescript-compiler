@@ -52,7 +52,7 @@ let empty_lexbuf = {
   finished = false;
 }
 
-let create f = {
+(* let create f = {
   empty_lexbuf with
     refill = f;
     buf = Array.make chunk_size (Uchar.of_int 0);
@@ -65,7 +65,7 @@ let set_position lexbuf position =
   lexbuf.curr_line <- position.Lexing.pos_lnum
 
 let set_filename lexbuf fname =
-  lexbuf.filename <- fname
+  lexbuf.filename <- fname *)
 
 (* let fill_buf_from_gen f gen buf pos len =
   let rec aux i =
@@ -153,20 +153,20 @@ let rollback lexbuf =
 let lexeme_start lexbuf = lexbuf.start_pos + lexbuf.offset
 let lexeme_end lexbuf = lexbuf.pos + lexbuf.offset
 
-let loc lexbuf = (lexbuf.start_pos + lexbuf.offset, lexbuf.pos + lexbuf.offset)
+(* let loc lexbuf = (lexbuf.start_pos + lexbuf.offset, lexbuf.pos + lexbuf.offset) *)
 
 let lexeme_length lexbuf = lexbuf.pos - lexbuf.start_pos
 
-let sub_lexeme lexbuf pos len =
-  Array.sub lexbuf.buf (lexbuf.start_pos + pos) len
+(* let sub_lexeme lexbuf pos len =
+  Array.sub lexbuf.buf (lexbuf.start_pos + pos) len *)
 
 let lexeme lexbuf =
   Array.sub lexbuf.buf (lexbuf.start_pos) (lexbuf.pos - lexbuf.start_pos)
 
-let lexeme_char lexbuf pos =
-  lexbuf.buf.(lexbuf.start_pos + pos)
+(* let lexeme_char lexbuf pos =
+  lexbuf.buf.(lexbuf.start_pos + pos) *)
 
-let lexing_positions lexbuf =
+(* let lexing_positions lexbuf =
   let start_p = {
     Lexing.pos_fname = lexbuf.filename;
     pos_lnum = lexbuf.start_line;
@@ -178,7 +178,7 @@ let lexing_positions lexbuf =
     pos_cnum = lexbuf.pos + lexbuf.offset;
     pos_bol = lexbuf.curr_bol;
   } in
-  (start_p, curr_p)
+  (start_p, curr_p) *)
 
 
 module Utf8 = struct

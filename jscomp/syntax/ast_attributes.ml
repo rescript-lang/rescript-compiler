@@ -179,7 +179,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
         st, attr::acc
     ) 
 
-let iter_process_derive_type (attrs : t) =
+(* let iter_process_derive_type (attrs : t) =
   let st = ref {explict_nonrec = false; bs_deriving = None } in
   Ext_list.iter attrs
     (fun ({txt ; loc}, payload  as attr)  ->
@@ -203,7 +203,7 @@ let iter_process_derive_type (attrs : t) =
       (* non bs attribute, no need to mark its use *)
       | _ -> ()
     ) ;
-  !st
+  !st *)
 
 
 (* duplicated [bs.uncurry] [bs.string] not allowed,
@@ -345,23 +345,17 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 let locg = Location.none
-let bs : attr
-  =  {txt = "bs" ; loc = locg}, Ast_payload.empty
+(* let bs : attr
+  =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
 
 let is_bs (attr : attr) =
   match attr with
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
-let is_optional (attr : attr) =
-  match attr with
-  | {Location.txt = "bs.optional"; _}, _ -> true
-  | _ -> false
 
-let is_bs_as (attr : attr) =
-  match attr with
-  | {Location.txt = "bs.as"; _}, _ -> true
-  | _ -> false
+
+
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
@@ -396,12 +390,3 @@ let bs_return_undefined : attr
            },[])
       ; pstr_loc = locg}]
 
-let deprecated s : attr =       
-  {txt = "ocaml.deprecated"; loc = locg },
-  PStr
-    [
-      {pstr_desc =
-         Pstr_eval (
-           Ast_compatible.const_exp_string ~loc:locg s, 
-           [])
-      ; pstr_loc = locg}]

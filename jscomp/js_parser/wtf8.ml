@@ -31,16 +31,16 @@ type 'a folder = 'a -> int -> codepoint -> 'a
 
 (* WTF-8 is a variable length encoding. The first byte in each codepoint
    determines how many other bytes follow. *)
-let needed_bytes c =
+(* let needed_bytes c =
   if 0x00 <= c && c <= 0x7F then 1 else
   if 0xC2 <= c && c <= 0xDF then 2 else
   if 0xE0 <= c && c <= 0xEF then 3 else
   if 0xF0 <= c && c <= 0xF4 then 4 else
-  0
+  0 *)
 
-let unsafe_char s i = Char.code (Bytes.unsafe_get s i)
+(* let unsafe_char s i = Char.code (Bytes.unsafe_get s i) *)
 
-let codepoint s i = function
+(* let codepoint s i = function
   | 1 -> unsafe_char s i
   | 2 ->
     let b0 = unsafe_char s i in
@@ -62,10 +62,10 @@ let codepoint s i = function
     ((b1 land 0x3F) lsl 12) lor
     ((b2 land 0x3F) lsl 6) lor
     (b3 land 0x3F)
-  | _ -> assert false
+  | _ -> assert false *)
 
 (* Fold over the WTF-8 code units in a string *)
-let fold_wtf_8 ?(pos = 0) ?len f acc s =
+(* let fold_wtf_8 ?(pos = 0) ?len f acc s =
   let rec loop acc f s i l =
     if i = l then acc else
     let need = needed_bytes (unsafe_char s i) in
@@ -78,7 +78,7 @@ let fold_wtf_8 ?(pos = 0) ?len f acc s =
   | None -> String.length s - pos
   | Some l -> l
   in
-  loop acc f (Bytes.unsafe_of_string s) pos len
+  loop acc f (Bytes.unsafe_of_string s) pos len *)
 
 (* Add a UTF-16 code unit to a buffer, encoded in WTF-8. *)
 let add_wtf_8 buf code =
