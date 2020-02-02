@@ -17,14 +17,14 @@ module Lex_mode = struct
     | TEMPLATE
     | REGEXP
 
-  let debug_string_of_lex_mode (mode : t) =
+  (* let debug_string_of_lex_mode (mode : t) =
     match mode with
     | NORMAL -> "NORMAL"
     | TYPE -> "TYPE"
     | JSX_TAG -> "JSX_TAG"
     | JSX_CHILD -> "JSX_CHILD"
     | TEMPLATE -> "TEMPLATE"
-    | REGEXP -> "REGEXP"
+    | REGEXP -> "REGEXP" *)
 end
 
 (* READ THIS BEFORE YOU MODIFY:
@@ -288,7 +288,7 @@ let errors env = !(env.errors)
 
 let parse_options env = env.parse_options
 
-let source env = env.source
+(* let source env = env.source *)
 
 let should_parse_types env = env.parse_options.types
 
@@ -361,7 +361,7 @@ let with_strict in_strict_mode env = { env with in_strict_mode }
 
 let with_in_formal_parameters in_formal_parameters env = { env with in_formal_parameters }
 
-let with_in_function in_function env = { env with in_function }
+(* let with_in_function in_function env = { env with in_function } *)
 
 let with_allow_yield allow_yield env = { env with allow_yield }
 
@@ -840,9 +840,9 @@ module Peek = struct
      error) *)
   let is_identifier env = ith_is_identifier ~i:0 env
 
-  let is_identifier_name env = ith_is_identifier_name ~i:0 env
+  (* let is_identifier_name env = ith_is_identifier_name ~i:0 env
 
-  let is_type_identifier env = ith_is_type_identifier ~i:0 env
+  let is_type_identifier env = ith_is_type_identifier ~i:0 env *)
 
   let is_function env =
     token env = T_FUNCTION

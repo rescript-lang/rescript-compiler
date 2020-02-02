@@ -37,7 +37,7 @@ module type STATEMENT = sig
 
   val declare_export_declaration : ?allow_export_type:bool -> env -> (Loc.t, Loc.t) Statement.t
 
-  val declare_opaque_type : env -> (Loc.t, Loc.t) Statement.t
+  (* val declare_opaque_type : env -> (Loc.t, Loc.t) Statement.t *)
 
   val do_while : env -> (Loc.t, Loc.t) Statement.t
 

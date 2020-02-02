@@ -14,7 +14,7 @@ type 'loc ident = 'loc * string
 
 type 'loc source = 'loc * string
 
-let rec fold_bindings_of_pattern =
+(* let rec fold_bindings_of_pattern =
   Pattern.(
     let property f acc =
       Object.(
@@ -35,9 +35,9 @@ let rec fold_bindings_of_pattern =
       | Identifier { Identifier.name; _ } -> f acc name
       | Object { Object.properties; _ } -> List.fold_left (property f) acc properties
       | Array { Array.elements; _ } -> List.fold_left (element f) acc elements
-      | Expression _ -> failwith "expression pattern")
+      | Expression _ -> failwith "expression pattern") *)
 
-let fold_bindings_of_variable_declarations f acc declarations =
+(* let fold_bindings_of_variable_declarations f acc declarations =
   Flow_ast.Statement.VariableDeclaration.(
     List.fold_left
       (fun acc -> function
@@ -70,11 +70,11 @@ let loc_of_expression = fst
 
 let loc_of_pattern = fst
 
-let loc_of_ident = fst
+let loc_of_ident = fst *)
 
 let name_of_ident (_, { Identifier.name; comments = _ }) = name
 
-let source_of_ident (loc, { Identifier.name; comments = _ }) = (loc, name)
+(* let source_of_ident (loc, { Identifier.name; comments = _ }) = (loc, name) *)
 
 let ident_of_source (loc, name) = (loc, { Identifier.name; comments = None })
 
@@ -85,7 +85,7 @@ let mk_comments_opt ?(leading = []) ?(trailing = []) () =
   | ([], []) -> None
   | (_, _) -> Some (mk_comments ~leading ~trailing ())
 
-let string_of_assignment_operator op =
+(* let string_of_assignment_operator op =
   Flow_ast.Expression.Assignment.(
     match op with
     | PlusAssign -> "+="
@@ -125,7 +125,7 @@ let string_of_binary_operator op =
     | Xor -> "^"
     | BitAnd -> "&"
     | In -> "in"
-    | Instanceof -> "instanceof")
+    | Instanceof -> "instanceof") *)
 
 module ExpressionSort = struct
   type t =
@@ -161,7 +161,7 @@ module ExpressionSort = struct
     | Update
     | Yield
 
-  let to_string = function
+  (* let to_string = function
     | Array -> "array"
     | ArrowFunction -> "arrow function"
     | Assignment -> "assignment expression"
@@ -192,5 +192,5 @@ module ExpressionSort = struct
     | TypeCast -> "type cast"
     | Unary -> "unary expression"
     | Update -> "update expression"
-    | Yield -> "yield expression"
+    | Yield -> "yield expression" *)
 end

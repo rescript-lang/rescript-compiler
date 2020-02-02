@@ -343,7 +343,7 @@ let with_eof parser env =
   Expect.token env T_EOF;
   ast
 
-let parse_statement env fail = do_parse env (with_eof Parse.statement_list_item) fail
+(* let parse_statement env fail = do_parse env (with_eof Parse.statement_list_item) fail *)
 
 let parse_expression env fail = do_parse env (with_eof Parse.expression) fail
 
@@ -351,15 +351,15 @@ let parse_program fail ?(token_sink = None) ?(parse_options = None) filename con
   let env = init_env ~token_sink ~parse_options filename content in
   do_parse env Parse.program fail
 
-let program ?(fail = true) ?(token_sink = None) ?(parse_options = None) content =
-  parse_program fail ~token_sink ~parse_options None content
+(* let program ?(fail = true) ?(token_sink = None) ?(parse_options = None) content =
+  parse_program fail ~token_sink ~parse_options None content *)
 
-let program_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
-  parse_program fail ~token_sink ~parse_options filename content
+(* let program_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
+  parse_program fail ~token_sink ~parse_options filename content *)
 
 (* even if fail=false, still raises an error on a totally invalid token, since
    there's no legitimate fallback. *)
-let json_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
+(* let json_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
   let env = init_env ~token_sink ~parse_options filename content in
   match Peek.token env with
   | T_LBRACKET
@@ -394,4 +394,4 @@ let jsx_pragma_expression =
   in
   fun content filename ->
     let env = init_env ~token_sink:None ~parse_options:None filename content in
-    do_parse env left_hand_side true
+    do_parse env left_hand_side true *)
