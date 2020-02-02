@@ -50,6 +50,22 @@
                     }
                 ]
             }
+    },
+    {
+        "label": "check unused",
+        "command" : "node",
+        "options": {
+            "cwd": "${workspaceRoot}/lib"
+        },
+        "args": [
+            "../scripts/checkUnused.js" 
+        ],
+        "problemMatcher" :{
+            "base": "$ocamlc",
+            "fileLocation" :
+                "autoDetect",
+                "owner": "globalUnused"     
+        }                
     }
     ]
 }
