@@ -14393,19 +14393,28 @@ let root = OCamlRes.Res.([
        Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
        \n\
        # Build\n\
-       ```\n\
+       \n\
+       ```bash\n\
+       # for yarn\n\
+       yarn build\n\
+       \n\
+       # for npm\n\
        npm run build\n\
        ```\n\
        \n\
        # Build + Watch\n\
        \n\
-       ```\n\
+       ```bash\n\
+       # for yarn\n\
+       yarn\n\
+       \n\
+       # for npm\n\
        npm run start\n\
        ```\n\
        \n\
-       \n\
        # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
+       \n\
+       If you're using VS Code, press <kbd>cmd</kbd> + <kbd>shift</kbd> + <kbd>B</kbd> or <kbd>Windows</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build the project automatically.\n\
        ")]) ;
   Dir  ("generator", [
     Dir  ("src", [
@@ -15146,7 +15155,7 @@ let root = OCamlRes.Res.([
       \  <!-- This is https://github.com/marijnh/moduleserve, the secret sauce that allows us not need to bundle things during development, and have instantaneous iteration feedback, without any hot-reloading or extra build pipeline needed. -->\n\
       \  <script src=\"/moduleserve/load.js\" data-module=\"/src/Index.bs.js\"></script>\n\
       \  <!-- Our little watcher. Super clean. Check it out! -->\n\
-      \  <script src=\"./watcher.js\"></script>\n\
+      \  <script src=\"/watcher.js\"></script>\n\
        </body>\n\
        </html>\n\
        ")]) ;
@@ -15946,10 +15955,7 @@ let root = OCamlRes.Res.([
       \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\": [\n\
       \      \"bucklescript-tea\"\n\
-      \  ],\n\
-      \  \"warnings\": {\n\
-      \    \"error\" : \"+101\"\n\
-      \  }\n\
+      \  ]\n\
        }\n\
        ") ;
     File  ("watcher.js",
