@@ -604,15 +604,12 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       (Ext_list.map_snd cases convert_aux)
       (Ext_option.map default convert_aux)
     | Lstaticraise (id,[]) ->
-        (match Hash_int.find_opt exit_map id  with
-        | None -> Lam.staticraise id []
-        | Some new_id -> Lam.staticraise new_id [])      
+        Lam.staticraise (Hash_int.find_default exit_map id id) []
     | Lstaticraise (id, args) ->
       Lam.staticraise id (Ext_list.map args convert_aux )
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
-      -> (* peep-hole [i] aliased to [j] *)
-      let new_i = Hash_int.find_default exit_map j j in
-      Hash_int.add exit_map i new_i ;
+      -> (* peep-hole [i] aliased to [j] *)      
+      Hash_int.add exit_map i (Hash_int.find_default exit_map j j);
       convert_aux b
     | Lstaticcatch (b, (i, ids), handler) ->
       Lam.staticcatch (convert_aux b) (i,ids) (convert_aux handler)
