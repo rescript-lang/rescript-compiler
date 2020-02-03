@@ -544,11 +544,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->
-      let var = Hash_ident.find_default alias_tbl x x in
-      if Ident.persistent var then
-        Lam.global_module var
-      else
-        Lam.var var
+      Lam.var (Hash_ident.find_default alias_tbl x x)
     | Lconst x ->
       Lam.const (Lam_constant_convert.convert_constant x )
     | Lapply 
@@ -669,14 +665,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       if Set_ident.mem exports id then
         Lam.let_ kind id (Lam.var new_u) (convert_aux body)
       else convert_aux body
-    | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
-      ->
-      Hash_ident.add alias_tbl id u;
-      may_depend may_depends (Lam_module_ident.of_ml u);
-      if Set_ident.mem exports id then
-        Lam.let_ kind id (Lam.var u) (convert_aux body)
-      else convert_aux body
-
     | _, _ -> 
       let new_e = convert_aux e in 
       let new_body = convert_aux body in 
