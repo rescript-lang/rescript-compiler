@@ -1,6 +1,6 @@
 
 
-open Js.Internal
+open Js_internalOO
 
 let f x = 
   !x # height + !x # width 

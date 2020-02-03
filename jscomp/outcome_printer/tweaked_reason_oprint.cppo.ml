@@ -295,12 +295,12 @@ and print_simple_out_type ppf =
   (* same for `Js.Internal.fn(...)`. Either might shown *)
   | Otyp_constr (
       (Oide_dot (
-        (Oide_dot ((Oide_ident "Js"), "Internal") | Oide_ident "Js_internal"),
-        ("fn" | "meth" as name)
-      ) as id),
+          Oide_dot (Oide_ident "Js", "Internal") ,
+          "fn" 
+        ) as id),
       ([Otyp_variant(_, Ovar_fields [variant, _, tys], _, _); result] as tyl)
     ) ->
-      (* Otyp_arrow *)
+    (* Otyp_arrow *)
       let make tys result =
         if tys = [] then
           Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
@@ -325,17 +325,47 @@ and print_simple_out_type ppf =
           pp_close_box ppf ()
         end
       | res ->
-        begin match name  with
-        | "fn" -> print_out_type_1 ~uncurried:true ppf res
-        | "meth" -> fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
-        | _ -> assert false
-        end
+        print_out_type_1 ~uncurried:true ppf res
       end
+  | Otyp_constr (
+      Oide_dot (
+        Oide_ident "Js_internalOO", "meth" ) as id
+      ,
+      ([Otyp_variant(_, Ovar_fields [variant, _, tys], _,_); result] as tyl)
+    ) ->
+    (* Otyp_arrow *)
+      let make tys result =
+        if tys = [] then
+          Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
+        else
+          match tys with
+          | [ Otyp_tuple tys as single] ->
+            if variant = "Arity_1" then
+              Otyp_arrow ("", single, result)
+            else
+              List.fold_right (fun x acc -> Otyp_arrow ("", x, acc)) tys result
+          | [single] ->
+            Otyp_arrow ("", single, result)
+          | _ ->
+            assert false
+      in
+      begin match (make tys result) with
+      | exception _ ->
+        begin
+          pp_open_box ppf 0;
+          print_typargs ppf tyl;
+          print_ident ppf id;
+          pp_close_box ppf ()
+        end
+      | res ->
+        fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
+      end
+
   (* also BuckleScript-specific. See the comment in the previous pattern *)
   | Otyp_constr (
-      (Oide_dot (
-        (Oide_dot ((Oide_ident "Js"), "Internal") | Oide_ident "Js_internal"), "meth_callback" ) as id
-      ),
+      Oide_dot (
+         Oide_ident "Js_internalOO", "meth_callback" ) as id
+      ,
       ([Otyp_variant(_, Ovar_fields [variant, _, tys], _,_); result] as tyl)
     ) ->
       let make tys result =

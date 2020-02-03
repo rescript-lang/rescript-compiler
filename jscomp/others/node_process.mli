@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
 type t =
   < argv : string array;
     arch : string ;
@@ -32,6 +33,7 @@ type t =
     platform : string;
     env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
   >   Js.t
+(* FIXME : use record *)
 
 external process : t = "process" [@@bs.module] 
 external argv : string array = "argv" [@@bs.module "process"]

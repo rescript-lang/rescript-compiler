@@ -97,7 +97,7 @@ let js_property loc obj (name : string) =
     ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Ast_literal.Lid.js_internal, Literals.unsafe_downgrade)})
+            txt = Ldot (Lident "Js_internalOO", Literals.unsafe_downgrade)})
         obj), 
         {loc; txt = name}
         )
@@ -134,7 +134,7 @@ let generic_apply  kind loc
         Longident.Ldot (Ast_literal.Lid.js_internal, 
                         Literals.fn_run ^ string_of_int arity)
       | `Method -> 
-        Longident.Ldot(Ast_literal.Lid.js_internal,
+        Longident.Ldot(Lident "Js_internalOO",
                        Literals.method_run ^ string_of_int arity
                       ) in 
     Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
@@ -264,7 +264,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
       | `Fn -> 
         Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_internal,  Literals.fn_method ^ string_of_int arity) in
+        Longident.Ldot (Lident "Js_internalOO",  Literals.fn_method ^ string_of_int arity) in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
 
   else 

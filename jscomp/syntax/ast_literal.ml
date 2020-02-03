@@ -51,9 +51,9 @@ module Lid = struct
   let js_fn : t =
       Ldot (js_internal,  "fn")
   let js_meth : t =
-      Ldot (js_internal , "meth")
+      Ldot (Lident "Js_internalOO" , "meth")
   let js_meth_callback : t =
-      Ldot (js_internal, "meth_callback")
+      Ldot (Lident "Js_internalOO", "meth_callback")
   let js_obj : t = Ldot (Lident "Js", "t")
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
   let js_null  : t = Ldot (Lident "Js", "null")
