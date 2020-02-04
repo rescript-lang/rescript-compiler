@@ -200,8 +200,9 @@ let get_list_of_output_js (package_specs : Spec_set.t) (bs_suffix : bool)
   Spec_set.fold
     (fun (spec : spec) acc ->
       let basename =
-        Ext_namespace.change_ext_ns_suffix output_file_sans_extension
-          (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+        Ext_namespace.replace_namespace_with_extension
+          ~name:output_file_sans_extension
+          ~ext:(if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
       in
       ( Bsb_config.proj_rel
       @@

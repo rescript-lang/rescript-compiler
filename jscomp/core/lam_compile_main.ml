@@ -258,10 +258,11 @@ let ( // ) = Filename.concat
 let lambda_as_module (lambda_output : J.deps_program) (output_prefix : string) :
     unit =
   let basename =
-    Ext_namespace.change_ext_ns_suffix
-      (Filename.basename output_prefix)
-      ( if !Js_config.bs_suffix then Literals.suffix_bs_js
-      else Literals.suffix_js )
+    Ext_namespace.replace_namespace_with_extension
+      ~name:(Filename.basename output_prefix)
+      ~ext:
+        ( if !Js_config.bs_suffix then Literals.suffix_bs_js
+        else Literals.suffix_js )
   in
   let package_info = Js_current_package_info.get_packages_info () in
   if Js_package_info.is_empty package_info && !Js_config.js_stdout then

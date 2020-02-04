@@ -28,7 +28,10 @@ val make : ?ns:string -> string -> string
 
 val try_split_module_name : string -> (string * string) option
 
-val change_ext_ns_suffix : string -> string -> string
+val replace_namespace_with_extension : name:string -> ext:string -> string
+(** [replace_namespace_with_extension ~name ~ext] removes the part of [name]
+    after [ns_sep_char], if any; and appends [ext].
+*)
 
 type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 
