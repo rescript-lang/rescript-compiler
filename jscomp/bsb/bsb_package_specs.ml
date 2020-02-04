@@ -90,6 +90,21 @@ let default_suffix format in_source =
   | _, false -> Literals.suffix_mjs
   | _, true -> Literals.suffix_bs_mjs
 
+module SS = Set.Make(String)
+
+let supported_bs_suffixes = Literals.[suffix_bs_js; suffix_bs_mjs]
+
+(** Produces a [list] of supported, bs-prefixed file-suffixes used in
+    [in-source] package-specs.
+*)
+let extract_in_source_bs_suffixes (package_specs : Spec_set.t) =
+  let f spec suffixes =
+    if spec.in_source && List.mem spec.suffix supported_bs_suffixes then
+      SS.add spec.suffix suffixes
+    else suffixes
+  in
+  let suffixes = Spec_set.fold f package_specs SS.empty in
+  SS.elements suffixes
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in

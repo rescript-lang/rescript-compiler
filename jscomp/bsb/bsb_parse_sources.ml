@@ -44,7 +44,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  bs_suffix : bool;
+  bs_suffixes : string list;
   ignored_dirs : Set_string.t;
 }
 
@@ -204,6 +204,13 @@ let classify_suffix (x : string) : suffix_kind =
         if i >= 0 then Cmti i else Not_any
 
 
+(** Attempt to delete any [.bs.m?js] files for a given artifact. *)
+let unlink_bs_suffixes context artifact =
+  List.iter
+    (fun suffix -> try_unlink (Filename.concat context.cwd (artifact ^ suffix)))
+    context.bs_suffixes
+
+
 (* This is the only place where we do some removal during scanning,
    configurably. *)
 let prune_staled_bs_js_files (context : cxt) (cur_sources : _ Map_string.t) :
@@ -234,12 +241,7 @@ let prune_staled_bs_js_files (context : cxt) (cur_sources : _ Map_string.t) :
                     if cmd <> "" then
                       Ext_pervasives.try_it (fun _ ->
                           Sys.command (cmd ^ " -cmt-rm " ^ filepath))
-                | Cmj _ ->
-                    (* remove .bs.js *)
-                    if context.bs_suffix then
-                      try_unlink
-                        (Filename.concat context.cwd
-                           (String.sub x 0 j ^ Literals.suffix_bs_js))
+                | Cmj _ -> unlink_bs_suffixes context (String.sub x 0 j)
                 | _ -> () );
                 try_unlink filepath )
               else ()
@@ -399,8 +401,8 @@ and parse_sources (cxt : cxt) (sources : Ext_json_types.t) =
   | _ -> parsing_single_source cxt sources
 
 
-let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffix ~ignored_dirs x :
-    t * int =
+let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffixes ~ignored_dirs x
+    : t * int =
   Bsb_dir_index.reset ();
   let output =
     parse_sources
@@ -412,7 +414,7 @@ let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffix ~ignored_dirs x :
         root;
         cut_generators;
         namespace;
-        bs_suffix;
+        bs_suffixes;
         traverse = false;
       }
       x

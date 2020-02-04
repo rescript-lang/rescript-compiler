@@ -159,17 +159,6 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       | _ -> assert false )
 
 
-let extract_bs_suffix_exn (map : json_map) =
-  match Map_string.find_opt map Bsb_build_schemas.suffix with
-  | None -> false
-  | Some (Str { str } as config) ->
-      if str = Literals.suffix_js then false
-      else if str = Literals.suffix_bs_js then true
-      else Bsb_exception.config_error config "expect .bs.js or .js string here"
-  | Some config ->
-      Bsb_exception.config_error config "expect .bs.js or .js string here"
-
-
 let extract_gentype_config (map : json_map) cwd :
     Bsb_config_types.gentype_config option =
   match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with
@@ -375,13 +364,15 @@ let interpret_json ~toplevel_package_specs ~(per_proj_dir : string) :
       let package_name, namespace = extract_package_name_and_namespace map in
       let refmt = extract_refmt map per_proj_dir in
       let gentype_config = extract_gentype_config map per_proj_dir in
-      let bs_suffix = extract_bs_suffix_exn map in
       (* The default situation is empty *)
       let built_in_package = check_stdlib map per_proj_dir in
       let package_specs =
         match Map_string.find_opt map Bsb_build_schemas.package_specs with
         | Some x -> Bsb_package_specs.from_json x
         | None -> Bsb_package_specs.default_package_specs
+      in
+      let bs_suffixes =
+        Bsb_package_specs.extract_in_source_bs_suffixes package_specs
       in
       let pp_flags : string option =
         extract_string map Bsb_build_schemas.pp_flags (fun p ->
@@ -411,12 +402,11 @@ let interpret_json ~toplevel_package_specs ~(per_proj_dir : string) :
           in
           let groups, number_of_dev_groups =
             Bsb_parse_sources.scan ~ignored_dirs:(extract_ignored_dirs map)
-              ~toplevel ~root:per_proj_dir ~cut_generators ~bs_suffix ~namespace
-              sources
+              ~toplevel ~root:per_proj_dir ~cut_generators ~bs_suffixes
+              ~namespace sources
           in
           {
             gentype_config;
-            bs_suffix;
             package_name;
             namespace;
             warning = extract_warning map;
