@@ -119,12 +119,12 @@ val nint : ?comment:string -> nativeint -> t
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
-val empty_string_literal : t 
+(* val empty_string_literal : t  *)
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
-val one_int_literal : t
+(* val one_int_literal : t *)
 val zero_float_lit : t 
-val obj_int_tag_literal : t
+(* val obj_int_tag_literal : t *)
 
 (** [is_out e range] is equivalent to [e > range or e <0]
 
@@ -147,7 +147,7 @@ val bytes_length :  ?comment:string -> t -> t
 
 val function_length : ?comment:string -> t -> t 
 
-val char_of_int : ?comment:string -> t -> t 
+(* val char_of_int : ?comment:string -> t -> t  *)
 
 val char_to_int : ?comment:string -> t -> t 
 
@@ -164,7 +164,7 @@ val string_append : ?comment:string -> t -> t -> t
 (* val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t  *)
 
 (* val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t *)
-val js_global_dot : ?comment:string -> string -> string -> t
+(* val js_global_dot : ?comment:string -> string -> string -> t *)
 
 
 

@@ -350,7 +350,7 @@ let rev_toplevel_flatten block =
     | x :: xs -> aux (x :: acc) xs  in
   aux [] block
 
-let rec is_constant (x : J.expression)  = 
+(* let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Array_index (a,b) -> is_constant a && is_constant b 
   | Str (b,_) -> b
@@ -360,7 +360,7 @@ let rec is_constant (x : J.expression)  =
     -> Ext_list.for_all xs is_constant && is_constant tag 
   | Bin (_op, a, b) -> 
     is_constant a && is_constant b     
-  | _ -> false 
+  | _ -> false  *)
 
 
 let rec is_okay_to_duplicate (e : J.expression) = 

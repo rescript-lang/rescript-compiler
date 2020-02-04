@@ -54,7 +54,7 @@ val get_cross_module_inline : unit -> bool
 (** diagnose option *)
 val diagnose : bool ref 
 val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
+(* val set_diagnose : bool -> unit  *)
 
 
 (** options for builtin ppx *)

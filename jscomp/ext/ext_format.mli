@@ -34,7 +34,7 @@
 
 type t = private Format.formatter
 
-val string : t -> string -> unit
+(* val string : t -> string -> unit
 
 val break : t -> unit
 
@@ -63,7 +63,7 @@ val newline : t -> unit
 
 val to_out_channel : out_channel -> t
 
-val flush : t -> unit -> unit
+val flush : t -> unit -> unit *)
 
 val pp_print_queue :
   ?pp_sep:(Format.formatter -> unit -> unit) ->

@@ -13497,9 +13497,9 @@ type t = Location.t = {
   loc_ghost : bool
 } 
 
-val is_ghost : t -> bool
+(* val is_ghost : t -> bool *)
 val merge : t -> t -> t 
-val none : t 
+(* val none : t  *)
 
 
 end = struct
@@ -13545,7 +13545,7 @@ let merge (l: t) (r : t) =
     -> 
     {loc_start ;loc_end; loc_ghost = false}
 
-let none = Location.none
+(* let none = Location.none *)
 
 end
 module Ast_utf8_string_interp : sig 
@@ -23113,7 +23113,7 @@ val get_cross_module_inline : unit -> bool
 (** diagnose option *)
 val diagnose : bool ref 
 val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
+(* val set_diagnose : bool -> unit  *)
 
 
 (** options for builtin ppx *)
@@ -23230,7 +23230,7 @@ let set_cross_module_inline b =
 
 let diagnose = ref false
 let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
+(* let set_diagnose b = diagnose := b *)
 
 (* let (//) = Filename.concat *)
 

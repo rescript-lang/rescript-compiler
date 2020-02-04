@@ -24,7 +24,7 @@
 
 
 
-class count_deps (add : Ident.t -> unit )  = 
+(* class count_deps (add : Ident.t -> unit )  = 
   object(self)
     inherit  Js_fold.fold as super
     method! expression lam = 
@@ -46,7 +46,7 @@ class count_deps (add : Ident.t -> unit )  =
       *)
       | _ -> super#expression lam
     method! ident x = add x ; self
-  end
+  end *)
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
@@ -82,7 +82,7 @@ let calculate_hard_dependencies block =
    will not depend [variables]
 
 *)
-let depends_j (lam : J.expression) (variables : Set_ident.t) = 
+(* let depends_j (lam : J.expression) (variables : Set_ident.t) = 
   let v = ref Set_ident.empty in
   let add id = 
     if Set_ident.mem variables id then 
@@ -90,4 +90,4 @@ let depends_j (lam : J.expression) (variables : Set_ident.t) =
   in
   ignore @@ (new count_deps add ) # expression lam ;
   !v
-
+ *)

@@ -39,4 +39,4 @@ let merge (l: t) (r : t) =
     -> 
     {loc_start ;loc_end; loc_ghost = false}
 
-let none = Location.none
+(* let none = Location.none *)

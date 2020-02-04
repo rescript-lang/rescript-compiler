@@ -34,9 +34,9 @@ type t = J.statement
 let return_stmt ?comment e : t = 
   {statement_desc = Return {return_value = e; } ; comment}
 
-let return_unit  : t list =              
+(* let return_unit  : t list =              
     [{ statement_desc = Return {return_value = E.unit; } ; 
-      comment = None}]
+      comment = None}] *)
   
 let empty_stmt  : t = 
   { statement_desc = Block []; comment = None}
@@ -86,12 +86,12 @@ let define_variable ?comment  ?ident_info
                 ident_info ;};
    comment}
 
-let alias_variable ?comment  ~exp (v:Ident.t)  : t=
+(* let alias_variable ?comment  ~exp (v:Ident.t)  : t=
   {statement_desc = 
      Variable {
        ident = v; value = Some exp; property = Alias;
        ident_info = {used_stats = NA }   };
-   comment}   
+   comment}    *)
 
 
 let int_switch 
@@ -301,7 +301,7 @@ let assign ?comment  id e : t =
     statement_desc = J.Exp ( E.assign (E.var id) e ) ;
     comment
   }
-let assign_unit ?comment  id :  t = 
+(* let assign_unit ?comment  id :  t = 
   {
     statement_desc = J.Exp( E.assign (E.var id) E.unit);
     comment
@@ -315,7 +315,7 @@ let declare_unit ?comment  id :  t =
                    ident_info = {used_stats = NA}
                  };
     comment
-  }
+  } *)
 
 let while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   let env = 
@@ -350,11 +350,11 @@ let try_ ?comment   ?with_ ?finally body : t =
 (* TODO: 
     actually, only loops can be labelled
 *)    
-let continue_stmt  ?comment   ?(label="") ()  : t = 
+(* let continue_stmt  ?comment   ?(label="") ()  : t = 
   { 
     statement_desc = J.Continue  label;
     comment;
-  }
+  } *)
   
 let continue_ : t = {
   statement_desc = Continue "" ;
