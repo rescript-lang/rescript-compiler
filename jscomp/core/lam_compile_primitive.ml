@@ -121,6 +121,7 @@ let translate  loc
   | Pdebugger 
   | Pjs_fn_run _ 
   | Pmethod_run
+  | Pfull_apply
   | Pjs_fn_make _
     -> assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method _ -> assert false

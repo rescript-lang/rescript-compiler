@@ -152,6 +152,11 @@ type t =
   | Praw_js_function of {block : string ; args : string list; arity : int}
   | Pjs_fn_make of int
   | Pjs_fn_run of int
+  | Pfull_apply 
+  (* we wrap it when do the conversion to prevent 
+    accendential optimization
+    play safe first
+  *)
   | Pmethod_run
   | Pjs_fn_method of int
   
@@ -328,6 +333,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
+  | Pfull_apply -> rhs = Pfull_apply 
   | Pmethod_run  -> rhs = Pmethod_run 
   | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )  
   | Pbigarrayref  _ 

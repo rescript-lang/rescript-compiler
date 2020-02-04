@@ -1454,7 +1454,9 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         } :: _
        } -> assert false        
-    | {primitive = Pjs_fn_run _ | Pmethod_run ;  args; loc}
+    | {primitive = 
+        Pfull_apply |
+        Pjs_fn_run _ | Pmethod_run ;  args; loc}
       ->
       (* 1. uncurried call should not do eta-conversion
             since `fn.length` will broken 
