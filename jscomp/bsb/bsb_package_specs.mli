@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,29 +17,22 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t
 
-
 val default_package_specs : t
 
-val from_json:
-  Ext_json_types.t -> t 
+val from_json : Ext_json_types.t -> t
 
-val get_list_of_output_js : 
-  t -> bool -> string -> string list
+val get_list_of_output_js : t -> bool -> string -> string list
 
-(**
-  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
-*)
-val package_flag_of_package_specs : 
-  t -> string -> string
+val package_flag_of_package_specs : t -> string -> string
+(** Sample output:
 
-val list_dirs_by :   
-  t -> 
-  (string -> unit) -> 
-  unit
+    {[ -bs-package-output commonjs:lib/js/jscomp/test ]} *)
+
+val list_dirs_by : t -> (string -> unit) -> unit

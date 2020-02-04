@@ -22,237 +22,175 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-type t = { 
-  mutable used : bool; 
-  rule_name : string; 
-  name : out_channel -> string 
+type t = {
+  mutable used : bool;
+  rule_name : string;
+  name : out_channel -> string;
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule (oc : out_channel) 
-  ~description 
-  ?(restat : unit option)  
-  ?dyndep 
-  ~command   
-  name  =
-  output_string oc "rule "; output_string oc name ; output_string oc "\n";
-  output_string oc "  command = "; output_string oc command; output_string oc "\n";
+let print_rule (oc : out_channel) ~description ?(restat : unit option) ?dyndep
+    ~command name =
+  output_string oc "rule ";
+  output_string oc name;
+  output_string oc "\n";
+  output_string oc "  command = ";
+  output_string oc command;
+  output_string oc "\n";
   Ext_option.iter dyndep (fun f ->
-      output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
-    );
-  (if restat <>  None then   
-     output_string oc "  restat = 1\n");
+      output_string oc "  dyndep = ";
+      output_string oc f;
+      output_string oc "\n");
+  if restat <> None then output_string oc "  restat = 1\n";
 
-  output_string oc "  description = " ; output_string oc description; output_string oc "\n"
-
-
+  output_string oc "  description = ";
+  output_string oc description;
+  output_string oc "\n"
 
 
 (** allocate an unique name for such rule*)
-let define
-    ~command
-    ?dyndep
-    ?restat
-    ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
-    rule_name : t 
-  =
-
-  let rec self = {
-    used  = false;
-    rule_name ;
-    name = fun oc ->
-      if not self.used then
-        begin
-          print_rule oc ~description  ?dyndep ?restat ~command rule_name;
-          self.used <- true
-        end ;
-      rule_name
-  } in 
+let define ~command ?dyndep ?restat
+    ?(description =
+      "\027[34mBuilding\027[39m \027[2m${out}\027[22m" (* blue, dim *))
+    rule_name : t =
+  let rec self =
+    {
+      used = false;
+      rule_name;
+      name =
+        (fun oc ->
+          if not self.used then (
+            print_rule oc ~description ?dyndep ?restat ~command rule_name;
+            self.used <- true );
+          rule_name);
+    }
+  in
 
   self
-
-
 
 
 type command = string
 
 type builtin = {
   build_ast : t;
-  (** TODO: Implement it on top of pp_flags *)
-  build_ast_from_re : t ;
+  (* TODO: Implement it on top of pp_flags *)
+  build_ast_from_re : t;
   (* build_ast_from_rei : t ; *)
-
-
-  (** platform dependent, on Win32,
-      invoking cmd.exe
-  *)
   copy_resources : t;
-  (** Rules below all need restat *)
-  build_bin_deps : t ;
-
+  build_bin_deps : t;
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
+  ml_cmj_cmi_js : t;
+  ml_cmj_cmi_js_dev : t;
   ml_cmi : t;
-  ml_cmi_dev : t ;
-  
-  build_package : t ;
-  customs : t Map_string.t
+  ml_cmi_dev : t;
+  build_package : t;
+  customs : t Map_string.t;
 }
 
-
-;;
-
-let make_custom_rules 
-  ~(has_gentype : bool)        
-  ~(has_postbuild : bool)
-  ~(has_ppx : bool)
-  ~(has_pp : bool)
-  ~(has_builtin : bool)
-  ~(bs_suffix : bool)
-  ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-  ~(digest : string)
-  ~(refmt : string option) (* set refmt path when needed *)
-  (custom_rules : command Map_string.t) : 
-  builtin = 
-  (** FIXME: We don't need set [-o ${out}] when building ast 
-      since the default is already good -- it does not*)
-  let buf = Buffer.create 100 in     
-  let mk_ml_cmj_cmd 
-      ~read_cmi 
-      ~is_dev 
-      ~postbuild : string =     
+let make_custom_rules ~(has_gentype : bool) ~(has_postbuild : bool)
+    ~(has_ppx : bool) ~(has_pp : bool) ~(has_builtin : bool) ~(bs_suffix : bool)
+    ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+    ~(digest : string) ~(refmt : string option)
+    (* set refmt path when needed *)
+      (custom_rules : command Map_string.t) : builtin =
+  (* FIXME: We don't need set [-o ${out}] when building ast since the default is
+     already good -- it does not *)
+  let buf = Buffer.create 100 in
+  let mk_ml_cmj_cmd ~read_cmi ~is_dev ~postbuild : string =
     Buffer.clear buf;
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
-    if bs_suffix then
-      Buffer.add_string buf " -bs-suffix";
-    if read_cmi then 
-      Buffer.add_string buf " -bs-read-cmi";
-    if is_dev then 
-      Buffer.add_string buf " $g_dev_incls";      
-    Buffer.add_string buf " $g_lib_incls" ;
-    if is_dev then
-      Buffer.add_string buf " $g_dpkg_incls";
-    if has_builtin then   
-      Buffer.add_string buf " -I $g_std_incl";
+    if bs_suffix then Buffer.add_string buf " -bs-suffix";
+    if read_cmi then Buffer.add_string buf " -bs-read-cmi";
+    if is_dev then Buffer.add_string buf " $g_dev_incls";
+    Buffer.add_string buf " $g_lib_incls";
+    if is_dev then Buffer.add_string buf " $g_dpkg_incls";
+    if has_builtin then Buffer.add_string buf " -I $g_std_incl";
     Buffer.add_string buf " $warnings $bsc_flags";
-    if has_gentype then
-      Buffer.add_string buf " $gentypeconfig";
+    if has_gentype then Buffer.add_string buf " $gentypeconfig";
     Buffer.add_string buf " -o $out $in";
-    if postbuild then
-      Buffer.add_string buf " $postbuild";
+    if postbuild then Buffer.add_string buf " $postbuild";
     Buffer.contents buf
-  in   
+  in
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
-    Buffer.clear buf ; 
+    Buffer.clear buf;
     Buffer.add_string buf "$bsc  $warnings -color always";
-    (match refmt with 
+    ( match refmt with
     | None -> ()
     | Some x ->
-      Buffer.add_string buf " -bs-refmt ";
-      Buffer.add_string buf (Ext_filename.maybe_quote x);
-    );
-    if has_pp then
-      Buffer.add_string buf " $pp_flags";
-    (match has_reason_react_jsx, reason_react_jsx with
-     | false, _ 
-     | _, None -> ()
-     | _, Some Jsx_v2
-       -> Buffer.add_string buf " -bs-jsx 2"
-     | _, Some Jsx_v3 
-       -> Buffer.add_string buf " -bs-jsx 3"
-    );
-    if has_ppx then 
-      Buffer.add_string buf " $ppx_flags"; 
-    Buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
+        Buffer.add_string buf " -bs-refmt ";
+        Buffer.add_string buf (Ext_filename.maybe_quote x) );
+    if has_pp then Buffer.add_string buf " $pp_flags";
+    ( match (has_reason_react_jsx, reason_react_jsx) with
+    | false, _ | _, None -> ()
+    | _, Some Jsx_v2 -> Buffer.add_string buf " -bs-jsx 2"
+    | _, Some Jsx_v3 -> Buffer.add_string buf " -bs-jsx 3" );
+    if has_ppx then Buffer.add_string buf " $ppx_flags";
+    Buffer.add_string buf
+      " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";
     Buffer.contents buf
-  in  
+  in
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast" in
+      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false)
+      "build_ast"
+  in
   let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_from_re" in 
- 
-  let copy_resources =    
-    define 
-      ~command:(
-        if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $in $out > null" 
-        else "cp $in $out"
-      )
-      "copy_resource" in
-  let build_bin_deps =
+      "build_ast_from_re"
+  in
+
+  let copy_resources =
     define
-      ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
-      "build_deps" in 
-  let aux ~name ~read_cmi  ~postbuild =
-    let postbuild = has_postbuild && postbuild in 
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi  ~is_dev:false 
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      name,
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi  ~is_dev:true
-                  ~postbuild)
-      ~dyndep:"$in_e.d"
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_dev")
-  in 
+        ( if Ext_sys.is_windows_or_cygwin then
+          "cmd.exe /C copy /Y $in $out > null"
+        else "cp $in $out" )
+      "copy_resource"
+  in
+  let build_bin_deps =
+    define ~restat:()
+      ~command:("$bsdep -hash " ^ digest ^ " $g_ns -g $bsb_dir_group $in")
+      "build_deps"
+  in
+  let aux ~name ~read_cmi ~postbuild =
+    let postbuild = has_postbuild && postbuild in
+    ( define
+        ~command:(mk_ml_cmj_cmd ~read_cmi ~is_dev:false ~postbuild)
+        ~dyndep:"$in_e.d" ~restat:() (* Always restat when having mli *) name,
+      define
+        ~command:(mk_ml_cmj_cmd ~read_cmi ~is_dev:true ~postbuild)
+        ~dyndep:"$in_e.d" ~restat:() (* Always restat when having mli *)
+        (name ^ "_dev") )
+  in
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js, ml_cmj_js_dev =
-    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
+    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true
+  in
   let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
-    aux
-      ~read_cmi:false 
-      ~name:"ml_cmj_cmi" ~postbuild:true in  
+    aux ~read_cmi:false ~name:"ml_cmj_cmi" ~postbuild:true
+  in
   let ml_cmi, ml_cmi_dev =
-    aux 
-       ~read_cmi:false  ~postbuild:false
-      ~name:"ml_cmi" in 
-  let build_package = 
-    define
-      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
-      ~restat:()
+    aux ~read_cmi:false ~postbuild:false ~name:"ml_cmi"
+  in
+  let build_package =
+    define ~command:"$bsc -w -49 -color always -no-alias-deps  $in" ~restat:()
       "build_package"
-  in 
+  in
   {
-    build_ast ;
-    build_ast_from_re  ;
-    (** platform dependent, on Win32,
-        invoking cmd.exe
-    *)
+    build_ast;
+    build_ast_from_re;
     copy_resources;
-    (** Rules below all need restat *)
-    build_bin_deps ;
-
-    ml_cmj_js ;
-    ml_cmj_js_dev ;
-    ml_cmj_cmi_js ;
-    ml_cmi ;
-    
+    build_bin_deps;
+    ml_cmj_js;
+    ml_cmj_js_dev;
+    ml_cmj_cmi_js;
+    ml_cmi;
     ml_cmj_cmi_js_dev;
     ml_cmi_dev;
-    
-    build_package ;
+    build_package;
     customs =
-      Map_string.mapi custom_rules begin fun name command -> 
-        define ~command ("custom_" ^ name)
-      end
+      Map_string.mapi custom_rules (fun name command ->
+          define ~command ("custom_" ^ name));
   }
-
-

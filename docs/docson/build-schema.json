@@ -78,7 +78,7 @@
                         }
                     }
                 ]
-                
+
             }
         },
         "pp-specs": {
@@ -139,7 +139,7 @@
                             "type": "string",
                             "description": "name of the directory"
                         },
-                   
+
                         "type": {
                             "enum": [
                                 "dev",
@@ -379,7 +379,7 @@
         },
         "ignored-dirs" : {
             "type" : "array",
-            "items": { 
+            "items": {
                 "type" : "string"
             },
             "description": "a list of directories that bsb will not look into"
@@ -410,7 +410,7 @@
         "gentypeconfig": {
             "$ref" : "#/definitions/gentype-specs",
             "description": "gentype config, see cristianoc/genType for more details"
-        },        
+        },
         "bsc-flags": {
             "$ref": "#/definitions/bsc-flags",
             "description": "Flags passed to bsc.exe"

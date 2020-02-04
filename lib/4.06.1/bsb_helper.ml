@@ -2877,7 +2877,7 @@ end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -2895,7 +2895,7 @@ module Literals : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -2905,7 +2905,7 @@ module Literals : sig
 
 
 
-val js_array_ctor : string 
+val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
@@ -2918,9 +2918,9 @@ val partial_arg : string
 val prim : string
 
 (**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
+val tmp : string
 
-val create : string 
+val create : string
 val runtime : string
 val stdlib : string
 val imul : string
@@ -2963,7 +2963,7 @@ val suffix_cmi : string
 val suffix_cmx : string
 val suffix_cmxa : string
 val suffix_ml : string
-val suffix_mlast : string 
+val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_reast : string
@@ -2973,48 +2973,49 @@ val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
-val suffix_rei : string 
+val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
-val suffix_bs_js : string 
+val suffix_bs_js : string
 (* val suffix_re_js : string *)
-val suffix_gen_js : string 
+val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
 
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
+val suffix_mli : string
+val suffix_cmt : string
+val suffix_cmti : string
 
-val commonjs : string 
+val commonjs : string
 
-val es6 : string 
+val es6 : string
 val es6_global : string
 
-val unused_attribute : string 
+val unused_attribute : string
 val dash_nostdlib : string
 
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
+val reactjs_jsx_ppx_2_exe : string
+val reactjs_jsx_ppx_3_exe : string
 
 val native : string
 val bytecode : string
 val js : string
 
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
+val node_sep : string
+val node_parent : string
+val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3032,7 +3033,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -3046,7 +3047,7 @@ end = struct
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -3105,8 +3106,8 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -3121,12 +3122,12 @@ let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
+let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
@@ -3145,9 +3146,10 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
+
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -3650,7 +3652,7 @@ end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3668,64 +3670,34 @@ module Ext_namespace : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [make ~ns:"Ns" "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : 
-  ?ns:string -> string -> string 
+val make : ?ns:string -> string -> string
+(** [make ~ns:"Ns" "a"] A typical example would return "a-Ns" Note the namespace
+    comes from the output of [namespace_of_package_name] *)
 
-val try_split_module_name :
-  string -> (string * string ) option
+val try_split_module_name : string -> (string * string) option
 
+val change_ext_ns_suffix : string -> string -> string
 
+type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
+val js_name_of_modulename : string -> file_kind -> string
+(** Predicts the JavaScript filename for a given (possibly namespaced) module-
+    name; i.e. [js_name_of_modulename "AA-Ns" Little_bs] would produce
+    ["aA.bs.js"]. *)
 
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val change_ext_ns_suffix :  
-  string -> 
-  string ->
-  string
-
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : 
-  string -> 
-  file_kind -> 
-  string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
+val is_valid_npm_package_name : string -> bool
 
 val namespace_of_package_name : string -> string
 
 end = struct
 #1 "ext_namespace.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3743,115 +3715,119 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
+(* Note the build system should check the validity of filenames espeically, it
+   should not contain '-' *)
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ?ns cunit  = 
-  match ns with 
+let make ?ns cunit =
+  match ns with
   | None -> cunit
   | Some ns -> cunit ^ ns_sep ^ ns
 
 
-let rec rindex_rec s i  =
-  if i < 0 then i else
+(** Starting from the end, search for [ns_sep_char]. Returns the index, if
+    found, or [-1] if [ns_sep_char] is not found before reaching a
+    directory-separator. *)
+let rec rindex_rec s i =
+  if i < 0 then i
+  else
     let char = String.unsafe_get s i in
-    if Ext_filename.is_dir_sep char  then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
+    if Ext_filename.is_dir_sep char then -1
+    else if char = ns_sep_char then i
+    else rindex_rec s (i - 1)
 
+
+(* Note we have to output uncapitalized file Name, or at least be consistent,
+   since by reading cmi file on Case insensitive OS, we don't really know
+   whether it is `list.cmi` or `List.cmi`, so that `require(./list.js)` or
+   `require(./List.js)`. Relevant issues: #1609, #913
+
+   #1933 when removing ns suffix, don't pass the bound of basename
+
+   FIXME: micro-optimizaiton *)
 let change_ext_ns_suffix name ext =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name ^ ext
-  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+  let i = rindex_rec name (String.length name - 1) in
+  if i < 0 then name ^ ext else String.sub name 0 i ^ ext
 
 
-  
-(* let js_name_of_basename bs_suffix s =   
-  change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
-
-let js_name_of_modulename s little = 
-  match little with 
-  | Little_js -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
-  | Little_bs -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
-  | Upper_js ->
-    change_ext_ns_suffix s  Literals.suffix_js
-  | Upper_bs -> 
-    change_ext_ns_suffix s  Literals.suffix_bs_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
+let try_split_module_name name =
+  let len = String.length name in
+  let i = rindex_rec name (len - 1) in
+  if i < 0 then None
+  else Some (String.sub name (i + 1) (len - i - 1), String.sub name 0 i)
 
 
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Ext_buffer.create len in 
-  let add capital ch = 
-    Ext_buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
+type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
+
+let js_name_of_modulename s little =
+  match little with
+  | Little_js ->
+      change_ext_ns_suffix (Ext_string.uncapitalize_ascii s) Literals.suffix_js
+  | Little_bs ->
+      change_ext_ns_suffix
+        (Ext_string.uncapitalize_ascii s)
+        Literals.suffix_bs_js
+  | Upper_js -> change_ext_ns_suffix s Literals.suffix_js
+  | Upper_bs -> change_ext_ns_suffix s Literals.suffix_bs_js
+
+
+(** https://docs.npmjs.com/files/package.json
+
+    Some rules:
+
+    - The name must be less than or equal to 214 characters. This includes the
+      scope for scoped packages.
+    - The name can't start with a dot or an underscore.
+    - New packages must not have uppercase letters in the name.
+    - The name ends up being part of a URL, an argument on the command line, and
+      a folder name. Therefore, the name can't contain any non-URL-safe
+      characters.
+
+    TODO: handle cases like '\@angular/core'. its directory structure is like:
+
+    {[
+      @angular
+      |-------- core
+    ]} *)
+let is_valid_npm_package_name (s : string) =
+  let len = String.length s in
+  len <= 214 (* magic number forced by npm *)
+  && len > 0
+  &&
+  match String.unsafe_get s 0 with
+  | 'a' .. 'z' | '@' ->
+      Ext_string.for_all_from s 1 (fun x ->
+          match x with
+          | 'a' .. 'z' | '0' .. '9' | '_' | '-' -> true
+          | _ -> false)
+  | _ -> false
+
+
+let namespace_of_package_name (s : string) : string =
+  let len = String.length s in
+  let buf = Ext_buffer.create len in
+  let add capital ch =
+    Ext_buffer.add_char buf (if capital then Char.uppercase_ascii ch else ch)
+  in
+  let rec aux capital off len =
     if off >= len then ()
-    else 
+    else
       let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-      | '_'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Ext_buffer.contents buf 
+      match ch with
+      | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' ->
+          add capital ch;
+          aux false (off + 1) len
+      | '/' | '-' -> aux true (off + 1) len
+      | _ -> aux capital (off + 1) len
+  in
+  aux true 0 len;
+  Ext_buffer.contents buf
 
 end
 module Ext_option : sig 

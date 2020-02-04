@@ -14106,7 +14106,7 @@ end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14124,96 +14124,77 @@ module Js_config : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* val get_packages_info : unit -> Js_packages_info.t *)
 
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
+val no_version_header : bool ref
 (** set/get header *)
-val no_version_header : bool ref 
 
+(** return [package_name] and [path] when in script mode: *)
 
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
+(* val get_current_package_name_and_path : Js_packages_info.module_system ->
+   Js_packages_info.info_query *)
 
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
+(* val set_package_name : string -> unit val get_package_name : unit -> string
+   option *)
 
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
 val cross_module_inline : bool ref
+(** cross module inline option *)
+
 val set_cross_module_inline : bool -> unit
 val get_cross_module_inline : unit -> bool
-  
+
+val diagnose : bool ref
 (** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
 
+val get_diagnose : unit -> bool
+val set_diagnose : bool -> unit
 
+val no_builtin_ppx_ml : bool ref
 (** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
 
+val no_builtin_ppx_mli : bool ref
 
+val no_warn_unimplemented_external : bool ref
 
-val no_warn_unimplemented_external : bool ref 
-
+val check_div_by_zero : bool ref
 (** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
 
-
-
-
-
-
-
+val get_check_div_by_zero : unit -> bool
 
 val set_debug_file : string -> unit
 
-
-val is_same_file : unit -> bool 
+val is_same_file : unit -> bool
 
 val tool_name : string
 
+val sort_imports : bool ref
 
-val sort_imports : bool ref 
-
-val syntax_only  : bool ref
+val syntax_only : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
-
 
 val bs_suffix : bool ref
 val debug : bool ref
 
-val cmi_only  : bool ref
-val cmj_only : bool ref 
+val cmi_only : bool ref
+val cmj_only : bool ref
+
 (* stopped after generating cmj *)
-val force_cmi : bool ref 
+val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
-val is_reason : bool ref 
+val is_reason : bool ref
 
-val js_stdout : bool ref 
+val js_stdout : bool ref
 
-val all_module_aliases : bool ref 
+val all_module_aliases : bool ref
 
 end = struct
 #1 "js_config.ml"
@@ -14241,71 +14222,37 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_arg.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
 let no_version_header = ref false
 
 let cross_module_inline = ref false
 
 let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
+let set_cross_module_inline b = cross_module_inline := b
 
 let diagnose = ref false
 let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
 (* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-
 (** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
+let no_warn_unimplemented_external = ref false
 
 let debug_file = ref ""
 
+let set_debug_file f = debug_file := f
 
-let set_debug_file  f = debug_file := f
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !Location.input_name
+let is_same_file () = !debug_file <> "" && !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
-
-
-
 
 let sort_imports = ref true
 
@@ -14313,11 +14260,11 @@ let syntax_only = ref false
 let binary_ast = ref false
 let simple_binary_ast = ref false
 
-let bs_suffix = ref false 
+let bs_suffix = ref false
 
 let debug = ref false
 
-let cmi_only = ref false  
+let cmi_only = ref false
 let cmj_only = ref false
 
 let force_cmi = ref false
@@ -15109,7 +15056,7 @@ end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15127,7 +15074,7 @@ module Literals : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -15137,7 +15084,7 @@ module Literals : sig
 
 
 
-val js_array_ctor : string 
+val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
@@ -15150,9 +15097,9 @@ val partial_arg : string
 val prim : string
 
 (**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
+val tmp : string
 
-val create : string 
+val create : string
 val runtime : string
 val stdlib : string
 val imul : string
@@ -15195,7 +15142,7 @@ val suffix_cmi : string
 val suffix_cmx : string
 val suffix_cmxa : string
 val suffix_ml : string
-val suffix_mlast : string 
+val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_reast : string
@@ -15205,48 +15152,49 @@ val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
-val suffix_rei : string 
+val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
-val suffix_bs_js : string 
+val suffix_bs_js : string
 (* val suffix_re_js : string *)
-val suffix_gen_js : string 
+val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
 
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
+val suffix_mli : string
+val suffix_cmt : string
+val suffix_cmti : string
 
-val commonjs : string 
+val commonjs : string
 
-val es6 : string 
+val es6 : string
 val es6_global : string
 
-val unused_attribute : string 
+val unused_attribute : string
 val dash_nostdlib : string
 
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
+val reactjs_jsx_ppx_2_exe : string
+val reactjs_jsx_ppx_3_exe : string
 
 val native : string
 val bytecode : string
 val js : string
 
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
+val node_sep : string
+val node_parent : string
+val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15264,7 +15212,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -15278,7 +15226,7 @@ end = struct
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -15337,8 +15285,8 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -15353,12 +15301,12 @@ let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
+let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
@@ -15377,9 +15325,10 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"

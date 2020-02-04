@@ -5006,7 +5006,7 @@ end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5024,7 +5024,7 @@ module Literals : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -5034,7 +5034,7 @@ module Literals : sig
 
 
 
-val js_array_ctor : string 
+val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
@@ -5047,9 +5047,9 @@ val partial_arg : string
 val prim : string
 
 (**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
+val tmp : string
 
-val create : string 
+val create : string
 val runtime : string
 val stdlib : string
 val imul : string
@@ -5092,7 +5092,7 @@ val suffix_cmi : string
 val suffix_cmx : string
 val suffix_cmxa : string
 val suffix_ml : string
-val suffix_mlast : string 
+val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_reast : string
@@ -5102,48 +5102,49 @@ val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
-val suffix_rei : string 
+val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
-val suffix_bs_js : string 
+val suffix_bs_js : string
 (* val suffix_re_js : string *)
-val suffix_gen_js : string 
+val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
 
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
+val suffix_mli : string
+val suffix_cmt : string
+val suffix_cmti : string
 
-val commonjs : string 
+val commonjs : string
 
-val es6 : string 
+val es6 : string
 val es6_global : string
 
-val unused_attribute : string 
+val unused_attribute : string
 val dash_nostdlib : string
 
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
+val reactjs_jsx_ppx_2_exe : string
+val reactjs_jsx_ppx_3_exe : string
 
 val native : string
 val bytecode : string
 val js : string
 
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
+val node_sep : string
+val node_parent : string
+val node_current : string
 val gentype_import : string
 
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5161,7 +5162,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -5175,7 +5176,7 @@ end = struct
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -5234,8 +5235,8 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -5250,12 +5251,12 @@ let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
+let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
@@ -5274,9 +5275,10 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
+
 end
 module Ounit_cmd_util : sig 
 #1 "ounit_cmd_util.mli"
@@ -7657,7 +7659,7 @@ end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -7675,96 +7677,77 @@ module Js_config : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* val get_packages_info : unit -> Js_packages_info.t *)
 
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
+val no_version_header : bool ref
 (** set/get header *)
-val no_version_header : bool ref 
 
+(** return [package_name] and [path] when in script mode: *)
 
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
+(* val get_current_package_name_and_path : Js_packages_info.module_system ->
+   Js_packages_info.info_query *)
 
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
+(* val set_package_name : string -> unit val get_package_name : unit -> string
+   option *)
 
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
 val cross_module_inline : bool ref
+(** cross module inline option *)
+
 val set_cross_module_inline : bool -> unit
 val get_cross_module_inline : unit -> bool
-  
+
+val diagnose : bool ref
 (** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
 
+val get_diagnose : unit -> bool
+val set_diagnose : bool -> unit
 
+val no_builtin_ppx_ml : bool ref
 (** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
 
+val no_builtin_ppx_mli : bool ref
 
+val no_warn_unimplemented_external : bool ref
 
-val no_warn_unimplemented_external : bool ref 
-
+val check_div_by_zero : bool ref
 (** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
 
-
-
-
-
-
-
+val get_check_div_by_zero : unit -> bool
 
 val set_debug_file : string -> unit
 
-
-val is_same_file : unit -> bool 
+val is_same_file : unit -> bool
 
 val tool_name : string
 
+val sort_imports : bool ref
 
-val sort_imports : bool ref 
-
-val syntax_only  : bool ref
+val syntax_only : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
-
 
 val bs_suffix : bool ref
 val debug : bool ref
 
-val cmi_only  : bool ref
-val cmj_only : bool ref 
+val cmi_only : bool ref
+val cmj_only : bool ref
+
 (* stopped after generating cmj *)
-val force_cmi : bool ref 
+val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
-val is_reason : bool ref 
+val is_reason : bool ref
 
-val js_stdout : bool ref 
+val js_stdout : bool ref
 
-val all_module_aliases : bool ref 
+val all_module_aliases : bool ref
 
 end = struct
 #1 "js_config.ml"
@@ -7792,71 +7775,37 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_arg.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
 let no_version_header = ref false
 
 let cross_module_inline = ref false
 
 let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
+let set_cross_module_inline b = cross_module_inline := b
 
 let diagnose = ref false
 let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
 (* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-
 (** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
+let no_warn_unimplemented_external = ref false
 
 let debug_file = ref ""
 
+let set_debug_file f = debug_file := f
 
-let set_debug_file  f = debug_file := f
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !Location.input_name
+let is_same_file () = !debug_file <> "" && !debug_file = !Location.input_name
 
 let tool_name = "BuckleScript"
 
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
-
-
-
 
 let sort_imports = ref true
 
@@ -7864,11 +7813,11 @@ let syntax_only = ref false
 let binary_ast = ref false
 let simple_binary_ast = ref false
 
-let bs_suffix = ref false 
+let bs_suffix = ref false
 
 let debug = ref false
 
-let cmi_only = ref false  
+let cmi_only = ref false
 let cmj_only = ref false
 
 let force_cmi = ref false
@@ -16334,7 +16283,7 @@ end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16352,64 +16301,34 @@ module Ext_namespace : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [make ~ns:"Ns" "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : 
-  ?ns:string -> string -> string 
+val make : ?ns:string -> string -> string
+(** [make ~ns:"Ns" "a"] A typical example would return "a-Ns" Note the namespace
+    comes from the output of [namespace_of_package_name] *)
 
-val try_split_module_name :
-  string -> (string * string ) option
+val try_split_module_name : string -> (string * string) option
 
+val change_ext_ns_suffix : string -> string -> string
 
+type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
+val js_name_of_modulename : string -> file_kind -> string
+(** Predicts the JavaScript filename for a given (possibly namespaced) module-
+    name; i.e. [js_name_of_modulename "AA-Ns" Little_bs] would produce
+    ["aA.bs.js"]. *)
 
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val change_ext_ns_suffix :  
-  string -> 
-  string ->
-  string
-
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : 
-  string -> 
-  file_kind -> 
-  string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
+val is_valid_npm_package_name : string -> bool
 
 val namespace_of_package_name : string -> string
 
 end = struct
 #1 "ext_namespace.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16427,115 +16346,119 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
+(* Note the build system should check the validity of filenames espeically, it
+   should not contain '-' *)
 let ns_sep_char = '-'
 let ns_sep = "-"
 
-let make ?ns cunit  = 
-  match ns with 
+let make ?ns cunit =
+  match ns with
   | None -> cunit
   | Some ns -> cunit ^ ns_sep ^ ns
 
 
-let rec rindex_rec s i  =
-  if i < 0 then i else
+(** Starting from the end, search for [ns_sep_char]. Returns the index, if
+    found, or [-1] if [ns_sep_char] is not found before reaching a
+    directory-separator. *)
+let rec rindex_rec s i =
+  if i < 0 then i
+  else
     let char = String.unsafe_get s i in
-    if Ext_filename.is_dir_sep char  then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
+    if Ext_filename.is_dir_sep char then -1
+    else if char = ns_sep_char then i
+    else rindex_rec s (i - 1)
 
+
+(* Note we have to output uncapitalized file Name, or at least be consistent,
+   since by reading cmi file on Case insensitive OS, we don't really know
+   whether it is `list.cmi` or `List.cmi`, so that `require(./list.js)` or
+   `require(./List.js)`. Relevant issues: #1609, #913
+
+   #1933 when removing ns suffix, don't pass the bound of basename
+
+   FIXME: micro-optimizaiton *)
 let change_ext_ns_suffix name ext =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name ^ ext
-  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+  let i = rindex_rec name (String.length name - 1) in
+  if i < 0 then name ^ ext else String.sub name 0 i ^ ext
 
 
-  
-(* let js_name_of_basename bs_suffix s =   
-  change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
-
-let js_name_of_modulename s little = 
-  match little with 
-  | Little_js -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
-  | Little_bs -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
-  | Upper_js ->
-    change_ext_ns_suffix s  Literals.suffix_js
-  | Upper_bs -> 
-    change_ext_ns_suffix s  Literals.suffix_bs_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
+let try_split_module_name name =
+  let len = String.length name in
+  let i = rindex_rec name (len - 1) in
+  if i < 0 then None
+  else Some (String.sub name (i + 1) (len - i - 1), String.sub name 0 i)
 
 
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Ext_buffer.create len in 
-  let add capital ch = 
-    Ext_buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
+type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
+
+let js_name_of_modulename s little =
+  match little with
+  | Little_js ->
+      change_ext_ns_suffix (Ext_string.uncapitalize_ascii s) Literals.suffix_js
+  | Little_bs ->
+      change_ext_ns_suffix
+        (Ext_string.uncapitalize_ascii s)
+        Literals.suffix_bs_js
+  | Upper_js -> change_ext_ns_suffix s Literals.suffix_js
+  | Upper_bs -> change_ext_ns_suffix s Literals.suffix_bs_js
+
+
+(** https://docs.npmjs.com/files/package.json
+
+    Some rules:
+
+    - The name must be less than or equal to 214 characters. This includes the
+      scope for scoped packages.
+    - The name can't start with a dot or an underscore.
+    - New packages must not have uppercase letters in the name.
+    - The name ends up being part of a URL, an argument on the command line, and
+      a folder name. Therefore, the name can't contain any non-URL-safe
+      characters.
+
+    TODO: handle cases like '\@angular/core'. its directory structure is like:
+
+    {[
+      @angular
+      |-------- core
+    ]} *)
+let is_valid_npm_package_name (s : string) =
+  let len = String.length s in
+  len <= 214 (* magic number forced by npm *)
+  && len > 0
+  &&
+  match String.unsafe_get s 0 with
+  | 'a' .. 'z' | '@' ->
+      Ext_string.for_all_from s 1 (fun x ->
+          match x with
+          | 'a' .. 'z' | '0' .. '9' | '_' | '-' -> true
+          | _ -> false)
+  | _ -> false
+
+
+let namespace_of_package_name (s : string) : string =
+  let len = String.length s in
+  let buf = Ext_buffer.create len in
+  let add capital ch =
+    Ext_buffer.add_char buf (if capital then Char.uppercase_ascii ch else ch)
+  in
+  let rec aux capital off len =
     if off >= len then ()
-    else 
+    else
       let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-      | '_'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Ext_buffer.contents buf 
+      match ch with
+      | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' ->
+          add capital ch;
+          aux false (off + 1) len
+      | '/' | '-' -> aux true (off + 1) len
+      | _ -> aux capital (off + 1) len
+  in
+  aux true 0 len;
+  Ext_buffer.contents buf
 
 end
 module Ounit_data_random
@@ -16557,34 +16480,34 @@ module Ounit_string_tests
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-let (=~) = OUnit.assert_equal  ~printer:Ext_obj.dump  
+let (=~) = OUnit.assert_equal  ~printer:Ext_obj.dump
 
-let printer_string = fun x -> x 
+let printer_string = fun x -> x
 
 let string_eq = OUnit.assert_equal ~printer:(fun id -> id)
 
-let suites = 
-  __FILE__ >::: 
+let suites =
+  __FILE__ >:::
   [
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.rindex_neg "hello" 'h' =~ 0 ;
       Ext_string.rindex_neg "hello" 'e' =~ 1 ;
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-    (* __LOC__ >:: begin 
-      fun _ -> 
-      let nl cur s = Ext_string.extract_until s cur '\n' in 
+    (* __LOC__ >:: begin
+      fun _ ->
+      let nl cur s = Ext_string.extract_until s cur '\n' in
       nl (ref 0) "hello\n" =~ "hello";
       nl (ref 0) "\nhell" =~ "";
       nl (ref 0) "hello" =~ "hello";
-      let cur = ref 0 in 
-      let b = "a\nb\nc\nd" in 
+      let cur = ref 0 in
+      let b = "a\nb\nc\nd" in
       nl cur b =~ "a";
       nl cur b =~ "b";
       nl cur b =~ "c";
@@ -16592,7 +16515,7 @@ let suites =
       nl cur b =~ "" ;
       nl cur b =~ "" ;
       cur := 0 ;
-      let b = "a\nb\nc\nd\n" in 
+      let b = "a\nb\nc\nd\n" in
       nl cur b =~ "a";
       nl cur b =~ "b";
       nl cur b =~ "c";
@@ -16600,20 +16523,20 @@ let suites =
       nl cur b =~ "" ;
       nl cur b =~ "" ;
     end ; *)
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let b = "a\nb\nc\nd\n" in
-      let a = Ext_string.index_count in 
+      let a = Ext_string.index_count in
       a b 0 '\n' 1 =~ 1 ;
       a b 0 '\n' 2 =~ 3;
       a b 0 '\n' 3 =~ 5;
-      a b 0 '\n' 4 =~ 7; 
-      a b 0 '\n' 5 =~ -1; 
+      a b 0 '\n' 4 =~ 7;
+      a b 0 '\n' 5 =~ -1;
     end ;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
         (not (Ext_string.for_all_from "xABc"1
                 (function 'A' .. 'Z' -> true | _ -> false)));
@@ -16622,58 +16545,58 @@ let suites =
              (function 'A' .. 'Z' -> true | _ -> false)));
       OUnit.assert_bool __LOC__
         ( (Ext_string.for_all_from "xABC" 1_000
-             (function 'A' .. 'Z' -> true | _ -> false)));             
-    end; 
+             (function 'A' .. 'Z' -> true | _ -> false)));
+    end;
 
-    (* __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__ @@
       List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
-        ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
+        ["x.ml"; "x.mli"; "x.re"; "x.rei";
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@
       List.exists (fun x -> Ext_string.is_valid_source_name x = Good)
-        [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
-         "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
+        [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~";
+         "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei";
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
         ; "-.ml"
         ]
     end; *)
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_filename.module_name "a/hello.ml" =~ "Hello";
       Ext_filename.as_module ~basename:"a.ml" =~ Some {module_name = "A"; case = false};
       Ext_filename.as_module ~basename:"Aa.ml" =~ Some {module_name = "Aa"; case = true};
       Ext_filename.as_module ~basename:"_Aa.ml" =~ None;
       Ext_filename.as_module ~basename:"A_a" =~ Some {module_name = "A_a"; case = true};
       Ext_filename.as_module ~basename:"" =~ None;
-      Ext_filename.as_module ~basename:"a/hello.ml" =~ 
+      Ext_filename.as_module ~basename:"a/hello.ml" =~
         None
 
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__ @@
       List.for_all Ext_namespace.is_valid_npm_package_name
         ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
       ;
       OUnit.assert_bool __LOC__ @@
-      List.for_all 
+      List.for_all
         (fun x -> not (Ext_namespace.is_valid_npm_package_name x))
         ["x "; "x'"; "Test"; "hI"]
       ;
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
       Ext_string.non_overlap_count ~sub:"0" "000000" =~ 6;
       Ext_string.non_overlap_count ~sub:"00" "000000" =~ 3;
       Ext_string.non_overlap_count ~sub:"00" "00000" =~ 2
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");
@@ -16681,229 +16604,229 @@ let suites =
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "");
       OUnit.assert_bool __LOC__ (not @@ Ext_string.contain_substring "abc" "abcc");
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.trim " \t\n" =~ "";
       Ext_string.trim " \t\nb" =~ "b";
       Ext_string.trim "b \t\n" =~ "b";
-      Ext_string.trim "\t\n b \t\n" =~ "b";            
+      Ext_string.trim "\t\n b \t\n" =~ "b";
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.starts_with "ab" "a" =~ true;
       Ext_string.starts_with "ab" "" =~ true;
       Ext_string.starts_with "abb" "abb" =~ true;
       Ext_string.starts_with "abb" "abbc" =~ false;
     end;
-    __LOC__ >:: begin fun _ -> 
-      let (=~) = OUnit.assert_equal ~printer:(fun x -> string_of_bool x ) in 
-      let k = Ext_string.ends_with in 
+    __LOC__ >:: begin fun _ ->
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> string_of_bool x ) in
+      let k = Ext_string.ends_with in
       k "xx.ml" ".ml" =~ true;
       k "xx.bs.js" ".js" =~ true ;
       k "xx" ".x" =~false;
       k "xx" "" =~true
-    end;  
-    __LOC__ >:: begin fun _ -> 
+    end;
+    __LOC__ >:: begin fun _ ->
       Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
       Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
     end;
-    (* __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ ->
        Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
        Ext_string.starts_with_and_number "js_fn_run_02" ~offset:0 "js_fn_mk_" =~ -1 ;
        Ext_string.starts_with_and_number "js_fn_mk_03" ~offset:6 "mk_" =~ 3 ;
        Ext_string.starts_with_and_number "js_fn_mk_04" ~offset:6 "run_" =~ -1;
        Ext_string.starts_with_and_number "js_fn_run_04" ~offset:6 "run_" =~ 4;
-       Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
+       Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false
        end; *)
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.for_all "____" (function '_' -> true | _ -> false)
         =~ true;
       Ext_string.for_all "___-" (function '_' -> true | _ -> false)
         =~ false;
-      Ext_string.for_all ""  (function '_' -> true | _ -> false)        
+      Ext_string.for_all ""  (function '_' -> true | _ -> false)
         =~ true
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
       Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
     end;
-    (* __LOC__ >:: begin fun _ -> 
-       Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+    (* __LOC__ >:: begin fun _ ->
+       Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11
        end; *)
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
-        (Ext_string.replace_backward_slash "a:\\b\\d" = 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+        (Ext_string.replace_backward_slash "a:\\b\\d" =
          "a:/b/d"
         ) ;
-      OUnit.assert_bool __LOC__ 
-        (Ext_string.replace_backward_slash "a:\\b\\d\\" = 
+      OUnit.assert_bool __LOC__
+        (Ext_string.replace_backward_slash "a:\\b\\d\\" =
          "a:/b/d/"
         ) ;
-      OUnit.assert_bool __LOC__ 
-        (Ext_string.replace_slash_backward "a:/b/d/"= 
-         "a:\\b\\d\\" 
-        ) ;  
-      OUnit.assert_bool __LOC__ 
-        (let old = "a:bd" in 
-         Ext_string.replace_backward_slash old == 
+      OUnit.assert_bool __LOC__
+        (Ext_string.replace_slash_backward "a:/b/d/"=
+         "a:\\b\\d\\"
+        ) ;
+      OUnit.assert_bool __LOC__
+        (let old = "a:bd" in
+         Ext_string.replace_backward_slash old ==
          old
         ) ;
-      OUnit.assert_bool __LOC__ 
-        (let old = "a:bd" in 
-         Ext_string.replace_backward_slash old == 
+      OUnit.assert_bool __LOC__
+        (let old = "a:bd" in
+         Ext_string.replace_backward_slash old ==
          old
         ) ;
 
     end;
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash "ahgoh" );
-      OUnit.assert_bool __LOC__ 
-        (Ext_string.no_slash "" );            
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
+        (Ext_string.no_slash "" );
+      OUnit.assert_bool __LOC__
         (not (Ext_string.no_slash "ahgoh/" ));
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (not (Ext_string.no_slash "/ahgoh" ));
-      OUnit.assert_bool __LOC__ 
-        (not (Ext_string.no_slash "/ahgoh/" ));            
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.no_slash "/ahgoh/" ));
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare "0" "0"  = 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare "" "acd" < 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare  "acd" "" > 0);
-      for i = 0 to 256 do 
-        let a = String.init i (fun _ -> '0') in 
-        let b = String.init i (fun _ -> '0') in 
+      for i = 0 to 256 do
+        let a = String.init i (fun _ -> '0') in
+        let b = String.init i (fun _ -> '0') in
         OUnit.assert_bool __LOC__ (Ext_string.compare  b a = 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare a b = 0)
       done ;
-      for i = 0 to 256 do 
-        let a = String.init i (fun _ -> '0') in 
-        let b = String.init i (fun _ -> '0') ^ "\000"in 
+      for i = 0 to 256 do
+        let a = String.init i (fun _ -> '0') in
+        let b = String.init i (fun _ -> '0') ^ "\000"in
         OUnit.assert_bool __LOC__ (Ext_string.compare a b < 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare  b a  > 0)
       done ;
 
     end;
-    __LOC__ >:: begin fun _ -> 
-      let slow_compare x y  = 
-        let x_len = String.length x  in 
-        let y_len = String.length y in 
-        if x_len = y_len then 
-          String.compare x y 
-        else 
-          Pervasives.compare x_len y_len  in 
+    __LOC__ >:: begin fun _ ->
+      let slow_compare x y  =
+        let x_len = String.length x  in
+        let y_len = String.length y in
+        if x_len = y_len then
+          String.compare x y
+        else
+          Pervasives.compare x_len y_len  in
       let same_sign x y =
-        if x = 0 then y = 0 
-        else if x < 0 then y < 0 
-        else y > 0 in 
+        if x = 0 then y = 0
+        else if x < 0 then y < 0
+        else y > 0 in
       for i = 0 to 3000 do
-        let chars = [|'a';'b';'c';'d'|] in 
-        let x = Ounit_data_random.random_string chars 129 in 
-        let y = Ounit_data_random.random_string chars 129 in 
-        let a = Ext_string.compare  x y  in 
-        let b = slow_compare x y in 
-        if same_sign a b then OUnit.assert_bool __LOC__ true 
+        let chars = [|'a';'b';'c';'d'|] in
+        let x = Ounit_data_random.random_string chars 129 in
+        let y = Ounit_data_random.random_string chars 129 in
+        let a = Ext_string.compare  x y  in
+        let b = slow_compare x y in
+        if same_sign a b then OUnit.assert_bool __LOC__ true
         else failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
-      done 
+      done
     end ;
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.concat3 "a0" "a1" "a2") "a0a1a2"
         );
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.concat3 "a0" "a11" "") "a0a11"
         );
 
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a1" "a2" "a3") "a0a1a2a3"
         );
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a11" "" "a33") "a0a11a33"
-        );   
+        );
     end;
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.inter2 "a0" "a1") "a0 a1"
         );
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.inter3 "a0" "a1" "a2") "a0 a1 a2"
         );
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.equal
            (Ext_string.inter4 "a0" "a1" "a2" "a3") "a0 a1 a2 a3"
         );
     end;
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx "" < 0);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx "xxx" < 0);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx "xxx/" = 3);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx "xxx/g/" = 3);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx "/xxx/g/" = 0)
     end;
-    __LOC__ >:: begin fun _ -> 
-      OUnit.assert_bool __LOC__ 
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx_from "xxx" 0 < 0);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx_from "xxx/" 1 = 3);
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx_from "xxx/g/" 4 = 5);
-      OUnit.assert_bool __LOC__ 
-        (Ext_string.no_slash_idx_from "xxx/g/" 3 = 3);  
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
+        (Ext_string.no_slash_idx_from "xxx/g/" 3 = 3);
+      OUnit.assert_bool __LOC__
         (Ext_string.no_slash_idx_from "/xxx/g/" 0 = 0)
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [||])
            Ext_string.empty
         );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"a0"|])
            "a0"
         );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"|])
            "a0 a1"
-        );   
+        );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2"|])
            "a0 a1 a2"
-        );   
+        );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3"|])
            "a0 a1 a2 a3"
-        );    
+        );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3";""; "a4"|])
            "a0 a1 a2 a3  a4"
-        );      
+        );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"a3";""; "a4"|])
            "0 a1 2 a3  a4"
-        );        
+        );
       OUnit.assert_bool __LOC__
-        (Ext_string.equal 
+        (Ext_string.equal
            (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"3";"d"; ""; "e"|])
            "0 a1 2 3 d  e"
-        );        
+        );
 
     end;
 
@@ -16911,7 +16834,7 @@ let suites =
       Ext_namespace.namespace_of_package_name "bs-json"
       =~ "BsJson"
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_namespace.namespace_of_package_name "xx"
       =~ "Xx"
     end;
@@ -16926,43 +16849,33 @@ let suites =
       Ext_namespace.namespace_of_package_name
         "reason"
       =~ "Reason";
-      Ext_namespace.namespace_of_package_name 
+      Ext_namespace.namespace_of_package_name
         "@aa/bb"
         =~"AaBb";
-      Ext_namespace.namespace_of_package_name 
+      Ext_namespace.namespace_of_package_name
         "@A/bb"
-        =~"ABb"        
+        =~"ABb"
     end;
-    __LOC__ >:: begin fun _ -> 
-      Ext_namespace.change_ext_ns_suffix  "a-b" Literals.suffix_js
-      =~ "a.js";
-      Ext_namespace.change_ext_ns_suffix  "a-" Literals.suffix_js
-      =~ "a.js";
-      Ext_namespace.change_ext_ns_suffix  "a--" Literals.suffix_js
-      =~ "a-.js";
-      Ext_namespace.change_ext_ns_suffix  "AA-b" Literals.suffix_js
-      =~ "AA.js";
-      Ext_namespace.js_name_of_modulename 
-        "AA-b" Little_js 
-      =~ "aA.js";
-      Ext_namespace.js_name_of_modulename 
-        "AA-b" Upper_js 
-      =~ "AA.js";
-      Ext_namespace.js_name_of_modulename 
-        "AA-b" Upper_bs 
-      =~ "AA.bs.js";
+    __LOC__ >:: begin fun _ ->
+      Ext_namespace.change_ext_ns_suffix "a-b" Literals.suffix_js =~ "a.js";
+      Ext_namespace.change_ext_ns_suffix "a-" Literals.suffix_js =~ "a.js";
+      Ext_namespace.change_ext_ns_suffix "a--" Literals.suffix_js =~ "a-.js";
+      Ext_namespace.change_ext_ns_suffix "AA-b" Literals.suffix_js =~ "AA.js";
+      Ext_namespace.js_name_of_modulename "AA-b" Little_js =~ "aA.js";
+      Ext_namespace.js_name_of_modulename "AA-b" Upper_js =~ "AA.js";
+      Ext_namespace.js_name_of_modulename "AA-b" Upper_bs =~ "AA.bs.js"
     end;
-    __LOC__ >:: begin   fun _ -> 
-      let (=~) = OUnit.assert_equal ~printer:(fun x -> 
-          match x with 
+    __LOC__ >:: begin   fun _ ->
+      let (=~) = OUnit.assert_equal ~printer:(fun x ->
+          match x with
           | None -> ""
           | Some (a,b) -> a ^","^ b
-        ) in  
+        ) in
       Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
       Ext_namespace.try_split_module_name "Js_X" =~ None
     end;
     __LOC__ >:: begin fun _ ->
-      let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in
       let f = Ext_string.capitalize_ascii in
       f "x" =~ "X";
       f "X" =~ "X";
@@ -16973,16 +16886,16 @@ let suites =
       f v =~ "Bc";
       v =~ "bc"
     end;
-    __LOC__ >:: begin fun _ -> 
-      let (=~) = OUnit.assert_equal ~printer:printer_string in 
-      Ext_filename.chop_all_extensions_maybe "a.bs.js" =~ "a" ; 
+    __LOC__ >:: begin fun _ ->
+      let (=~) = OUnit.assert_equal ~printer:printer_string in
+      Ext_filename.chop_all_extensions_maybe "a.bs.js" =~ "a" ;
       Ext_filename.chop_all_extensions_maybe "a.js" =~ "a";
       Ext_filename.chop_all_extensions_maybe "a" =~ "a";
       Ext_filename.chop_all_extensions_maybe "a.x.bs.js" =~ "a"
     end;
     (* let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  *)
     __LOC__ >:: begin fun _ ->
-      let k = Ext_modulename.js_id_name_of_hint_name in 
+      let k = Ext_modulename.js_id_name_of_hint_name in
       k "xx" =~ "Xx";
       k "react-dom" =~ "ReactDom";
       k "a/b/react-dom" =~ "ReactDom";
@@ -16996,29 +16909,29 @@ let suites =
       k "c/d/a--b"=~ "AB";
       k "c/d/ac--" =~ "Ac"
     end ;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.capitalize_sub "ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 2 =~ "Ab";
       Ext_string.capitalize_sub "Ab-Ns.cmi" 3 =~ "Ab-"
     end ;
     __LOC__ >:: begin fun _ ->
-      OUnit.assert_equal 
-        (String.length (Digest.string "")) 
+      OUnit.assert_equal
+        (String.length (Digest.string ""))
          Ext_digest.length
     end;
 
-    __LOC__ >:: begin fun _ -> 
-      let bench = String.concat 
+    __LOC__ >:: begin fun _ ->
+      let bench = String.concat
         ";" (Ext_list.init 11 (fun i -> string_of_int i)) in
-      let buf = Ext_buffer.create 10 in 
+      let buf = Ext_buffer.create 10 in
       OUnit.assert_bool
-        __LOC__ (Ext_buffer.not_equal buf bench); 
-      for i = 0 to 9 do   
+        __LOC__ (Ext_buffer.not_equal buf bench);
+      for i = 0 to 9 do
         Ext_buffer.add_string buf (string_of_int i);
         Ext_buffer.add_string buf ";"
       done ;
       OUnit.assert_bool
-        __LOC__ (Ext_buffer.not_equal buf bench); 
+        __LOC__ (Ext_buffer.not_equal buf bench);
       Ext_buffer.add_string buf "10"  ;
       (* print_endline (Ext_buffer.contents buf);
       print_endline bench; *)
@@ -17026,7 +16939,7 @@ let suites =
       __LOC__ (not (Ext_buffer.not_equal buf bench))
     end ;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
         string_eq (Ext_filename.new_extension "a.c" ".xx")  "a.xx";
         string_eq (Ext_filename.new_extension "abb.c" ".xx")  "abb.xx";
         string_eq (Ext_filename.new_extension ".c" ".xx")  ".xx";
@@ -17038,43 +16951,43 @@ let suites =
         string_eq (Ext_filename.chop_all_extensions_maybe "abx") "abx";
     end;
     __LOC__ >:: begin fun _ ->
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/c.d")
           "C";
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc.re")
           "Xc";
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc.ml")
           "Xc"  ;
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc.mli")
           "Xc"  ;
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc.cppo.mli")
           "Xc.cppo";
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc.cppo.")
           "Xc.cppo"  ;
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/xc..")
           "Xc."  ;
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/Xc..")
           "Xc."  ;
-        string_eq 
+        string_eq
           (Ext_filename.module_name "a/b/.")
-          ""  ;  
+          ""  ;
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       Ext_string.split "" ':' =~ [];
       Ext_string.split "a:b:" ':' =~ ["a";"b"];
       Ext_string.split "a:b:" ':' ~keep_empty:true =~ ["a";"b";""]
     end;
-    __LOC__ >:: begin fun _ ->    
-        let cmp0 = Ext_string.compare in 
-        let cmp1 = Map_string.compare_key in 
-        let f a b = 
+    __LOC__ >:: begin fun _ ->
+        let cmp0 = Ext_string.compare in
+        let cmp1 = Map_string.compare_key in
+        let f a b =
           cmp0 a b =~ cmp1 a b ;
           cmp0 b a =~ cmp1 b a
           in

@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,28 +17,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(** only used for debugging purpose *)
 val dump_program : J.program -> out_channel -> unit
-
+(** only used for debugging purpose *)
 
 val pp_deps_program :
   output_prefix:string ->
   Js_packages_info.module_system ->
-  J.deps_program -> 
-  Ext_pp.t -> 
+  J.deps_program ->
+  Ext_pp.t ->
   unit
-
 
 val dump_deps_program :
   output_prefix:string ->
-  Js_packages_info.module_system  -> 
-  J.deps_program -> 
-  out_channel -> 
+  Js_packages_info.module_system ->
+  J.deps_program ->
+  out_channel ->
   unit
-  

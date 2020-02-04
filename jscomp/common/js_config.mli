@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,93 +17,74 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* val get_packages_info : unit -> Js_packages_info.t *)
 
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
+val no_version_header : bool ref
 (** set/get header *)
-val no_version_header : bool ref 
 
+(** return [package_name] and [path] when in script mode: *)
 
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
+(* val get_current_package_name_and_path : Js_packages_info.module_system ->
+   Js_packages_info.info_query *)
 
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
+(* val set_package_name : string -> unit val get_package_name : unit -> string
+   option *)
 
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
 val cross_module_inline : bool ref
+(** cross module inline option *)
+
 val set_cross_module_inline : bool -> unit
 val get_cross_module_inline : unit -> bool
-  
+
+val diagnose : bool ref
 (** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
 
+val get_diagnose : unit -> bool
+val set_diagnose : bool -> unit
 
+val no_builtin_ppx_ml : bool ref
 (** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
 
+val no_builtin_ppx_mli : bool ref
 
+val no_warn_unimplemented_external : bool ref
 
-val no_warn_unimplemented_external : bool ref 
-
+val check_div_by_zero : bool ref
 (** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
 
-
-
-
-
-
-
+val get_check_div_by_zero : unit -> bool
 
 val set_debug_file : string -> unit
 
-
-val is_same_file : unit -> bool 
+val is_same_file : unit -> bool
 
 val tool_name : string
 
+val sort_imports : bool ref
 
-val sort_imports : bool ref 
-
-val syntax_only  : bool ref
+val syntax_only : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
-
 
 val bs_suffix : bool ref
 val debug : bool ref
 
-val cmi_only  : bool ref
-val cmj_only : bool ref 
+val cmi_only : bool ref
+val cmj_only : bool ref
+
 (* stopped after generating cmj *)
-val force_cmi : bool ref 
+val force_cmi : bool ref
 val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
-val is_reason : bool ref 
+val is_reason : bool ref
 
-val js_stdout : bool ref 
+val js_stdout : bool ref
 
-val all_module_aliases : bool ref 
+val all_module_aliases : bool ref

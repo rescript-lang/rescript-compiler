@@ -23,19 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type dependency = 
+type dependency =
   {
-    package_name : Bsb_pkg_types.t ; 
-    package_install_path : string ; 
+    package_name : Bsb_pkg_types.t ;
+    package_install_path : string ;
   }
-type dependencies = dependency list 
+type dependencies = dependency list
 
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
 type compilation_kind_t = Js | Bytecode | Native
 
-type reason_react_jsx = 
+type reason_react_jsx =
   | Jsx_v2
   | Jsx_v3
   (* string option  *)
@@ -51,33 +51,33 @@ type ppx = {
   name : string;
   args : string list
 }
-type t = 
+type t =
   {
-    package_name : string ; 
+    package_name : string ;
     (* [captial-package] *)
-    namespace : string option; 
+    namespace : string option;
     (* CapitalPackage *)
-    external_includes : string list ; 
+    external_includes : string list ;
     bsc_flags : string list ;
     ppx_files : ppx list ;
     pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
-    built_in_dependency : dependency option; 
+    built_in_dependency : dependency option;
     warning : Bsb_warning.t;
-    (*TODO: maybe we should always resolve bs-platform 
-      so that we can calculate correct relative path in 
+    (*TODO: maybe we should always resolve bs-platform
+      so that we can calculate correct relative path in
       [.merlin]
     *)
     refmt : refmt;
     js_post_build_cmd : string option;
-    package_specs : Bsb_package_specs.t ; 
+    package_specs : Bsb_package_specs.t ;
     file_groups : Bsb_file_groups.t;
     files_to_install : Hash_set_string.t ;
-    generate_merlin : bool ; 
+    generate_merlin : bool ;
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
-    generators : command Map_string.t ; 
+    generators : command Map_string.t ;
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option;

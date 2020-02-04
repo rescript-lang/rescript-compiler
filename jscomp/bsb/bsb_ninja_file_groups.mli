@@ -22,9 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 val handle_files_per_dir :
   out_channel ->
   bs_suffix:bool ->
@@ -32,5 +29,6 @@ val handle_files_per_dir :
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->
   files_to_install:Hash_set_string.t ->
-  namespace:string option -> 
-  Bsb_file_groups.file_group -> unit
+  namespace:string option ->
+  Bsb_file_groups.file_group ->
+  unit

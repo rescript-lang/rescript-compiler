@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,32 +17,23 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-(** [scan .. cxt json]
-    entry is to the [sources] in the schema    
-    given a root, return an object which is
-    all relative paths, this function will do the IO
-*)
 val scan :
-  toplevel: bool -> 
-  root: string ->  
-  cut_generators: bool -> 
-  namespace : string option -> 
-  bs_suffix:bool -> 
+  toplevel:bool ->
+  root:string ->
+  cut_generators:bool ->
+  namespace:string option ->
+  bs_suffix:bool ->
   ignored_dirs:Set_string.t ->
-  Ext_json_types.t ->   
-  Bsb_file_groups.t * int 
+  Ext_json_types.t ->
+  Bsb_file_groups.t * int
+(** [scan .. cxt json] entry is to the [sources] in the schema given a root,
+    return an object which is all relative paths, this function will do the IO *)
 
-(** This function has some duplication 
-  from [scan],
-  the parsing assuming the format is 
-  already valid
-*) 
-val clean_re_js:  
-  string -> unit 
+val clean_re_js : string -> unit
+(** This function has some duplication from [scan], the parsing assuming the
+    format is already valid *)
