@@ -18,6 +18,15 @@
                 "in-source": {
                     "type": "boolean",
                     "description": "Default: false."
+                },
+                "suffix" : {
+                    "enum" : [
+                        ".js",
+                        ".mjs",
+                        ".bs.js",
+                        ".bs.mjs"
+                    ],
+                    "description": "suffix of generated JavaScript files, default varies by 'module' and 'in-source'"
                 }
             },
             "required": [
@@ -482,13 +491,6 @@
                 "type": "string"
             },
             "description": "(Not needed usually) arguments to pass to `refmt` above. Default: `[\"--print\", \"binary\"]`."
-        },
-        "suffix" : {
-            "enum" : [
-                ".js",
-                ".bs.js"
-            ],
-            "description": "suffix of generated js files, default to [.js] "
         }
     },
     "additionalProperties": false,
