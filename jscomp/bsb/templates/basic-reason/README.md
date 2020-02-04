@@ -16,7 +16,7 @@ npm run build
 
 ```bash
 # for yarn
-yarn
+yarn start
 
 # for npm
 npm run start
