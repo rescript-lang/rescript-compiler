@@ -549,6 +549,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#typeof" -> Pjs_typeof
         | "#fn_run"  -> 
           Pjs_fn_run(Ext_pervasives.nat_of_string_exn p.prim_native_name)
+        | "#full_apply" ->
+          Pfull_apply  
         | "#method_run" -> Pmethod_run
         | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method (Ext_pervasives.nat_of_string_exn p.prim_native_name)
@@ -556,8 +558,18 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
       in
-      let args = Ext_list.map args convert_aux in
-      prim ~primitive ~args loc
+      if primitive = Pfull_apply then
+        match args with 
+        | [app] -> 
+          begin match convert_aux app with 
+          | Lapply {ap_func; ap_args}
+            -> prim ~primitive ~args:(ap_func::ap_args) loc
+          | _ -> assert false 
+          end
+        | _ -> assert false  
+      else
+        let args = Ext_list.map args convert_aux in
+        prim ~primitive ~args loc
   and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->

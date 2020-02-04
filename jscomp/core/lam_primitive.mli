@@ -150,6 +150,7 @@ type t =
     { block : string ; args : string list; arity : int}
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
+  | Pfull_apply 
   | Pmethod_run
   | Pjs_fn_method of int 
   | Pundefined_to_opt
