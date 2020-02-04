@@ -11,8 +11,8 @@ var Ext_bytes_test = require("./ext_bytes_test.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function split_by($staropt$star, is_delim, str) {
-  var keep_empty = $staropt$star !== undefined ? $staropt$star : false;
+function split_by(keep_emptyOpt, is_delim, str) {
+  var keep_empty = keep_emptyOpt !== undefined ? keep_emptyOpt : false;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -273,8 +273,8 @@ function unsafe_is_sub(sub, i, s, j, len) {
 
 var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
 
-function find($staropt$star, sub, s) {
-  var start = $staropt$star !== undefined ? $staropt$star : 0;
+function find(startOpt, sub, s) {
+  var start = startOpt !== undefined ? startOpt : 0;
   var n = sub.length;
   var s_len = s.length;
   var i = start;

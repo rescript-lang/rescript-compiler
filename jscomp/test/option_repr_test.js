@@ -38,8 +38,8 @@ function f1(u) {
   }
 }
 
-function f2(x, y, $staropt$star, param) {
-  var z = $staropt$star !== undefined ? $staropt$star : 3;
+function f2(x, y, zOpt, param) {
+  var z = zOpt !== undefined ? zOpt : 3;
   console.log(x);
   if (y !== undefined) {
     return y + z | 0;
@@ -80,8 +80,8 @@ var randomized = {
   contents: false
 };
 
-function create($staropt$star, param) {
-  var random = $staropt$star !== undefined ? $staropt$star : randomized.contents;
+function create(randomOpt, param) {
+  var random = randomOpt !== undefined ? randomOpt : randomized.contents;
   if (random) {
     return 2;
   } else {
@@ -91,9 +91,9 @@ function create($staropt$star, param) {
 
 var ff = create(false, /* () */0);
 
-function f13($staropt$star, $staropt$star$1, param) {
-  var x = $staropt$star !== undefined ? $staropt$star : 3;
-  var y = $staropt$star$1 !== undefined ? $staropt$star$1 : 4;
+function f13(xOpt, yOpt, param) {
+  var x = xOpt !== undefined ? xOpt : 3;
+  var y = yOpt !== undefined ? yOpt : 4;
   return x + y | 0;
 }
 

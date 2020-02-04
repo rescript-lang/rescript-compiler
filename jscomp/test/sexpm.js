@@ -344,8 +344,8 @@ var ID_MONAD = {
   $great$great$eq: $great$great$eq
 };
 
-function make($staropt$star, refill) {
-  var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
+function make(bufsizeOpt, refill) {
+  var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return {
           buf: Caml_bytes.caml_create_bytes(bufsize$1),
@@ -948,8 +948,8 @@ function parse_file_list(filename) {
 
 function MakeDecode(funarg) {
   var $great$great$eq = funarg.$great$great$eq;
-  var make = function ($staropt$star, refill) {
-    var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
+  var make = function (bufsizeOpt, refill) {
+    var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return {
             buf: Caml_bytes.caml_create_bytes(bufsize$1),

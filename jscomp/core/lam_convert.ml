@@ -402,7 +402,24 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 
 let may_depend = Lam_module_ident.Hash_set.add
 
-
+let rec rename_optional_parameters map params  (body : Lambda.lambda) = 
+  match body with 
+  | Llet(k,value_kind,id, (Lifthenelse(
+      Lprim(p,[Lvar ({name = "*opt*"} as opt)],p_loc), 
+        Lprim(p1,[Lvar ({name = "*opt*"} as opt2)],x_loc), f)),rest)
+    when Ident.same opt opt2 && List.mem opt params 
+    ->
+    let map, rest = rename_optional_parameters map params rest in 
+    let new_id = Ident.create (id.name ^ "Opt") in 
+    Map_ident.add map opt new_id,
+    Lambda.Llet(k,value_kind,id, 
+    (Lifthenelse(
+      Lprim(p,[Lvar new_id],p_loc), 
+        Lprim(p1,[Lvar new_id],x_loc), f)),rest)
+  | _ -> 
+    map, body
+  
+  
 let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
   let alias_tbl = Hash_ident.create 64 in
   let exit_map = Hash_int.create 0 in
@@ -436,7 +453,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with
-    | _ when s = "#is_none" -> 
+    | _ when s = "#is_not_none" -> 
       prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux ) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
@@ -544,11 +561,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->
-      let var = Hash_ident.find_default alias_tbl x x in
-      if Ident.persistent var then
-        Lam.global_module var
-      else
-        Lam.var var
+      Lam.var (Hash_ident.find_default alias_tbl x x)
     | Lconst x ->
       Lam.const (Lam_constant_convert.convert_constant x )
     | Lapply 
@@ -560,9 +573,17 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     {kind; params; body }
       ->  
       assert (kind = Curried);
-      Lam.function_
-            ~arity:(List.length params)  ~params
-            ~body:(convert_aux body)
+      let new_map,body = rename_optional_parameters Map_ident.empty params body in 
+      if Map_ident.is_empty new_map then
+        Lam.function_
+          ~arity:(List.length params)  ~params
+          ~body:(convert_aux body)
+      else 
+        let params = Ext_list.map params (fun x -> Map_ident.find_default new_map x x) in 
+        Lam.function_
+          ~arity:(List.length params)  ~params
+          ~body:(convert_aux body)
+
     | Llet 
       (kind,_value_kind, id,e,body) (*FIXME*)
       -> convert_let kind id e body
@@ -604,15 +625,12 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       (Ext_list.map_snd cases convert_aux)
       (Ext_option.map default convert_aux)
     | Lstaticraise (id,[]) ->
-        (match Hash_int.find_opt exit_map id  with
-        | None -> Lam.staticraise id []
-        | Some new_id -> Lam.staticraise new_id [])      
+        Lam.staticraise (Hash_int.find_default exit_map id id) []
     | Lstaticraise (id, args) ->
       Lam.staticraise id (Ext_list.map args convert_aux )
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
-      -> (* peep-hole [i] aliased to [j] *)
-      let new_i = Hash_int.find_default exit_map j j in
-      Hash_int.add exit_map i new_i ;
+      -> (* peep-hole [i] aliased to [j] *)      
+      Hash_int.add exit_map i (Hash_int.find_default exit_map j j);
       convert_aux b
     | Lstaticcatch (b, (i, ids), handler) ->
       Lam.staticcatch (convert_aux b) (i,ids) (convert_aux handler)
@@ -672,14 +690,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       if Set_ident.mem exports id then
         Lam.let_ kind id (Lam.var new_u) (convert_aux body)
       else convert_aux body
-    | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
-      ->
-      Hash_ident.add alias_tbl id u;
-      may_depend may_depends (Lam_module_ident.of_ml u);
-      if Set_ident.mem exports id then
-        Lam.let_ kind id (Lam.var u) (convert_aux body)
-      else convert_aux body
-
     | _, _ -> 
       let new_e = convert_aux e in 
       let new_body = convert_aux body in 

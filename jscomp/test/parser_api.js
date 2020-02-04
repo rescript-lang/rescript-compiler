@@ -3685,10 +3685,10 @@ function print_phanton_error_prefix(ppf) {
   return Format.pp_print_as(ppf, error_prefix.length + 2 | 0, "");
 }
 
-function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
-  var loc = $staropt$star !== undefined ? $staropt$star : none;
-  var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
+function errorf(locOpt, subOpt, if_highlightOpt, fmt) {
+  var loc = locOpt !== undefined ? locOpt : none;
+  var sub = subOpt !== undefined ? subOpt : /* [] */0;
+  var if_highlight = if_highlightOpt !== undefined ? if_highlightOpt : "";
   return pp_ksprintf(print_phanton_error_prefix, (function (msg) {
                 return {
                         loc: loc,
@@ -3699,10 +3699,10 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
               }), fmt);
 }
 
-function error($staropt$star, $staropt$star$1, $staropt$star$2, msg) {
-  var loc = $staropt$star !== undefined ? $staropt$star : none;
-  var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
+function error(locOpt, subOpt, if_highlightOpt, msg) {
+  var loc = locOpt !== undefined ? locOpt : none;
+  var sub = subOpt !== undefined ? subOpt : /* [] */0;
+  var if_highlight = if_highlightOpt !== undefined ? if_highlightOpt : "";
   return {
           loc: loc,
           msg: msg,
@@ -3898,10 +3898,10 @@ register_error_of_exn((function (param) {
         
       }));
 
-function raise_errorf($staropt$star, $staropt$star$1, $staropt$star$2) {
-  var loc = $staropt$star !== undefined ? $staropt$star : none;
-  var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
+function raise_errorf(locOpt, subOpt, if_highlightOpt) {
+  var loc = locOpt !== undefined ? locOpt : none;
+  var sub = subOpt !== undefined ? subOpt : /* [] */0;
+  var if_highlight = if_highlightOpt !== undefined ? if_highlightOpt : "";
   var partial_arg = print_phanton_error_prefix;
   return (function (param) {
       return pp_ksprintf(partial_arg, (function (msg) {
@@ -4576,9 +4576,9 @@ function with_default_loc(l, f) {
   }
 }
 
-function mk($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           ptyp_desc: d,
           ptyp_loc: loc,
@@ -4697,9 +4697,9 @@ var Typ = {
   force_poly: force_poly
 };
 
-function mk$1($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$1(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           ppat_desc: d,
           ppat_loc: loc,
@@ -4829,9 +4829,9 @@ var Pat = {
   extension: extension$1
 };
 
-function mk$2($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$2(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           pexp_desc: d,
           pexp_loc: loc,
@@ -5071,9 +5071,9 @@ function $$case(lhs, guard, rhs) {
         };
 }
 
-function mk$3($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$3(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           pmty_desc: d,
           pmty_loc: loc,
@@ -5139,9 +5139,9 @@ var Mty = {
   extension: extension$3
 };
 
-function mk$4($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$4(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           pmod_desc: d,
           pmod_loc: loc,
@@ -5210,8 +5210,8 @@ var Mod = {
   extension: extension$4
 };
 
-function mk$5($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
+function mk$5(locOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
   return {
           psig_desc: d,
           psig_loc: loc
@@ -5262,8 +5262,8 @@ function class_type(loc, a) {
   return mk$5(loc, /* Psig_class_type */Block.__(10, [a]));
 }
 
-function extension$5(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function extension$5(loc, attrsOpt, a) {
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return mk$5(loc, /* Psig_extension */Block.__(12, [
                 a,
                 attrs
@@ -5300,16 +5300,16 @@ var Sig = {
   text: text
 };
 
-function mk$6($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
+function mk$6(locOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
   return {
           pstr_desc: d,
           pstr_loc: loc
         };
 }
 
-function $$eval(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function $$eval(loc, attrsOpt, a) {
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return mk$6(loc, /* Pstr_eval */Block.__(0, [
                 a,
                 attrs
@@ -5367,8 +5367,8 @@ function include_$1(loc, a) {
   return mk$6(loc, /* Pstr_include */Block.__(12, [a]));
 }
 
-function extension$6(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function extension$6(loc, attrsOpt, a) {
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return mk$6(loc, /* Pstr_extension */Block.__(14, [
                 a,
                 attrs
@@ -5407,9 +5407,9 @@ var Str = {
   text: text$1
 };
 
-function mk$7($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$7(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           pcl_desc: d,
           pcl_loc: loc,
@@ -5486,9 +5486,9 @@ var Cl = {
   extension: extension$7
 };
 
-function mk$8($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+function mk$8(locOpt, attrsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
   return {
           pcty_desc: d,
           pcty_loc: loc,
@@ -5539,10 +5539,10 @@ var Cty = {
   extension: extension$8
 };
 
-function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+function mk$9(locOpt, attrsOpt, docsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
   return {
           pctf_desc: d,
           pctf_loc: loc,
@@ -5604,10 +5604,10 @@ function attr$7(d, a) {
         };
 }
 
-function mk$10($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+function mk$10(locOpt, attrsOpt, docsOpt, d) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
   return {
           pcf_desc: d,
           pcf_loc: loc,
@@ -5686,11 +5686,11 @@ function attr$8(d, a) {
         };
 }
 
-function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var prim = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function mk$11(locOpt, attrsOpt, docsOpt, primOpt, name, typ) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var prim = primOpt !== undefined ? primOpt : /* [] */0;
   return {
           pval_name: name,
           pval_type: typ,
@@ -5704,11 +5704,11 @@ var Val = {
   mk: mk$11
 };
 
-function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function mk$12(locOpt, attrsOpt, docsOpt, textOpt, name, typ) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
   return {
           pmd_name: name,
           pmd_type: typ,
@@ -5721,11 +5721,11 @@ var Md = {
   mk: mk$12
 };
 
-function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function mk$13(locOpt, attrsOpt, docsOpt, textOpt, typ, name) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
   return {
           pmtd_name: name,
           pmtd_type: typ,
@@ -5738,11 +5738,11 @@ var Mtd = {
   mk: mk$13
 };
 
-function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function mk$14(locOpt, attrsOpt, docsOpt, textOpt, name, expr) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
   return {
           pmb_name: name,
           pmb_expr: expr,
@@ -5755,11 +5755,11 @@ var Mb = {
   mk: mk$14
 };
 
-function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var override = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Fresh */1;
+function mk$15(locOpt, attrsOpt, docsOpt, overrideOpt, lid) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var override = overrideOpt !== undefined ? overrideOpt : /* Fresh */1;
   return {
           popen_lid: lid,
           popen_override: override,
@@ -5772,10 +5772,10 @@ var Opn = {
   mk: mk$15
 };
 
-function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+function mk$16(locOpt, attrsOpt, docsOpt, mexpr) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
   return {
           pincl_mod: mexpr,
           pincl_loc: loc,
@@ -5787,11 +5787,11 @@ var Incl = {
   mk: mk$16
 };
 
-function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function mk$17(locOpt, attrsOpt, docsOpt, textOpt, pat, expr) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
   return {
           pvb_pat: pat,
           pvb_expr: expr,
@@ -5804,13 +5804,13 @@ var Vb = {
   mk: mk$17
 };
 
-function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
-  var virt = $staropt$star$4 !== undefined ? $staropt$star$4 : /* Concrete */1;
-  var params = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
+function mk$18(locOpt, attrsOpt, docsOpt, textOpt, virtOpt, paramsOpt, name, expr) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
+  var virt = virtOpt !== undefined ? virtOpt : /* Concrete */1;
+  var params = paramsOpt !== undefined ? paramsOpt : /* [] */0;
   return {
           pci_virt: virt,
           pci_params: params,
@@ -5825,15 +5825,15 @@ var Ci = {
   mk: mk$18
 };
 
-function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
-  var params = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
-  var cstrs = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
-  var kind = $staropt$star$6 !== undefined ? $staropt$star$6 : /* Ptype_abstract */0;
-  var priv = $staropt$star$7 !== undefined ? $staropt$star$7 : /* Public */1;
+function mk$19(locOpt, attrsOpt, docsOpt, textOpt, paramsOpt, cstrsOpt, kindOpt, privOpt, manifest, name) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var text = textOpt !== undefined ? textOpt : /* [] */0;
+  var params = paramsOpt !== undefined ? paramsOpt : /* [] */0;
+  var cstrs = cstrsOpt !== undefined ? cstrsOpt : /* [] */0;
+  var kind = kindOpt !== undefined ? kindOpt : /* Ptype_abstract */0;
+  var priv = privOpt !== undefined ? privOpt : /* Public */1;
   return {
           ptype_name: name,
           ptype_params: params,
@@ -5846,11 +5846,11 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         };
 }
 
-function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
-  var args = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+function constructor(locOpt, attrsOpt, infoOpt, argsOpt, res, name) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var info = infoOpt !== undefined ? Caml_option.valFromOption(infoOpt) : undefined;
+  var args = argsOpt !== undefined ? argsOpt : /* [] */0;
   return {
           pcd_name: name,
           pcd_args: args,
@@ -5860,11 +5860,11 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
         };
 }
 
-function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
-  var mut = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Immutable */0;
+function field$1(locOpt, attrsOpt, infoOpt, mutOpt, name, typ) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var info = infoOpt !== undefined ? Caml_option.valFromOption(infoOpt) : undefined;
+  var mut = mutOpt !== undefined ? mutOpt : /* Immutable */0;
   return {
           pld_name: name,
           pld_mutable: mut,
@@ -5880,11 +5880,11 @@ var Type = {
   field: field$1
 };
 
-function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
-  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  var docs = $staropt$star$1 !== undefined ? $staropt$star$1 : empty_docs;
-  var params = $staropt$star$2 !== undefined ? $staropt$star$2 : /* [] */0;
-  var priv = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Public */1;
+function mk$20(attrsOpt, docsOpt, paramsOpt, privOpt, path, constructors) {
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var params = paramsOpt !== undefined ? paramsOpt : /* [] */0;
+  var priv = privOpt !== undefined ? privOpt : /* Public */1;
   return {
           ptyext_path: path,
           ptyext_params: params,
@@ -5894,11 +5894,11 @@ function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
         };
 }
 
-function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, kind) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
+function constructor$1(locOpt, attrsOpt, docsOpt, infoOpt, name, kind) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var info = infoOpt !== undefined ? Caml_option.valFromOption(infoOpt) : undefined;
   return {
           pext_name: name,
           pext_kind: kind,
@@ -5907,12 +5907,12 @@ function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt
         };
 }
 
-function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, res, name) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
-  var args = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
+function decl(locOpt, attrsOpt, docsOpt, infoOpt, argsOpt, res, name) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var info = infoOpt !== undefined ? Caml_option.valFromOption(infoOpt) : undefined;
+  var args = argsOpt !== undefined ? argsOpt : /* [] */0;
   return {
           pext_name: name,
           pext_kind: /* Pext_decl */Block.__(0, [
@@ -5924,11 +5924,11 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
         };
 }
 
-function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, lid) {
-  var loc = $staropt$star !== undefined ? $staropt$star : default_loc.contents;
-  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
+function rebind(locOpt, attrsOpt, docsOpt, infoOpt, name, lid) {
+  var loc = locOpt !== undefined ? locOpt : default_loc.contents;
+  var attrs = attrsOpt !== undefined ? attrsOpt : /* [] */0;
+  var docs = docsOpt !== undefined ? docsOpt : empty_docs;
+  var info = infoOpt !== undefined ? Caml_option.valFromOption(infoOpt) : undefined;
   return {
           pext_name: name,
           pext_kind: /* Pext_rebind */Block.__(1, [lid]),

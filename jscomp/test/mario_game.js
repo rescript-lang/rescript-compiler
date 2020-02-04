@@ -16,13 +16,13 @@ var Actors = { };
 
 var Dom_html = { };
 
-function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, max_frames, max_ticks, frame_size, src_offset) {
-  var loop = $staropt$star !== undefined ? $staropt$star : true;
-  var bbox_offset = $staropt$star$1 !== undefined ? $staropt$star$1 : /* tuple */[
+function setup_sprite(loopOpt, bbox_offsetOpt, bbox_sizeOpt, img_src, max_frames, max_ticks, frame_size, src_offset) {
+  var loop = loopOpt !== undefined ? loopOpt : true;
+  var bbox_offset = bbox_offsetOpt !== undefined ? bbox_offsetOpt : /* tuple */[
       0,
       0
     ];
-  var bbox_size = $staropt$star$2 !== undefined ? $staropt$star$2 : /* tuple */[
+  var bbox_size = bbox_sizeOpt !== undefined ? bbox_sizeOpt : /* tuple */[
       0,
       0
     ];
@@ -721,12 +721,12 @@ function make_type$1(typ, ctx) {
   }
 }
 
-function make$1($staropt$star, $staropt$star$1, part_type, pos, ctx) {
-  var vel = $staropt$star !== undefined ? $staropt$star : /* tuple */[
+function make$1(velOpt, accOpt, part_type, pos, ctx) {
+  var vel = velOpt !== undefined ? velOpt : /* tuple */[
       0,
       0
     ];
-  var acc = $staropt$star$1 !== undefined ? $staropt$star$1 : /* tuple */[
+  var acc = accOpt !== undefined ? accOpt : /* tuple */[
       0,
       0
     ];
@@ -799,9 +799,9 @@ var id_counter = {
   contents: Pervasives.min_int
 };
 
-function setup_obj($staropt$star, $staropt$star$1, param) {
-  var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
-  var speed = $staropt$star$1 !== undefined ? $staropt$star$1 : 1;
+function setup_obj(has_gravityOpt, speedOpt, param) {
+  var has_gravity = has_gravityOpt !== undefined ? has_gravityOpt : true;
+  var speed = speedOpt !== undefined ? speedOpt : 1;
   return {
           has_gravity: has_gravity,
           speed: speed
@@ -1095,8 +1095,8 @@ function normalize_origin(pos, spr) {
   return /* () */0;
 }
 
-function collide_block($staropt$star, dir, obj) {
-  var check_x = $staropt$star !== undefined ? $staropt$star : true;
+function collide_block(check_xOpt, dir, obj) {
+  var check_x = check_xOpt !== undefined ? check_xOpt : true;
   if (dir !== 1) {
     if (dir !== 0) {
       if (check_x) {
