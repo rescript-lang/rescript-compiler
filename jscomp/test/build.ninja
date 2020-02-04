@@ -563,6 +563,7 @@ build test/test_bool_equal.cmi test/test_bool_equal.cmj : cc test/test_bool_equa
 build test/test_bs_this.cmi test/test_bs_this.cmj : cc test/test_bs_this.ml | $stdlib
 build test/test_bug.cmi test/test_bug.cmj : cc test/test_bug.ml | $stdlib
 build test/test_bytes.cmi test/test_bytes.cmj : cc test/test_bytes.ml | $stdlib
+build test/test_case_opt_collision.cmi test/test_case_opt_collision.cmj : cc test/test_case_opt_collision.ml | test/mt.cmj $stdlib
 build test/test_case_set.cmi test/test_case_set.cmj : cc test/test_case_set.ml | $stdlib
 build test/test_char.cmi test/test_char.cmj : cc test/test_char.ml | $stdlib
 build test/test_closure.cmi test/test_closure.cmj : cc test/test_closure.ml | $stdlib
