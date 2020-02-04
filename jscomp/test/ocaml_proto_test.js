@@ -22,8 +22,8 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function field($staropt$star, label, number, type_, name) {
-  var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function field(optionsOpt, label, number, type_, name) {
+  var options = optionsOpt !== undefined ? optionsOpt : /* [] */0;
   return {
           field_name: name,
           field_number: number,
@@ -33,8 +33,8 @@ function field($staropt$star, label, number, type_, name) {
         };
 }
 
-function map($staropt$star, number, key_type, value_type, name) {
-  var map_options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function map(map_optionsOpt, number, key_type, value_type, name) {
+  var map_options = map_optionsOpt !== undefined ? map_optionsOpt : /* [] */0;
   return {
           map_name: name,
           map_number: number,
@@ -44,8 +44,8 @@ function map($staropt$star, number, key_type, value_type, name) {
         };
 }
 
-function oneof_field($staropt$star, number, type_, name) {
-  var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function oneof_field(optionsOpt, number, type_, name) {
+  var options = optionsOpt !== undefined ? optionsOpt : /* [] */0;
   return {
           field_name: name,
           field_number: number,
@@ -1265,9 +1265,9 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      var $staropt$star = _4;
+      var enum_valuesOpt = _4;
       var enum_name = _2[1];
-      var enum_values = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+      var enum_values = enum_valuesOpt !== undefined ? enum_valuesOpt : /* [] */0;
       message_counter.contents = message_counter.contents + 1 | 0;
       return {
               enum_id: message_counter.contents,

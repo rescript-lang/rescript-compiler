@@ -50,8 +50,8 @@ function from_suites(name, suite) {
   }
 }
 
-function close_enough($staropt$star, a, b) {
-  var threshold = $staropt$star !== undefined ? $staropt$star : 0.0000001;
+function close_enough(thresholdOpt, a, b) {
+  var threshold = thresholdOpt !== undefined ? thresholdOpt : 0.0000001;
   return Math.abs(a - b) < threshold;
 }
 

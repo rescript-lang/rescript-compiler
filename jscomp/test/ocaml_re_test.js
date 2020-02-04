@@ -2896,9 +2896,9 @@ function compile(r) {
         };
 }
 
-function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
-  var pos = $staropt$star !== undefined ? $staropt$star : 0;
-  var len = $staropt$star$1 !== undefined ? $staropt$star$1 : -1;
+function exec_internal(name, posOpt, lenOpt, groups, re, s) {
+  var pos = posOpt !== undefined ? posOpt : 0;
+  var len = lenOpt !== undefined ? lenOpt : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -3743,8 +3743,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   return res;
 }
 
-function re($staropt$star, pat) {
-  var flags = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function re(flagsOpt, pat) {
+  var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
           if (param !== 601676297) {
             if (param >= 613575188) {
@@ -3756,9 +3756,9 @@ function re($staropt$star, pat) {
             return /* Caseless */604571177;
           }
         }), flags);
-  var $staropt$star$1 = opts;
+  var optsOpt = opts;
   var s = pat;
-  var opts$1 = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
   var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), s);
   var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2(/* :: */[
           /* Start */8,

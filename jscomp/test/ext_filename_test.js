@@ -61,8 +61,8 @@ function absolute_path(s) {
   return aux(s$2);
 }
 
-function chop_extension($staropt$star, name) {
-  var loc = $staropt$star !== undefined ? $staropt$star : "";
+function chop_extension(locOpt, name) {
+  var loc = locOpt !== undefined ? locOpt : "";
   try {
     return Filename.chop_extension(name);
   }
