@@ -36,8 +36,8 @@ val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> Set_string.t
 
 type ('a,'b) t 
 
-val sort_files_by_dependencies :
-  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t
+(* val sort_files_by_dependencies :
+  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t *)
 
 
 val sort :
@@ -56,7 +56,7 @@ val collect_ast_map :
   string list ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
-  ('a, 'b) t Map_string.t
+  ('a, 'b) t Map_string.t 
 
 type dir_spec = 
   { dir : string ;

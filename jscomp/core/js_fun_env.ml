@@ -68,8 +68,8 @@ let make ?immutable_mask n = {
   bound_loop_mutable_values =Set_ident.empty;
 }
 
-let is_tailcalled x = 
-  x.immutable_mask <> All_immutable_and_no_tail_call
+(* let is_tailcalled x = 
+  x.immutable_mask <> All_immutable_and_no_tail_call *)
 
 let mark_unused  t i = 
   t.used_mask.(i) <- true
@@ -77,13 +77,13 @@ let mark_unused  t i =
 let get_unused t i = 
   t.used_mask.(i)
 
-let get_length t = Array.length t.used_mask
+(* let get_length t = Array.length t.used_mask *)
 
-let to_string env =  
+(* let to_string env =  
   String.concat "," 
     (Ext_list.map (Set_ident.elements  env.unbounded ) 
       (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
-       )
+       ) *)
 
 let get_mutable_params (params : Ident.t list) (x : t ) = 
   match x.immutable_mask with 
@@ -110,4 +110,4 @@ let get_lexical_scope env =
 (* TODO:  can be refined if it 
     only enclose toplevel variables 
  *)
-let is_empty t = Set_ident.is_empty t.unbounded
+(* let is_empty t = Set_ident.is_empty t.unbounded *)

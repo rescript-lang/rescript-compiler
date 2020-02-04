@@ -168,4 +168,4 @@ let rewrite (map :   _ Hash_ident.t)
   aux lam
 
 
-let refresh lam = rewrite (Hash_ident.create 17 : Lam.t Hash_ident.t ) lam
+(* let refresh lam = rewrite (Hash_ident.create 17 : Lam.t Hash_ident.t ) lam *)

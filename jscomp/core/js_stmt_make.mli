@@ -36,8 +36,8 @@ type t = J.statement
 
 
 (** empty statement, block of length 0 *)  
-val empty_stmt :  
-  t
+(* val empty_stmt :  
+  t *)
 
 val throw_stmt :
   ?comment:string  ->
@@ -113,11 +113,11 @@ val define_variable :
   t
 
 (** created an alias expression *)  
-val alias_variable :
+(* val alias_variable :
   ?comment:string ->
   exp:J.expression ->
   Ident.t ->
-  t
+  t *)
 
 val assign :
   ?comment:string  ->
@@ -132,10 +132,10 @@ val assign :
     done in ..
   ]}
 *)  
-val assign_unit :
+(* val assign_unit :
   ?comment:string  ->
   J.ident ->
-  t
+  t *)
 
 (** used in cases like 
   {[
@@ -144,10 +144,10 @@ val assign_unit :
     done in ..
   ]}
 *)  
-val declare_unit :
+(* val declare_unit :
   ?comment:string  ->
   J.ident ->
-  t
+  t *)
 
 val while_ :
   ?comment:string ->
@@ -185,16 +185,17 @@ val return_stmt :
   t
 
 
-val return_unit : t list
+(* val return_unit : t list *)
 (** for ocaml function which returns unit 
     it will be compiled into [return 0] in js *)
 
 (** if [label] is not set, it will default to empty *)  
-val continue_stmt :
+(* val continue_stmt :
   ?comment:string  ->
   ?label:J.label ->
   unit  ->
-  t
+  t *)
+  
 val continue_ : t   
 
 val debugger_block :  t list

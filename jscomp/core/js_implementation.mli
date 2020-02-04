@@ -41,11 +41,11 @@ val interface_mliast : Format.formatter -> string -> string  -> unit
   
 
 
-val after_parsing_impl : 
+(* val after_parsing_impl : 
   Format.formatter -> 
   string ->
   Parsetree.structure ->
-  unit
+  unit *)
 (** [after_parsing_impl ppf sourcefile outputprefix ast ]
     Make sure you need run {!Compmisc.init_path} for set up
     Used in eval

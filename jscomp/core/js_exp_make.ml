@@ -326,8 +326,8 @@ let fuse_to_seq x xs =
   if xs = [] then x  
   else Ext_list.fold_left xs x seq 
 
-let empty_string_literal : t = 
-  {expression_desc = Str (true,""); comment = None}  
+(* let empty_string_literal : t = 
+  {expression_desc = Str (true,""); comment = None}   *)
 
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
@@ -506,7 +506,7 @@ let function_length ?comment (e : t) : t =
   | _ -> { expression_desc = Length (e, Function) ; comment }
 
 (** no dependency introduced *)
-let js_global_dot ?comment (x : string)  (e1 : string) : t = 
+(* let js_global_dot ?comment (x : string)  (e1 : string) : t = 
   { expression_desc = Static_index (js_global x,  e1,None); comment} 
 
 let char_of_int ?comment (v : t) : t = 
@@ -514,7 +514,7 @@ let char_of_int ?comment (v : t) : t =
   | Number (Int {i; _}) ->
     str  (String.make 1(Char.chr (Int32.to_int i)))
   | Char_to_int v -> v 
-  | _ ->  {comment ; expression_desc = Char_of_int v}
+  | _ ->  {comment ; expression_desc = Char_of_int v} *)
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 

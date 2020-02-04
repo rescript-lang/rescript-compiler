@@ -59,7 +59,7 @@ let set_cross_module_inline b =
 
 let diagnose = ref false
 let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
+(* let set_diagnose b = diagnose := b *)
 
 (* let (//) = Filename.concat *)
 

@@ -8354,7 +8354,7 @@ module Ext_format : sig
 
 type t = private Format.formatter
 
-val string : t -> string -> unit
+(* val string : t -> string -> unit
 
 val break : t -> unit
 
@@ -8383,7 +8383,7 @@ val newline : t -> unit
 
 val to_out_channel : out_channel -> t
 
-val flush : t -> unit -> unit
+val flush : t -> unit -> unit *)
 
 val pp_print_queue :
   ?pp_sep:(Format.formatter -> unit -> unit) ->
@@ -8426,17 +8426,17 @@ open Format
 
 type t = formatter
 
-let string = pp_print_string
+(* let string = pp_print_string *)
 
-let break = fun fmt -> pp_print_break fmt 0 0
+(* let break = fun fmt -> pp_print_break fmt 0 0
 
 let break1 =
   fun fmt -> pp_print_break fmt 0 1 
 
 let space  fmt  = 
   pp_print_break fmt 1 0
-
-let vgroup fmt indent u = 
+ *)
+(* let vgroup fmt indent u = 
   pp_open_vbox fmt indent; 
   let v = u () in
   pp_close_box fmt ();
@@ -8465,9 +8465,9 @@ let bracket fmt u =
   string fmt "[";
   let v = u () in
   string fmt "]";
-  v 
+  v  *)
 
-let paren_group st n action = 
+(* let paren_group st n action = 
   group st n (fun _ -> paren st action)
 
 let brace_group st n action = 
@@ -8492,7 +8492,7 @@ let to_out_channel = formatter_of_out_channel
 (* let non_breaking_space  fmt = string fmt " " *)
 (* let set_needed_space_function _ _ = () *)
 let flush = pp_print_flush
-
+ *)
 (* let list = pp_print_list *)
 
 let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
@@ -11281,7 +11281,7 @@ val get_cross_module_inline : unit -> bool
 (** diagnose option *)
 val diagnose : bool ref 
 val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
+(* val set_diagnose : bool -> unit  *)
 
 
 (** options for builtin ppx *)
@@ -11398,7 +11398,7 @@ let set_cross_module_inline b =
 
 let diagnose = ref false
 let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
+(* let set_diagnose b = diagnose := b *)
 
 (* let (//) = Filename.concat *)
 
@@ -12179,8 +12179,8 @@ val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> Set_string.t
 
 type ('a,'b) t 
 
-val sort_files_by_dependencies :
-  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t
+(* val sort_files_by_dependencies :
+  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t *)
 
 
 val sort :
@@ -12199,7 +12199,7 @@ val collect_ast_map :
   string list ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
-  ('a, 'b) t Map_string.t
+  ('a, 'b) t Map_string.t 
 
 type dir_spec = 
   { dir : string ;

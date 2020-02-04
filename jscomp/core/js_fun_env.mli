@@ -37,9 +37,9 @@ type t
 
 val make :  ?immutable_mask:bool array  -> int -> t
 
-val is_tailcalled : t -> bool
+(* val is_tailcalled : t -> bool
 
-val is_empty : t -> bool 
+val is_empty : t -> bool  *)
 
 val set_unbounded :  t -> Set_ident.t -> unit
 
@@ -49,7 +49,7 @@ val set_lexical_scope : t -> Set_ident.t -> unit
 
 val get_lexical_scope : t -> Set_ident.t
 
-val to_string : t -> string
+(* val to_string : t -> string *)
 
 val mark_unused : t -> int -> unit 
 
@@ -59,4 +59,4 @@ val get_mutable_params : Ident.t list -> t -> Ident.t list
 
 val get_unbounded : t -> Set_ident.t
 
-val get_length : t -> int
+(* val get_length : t -> int *)
