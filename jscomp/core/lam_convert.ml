@@ -402,7 +402,24 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 
 let may_depend = Lam_module_ident.Hash_set.add
 
-
+let rec rename_optional_parameters map params  (body : Lambda.lambda) = 
+  match body with 
+  | Llet(k,value_kind,id, (Lifthenelse(
+      Lprim(p,[Lvar ({name = "*opt*"} as opt)],p_loc), 
+        Lprim(p1,[Lvar ({name = "*opt*"} as opt2)],x_loc), f)),rest)
+    when Ident.same opt opt2 && List.mem opt params 
+    ->
+    let map, rest = rename_optional_parameters map params rest in 
+    let new_id = Ident.create (id.name ^ "Opt") in 
+    Map_ident.add map opt new_id,
+    Lambda.Llet(k,value_kind,id, 
+    (Lifthenelse(
+      Lprim(p,[Lvar new_id],p_loc), 
+        Lprim(p1,[Lvar new_id],x_loc), f)),rest)
+  | _ -> 
+    map, body
+  
+  
 let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
   let alias_tbl = Hash_ident.create 64 in
   let exit_map = Hash_int.create 0 in
@@ -436,7 +453,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with
-    | _ when s = "#is_none" -> 
+    | _ when s = "#is_not_none" -> 
       prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux ) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
@@ -556,9 +573,17 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     {kind; params; body }
       ->  
       assert (kind = Curried);
-      Lam.function_
-            ~arity:(List.length params)  ~params
-            ~body:(convert_aux body)
+      let new_map,body = rename_optional_parameters Map_ident.empty params body in 
+      if Map_ident.is_empty new_map then
+        Lam.function_
+          ~arity:(List.length params)  ~params
+          ~body:(convert_aux body)
+      else 
+        let params = Ext_list.map params (fun x -> Map_ident.find_default new_map x x) in 
+        Lam.function_
+          ~arity:(List.length params)  ~params
+          ~body:(convert_aux body)
+
     | Llet 
       (kind,_value_kind, id,e,body) (*FIXME*)
       -> convert_let kind id e body
