@@ -64,10 +64,19 @@ module Internal = struct
  type (-'arg, + 'result) fn
  (** Js uncurried function *)
 
+ external unsafeInvariantApply : 'a -> 'a = "#full_apply"
+
+
+ type 'a fn3 = {
+    _3 : 'a
+ } 
+ [@@ocaml.unboxed]  
  external fn_mk0 : (unit -> 'a0) -> (([`Arity_0], 'a0) fn) = "#fn_mk" "0"
  external fn_mk1 : ('a0 -> 'a1) -> (([`Arity_1 of ( 'a0 )], 'a1) fn) = "#fn_mk" "1"
  external fn_mk2 : ('a0 -> 'a1 -> 'a2) -> (([`Arity_2 of ( 'a0 * 'a1 )], 'a2) fn) = "#fn_mk" "2"
- external fn_mk3 : ('a0 -> 'a1 -> 'a2 -> 'a3) -> (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) = "#fn_mk" "3"
+ (* external fn_mk3 : ('a0 -> 'a1 -> 'a2 -> 'a3) -> (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) = "#fn_mk" "3" *)
+ (* external fn_mk3 : 'a -> 'a fn3 = "%identity" *)
+ (* have to unfold with Uncurry3 instead of Obj.magic *)
  external fn_mk4 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4) -> (([`Arity_4 of ( 'a0 * 'a1 * 'a2 * 'a3 )], 'a4) fn) = "#fn_mk" "4"
  external fn_mk5 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5) -> (([`Arity_5 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 )], 'a5) fn) = "#fn_mk" "5"
  external fn_mk6 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -> (([`Arity_6 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 )], 'a6) fn) = "#fn_mk" "6"
@@ -77,7 +86,12 @@ module Internal = struct
  external fn_run0 : (([`Arity_0], 'a0) fn) ->  'a0  = "#fn_run" "0"
  external fn_run1 : (([`Arity_1 of ( 'a0 )], 'a1) fn) -> ('a0 -> 'a1 ) = "#fn_run" "1"
  external fn_run2 : (([`Arity_2 of ( 'a0 * 'a1 )], 'a2) fn) -> ('a0 -> 'a1 -> 'a2 ) = "#fn_run" "2"
- external fn_run3 : (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 ) = "#fn_run" "3"
+ external opaque3 : 'a fn3 -> 'a = "%opaque" 
+ (* external fn_run3 : (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 ) = "#fn_run" "3" *)
+ (* external fn_run3 : ('a0 -> 'a1 -> 'a2 -> 'a3) fn3 -> ('a0 -> 'a1 -> 'a2 -> 'a3) = "#fn_run" "3" *)
+ (* - need unroll to support label types
+    - need tell backend full application
+ *)
  external fn_run4 : (([`Arity_4 of ( 'a0 * 'a1 * 'a2 * 'a3 )], 'a4) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 ) = "#fn_run" "4"
  external fn_run5 : (([`Arity_5 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 )], 'a5) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 ) = "#fn_run" "5"
  external fn_run6 : (([`Arity_6 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 )], 'a6) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 ) = "#fn_run" "6"

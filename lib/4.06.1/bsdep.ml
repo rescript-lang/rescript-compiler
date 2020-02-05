@@ -138,7 +138,7 @@ module Bsc_warnings
 
   - 102 Bs_polymorphic_comparison
 *)
-let defaults_w = "+a-4-9-40-41-42-50-102"
+let defaults_w = "+a-4-9-40-41-42-50-61-102"
 let defaults_warn_error = "-a+5+101";;
 (*TODO: add +10*)
 
@@ -42976,8 +42976,11 @@ let generic_lift txt loc args result  =
   in 
   Typ.constr ~loc {txt ; loc} xs
 
-let lift_curry_type  loc   = 
-  generic_lift   uncurry_type_id loc
+let lift_curry_type  loc  args_type result_type  = 
+  if List.length args_type = 3 then   
+    Typ.constr ({txt = Longident.parse "Js.Internal.fn3"; loc })
+    [Ext_list.fold_right args_type result_type (fun a b -> Typ.arrow Nolabel a b)]
+  else generic_lift   uncurry_type_id loc args_type result_type
 
 let lift_method_type loc  = 
   generic_lift  method_id loc
@@ -43038,17 +43041,26 @@ let generic_apply  kind loc
       0, cb loc obj, []
     | _ -> 
       len,  cb loc obj, args in
-  if arity < 10 then 
-    let txt = 
+  if arity < 10 then     
       match kind with 
-      | `Fn | `PropertyFn ->  
-        Longident.Ldot (Ast_literal.Lid.js_internal, 
-                        Literals.fn_run ^ string_of_int arity)
+      | `Fn | `PropertyFn ->          
+          if arity = 3 then 
+            let txt = 
+              Longident.parse "Js.Internal.opaque3" in 
+            Parsetree.Pexp_apply (
+              Exp.ident {txt = Longident.parse "Js.Internal.unsafeInvariantApply"; loc},
+            [Nolabel,
+            Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
+            Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
+          else 
+            let txt = Longident.Ldot (Ast_literal.Lid.js_internal, 
+                            Literals.fn_run ^ string_of_int arity) in 
+                            Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))                        
       | `Method -> 
-        Longident.Ldot(Lident "Js_internalOO",
-                       Literals.method_run ^ string_of_int arity
-                      ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
+        let txt = Longident.Ldot(Lident "Js_internalOO",
+             Literals.method_run ^ string_of_int arity
+            ) in 
+            Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -43068,6 +43080,7 @@ let generic_apply  kind loc
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
+(* `#@` operator *)
 let property_apply loc self obj name args  
   =  generic_apply `PropertyFn loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
@@ -43170,13 +43183,19 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
       end
     | `Method_callback -> len  in 
   if arity < 10  then 
-    let txt = 
+    
       match kind with 
       | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
+        if arity = 3 then 
+          Parsetree.Pexp_record ([{txt = Longident.parse "Js.Internal._3"; loc},body], None)
+        else 
+        let txt = 
+          Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity) in 
+        Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
       | `Method_callback -> 
-        Longident.Ldot (Lident "Js_internalOO",  Literals.fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
+        let txt =
+          Longident.Ldot (Lident "Js_internalOO",  Literals.fn_method ^ string_of_int arity) in
+        Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
 
   else 
     let pval_prim =

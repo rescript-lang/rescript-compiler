@@ -686,6 +686,7 @@ build test/undef_regression_test.cmi test/undef_regression_test.cmj : cc test/un
 build test/unicode_type_error.cmi test/unicode_type_error.cmj : cc test/unicode_type_error.ml | $stdlib
 build test/unitest_string.cmi test/unitest_string.cmj : cc test/unitest_string.ml | $stdlib
 build test/unsafe_full_apply_primitive.cmi test/unsafe_full_apply_primitive.cmj : cc test/unsafe_full_apply_primitive.ml | $stdlib
+build test/unsafe_full_apply_primitive_call.cmi test/unsafe_full_apply_primitive_call.cmj : cc test/unsafe_full_apply_primitive_call.ml | test/unsafe_full_apply_primitive.cmj $stdlib
 build test/unsafe_obj_external.cmi test/unsafe_obj_external.cmj : cc test/unsafe_obj_external.ml | $stdlib
 build test/unsafe_ppx_test.cmi test/unsafe_ppx_test.cmj : cc test/unsafe_ppx_test.ml | test/ffi_js_test.cmj test/mt.cmj $stdlib
 build test/unsafe_this.cmj : cc_cmi test/unsafe_this.ml | test/unsafe_this.cmi $stdlib

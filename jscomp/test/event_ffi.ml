@@ -45,17 +45,17 @@ let h00 x = Js.Internal.fn_run0 x ()
 let h1 x = Js.Internal.fn_run1 x 
 let h10 x = Js.Internal.fn_run1 x 3  
 
-let h30 x = Js.Internal.fn_run3 x 3 3   
-let h33 x = Js.Internal.fn_run3 x 1 2 3
-let h34 x = Js.Internal.fn_run3 x 1 2 3 4
+(* let h30 x = Js.Internal.fn_run3 x 3 3    *)
+(* let h33 x = Js.Internal.fn_run3 x 1 2 3
+let h34 x = Js.Internal.fn_run3 x 1 2 3 4 *)
 
 
-let ocaml_run = Js.Internal.fn_run3 (Js.Internal.fn_mk3 (fun x y z -> x + y + z)) 1 
+(* let ocaml_run = Js.Internal.fn_run3 (Js.Internal.fn_mk3 (fun x y z -> x + y + z)) 1  *)
 
 let a0 = Js.Internal.fn_mk0 (fun  _ -> Js.log "hi")
 let a1 () = Js.Internal.fn_mk1 (fun x -> x )
 let a2 = Js.Internal.fn_mk2 (fun x y -> x + y)
-let a3 = Js.Internal.fn_mk3 (fun x y z -> x + y + z )
+(* let a3 = Js.Internal.fn_mk3 (fun x y z -> x + y + z ) *)
 let a4 = Js.Internal.fn_mk4 (fun x y z -> let u = x * x + y * y + z * z in fun d -> u + d)
 
 let a44 = Js.Internal.fn_mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d)
