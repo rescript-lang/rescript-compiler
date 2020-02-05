@@ -7,7 +7,7 @@ var WS_PORT = 9999; // configurable
 function setUpWebScoket() {
     if (wsReloader == null || wsReloader.readyState !== 1) {
         try {
-            wsReloader = new WebSocket(`ws://localhost:${WS_PORT}`)
+            wsReloader = new WebSocket(`ws://${window.location.hostname}:${WS_PORT}`)
             wsReloader.onmessage = (msg) => {
                 var newData = JSON.parse(msg.data).LAST_SUCCESS_BUILD_STAMP
                 if (newData > LAST_SUCCESS_BUILD_STAMP) {
