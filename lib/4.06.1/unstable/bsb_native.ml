@@ -5092,6 +5092,7 @@ module Bsb_config : sig
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 
+val lib_lit : string
 val lib_js : string 
 val lib_bs : string
 val lib_es6 : string 
@@ -9863,9 +9864,9 @@ let walk_all_deps dir cb =
   walk_all_deps_aux visited [] true dir cb 
 
 end
-module Bsb_global_paths : sig 
-#1 "bsb_global_paths.mli"
-(* Copyright (C) 2019 - Authors of BuckleScript
+module Bsb_default : sig 
+#1 "bsb_default.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9890,25 +9891,18 @@ module Bsb_global_paths : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val cwd : string 
 
-val bsc_dir : string 
 
-val vendor_bsc : string
 
-val vendor_ninja : string
+val main_entries : Bsb_config_types.entries_t list
 
-val vendor_bsdep : string
+val ocaml_flags : string list
 
-val vendor_bsppx : string
-
-val ocaml_dir : string
-
-val ocaml_lib_dir : string
+val ocaml_dependencies : string list
 
 end = struct
-#1 "bsb_global_paths.ml"
-(* Copyright (C) 2019 - Authors of BuckleScript
+#1 "bsb_default.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9932,57 +9926,17 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let cwd = Sys.getcwd ()
 
 
-(**
-   If [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done.
-   
-   If [Sys.executable_name] is not an absolute path, for example
-   (rlwrap ./ocaml)
-   it is a relative path, 
-   it needs be adapted based on cwd
-
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
-
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
-*)
-
-let bsc_dir  = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
-
-let vendor_bsc =        
-  Filename.concat bsc_dir  "bsc.exe"
 
 
-let vendor_ninja = 
-    Filename.concat bsc_dir "ninja.exe"      
-
-let vendor_bsdep =     
-  Filename.concat bsc_dir "bsb_helper.exe"
 
 
-let vendor_bsppx = 
-  Filename.concat bsc_dir "bsppx.exe"
-  
-;; assert (Sys.file_exists bsc_dir)       
+let main_entries = []
 
-let ocaml_version = "4.06.1"
+let ocaml_flags = ["-g"; "-bin-annot"; "-color"; "always"]
 
-let ocaml_dir =
-  Filename.(concat (concat (dirname bsc_dir) "native") ocaml_version)
-
-let ocaml_lib_dir =
-  Filename.(concat (concat ocaml_dir "lib") "ocaml")
+let ocaml_dependencies = ["unix"; "bigarray"; ]
 
 end
 module Bsb_db_util : sig 
@@ -10527,6 +10481,7 @@ let prune_staled_bs_js_files
     (context : cxt) 
     (cur_sources : _ Map_string.t ) 
      : unit =     
+     (* Doesn't need to use Bsb_global_backend.lib_artifacts_dir because this is only for JS. *)
   let lib_parent = 
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
       context.cwd in 
@@ -10817,326 +10772,6 @@ let clean_re_js root =
   | _  -> () 
   | exception _ -> ()    
   
-end
-module Bsb_unix : sig 
-#1 "bsb_unix.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
-
-
-val command_fatal_error : command -> int -> unit 
-
-val run_command_execv :   command -> int
-
-
-val remove_dir_recursive : string -> unit 
-end = struct
-#1 "bsb_unix.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
-
-
-let log cmd = 
-  Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
-  Bsb_log.info "@{<info>Cmd:@} " ; 
-  Bsb_log.info_args cmd.args
-
-let command_fatal_error cmd eid =
-  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
-  exit eid 
-
-let run_command_execv_unix  cmd : int =
-  match Unix.fork () with 
-  | 0 -> 
-    log cmd;
-    Unix.chdir cmd.cwd;
-    Unix.execv cmd.cmd cmd.args 
-  | pid -> 
-    match Unix.waitpid [] pid  with 
-    | _, process_status ->       
-      match process_status with 
-      | Unix.WEXITED eid ->
-        eid    
-      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
-        2 
-
-
-
-(** TODO: the args are not quoted, here 
-    we are calling a very limited set of `bsb` commands, so that 
-    we are safe
-*)
-let run_command_execv_win (cmd : command) =
-  let old_cwd = Unix.getcwd () in 
-  log cmd;
-  Unix.chdir cmd.cwd;
-  let eid =
-    Sys.command 
-      (String.concat Ext_string.single_space 
-         ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
-  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
-  Unix.chdir old_cwd;
-  eid
-
-
-let run_command_execv = 
-  if Ext_sys.is_windows_or_cygwin then 
-    run_command_execv_win
-  else run_command_execv_unix  
-(** it assume you have permissions, so always catch it to fail 
-    gracefully
-*)
-
-let rec remove_dir_recursive dir = 
-  if Sys.is_directory dir then 
-    begin 
-      let files = Sys.readdir dir in 
-      for i = 0 to Array.length files - 1 do 
-        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
-      done ;
-      Unix.rmdir dir 
-    end
-  else Sys.remove dir 
-
-end
-module Bsb_clean : sig 
-#1 "bsb_clean.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** clean bsc generated artifacts.
-  TODO: clean staled in source js artifacts
-*)
-
-val clean_bs_deps : 
-  string -> 
-  unit
-
-val clean_self : 
-  string -> 
-  unit
-
-end = struct
-#1 "bsb_clean.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let (//) = Ext_path.combine
-
-
-let ninja_clean  proj_dir =
-  try
-    let cmd = Bsb_global_paths.vendor_ninja in
-    let cwd = proj_dir // Bsb_config.lib_bs in
-    if Sys.file_exists cwd then
-      let eid =
-        Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
-      if eid <> 0 then
-        Bsb_log.warn "@{<warning>ninja clean failed@}@."
-  with  e ->
-    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
-
-let clean_bs_garbage proj_dir =
-  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
-  let try_remove x =
-    let x = proj_dir // x in
-    if Sys.file_exists x then
-      Bsb_unix.remove_dir_recursive x  in
-  try
-    Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
-    ninja_clean  proj_dir ;
-    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-  with
-    e ->
-    Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
-
-
-let clean_bs_deps  proj_dir =
-  Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
-      (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.proj_dir
-    )
-
-let clean_self  proj_dir = 
-    clean_bs_garbage  proj_dir
-
-end
-module Bsb_default : sig 
-#1 "bsb_default.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-val main_entries : Bsb_config_types.entries_t list
-
-val ocaml_flags : string list
-
-val ocaml_dependencies : string list
-
-end = struct
-#1 "bsb_default.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let main_entries = []
-
-let ocaml_flags = ["-g"; "-bin-annot"; "-color"; "always"]
-
-let ocaml_dependencies = ["unix"; "bigarray"; ]
-
 end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
@@ -11665,6 +11300,462 @@ let interpret_json
     Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
 end
+module Bsb_global_paths : sig 
+#1 "bsb_global_paths.mli"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val cwd : string 
+
+val bsc_dir : string 
+
+val vendor_bsc : string
+
+val vendor_ninja : string
+
+val vendor_bsdep : string
+
+val vendor_bsppx : string
+
+val ocaml_dir : string
+
+val ocaml_lib_dir : string
+
+end = struct
+#1 "bsb_global_paths.ml"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let cwd = Sys.getcwd ()
+
+
+(**
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
+
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+
+let bsc_dir  = 
+  Filename.dirname 
+    (Ext_path.normalize_absolute_path 
+       (Ext_path.combine cwd  Sys.executable_name))
+
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
+
+
+let vendor_ninja = 
+    Filename.concat bsc_dir "ninja.exe"      
+
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
+
+
+let vendor_bsppx = 
+  Filename.concat bsc_dir "bsppx.exe"
+  
+;; assert (Sys.file_exists bsc_dir)       
+
+let ocaml_version = "4.06.1"
+
+let ocaml_dir =
+  Filename.(concat (concat (dirname bsc_dir) "native") ocaml_version)
+
+let ocaml_lib_dir =
+  Filename.(concat (concat ocaml_dir "lib") "ocaml")
+
+end
+module Bsb_global_backend : sig 
+#1 "bsb_global_backend.mli"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val cmdline_backend : Bsb_config_types.compilation_kind_t option ref
+
+val backend : Bsb_config_types.compilation_kind_t Lazy.t
+
+val lib_artifacts_dir : string Lazy.t
+
+end = struct
+#1 "bsb_global_backend.ml"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let cmdline_backend = ref None
+
+(* If cmdline_backend is set we use it, otherwise we use the first entry's backend. *)
+let backend = lazy
+  begin match !cmdline_backend with
+  | Some cmdline_backend -> cmdline_backend
+  | None -> 
+    let entries = Bsb_config_parse.entries_from_bsconfig Bsb_global_paths.cwd in 
+    let new_cmdline_backend = begin match entries with
+      | []                                       -> Bsb_config_types.Js
+      | (Bsb_config_types.JsTarget _) :: _       -> Bsb_config_types.Js
+      | (Bsb_config_types.NativeTarget _) :: _   -> Bsb_config_types.Native
+      | (Bsb_config_types.BytecodeTarget _) :: _ -> Bsb_config_types.Bytecode
+    end in
+    cmdline_backend := Some (new_cmdline_backend);
+    new_cmdline_backend
+  end
+
+
+let (//) = Ext_path.combine
+
+let lib_artifacts_dir = lazy
+  begin match Lazy.force backend with
+  | Bsb_config_types.Js       -> Bsb_config.lib_bs
+  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "native"
+  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bytecode"
+  end
+
+end
+module Bsb_unix : sig 
+#1 "bsb_unix.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type command = 
+  { 
+    cmd : string ;
+    cwd : string ; 
+    args : string array 
+  }  
+
+
+val command_fatal_error : command -> int -> unit 
+
+val run_command_execv :   command -> int
+
+
+val remove_dir_recursive : string -> unit 
+end = struct
+#1 "bsb_unix.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type command = 
+  { 
+    cmd : string ;
+    cwd : string ; 
+    args : string array 
+  }  
+
+
+let log cmd = 
+  Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
+  Bsb_log.info "@{<info>Cmd:@} " ; 
+  Bsb_log.info_args cmd.args
+
+let command_fatal_error cmd eid =
+  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+  exit eid 
+
+let run_command_execv_unix  cmd : int =
+  match Unix.fork () with 
+  | 0 -> 
+    log cmd;
+    Unix.chdir cmd.cwd;
+    Unix.execv cmd.cmd cmd.args 
+  | pid -> 
+    match Unix.waitpid [] pid  with 
+    | _, process_status ->       
+      match process_status with 
+      | Unix.WEXITED eid ->
+        eid    
+      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
+        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
+        2 
+
+
+
+(** TODO: the args are not quoted, here 
+    we are calling a very limited set of `bsb` commands, so that 
+    we are safe
+*)
+let run_command_execv_win (cmd : command) =
+  let old_cwd = Unix.getcwd () in 
+  log cmd;
+  Unix.chdir cmd.cwd;
+  let eid =
+    Sys.command 
+      (String.concat Ext_string.single_space 
+         ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
+  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
+  Unix.chdir old_cwd;
+  eid
+
+
+let run_command_execv = 
+  if Ext_sys.is_windows_or_cygwin then 
+    run_command_execv_win
+  else run_command_execv_unix  
+(** it assume you have permissions, so always catch it to fail 
+    gracefully
+*)
+
+let rec remove_dir_recursive dir = 
+  if Sys.is_directory dir then 
+    begin 
+      let files = Sys.readdir dir in 
+      for i = 0 to Array.length files - 1 do 
+        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
+      done ;
+      Unix.rmdir dir 
+    end
+  else Sys.remove dir 
+
+end
+module Bsb_clean : sig 
+#1 "bsb_clean.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** clean bsc generated artifacts.
+  TODO: clean staled in source js artifacts
+*)
+
+val clean_bs_deps : 
+  string -> 
+  unit
+
+val clean_self : 
+  string -> 
+  unit
+
+end = struct
+#1 "bsb_clean.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let (//) = Ext_path.combine
+
+
+let ninja_clean  proj_dir =
+  try
+    let cmd = Bsb_global_paths.vendor_ninja in
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let cwd = proj_dir // lib_artifacts_dir in
+    if Sys.file_exists cwd then
+      let eid =
+        Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
+      if eid <> 0 then
+        Bsb_log.warn "@{<warning>ninja clean failed@}@."
+  with  e ->
+    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
+
+let clean_bs_garbage proj_dir =
+  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
+  let try_remove x =
+    let x = proj_dir // x in
+    if Sys.file_exists x then
+      Bsb_unix.remove_dir_recursive x  in
+  try
+    Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
+    ninja_clean  proj_dir ;
+    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
+  with
+    e ->
+    Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
+
+
+let clean_bs_deps  proj_dir =
+  Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
+      (* whether top or not always do the cleaning *)
+      clean_bs_garbage  pkg_cxt.proj_dir
+    )
+
+let clean_self  proj_dir = 
+    clean_bs_garbage  proj_dir
+
+end
 module Ext_io : sig 
 #1 "ext_io.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11872,8 +11963,9 @@ let output_merlin_namespace buffer ns=
   match ns with 
   | None -> ()
   | Some x -> 
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Buffer.add_string buffer merlin_b ; 
-    Buffer.add_string buffer Bsb_config.lib_bs ; 
+    Buffer.add_string buffer lib_artifacts_dir ; 
     Buffer.add_string buffer merlin_flg ; 
     Buffer.add_string buffer "-open ";
     Buffer.add_string buffer x 
@@ -11967,13 +12059,14 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
             Buffer.add_string buffer merlin_b;
-            Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+            Buffer.add_string buffer (lib_artifacts_dir//x.dir) ;
           end
       ) ;
     Buffer.add_string buffer "\n";
@@ -13543,8 +13636,8 @@ let output_ninja_and_namespace_map
       number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
-  
-  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -13665,7 +13758,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        per_proj_dir // Bsb_config.lib_bs  in
+        per_proj_dir // lib_artifacts_dir  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
@@ -14092,7 +14185,8 @@ let regenerate_ninja
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
@@ -16553,6 +16647,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace.make ?ns:namespace x in 
@@ -16560,10 +16655,10 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;
     install ~destdir (cwd // x ^  Literals.suffix_rei) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
   let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
@@ -16587,6 +16682,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
@@ -16597,7 +16693,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
               ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = proj_dir // Bsb_config.lib_bs;
+             cwd = proj_dir // lib_artifacts_dir;
              args 
             } in     
           let eid =
@@ -16627,6 +16723,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some config -> config.package_specs in
   build_bs_deps cwd deps ninja_args
+
 end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
@@ -16735,20 +16832,21 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
-           path_ninja "-C" Bsb_config.lib_bs
+           path_ninja "-C" lib_artifacts_dir
        else   
          let args = 
            Array.append 
-             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             [| path_ninja ; "-C"; lib_artifacts_dir|]
              ninja_args in 
          Ext_string.concat_array Ext_string.single_space args)
   else
-    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let ninja_common_args = [|"ninja.exe"; "-C"; lib_artifacts_dir |] in 
     let args = 
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 

@@ -5092,6 +5092,7 @@ module Bsb_config : sig
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 
+val lib_lit : string
 val lib_js : string 
 val lib_bs : string
 val lib_es6 : string 
@@ -9863,6 +9864,81 @@ let walk_all_deps dir cb =
   walk_all_deps_aux visited [] true dir cb 
 
 end
+module Bsb_global_backend : sig 
+#1 "bsb_global_backend.mli"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val cmdline_backend : Bsb_config_types.compilation_kind_t option ref
+
+val backend : Bsb_config_types.compilation_kind_t Lazy.t
+
+val lib_artifacts_dir : string Lazy.t
+
+end = struct
+#1 "bsb_global_backend.ml"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let backend = lazy Bsb_config_types.Js
+
+(* No cost of using this variable below when compiled in JS mode. *)
+let cmdline_backend = ref (Some Bsb_config_types.Js)
+
+
+let (//) = Ext_path.combine
+
+let lib_artifacts_dir = lazy
+  begin match Lazy.force backend with
+  | Bsb_config_types.Js       -> Bsb_config.lib_bs
+  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "native"
+  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bytecode"
+  end
+
+end
 module Bsb_global_paths : sig 
 #1 "bsb_global_paths.mli"
 (* Copyright (C) 2019 - Authors of BuckleScript
@@ -10527,6 +10603,7 @@ let prune_staled_bs_js_files
     (context : cxt) 
     (cur_sources : _ Map_string.t ) 
      : unit =     
+     (* Doesn't need to use Bsb_global_backend.lib_artifacts_dir because this is only for JS. *)
   let lib_parent = 
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
       context.cwd in 
@@ -11029,7 +11106,8 @@ let (//) = Ext_path.combine
 let ninja_clean  proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
-    let cwd = proj_dir // Bsb_config.lib_bs in
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
         Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
@@ -11763,8 +11841,9 @@ let output_merlin_namespace buffer ns=
   match ns with 
   | None -> ()
   | Some x -> 
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Buffer.add_string buffer merlin_b ; 
-    Buffer.add_string buffer Bsb_config.lib_bs ; 
+    Buffer.add_string buffer lib_artifacts_dir ; 
     Buffer.add_string buffer merlin_flg ; 
     Buffer.add_string buffer "-open ";
     Buffer.add_string buffer x 
@@ -11858,13 +11937,14 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
+    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
     Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
             Buffer.add_string buffer merlin_b;
-            Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+            Buffer.add_string buffer (lib_artifacts_dir//x.dir) ;
           end
       ) ;
     Buffer.add_string buffer "\n";
@@ -13434,8 +13514,8 @@ let output_ninja_and_namespace_map
       number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
-  
-  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -13556,7 +13636,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        per_proj_dir // Bsb_config.lib_bs  in
+        per_proj_dir // lib_artifacts_dir  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
@@ -13983,7 +14063,8 @@ let regenerate_ninja
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_bs_dir =  per_proj_dir // Bsb_config.lib_bs  in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
@@ -16444,6 +16525,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace.make ?ns:namespace x in 
@@ -16451,10 +16533,10 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;
     install ~destdir (cwd // x ^  Literals.suffix_rei) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
+    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
   let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
@@ -16478,6 +16560,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
@@ -16488,7 +16571,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
               ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = proj_dir // Bsb_config.lib_bs;
+             cwd = proj_dir // lib_artifacts_dir;
              args 
             } in     
           let eid =
@@ -16518,6 +16601,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some config -> config.package_specs in
   build_bs_deps cwd deps ninja_args
+
 end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
@@ -16622,20 +16706,21 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
       (if ninja_args_len = 0 then      
          Ext_string.inter3
-           path_ninja "-C" Bsb_config.lib_bs
+           path_ninja "-C" lib_artifacts_dir
        else   
          let args = 
            Array.append 
-             [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+             [| path_ninja ; "-C"; lib_artifacts_dir|]
              ninja_args in 
          Ext_string.concat_array Ext_string.single_space args)
   else
-    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let ninja_common_args = [|"ninja.exe"; "-C"; lib_artifacts_dir |] in 
     let args = 
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
