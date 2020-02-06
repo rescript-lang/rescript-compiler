@@ -119,8 +119,8 @@ let output_ninja_and_namespace_map
       number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
-  
-  let cwd_lib_bs = per_proj_dir // Bsb_config.lib_bs in 
+  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let g_pkg_flg , g_ns_flg = 
@@ -241,7 +241,7 @@ let output_ninja_and_namespace_map
 
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
-        per_proj_dir // Bsb_config.lib_bs  in
+        per_proj_dir // lib_artifacts_dir  in
       Bsb_namespace_map_gen.output 
         ~dir:namespace_dir ns
         bs_file_groups; 
