@@ -38798,7 +38798,7 @@ let generic_lift txt loc (args : typ list) (result : typ) =
   in 
   Typ.constr ~loc {txt ; loc} xs
 
-let lift_curry_type  loc args_type result_type  = 
+let lift_curry_type  loc (args_type : typ list) (result_type : typ) = 
   generic_lift   uncurry_type_id loc args_type result_type
 
 let lift_method_type loc  args_type result_type = 
@@ -41900,63 +41900,6 @@ let restore_exp
         } : Parsetree.expression)
     ) 
 end
-module Ast_exp : sig 
-#1 "ast_exp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end = struct
-#1 "ast_exp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end
 module Ast_external_mk : sig 
 #1 "ast_external_mk.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -44763,20 +44706,6 @@ val js_property :
   loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc
 
-val handle_debugger : 
-  loc -> Ast_payload.t -> Parsetree.expression_desc
-
-val handle_raw : 
-  kind : Js_raw_exp_info.raw_kind ->
-  loc -> 
-  Ast_payload.t -> 
-  Parsetree.expression
-
-val handle_external :
-  loc -> string -> Parsetree.expression 
-  
-val handle_raw_structure : 
-  loc -> Ast_payload.t -> Parsetree.structure_item
 
 val ocaml_obj_as_js_object :
   (Parsetree.pattern ->
@@ -44975,81 +44904,6 @@ let to_uncurry_fn   =
   generic_to_uncurry_exp `Fn
 let to_method_callback  = 
   generic_to_uncurry_exp `Method_callback 
-
-
-let handle_debugger loc (payload : Ast_payload.t) = 
-  match payload with 
-  | PStr [] -> 
-    Ast_external_mk.local_external_apply
-    loc 
-    ~pval_prim:["#debugger"]
-    ~pval_type:(Typ.arrow Nolabel (Typ.any ()) 
-      (Ast_literal.type_unit ())
-      )
-    [Ast_literal.val_unit ~loc ()]
-  | _ ->  
-    Location.raise_errorf ~loc "bs.debugger does not accept payload"
-
-
-
-let handle_raw ~kind loc payload =
-  begin match Ast_payload.raw_as_string_exp_exn 
-    ~kind payload with
-    | None ->
-      Location.raise_errorf ~loc
-        "bs.raw can only be applied to a string"
-    | Some exp ->
-      { exp with pexp_desc = Ast_external_mk.local_external_apply
-      loc ~pval_prim:["#raw_expr"]
-      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-      [exp]}
-  end
-let handle_raw_structure loc payload = 
-  begin match Ast_payload.raw_as_string_exp_exn 
-                ~kind:Raw_program payload with 
-  | Some exp 
-    ->     
-    Ast_helper.Str.eval 
-      { exp with pexp_desc =
-                   Ast_external_mk.local_external_apply
-                     loc ~pval_prim:["#raw_stmt"]
-                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-                     [exp]
-      }
-
-  | None
-    -> 
-    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-  end
-
-let handle_external loc (x : string) : Parsetree.expression = 
-  let raw_exp : Ast_exp.t = 
-    let str_exp = 
-      (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
-    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
-      loc ~pval_prim:["#raw_expr"]
-      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-      [str_exp]}   
-  in 
-  let empty = (* FIXME: the empty delimiter does not make sense*)
-    Exp.ident ~loc 
-    {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
-  in 
-  let undefined_typeof = 
-    Exp.ident {loc ; txt = Ldot(Lident "Js","undefinedToOption")} in 
-  let typeof = 
-    Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
-
-  Ast_compatible.app1 ~loc undefined_typeof (
-    Exp.ifthenelse ~loc
-    (Ast_compatible.app2 ~loc 
-      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
-        (Ast_compatible.app1 ~loc typeof raw_exp)      
-        (Ast_compatible.const_exp_string ~loc "undefined")
-        )      
-      empty
-      (Some raw_exp)
-  )
 
 
 
@@ -45598,6 +45452,216 @@ let app_exp_mapper
      )
 
 end
+module Ast_exp : sig 
+#1 "ast_exp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end = struct
+#1 "ast_exp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end
+module Ast_exp_handle_external : sig 
+#1 "ast_exp_handle_external.mli"
+(* Copyright (C) 2020 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val handle_external:
+  Location.t -> 
+  string -> 
+  Parsetree.expression
+
+val handle_debugger : 
+  Location.t -> Ast_payload.t -> Parsetree.expression_desc
+
+val handle_raw : 
+  kind : Js_raw_exp_info.raw_kind ->
+  Location.t -> 
+  Ast_payload.t -> 
+  Parsetree.expression
+
+val handle_raw_structure : 
+  Location.t -> Ast_payload.t -> Parsetree.structure_item
+
+end = struct
+#1 "ast_exp_handle_external.ml"
+(* Copyright (C) 2020 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+(*
+{[
+  Js.undefinedToOption 
+    (if Js.typeof x = "undefined" then undefined 
+    else x  )
+
+]}
+*)
+let handle_external loc (x : string) : Parsetree.expression = 
+  let raw_exp : Ast_exp.t = 
+    let str_exp = 
+      (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+    {str_exp with pexp_desc = Ast_external_mk.local_external_apply
+      loc ~pval_prim:["#raw_expr"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+      [str_exp]}   
+  in 
+  let empty = (* FIXME: the empty delimiter does not make sense*)
+    Exp.ident ~loc 
+    {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
+  in 
+  let undefined_typeof = 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","undefinedToOption")} in 
+  let typeof = 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
+
+  Ast_compatible.app1 ~loc undefined_typeof (
+    Exp.ifthenelse ~loc
+    (Ast_compatible.app2 ~loc 
+      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
+        (Ast_compatible.app1 ~loc typeof raw_exp)      
+        (Ast_compatible.const_exp_string ~loc "undefined")
+        )      
+      empty
+      (Some raw_exp)
+  )
+
+let handle_debugger loc (payload : Ast_payload.t) = 
+  match payload with 
+  | PStr [] -> 
+    Ast_external_mk.local_external_apply
+      loc 
+      ~pval_prim:["#debugger"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) 
+                    (Ast_literal.type_unit ())
+                 )
+      [Ast_literal.val_unit ~loc ()]
+  | _ ->  
+    Location.raise_errorf ~loc "bs.debugger does not accept payload"
+
+
+let handle_raw ~kind loc payload =
+  begin match Ast_payload.raw_as_string_exp_exn 
+                ~kind payload with
+  | None ->
+    Location.raise_errorf ~loc
+      "bs.raw can only be applied to a string"
+  | Some exp ->
+    { exp with pexp_desc = Ast_external_mk.local_external_apply
+                   loc ~pval_prim:["#raw_expr"]
+                   ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                   [exp]}
+  end
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.raw_as_string_exp_exn 
+                ~kind:Raw_program payload with 
+  | Some exp 
+    ->     
+    Ast_helper.Str.eval 
+      { exp with pexp_desc =
+                   Ast_external_mk.local_external_apply
+                     loc ~pval_prim:["#raw_stmt"]
+                     ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                     [exp]
+      }
+
+  | None
+    -> 
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  end
+
+end
 module Ast_exp_extension : sig 
 #1 "ast_exp_extension.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -45735,16 +45799,16 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                     loc ~pval_prim:["#raw_function"]
                     ~pval_type:(Typ.arrow Nolabel any_type any_type)
                     [str_exp]} 
-      | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
+      | _ ->   Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~kind:Raw_re loc payload)
+        (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
         (Ast_comb.to_js_re_type loc)
     | "bs.external" | "external" ->
       begin match Ast_payload.as_ident payload with 
         | Some {txt = Lident x}
-          -> Ast_util.handle_external loc x
+          -> Ast_exp_handle_external.handle_external loc x
         (* do we need support [%external gg.xx ] 
 
            {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
@@ -45865,7 +45929,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                     | "require" as name); loc}
           ->
           let exp =
-            Ast_util.handle_external loc (strip name)  in
+            Ast_exp_handle_external.handle_external loc (strip name)  in
           let typ =
             Ast_core_type.lift_option_type  
             (
@@ -45895,7 +45959,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
 
       end             
     | "bs.debugger"|"debugger" ->
-      {e with pexp_desc = Ast_util.handle_debugger loc payload}
+      {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
     | "bs.obj" | "obj" ->
       begin match payload with 
         | PStr [{pstr_desc = Pstr_eval (e,_)}]
@@ -47011,7 +47075,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
     ->
-    Ast_util.handle_raw_structure loc payload
+    Ast_exp_handle_external.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
     Ast_structure.dummy_item loc

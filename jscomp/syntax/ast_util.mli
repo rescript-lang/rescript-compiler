@@ -88,20 +88,6 @@ val js_property :
   loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc
 
-val handle_debugger : 
-  loc -> Ast_payload.t -> Parsetree.expression_desc
-
-val handle_raw : 
-  kind : Js_raw_exp_info.raw_kind ->
-  loc -> 
-  Ast_payload.t -> 
-  Parsetree.expression
-
-val handle_external :
-  loc -> string -> Parsetree.expression 
-  
-val handle_raw_structure : 
-  loc -> Ast_payload.t -> Parsetree.structure_item
 
 val ocaml_obj_as_js_object :
   (Parsetree.pattern ->

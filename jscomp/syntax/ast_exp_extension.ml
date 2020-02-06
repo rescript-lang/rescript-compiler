@@ -94,16 +94,16 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                     loc ~pval_prim:["#raw_function"]
                     ~pval_type:(Typ.arrow Nolabel any_type any_type)
                     [str_exp]} 
-      | _ ->   Ast_util.handle_raw ~kind:Raw_exp loc payload
+      | _ ->   Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
       end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~kind:Raw_re loc payload)
+        (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
         (Ast_comb.to_js_re_type loc)
     | "bs.external" | "external" ->
       begin match Ast_payload.as_ident payload with 
         | Some {txt = Lident x}
-          -> Ast_util.handle_external loc x
+          -> Ast_exp_handle_external.handle_external loc x
         (* do we need support [%external gg.xx ] 
 
            {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
@@ -224,7 +224,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                     | "require" as name); loc}
           ->
           let exp =
-            Ast_util.handle_external loc (strip name)  in
+            Ast_exp_handle_external.handle_external loc (strip name)  in
           let typ =
             Ast_core_type.lift_option_type  
             (
@@ -254,7 +254,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
 
       end             
     | "bs.debugger"|"debugger" ->
-      {e with pexp_desc = Ast_util.handle_debugger loc payload}
+      {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
     | "bs.obj" | "obj" ->
       begin match payload with 
         | PStr [{pstr_desc = Pstr_eval (e,_)}]

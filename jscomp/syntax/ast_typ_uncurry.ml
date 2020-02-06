@@ -60,7 +60,7 @@ let generic_lift txt loc (args : typ list) (result : typ) =
   in 
   Typ.constr ~loc {txt ; loc} xs
 
-let lift_curry_type  loc args_type result_type  = 
+let lift_curry_type  loc (args_type : typ list) (result_type : typ) = 
   generic_lift   uncurry_type_id loc args_type result_type
 
 let lift_method_type loc  args_type result_type = 
