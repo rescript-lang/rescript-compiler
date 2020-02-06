@@ -37,11 +37,7 @@ type uncurry_expression_gen =
   (Parsetree.pattern ->
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
-type uncurry_type_gen = 
-  (Asttypes.arg_label -> (* label for error checking *)
-   Parsetree.core_type ->
-   Parsetree.core_type  ->
-   Parsetree.core_type) cxt
+
 
 (** TODO: the interface is not reusable, it depends on too much context *)
 (** syntax: {[f arg0 arg1 [@bs]]}*)
@@ -79,23 +75,6 @@ val to_uncurry_fn : uncurry_expression_gen
     {[fun [@bs.this] obj pat pat1 -> body]}    
 *)
 val to_method_callback : uncurry_expression_gen
-
-
-(** syntax : 
-    {[ int -> int -> int [@bs]]}
-*)
-val to_uncurry_type : uncurry_type_gen
-  
-
-(** syntax
-    {[ method : int -> itn -> int ]}
-*)
-val to_method_type : uncurry_type_gen
-
-(** syntax:
-    {[ 'obj -> int -> int [@bs.this] ]}
-*)
-val to_method_callback_type : uncurry_type_gen
 
 
 

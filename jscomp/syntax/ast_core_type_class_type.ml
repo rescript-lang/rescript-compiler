@@ -73,7 +73,7 @@ let handle_class_type_field self
         match ty.ptyp_desc with 
         | Ptyp_arrow (label, args, body) 
           ->
-          Ast_util.to_method_type
+          Ast_typ_uncurry.to_method_type
             ty.ptyp_loc  self label args body
 
         | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
@@ -81,7 +81,7 @@ let handle_class_type_field self
           ->
           {ty with ptyp_desc = 
                      Ptyp_poly(strs,             
-                               Ast_util.to_method_type
+                               Ast_typ_uncurry.to_method_type
                                  ptyp_loc  self label args body  )}
         | _ -> 
           self.typ self ty
@@ -105,7 +105,7 @@ let handle_class_type_field self
          Pctf_method (name, 
                       private_flag,
                       virtual_flag,
-                      Ast_util.to_method_type
+                      Ast_typ_uncurry.to_method_type
                         loc self Nolabel ty
                         (Ast_literal.type_unit ~loc ())
                      );
@@ -147,11 +147,11 @@ let typ_mapper
     } ->
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | Uncurry _, ptyp_attributes ->
-        Ast_util.to_uncurry_type loc self label args body 
+        Ast_typ_uncurry.to_uncurry_type loc self label args body 
       | Meth_callback _, ptyp_attributes ->
-        Ast_util.to_method_callback_type loc self label args body
+        Ast_typ_uncurry.to_method_callback_type loc self label args body
       | Method _, ptyp_attributes ->
-        Ast_util.to_method_type loc self label args body
+        Ast_typ_uncurry.to_method_type loc self label args body
       | Nothing , _ -> 
         Bs_ast_mapper.default_mapper.typ self ty
     end
@@ -190,7 +190,7 @@ let typ_mapper
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Nolabel core_type 
+            Ast_compatible.object_field name attrs (Ast_typ_uncurry.to_method_type loc self Nolabel core_type 
               (Ast_literal.type_unit ~loc ())) in
           let not_getter_setter ty =
             let attrs, core_type =

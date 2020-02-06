@@ -26,66 +26,17 @@ open Ast_helper
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
 
+
+
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
-type uncurry_type_gen = 
-  (Asttypes.arg_label ->
-   Parsetree.core_type ->
-   Parsetree.core_type  ->
-   Parsetree.core_type) cxt
 
-let uncurry_type_id = 
-  Ast_literal.Lid.js_fn
- 
-let method_id  = 
-  Ast_literal.Lid.js_meth
 
-let method_call_back_id  = 
-  Ast_literal.Lid.js_meth_callback
 
-let arity_lit = "Arity_"
 
-let mk_args loc (n : int) (tys : Parsetree.core_type list) : Parsetree.core_type = 
-  Typ.variant ~loc 
-    [ Rtag (
-      {loc; txt = arity_lit ^ string_of_int n}
-      ,
-       [], (n = 0),  tys)] Closed None
-
-let generic_lift txt loc args result  = 
-  let xs =
-    match args with 
-    | [ ] -> [mk_args loc 0   [] ; result ]
-    | [ x ] -> [ mk_args loc 1 [x] ; result ] 
-    | _ -> 
-      [mk_args loc (List.length args ) [Typ.tuple ~loc args] ; result ]
-  in 
-  Typ.constr ~loc {txt ; loc} xs
-
-let lift_curry_type  loc   = 
-  generic_lift   uncurry_type_id loc
-
-let lift_method_type loc  = 
-  generic_lift  method_id loc
-
-let lift_js_method_callback loc
-  = 
-  generic_lift method_call_back_id loc 
-(** Note that currently there is no way to consume [Js.meth_callback]
-    so it is fine to encode it with a freedom, 
-    but we need make it better for error message.
-    - all are encoded as 
-    {[ 
-      type fn =  (`Args_n of _ , 'result ) Js.fn
-      type method = (`Args_n of _, 'result) Js.method
-      type method_callback = (`Args_n of _, 'result) Js.method_callback
-    ]}
-    For [method_callback], the arity is never zero, so both [method] 
-    and  [fn] requires (unit -> 'a) to encode arity zero
-*)
 
 
 
@@ -145,10 +96,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn -> 
         ["#fn_run"; string_arity], 
-        arrow ~loc  (lift_curry_type loc args_type result_type ) fn_type
+        arrow ~loc  (Ast_typ_uncurry.lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
         ["#method_run" ; string_arity], 
-        arrow ~loc  (lift_method_type loc args_type result_type) fn_type
+        arrow ~loc  (Ast_typ_uncurry.lift_method_type loc args_type result_type) fn_type
     in
     Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
       (  fn :: args )
@@ -165,58 +116,7 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
-    (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  =
-  if label <> Nolabel then
-    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-
-  let rec aux acc (typ : Parsetree.core_type) = 
-    (* in general, 
-       we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [bs] and [bs.this] found in typ, 
-       we should stop 
-    *)
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    | Nothing, _   -> 
-      begin match typ.ptyp_desc with 
-        | Ptyp_arrow (label, arg, body)
-          -> 
-          if label <> Nolabel then
-            Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
-          aux (mapper.typ mapper arg :: acc) body 
-        | _ -> mapper.typ mapper typ, acc 
-      end
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
-  let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = aux  [first_arg] typ in 
-  let args  = List.rev rev_extra_args in 
-  let filter_args args  =  
-    match args with 
-    | [{Parsetree.ptyp_desc = 
-          (Ptyp_constr ({txt = Lident "unit"}, []) 
-          )}]
-      -> []
-    | _ -> args in
-  match kind with 
-  | `Fn ->
-    let args = filter_args args in
-    lift_curry_type loc args result 
-  | `Method -> 
-    let args = filter_args args in
-    lift_method_type loc args result 
-
-  | `Method_callback
-    -> lift_js_method_callback loc args result 
-
-
-let to_uncurry_type  = 
-  generic_to_uncurry_type `Fn
-let to_method_type  =
-  generic_to_uncurry_type  `Method
-let to_method_callback_type  = 
-  generic_to_uncurry_type `Method_callback 
+ 
 
 let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body 
   = 
@@ -277,9 +177,9 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
     let pval_type = arrow ~loc  fn_type (
         match kind with 
         | `Fn -> 
-          lift_curry_type loc args_type result_type
+          Ast_typ_uncurry.lift_curry_type loc args_type result_type
         | `Method_callback -> 
-          lift_js_method_callback loc args_type result_type
+          Ast_typ_uncurry.lift_js_method_callback loc args_type result_type
       ) in
     Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
       (fun prim -> Ast_compatible.app1 ~loc prim body) 
@@ -395,7 +295,7 @@ let ocaml_obj_as_js_object
     ((val_name , [], result ) ::
      (if is_mutable then 
         [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
-         to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
+         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
   in 
@@ -408,7 +308,7 @@ let ocaml_obj_as_js_object
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
-      to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
+      Ast_typ_uncurry.to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
     else
       let tyvars =
@@ -419,7 +319,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          to_method_type loc mapper Nolabel x method_rest
+          Ast_typ_uncurry.to_method_type loc mapper Nolabel x method_rest
         | _ -> assert false
       end in          
 
@@ -436,7 +336,7 @@ let ocaml_obj_as_js_object
       | Some ty -> Typ.alias ~loc ty self_type_lit
     in  
     if arity = 0 then
-      to_method_callback_type loc mapper  Nolabel self_type result      
+      Ast_typ_uncurry.to_method_callback_type loc mapper  Nolabel self_type result      
     else
       let tyvars =
         Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
@@ -446,7 +346,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
           in         
-          (to_method_callback_type loc mapper  Nolabel self_type
+          (Ast_typ_uncurry.to_method_callback_type loc mapper  Nolabel self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
