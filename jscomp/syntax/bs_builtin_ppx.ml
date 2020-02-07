@@ -280,7 +280,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
     ->
-    Ast_util.handle_raw_structure loc payload
+    Ast_exp_handle_external.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
     Ast_structure.dummy_item loc
