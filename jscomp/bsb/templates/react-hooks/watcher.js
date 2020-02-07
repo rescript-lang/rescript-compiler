@@ -15,7 +15,7 @@ var webSocketPort = 9999;
 function setUpWebSocket() {
   if (websocketReloader == null || websocketReloader.readyState !== 1) {
     try {
-      websocketReloader = new WebSocket(`ws://localhost:${webSocketPort}`);
+      websocketReloader = new WebSocket(`ws://${window.location.hostname}:${webSocketPort}`);
       websocketReloader.onmessage = (message) => {
         var newData = JSON.parse(message.data).LAST_SUCCESS_BUILD_STAMP;
         if (newData > LAST_SUCCESS_BUILD_STAMP) {
