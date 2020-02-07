@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t =
+type exp =
   | Js_function of {arity : int ; arrow : bool}     
   | Js_literal 
   (* Flow ast module 
@@ -37,7 +37,7 @@ type t =
     | RegExp of RegExp.t
   ]}
   *)
-  | Js_unknown
+  | Js_exp_unknown
 
 
   type raw_kind = 
@@ -45,3 +45,6 @@ type t =
     | Raw_exp
     | Raw_program
     
+type stmt = 
+  | Js_stmt_comment
+  | Js_stmt_unknown

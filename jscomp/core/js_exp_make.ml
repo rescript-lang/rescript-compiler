@@ -125,7 +125,7 @@ let unicode ?comment s : t =
   {expression_desc = Unicode (s); comment}
 
 let raw_js_code ?comment info s : t =
-  {expression_desc = Raw_js_code (s,info) ; comment }
+  {expression_desc = Raw_js_code (String.trim s,info) ; comment }
 
 let raw_js_function ?comment arg block : t = 
   {expression_desc = Raw_js_function(arg,block); comment}

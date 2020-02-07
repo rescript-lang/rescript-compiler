@@ -143,9 +143,8 @@ type t =
   | Pupdate_mod
 
   | Praw_js_code_exp of 
-    { code : string ; kind : Js_raw_exp_info.t}
-  | Praw_js_code_stmt of 
-    { code : string }
+    { code : string ; kind : Js_raw_info.exp}
+  | Praw_js_code_stmt of {code : string; kind : Js_raw_info.stmt}
   | Praw_js_function of 
     { block : string ; args : string list; arity : int}
   | Pjs_fn_make of int 

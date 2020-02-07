@@ -24,4 +24,7 @@
 
 
 val classify :
-  string -> Js_raw_exp_info.t 
+  string -> Js_raw_info.exp 
+
+val classify_stmt :  
+  string -> Js_raw_info.stmt

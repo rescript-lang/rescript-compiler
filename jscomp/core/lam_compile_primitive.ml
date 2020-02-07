@@ -57,8 +57,8 @@ let translate  loc
     E.raw_js_function block args
   | Praw_js_code_exp {code; kind} -> 
     E.raw_js_code (Exp kind) code
-  | Praw_js_code_stmt {code} -> 
-    E.raw_js_code Stmt code 
+  | Praw_js_code_stmt {code; kind} -> 
+    E.raw_js_code (Stmt kind) code 
   | Pjs_runtime_apply -> 
     (match args with 
      | [f ;  args] -> 

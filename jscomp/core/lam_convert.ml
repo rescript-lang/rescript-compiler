@@ -487,7 +487,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | _ when s = "#raw_stmt" ->
       begin match args with
         | [Lconst( Const_base (Const_string(code,_)))] ->
-          prim ~primitive:(Praw_js_code_stmt {code})
+          let kind = Classify_function.classify_stmt code in 
+          prim ~primitive:(Praw_js_code_stmt {code; kind})
             ~args:[] loc
         | _ -> assert false
       end
