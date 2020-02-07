@@ -44742,7 +44742,7 @@ open Ast_helper
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
 
-
+type exp = Parsetree.expression
 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
@@ -44774,26 +44774,22 @@ let js_property loc obj (name : string) =
      [#=], 
 *)
 
-(*         
-  if not (Ast_compatible.is_arg_label_simple label) then
-    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-*)
+
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : Parsetree.expression list) cb   =
+    (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
   let obj = self.expr self obj in
   let args =
     Ext_list.map args (fun e -> self.expr self e) in
-  let len = List.length args in 
-  let arity, fn, args  = 
+  let fn = cb loc obj in   
+  let args  = 
     match args with 
     | [ {pexp_desc =
            Pexp_construct ({txt = Lident "()"}, None)}]
-      -> 
-      0, cb loc obj, []
-    | _ -> 
-      len,  cb loc obj, args in
+      -> []
+    | _ -> args in
+  let arity = List.length args in       
   if arity < 10 then 
     let txt = 
       match kind with 

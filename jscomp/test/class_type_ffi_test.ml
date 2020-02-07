@@ -45,6 +45,9 @@ let f (x : < bark : string -> unit [@bs.meth] ; fight : unit -> unit [@bs.meth] 
   x##bark "he";
   x##fight ()
 
+(* This type is generated on the fly -- in which case
+  it can not be nominal
+*)
 let ff 
     (fn :('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 -> 'a10 -> 'a11 -> 'a12 [@bs])) a0  a1  a2  a3  a4  a5  a6  a7  a8  a9  a10  a11  = 
   fn a0  a1  a2  a3  a4  a5  a6  a7  a8  a9  a10  a11 [@bs]
