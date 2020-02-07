@@ -152,6 +152,15 @@ let getFnName binding =
     }} -> txt
   | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
 
+let setFnName binding newName =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var ({txt} as ppat_var)
+    } as pvb_pat} ->{ binding with pvb_pat = {
+       pvb_pat with ppat_desc = Ppat_var {ppat_var with txt = newName}
+    }}
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
 (* Lookup the value of `props` otherwise raise Invalid_argument error *)
 let getPropsNameValue _acc (loc, exp) =
     match (loc, exp) with
@@ -642,6 +651,7 @@ let jsxMapper () =
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
         let fnName = getFnName binding in
+        let internalFnName = fnName ^ "$Internal" in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
         let modifiedBindingOld binding =
           let expression = binding.pvb_expr in
@@ -722,6 +732,7 @@ let jsxMapper () =
         (* do stuff here! *)
         let (namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper (modifiedBindingOld binding) [] in
         let binding = { binding with pvb_expr = expression; pvb_attributes = [] } in
+        let binding = setFnName binding internalFnName in
         let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
@@ -756,7 +767,7 @@ let jsxMapper () =
         let externalDecl = makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList in
         let innerExpressionArgs = (List.map pluckArg namedArgListWithKeyAndRefForNew) @
           if hasUnit then [(Nolabel, Exp.construct {loc; txt = Lident "()"} None)] else [] in
-        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(fnName)}) innerExpressionArgs in
+        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(internalFnName)}) innerExpressionArgs in
         let innerExpressionWithRef = match (forwardRef) with
         | Some txt ->
           {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
@@ -788,37 +799,39 @@ let jsxMapper () =
               fullExpression
             ]
             (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt}) in
-        let newBinding = bindingWrapper fullExpression in
-        (Some externalDecl, binding, Some newBinding)
+        let newBinding = bindingWrapper (
+          match recFlag with
+          | Recursive -> Exp.let_
+            Recursive
+            [binding; Vb.mk (Pat.var {loc = emptyLoc; txt = fnName}) fullExpression]
+            (Exp.ident {loc = emptyLoc; txt = Lident fnName})
+          | Nonrecursive -> Exp.let_
+            Nonrecursive
+            [binding]
+            (Exp.let_
+              Nonrecursive
+              [Vb.mk (Pat.var {loc = emptyLoc; txt = fnName}) fullExpression]
+              (Exp.ident {loc = emptyLoc; txt = Lident fnName}))
+          ) in
+        (Some externalDecl, newBinding)
       else
-        (None, binding, None)
+        (None, binding)
       in
       let structuresAndBinding = List.map mapBinding valueBindings in
-      let otherStructures (extern, binding, newBinding) (externs, bindings, newBindings) =
+      let otherStructures (extern, binding) (externs, bindings) =
         let externs = match extern with
         | Some extern -> extern :: externs
         | None -> externs in
-        let newBindings = match newBinding with
-        | Some newBinding -> newBinding :: newBindings
-        | None -> newBindings in
-        (externs, binding :: bindings, newBindings)
+        (externs, binding :: bindings)
       in
-      let (externs, bindings, newBindings) = List.fold_right otherStructures structuresAndBinding ([], [], []) in
+      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
       externs @ [{
         pstr_loc;
         pstr_desc = Pstr_value (
           recFlag,
           bindings
         )
-      }] @ (match newBindings with
-      | [] -> []
-      | newBindings -> [{
-        pstr_loc = emptyLoc;
-        pstr_desc = Pstr_value (
-          recFlag,
-          newBindings
-        )
-      }]) @ returnStructures
+      }] @ returnStructures
     | structure -> structure :: returnStructures in
 
   let reactComponentTransform mapper structures =
