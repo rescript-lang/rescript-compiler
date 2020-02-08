@@ -1,10 +1,9 @@
-'use strict';
-
-var List = require("../../lib/js/list.js");
-
 /**
  * copyright 
 */
+'use strict';
+
+var List = require("../../lib/js/list.js");
 
 var x0 = null;
 
