@@ -1,10 +1,10 @@
+/**
+ * copyright 
+*/
+// hello
 'use strict';
 
-
-/**
- * copyright
-*/
-;
+var List = require("../../lib/js/list.js");
 
 var x0 = null;
 
@@ -15,9 +15,17 @@ var x3 = /ghoghos/;
 /**
  * copyright
 */
-;
+
+function f(x) {
+  ((/*hgosgh */  undefined));
+  return x;
+}
+
+var hh = List.length;
 
 exports.x0 = x0;
 exports.x2 = x2;
 exports.x3 = x3;
-/*  Not a pure module */
+exports.hh = hh;
+exports.f = f;
+/* No side effect */

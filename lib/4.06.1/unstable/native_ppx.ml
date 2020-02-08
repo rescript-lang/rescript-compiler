@@ -9270,9 +9270,9 @@ type args  =
   (Asttypes.arg_label * Parsetree.expression) list 
 
 end
-module Js_raw_exp_info
+module Js_raw_info
 = struct
-#1 "js_raw_exp_info.ml"
+#1 "js_raw_info.ml"
 (* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9298,7 +9298,7 @@ module Js_raw_exp_info
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t =
+type exp =
   | Js_function of {arity : int ; arrow : bool}     
   | Js_literal 
   (* Flow ast module 
@@ -9312,7 +9312,7 @@ type t =
     | RegExp of RegExp.t
   ]}
   *)
-  | Js_unknown
+  | Js_exp_unknown
 
 
   type raw_kind = 
@@ -9320,6 +9320,20 @@ type t =
     | Raw_exp
     | Raw_program
     
+type stmt = 
+  | Js_stmt_comment
+  | Js_stmt_unknown
+
+type code_info = 
+  | Exp of exp 
+  | Stmt of stmt
+
+
+type t = {
+  code : string;
+  code_info : code_info
+}
+
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -11146,7 +11160,7 @@ val is_single_int : t -> int option
 
 (** Convert %raw into expression *)
 val raw_as_string_exp_exn :
-  kind: Js_raw_exp_info.raw_kind ->
+  kind: Js_raw_info.raw_kind ->
   t ->
   Parsetree.expression option
   
@@ -11289,7 +11303,7 @@ let check_flow_errors ~(loc : Location.t)
       (Parse_error.PP.error first_error)  
 ;;      
 let raw_as_string_exp_exn 
-  ~(kind: Js_raw_exp_info.raw_kind)
+  ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {

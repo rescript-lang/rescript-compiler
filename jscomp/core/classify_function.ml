@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let classify (prog : string) : Js_raw_exp_info.t = 
+let classify (prog : string) : Js_raw_info.exp = 
   match Parser_flow.parse_expression 
     (Parser_env.init_env None prog) false with 
   | (_, Function {
@@ -45,9 +45,16 @@ let classify (prog : string) : Js_raw_exp_info.t =
  |(_, Literal _), [] -> 
   Js_literal     
  | _ -> 
-  Js_unknown
+  Js_exp_unknown
  | exception _ -> 
-  Js_unknown
+  Js_exp_unknown
+
+let classify_stmt (prog : string) : Js_raw_info.stmt = 
+  let result =  Parser_flow.parse_program false None prog in 
+  match fst result with 
+  | (_loc, [], _) -> 
+    Js_stmt_comment 
+  | _ -> Js_stmt_unknown
 (* we can also analayze throw
   x.x pure access
  *)

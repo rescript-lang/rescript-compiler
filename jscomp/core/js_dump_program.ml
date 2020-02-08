@@ -48,6 +48,21 @@ let deps_program_is_empty (x : J.deps_program) =
     } -> program_is_empty program
   | _ -> false 
 
+let rec extract_block_comments acc (x : J.block) = 
+  match x with 
+  | {statement_desc = Exp {expression_desc = Raw_js_code {code ; code_info = Stmt (Js_stmt_comment)}} } :: rest
+      -> extract_block_comments (code :: acc) rest 
+  | _ -> (acc ,x)
+
+
+let extract_file_comments  (x : J.deps_program) = 
+  let comments, new_block = extract_block_comments [] x.program.block in 
+  comments , {x with program = {x.program with block = new_block}}
+    
+
+
+
+
 let program f cxt   ( x : J.program ) = 
   P.force_newline f;
   let cxt =  Js_dump.statement_list true cxt f x.block  in
@@ -107,7 +122,7 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
 *)
 
 let pp_deps_program
-    ~output_prefix
+    ~(output_prefix : string)
     (kind : Js_packages_info.module_system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   if not !Js_config.no_version_header then 
@@ -119,6 +134,8 @@ let pp_deps_program
     P.string f empty_explanation 
     (* This is empty module, it won't be referred anywhere *)
   else 
+    let comments, program = extract_file_comments program  in 
+    Ext_list.rev_iter comments (fun comment -> P.string f comment; P.newline f) ;
     let output_dir = Filename.dirname output_prefix in   
     begin 
       ignore (match kind with 

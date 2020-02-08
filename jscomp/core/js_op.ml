@@ -242,9 +242,6 @@ type length_object =
   | Function
   | Caml_block
 
-type code_info = 
-  | Exp of Js_raw_exp_info.t 
-  | Stmt
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)
 (*   | Const_int of int *)

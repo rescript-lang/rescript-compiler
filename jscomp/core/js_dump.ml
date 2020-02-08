@@ -169,12 +169,12 @@ let exp_need_paren  (e : J.expression) =
   (* | Caml_uninitialized_obj _  *)
   | Call ({expression_desc = Fun _ | Raw_js_function _ | Raw_js_code _ },_,_) -> true
 
-  | Raw_js_code (_, Exp _)
+  | Raw_js_code {code_info = Exp _}
   | Fun _ 
   | Raw_js_function _ 
   | Caml_block (_,_,_, (Blk_record _ | Blk_module _))
   | Object _ -> true
-  | Raw_js_code (_,Stmt)
+  | Raw_js_code {code_info = Stmt _ }
   | Length _
   | Call _
   | Caml_block_tag _
@@ -646,8 +646,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     P.space f ; 
     pp_js_function_params_body f s params;
     cxt 
-  | Raw_js_code (s,info) ->
-    let s = String.trim s in             
+  | Raw_js_code {code = s; code_info = info} ->
     (match info with
      | Exp exp_info ->
        let raw_paren =
@@ -656,10 +655,11 @@ and expression_desc cxt ~(level:int) f x : cxt  =
        P.string f s ;       
        if raw_paren then  P.string f L.rparen;
        cxt
-     | Stmt ->
-       P.newline f  ;
+     | Stmt stmt_info ->
+       if stmt_info = Js_stmt_comment then P.string f s 
+       else begin P.newline f  ;
        P.string f s ;
-       P.newline f ;
+       P.newline f end ;
        cxt)
   
   | Number v ->
@@ -1051,16 +1051,23 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     cxt
   | Exp {expression_desc = Var _;}
     -> (* Does it make sense to optimize here? *)
-    semi f; cxt
-  | Exp e ->
-    let cxt =
-      (
-        if exp_need_paren  e
-        then P.paren_group f 1
-        else P.group f 0
-      ) (fun _ -> expression ~level:0 cxt f e ) in
-    semi f;
+    (* semi f; *)
     cxt
+  | Exp e ->
+    (
+      match e.expression_desc with 
+      | Raw_js_code {code = s; code_info =  Stmt (Js_stmt_comment)} -> 
+        P.string f s;
+        cxt
+      | _ ->  
+        let cxt =
+          (
+            if exp_need_paren  e
+            then P.paren_group f 1
+            else P.group f 0
+          ) (fun _ -> expression ~level:0 cxt f e ) in
+        semi f;
+        cxt)
   | Block b -> (* No braces needed here *)
     ipp_comment f L.start_block;
     let cxt = statement_list top cxt  f b in

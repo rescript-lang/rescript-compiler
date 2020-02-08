@@ -99,7 +99,7 @@ let check_flow_errors ~(loc : Location.t)
       (Parse_error.PP.error first_error)  
 ;;      
 let raw_as_string_exp_exn 
-  ~(kind: Js_raw_exp_info.raw_kind)
+  ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
