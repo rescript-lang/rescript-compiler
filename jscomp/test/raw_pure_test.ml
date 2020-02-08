@@ -1,6 +1,6 @@
 [%%raw{|
 /**
- * copyright
+ * copyright 
 */
 |}]
 
@@ -24,7 +24,7 @@ let x3 = [%raw{|/ghoghos/|}]
 |}]
 
 let f = [%raw"/*hello*/ 0 "]
-
+let hh = List.length
 let f x = 
   ignore [%raw "/*hgosgh */  undefined"];
   x 

@@ -1,8 +1,9 @@
 'use strict';
 
+var List = require("../../lib/js/list.js");
 
 /**
- * copyright
+ * copyright 
 */
 
 var x0 = null;
@@ -20,8 +21,11 @@ function f(x) {
   return x;
 }
 
+var hh = List.length;
+
 exports.x0 = x0;
 exports.x2 = x2;
 exports.x3 = x3;
+exports.hh = hh;
 exports.f = f;
 /* No side effect */
