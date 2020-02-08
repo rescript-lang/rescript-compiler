@@ -4,7 +4,10 @@
 */
 |}]
 
+[%%raw{|
+// hello
 
+|}]
 
 
 let x0 = [%raw{|null|}]
