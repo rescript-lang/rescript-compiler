@@ -24,4 +24,4 @@ exports.x0 = x0;
 exports.x2 = x2;
 exports.x3 = x3;
 exports.f = f;
-/*  Not a pure module */
+/* No side effect */

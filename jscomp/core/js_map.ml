@@ -392,9 +392,7 @@ class virtual map =
       | Str (_x, _x_i1) ->
           let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
       | Unicode _x -> let _x = o#string _x in Unicode _x
-      | Raw_js_code (_x, _x_i1) ->
-          let _x = o#string _x in
-          let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
+      | Raw_js_code _x -> let _x = o#unknown _x in Raw_js_code _x
       | Raw_js_function (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#list (fun o -> o#string) _x_i1
@@ -429,7 +427,6 @@ class virtual map =
         let _x_i1 = o#required_modules _x_i1 in
         let _x_i2 = o#option (fun o -> o#string) _x_i2
         in { program = _x; modules = _x_i1; side_effect = _x_i2; }
-    method code_info : code_info -> code_info = o#unknown
     method case_clause :
       (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 

@@ -55,10 +55,12 @@ let translate  loc
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
   | Praw_js_function {args ; block} -> 
     E.raw_js_function block args
-  | Praw_js_code_exp {code; kind} -> 
-    E.raw_js_code (Exp kind) code
-  | Praw_js_code_stmt {code; kind} -> 
-    E.raw_js_code (Stmt kind) code 
+  | Praw_js_code {code; code_info} -> 
+    E.raw_js_code code_info code
+    (* FIXME: save one allocation 
+       trim can not be done before syntax checking
+       otherwise location is incorrect
+    *)
   | Pjs_runtime_apply -> 
     (match args with 
      | [f ;  args] -> 

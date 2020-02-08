@@ -31,7 +31,6 @@ type record_representation =
     | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 
-
 type t =
   | Pbytes_to_string
   | Pbytes_of_string
@@ -147,8 +146,7 @@ type t =
      }
   | Pinit_mod
   | Pupdate_mod
-  | Praw_js_code_exp of {code : string; kind : Js_raw_info.exp }
-  | Praw_js_code_stmt of {code : string; kind : Js_raw_info.stmt}
+  | Praw_js_code of Js_raw_info.t  
   | Praw_js_function of {block : string ; args : string list; arity : int}
   | Pjs_fn_make of int
   | Pjs_fn_run of int
@@ -339,8 +337,8 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pbigarrayref  _ 
   | Pbigarrayset _ 
   | Praw_js_function _
-  | Praw_js_code_exp _ 
-  | Praw_js_code_stmt _ -> false (* TOO lazy, here comparison is only approximation*)
+  | Praw_js_code _ 
+   -> false (* TOO lazy, here comparison is only approximation*)
   
   | Pfield_computed -> rhs = Pfield_computed
   | Psetfield_computed -> rhs = Psetfield_computed

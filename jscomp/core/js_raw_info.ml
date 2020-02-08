@@ -48,3 +48,13 @@ type exp =
 type stmt = 
   | Js_stmt_comment
   | Js_stmt_unknown
+
+type code_info = 
+  | Exp of exp 
+  | Stmt of stmt
+
+
+type t = {
+  code : string;
+  code_info : code_info
+}

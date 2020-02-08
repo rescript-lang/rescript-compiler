@@ -166,7 +166,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
       | Praw_js_function _
-      | Praw_js_code_exp {kind = Js_function _ | Js_literal }
+      | Praw_js_code {code_info = Exp (Js_function _ | Js_literal) | Stmt Js_stmt_comment}
         -> true
       | Pjs_apply
       | Pjs_runtime_apply
@@ -180,8 +180,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pmethod_run
       | Pjs_fn_method _ 
       (* TODO *)
-      | Praw_js_code_exp _ 
-      | Praw_js_code_stmt _
+      | Praw_js_code _
       | Pbytessetu 
       | Pbytessets
       (* Bitvect operations *)
@@ -287,9 +286,9 @@ let rec size (lam : Lam.t) =
       -> size l
     | Lglobal_module _ -> 1       
     | Lprim {primitive = 
-        Praw_js_code_stmt _ 
+        Praw_js_code _ 
       | Praw_js_function _ 
-      | Praw_js_code_exp _ } -> really_big ()
+      } -> really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 

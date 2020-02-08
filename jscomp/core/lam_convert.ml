@@ -470,7 +470,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         (* js parsing here *)
         let kind = 
             Classify_function.classify code in 
-         prim ~primitive:(Praw_js_code_exp {code; kind})
+         prim ~primitive:(Praw_js_code {code; code_info = Exp kind})
            ~args:[] loc
        | _ -> assert false)
       
@@ -488,7 +488,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       begin match args with
         | [Lconst( Const_base (Const_string(code,_)))] ->
           let kind = Classify_function.classify_stmt code in 
-          prim ~primitive:(Praw_js_code_stmt {code; kind})
+          prim ~primitive:(Praw_js_code {code; code_info = Stmt kind})
             ~args:[] loc
         | _ -> assert false
       end

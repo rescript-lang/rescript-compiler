@@ -60,7 +60,7 @@ and tag_info = Js_op.tag_info
  
 and required_modules = Js_op.required_modules
 
-and code_info = Js_op.code_info 
+
 
 
 (** object literal, if key is ident, in this case, it might be renamed by 
@@ -168,7 +168,7 @@ and expression_desc =
      *)
   | Unicode of string 
     (* It is escaped string, print delimited by '"'*)   
-  | Raw_js_code of string * code_info
+  | Raw_js_code of Js_raw_info.t
   | Raw_js_function of string * string list
   (* literally raw JS code 
   *)

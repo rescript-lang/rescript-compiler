@@ -356,8 +356,7 @@ class virtual fold =
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
       | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
       | Unicode _x -> let o = o#string _x in o
-      | Raw_js_code (_x, _x_i1) ->
-          let o = o#string _x in let o = o#code_info _x_i1 in o
+      | Raw_js_code _x -> let o = o#unknown _x in o
       | Raw_js_function (_x, _x_i1) ->
           let o = o#string _x in
           let o = o#list (fun o -> o#string) _x_i1 in o
@@ -386,7 +385,6 @@ class virtual fold =
         let o = o#program _x in
         let o = o#required_modules _x_i1 in
         let o = o#option (fun o -> o#string) _x_i2 in o
-    method code_info : code_info -> 'self_type = o#unknown
     method case_clause :
       (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 
