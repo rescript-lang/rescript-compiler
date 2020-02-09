@@ -93,41 +93,6 @@ let read_build_cache ~dir  : t =
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
   decode_internal all_content (ref (Ext_digest.length + 1)), all_content
 
-(* Invariant: the same as encoding Map_string.compare_key  *)  
-let cmp  =  Ext_string.compare
-    
-
-let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
-  let mid = (lo + hi)/2 in 
-  let midVal = Array.unsafe_get arr mid in 
-  let c = cmp key midVal in 
-  if c = 0 then Some (mid)
-  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then  
-      let loVal = (Array.unsafe_get arr lo) in 
-      if  loVal = key then Some lo
-      else None
-    else binarySearchAux arr lo mid key 
-  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-  if lo = mid then 
-    let hiVal = (Array.unsafe_get arr hi) in 
-    if  hiVal = key then Some hi
-    else None
-  else binarySearchAux arr mid hi key 
-
-let find_opt_aux sorted key  : _ option =  
-  let len = Array.length sorted in 
-  if len = 0 then None
-  else 
-    let lo = Array.unsafe_get sorted 0 in 
-    let c = cmp key lo in 
-    if c < 0 then None
-    else
-      let hi = Array.unsafe_get sorted (len - 1) in 
-      let c2 = cmp key hi in 
-      if c2 > 0 then None
-      else binarySearchAux sorted 0 (len - 1) key
-
 
 
 type module_info =  {
@@ -140,7 +105,7 @@ let find_opt
   ((sorteds,whole) : t )  i (key : string) 
     : module_info option = 
   let group = sorteds.(i) in 
-  let i = find_opt_aux group.modules key in 
+  let i = Ext_string_array.find_sorted  group.modules key in 
   match i with 
   | None -> None 
   | Some count ->     

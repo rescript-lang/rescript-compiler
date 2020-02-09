@@ -189,7 +189,10 @@ val reverse_of_list : 'a list -> 'a array
 
 val filter : ('a -> bool) -> 'a array -> 'a array
 
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+val filter_map : 
+'a array -> 
+('a -> 'b option) -> 
+'b array
 
 val range : int -> int -> int array
 
@@ -334,7 +337,7 @@ let filter f a =
   in aux [] 0
 
 
-let filter_map (f : _ -> _ option) a =
+let filter_map a (f : _ -> _ option)  =
   let arr_len = Array.length a in
   let rec aux acc i =
     if i = arr_len 

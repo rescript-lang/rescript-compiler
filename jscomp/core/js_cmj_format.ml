@@ -24,7 +24,7 @@
 
 
 
-[@@@ocaml.warning "+9"]
+[@@@warning "+9"]
 
 
 type arity = 

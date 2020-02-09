@@ -71,7 +71,7 @@ let filter f a =
   in aux [] 0
 
 
-let filter_map (f : _ -> _ option) a =
+let filter_map a (f : _ -> _ option)  =
   let arr_len = Array.length a in
   let rec aux acc i =
     if i = arr_len 
