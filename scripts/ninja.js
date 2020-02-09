@@ -621,7 +621,7 @@ function sourceToTarget(y) {
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
     cp.exec(
-      `${getOcamldepFile()} -one-line -native ${files.join(" ")}`,
+      `${getOcamldepFile()} -allow-approx -one-line -native ${files.join(" ")}`,
       {
         cwd: dir,
         encoding: "ascii"
@@ -698,7 +698,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `${getOcamldepFile()} -modules -one-line -native ${ocamlFiles.join(
+        `${getOcamldepFile()} -allow-approx -modules -one-line -native ${ocamlFiles.join(
           " "
         )}`,
         config,
@@ -1654,11 +1654,12 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
-    flags = -I ./bin -w -40-30
+    flags = -I ./bin -w -40-30    
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
+    libs = ocamlcommon.cmxa    
+build ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  main/cmij_main.cmx
     libs = ocamlcommon.cmxa
-build ./bin/cmjbrowser.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/jscmj_main.cmx
-    libs = ocamlcommon.cmxa
+
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
@@ -1694,7 +1695,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
   }
 
   cp.exec(
-    `${getOcamldepFile()} -one-line -native ${includes} ${files.join(" ")}`,
+    `${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(" ")}`,
     { cwd: jscompDir, encoding: "ascii" },
     function(error, out) {
       if (error !== null) {

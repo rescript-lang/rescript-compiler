@@ -35,7 +35,10 @@ val reverse_of_list : 'a list -> 'a array
 
 val filter : ('a -> bool) -> 'a array -> 'a array
 
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+val filter_map : 
+'a array -> 
+('a -> 'b option) -> 
+'b array
 
 val range : int -> int -> int array
 

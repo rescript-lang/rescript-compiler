@@ -24,6 +24,19 @@
 
 
 let setup_env () =
+#if 0 then
+  let old_loader = !Env.Persistent_signature.load in   
+  Env.Persistent_signature.load := (fun ~unit_name -> 
+    match Ext_string_array.find_sorted Js_cmi_datasets.module_sets unit_name with
+    | Some index ->
+      Format.fprintf Format.err_formatter "reading %s@." unit_name;
+       Some {filename = Sys.executable_name ; cmi = 
+        Lazy.force Js_cmi_datasets.module_sets_cmi.(index)}
+    | None -> old_loader ~unit_name
+  );
+  Clflags.keep_locs := false;
+  Clflags.keep_docs := false;
+#end
   Warnings.parse_options false Bsc_warnings.defaults_w;
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  
