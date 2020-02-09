@@ -164,7 +164,7 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
-#if BS_COMPILER_IN_BROWSER then
+#if BS_BROWSER then
 val compare :  string -> string -> int
 #else
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  

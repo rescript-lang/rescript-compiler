@@ -211,7 +211,7 @@ let generate_label ?(name="") ()  =
   incr count; 
   Printf.sprintf "%s_tailcall_%04d" name !count
 
-#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then  
+#if BS_BROWSER || BS_RELEASE_BUILD then  
 let dump ext  lam = 
   ()
 #else
