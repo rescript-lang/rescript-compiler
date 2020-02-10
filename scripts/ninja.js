@@ -22,6 +22,7 @@ var runtimeMliFiles = runtimeFiles.filter(
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
 
+var commonBsFlags = `-no-keep-locs -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -nostdlib `
 var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
@@ -879,7 +880,7 @@ async function runtimeNinja(devmode = true) {
     : "release.ninja";
   var templateRuntimeRules = `
 ${BSC_COMPILER}
-bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -w +50 -warn-error A  -bin-annot
+bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50 -warn-error A  
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
@@ -979,7 +980,7 @@ async function othersNinja(devmode = true) {
 
   var templateOthersRules = `
 ${BSC_COMPILER}
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe  -w +50 -warn-error A  -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
   devmode
@@ -1107,7 +1108,7 @@ async function stdlibNinja(devmode = true) {
   var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
 ${BSC_COMPILER}
-${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings}  -I runtime  -I others
+${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   [

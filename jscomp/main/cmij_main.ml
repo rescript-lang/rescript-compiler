@@ -38,74 +38,70 @@ let get_files ext dir =
   Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
   Array.to_list arr
 
-let from_cmj (files : string list) (output_file : string) = 
-  let raw_to_str f str = 
-    Ext_pp.string f "\""   ;
-    Ext_pp.string f (String.escaped str);
-    Ext_pp.string f "\""
-  in  
-  let v = open_out_bin output_file in
-  Ext_pervasives.finally v ~clean:close_out (fun v ->   
-      let f = Ext_pp.from_channel v in  
-      let aux file =                 
-        let str = Ext_io.load_file file in
-        begin
-#if 0 then           
-          prerr_endline (* can not embed corrupted data *)
-            (Printf.sprintf "Begin Verifying %s" file);
-          let _  = Js_cmj_format.from_string str in          
-          prerr_endline "End";
-#end
-          Ext_pp.paren_group f 1 (fun _ ->
-          raw_to_str f (Filename.basename file) ;
-          Ext_pp.string f ",";
-          Ext_pp.string f "lazy";
-          Ext_pp.space f ;
-          Ext_pp.paren_group f 1 (fun _ ->
-              Ext_pp.string f "Js_cmj_format.from_string " ;
-              raw_to_str f str));
-          Ext_pp.string f  ";";
-          Ext_pp.newline f           
-        end
-      in
-
-      Ext_pp.newline f ;
-      Ext_pp.string f "let data_sets = let map = Map_string.of_list "    ;
-      Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files);
-      Ext_pp.string f " in ref map") 
-
-
 (** the cache should be readable and also update *)
-let _raw_to_str f str = 
-  Ext_pp.string f "\""   ;
-  Ext_pp.string f (String.escaped str);
-  Ext_pp.string f "\""
+
+let from_cmj (files : string list) (output_file : string) = 
+  let files = List.sort (fun filea fileb  ->
+      Ext_string_array.cmp (Filename.basename filea) (Filename.basename fileb)) files in 
+  let keys = Ext_list.map files (fun x -> "\"" ^Filename.basename x ^ "\"") in 
+  let v = open_out_bin output_file in
+  Ext_pervasives.finally v ~clean:close_out (fun f ->   
+      output_string f 
+        (Printf.sprintf {|let module_sets = [|
+%s
+  |]|}
+           (String.concat ";\n" keys)
+        ) ;
+      output_string f "\n";
+      output_string f 
+        (Printf.sprintf {|let module_sets_cmj : Js_cmj_format.t Lazy.t array = [|
+%s
+|] 
+|} (String.concat ";\n" (Ext_list.map files (fun file -> 
+            Printf.sprintf "lazy (Js_cmj_format.from_string %S )"
+              (Ext_io.load_file file)))));
+              output_string f "\n";
+              output_string f {|
+              let query_by_name s =
+                match Ext_string_array.find_sorted  
+                  module_sets  s with 
+                | None -> None
+                | Some i -> 
+                  Some (Lazy.force module_sets_cmj.(i))              
+              |}
+
+    ) 
+
+
+
 
 let from_cmi (files : string list) (output_file : string) = 
   let files = List.sort (fun filea fileb  ->
-     Ext_string_array.cmp (Ext_filename.module_name filea) (Ext_filename.module_name fileb)) files in 
+      Ext_string_array.cmp (Ext_filename.module_name filea) (Ext_filename.module_name fileb)) files in 
+  let keys = Ext_list.map files (fun x -> "\"" ^ Ext_filename.module_name x ^ "\"") in       
   let v = open_out_bin output_file in
   Ext_pervasives.finally v ~clean:close_out (fun f ->         
       output_string f 
         (Printf.sprintf {|let module_sets = [|
 %s
         |]|}
-          (String.concat ";\n" (Ext_list.map files (fun x -> "\"" ^ Ext_filename.module_name x ^ "\"")))
-         ) ;
+           (String.concat ";\n" keys)
+        ) ;
       output_string f "\n";
       output_string f 
-      (Printf.sprintf {|let module_sets_cmi : Cmi_format.cmi_infos Lazy.t array = [|
+        (Printf.sprintf {|let module_sets_cmi : Cmi_format.cmi_infos Lazy.t array = [|
       %s
       |] 
       |} (String.concat ";\n" (Ext_list.map files (fun file -> 
-        Printf.sprintf "lazy (Marshal.from_string %S 0)"
-          (let content = (Cmi_format.read_cmi file) in 
-            Marshal.to_string content []
-          (* let header_len = (String.length Config.cmi_magic_number) in 
-          String.sub content header_len (String.length content - header_len) *)
-      )))
-      )
-      ))
+            Printf.sprintf "lazy (Marshal.from_string %S 0)"
+              (let content = (Cmi_format.read_cmi file) in 
+               Marshal.to_string content []
+               (* let header_len = (String.length Config.cmi_magic_number) in 
+                  String.sub content header_len (String.length content - header_len) *)
+              )))
+          )
+        )
+    )
       ;;
 
 let stdlib = "stdlib-406"
@@ -114,9 +110,9 @@ let () =
   from_cmj ( Ext_list.append (get_files Literals.suffix_cmj stdlib)
              (Ext_list.append (get_files Literals.suffix_cmj "runtime")
              (get_files Literals.suffix_cmj "others"))) 
-    (Filename.concat "core" "js_cmj_datasets.ml")
-  (* from_cmi ( Ext_list.append (get_files Literals.suffix_cmi stdlib)
+    (Filename.concat "core" "builtin_cmj_datasets.ml");
+   from_cmi ( Ext_list.append (get_files Literals.suffix_cmi stdlib)
                (Ext_list.append (get_files Literals.suffix_cmi "runtime")
                   (get_files Literals.suffix_cmi "others"))) 
-    (Filename.concat "core" "js_cmi_datasets.ml") *)
+    (Filename.concat "core" "builtin_cmi_datasets.ml")
 

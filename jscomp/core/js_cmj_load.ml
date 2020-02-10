@@ -28,32 +28,20 @@
 *)
 
 
-type path = string  
-type cmj_load_info = {
-  cmj_table : Js_cmj_format.t ; 
-  cmj_path : path ;
-}
 
-#if BS_BROWSER then 
-let find_cmj_exn file : cmj_load_info = 
+
+#if BS_BROWSER  then 
+let find_cmj_exn file : Js_cmj_format.cmj_load_info = 
   let target = Ext_string.uncapitalize_ascii (Filename.basename file) in
-  match Map_string.find_exn !Js_cmj_datasets.data_sets target with
-  | v
+  match Builtin_cmj_datasets.query_by_name target with
+  | Some v
     -> 
-    begin match Lazy.force v with
-      | exception _ 
-        -> 
-        Ext_log.warn __LOC__ 
-          "@[%s corrupted in database, when looking %s while compiling %s please update @]"  file target !Location.input_name  ;
-        Bs_exception.error (Cmj_not_found file)
-      | v ->  {cmj_path = "BROWSER"; cmj_table = v} 
-      (* see {!Js_packages_info.string_of_module_id} *)
-    end
-  | exception Not_found 
+    {cmj_path = "BROWSER"; cmj_table = v}
+  | None
     ->     
     Bs_exception.error (Cmj_not_found file)
 #else    
-let find_cmj_exn file : cmj_load_info = 
+let find_cmj_exn file : Js_cmj_format.cmj_load_info = 
   match Config_util.find_opt file with
   | Some f
     -> 
