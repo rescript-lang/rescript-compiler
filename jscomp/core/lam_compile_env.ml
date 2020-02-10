@@ -29,22 +29,14 @@
 
 
 
-(* module E = Js_exp_make  
-module S = Js_stmt_make
- *)
+
 
 type env_value = 
   | Ml of Js_cmj_format.cmj_load_info
-  (* | Runtime  of Js_cmj_load.cmj_load_info *)
-  (** 
-     [Runtime (pure, path, cmj_format)]
-     A built in module probably from our runtime primitives, 
-      so it does not have any [signature]
-
-  *)
   | External  
-  (** Also a js file, but this belong to third party 
-  *)
+(** Also a js file, but this belong to third party 
+    we never load runtime/*.cmj
+*)
 
 
 
@@ -61,9 +53,11 @@ type ident_info = {
 *)
 
 
-
+(** It stores module => env_value mapping 
+*)
 let cached_tbl  : env_value Lam_module_ident.Hash.t
    = Lam_module_ident.Hash.create 31
+
 let (+>) = Lam_module_ident.Hash.add cached_tbl
 
 
@@ -99,11 +93,8 @@ let add_js_module
   let lam_module_ident = 
     Lam_module_ident.of_external id module_name in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
-  | None ->
-    Lam_module_ident.Hash.add 
-      cached_tbl 
-      lam_module_ident
-      External;
+  | None ->   
+    lam_module_ident +> External;
     id
   | Some old_key ->
     old_key.id 
@@ -124,7 +115,6 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
       cmj_load_info.cmj_table
     | Some (Ml { cmj_table } )
       -> cmj_table
-    (* | Some (Runtime _) -> assert false *)
     | Some External  -> assert false in 
   let arity , closed_lambda =  
     Js_cmj_format.query_by_name cmj_table name 
@@ -154,9 +144,7 @@ let get_package_path_from_cmj
      (cmj_path, 
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
-  | Some (
-   External (*| 
-   Runtime _ *) ) -> 
+  | Some External -> 
     assert false  
       (* called by {!Js_name_of_module_id.string_of_module_id}
         can not be External
@@ -166,8 +154,9 @@ let get_package_path_from_cmj
     | Runtime 
     | External _ -> assert false
     | Ml -> 
-      let ({Js_cmj_format.cmj_table} as cmj_load_info) = 
+      let cmj_load_info = 
         Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
+      let cmj_table = cmj_load_info.cmj_table in    
       id +> Ml cmj_load_info;  
       (cmj_load_info.cmj_path, 
        Js_cmj_format.get_npm_package_path cmj_table, 
@@ -204,10 +193,10 @@ let get_required_modules
     (hard_dependencies 
      : Lam_module_ident.Hash_set.t) : Lam_module_ident.t list =  
   Lam_module_ident.Hash.iter cached_tbl (fun id  _  ->
-      if not @@ is_pure_module id 
+      if not (is_pure_module id)
       then add  hard_dependencies id);
   Lam_module_ident.Hash_set.iter extras (fun id  -> 
-      (if not @@ is_pure_module  id 
+      (if not (is_pure_module  id)
        then add hard_dependencies id : unit)
     );
   Lam_module_ident.Hash_set.elements hard_dependencies

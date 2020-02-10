@@ -248,5 +248,9 @@ let pp_cmj
 type path = string  
 type cmj_load_info = {
   cmj_table : t ; 
-  cmj_path : path ;
+  cmj_path : path 
+  (*
+    Note it is the package path we want 
+    for ES6_global module spec
+  *)
 }    
