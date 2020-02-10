@@ -114,5 +114,5 @@ val pp_cmj: t -> unit
 type path = string  
 type cmj_load_info = {
   cmj_table : t ; 
-  cmj_path : path ;
+  package_path : path ;
 }    

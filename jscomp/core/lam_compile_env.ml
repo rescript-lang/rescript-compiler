@@ -140,8 +140,8 @@ let get_package_path_from_cmj
     ( id : Lam_module_ident.t) 
    = 
   match Lam_module_ident.Hash.find_opt cached_tbl id with 
-  | Some (Ml {cmj_table ; cmj_path}) -> 
-     (cmj_path, 
+  | Some (Ml {cmj_table ; package_path}) -> 
+     (package_path, 
           Js_cmj_format.get_npm_package_path cmj_table, 
           Js_cmj_format.get_cmj_case cmj_table )
   | Some External -> 
@@ -158,7 +158,7 @@ let get_package_path_from_cmj
         Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
       let cmj_table = cmj_load_info.cmj_table in    
       id +> Ml cmj_load_info;  
-      (cmj_load_info.cmj_path, 
+      (cmj_load_info.package_path, 
        Js_cmj_format.get_npm_package_path cmj_table, 
        Js_cmj_format.get_cmj_case cmj_table )              
     end 
