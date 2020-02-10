@@ -28211,7 +28211,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(* Clflags.keep_docs := false; *)
+(* default to false -check later*)
+(* Clflags.keep_locs := false; *)
 let setup_env () =
 
   Warnings.parse_options false Bsc_warnings.defaults_w;

@@ -61,11 +61,11 @@ build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe
     main = Bspack_main
 
 build $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_COMPILER_IN_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I main
+    flags = -D BS_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
     main  = Jsoo_main
 
 build $SNAP/unstable/js_refmt_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_COMPILER_IN_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I js_parser -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I main -I refmt
+    flags = -D BS_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I js_parser -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main -I refmt
     main  = Jsoo_refmt_main
 # -o $@
 # Check it later 

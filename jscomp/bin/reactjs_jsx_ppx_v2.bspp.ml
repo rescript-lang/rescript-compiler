@@ -332,7 +332,7 @@ let jsxMapper () =
   { default_mapper with structure; expr }
 #end
 
-#if BS_COMPILER_IN_BROWSER then
+#if BS_BROWSER then
 
 module Js = struct
   module Unsafe = struct

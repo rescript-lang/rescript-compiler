@@ -34,7 +34,7 @@ module S = Js_stmt_make
  *)
 
 type env_value = 
-  | Ml of Js_cmj_load.cmj_load_info
+  | Ml of Js_cmj_format.cmj_load_info
   (* | Runtime  of Js_cmj_load.cmj_load_info *)
   (** 
      [Runtime (pure, path, cmj_format)]
@@ -166,7 +166,7 @@ let get_package_path_from_cmj
     | Runtime 
     | External _ -> assert false
     | Ml -> 
-      let ({Js_cmj_load.cmj_table} as cmj_load_info) = 
+      let ({Js_cmj_format.cmj_table} as cmj_load_info) = 
         Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
       id +> Ml cmj_load_info;  
       (cmj_load_info.cmj_path, 

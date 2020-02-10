@@ -244,3 +244,9 @@ let pp_cmj
           (Format.asprintf "%a" Lam_arity.print arity ))
          xs
     )    
+
+type path = string  
+type cmj_load_info = {
+  cmj_table : t ; 
+  cmj_path : path ;
+}    

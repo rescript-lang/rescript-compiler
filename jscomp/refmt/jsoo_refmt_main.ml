@@ -114,23 +114,23 @@ let compile ~use_super_errors ?react_ppx_version impl =
 let shake_compile ~prefix ~use_super_errors ?react_ppx_version impl =
    implementation ~prefix ~use_super_errors ?react_ppx_version impl
 
-let load_module cmi_path cmi_content cmj_name cmj_content =
+(* let load_module cmi_path cmi_content cmj_name cmj_content =
   Js.create_file cmi_path cmi_content;
   Js_cmj_datasets.data_sets :=
     Map_string.add !Js_cmj_datasets.data_sets
-      cmj_name (lazy (Js_cmj_format.from_string cmj_content))
+      cmj_name (lazy (Js_cmj_format.from_string cmj_content)) *)
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
 
 (* To add a directory to the load path *)
-
+(* 
 let dir_directory d =
   Config.load_path := d :: !Config.load_path
 
 let () =
-  dir_directory "/static/cmis"
+  dir_directory "/static/cmis" *)
 
 module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
 
@@ -170,7 +170,7 @@ let make_compiler ~name ~prefix impl=
                     Js.wrap_meth_callback
                       (fun _ code -> (shake_compile impl ~use_super_errors:true ~prefix (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (match name with | "reason" -> Refmt_api.version | _ -> Bs_version.version));
-                    "load_module",
+                    (* "load_module",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ cmi_path cmi_content cmj_name cmj_content ->
@@ -178,7 +178,7 @@ let make_compiler ~name ~prefix impl=
                         (* HACK: force string tag to ASCII (9) to avoid
                          * UTF-8 encoding *)
                         Js.Unsafe.set cmj_bytestring "t" 9;
-                        load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
+                        load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring); *)
                   |]))
 
 let () = make_compiler ~name:"ocaml" ~prefix:"[@@@bs.config {no_export}]\n#1 \"repl.ml\"\n"  Parse.implementation

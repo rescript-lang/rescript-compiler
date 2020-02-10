@@ -1,5 +1,5 @@
 
-#if BS_COMPILER_IN_BROWSER then
+#if BS_BROWSER then
 
 
 let hash_string : string -> int = Hashtbl.hash

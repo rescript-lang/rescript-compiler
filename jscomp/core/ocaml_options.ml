@@ -64,6 +64,9 @@ let mk_keep_docs f =
 let mk_keep_locs f =
   "-keep-locs", Arg.Unit f, " Keep locations in .cmi files"
 ;;
+let mk_no_keep_locs f =
+  "-no-keep-locs", Arg.Unit f, " Do not keep locations in .cmi files"
+;;
 
 let mk_labels f =
   "-labels", Arg.Unit f, " Use commuting label mode"
@@ -290,6 +293,7 @@ let ocaml_options =
   let _intf_suffix s = Config.interface_suffix := s in 
   let _keep_docs = set Clflags.keep_docs in 
   let _keep_locs = set Clflags.keep_locs in 
+  let _no_keep_locs = unset Clflags.keep_locs in 
   let _labels = unset Clflags.classic in 
   let _no_alias_deps = set Clflags.transparent_modules in 
   let _no_app_funct = unset Clflags.applicative_functors in 
@@ -339,6 +343,7 @@ let ocaml_options =
     mk_intf_suffix _intf_suffix;
     mk_keep_docs _keep_docs;
     mk_keep_locs _keep_locs;
+    mk_no_keep_locs _no_keep_locs;
     mk_labels _labels;
     mk_no_alias_deps _no_alias_deps;
     mk_no_app_funct _no_app_funct;

@@ -113,12 +113,12 @@ let shake_compile impl ~use_super_errors ?react_ppx_version =
 
 
 
-let load_module cmi_path cmi_content cmj_name cmj_content =
+(* let load_module cmi_path cmi_content cmj_name cmj_content =
   Js.create_file cmi_path cmi_content;
   Js_cmj_datasets.data_sets :=
     Map_string.add !Js_cmj_datasets.data_sets
       cmj_name (lazy (Js_cmj_format.from_string cmj_content))
-      
+       *)
 
 
 let export (field : string) v =
@@ -167,7 +167,7 @@ let make_compiler name impl =
                     Js.wrap_meth_callback
                       (fun _ code -> (shake_compile impl ~use_super_errors:true (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
-                    "load_module",
+                    (* "load_module",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ cmi_path cmi_content cmj_name cmj_content ->
@@ -175,7 +175,7 @@ let make_compiler name impl =
                         (* HACK: force string tag to ASCII (9) to avoid
                          * UTF-8 encoding *)
                         Js.Unsafe.set cmj_bytestring "t" 9;
-                        load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
+                        load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring); *)
                   |]))
 let () = make_compiler "ocaml" Parse.implementation
 
