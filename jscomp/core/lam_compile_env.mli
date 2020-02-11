@@ -30,11 +30,7 @@
 
 
 
-type ident_info = {
-  name : string;
-  arity : Js_cmj_format.arity;
-  closed_lambda : Lam.t option 
-}  
+
 
 
 
@@ -81,7 +77,7 @@ val add_js_module :
 val query_external_id_info : 
   Ident.t ->
   string -> 
-  ident_info
+  Js_cmj_format.keyed_cmj_value
 
 
 val is_pure_module : Lam_module_ident.t -> bool

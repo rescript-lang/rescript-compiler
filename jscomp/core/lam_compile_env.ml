@@ -41,10 +41,10 @@ type env_value =
 
 
 
-type ident_info = {
+type ident_info = Js_cmj_format.keyed_cmj_value = {
   name : string;
   arity : Js_cmj_format.arity; 
-  closed_lambda : Lam.t option 
+  persistent_closed_lambda : Lam.t option 
 }
 
 (*
@@ -115,16 +115,9 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
       cmj_load_info.cmj_table
     | Some (Ml { cmj_table } )
       -> cmj_table
-    | Some External  -> assert false in 
-  let arity , closed_lambda =  
-    Js_cmj_format.query_by_name cmj_table name 
-  in
-  { 
-    name; 
-    arity;
-    closed_lambda
-    (* TODO shall we cache the arity ?*) 
-  } 
+    | Some External  -> assert false in   
+  Js_cmj_format.query_by_name cmj_table name 
+
 
 
 

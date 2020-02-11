@@ -96,7 +96,13 @@ let values_of_export
            else
              None
          | None -> None  in 
-       Map_string.add  acc x.name  Js_cmj_format.{arity ; persistent_closed_lambda }
+       match arity, persistent_closed_lambda with 
+       | Single Arity_na, 
+        (None | Some (Lconst (Const_pointer (_, Pt_module_alias)))) -> acc
+       | _ ->  
+         let cmj_value : Js_cmj_format.cmj_value =  
+           {arity ; persistent_closed_lambda } in  
+         Map_string.add  acc x.name  cmj_value
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 
@@ -136,7 +142,7 @@ let export_to_cmj
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   
-  Js_cmj_format.mk
+  Js_cmj_format.make
     ~values
     ~effect 
     ~npm_package_path: (Js_packages_state.get_packages_info ())

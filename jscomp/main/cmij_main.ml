@@ -28,15 +28,11 @@
 
 
 let get_files ext dir = 
-  let arr =     
-    Ext_array.filter_map (Sys.readdir dir)
-      (fun  x ->
-         if Ext_string.ends_with x  ext 
-         then Some (Filename.concat dir x) else None )
-  in
-  (* Sort to guarantee it works the same across OSes *)
-  Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
-  Array.to_list arr
+  Ext_array.filter_map (Sys.readdir dir)
+    (fun  x ->
+       if Ext_string.ends_with x  ext 
+       then Some (Filename.concat dir x) else None )
+  |> Array.to_list
 
 (** the cache should be readable and also update *)
 
@@ -113,16 +109,26 @@ let i s = lazy (Marshal.from_string s 0)
       ;;
 
 let stdlib = "stdlib-406"
+let (//) = Filename.concat 
+let (|~) = Ext_string.contain_substring
 
 let () = 
-  from_cmj ( 
-    Filename.concat "runtime" "js.cmj" ::
-    get_files Literals.suffix_cmj stdlib @             
-    get_files Literals.suffix_cmj "others")
+  let cmj_files = 
+    ( 
+       "runtime" // "js.cmj" ::
+      get_files Literals.suffix_cmj stdlib @             
+      get_files Literals.suffix_cmj "others") in 
+  from_cmj cmj_files
     (Filename.concat "core" "builtin_cmj_datasets.ml");
-  from_cmi ( 
-    Filename.concat "runtime"  "js.cmi" ::
-    get_files Literals.suffix_cmi stdlib @
-    get_files Literals.suffix_cmi "others")
+  let cmi_files = 
+    "runtime" // "js.cmi" ::       
+    (get_files Literals.suffix_cmi stdlib @
+    get_files Literals.suffix_cmi "others" )
+    |> List.filter (fun x -> 
+       x|~ "js_internalOO" ||
+       x|~  "camlinternal" ||
+       not (x |~ "internal"))
+  in     
+  from_cmi cmi_files
     (Filename.concat "core" "builtin_cmi_datasets.ml")
 

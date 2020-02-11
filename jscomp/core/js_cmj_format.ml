@@ -56,7 +56,7 @@ type t = {
   cmj_case : cmj_case; 
 }
 
-let mk ~(values:cmj_value Map_string.t) ~effect ~npm_package_path ~cmj_case : t = 
+let make ~(values:cmj_value Map_string.t) ~effect ~npm_package_path ~cmj_case : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
       name = k ; 
@@ -130,13 +130,14 @@ let to_file name ~check_exists (v : t) =
 let keyComp (a : string) b = 
     Map_string.compare_key  a b.name 
 
-let not_found = single_na, None 
+let not_found key = {name = key; arity = single_na; persistent_closed_lambda =  None }
+
 
 let get_result  midVal =   
-  midVal.arity,
-  if Js_config.get_cross_module_inline () then midVal.persistent_closed_lambda
-  else None 
-
+  if midVal.persistent_closed_lambda = None || 
+    Js_config.get_cross_module_inline () then midVal
+  else {midVal with persistent_closed_lambda = None}  
+  
 let rec binarySearchAux arr lo hi (key : string) = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
@@ -147,33 +148,33 @@ let rec binarySearchAux arr lo hi (key : string) =
     if hi = mid then  
       let loVal = (Array.unsafe_get arr lo) in 
       if loVal.name = key then get_result loVal
-      else not_found
+      else not_found key
     else binarySearchAux arr lo mid key 
   else  (*  a[lo] =< a[mid] < key <= a[hi] *)
   if lo = mid then 
     let hiVal = (Array.unsafe_get arr hi) in 
     if hiVal.name = key  then get_result hiVal
-    else not_found
+    else not_found key
   else binarySearchAux arr mid hi key
 
-let binarySearch (sorted : keyed_cmj_values) (key : string) =  
+let binarySearch (sorted : keyed_cmj_values) (key : string) : keyed_cmj_value =  
   let len = Array.length sorted in 
-  if len = 0 then not_found
+  if len = 0 then not_found key
   else 
     let lo = Array.unsafe_get sorted 0 in 
     let c = keyComp key lo in 
-    if c < 0 then not_found
+    if c < 0 then not_found key
     else
       let hi = Array.unsafe_get sorted (len - 1) in 
       let c2 = keyComp key hi in 
-      if c2 > 0 then not_found
+      if c2 > 0 then not_found key
       else binarySearchAux sorted 0 (len - 1) key 
 
 
 (* FIXME: better error message when ocamldep
   get self-cycle
 *)    
-let query_by_name (cmj_table : t ) name =   
+let query_by_name (cmj_table : t ) name  : keyed_cmj_value =   
   let values = cmj_table.values in    
   binarySearch values name 
 

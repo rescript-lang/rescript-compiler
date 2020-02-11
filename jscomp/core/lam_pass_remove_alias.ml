@@ -121,7 +121,7 @@ let simplify_alias
              ap_args = args; ap_loc = loc ; ap_status = status} ->
       begin
         match  Lam_compile_env.query_external_id_info ident fld_name with                   
-        | {closed_lambda=Some Lfunction{params; body; _} } 
+        | {persistent_closed_lambda=Some Lfunction{params; body; _} } 
           (** be more cautious when do cross module inlining *)
           when
             Ext_list.same_length params args &&
