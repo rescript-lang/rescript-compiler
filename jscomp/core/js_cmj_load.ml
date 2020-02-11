@@ -31,17 +31,17 @@
 
 
 #if BS_BROWSER  then 
-let find_cmj_exn file : Js_cmj_format.cmj_load_info = 
-  let target = Ext_string.uncapitalize_ascii (Filename.basename file) in
-  match Builtin_cmj_datasets.query_by_name target with
+let load_unit_exn unit_name : Js_cmj_format.cmj_load_info = 
+  match Builtin_cmj_datasets.query_by_name unit_name with
   | Some v
     -> 
     {package_path = "BROWSER"; cmj_table = v}
   | None
     ->     
-    Bs_exception.error (Cmj_not_found file)
+    Bs_exception.error (Cmj_not_found unit_name)
 #else    
-let find_cmj_exn file : Js_cmj_format.cmj_load_info = 
+let load_unit_exn unit_name : Js_cmj_format.cmj_load_info = 
+  let file = unit_name ^ Literals.suffix_cmj in   
   match Config_util.find_opt file with
   | Some f
     -> 

@@ -37,9 +37,10 @@ let get_files ext dir =
 (** the cache should be readable and also update *)
 
 let from_cmj (files : string list) (output_file : string) = 
+  let cmp = Ext_filename.module_name in     
   let files = List.sort (fun filea fileb  ->
-      Ext_string_array.cmp (Filename.basename filea) (Filename.basename fileb)) files in 
-  let keys = Ext_list.map files (fun x -> "\"" ^Filename.basename x ^ "\"") in 
+      Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
+  let keys = Ext_list.map files (fun x -> "\"" ^cmp x ^ "\"") in 
   let v = open_out_bin output_file in
   Ext_pervasives.finally v ~clean:close_out (fun f ->   
       output_string f {|
@@ -77,9 +78,10 @@ let from_cmj (files : string list) (output_file : string) =
 
 
 let from_cmi (files : string list) (output_file : string) = 
+  let cmp = Ext_filename.module_name in   
   let files = List.sort (fun filea fileb  ->
-      Ext_string_array.cmp (Ext_filename.module_name filea) (Ext_filename.module_name fileb)) files in 
-  let keys = Ext_list.map files (fun x -> "\"" ^ Ext_filename.module_name x ^ "\"") in       
+      Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
+  let keys = Ext_list.map files (fun x -> "\"" ^ cmp x ^ "\"") in       
   let v = open_out_bin output_file in
   Ext_pervasives.finally v ~clean:close_out (fun f ->         
       output_string f {|

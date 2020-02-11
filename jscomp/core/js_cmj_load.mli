@@ -30,6 +30,6 @@
 
 
 (** return path and meta data *)
-val find_cmj_exn : 
+val load_unit_exn : 
    string -> 
    Js_cmj_format.cmj_load_info

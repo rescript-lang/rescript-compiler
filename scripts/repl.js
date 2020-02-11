@@ -40,7 +40,7 @@ function prepare() {
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
-  e(`cp ./exports.js ${playground}`)
+  e(`mv ./exports.js ${playground}`)
 }
 
 

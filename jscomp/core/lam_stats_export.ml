@@ -99,6 +99,9 @@ let values_of_export
        match arity, persistent_closed_lambda with 
        | Single Arity_na, 
         (None | Some (Lconst (Const_pointer (_, Pt_module_alias)))) -> acc
+        (* TODO: empty module can be saved too
+           This is common since we have a module of externals quite common      
+         *)
        | _ ->  
          let cmj_value : Js_cmj_format.cmj_value =  
            {arity ; persistent_closed_lambda } in  
