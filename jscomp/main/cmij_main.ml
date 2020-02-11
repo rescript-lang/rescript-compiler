@@ -46,6 +46,9 @@ let from_cmj (files : string list) (output_file : string) =
   let keys = Ext_list.map files (fun x -> "\"" ^Filename.basename x ^ "\"") in 
   let v = open_out_bin output_file in
   Ext_pervasives.finally v ~clean:close_out (fun f ->   
+      output_string f {|
+  let i s = lazy (Marshal.from_string s 0)     
+  |};
       output_string f 
         (Printf.sprintf {|let module_sets = [|
 %s
@@ -58,8 +61,10 @@ let from_cmj (files : string list) (output_file : string) =
 %s
 |] 
 |} (String.concat ";\n" (Ext_list.map files (fun file -> 
-            Printf.sprintf "lazy (Js_cmj_format.from_string %S )"
-              (Ext_io.load_file file)))));
+            Printf.sprintf "i %S"
+              (let content = Ext_io.load_file file in 
+                String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
+              )))));
               output_string f "\n";
               output_string f {|
               let query_by_name s =
@@ -81,6 +86,9 @@ let from_cmi (files : string list) (output_file : string) =
   let keys = Ext_list.map files (fun x -> "\"" ^ Ext_filename.module_name x ^ "\"") in       
   let v = open_out_bin output_file in
   Ext_pervasives.finally v ~clean:close_out (fun f ->         
+      output_string f {|
+let i s = lazy (Marshal.from_string s 0)     
+|};
       output_string f 
         (Printf.sprintf {|let module_sets = [|
 %s
@@ -93,7 +101,7 @@ let from_cmi (files : string list) (output_file : string) =
       %s
       |] 
       |} (String.concat ";\n" (Ext_list.map files (fun file -> 
-            Printf.sprintf "lazy (Marshal.from_string %S 0)"
+            Printf.sprintf "i %S"
               (let content = (Cmi_format.read_cmi file) in 
                Marshal.to_string content []
                (* let header_len = (String.length Config.cmi_magic_number) in 
@@ -107,12 +115,14 @@ let from_cmi (files : string list) (output_file : string) =
 let stdlib = "stdlib-406"
 
 let () = 
-  from_cmj ( Ext_list.append (get_files Literals.suffix_cmj stdlib)
-             (Ext_list.append (get_files Literals.suffix_cmj "runtime")
-             (get_files Literals.suffix_cmj "others"))) 
+  from_cmj ( 
+    Filename.concat "runtime" "js.cmj" ::
+    get_files Literals.suffix_cmj stdlib @             
+    get_files Literals.suffix_cmj "others")
     (Filename.concat "core" "builtin_cmj_datasets.ml");
-   from_cmi ( Ext_list.append (get_files Literals.suffix_cmi stdlib)
-               (Ext_list.append (get_files Literals.suffix_cmi "runtime")
-                  (get_files Literals.suffix_cmi "others"))) 
+  from_cmi ( 
+    Filename.concat "runtime"  "js.cmi" ::
+    get_files Literals.suffix_cmi stdlib @
+    get_files Literals.suffix_cmi "others")
     (Filename.concat "core" "builtin_cmi_datasets.ml")
 
