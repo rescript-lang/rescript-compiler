@@ -47587,6 +47587,9 @@ let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
     (childrenExpr, if removeLastPositionUnit then allButLast props else props)
   | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
 
+let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
+let merlinFocus = ({loc = Location.none; txt = "merlin.focus"}, (PStr []))
+
 (* Helper method to look up the [@react.component] attribute *)
 let hasAttr (loc, _) =
   loc.txt = "react.component"
@@ -47607,6 +47610,19 @@ let getFnName binding =
   | {pvb_pat = {
       ppat_desc = Ppat_var {txt}
     }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+let makeNewBinding binding expression newName =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var ({txt} as ppat_var)
+    } as pvb_pat} ->{ binding with pvb_pat = {
+        pvb_pat with
+        ppat_desc = Ppat_var {ppat_var with txt = newName};
+      };
+      pvb_expr = expression;
+      pvb_attributes = [merlinFocus];
+    }
   | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
 
 (* Lookup the value of `props` otherwise raise Invalid_argument error *)
@@ -47776,8 +47792,6 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     loc
     (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
     (makePropsType ~loc namedTypeList)
-
-let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
 
 (* TODO: some line number might still be wrong *)
 let jsxMapper () =
@@ -48099,6 +48113,7 @@ let jsxMapper () =
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
         let fnName = getFnName binding in
+        let internalFnName = fnName ^ "$Internal" in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
         let modifiedBindingOld binding =
           let expression = binding.pvb_expr in
@@ -48178,7 +48193,6 @@ let jsxMapper () =
         let props = getPropsAttr payload in
         (* do stuff here! *)
         let (namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper (modifiedBindingOld binding) [] in
-        let binding = { binding with pvb_expr = expression; pvb_attributes = [] } in
         let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
@@ -48213,7 +48227,11 @@ let jsxMapper () =
         let externalDecl = makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList in
         let innerExpressionArgs = (List.map pluckArg namedArgListWithKeyAndRefForNew) @
           if hasUnit then [(Nolabel, Exp.construct {loc; txt = Lident "()"} None)] else [] in
-        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(fnName)}) innerExpressionArgs in
+        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(
+          match recFlag with
+          | Recursive -> internalFnName
+          | Nonrecursive -> fnName
+        )}) innerExpressionArgs in
         let innerExpressionWithRef = match (forwardRef) with
         | Some txt ->
           {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
@@ -48245,10 +48263,21 @@ let jsxMapper () =
               fullExpression
             ]
             (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt}) in
-        let newBinding = bindingWrapper fullExpression in
-        (Some externalDecl, binding, Some newBinding)
+        let (bindings, newBinding) =
+          match recFlag with
+          | Recursive -> ([bindingWrapper (Exp.let_
+            ~loc:(emptyLoc)
+            Recursive
+            [
+              makeNewBinding binding expression internalFnName;
+              Vb.mk (Pat.var {loc = emptyLoc; txt = fnName}) fullExpression
+            ]
+            (Exp.ident {loc = emptyLoc; txt = Lident fnName}))], None)
+          | Nonrecursive -> ([{ binding with pvb_expr = expression; pvb_attributes = [] }], Some(bindingWrapper fullExpression))
+         in
+        (Some externalDecl, bindings, newBinding)
       else
-        (None, binding, None)
+        (None, [binding], None)
       in
       let structuresAndBinding = List.map mapBinding valueBindings in
       let otherStructures (extern, binding, newBinding) (externs, bindings, newBindings) =
@@ -48258,7 +48287,7 @@ let jsxMapper () =
         let newBindings = match newBinding with
         | Some newBinding -> newBinding :: newBindings
         | None -> newBindings in
-        (externs, binding :: bindings, newBindings)
+        (externs, binding @ bindings, newBindings)
       in
       let (externs, bindings, newBindings) = List.fold_right otherStructures structuresAndBinding ([], [], []) in
       externs @ [{
@@ -48268,14 +48297,14 @@ let jsxMapper () =
           bindings
         )
       }] @ (match newBindings with
-      | [] -> []
-      | newBindings -> [{
-        pstr_loc = emptyLoc;
-        pstr_desc = Pstr_value (
-          recFlag,
-          newBindings
-        )
-      }]) @ returnStructures
+        | [] -> []
+        | newBindings -> [{
+          pstr_loc = emptyLoc;
+          pstr_desc = Pstr_value (
+            recFlag,
+            newBindings
+          )
+        }]) @ returnStructures
     | structure -> structure :: returnStructures in
 
   let reactComponentTransform mapper structures =
@@ -48345,11 +48374,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 891 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 920 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           
-# 897 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 926 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48359,11 +48388,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 906 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 935 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           
-# 912 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 941 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -48654,6 +48683,9 @@ let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
     (childrenExpr, if removeLastPositionUnit then allButLast props else props)
   | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
 
+let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
+let merlinFocus = ({loc = Location.none; txt = "merlin.focus"}, (PStr []))
+
 (* Helper method to look up the [@react.component] attribute *)
 let hasAttr (loc, _) =
   loc.txt = "react.component"
@@ -48674,6 +48706,19 @@ let getFnName binding =
   | {pvb_pat = {
       ppat_desc = Ppat_var {txt}
     }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+let makeNewBinding binding expression newName =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var ({txt} as ppat_var)
+    } as pvb_pat} ->{ binding with pvb_pat = {
+        pvb_pat with
+        ppat_desc = Ppat_var {ppat_var with txt = newName};
+      };
+      pvb_expr = expression;
+      pvb_attributes = [merlinFocus];
+    }
   | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
 
 (* Lookup the value of `props` otherwise raise Invalid_argument error *)
@@ -48843,8 +48888,6 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     loc
     (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
     (makePropsType ~loc namedTypeList)
-
-let unerasableIgnore loc = ({loc; txt = "warning"}, (PStr [Str.eval (Exp.constant (Pconst_string ("-16", None)))]))
 
 (* TODO: some line number might still be wrong *)
 let jsxMapper () =
@@ -49166,6 +49209,7 @@ let jsxMapper () =
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
         let fnName = getFnName binding in
+        let internalFnName = fnName ^ "$Internal" in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
         let modifiedBindingOld binding =
           let expression = binding.pvb_expr in
@@ -49245,7 +49289,6 @@ let jsxMapper () =
         let props = getPropsAttr payload in
         (* do stuff here! *)
         let (namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper (modifiedBindingOld binding) [] in
-        let binding = { binding with pvb_expr = expression; pvb_attributes = [] } in
         let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
@@ -49280,7 +49323,11 @@ let jsxMapper () =
         let externalDecl = makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList in
         let innerExpressionArgs = (List.map pluckArg namedArgListWithKeyAndRefForNew) @
           if hasUnit then [(Nolabel, Exp.construct {loc; txt = Lident "()"} None)] else [] in
-        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(fnName)}) innerExpressionArgs in
+        let innerExpression = Exp.apply (Exp.ident {loc; txt = Lident(
+          match recFlag with
+          | Recursive -> internalFnName
+          | Nonrecursive -> fnName
+        )}) innerExpressionArgs in
         let innerExpressionWithRef = match (forwardRef) with
         | Some txt ->
           {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
@@ -49312,10 +49359,21 @@ let jsxMapper () =
               fullExpression
             ]
             (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt}) in
-        let newBinding = bindingWrapper fullExpression in
-        (Some externalDecl, binding, Some newBinding)
+        let (bindings, newBinding) =
+          match recFlag with
+          | Recursive -> ([bindingWrapper (Exp.let_
+            ~loc:(emptyLoc)
+            Recursive
+            [
+              makeNewBinding binding expression internalFnName;
+              Vb.mk (Pat.var {loc = emptyLoc; txt = fnName}) fullExpression
+            ]
+            (Exp.ident {loc = emptyLoc; txt = Lident fnName}))], None)
+          | Nonrecursive -> ([{ binding with pvb_expr = expression; pvb_attributes = [] }], Some(bindingWrapper fullExpression))
+         in
+        (Some externalDecl, bindings, newBinding)
       else
-        (None, binding, None)
+        (None, [binding], None)
       in
       let structuresAndBinding = List.map mapBinding valueBindings in
       let otherStructures (extern, binding, newBinding) (externs, bindings, newBindings) =
@@ -49325,7 +49383,7 @@ let jsxMapper () =
         let newBindings = match newBinding with
         | Some newBinding -> newBinding :: newBindings
         | None -> newBindings in
-        (externs, binding :: bindings, newBindings)
+        (externs, binding @ bindings, newBindings)
       in
       let (externs, bindings, newBindings) = List.fold_right otherStructures structuresAndBinding ([], [], []) in
       externs @ [{
@@ -49335,14 +49393,14 @@ let jsxMapper () =
           bindings
         )
       }] @ (match newBindings with
-      | [] -> []
-      | newBindings -> [{
-        pstr_loc = emptyLoc;
-        pstr_desc = Pstr_value (
-          recFlag,
-          newBindings
-        )
-      }]) @ returnStructures
+        | [] -> []
+        | newBindings -> [{
+          pstr_loc = emptyLoc;
+          pstr_desc = Pstr_value (
+            recFlag,
+            newBindings
+          )
+        }]) @ returnStructures
     | structure -> structure :: returnStructures in
 
   let reactComponentTransform mapper structures =
@@ -49412,11 +49470,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 894 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 923 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           
-# 897 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 926 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -49426,11 +49484,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 909 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 938 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           
-# 912 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 941 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
