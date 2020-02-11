@@ -44,9 +44,10 @@ type effect = string option
 let single_na = Single Lam_arity.na
 (** we don't force people to use package *)
 type cmj_case = Ext_namespace.file_kind
-  
+
+type keyed_cmj_value = { name : string ; arity : arity ; persistent_closed_lambda : Lam.t option}
 type keyed_cmj_values 
-  =  (string * cmj_value) array
+  =   keyed_cmj_value array
 
 type t = {
   values : keyed_cmj_values ;
@@ -54,26 +55,23 @@ type t = {
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
 }
-(* let empty_values = [||] *)
-let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
+
+let make ~(values:cmj_value Map_string.t) ~effect ~npm_package_path ~cmj_case : t = 
   {
-    values = Map_string.to_sorted_array values; 
+    values = Map_string.to_sorted_array_with_f values (fun k v -> {
+      name = k ; 
+      arity = v.arity;
+      persistent_closed_lambda = v.persistent_closed_lambda
+    }); 
     pure = effect = None ; 
     npm_package_path;
     cmj_case
   }
 
-let cmj_magic_number =  "BUCKLE20171012"
-let cmj_magic_number_length = 
-  String.length cmj_magic_number
-
-
-
-let digest_length = 16 (*16 chars *)
 
 let verify_magic_in_beg ic =
-  let buffer = really_input_string ic cmj_magic_number_length in 
-  if buffer <> cmj_magic_number then
+  let buffer = really_input_string ic Ext_cmj_magic.cmj_magic_number_length in 
+  if buffer <> Ext_cmj_magic.cmj_magic_number then
     Ext_fmt.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
@@ -98,21 +96,20 @@ let from_file_with_digest name : t * Digest.t =
 
 
 let from_string s : t = 
-  let magic_number = String.sub s 0 cmj_magic_number_length in 
-  if magic_number = cmj_magic_number then 
-    Marshal.from_string s  (digest_length + cmj_magic_number_length)
+  let magic_number = String.sub s 0 Ext_cmj_magic.cmj_magic_number_length in 
+  if magic_number = Ext_cmj_magic.cmj_magic_number then 
+    Marshal.from_string s  Ext_cmj_magic.header_length
   else 
     Ext_fmt.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 
-let fixed_length = cmj_magic_number_length + digest_length
 
 let for_sure_not_changed (name : string) (header : string) =   
   if Sys.file_exists name then 
     let ic = open_in_bin name in 
     let holder =
-      really_input_string ic fixed_length in 
+      really_input_string ic Ext_cmj_magic.header_length in 
     close_in ic; 
     holder = header
   else false  
@@ -123,23 +120,24 @@ let for_sure_not_changed (name : string) (header : string) =
 let to_file name ~check_exists (v : t) = 
   let s = Marshal.to_string v [] in 
   let cur_digest = Digest.string s in 
-  let header = cmj_magic_number ^ cur_digest in 
+  let header = Ext_cmj_magic.cmj_magic_number ^ cur_digest in 
   if  not (check_exists && for_sure_not_changed name header) then 
     let oc = open_out_bin name in 
     output_string oc header;    
     output_string oc s;
     close_out oc 
 
-let keyComp (a : string) (b,_) = 
-    Map_string.compare_key  a b 
+let keyComp (a : string) b = 
+    Map_string.compare_key  a b.name 
 
-let not_found = single_na, None 
-let get_result  midVal = 
-  let (_,cmj_value) = midVal in 
-  cmj_value.arity,
-  if Js_config.get_cross_module_inline () then cmj_value.persistent_closed_lambda
-  else None 
+let not_found key = {name = key; arity = single_na; persistent_closed_lambda =  None }
 
+
+let get_result  midVal =   
+  if midVal.persistent_closed_lambda = None || 
+    Js_config.get_cross_module_inline () then midVal
+  else {midVal with persistent_closed_lambda = None}  
+  
 let rec binarySearchAux arr lo hi (key : string) = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
@@ -149,34 +147,34 @@ let rec binarySearchAux arr lo hi (key : string) =
   else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then  
       let loVal = (Array.unsafe_get arr lo) in 
-      if fst loVal = key then get_result loVal
-      else not_found
+      if loVal.name = key then get_result loVal
+      else not_found key
     else binarySearchAux arr lo mid key 
   else  (*  a[lo] =< a[mid] < key <= a[hi] *)
   if lo = mid then 
     let hiVal = (Array.unsafe_get arr hi) in 
-    if fst hiVal = key  then get_result hiVal
-    else not_found
+    if hiVal.name = key  then get_result hiVal
+    else not_found key
   else binarySearchAux arr mid hi key
 
-let binarySearch (sorted : keyed_cmj_values) (key : string) =  
+let binarySearch (sorted : keyed_cmj_values) (key : string) : keyed_cmj_value =  
   let len = Array.length sorted in 
-  if len = 0 then not_found
+  if len = 0 then not_found key
   else 
     let lo = Array.unsafe_get sorted 0 in 
     let c = keyComp key lo in 
-    if c < 0 then not_found
+    if c < 0 then not_found key
     else
       let hi = Array.unsafe_get sorted (len - 1) in 
       let c2 = keyComp key hi in 
-      if c2 > 0 then not_found
+      if c2 > 0 then not_found key
       else binarySearchAux sorted 0 (len - 1) key 
 
 
 (* FIXME: better error message when ocamldep
   get self-cycle
 *)    
-let query_by_name (cmj_table : t ) name =   
+let query_by_name (cmj_table : t ) name  : keyed_cmj_value =   
   let values = cmj_table.values in    
   binarySearch values name 
 
@@ -215,7 +213,7 @@ let pp_cmj
   f "effect: %s\n"
       (if pure then "pure" else "not pure");
    Ext_array.iter values 
-    (fun (k , {arity; persistent_closed_lambda}) -> 
+    (fun ({name = k ; arity; persistent_closed_lambda}) -> 
        match arity with             
        | Single arity ->
          f "%s: %s\n" k (Format.asprintf "%a" Lam_arity.print arity);
@@ -248,5 +246,10 @@ let pp_cmj
 type path = string  
 type cmj_load_info = {
   cmj_table : t ; 
-  cmj_path : path ;
+  package_path : path 
+  (*
+    Note it is the package path we want 
+    for ES6_global module spec
+    Maybe we can employ package map in the future
+  *)
 }    

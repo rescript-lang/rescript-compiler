@@ -69,17 +69,21 @@ type cmj_case = Ext_namespace.file_kind
 type t 
 
 
-val mk:
+val make:
   values: cmj_value Map_string.t -> 
   effect: effect -> 
   npm_package_path: Js_packages_info.t ->
   cmj_case:cmj_case -> 
   t
-
+  
+type keyed_cmj_value = 
+  { name : string ;
+     arity : arity ; 
+     persistent_closed_lambda : Lam.t option}
 val query_by_name : 
   t ->
   string -> 
-  arity * Lam.t option 
+  keyed_cmj_value
 
 val is_pure : 
   t -> bool 
@@ -114,5 +118,5 @@ val pp_cmj: t -> unit
 type path = string  
 type cmj_load_info = {
   cmj_table : t ; 
-  cmj_path : path ;
+  package_path : path ;
 }    

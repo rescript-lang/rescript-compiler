@@ -35,109 +35,14 @@ function prepare() {
   e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
 `);
 
-  e(`./bin/cmjbrowser.exe`);
   e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte`
+    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
+  e(`cp ./exports.js ${playground}`)
 }
 
-// needs js_cmj_datasets, preload.js and amdjs to be update
+
 prepare();
 
-console.log(`playground : ${playground}`);
-
-var includes = [`stdlib-406`, `runtime`, `others`]
-  .map(x => path.join(jscompDir, x))
-  .concat([jsRefmtCompDir])
-  .map(x => `-I ${x}`)
-  .join(` `);
-
-var cmi_files = [
-  // `lazy`,
-  `js`,
-  `js_re`,
-  `js_array`,
-  `js_array2`,
-  `js_null`,
-  `js_undefined`,
-  `js_types`,
-  `js_null_undefined`,
-  `js_dict`,
-  `js_exn`,
-  `js_string`,
-  `js_string2`,
-  `js_vector`,
-  `js_date`,
-  `js_console`,
-  `js_global`,
-  `js_math`,
-  `js_obj`,
-  `js_int`,
-  `js_result`,
-  `js_list`,
-  `js_typed_array`,
-  `js_typed_array2`,
-  `js_mapperRt`,
-  `js_promise`,
-  `js_option`,
-  `js_float`,
-  `js_json`,
-
-  /*
-  These files cause troubles when compiled with JSOO (v3.4.0)
-  Be aware, if those are included you will get an error stating something like "/static/cmis/scanf.cmi : file already exists"
-  */
-  // `arrayLabels`,
-  // `bytesLabels`,
-  // `complex`,
-  // `gc`,
-  // `genlex`,
-  // `listLabels`,
-  // `moreLabels`,
-  // `queue`,
-  // `scanf`,
-  // `sort`,
-  // `stack`,
-  // `stdLabels`,
-  // `stream`,
-  // `stringLabels`,
-
-  `dom`,
-  `belt`,
-  `belt_Id`,
-  `belt_Array`,
-  `belt_SortArray`,
-  `belt_SortArrayInt`,
-  `belt_SortArrayString`,
-  `belt_MutableQueue`,
-  `belt_MutableStack`,
-  `belt_List`,
-  `belt_Range`,
-  `belt_Set`,
-  `belt_SetInt`,
-  `belt_SetString`,
-  `belt_Map`,
-  `belt_MapInt`,
-  `belt_Option`,
-  `belt_MapString`,
-  `belt_MutableSet`,
-  `belt_MutableSetInt`,
-  `belt_MutableSetString`,
-  `belt_MutableMap`,
-  `belt_MutableMapInt`,
-  `belt_MutableMapString`,
-  `belt_HashSet`,
-  `belt_HashSetInt`,
-  `belt_HashSetString`,
-  `belt_HashMap`,
-  `belt_HashMapInt`,
-  `belt_HashMapString`
-]
-  .map(x => `${x}.cmi:/static/cmis/${x}.cmi`)
-  .map(x => `--file ${x}`)
-  .join(` `);
-e(
-  `js_of_ocaml --disable share --toplevel ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`
-);

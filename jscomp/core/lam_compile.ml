@@ -180,7 +180,7 @@ let rec
     pos
   : Js_output.t =  
   match Lam_compile_env.query_external_id_info id pos  with      
-  | { closed_lambda = Some lam}
+  | {  persistent_closed_lambda = Some lam}
       when Lam_util.not_function lam
       ->
       compile_lambda lamba_cxt lam     
@@ -225,7 +225,7 @@ and compile_external_field_apply
   let ident_info =  
     Lam_compile_env.query_external_id_info module_id field_name  in 
   let ap_args = appinfo.ap_args in 
-  match ident_info.closed_lambda with
+  match ident_info.persistent_closed_lambda with
   | Some (Lfunction{ params; body; _})
       when Ext_list.same_length params ap_args ->
       (* TODO: serialize it when exporting to save compile time *)

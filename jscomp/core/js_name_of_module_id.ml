@@ -113,7 +113,7 @@ let string_of_module_id
           module_system  
       in
       match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
-      | (cmj_path, dep_package_info, little) -> 
+      | (package_path, dep_package_info, little) -> 
         let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name little in 
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
@@ -159,12 +159,7 @@ let string_of_module_id
 #end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
-              -> 
-                (** lib/ocaml/xx.cmj --               
-                    HACKING: FIXME
-                    maybe we can caching relative package path calculation or employ package map *)
-                (* assert false  *)
-
+              ->             
                 begin 
                   Ext_path.rel_normalized_absolute_path              
                     ~from:(
@@ -173,8 +168,7 @@ let string_of_module_id
                         ~package_dir:(Lazy.force Ext_path.package_dir)
                         module_system 
                     )
-                    ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // dep_pkg.rel_path // js_file)              
+                    (package_path // dep_pkg.rel_path // js_file)              
                 end
             end
         | Package_script, Package_script 
