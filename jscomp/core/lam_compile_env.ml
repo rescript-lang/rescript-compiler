@@ -110,7 +110,7 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
     match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
       let cmj_load_info = 
-        Js_cmj_load.find_cmj_exn (module_id.name ^ Literals.suffix_cmj) in
+        Js_cmj_load.load_unit_exn module_id.name in
       oid  +> Ml cmj_load_info  ;
       cmj_load_info.cmj_table
     | Some (Ml { cmj_table } )
@@ -148,7 +148,7 @@ let get_package_path_from_cmj
     | External _ -> assert false
     | Ml -> 
       let cmj_load_info = 
-        Js_cmj_load.find_cmj_exn (Lam_module_ident.name id ^ Literals.suffix_cmj) in           
+        Js_cmj_load.load_unit_exn (Lam_module_ident.name id) in           
       let cmj_table = cmj_load_info.cmj_table in    
       id +> Ml cmj_load_info;  
       (cmj_load_info.package_path, 
@@ -169,7 +169,7 @@ let is_pure_module (oid : Lam_module_ident.t)  =
     begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
       begin 
-        match Js_cmj_load.find_cmj_exn (Lam_module_ident.name oid ^ Literals.suffix_cmj) with
+        match Js_cmj_load.load_unit_exn (Lam_module_ident.name oid) with
         | cmj_load_info -> 
           oid +> Ml cmj_load_info ;
           Js_cmj_format.is_pure cmj_load_info.cmj_table
