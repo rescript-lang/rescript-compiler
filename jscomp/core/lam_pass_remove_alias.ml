@@ -135,9 +135,8 @@ let simplify_alias
                   end
                 |  _ -> true 
               ) -> 
-          simpl @@
-          Lam_beta_reduce.propogate_beta_reduce
-            meta params body args
+          simpl (Lam_beta_reduce.propogate_beta_reduce
+                   meta params body args)
         | _ -> 
           Lam.apply (simpl l1) (Ext_list.map args simpl) loc status
 

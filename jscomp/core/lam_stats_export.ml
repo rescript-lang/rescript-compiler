@@ -99,9 +99,7 @@ let values_of_export
        match arity, persistent_closed_lambda with 
        | Single Arity_na, 
         (None | Some (Lconst (Const_pointer (_, Pt_module_alias)))) -> acc
-        (* TODO: empty module can be saved too
-           This is common since we have a module of externals quite common      
-         *)
+       | Submodule [||], None -> acc          
        | _ ->  
          let cmj_value : Js_cmj_format.cmj_value =  
            {arity ; persistent_closed_lambda } in  
@@ -141,15 +139,15 @@ let export_to_cmj
     (meta : Lam_stats.t ) 
     effect 
     export_map
-    cmj_case
+    js_file_kind
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   
   Js_cmj_format.make
     ~values
     ~effect 
-    ~npm_package_path: (Js_packages_state.get_packages_info ())
-   ~cmj_case 
+    ~package_spec: (Js_packages_state.get_packages_info ())
+   ~js_file_kind
     (* FIXME: make sure [-o] would not change its case 
       add test for ns/non-ns
     *)

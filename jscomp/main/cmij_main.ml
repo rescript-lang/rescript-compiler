@@ -35,44 +35,51 @@ let get_files ext dir =
   |> Array.to_list
 
 (** the cache should be readable and also update *)
+let check_digest output_file digest : bool = 
+  if Sys.file_exists output_file then 
+    match 
+      List.filter (fun x -> x <> "")
+        (String.split_on_char ' ' 
+           ((Ext_io.load_file output_file))) with         
+    | head :: old_digest :: tail->
 
-let from_cmj (files : string list) (output_file : string) = 
+      Digest.equal digest old_digest
+
+    | _ -> false
+  else false   
+let (+>) = Ext_buffer.add_string
+let from_cmj (files : string list) (output_file : string) : unit = 
   let cmp = Ext_filename.module_name in     
   let files = List.sort (fun filea fileb  ->
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
-  let keys = Ext_list.map files (fun x -> "\"" ^cmp x ^ "\"") in 
-  let v = open_out_bin output_file in
-  Ext_pervasives.finally v ~clean:close_out (fun f ->   
-      output_string f {|
+  let buf = Ext_buffer.create 10000 in 
+  buf +> {|
   let i s = lazy (Marshal.from_string s 0)     
   |};
-      output_string f 
-        (Printf.sprintf {|let module_sets = [|
+  buf +>
+  (Printf.sprintf {|let module_sets : (string * Js_cmj_format.t Lazy.t) array = [|
 %s
   |]|}
-           (String.concat ";\n" keys)
-        ) ;
-      output_string f "\n";
-      output_string f 
-        (Printf.sprintf {|let module_sets_cmj : Js_cmj_format.t Lazy.t array = [|
-%s
-|] 
-|} (String.concat ";\n" (Ext_list.map files (fun file -> 
-            Printf.sprintf "i %S"
-              (let content = Ext_io.load_file file in 
-                String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
-              )))));
-              output_string f "\n";
-              output_string f {|
-              let query_by_name s =
-                match Ext_string_array.find_sorted  
-                  module_sets  s with 
-                | None -> None
-                | Some i -> 
-                  Some (Lazy.force module_sets_cmj.(i))              
-              |}
+     (String.concat ";\n" 
 
-    ) 
+        (Ext_list.map files (fun file -> 
+             let c = 
+               (let content = Ext_io.load_file file in 
+                String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
+               ) in 
+             Printf.sprintf "%S, (* %d *)i %S"
+               (cmp file)
+               (String.length c) c   
+           ))));
+  buf +> "\n" ;
+  let digest  = Digest.to_hex (Ext_buffer.digest buf) in  
+  let same = check_digest output_file digest in     
+  if not same then   
+    let v = open_out_bin output_file in  
+    Ext_pervasives.finally v ~clean:close_out (fun f ->   
+        output_string f ("(* " ^ digest ^  " *) \n");
+        Ext_buffer.output_buffer f buf     
+      ) 
 
 
 
@@ -81,33 +88,33 @@ let from_cmi (files : string list) (output_file : string) =
   let cmp = Ext_filename.module_name in   
   let files = List.sort (fun filea fileb  ->
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
-  let keys = Ext_list.map files (fun x -> "\"" ^ cmp x ^ "\"") in       
-  let v = open_out_bin output_file in
-  Ext_pervasives.finally v ~clean:close_out (fun f ->         
-      output_string f {|
-let i s = lazy (Marshal.from_string s 0)     
-|};
-      output_string f 
-        (Printf.sprintf {|let module_sets = [|
-%s
-        |]|}
-           (String.concat ";\n" keys)
-        ) ;
-      output_string f "\n";
-      output_string f 
-        (Printf.sprintf {|let module_sets_cmi : Cmi_format.cmi_infos Lazy.t array = [|
-      %s
-      |] 
-      |} (String.concat ";\n" (Ext_list.map files (fun file -> 
-            Printf.sprintf "i %S"
-              (let content = (Cmi_format.read_cmi file) in 
-               Marshal.to_string content []
-               (* let header_len = (String.length Config.cmi_magic_number) in 
-                  String.sub content header_len (String.length content - header_len) *)
-              )))
-          )
-        )
-    )
+  
+  let buf = Ext_buffer.create 10000 in 
+  buf +> {|
+  let i s = lazy (Marshal.from_string s 0)     
+  |};
+  buf +> 
+  (Printf.sprintf {|let module_sets_cmi : (string * Cmi_format.cmi_infos Lazy.t) array = [|
+  %s
+          |]|}
+     (String.concat ";\n" 
+        (Ext_list.map files (fun file -> 
+             let content = 
+               Marshal.to_string (Cmi_format.read_cmi file) [] in 
+             Printf.sprintf "%S , (* %d *)i %S"
+               (cmp file) (String.length content)
+               content)))
+  ) ;
+  buf +> "\n";
+  let digest = Digest.to_hex (Ext_buffer.digest buf) in             
+  let same = check_digest output_file digest in 
+  if not same then
+    let v = open_out_bin output_file in
+    Ext_pervasives.finally v ~clean:close_out (fun f ->         
+        output_string f ("(* " ^ digest ^ " *)\n");
+        Ext_buffer.output_buffer f buf 
+      )
+    
       ;;
 
 let stdlib = "stdlib-406"

@@ -26,3 +26,8 @@ val cmp : string -> string -> int
 
 val find_sorted : 
   string array -> string -> int option
+
+val find_sorted_assoc : 
+  (string * 'a ) array -> 
+  string -> 
+  'a option

@@ -32,10 +32,13 @@
 
 #if BS_BROWSER  then 
 let load_unit_exn unit_name : Js_cmj_format.cmj_load_info = 
-  match Builtin_cmj_datasets.query_by_name unit_name with
-  | Some v
+  match Ext_string_array.find_sorted_assoc 
+          Builtin_cmj_datasets.module_sets
+          unit_name with
+  | Some cmj_table
     -> 
-    {package_path = "BROWSER"; cmj_table = v}
+    let lazy cmj_table = cmj_table in   
+    {package_path = "BROWSER"; cmj_table}
   | None
     ->     
     Bs_exception.error (Cmj_not_found unit_name)

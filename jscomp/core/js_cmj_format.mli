@@ -64,37 +64,34 @@ type cmj_value = {
 
 type effect = string option
 
-type cmj_case = Ext_namespace.file_kind 
+type keyed_cmj_value = { 
+  name : string ;
+  arity : arity ; 
+  persistent_closed_lambda : Lam.t option
+}
 
-type t 
+type t = private {
+  values : keyed_cmj_value array ;
+  pure : bool;
+  package_spec : Js_packages_info.t ;
+  js_file_kind : Ext_js_file_kind.t; 
+}
 
 
 val make:
   values: cmj_value Map_string.t -> 
   effect: effect -> 
-  npm_package_path: Js_packages_info.t ->
-  cmj_case:cmj_case -> 
+  package_spec: Js_packages_info.t ->
+  js_file_kind:Ext_js_file_kind.t -> 
   t
   
-type keyed_cmj_value = 
-  { name : string ;
-     arity : arity ; 
-     persistent_closed_lambda : Lam.t option}
+
 val query_by_name : 
   t ->
   string -> 
   keyed_cmj_value
 
-val is_pure : 
-  t -> bool 
 
-val get_npm_package_path :  
-  t -> 
-  Js_packages_info.t  
-
-val get_cmj_case :   
-  t ->
-  cmj_case 
 
 val single_na : arity
 
@@ -107,12 +104,13 @@ val from_file_with_digest :
 
 val from_string : string -> t
 
-(* Note writing the file if its content is not chnaged  
+(* 
+  Note writing the file if its content is not changed  
 *)
 val to_file : 
   string -> check_exists:bool -> t -> unit
 
-val pp_cmj: t -> unit 
+
 
 
 type path = string  

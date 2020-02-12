@@ -42,8 +42,6 @@ type effect = string option
 
 
 let single_na = Single Lam_arity.na
-(** we don't force people to use package *)
-type cmj_case = Ext_namespace.file_kind
 
 type keyed_cmj_value = { name : string ; arity : arity ; persistent_closed_lambda : Lam.t option}
 type keyed_cmj_values 
@@ -52,11 +50,11 @@ type keyed_cmj_values
 type t = {
   values : keyed_cmj_values ;
   pure : bool;
-  npm_package_path : Js_packages_info.t ;
-  cmj_case : cmj_case; 
+  package_spec : Js_packages_info.t ;
+  js_file_kind : Ext_js_file_kind.t; 
 }
 
-let make ~(values:cmj_value Map_string.t) ~effect ~npm_package_path ~cmj_case : t = 
+let make ~(values:cmj_value Map_string.t) ~effect ~package_spec ~js_file_kind : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
       name = k ; 
@@ -64,8 +62,8 @@ let make ~(values:cmj_value Map_string.t) ~effect ~npm_package_path ~cmj_case : 
       persistent_closed_lambda = v.persistent_closed_lambda
     }); 
     pure = effect = None ; 
-    npm_package_path;
-    cmj_case
+    package_spec;
+    js_file_kind
   }
 
 
@@ -178,70 +176,9 @@ let query_by_name (cmj_table : t ) name  : keyed_cmj_value =
   let values = cmj_table.values in    
   binarySearch values name 
 
-let is_pure (cmj_table : t ) = 
-  cmj_table.pure
-
-let get_npm_package_path (cmj_table : t) = 
-  cmj_table.npm_package_path
-
-let get_cmj_case (cmj_table : t) =  
-  cmj_table.cmj_case
 
 
-(* start dumping *)
 
-let f fmt = Printf.fprintf stdout fmt 
-
-let pp_cmj_case  (cmj_case : cmj_case) : unit = 
-  match cmj_case with 
-  | Little_js -> 
-    f  "case : little, .js \n"
-  | Little_bs -> 
-    f  "case : little, .bs.js \n"    
-  | Upper_js -> 
-    f  "case: upper, .js  \n"
-  | Upper_bs -> 
-    f  "case: upper, .bs.js  \n"    
-
-let pp_cmj 
-    ({ values ; pure; npm_package_path ; cmj_case} : t) = 
-  f  "package info: %s\n"  
-    (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path)        
-  ;
-  pp_cmj_case  cmj_case;
-
-  f "effect: %s\n"
-      (if pure then "pure" else "not pure");
-   Ext_array.iter values 
-    (fun ({name = k ; arity; persistent_closed_lambda}) -> 
-       match arity with             
-       | Single arity ->
-         f "%s: %s\n" k (Format.asprintf "%a" Lam_arity.print arity);
-         (match persistent_closed_lambda with 
-          | None -> 
-            f "%s: not saved\n" k 
-          | Some lam -> 
-            begin 
-              f "%s: ======[start]\n" k ;
-              f "%s\n" (Lam_print.lambda_to_string lam);
-              f "%s: ======[finish]\n" k
-            end )         
-       | Submodule xs -> 
-         (match persistent_closed_lambda with 
-          | None -> f "%s: not saved\n" k 
-          | Some lam -> 
-            begin 
-              f "%s: ======[start]\n" k ;
-              f "%s" (Lam_print.lambda_to_string lam);
-              f "%s: ======[finish]\n" k
-            end 
-         );
-         Array.iteri 
-         (fun i arity -> f "%s[%i] : %s \n" 
-          k i 
-          (Format.asprintf "%a" Lam_arity.print arity ))
-         xs
-    )    
 
 type path = string  
 type cmj_load_info = {

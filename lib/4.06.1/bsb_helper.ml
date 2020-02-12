@@ -2903,6 +2903,11 @@ val cmp : string -> string -> int
 
 val find_sorted : 
   string array -> string -> int option
+
+val find_sorted_assoc : 
+  (string * 'a ) array -> 
+  string -> 
+  'a option
 end = struct
 #1 "ext_string_array.ml"
 (* Copyright (C) 2020 - Present Authors of BuckleScript
@@ -2965,7 +2970,37 @@ let find_sorted sorted key  : int option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
- 
+let rec binarySearchAssoc  (arr : (string * _) array) (lo : int) (hi : int) (key : string)  : _ option = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = cmp key (fst midVal) in 
+  if c = 0 then Some (snd midVal)
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if  fst loVal = key then Some (snd loVal)
+      else None
+    else binarySearchAssoc arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if  fst hiVal = key then Some (snd hiVal)
+    else None
+  else binarySearchAssoc arr mid hi key 
+
+let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string)  : a option =  
+  let len = Array.length sorted in 
+  if len = 0 then None
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = cmp key (fst lo) in 
+    if c < 0 then None
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key (fst hi) in 
+      if c2 > 0 then None
+      else binarySearchAssoc sorted 0 (len - 1) key
+
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -3705,6 +3740,41 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
+module Ext_js_file_kind
+= struct
+#1 "ext_js_file_kind.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
+
+
+end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -3755,16 +3825,13 @@ val change_ext_ns_suffix :
   string ->
   string
 
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
+
+  
+(** [js_name_of_modulename ~little A-Ns]
   *)
 val js_name_of_modulename : 
   string -> 
-  file_kind -> 
+  Ext_js_file_kind.t -> 
   string
 
 (* TODO handle cases like 
@@ -3839,11 +3906,7 @@ let try_split_module_name name =
   else 
     Some (String.sub name (i+1) (len - i - 1),
           String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+
 
 
   
@@ -3851,7 +3914,7 @@ type file_kind =
   change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename s little = 
+let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
   match little with 
   | Little_js -> 
     change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
