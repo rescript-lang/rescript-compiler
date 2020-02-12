@@ -51,7 +51,9 @@ type file_kind =
   | Upper_bs
   | Little_js 
   | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
+  
+  
+(** [js_name_of_modulename ~little A-Ns]
   *)
 val js_name_of_modulename : 
   string -> 

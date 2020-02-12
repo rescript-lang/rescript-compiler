@@ -38,18 +38,18 @@ val runtime_package_path:
   string ->
   string
 
-type package_info 
-  = 
-  { 
-    module_system : module_system ;
-    path :  string 
-  }
+type package_info = { 
+  module_system : module_system ;
+  path :  string 
+}
 
 type t 
 
 val is_runtime_package:
   t ->
   bool
+  
+  
 
 val same_package_by_name :   
   t ->

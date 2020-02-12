@@ -76,10 +76,12 @@ val make:
   cmj_case:cmj_case -> 
   t
   
-type keyed_cmj_value = 
-  { name : string ;
-     arity : arity ; 
-     persistent_closed_lambda : Lam.t option}
+type keyed_cmj_value = { 
+  name : string ;
+  arity : arity ; 
+  persistent_closed_lambda : Lam.t option
+}
+
 val query_by_name : 
   t ->
   string -> 
@@ -107,7 +109,8 @@ val from_file_with_digest :
 
 val from_string : string -> t
 
-(* Note writing the file if its content is not chnaged  
+(* 
+  Note writing the file if its content is not changed  
 *)
 val to_file : 
   string -> check_exists:bool -> t -> unit
