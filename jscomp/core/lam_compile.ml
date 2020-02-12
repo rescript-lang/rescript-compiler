@@ -177,14 +177,14 @@ let rec
   compile_external_field (* Like [List.empty]*)
     (lamba_cxt : Lam_compile_context.t)
     (id : Ident.t)
-    pos
+    name
   : Js_output.t =  
-  match Lam_compile_env.query_external_id_info id pos  with      
+  match Lam_compile_env.query_external_id_info id name  with      
   | {  persistent_closed_lambda = Some lam}
       when Lam_util.not_function lam
       ->
       compile_lambda lamba_cxt lam     
-  | { name} ->
+  | _ ->
       Js_output.output_of_expression lamba_cxt.continuation  
       ~no_effects:no_effects_const
       (E.ml_var_dot id name )
@@ -254,7 +254,9 @@ and compile_external_field_apply
         E.call ~info:(call_info_of_ap_status ap_status) fn args 
       | App_na ->   
         match ident_info.arity with 
-        | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
+        | Submodule _ 
+        | Single Arity_na 
+          -> E.call ~info:Js_call_info.dummy fn args 
         | Single x -> 
           apply_with_arity
             fn ~arity:(Lam_arity.extract_arity x) args         
