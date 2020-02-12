@@ -56,11 +56,7 @@ let try_split_module_name name =
   else 
     Some (String.sub name (i+1) (len - i - 1),
           String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+
 
 
   
@@ -68,7 +64,7 @@ type file_kind =
   change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename s little = 
+let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
   match little with 
   | Little_js -> 
     change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js

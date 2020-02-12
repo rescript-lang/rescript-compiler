@@ -129,32 +129,31 @@ let query_external_id_info (module_id : Ident.t) (name : string) : ident_info =
 
 
 
-let get_package_path_from_cmj 
-    ( id : Lam_module_ident.t) 
+let get_package_path_from_cmj ( id : Lam_module_ident.t) 
    = 
-  match Lam_module_ident.Hash.find_opt cached_tbl id with 
-  | Some (Ml {cmj_table ; package_path}) -> 
-     (package_path, 
-          Js_cmj_format.get_npm_package_path cmj_table, 
-          Js_cmj_format.get_cmj_case cmj_table )
-  | Some External -> 
-    assert false  
-      (* called by {!Js_name_of_module_id.string_of_module_id}
+   let cmj_load_info =       
+     match Lam_module_ident.Hash.find_opt cached_tbl id with 
+     | Some (Ml cmj_load_info) -> cmj_load_info
+     | Some External -> 
+       assert false  
+     (* called by {!Js_name_of_module_id.string_of_module_id}
         can not be External
-      *)
-  | None -> 
-    begin match id.kind with 
-    | Runtime 
-    | External _ -> assert false
-    | Ml -> 
-      let cmj_load_info = 
-        Js_cmj_load.load_unit_exn (Lam_module_ident.name id) in           
-      let cmj_table = cmj_load_info.cmj_table in    
-      id +> Ml cmj_load_info;  
-      (cmj_load_info.package_path, 
-       Js_cmj_format.get_npm_package_path cmj_table, 
-       Js_cmj_format.get_cmj_case cmj_table )              
-    end 
+     *)
+     | None -> 
+       begin match id.kind with 
+         | Runtime 
+         | External _ -> assert false
+         | Ml -> 
+           let cmj_load_info = 
+             Js_cmj_load.load_unit_exn (Lam_module_ident.name id) in           
+           id +> Ml cmj_load_info;    
+           cmj_load_info
+
+       end  in 
+   let cmj_table = cmj_load_info.cmj_table in          
+   (cmj_load_info.package_path, 
+    cmj_table.package_spec, 
+    cmj_table.js_file_kind)                
 
 let add = Lam_module_ident.Hash_set.add
 
@@ -172,11 +171,11 @@ let is_pure_module (oid : Lam_module_ident.t)  =
         match Js_cmj_load.load_unit_exn (Lam_module_ident.name oid) with
         | cmj_load_info -> 
           oid +> Ml cmj_load_info ;
-          Js_cmj_format.is_pure cmj_load_info.cmj_table
+          cmj_load_info.cmj_table.pure
         | exception _ -> false 
       end 
-    | Some (Ml{cmj_table}(*|Runtime {cmj_table}*)) ->
-       Js_cmj_format.is_pure cmj_table
+    | Some (Ml{cmj_table}) ->
+       cmj_table.pure
     | Some External ->  false
     end 
     

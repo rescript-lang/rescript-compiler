@@ -32,7 +32,7 @@
 (* module E = Js_exp_make  *)
 (* module S = Js_stmt_make   *)
 
-let get_cmj_case output_prefix : Ext_namespace.file_kind = 
+let get_cmj_case output_prefix : Ext_js_file_kind.t = 
   let little = 
     Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
   in 

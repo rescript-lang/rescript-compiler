@@ -6467,6 +6467,41 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
+module Ext_js_file_kind
+= struct
+#1 "ext_js_file_kind.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
+
+
+end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -6517,18 +6552,13 @@ val change_ext_ns_suffix :
   string ->
   string
 
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  
+
   
 (** [js_name_of_modulename ~little A-Ns]
   *)
 val js_name_of_modulename : 
   string -> 
-  file_kind -> 
+  Ext_js_file_kind.t -> 
   string
 
 (* TODO handle cases like 
@@ -6603,11 +6633,7 @@ let try_split_module_name name =
   else 
     Some (String.sub name (i+1) (len - i - 1),
           String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+
 
 
   
@@ -6615,7 +6641,7 @@ type file_kind =
   change_ext_ns_suffix  s 
   (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename s little = 
+let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
   match little with 
   | Little_js -> 
     change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js

@@ -46,18 +46,13 @@ val change_ext_ns_suffix :
   string ->
   string
 
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  
+
   
 (** [js_name_of_modulename ~little A-Ns]
   *)
 val js_name_of_modulename : 
   string -> 
-  file_kind -> 
+  Ext_js_file_kind.t -> 
   string
 
 (* TODO handle cases like 
