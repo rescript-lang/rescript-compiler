@@ -2903,6 +2903,11 @@ val cmp : string -> string -> int
 
 val find_sorted : 
   string array -> string -> int option
+
+val find_sorted_assoc : 
+  (string * 'a ) array -> 
+  string -> 
+  'a option
 end = struct
 #1 "ext_string_array.ml"
 (* Copyright (C) 2020 - Present Authors of BuckleScript
@@ -2965,7 +2970,37 @@ let find_sorted sorted key  : int option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
- 
+let rec binarySearchAssoc  (arr : (string * _) array) (lo : int) (hi : int) (key : string)  : _ option = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = cmp key (fst midVal) in 
+  if c = 0 then Some (snd midVal)
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if  fst loVal = key then Some (snd loVal)
+      else None
+    else binarySearchAssoc arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if  fst hiVal = key then Some (snd hiVal)
+    else None
+  else binarySearchAssoc arr mid hi key 
+
+let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string)  : a option =  
+  let len = Array.length sorted in 
+  if len = 0 then None
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = cmp key (fst lo) in 
+    if c < 0 then None
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key (fst hi) in 
+      if c2 > 0 then None
+      else binarySearchAssoc sorted 0 (len - 1) key
+
 end
 module Literals : sig 
 #1 "literals.mli"

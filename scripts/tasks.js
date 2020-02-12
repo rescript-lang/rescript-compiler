@@ -71,6 +71,7 @@ function buildFinished(code, signal) {
       // ninjaFile.updateDev();
       // This file is cached
       child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
+      child_process.execFile(path.join(__dirname,'..','jscomp','bin','cmij.exe'))
     }
   }
 }
