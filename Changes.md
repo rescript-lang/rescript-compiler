@@ -1,6 +1,7 @@
 `*` means  potential break changes
 
 # current
+- #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
 
 
 # 7.1.0
