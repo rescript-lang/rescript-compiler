@@ -20149,7 +20149,7 @@ var v = /* Dir_string */Block.__(3, [tmp]);
 
 Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", v);
 
-Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, ["Unix"]));
+Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, [Sys.os_type]));
 
 Hashtbl.replace(directive_built_in_values, "BIG_ENDIAN", /* Dir_bool */Block.__(0, [Sys.big_endian]));
 
@@ -77076,4 +77076,4 @@ if (match$1) {
 
 from_pair_suites("Ocaml_typedtree_test", suites.contents);
 
-/* bs_vscode Not a pure module */
+/*  Not a pure module */

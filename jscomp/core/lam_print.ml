@@ -232,13 +232,10 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Parraysets  -> fprintf ppf "array.set"
   | Pctconst c ->
     let const_name = match c with
-      | Big_endian -> "big_endian"
-      | Word_size -> "word_size"
+      | Big_endian -> "big_endian"      
       | Ostype_unix -> "ostype_unix"
       | Ostype_win32 -> "ostype_win32"
-      | Ostype_cygwin -> "ostype_cygwin" 
-      | Int_size -> "int_size"
-      | Max_wosize -> "max_wosize"
+      | Ostype -> "ostype"
       | Backend_type -> "backend_type"
     in
     fprintf ppf "sys.constant_%s" const_name

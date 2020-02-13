@@ -587,15 +587,19 @@ let translate  loc
   | Pctconst ct -> 
     (match ct with 
      | Big_endian -> E.bool Sys.big_endian
-     | Word_size -> 
-       E.small_int  Sys.word_size
-     | Ostype_unix -> E.bool Sys.unix
-     | Ostype_win32 -> E.bool Sys.win32      
-     | Ostype_cygwin -> E.bool Sys.cygwin
-     | Int_size -> E.int 32l
-     | Max_wosize ->
+     | Ostype ->
+      (E.runtime_call Js_runtime_modules.sys "os_type" args)
+     | Ostype_unix -> 
+       E.string_equal
+       (E.runtime_call Js_runtime_modules.sys "os_type" args)
+         (E.str "Unix")
+     | Ostype_win32 -> 
+       E.string_equal
+         (E.runtime_call Js_runtime_modules.sys "os_type" args)
+         (E.str "Win32")
+     (* | Max_wosize ->
       (* max_array_length*)
-       E.int 2147483647l (* 2 ^ 31 - 1 *) 
+       E.int 2147483647l (* 2 ^ 31 - 1 *)  *)
         (* 4_294_967_295l  not representable*)
         (* 2 ^ 32 - 1*)
      | Backend_type  -> 

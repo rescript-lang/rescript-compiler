@@ -90,11 +90,7 @@ val interactive : bool ref
    programs and to [true] if the code is being executed under
    the interactive toplevel system [ocaml]. *)
 
-#if BS then
-external os_type : string = "#os_type"
-#else
 val os_type : string
-#end
 (** Operating system currently executing the OCaml program. One of
 -  ["Unix"] (for all Unix versions, including Linux and Mac OS X),
 -  ["Win32"] (for MS-Windows, OCaml compiled with MSVC++ or Mingw),

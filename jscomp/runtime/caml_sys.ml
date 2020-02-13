@@ -34,8 +34,19 @@ let caml_sys_getenv s =
     | None -> raise Not_found
     | Some x -> x 
 
-
-
+(* https://nodejs.org/dist/latest-v12.x/docs/api/os.html#os_os_platform 
+  The value is set at compile time. Possible values are 'aix', 'darwin','freebsd', 'linux', 'openbsd', 'sunos', and 'win32'.
+  The return value is equivalent to process.platform. 
+  NodeJS does not support Cygwin very well
+*)
+let os_type : unit -> string = [%raw{|function(_){
+  if(typeof process !== 'undefined' && process.platform === 'win32'){
+        return "Win32"    
+  }
+  else {
+    return "Unix"
+  }
+}|}]
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
 external now : unit -> float = "" [@@bs.val "Date.now"]

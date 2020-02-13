@@ -28,7 +28,9 @@ val caml_sys_getenv : string -> string
 
 val caml_sys_time : unit -> float 
 
-val  caml_sys_random_seed : unit -> nativeint array
+val os_type : unit -> string 
+
+val caml_sys_random_seed : unit -> nativeint array
 
 val caml_sys_system_command : string -> int
 

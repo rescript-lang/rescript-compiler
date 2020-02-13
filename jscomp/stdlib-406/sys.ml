@@ -37,7 +37,8 @@ external get_backend_type : unit -> backend_type = "%backend_type"
 
 let (executable_name, argv) = get_argv()
 #if BS then
-external os_type : string = "#os_type"
+external get_os_type : unit -> string = "#os_type"
+let os_type = get_os_type ()
 #else
 let (os_type, _, _) = get_config()
 #end

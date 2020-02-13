@@ -147,14 +147,11 @@ type bigarray_layout = Lambda.bigarray_layout =
   | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
   | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout   *)
 
-type compile_time_constant = Lambda.compile_time_constant = 
-    | Big_endian
-    | Word_size
-    | Int_size
-    | Max_wosize
+type compile_time_constant =
+    | Big_endian  
     | Ostype_unix
-    | Ostype_win32
-    | Ostype_cygwin
+    | Ostype_win32    
+    | Ostype
     | Backend_type
 
 (** relies on the fact that [compile_time_constant] is enum type *)

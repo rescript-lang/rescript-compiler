@@ -9,4 +9,4 @@ var v = List.length;
 
 exports.u = u;
 exports.v = v;
-/* No side effect */
+/* Filename Not a pure module */
