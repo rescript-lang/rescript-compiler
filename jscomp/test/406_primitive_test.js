@@ -16,13 +16,9 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var v = 32;
-
-eq("File \"406_primitive_test.ml\", line 18, characters 6-13", v, 32);
+eq("File \"406_primitive_test.ml\", line 18, characters 6-13", 32, 32);
 
 var backend_type = /* Other */["BS"];
-
-var max_array_length = 2147483647;
 
 eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, /* Other */["BS"]);
 
@@ -51,6 +47,10 @@ function f(param) {
 }
 
 Mt.from_pair_suites("406_primitive_test", suites.contents);
+
+var v = 32;
+
+var max_array_length = 2147483647;
 
 exports.suites = suites;
 exports.test_id = test_id;

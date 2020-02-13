@@ -118,7 +118,7 @@ val switch : t -> lambda_switch -> t
 val stringswitch : t -> (string * t) list -> t option -> t 
 
 (* val true_ : t  *)
-(* val false_ : t  *)
+val false_ : t 
 val unit : t 
 
 (** convert [l || r] to [if l then true else r]*)

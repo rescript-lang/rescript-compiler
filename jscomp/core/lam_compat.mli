@@ -52,14 +52,11 @@ type bigarray_layout = Lambda.bigarray_layout =
 
 
 
-type compile_time_constant = Lambda.compile_time_constant = 
+type compile_time_constant = 
   | Big_endian
-  | Word_size
-  | Int_size
-  | Max_wosize
   | Ostype_unix
   | Ostype_win32
-  | Ostype_cygwin
+  | Ostype
   | Backend_type
 
 

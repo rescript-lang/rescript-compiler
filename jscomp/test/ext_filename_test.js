@@ -386,12 +386,13 @@ if (Sys.unix) {
   simple_convert_node_path_to_os_path = (function (x) {
       return x;
     });
-} else if (Sys.win32 || Sys.cygwin) {
+} else if (Sys.win32 || false) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
+  var s = "Unknown OS : " + Sys.os_type;
   throw [
         Caml_builtin_exceptions.failure,
-        "Unknown OS : Unix"
+        s
       ];
 }
 

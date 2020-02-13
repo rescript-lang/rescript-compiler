@@ -378,9 +378,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc
   | Pctconst x ->
     begin match x with
-      | Word_size ->
-        Lam.const (Const_int 32) 
-      | _ -> prim ~primitive:(Pctconst x) ~args loc
+      | Word_size 
+      | Int_size -> Lam.const(Const_int 32)  
+      | Max_wosize -> Lam.const (Const_int 2147483647)
+      | Big_endian
+        -> prim ~primitive:(Pctconst Big_endian) ~args loc
+      | Ostype_unix
+        -> prim ~primitive:(Pctconst Ostype_unix) ~args loc
+      | Ostype_win32
+        -> prim ~primitive:(Pctconst Ostype_win32) ~args loc
+      | Ostype_cygwin
+        -> Lam.false_
+      | Backend_type
+        -> prim ~primitive:(Pctconst Backend_type) ~args loc
     end
 
   | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc
@@ -497,8 +507,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       prim ~primitive:Pdebugger ~args:[] loc
     | _ when s = "#null" ->
       Lam.const (Const_js_null)
-    | _ when s = "#os_type" ->    
-      Lam.const (Const_string Sys.os_type)
+    | _ when s = "#os_type" ->   
+      prim ~primitive:(Pctconst Ostype) ~args:[unit] loc 
     | _ when s = "#undefined" ->
       Lam.const (Const_js_undefined)
     | _ when s = "#init_mod" ->

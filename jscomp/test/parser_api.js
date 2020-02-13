@@ -115,7 +115,19 @@ var host = "x86_64-apple-darwin18.2.0";
 
 var target = "x86_64-apple-darwin18.2.0";
 
-var default_executable_name = "a.out";
+var default_executable_name;
+
+switch (Sys.os_type) {
+  case "Unix" :
+      default_executable_name = "a.out";
+      break;
+  case "Cygwin" :
+  case "Win32" :
+      default_executable_name = "camlprog.exe";
+      break;
+  default:
+    default_executable_name = "camlprog";
+}
 
 function print_config(oc) {
   var p = function (name, valu) {
@@ -176,7 +188,7 @@ function print_config(oc) {
   p("ext_asm", ext_asm);
   p("ext_lib", ext_lib);
   p("ext_dll", ext_dll);
-  p("os_type", "Unix");
+  p("os_type", Sys.os_type);
   p("default_executable_name", default_executable_name);
   p_bool("systhread_supported", true);
   p("host", host);
@@ -12490,7 +12502,7 @@ var v = /* Dir_string */Block.__(3, [tmp]);
 
 Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", v);
 
-Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, ["Unix"]));
+Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, [Sys.os_type]));
 
 Hashtbl.replace(directive_built_in_values, "BIG_ENDIAN", /* Dir_bool */Block.__(0, [Sys.big_endian]));
 
@@ -15184,4 +15196,4 @@ exports.Lexer = Lexer;
 exports.Parse = Parse;
 exports.from_string = from_string;
 exports.implementation = implementation$1;
-/* bs_vscode Not a pure module */
+/* default_executable_name Not a pure module */

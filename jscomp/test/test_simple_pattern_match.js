@@ -1,10 +1,23 @@
 'use strict';
 
+var Sys = require("../../lib/js/sys.js");
 
-var match = /* tuple */[
-  1,
-  2
-];
+var match;
+
+switch (Sys.os_type) {
+  case "Cygwin" :
+  case "Unix" :
+      match = /* tuple */[
+        1,
+        2
+      ];
+      break;
+  default:
+    match = /* tuple */[
+      3,
+      4
+    ];
+}
 
 var a = match[0];
 
@@ -12,4 +25,4 @@ var b = match[1];
 
 exports.a = a;
 exports.b = b;
-/* No side effect */
+/* match Not a pure module */
