@@ -205,9 +205,9 @@ let infinity = 0x1p2047
 let neg_infinity = -0x1p2047
 external nan : float = "NaN"
 [@@bs.val]  [@@bs.scope "Number"]
-let max_float = 0x1.ffff_ffff_ffff_fp+1023
-let min_float = 0x1p-1022
-let epsilon_float = 0x1p-52
+let max_float = 1.79769313486231571e+308 (*0x1.ffff_ffff_ffff_fp+1023*)
+let min_float = 2.22507385850720138e-308 (* 0x1p-1022 *)
+let epsilon_float = 2.22044604925031308e-16 (* 0x1p-52 *)
 #else  
 let infinity =
   float_of_bits 0x7F_F0_00_00_00_00_00_00L
@@ -232,7 +232,7 @@ type fpclass =
 #if BS then  
 let classify_float (x : float) : fpclass =   
   if [%raw{|isFinite|}] x [@bs] then
-    if abs_float x >= 0x1p-1022(* 2.2250738585072014e-308*)  then
+    if abs_float x >= (* 0x1p-1022 *) (* 2.22507385850720138e-308*) min_float  then
       FP_normal
     else if x <> 0. then FP_subnormal
     else FP_zero
