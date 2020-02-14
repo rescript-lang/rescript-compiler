@@ -67,7 +67,9 @@ let from_cmj (files : string list) (output_file : string) : unit =
                (let content = Ext_io.load_file file in 
                 String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
                ) in 
-             Printf.sprintf "%S, (* %d *)i %S"
+             Printf.sprintf {|%S, 
+(* %d *)i 
+%S|}
                (cmp file)
                (String.length c) c   
            ))));
@@ -101,7 +103,9 @@ let from_cmi (files : string list) (output_file : string) =
         (Ext_list.map files (fun file -> 
              let content = 
                Marshal.to_string (Cmi_format.read_cmi file) [] in 
-             Printf.sprintf "%S , (* %d *)i %S"
+             Printf.sprintf {|%S , 
+(* %d *)i
+%S|}
                (cmp file) (String.length content)
                content)))
   ) ;
