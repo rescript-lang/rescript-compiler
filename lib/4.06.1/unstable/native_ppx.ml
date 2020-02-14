@@ -23149,6 +23149,7 @@ val js_stdout : bool ref
 
 val all_module_aliases : bool ref 
 
+val no_stdlib: bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23264,6 +23265,7 @@ let js_stdout = ref true
 
 let all_module_aliases = ref false
 
+let no_stdlib = ref false
 end
 module Ppx_driver : sig 
 #1 "ppx_driver.mli"

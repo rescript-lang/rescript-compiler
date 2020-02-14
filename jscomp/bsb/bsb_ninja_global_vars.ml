@@ -54,5 +54,3 @@ let gentypeconfig = "gentypeconfig"
 
 let g_dev_incls = "g_dev_incls"
 
-(* path to stdlib *)
-let g_stdlib_incl = "g_std_incl"

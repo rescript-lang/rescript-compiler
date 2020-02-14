@@ -142,14 +142,7 @@ let output_ninja_and_namespace_map
         (* resolved earlier *)
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
-      );
-    Ext_option.iter built_in_dependency (fun x -> 
-      Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.g_stdlib_incl
-      (Ext_filename.maybe_quote x.package_install_path) oc 
-    )  
-    ;  
-    
-
+      );    
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 

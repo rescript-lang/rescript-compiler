@@ -93,10 +93,10 @@ let mk_nolabels f =
   "-nolabels", Arg.Unit f, " Ignore non-optional labels in types"
 ;;
 
-let mk_nostdlib f =
+(* let mk_nostdlib f =
   "-nostdlib", Arg.Unit f,
   " Do not add default directory to the list of include directories"
-;;
+;; *)
 
 let mk_o f =
   "-o", Arg.String f, "<file>  Set output file name to <file>"
@@ -299,7 +299,7 @@ let ocaml_options =
   let _no_app_funct = unset Clflags.applicative_functors in 
   let _noassert = set Clflags.noassert in 
   let _nolabels = set Clflags.classic in 
-  let _nostdlib = set Clflags.no_std_include in 
+  (* let _nostdlib = set Clflags.no_std_include in  *)
   let _o s = Clflags.output_name := Some s in 
   let _open s = Clflags.open_modules := s :: !Clflags.open_modules in 
   let _pp s = Clflags.preprocessor := Some s in 
@@ -349,7 +349,7 @@ let ocaml_options =
     mk_no_app_funct _no_app_funct;
     mk_noassert _noassert;
     mk_nolabels _nolabels;
-    mk_nostdlib _nostdlib;
+    (* mk_nostdlib _nostdlib; *)
     mk_o _o;
     mk_open _open;
     mk_pp _pp;

@@ -12577,8 +12577,7 @@ let gentypeconfig = "gentypeconfig"
 
 let g_dev_incls = "g_dev_incls"
 
-(* path to stdlib *)
-let g_stdlib_incl = "g_std_incl"
+
 end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
@@ -12799,7 +12798,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
+    Buffer.add_string buf "$bsc $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if read_cmi then 
@@ -12809,8 +12808,8 @@ let make_custom_rules
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
-    if has_builtin then   
-      Buffer.add_string buf " -I $g_std_incl";
+    if not has_builtin then   
+      Buffer.add_string buf " -nostdlib";
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";
@@ -13591,14 +13590,7 @@ let output_ninja_and_namespace_map
         (* resolved earlier *)
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
-      );
-    Ext_option.iter built_in_dependency (fun x -> 
-      Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.g_stdlib_incl
-      (Ext_filename.maybe_quote x.package_install_path) oc 
-    )  
-    ;  
-    
-
+      );    
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
