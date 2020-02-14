@@ -209,6 +209,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-nostdlib", Arg.Set Js_config.no_stdlib,
     " Don't use stdlib")
   ::
+  ("-bs-internal-check", Arg.Unit (Builtin_check.check ),
+    " Built in check corrupted data"
+  )
+  ::  
   ("-bs-list-conditionals",
    Arg.Unit (fun () -> Lexer.list_variables Format.err_formatter),
    " List existing conditional variables")

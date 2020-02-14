@@ -119,10 +119,10 @@ function main() {
 
   if (installGlobal) {
     console.log("install bucklescript globally");
-    cp.execSync("sudo npm i -g --unsafe-perm .", {
+    cp.execSync("sudo npm i -g --unsafe-perm . && bsc -bs-internal-check", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2]
-    });
+    });    
   }
 
   var bsbDir = cp
