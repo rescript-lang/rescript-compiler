@@ -36,8 +36,10 @@ let load_builin_unit unit_name : Js_cmj_format.cmj_load_info =
   | Some cmj_table
     -> 
     if Js_config.get_diagnose () then
-      Format.fprintf Format.err_formatter "Reading cmj: %s@." unit_name;
+      Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
     let lazy cmj_table = cmj_table in   
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
     {package_path =  
       Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
   | None

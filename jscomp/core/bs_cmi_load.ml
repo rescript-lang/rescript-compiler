@@ -33,8 +33,10 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
       match Ext_string_array.find_sorted_assoc Builtin_cmi_datasets.module_sets_cmi unit_name with
       | Some cmi ->
         if Js_config.get_diagnose () then
-          Format.fprintf Format.err_formatter "Reading cmi: %s@." unit_name;
+          Format.fprintf Format.err_formatter ">Cmi: %s@." unit_name;
+        let lazy cmi = cmi in   
+        if Js_config.get_diagnose () then
+          Format.fprintf Format.err_formatter "<Cmi: %s@." unit_name;
         Some {filename = Sys.executable_name ; 
-              cmi = 
-                Lazy.force cmi}
+              cmi }
       | None -> None
