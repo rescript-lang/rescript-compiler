@@ -1,4 +1,10 @@
+var p = require("child_process");
 
-var p = require('child_process')
+var o = p.spawnSync(`bsb`);
 
-p.execSync(`bsb`)
+console.log(o.stderr + "");
+console.log("-----");
+console.log(o.stdout + "");
+if (o.error) {
+  throw o.error;
+}
