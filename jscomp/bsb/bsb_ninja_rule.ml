@@ -129,7 +129,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Buffer.clear buf;
-    Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
+    Buffer.add_string buf "$bsc $g_pkg_flg -color always";
     if bs_suffix then
       Buffer.add_string buf " -bs-suffix";
     if read_cmi then 
@@ -139,8 +139,8 @@ let make_custom_rules
     Buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
       Buffer.add_string buf " $g_dpkg_incls";
-    if has_builtin then   
-      Buffer.add_string buf " -I $g_std_incl";
+    if not has_builtin then   
+      Buffer.add_string buf " -nostdlib";
     Buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
       Buffer.add_string buf " $gentypeconfig";

@@ -29,21 +29,36 @@
 
 
 
-
-#if BS_BROWSER  then 
-let load_unit_exn unit_name : Js_cmj_format.cmj_load_info = 
+let load_builin_unit unit_name : Js_cmj_format.cmj_load_info = 
   match Ext_string_array.find_sorted_assoc 
           Builtin_cmj_datasets.module_sets
           unit_name with
   | Some cmj_table
     -> 
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
     let lazy cmj_table = cmj_table in   
-    {package_path = "BROWSER"; cmj_table}
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
+    {package_path =  
+      Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
   | None
     ->     
     Bs_exception.error (Cmj_not_found unit_name)
-#else    
-let load_unit_exn unit_name : Js_cmj_format.cmj_load_info = 
+(* 
+let load_unit_no_file unit_name : Js_cmj_format.cmj_load_info = 
+  let file = unit_name ^ Literals.suffix_cmj in   
+  match Config_util.find_opt file with
+  | Some f
+    -> 
+    {package_path = 
+       (** hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
+       Filename.dirname (Filename.dirname (Filename.dirname f)); 
+     cmj_table =  Js_cmj_format.from_file f}
+  | None -> 
+    Bs_exception.error (Cmj_not_found unit_name) *)
+
+let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info = 
   let file = unit_name ^ Literals.suffix_cmj in   
   match Config_util.find_opt file with
   | Some f
@@ -53,7 +68,12 @@ let load_unit_exn unit_name : Js_cmj_format.cmj_load_info =
       Filename.dirname (Filename.dirname (Filename.dirname f)); 
       cmj_table =  Js_cmj_format.from_file f}
   | None -> 
-    (* ONLY read the stored cmj data in browser environment *)
-    Bs_exception.error (Cmj_not_found file)
+    if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
+    else load_builin_unit unit_name 
 
-#end
+
+(* we can disable loading from file for troubleshooting
+   Note in dev mode we still allow loading from file is to 
+   make the dev build still function correct 
+*)
+let load_unit = ref load_unit_with_file

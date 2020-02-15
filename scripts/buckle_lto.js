@@ -5,7 +5,9 @@ var pairs = [
   ["Config.bs_only", "true"],
   ["Clflags.native_code", "false"],
   ["Clflags.unsafe_string", "false"],
-  ["Clflags.record_event_when_debug", "false"]
+  ["Clflags.record_event_when_debug", "false"],
+  ["Clflags.no_std_include", "true"],
+  ["no_std_include", "true"]
 ];
 
 var regexp = RegExp(`${pairs.map(x => "!" + x[0]).join("|")}`, "g");

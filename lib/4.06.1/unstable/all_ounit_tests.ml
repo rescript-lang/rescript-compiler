@@ -6716,7 +6716,7 @@ end = struct
 type t =  
   (* | File of string  *)
   | Dir of string  
-
+[@@unboxed]
 
 let simple_convert_node_path_to_os_path =
   if Sys.unix then fun x -> x 
@@ -7764,6 +7764,7 @@ val js_stdout : bool ref
 
 val all_module_aliases : bool ref 
 
+val no_stdlib: bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7879,6 +7880,7 @@ let js_stdout = ref true
 
 let all_module_aliases = ref false
 
+let no_stdlib = ref false
 end
 module Map_gen
 = struct

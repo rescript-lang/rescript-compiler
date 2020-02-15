@@ -26,9 +26,8 @@
 (* default to false -check later*)
 (* Clflags.keep_locs := false; *)
 let setup_env () =
-#if BS_BROWSER then
-  Env.Persistent_signature.load := Bs_cmi_load.browse_load;  
-#end
+  Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
+  Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  

@@ -2,6 +2,7 @@
   "name": "bucklescript-tea",
   "version": "0.6.11",
   "bsc-flags": [
+    "-bs-diagnose",
     "-bs-cross-module-opt"
   ],
   "package-specs": {
@@ -14,6 +15,6 @@
       "dir": "test",
       "type": "dev"
     }
-  ],
+  ],  
   "suffix": ".bs.js"
 }

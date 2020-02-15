@@ -26,7 +26,7 @@
 type t =  
   (* | File of string  *)
   | Dir of string  
-
+[@@unboxed]
 
 let simple_convert_node_path_to_os_path =
   if Sys.unix then fun x -> x 
