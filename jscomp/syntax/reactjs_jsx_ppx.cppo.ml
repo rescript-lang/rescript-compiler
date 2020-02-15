@@ -534,7 +534,9 @@ let jsxMapper () =
              | Ptyp_constr({txt}, _innerTypeArgs) -> String.concat "." (Longident.flatten txt) ^ "(...)"
              | _ -> "...")
              in
-             Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)
+             Location.prerr_warning pattern.ppat_loc 
+               (Preprocessor 
+                  (Printf.sprintf "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)))
       | _ -> ()) in
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
