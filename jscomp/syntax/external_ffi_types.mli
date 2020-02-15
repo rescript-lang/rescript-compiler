@@ -85,11 +85,11 @@ type js_set =
 type js_get_index =   {
   js_get_index_scopes : string list
 }
-
+[@@unboxed]
 type js_set_index = {
   js_set_index_scopes : string list
 }
-
+[@@unboxed]
 
 
 type external_spec  =

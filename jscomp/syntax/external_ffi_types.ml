@@ -78,10 +78,11 @@ type js_set =
 type js_get_index =   {
   js_get_index_scopes : string list
 }
+[@@unboxed]
 
 type js_set_index = {
   js_set_index_scopes : string list
-}
+} [@@unboxed]
 (** TODO: information between [arg_type] and [arg_label] are duplicated,
   design a more compact representation so that it is also easy to seralize by hand
 *)
