@@ -28,7 +28,7 @@ var sys_extension = config.sys_extension;
 
 process.env.BS_RELEASE_BUILD = "true";
 
-var ninja_bin_output = path.join(root_dir, "lib", "ninja.exe");
+var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
 var preBuiltCompilerArtifacts = ["bsc", "bsb", "bsb_helper", "bsppx", "refmt"];
 
 /**
@@ -51,7 +51,7 @@ function provideNinja() {
       cwd: ninja_source_dir,
       stdio: [0, 1, 2]
     });
-    fs.renameSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
     console.log("ninja binary is ready: ", ninja_bin_output);
   }
 
@@ -76,11 +76,6 @@ function provideNinja() {
     return version === vendor_ninja_version;
   }
 
-  var ninja_os_path = path.join(
-    ninja_source_dir,
-    "snapshot",
-    "ninja" + sys_extension
-  );
   if (
     fs.existsSync(ninja_bin_output) &&
     test_ninja_compatible(ninja_bin_output)
@@ -91,18 +86,7 @@ function provideNinja() {
     );
     return;
   }
-  if (fs.existsSync(ninja_os_path)) {
-    if (fs.copyFileSync) {
-      // ninja binary size is small
-      fs.copyFileSync(ninja_os_path, ninja_bin_output);
-    } else {
-      fs.renameSync(ninja_os_path, ninja_bin_output);
-    }
-    if (test_ninja_compatible(ninja_bin_output)) {
-      console.log("ninja binary is copied from pre-distribution");
-      return;
-    }
-  }
+
   build_ninja();
 }
 /**
@@ -203,24 +187,24 @@ function install(stdlib) {
  *
  */
 function copyPrebuiltCompilersForUnix(sys_extension) {
-    var output = `
+  var output = `
 rule cp 
     command = cp $in $out
 `;
-    output += preBuiltCompilerArtifacts
-        .map(function (x) {
-            return `build ${x}.exe: cp ${x}${sys_extension}`;
-        })
-        .join("\n");
-    output += "\n";
+  output += preBuiltCompilerArtifacts
+    .map(function(x) {
+      return `build ${x}.exe: cp ${x}${sys_extension}`;
+    })
+    .join("\n");
+  output += "\n";
 
-    var filePath = path.join(lib_dir, "copy.ninja");
-    fs.writeFileSync(filePath, output, "ascii");
-    cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
-        cwd: lib_dir,
-        stdio: [0, 1, 2]
-    });
-    fs.unlinkSync(filePath);
+  var filePath = path.join(lib_dir, "copy.ninja");
+  fs.writeFileSync(filePath, output, "ascii");
+  cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
+    cwd: lib_dir,
+    stdio: [0, 1, 2]
+  });
+  fs.unlinkSync(filePath);
 }
 
 /**
@@ -229,34 +213,36 @@ rule cp
  *
  */
 function copyPrebuiltCompilersForWindows(sys_extension) {
-    preBuiltCompilerArtifacts
-        .forEach(function (x) {
-            fs.copyFileSync(path.join(lib_dir, `${x}${sys_extension}`), path.join((lib_dir), `${x}.exe`));
-        });
+  preBuiltCompilerArtifacts.forEach(function(x) {
+    fs.copyFileSync(
+      path.join(lib_dir, `${x}${sys_extension}`),
+      path.join(lib_dir, `${x}.exe`)
+    );
+  });
 }
 
 function copyPrebuiltCompilers() {
-    switch (sys_extension) {
-        case ".win32":
-            copyPrebuiltCompilersForWindows(sys_extension);
-            break;
+  switch (sys_extension) {
+    case ".win32":
+      copyPrebuiltCompilersForWindows(sys_extension);
+      break;
 
-        default:
-            copyPrebuiltCompilersForUnix(sys_extension);
-            break;
-    }
+    default:
+      copyPrebuiltCompilersForUnix(sys_extension);
+      break;
+  }
 }
 
 /**
  * @returns {string|undefined}
  */
 function checkPrebuiltBscCompiler() {
-  if(process.env.BS_TRAVIS_CI){
-    return ;
+  if (process.env.BS_TRAVIS_CI) {
+    return;
   }
   try {
     var version = String(
-      cp.execFileSync(path.join(lib_dir, "bsc" + sys_extension), ["-v"])
+      cp.execFileSync(path.join(root_dir, process.platform, "bsc.exe"), ["-v"])
     );
 
     var myOCamlVersion = version.substr(
@@ -286,6 +272,7 @@ function buildLibs(stdlib) {
   ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
   var releaseNinja = `
+bsc = ../${process.platform}/bsc.exe
 stdlib = ${stdlib}
 subninja runtime/release.ninja
 subninja others/release.ninja
@@ -320,7 +307,6 @@ build all: phony runtime others $stdlib
 function provideCompiler() {
   var myVersion = checkPrebuiltBscCompiler();
   if (myVersion !== undefined) {
-    copyPrebuiltCompilers();
     return myVersion;
   } else {
     myVersion = require("./buildocaml.js").getVersionPrefix();
@@ -366,5 +352,7 @@ var ocamlVersion = provideCompiler();
 
 var stdlib = ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406";
 
-buildLibs(stdlib);
-install(stdlib);
+if (process.env.BS_TRAVIS_CI) {
+  buildLibs(stdlib);
+  install(stdlib);
+}

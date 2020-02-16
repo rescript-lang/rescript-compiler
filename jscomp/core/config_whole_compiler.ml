@@ -16,7 +16,8 @@
 (* The main OCaml version string has moved to ../VERSION *)
 let version = "4.06.1+BS"
 let standard_library =
-  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+  let (//) = Filename.concat in   
+  Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
 let standard_library_default = standard_library
 let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)

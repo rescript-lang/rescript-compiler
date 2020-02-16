@@ -22,20 +22,13 @@ var runtimeMliFiles = runtimeFiles.filter(
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
 
-var commonBsFlags = `-no-keep-locs -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -nostdlib `
+var commonBsFlags = `-no-keep-locs -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -nostdlib `;
 var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
 
-var vendorNinjaPath = path.join(
-  __dirname,
-  "..",
-  "vendor",
-  "ninja",
-  "snapshot",
-  "ninja" + require("./config.js").sys_extension
-);
+var vendorNinjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
 
 exports.vendorNinjaPath = vendorNinjaPath;
 var visitorPattern = `
@@ -709,7 +702,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
 
     new Promise((resolve, reject) => {
       cp.exec(
-        `${getOcamldepFile()} -pp '../../lib/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
+        `${getOcamldepFile()} -pp '../../${process.platform}/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
           " "
         )}`,
         config,
@@ -866,7 +859,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
   return build_stmts;
 }
 
-var COMPILIER = "../lib/bsc.exe";
+var COMPILIER = `../${process.platform}/bsc.exe`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
 var compilerTarget = pseudoTarget(COMPILIER);
 
@@ -879,7 +872,6 @@ async function runtimeNinja(devmode = true) {
       : "build.ninja"
     : "release.ninja";
   var templateRuntimeRules = `
-${BSC_COMPILER}
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50 -warn-error A  
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
@@ -979,7 +971,6 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-${BSC_COMPILER}
 bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
@@ -1107,7 +1098,6 @@ async function stdlibNinja(devmode = true) {
   // deprecations diabled due to string_of_float
   var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
-${BSC_COMPILER}
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
@@ -1242,7 +1232,6 @@ async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-${BSC_COMPILER}
 bsc_flags = -absname -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
@@ -1432,6 +1421,7 @@ native_ocaml_path = ${
           ? path.join(process.env.OCAMLLIB, "/../..")
           : "../ocaml/"
       }
+${BSC_COMPILER}      
 snapshot_path = ${require("./buildocaml.js").getVersionPrefix()}
 subninja compiler.ninja
 subninja snapshot.ninja
@@ -1493,7 +1483,7 @@ function test(dir) {
 function setSortedToStringAsNativeDeps(xs) {
   var arr = Array.from(xs).sort();
   // it relies on we have -opaque, so that .cmx is dummy file
-  return arr.join(" ").replace(/\.cmx/g,'.cmi');
+  return arr.join(" ").replace(/\.cmx/g, ".cmi");
 }
 
 /**
@@ -1570,7 +1560,7 @@ ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
   ["reactjs_jsx_ppx_v2.ml", "reactjs_jsx_ppx.cppo.ml", "REACT_JS_JSX_V2"]
 ])}
-build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+build ../${process.platform}/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
     generator = true
@@ -1645,13 +1635,13 @@ ${generateVisitorPattern()}
 
 build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
-build ../lib/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+build ../${process.platform}/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsppx.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
     libs = ocamlcommon.cmxa    
-build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
+build ../${process.platform}/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
+build ../${process.platform}/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
@@ -1696,7 +1686,9 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
   }
 
   cp.exec(
-    `${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(" ")}`,
+    `${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(
+      " "
+    )}`,
     { cwd: jscompDir, encoding: "ascii" },
     function(error, out) {
       if (error !== null) {
@@ -1748,7 +1740,9 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
           } else {
             // === 'cmi'
             var mli = path.join(y.dir, y.name + ".mli");
-            return `build ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(deps)}`;
+            return `build ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
+              deps
+            )}`;
           }
         }
       });
@@ -1800,7 +1794,7 @@ function main() {
             stdio: [0, 1]
           });
         } catch (e) {}
-        cp.execSync(`git clean -dfx jscomp lib`, {
+        cp.execSync(`git clean -dfx jscomp ${process.platform} lib`, {
           encoding: "utf8",
           cwd: path.join(__dirname, ".."),
           stdio: [0, 1, 2]

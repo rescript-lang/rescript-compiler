@@ -58,24 +58,10 @@ function init() {
 
   process.env["PATH"] = vendorOCamlPath + path.delimiter + process.env["PATH"];
 
-  var vendored = path.join(
-    __dirname,
-    "..",
-    "vendor",
-    "ninja",
-    "snapshot",
-    "ninja" + config.sys_extension
-  );
+  var ninjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
 
-  if (fs.existsSync(vendored)) {
-    ninjaPath = vendored;
-  } else {
-    var newPath = path.join(__dirname, "..", "lib", "ninja.exe");
-    if (fs.existsSync(newPath)) {
-      ninjaPath = newPath;
-    } else {
-      throw new Error("ninja could not be configured");
-    }
+  if (!fs.existsSync(ninjaPath)) {
+    throw new Error("ninja could not be configured");
   }
 }
 
@@ -122,7 +108,7 @@ function main() {
     cp.execSync("sudo npm i -g --unsafe-perm . && bsc -bs-internal-check", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2]
-    });    
+    });
   }
 
   var bsbDir = cp

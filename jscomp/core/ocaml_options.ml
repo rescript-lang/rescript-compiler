@@ -259,19 +259,20 @@ let bs_version_string =
   " ( Using OCaml:" ^ Config.version ^ " )" 
 
 let print_version_string () = 
-  print_string bs_version_string;
-  print_newline (); 
+#if undefined BS_RELEASE_BUILD then 
+  print_string "DEV VERSION: ";
+#end  
+  print_endline bs_version_string;
   exit 0 
 
-let standard_library =
-#if undefined BS_RELEASE_BUILD then
-      Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
-#else
-      Config.standard_library
-#end  
 
 let print_standard_library () = 
-  print_string standard_library; print_newline(); exit 0
+  let (//) = Filename.concat in   
+  let standard_library = 
+    Filename.dirname Sys.executable_name
+    // Filename.parent_dir_name // "lib"// "ocaml"  in 
+  print_string standard_library; print_newline(); 
+  exit 0
 
 let ocaml_options = 
   let set r () = r := true in 
