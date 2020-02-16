@@ -2,10 +2,10 @@
 //@ts-check
 var cp = require("child_process");
 var path = require("path");
-var { sys_extension, is_windows } = require("./config.js");
+var { is_windows } = require("./config.js");
 
 var root = path.join(__dirname, "..");
-var root_config = { cwd: root, stdio: [0, 1, 2], encoding: 'utf8' };
+var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
 process.env.BS_RELEASE_BUILD = "true";
 
 var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
@@ -13,15 +13,7 @@ var fs = require("fs");
 var hostPlatform = "darwin";
 
 function rebuild() {
-  cp.execSync(`node ${path.join(__dirname, "ninja.js")} clean`, {
-    cwd: __dirname,
-    stdio: [0, 1, 2]
-  });
-  cp.execSync(`node ${path.join(__dirname, "ninja.js")} config`, {
-    cwd: __dirname,
-    stdio: [0, 1, 2]
-  });
-  cp.execSync(`node ${path.join(__dirname, "ninja.js")} build`, {
+  cp.execSync(`node ${path.join(__dirname, "ninja.js")} cleanbuild`, {
     cwd: __dirname,
     stdio: [0, 1, 2]
   });
@@ -36,22 +28,24 @@ function buildCompiler() {
     ocamlopt: is_windows
       ? `ocamlopt.opt.exe`
       : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
-    ext: sys_extension,
     INCL: ocamlVersion,
     isWin: is_windows
   });
 
   fs.writeFileSync(path.join(root, "lib", prebuilt), content, "ascii");
-  process.env.PATH=
-    `${path.join(__dirname,'..','vendor','ninja','snapshot')}${path.delimiter}${process.env.PATH}`
-  let ninjaPath = `ninja${sys_extension}`
+  process.env.PATH = `${path.join(__dirname, "..", process.platform)}${
+    path.delimiter
+  }${process.env.PATH}`;
+  let ninjaPath = `ninja.exe`;
   cp.execSync(
-    `${ninjaPath} -C lib -f ${prebuilt} -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
+    `${ninjaPath} -C lib -f ${prebuilt} -v -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
     root_config
   );
 }
 if (!is_windows) {
-  rebuild();
+  if (!process.argv.includes("-noclean")) {
+    rebuild();
+  }
   require("./ninja.js").updateRelease();
 }
 var os = require("os");

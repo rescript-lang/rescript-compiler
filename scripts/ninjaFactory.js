@@ -7,13 +7,13 @@
 // ../native/4.06.1/bin/ocamlopt.opt -c -O2 -nodynlink -I 4.06.1 -g -w a+32  4.06.1/whole_compiler.mli 4.06.1/whole_compiler.ml  &> warning.log
 /**
  *
- * @param {{ocamlopt : string ; ext : string ; INCL : string, isWin : boolean}} config
+ * @param {{ocamlopt : string ;  INCL : string, isWin : boolean}} config
  *
  */
 function libNinja(config) {
   return `
 ocamlopt = ${config.ocamlopt}
-ext = ${config.ext}
+ext = .exe
 INCL = ${config.INCL}
 flags = -nodynlink -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 rule cc
