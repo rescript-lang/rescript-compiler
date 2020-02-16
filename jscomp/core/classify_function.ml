@@ -42,8 +42,15 @@ let classify (prog : string) : Js_raw_info.exp =
   }) , [] -> 
     Js_function
       {arity = List.length params; arrow = true} 
- |(_, Literal _), [] -> 
-  Js_literal     
+ |(_, Literal {comments}), [] -> 
+  let comment = 
+    match comments with 
+    | None -> None 
+    | Some {leading = [_, Block comment]} -> Some ("/*" ^ comment ^ "*/")
+    | Some {leading = [_, Line comment]} -> Some ("//" ^ comment)
+    | Some _ -> None
+  in   
+  Js_literal {comment}   
  | _ -> 
   Js_exp_unknown
  | exception _ -> 

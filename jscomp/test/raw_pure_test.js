@@ -17,7 +17,8 @@ var x3 = /ghoghos/;
 */
 
 function f(x) {
-  ((/*hgosgh */  undefined));
+  //eslint-disable
+  /*hgosgh */
   return x;
 }
 

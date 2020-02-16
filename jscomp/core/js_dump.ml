@@ -650,7 +650,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     (match info with
      | Exp exp_info ->
        let raw_paren =
-          not (exp_info = Js_literal || raw_snippet_exp_simple_enough s) in 
+          not (match exp_info with  Js_literal _ -> true | _ -> false || raw_snippet_exp_simple_enough s) in 
        if raw_paren then P.string f L.lparen;
        P.string f s ;       
        if raw_paren then  P.string f L.rparen;
@@ -1059,6 +1059,13 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       | Raw_js_code {code = s; code_info =  Stmt (Js_stmt_comment)} -> 
         P.string f s;
         cxt
+      | Raw_js_code {code = s; code_info =  Exp (Js_literal {comment})} -> 
+        (match comment with 
+        | Some s ->
+          P.string f s;
+        | None -> ());
+        cxt
+
       | _ ->  
         let cxt =
           (

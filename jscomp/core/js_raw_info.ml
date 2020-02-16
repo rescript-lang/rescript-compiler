@@ -25,7 +25,10 @@
 
 type exp =
   | Js_function of {arity : int ; arrow : bool}     
-  | Js_literal 
+  | Js_literal of {comment : string option}
+  (* A special handling of 
+    [%raw "/*lint*/ 0"]
+  *)
   (* Flow ast module 
   {[
   and value =
