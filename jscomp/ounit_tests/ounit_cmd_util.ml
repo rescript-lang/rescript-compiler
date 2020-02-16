@@ -7,9 +7,9 @@ let rec unsafe_root_dir_aux cwd  =
 
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())
 let jscomp = project_root // "jscomp"
-let bsc_bin = project_root // "lib" 
 
-let bsc_exe = bsc_bin // "bsc.exe"
+
+let bsc_exe = project_root // "bsc"
 let runtime_dir = jscomp // "runtime"
 let others_dir = jscomp // "others"
 

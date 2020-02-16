@@ -21,15 +21,15 @@ rule cc
       config.isWin ? "" : "&& strip $out"
     }
     description = Making $out
-build bsppx$ext: cc $INCL/bsppx.mli $INCL/bsppx.ml
+build ../${process.platform}/bsppx$ext: cc $INCL/bsppx.mli $INCL/bsppx.ml
 # build bspp.exe:  cc bspp.mli bspp.ml
-build bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
+build ../${process.platform}/bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
     flags = $flags -unboxed-types unix.cmxa str.cmxa
-build bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
+build ../${process.platform}/bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
     flags = $flags  -unboxed-types -w -a
-build refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
+build ../${process.platform}/refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
     flags = $flags  -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
-build bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
+build ../${process.platform}/bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
 `;
 }
 

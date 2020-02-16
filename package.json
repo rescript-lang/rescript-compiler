@@ -3,8 +3,8 @@
     "mocha": "^6.2.2"
   },
   "bin": {
-    "bsb": "lib/bsb",
-    "bsc": "lib/bsc",
+    "bsb": "bsb",
+    "bsc": "bsc",
     "bsrefmt": "lib/bsrefmt",
     "bstracing": "lib/bstracing"
   },

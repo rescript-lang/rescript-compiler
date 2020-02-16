@@ -7,13 +7,13 @@ let eq loc x y =
 
 
 
-
+#if 1 then
 let () =
   match [%node __dirname] with | Some p ->
       let root = App_root_finder.find_package_json p in
       let bsc_exe =
         Node.Path.join
-          [| root ; "lib";"bsc.exe" |] in
+          [| root ; "bsc" |] in
 
       begin match Node.Child_process.execSync
               (bsc_exe ^ " -where ")
@@ -33,6 +33,6 @@ let () =
         assert false
       end
       | None  ->  assert false
-
+#end
 let () =
   Mt.from_pair_suites __MODULE__ !suites
