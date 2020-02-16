@@ -29,7 +29,9 @@ let x3 = [%raw{|/ghoghos/|}]
 let f = [%raw"/*hello*/ 0 "]
 let hh = List.length
 let f x = 
-  ignore [%raw "/*hgosgh */  undefined"];
+  ignore [%raw "//eslint-disable
+  0"];
+  ignore [%raw {|/*hgosgh */0 |}];
   x 
 (* let s = [%raw                                           {hgosgho| (a,x) => {
 
