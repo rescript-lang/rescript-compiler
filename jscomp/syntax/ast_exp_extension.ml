@@ -71,6 +71,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
       | PStr [
         {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)} as e,_)}]        
          -> 
+        Location.prerr_warning loc (Preprocessor "Special raw form for function is deprecated, plain [%raw \"..\"] is recommended"); 
         let str_exp : Parsetree.expression = 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
