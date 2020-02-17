@@ -1,7 +1,6 @@
 *~
 _build
 _esy
-*.exe
 *.obj
 *.out
 *.compile
@@ -61,8 +60,7 @@ reason/
 man/
 lib/ocaml
 bin/*
-
-*.exe
+jscomp/bin/*.exe
 odoc_gen/*.cmxs
 
 # for npm publish
