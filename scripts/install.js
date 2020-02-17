@@ -21,15 +21,16 @@ var runtime_dir = path.join(jscomp_dir, "runtime");
 var others_dir = path.join(jscomp_dir, "others");
 
 var ocaml_dir = path.join(lib_dir, "ocaml");
-var config = require("./config.js");
 
-var is_windows = config.is_windows;
-var sys_extension = config.sys_extension;
+var supported_os = ['darwin','freebsd','linux','win32']
+if(supported_os.indexOf(process.platform)<0){
+  throw new Error("Not supported platform" + process.platform)
+}
+var is_windows = process.platform === 'win32'
 
 process.env.BS_RELEASE_BUILD = "true";
 
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
-var preBuiltCompilerArtifacts = ["bsc", "bsb", "bsb_helper", "bsppx", "refmt"];
 
 /**
  * Make sure `ninja_bin_output` exists
@@ -181,57 +182,6 @@ function install(stdlib) {
   });
 }
 
-/**
- *
- * @param {string} sys_extension
- *
- */
-function copyPrebuiltCompilersForUnix(sys_extension) {
-  var output = `
-rule cp 
-    command = cp $in $out
-`;
-  output += preBuiltCompilerArtifacts
-    .map(function(x) {
-      return `build ${x}.exe: cp ${x}${sys_extension}`;
-    })
-    .join("\n");
-  output += "\n";
-
-  var filePath = path.join(lib_dir, "copy.ninja");
-  fs.writeFileSync(filePath, output, "ascii");
-  cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
-    cwd: lib_dir,
-    stdio: [0, 1, 2]
-  });
-  fs.unlinkSync(filePath);
-}
-
-/**
- *
- * @param {string} sys_extension
- *
- */
-function copyPrebuiltCompilersForWindows(sys_extension) {
-  preBuiltCompilerArtifacts.forEach(function(x) {
-    fs.copyFileSync(
-      path.join(lib_dir, `${x}${sys_extension}`),
-      path.join(lib_dir, `${x}.exe`)
-    );
-  });
-}
-
-function copyPrebuiltCompilers() {
-  switch (sys_extension) {
-    case ".win32":
-      copyPrebuiltCompilersForWindows(sys_extension);
-      break;
-
-    default:
-      copyPrebuiltCompilersForUnix(sys_extension);
-      break;
-  }
-}
 
 /**
  * @returns {string|undefined}

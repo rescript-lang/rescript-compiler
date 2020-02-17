@@ -41,11 +41,9 @@ if (all) {
   bsbTest = true;
 }
 
-var os = require("os");
+
 var fs = require("fs");
 
-// TODO: seems it is never used, remove it later
-var ninjaPath = "";
 
 function init() {
   var vendorOCamlPath = path.join(
