@@ -61,4 +61,4 @@ let () = g () [@bs]
 let bar fn = fn ()
 (* let hh0001 = fun%raw a b -> {| a + b|}
 let hh0002 = fun%raw () -> {| console.log ("forgiving arity")|}  *)
-;; bar (fun%raw () -> {|console.log("forgiving arity")|} )
+;; bar [%raw {|function(){console.log("forgiving arity")}|}]

@@ -170,7 +170,7 @@ function bar(fn) {
   return Curry._1(fn, /* () */0);
 }
 
-(Curry._1(function (){console.log("forgiving arity")}, /* () */0));
+(Curry._1((function(){console.log("forgiving arity")}), /* () */0));
 
 exports.f = f;
 exports.v = v;

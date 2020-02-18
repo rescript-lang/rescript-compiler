@@ -1,3 +1,4 @@
+[@@@warning "-22"]
 let mk fn = fn ()
 
 
