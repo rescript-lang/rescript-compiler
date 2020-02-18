@@ -24,7 +24,7 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-process.env.BS_RELEASE_BUILD = "true";
+
 
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
 
