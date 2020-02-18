@@ -1,4 +1,4 @@
-
+[@@@warning "-22"]
 (* [@@@bs.config no_export] *)
 (* let for_each n =
   ([%raw{|

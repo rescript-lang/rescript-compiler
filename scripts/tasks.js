@@ -43,10 +43,11 @@ function rebuild() {
   } else {
     console.log(">>>> Start compiling");
     isBuilding = true;
-    var p = cp.spawn(ninjaFile.vendorNinjaPath, [], {
-      stdio: ["inherit", "inherit", "pipe"]
-    });
-    p.on("exit", buildFinished);
+
+    cp.fork(path.join(__dirname, "ninja.js"), ["build"]).on(
+      "exit",
+      buildFinished
+    );
   }
 }
 /**
@@ -71,7 +72,6 @@ function buildFinished(code, signal) {
       // ninjaFile.updateDev();
       // This file is cached
       child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
-      child_process.execFile(path.join(__dirname,'..','jscomp','bin','cmij.exe'))
     }
   }
 }
@@ -82,7 +82,11 @@ function buildFinished(code, signal) {
  */
 function onSourceChange(eventType, filename) {
   // console.log('event ', eventType,filename)
-  if (filename.endsWith(".ml") || filename.endsWith(".mli")) {
+  if (
+    filename.endsWith(".ml") ||
+    filename.endsWith(".mli") ||
+    filename.endsWith(".json")
+  ) {
     rebuild();
   }
 }
@@ -90,6 +94,9 @@ function onSourceChange(eventType, filename) {
 sourceDirs.forEach(x => {
   fs.watch(path.join(jscompDir, x), "utf8", onSourceChange);
 });
+
+fs.watch(path.join("..", "package.json"), "utf8", onSourceChange);
+
 rebuild();
 
 var readline = require("readline");

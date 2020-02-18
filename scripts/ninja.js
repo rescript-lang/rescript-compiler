@@ -702,7 +702,9 @@ function depModulesForBscAsync(files, dir, depsMap) {
 
     new Promise((resolve, reject) => {
       cp.exec(
-        `${getOcamldepFile()} -pp '../../${process.platform}/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
+        `${getOcamldepFile()} -pp '../../${
+          process.platform
+        }/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
           " "
         )}`,
         config,
@@ -1416,15 +1418,8 @@ build all: phony runtime others $stdlib test
       `
 ${getVendorConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
-native_ocaml_path = ${
-        process.env.ESY === "true"
-          ? path.join(process.env.OCAMLLIB, "/../..")
-          : "../ocaml/"
-      }
 ${BSC_COMPILER}      
-snapshot_path = ${require("./buildocaml.js").getVersionPrefix()}
 subninja compiler.ninja
-subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
@@ -1560,7 +1555,9 @@ ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
   ["reactjs_jsx_ppx_v2.ml", "reactjs_jsx_ppx.cppo.ml", "REACT_JS_JSX_V2"]
 ])}
-build ../${process.platform}/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+build ../${
+    process.platform
+  }/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
     generator = true
@@ -1635,13 +1632,21 @@ ${generateVisitorPattern()}
 
 build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
-build ../${process.platform}/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+build ../${
+    process.platform
+  }/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../${process.platform}/bsppx.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
+build ../${
+    process.platform
+  }/bsppx.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
     libs = ocamlcommon.cmxa    
-build ../${process.platform}/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
+build ../${
+    process.platform
+  }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ../${process.platform}/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
+build ../${
+    process.platform
+  }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
@@ -1776,6 +1781,19 @@ function main() {
       case "build":
         try {
           cp.execFileSync(vendorNinjaPath, {
+            encoding: "utf8",
+            cwd: jscompDir,
+            stdio: [0, 1, 2]
+          });
+          cp.execFileSync(
+            path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
+            {
+              encoding: "utf8",
+              cwd: jscompDir,
+              stdio: [0, 1, 2]
+            }
+          );
+          cp.execFileSync(vendorNinjaPath, ["-f", "snapshot.ninja"], {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2]

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+#if BS_RELEASE_BUILD then
 
 let load_cmi ~unit_name : Env.Persistent_signature.t option =
   match Config_util.find_opt (unit_name ^".cmi") with 
@@ -40,3 +40,32 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
         Some {filename = Sys.executable_name ; 
               cmi }
       | None -> None
+
+let check () = 
+  Ext_array.iter 
+    Builtin_cmi_datasets.module_sets_cmi
+    (fun (name,l) ->
+       prerr_endline (">checking " ^ name);
+       let cmi = Lazy.force l in 
+       (match cmi.cmi_crcs with 
+        | (unit , Some digest) :: _  ->
+          Format.fprintf Format.err_formatter "%s -> %s@." unit (Digest.to_hex digest)
+        | _ -> ());
+       prerr_endline ("<checking " ^ name);
+    );
+  Ext_array.iter 
+    Builtin_cmj_datasets.module_sets
+    (fun (name,l) ->
+       prerr_endline (">checking " ^ name);
+       let cmj = Lazy.force l in 
+       Format.fprintf Format.err_formatter "%b@." cmj.pure;
+       prerr_endline ("<checking " ^ name);
+    ) 
+#else
+
+let check () = ()
+let load_cmi ~unit_name : Env.Persistent_signature.t option =
+  match Config_util.find_opt (unit_name ^".cmi") with 
+  | Some filename -> Some {filename; cmi = Cmi_format.read_cmi filename}
+  | None -> None 
+#end    

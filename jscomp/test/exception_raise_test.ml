@@ -1,4 +1,4 @@
-
+[@@@warning "-22"]
 
 exception Local
 exception B of int list 

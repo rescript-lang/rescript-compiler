@@ -30,6 +30,7 @@
 
 
 let load_builin_unit unit_name : Js_cmj_format.cmj_load_info = 
+#if BS_RELEASE_BUILD then  
   match Ext_string_array.find_sorted_assoc 
           Builtin_cmj_datasets.module_sets
           unit_name with
@@ -43,7 +44,8 @@ let load_builin_unit unit_name : Js_cmj_format.cmj_load_info =
     {package_path =  
       Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
   | None
-    ->     
+    ->  
+#end         
     Bs_exception.error (Cmj_not_found unit_name)
 (* 
 let load_unit_no_file unit_name : Js_cmj_format.cmj_load_info = 

@@ -17,19 +17,16 @@ var path = require("path");
 var root_dir = path.join(__dirname, "..");
 var lib_dir = path.join(root_dir, "lib");
 var jscomp_dir = path.join(root_dir, "jscomp");
-var runtime_dir = path.join(jscomp_dir, "runtime");
-var others_dir = path.join(jscomp_dir, "others");
 
-var ocaml_dir = path.join(lib_dir, "ocaml");
-var config = require("./config.js");
-
-var is_windows = config.is_windows;
-var sys_extension = config.sys_extension;
+var supported_os = ["darwin", "freebsd", "linux", "win32"];
+if (supported_os.indexOf(process.platform) < 0) {
+  throw new Error("Not supported platform" + process.platform);
+}
+var is_windows = process.platform === "win32";
 
 process.env.BS_RELEASE_BUILD = "true";
 
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
-var preBuiltCompilerArtifacts = ["bsc", "bsb", "bsb_helper", "bsppx", "refmt"];
 
 /**
  * Make sure `ninja_bin_output` exists
@@ -89,67 +86,6 @@ function provideNinja() {
 
   build_ninja();
 }
-/**
- *
- * @param {NodeJS.ErrnoException} err
- */
-function throwWhenError(err) {
-  if (err !== null) {
-    throw err;
-  }
-}
-/**
- *
- * @param {string} file
- * @param {string} target
- */
-function poorCopyFile(file, target) {
-  var stat = fs.statSync(file);
-  fs.createReadStream(file).pipe(
-    fs.createWriteStream(target, { mode: stat.mode })
-  );
-}
-/**
- * @type {(x:string,y:string)=>void}
- *
- */
-var installTrytoCopy;
-if (fs.copyFile !== undefined) {
-  installTrytoCopy = function(x, y) {
-    fs.copyFile(x, y, throwWhenError);
-  };
-} else if (is_windows) {
-  installTrytoCopy = function(x, y) {
-    fs.rename(x, y, throwWhenError);
-  };
-} else {
-  installTrytoCopy = function(x, y) {
-    poorCopyFile(x, y);
-  };
-}
-
-/**
- *
- * @param {string} src
- * @param {(file:string)=>boolean} filter
- * @param {string} dest
- */
-function installDirBy(src, dest, filter) {
-  fs.readdir(src, function(err, files) {
-    if (err === null) {
-      files.forEach(function(file) {
-        if (filter(file)) {
-          var x = path.join(src, file);
-          var y = path.join(dest, file);
-          // console.log(x, '----->', y )
-          installTrytoCopy(x, y);
-        }
-      });
-    } else {
-      throw err;
-    }
-  });
-}
 
 /**
  *
@@ -162,76 +98,7 @@ function ensureExists(dir) {
   }
 }
 
-/**
- * @param {string} stdlib
- */
-function install(stdlib) {
-  installDirBy(runtime_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return y.name === "js" || y.ext.includes("cm");
-  });
-  installDirBy(others_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
-  });
-  var stdlib_dir = path.join(jscomp_dir, stdlib);
-  installDirBy(stdlib_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
-  });
-}
 
-/**
- *
- * @param {string} sys_extension
- *
- */
-function copyPrebuiltCompilersForUnix(sys_extension) {
-  var output = `
-rule cp 
-    command = cp $in $out
-`;
-  output += preBuiltCompilerArtifacts
-    .map(function(x) {
-      return `build ${x}.exe: cp ${x}${sys_extension}`;
-    })
-    .join("\n");
-  output += "\n";
-
-  var filePath = path.join(lib_dir, "copy.ninja");
-  fs.writeFileSync(filePath, output, "ascii");
-  cp.execFileSync(ninja_bin_output, ["-f", "copy.ninja"], {
-    cwd: lib_dir,
-    stdio: [0, 1, 2]
-  });
-  fs.unlinkSync(filePath);
-}
-
-/**
- *
- * @param {string} sys_extension
- *
- */
-function copyPrebuiltCompilersForWindows(sys_extension) {
-  preBuiltCompilerArtifacts.forEach(function(x) {
-    fs.copyFileSync(
-      path.join(lib_dir, `${x}${sys_extension}`),
-      path.join(lib_dir, `${x}.exe`)
-    );
-  });
-}
-
-function copyPrebuiltCompilers() {
-  switch (sys_extension) {
-    case ".win32":
-      copyPrebuiltCompilersForWindows(sys_extension);
-      break;
-
-    default:
-      copyPrebuiltCompilersForUnix(sys_extension);
-      break;
-  }
-}
 
 /**
  * @returns {string|undefined}
@@ -267,7 +134,6 @@ function checkPrebuiltBscCompiler() {
  */
 function buildLibs(stdlib) {
   ensureExists(lib_dir);
-  ensureExists(ocaml_dir);
   ensureExists(path.join(lib_dir, "js"));
   ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
@@ -330,7 +196,6 @@ function provideCompiler() {
     // under windows require '.exe'
     var releaseNinja = require("./ninjaFactory.js").libNinja({
       ocamlopt: ocamlopt,
-      ext: ".exe",
       INCL: myVersion,
       isWin: is_windows
     });
@@ -354,5 +219,4 @@ var stdlib = ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406";
 
 if (process.env.BS_TRAVIS_CI) {
   buildLibs(stdlib);
-  install(stdlib);
 }

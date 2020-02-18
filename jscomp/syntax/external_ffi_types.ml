@@ -257,7 +257,7 @@ let bs_prefix_length = String.length bs_prefix
     1. fixed length
     2. non-prefix approach
 *)
-let bs_external = bs_prefix ^ Bs_version.version
+let bs_external = bs_prefix 
 
 
 let bs_external_length = String.length bs_external
