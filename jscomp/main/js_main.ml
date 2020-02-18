@@ -209,7 +209,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-nostdlib", Arg.Set Js_config.no_stdlib,
     " Don't use stdlib")
   ::
-  ("-bs-internal-check", Arg.Unit (Builtin_check.check ),
+  ("-bs-internal-check", Arg.Unit (Bs_cmi_load.check ),
     " Built in check corrupted data"
   )
   ::  

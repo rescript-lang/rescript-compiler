@@ -1,6 +1,6 @@
 //@ts-check
 var cp = require("child_process");
-var config = require("./config");
+
 var path = require("path");
 
 var installGlobal = false;

@@ -52,17 +52,12 @@ let rec unroll_function_aux
 type t = { args : string list ; block :  string }
 
 let toString (x : t) = 
-  Bs_version.version ^ Marshal.to_string x []
+   Marshal.to_string x []
 
 (* exception handling*)
-let fromString (x : string) : t = 
-  if Ext_string.starts_with x Bs_version.version then 
-    Marshal.from_string x (String.length Bs_version.version)
-  else 
-     Ext_fmt.failwithf
-        ~loc:__LOC__
-        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
-
+let fromString (x : string) : t =   
+    Marshal.from_string x 0
+  
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     (({txt ; loc} as lid , payload) : Parsetree.extension) = 
   begin match txt with

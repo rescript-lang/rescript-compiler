@@ -132,7 +132,7 @@ let () =
       get_files Literals.suffix_cmj stdlib @             
       get_files Literals.suffix_cmj "others") in 
   from_cmj cmj_files
-    (Filename.concat "core" "builtin_cmj_datasets.ml");
+    (Filename.concat "main" "builtin_cmj_datasets.ml");
   let cmi_files = 
     "runtime" // "js.cmi" ::       
     (get_files Literals.suffix_cmi stdlib @
@@ -143,5 +143,5 @@ let () =
        not (x |~ "internal"))
   in     
   from_cmi cmi_files
-    (Filename.concat "core" "builtin_cmi_datasets.ml")
+    (Filename.concat "main" "builtin_cmi_datasets.ml")
 
