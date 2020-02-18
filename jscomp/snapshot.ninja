@@ -1,6 +1,6 @@
 releaseMode = -D BS_RELEASE_BUILD=true
 rule bspack    
-    command = ./bin/bspack.exe $flags -bs-main $main -o $out  $post_process
+    command = ./bin/bspack.exe $releaseMode $flags -bs-main $main -o $out  $post_process
     depfile = $out.d
     generator = true
 native_ocaml_path = ../ocaml/
@@ -62,11 +62,11 @@ build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe
     main = Bspack_main
 
 build $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
+    flags = -D BS_BROWSER=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
     main  = Jsoo_main
 
 build $SNAP/unstable/js_refmt_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_BROWSER=true -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I js_parser -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main -I refmt
+    flags = -D BS_BROWSER=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I js_parser -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main -I refmt
     main  = Jsoo_refmt_main
 
 subninja build.ninja    

@@ -6,7 +6,7 @@ var { is_windows } = require("./config.js");
 
 var root = path.join(__dirname, "..");
 var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
-process.env.BS_RELEASE_BUILD = "true";
+
 
 var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
 var fs = require("fs");
