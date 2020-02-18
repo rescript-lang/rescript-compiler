@@ -1613,7 +1613,7 @@ rule gcc
     command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
-    command = $ocamlmklib $in -o $name
+    command = $ocamlmklib -v $in -o $name && touch $out
 
 rule mk_keywords
     command = $ocaml $in
