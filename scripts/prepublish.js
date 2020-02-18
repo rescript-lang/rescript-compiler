@@ -1,109 +1,117 @@
 #!/usr/bin/env node
 //@ts-check
-var p = require('child_process')
-var path = require('path')
-var fs = require('fs')
-var assert = require('assert')
-var root = path.join(__dirname, '..')
-var root_config = { cwd: root, encoding: 'utf8' }
-var json = require(path.join(root, 'package.json'))
-var os = require('os')
+var p = require("child_process");
+var path = require("path");
+var fs = require("fs");
+var assert = require("assert");
+var root = path.join(__dirname, "..");
+var root_config = { cwd: root, encoding: "utf8" };
+var json = require(path.join(root, "package.json"));
+var os = require("os");
 
 function clean() {
-    console.log(`cleanning`)
-    p.execSync(`git clean -dfx . -e native/`, root_config)
+  console.log(`cleanning`);
+  p.execSync(`git clean -dfx . -e native/`, root_config);
 }
 function verifyIsCleanWorkTree() {
-    var output = p.execSync(`git status -uno`, root_config)
-    if (output.includes('nothing to commit')) {
-        console.log(`still clean tree`)
-
-    } else {
-
-        console.log(output)
-        console.log(`Error: not fixed point`)
-        process.exit(2)
-    }
+  var output = p.execSync(`git status -uno`, root_config);
+  if (output.includes("nothing to commit")) {
+    console.log(`still clean tree`);
+  } else {
+    console.log(output);
+    console.log(`Error: not fixed point`);
+    process.exit(2);
+  }
 }
 
-function checkWinBinary(){
-    var assocs = ['bsppx', 'bsb', 'bsb_helper', 'refmt', 'bsc'].map(x=>{
-        return [x, { win32 : false, darwin : false}]
-    })
-    
-    /**
-     * @type{Map<string,*>}
-     */
-    // @ts-ignore
-    var files = new Map( assocs )
+function checkWinBinary() {
+  var assocs = ["bsppx", "bsb", "bsb_helper", "refmt", "bsc"].map(x => {
+    return [x, { win32: false, darwin: false }];
+  });
 
-    // check sound
-    var libDir = path.join(root,'lib')
-    fs.readdirSync(libDir).forEach(x=>{
-        var y = path.parse(x)
-        if(y.ext === '.win32'){
-            assert (files.has(y.name), `unknown ${x}`)
-            files.get(y.name).win32 = true
-        } else  if(y.ext === '.darwin'){
-            assert  (files.has(y.name), `unknown ${x}`)
-            files.get(y.name).darwin = true
-        }    
-    })
+  /**
+   * @type{Map<string,*>}
+   */
+  // @ts-ignore
+  var files = new Map(assocs);
 
-    // check complete 
-    files.forEach(x => {
-        assert(x.win32, `${x}.win32 not available`)
-        assert(x.darwin, `${x}.darwin not available`)
-    } )    
+  // TODO: check sound
+  var platforms = ["win32", "linux", "darwin"];
+  /*
+  platforms
+    .map(x => path.join(root, x))
+    .forEach(libDir => {
+      fs.readdirSync(libDir).forEach(x => {
+        var y = path.parse(x);
+        if (y.ext === ".win32") {
+          assert(files.has(y.name), `unknown ${x}`);
+          files.get(y.name).win32 = true;
+        } else if (y.ext === ".darwin") {
+          assert(files.has(y.name), `unknown ${x}`);
+          files.get(y.name).darwin = true;
+        }
+      });
+    });
+
+  // check complete
+  files.forEach(x => {
+    assert(x.win32, `${x}.win32 not available`);
+    assert(x.darwin, `${x}.darwin not available`);
+  });
+  */
 }
 
-clean()
+clean();
 
 // require('./release').run()
 // Not needed
-verifyIsCleanWorkTree()
+verifyIsCleanWorkTree();
 
-clean()
-console.log(`start packing`)
-p.execSync(`yarn pack`, root_config)
-console.log(`finish packing`)
+clean();
+console.log(`start packing`);
+p.execSync(`yarn pack`, root_config);
+console.log(`finish packing`);
 
-var tmpdir = 'tmp'
+var tmpdir = "tmp";
 
-fs.mkdirSync(path.join(root, tmpdir))
+fs.mkdirSync(path.join(root, tmpdir));
 
-p.execSync(`tar -xzf ${json.name}-v${json.version}.tgz -C ${tmpdir} `, root_config)
+p.execSync(
+  `tar -xzf ${json.name}-v${json.version}.tgz -C ${tmpdir} `,
+  root_config
+);
 
-process.env.BS_ALWAYS_BUILD_YOUR_COMPILER = 'true'
+process.env.BS_ALWAYS_BUILD_YOUR_COMPILER = "true";
 var tmpdir_config = {
-    cwd: path.join(root, tmpdir, 'package'),
-    encoding: 'utf8', stdio: 'inherit'
-}
-console.log(`start installing`)
+  cwd: path.join(root, tmpdir, "package"),
+  encoding: "utf8",
+  stdio: "inherit"
+};
+console.log(`start installing`);
 // @ts-ignore
-p.execSync(`npm install`, tmpdir_config)
-console.log(`finish installing`)
-clean()
-verifyIsCleanWorkTree()
-console.log(`okay to publish`)
+p.execSync(`npm install`, tmpdir_config);
+console.log(`finish installing`);
+clean();
+verifyIsCleanWorkTree();
+console.log(`okay to publish`);
 
-
-if(!process.argv.includes('-weekly')){
-    console.log(`checking windows`)
-    checkWinBinary()
+if (!process.argv.includes("-weekly")) {
+  console.log(`checking windows`);
+  checkWinBinary();
 }
 
 /**
- * 
- * @param {string} data 
+ *
+ * @param {string} data
  */
 function pbcopy(data) {
-    var proc = require('child_process').spawn('pbcopy'); 
-    proc.stdin.write(data); proc.stdin.end();
+  var proc = require("child_process").spawn("pbcopy");
+  proc.stdin.write(data);
+  proc.stdin.end();
 }
 
-var publishCommand = `yarn publish --network-timeout 100000000 --tag ${json.version}`
-console.log(`please run: \n${publishCommand}`)
-if(os.platform() === 'darwin'){
-    pbcopy(publishCommand)
+var publishCommand = `yarn publish --network-timeout 100000000 --tag ${json.version}`;
+console.log(`please run: \n${publishCommand}`);
+if (os.platform() === "darwin") {
+  pbcopy(publishCommand);
 }
