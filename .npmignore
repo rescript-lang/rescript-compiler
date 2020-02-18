@@ -17,13 +17,13 @@ site/
 odoc_gen
 coverage
 jscomp/*
-!jscomp/release.ninja
+# !jscomp/release.ninja
 # !jscomp/Makefile
-!jscomp/stdlib-406
-!jscomp/runtime
-!jscomp/others
-!jscomp/stubs
-!jscomp/Makefile.shared
+# !jscomp/stdlib-406
+# !jscomp/runtime
+# !jscomp/others
+# !jscomp/stubs
+# !jscomp/Makefile.shared
 ocaml/
 lib/4.06.1/unstable
 .circleci/
