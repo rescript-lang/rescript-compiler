@@ -1,109 +1,98 @@
 #!/usr/bin/env node
 //@ts-check
-var p = require('child_process')
-var path = require('path')
-var fs = require('fs')
-var assert = require('assert')
-var root = path.join(__dirname, '..')
-var root_config = { cwd: root, encoding: 'utf8' }
-var json = require(path.join(root, 'package.json'))
-var os = require('os')
+var p = require("child_process");
+var path = require("path");
+var fs = require("fs");
+var assert = require("assert");
+var root = path.join(__dirname, "..");
 
-function clean() {
-    console.log(`cleanning`)
-    p.execSync(`git clean -dfx . -e native/`, root_config)
+var output = p.spawnSync(`npm pack --dry-run`, {
+  cwd: root,
+  encoding: "utf8",
+  shell: true
+  // stdio: [0, 1, 2]
+});
+
+/**
+ *
+ * @param {string} output
+ */
+function parseOutput(output) {
+  var publishedFiles = output
+    .slice(
+      output.indexOf("Tarball Contents"),
+      output.lastIndexOf("npm notice === Tarball Details ===")
+    )
+    .split("\n")
+    .map(x => x.split(" ").filter(Boolean))
+    .filter(x => x[0] === "npm" && x[1] === "notice")
+    .map(x => x[x.length - 1]);
+  return publishedFiles;
 }
-function verifyIsCleanWorkTree() {
-    var output = p.execSync(`git status -uno`, root_config)
-    if (output.includes('nothing to commit')) {
-        console.log(`still clean tree`)
 
+var packedFiles = parseOutput(output.stderr);
+
+/**
+ *
+ * @param {string[]} files
+ */
+function stat(files) {
+  /**
+   * @type Map<string,Set<string> >
+   */
+  var map = new Map();
+  for (let f of files) {
+    let p = path.parse(f);
+    if (map.get(p.dir) === undefined) {
+      map.set(p.dir, new Set([p.base]));
     } else {
-
-        console.log(output)
-        console.log(`Error: not fixed point`)
-        process.exit(2)
+      map.get(p.dir).add(p.base);
     }
-}
-
-function checkWinBinary(){
-    var assocs = ['bsppx', 'bsb', 'bsb_helper', 'refmt', 'bsc'].map(x=>{
-        return [x, { win32 : false, darwin : false}]
-    })
-    
-    /**
-     * @type{Map<string,*>}
-     */
-    // @ts-ignore
-    var files = new Map( assocs )
-
-    // check sound
-    var libDir = path.join(root,'lib')
-    fs.readdirSync(libDir).forEach(x=>{
-        var y = path.parse(x)
-        if(y.ext === '.win32'){
-            assert (files.has(y.name), `unknown ${x}`)
-            files.get(y.name).win32 = true
-        } else  if(y.ext === '.darwin'){
-            assert  (files.has(y.name), `unknown ${x}`)
-            files.get(y.name).darwin = true
-        }    
-    })
-
-    // check complete 
-    files.forEach(x => {
-        assert(x.win32, `${x}.win32 not available`)
-        assert(x.darwin, `${x}.darwin not available`)
-    } )    
-}
-
-clean()
-
-// require('./release').run()
-// Not needed
-verifyIsCleanWorkTree()
-
-clean()
-console.log(`start packing`)
-p.execSync(`yarn pack`, root_config)
-console.log(`finish packing`)
-
-var tmpdir = 'tmp'
-
-fs.mkdirSync(path.join(root, tmpdir))
-
-p.execSync(`tar -xzf ${json.name}-v${json.version}.tgz -C ${tmpdir} `, root_config)
-
-process.env.BS_ALWAYS_BUILD_YOUR_COMPILER = 'true'
-var tmpdir_config = {
-    cwd: path.join(root, tmpdir, 'package'),
-    encoding: 'utf8', stdio: 'inherit'
-}
-console.log(`start installing`)
-// @ts-ignore
-p.execSync(`npm install`, tmpdir_config)
-console.log(`finish installing`)
-clean()
-verifyIsCleanWorkTree()
-console.log(`okay to publish`)
-
-
-if(!process.argv.includes('-weekly')){
-    console.log(`checking windows`)
-    checkWinBinary()
+  }
+  for (let [k, v] of map) {
+    console.log(`dir: ${k} \t=>\t ${v.size}`);
+  }
+  return map;
 }
 
 /**
- * 
- * @param {string} data 
+ *
+ * @param {Map<string, Set<string> >} map
  */
-function pbcopy(data) {
-    var proc = require('child_process').spawn('pbcopy'); 
-    proc.stdin.write(data); proc.stdin.end();
+function check(map) {
+  var compilers = ["bsb", "bsb_helper", "bsc", "bsppx", "ninja", "refmt"];
+  for (let os of ["win32", "darwin", "linux"]) {
+    for (let c of compilers) {
+      assert(map.get(os).has(`${c}.exe`));
+    }
+  }
+  assert(map.get("lib/ocaml").size > 400);
+  assert.equal(map.has("jscomp"), false);
+  assert.equal(map.get("jscomp/stubs").size, 1);
+  assert.equal(map.get("lib/js").size, map.get("lib/es6").size);
 }
 
-var publishCommand = `yarn publish --network-timeout 100000000 --tag ${json.version}`
-console.log(`please run: \n${publishCommand}`)
-if(os.platform() === 'darwin'){
-    pbcopy(publishCommand)
+var map = stat(packedFiles);
+/**
+ *
+ * @param {Map<string,Set<string>} map
+ */
+function toJSON(map) {
+  var o = {};
+  var keys = [...map.keys()].sort();
+  for (let k of keys) {
+    // @ts-ignore
+    o[k] = [...map.get(k)];
+  }
+  return o;
+}
+
+fs.writeFileSync(
+  path.join(__dirname, "..", "jscomp", "artifacts.json"),
+  JSON.stringify(toJSON(map), undefined, 2),
+  "utf8"
+);
+
+if (!process.argv.includes("-nocheck")) {
+  check(map);
 }
