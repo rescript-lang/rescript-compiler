@@ -49,7 +49,9 @@ function install() {
   var others_dir = path.join(jscomp_dir, "others");
   var ocaml_dir = path.join(lib_dir, "ocaml");
   var stdlib_dir = path.join(jscomp_dir, "stdlib-406");
-
+  if(!fs.existsSync(ocaml_dir)){
+    fs.mkdirSync(ocaml_dir)
+  }
   // sync up with cmij_main.ml
   installDirBy(runtime_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
