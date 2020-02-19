@@ -6,7 +6,6 @@ var { is_windows } = require("./config.js");
 
 var root = path.join(__dirname, "..");
 var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
-process.env.BS_RELEASE_BUILD = "true";
 
 var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
 var fs = require("fs");
@@ -18,7 +17,7 @@ function rebuild() {
     stdio: [0, 1, 2]
   });
 }
-var assert = require('assert')
+var assert = require("assert");
 /**
  *
  * @param {string} src
@@ -33,7 +32,7 @@ function installDirBy(src, dest, filter) {
           var x = path.join(src, file);
           var y = path.join(dest, file);
           // console.log(x, '----->', y )
-          fs.copyFile(x, y, (err) => assert.equal(err,null));
+          fs.copyFile(x, y, err => assert.equal(err, null));
         }
       });
     } else {
@@ -51,18 +50,22 @@ function install() {
   var ocaml_dir = path.join(lib_dir, "ocaml");
   var stdlib_dir = path.join(jscomp_dir, "stdlib-406");
 
+  // sync up with cmij_main.ml
   installDirBy(runtime_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
-    return y.name === "js" || y.ext.includes("cm");
+    return y.name === "js" && y.ext !== ".cmj";
     // install js.cmi, js.mli
   });
+
+  // for merlin or other IDE
+  var installed_suffixes = [".ml", ".mli", ".cmi",".cmt", ".cmti"];
   installDirBy(others_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
-    return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
+    return installed_suffixes.includes(y.ext);
   });
   installDirBy(stdlib_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
-    return y.ext === ".ml" || y.ext === ".mli" || y.ext.includes("cm");
+    return installed_suffixes.includes(y.ext)
   });
 }
 
