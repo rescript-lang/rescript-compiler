@@ -4,10 +4,12 @@
 *.obj
 *.lib
 *.dll
-*.cm[ioxatj]
+*.cm[oxaj]
 *.cmx[as]
-*.cmti
 *.annot
+*.ninja_deps
+*.ninja_log
+*~
 docs/*
 docs/docson/*
 !docs/docson/build-schema.json
@@ -16,15 +18,14 @@ site/
 .github/
 odoc_gen
 coverage
-jscomp/*
-!jscomp/release.ninja
-# !jscomp/Makefile
-!jscomp/stdlib-406
-!jscomp/runtime
-!jscomp/others
-!jscomp/stubs
-!jscomp/Makefile.shared
+jscomp/**/*
+!jscomp/stubs/ext_basic_hash_stubs.c
 ocaml/
 lib/4.06.1/unstable
+lib/4.06.1/*.cm*
 .circleci/
 native/
+vendor/cppo
+vendor/rollup.js
+package/
+*.tgz

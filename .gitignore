@@ -59,6 +59,7 @@ vendor/ocaml/stdlib/target_camlheaderd
 reason/
 man/
 lib/ocaml
+*.tgz
 bin/*
 jscomp/bin/*.exe
 odoc_gen/*.cmxs
@@ -70,7 +71,6 @@ odoc_gen/*.cmxs
 !/bin/bsb
 !/bin/bsc
 
-!/bin/ninja.exe
 # This is intentional
 # so that `npm install && npm intall -g .`
 # the second install would use the cached ninja.exe (instead of being ignored)
