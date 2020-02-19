@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 var p = require("child_process");
-var fs = require("fs");
+
 var path = require("path");
 
-process.env.BS_RELEASE_BUILD = 1;
+
 var ocamlVersion = "4.06.1";
 var jscompDir = path.join(__dirname, "..", "jscomp");
 var jsRefmtCompDir = path.join(__dirname, "..", "lib", ocamlVersion, "unstable");

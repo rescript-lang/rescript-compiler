@@ -28,7 +28,7 @@ var sourceDirs = [
 
 var buildAppending = false;
 var isBuilding = false;
-var ninjaFile = require("./ninja.js");
+
 var jscompDir = path.join("..", "jscomp");
 /**
  *
