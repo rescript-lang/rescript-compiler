@@ -24,7 +24,7 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-process.env.BS_RELEASE_BUILD = "true";
+
 
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
 
@@ -38,6 +38,7 @@ function provideNinja() {
   var ninja_source_dir = path.join(root_dir, "vendor", "ninja");
   function build_ninja() {
     console.log(`building ninja`);
+    ensureExists(ninja_source_dir);
     cp.execSync(`tar xzvf ../ninja.tar.gz`, {
       cwd: ninja_source_dir,
       stdio: [0, 1, 2]
