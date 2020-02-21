@@ -365,8 +365,8 @@ let file_level_flags_handler (e : Parsetree.expression option) =
              | _ -> Location.raise_errorf ~loc:e.pexp_loc "string literal expected" )) in               
     Arg.parse_argv ~current:(ref 0)
       args buckle_script_flags ignore usage
-  ;Format.fprintf Format.err_formatter "%a %b@." 
-      Ext_obj.pp_any args !Js_config.cross_module_inline;
+  (* ;Format.fprintf Format.err_formatter "%a %b@." 
+      Ext_obj.pp_any args !Js_config.cross_module_inline; *)
   | Some e -> 
     Location.raise_errorf ~loc:e.pexp_loc "string array expected"
 

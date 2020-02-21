@@ -38,7 +38,7 @@ function setOfArray(x) {
 function emptyMap(param) {
   return {
           cmp: Icmp.cmp,
-          data: Belt_MapDict.empty
+          data: null
         };
 }
 
@@ -200,7 +200,7 @@ function acc(m, is) {
 
 var m = {
   cmp: Icmp.cmp,
-  data: Belt_MapDict.empty
+  data: null
 };
 
 var m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
@@ -218,7 +218,7 @@ b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Bel
 
 var v0 = {
   cmp: Icmp.cmp,
-  data: Belt_MapDict.empty
+  data: null
 };
 
 var v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
@@ -273,14 +273,14 @@ b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== undefin
 
 var map = Belt_Map.remove({
       cmp: Icmp.cmp,
-      data: Belt_MapDict.empty
+      data: null
     }, 0);
 
 b("File \"bs_poly_map_test.ml\", line 129, characters 4-11", Belt_MapDict.isEmpty(map.data));
 
 var map$1 = Belt_Map.removeMany({
       cmp: Icmp.cmp,
-      data: Belt_MapDict.empty
+      data: null
     }, [0]);
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));

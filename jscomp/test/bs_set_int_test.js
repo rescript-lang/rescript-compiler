@@ -75,9 +75,9 @@ var match = Belt_SetInt.partition(v, (function (x) {
         return x % 3 === 0;
       }));
 
-var l = Belt_SetInt.empty;
+var l = null;
 
-var r = Belt_SetInt.empty;
+var r = null;
 
 for(var i$1 = 100; i$1 <= 1500; ++i$1){
   if (i$1 % 3 === 0) {
@@ -269,7 +269,7 @@ b("File \"bs_set_int_test.ml\", line 129, characters 4-11", !Belt_SetInt.eq(dd$1
 
 b("File \"bs_set_int_test.ml\", line 130, characters 4-11", !Belt_SetInt.eq(bb$1, ee));
 
-var a1 = Belt_SetInt.mergeMany(Belt_SetInt.empty, Array_data_util.randomRange(0, 100));
+var a1 = Belt_SetInt.mergeMany(null, Array_data_util.randomRange(0, 100));
 
 var a2 = Belt_SetInt.removeMany(a1, Array_data_util.randomRange(40, 100));
 
@@ -317,7 +317,7 @@ var a11 = Belt_SetInt.removeMany(a9, Array_data_util.randomRange(0, 2000));
 
 b("File \"bs_set_int_test.ml\", line 152, characters 4-11", Belt_SetInt.isEmpty(a11));
 
-var match$5 = Belt_SetInt.split(Belt_SetInt.empty, 0);
+var match$5 = Belt_SetInt.split(null, 0);
 
 var match$6 = match$5[0];
 

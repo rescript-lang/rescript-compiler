@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@bs.config { flags = [|"-bs-no-cross-module-opt" |]}]
 (* Module [Bigarray]: large, multi-dimensional, numerical arrays *)
 
 include CamlinternalBigarray
