@@ -64,9 +64,11 @@ let values_of_export
            end
        in
        let persistent_closed_lambda = 
+          match Map_ident.find_opt export_map x with 
+         | Some Lconst (Const_js_null | Const_js_undefined | Const_js_true | Const_js_false ) | None  as optlam  -> optlam
+         | Some lambda as optlam ->
          if not !Js_config.cross_module_inline then None
-         else match Map_ident.find_opt export_map x with 
-         | Some lambda  -> 
+         else
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
               only truly immutable values can be inlined
@@ -90,12 +92,12 @@ let values_of_export
                then 
                  begin
                    Ext_log.dwarn ~__POS__ "%s recorded for inlining @." x.name ;
-                   Some lambda
+                   optlam
                  end
                else None
            else
              None
-         | None -> None  in 
+         in 
        match arity, persistent_closed_lambda with 
        | Single Arity_na, 
         (None | Some (Lconst (Const_pointer (_, Pt_module_alias)))) -> acc

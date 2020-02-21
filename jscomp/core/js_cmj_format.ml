@@ -132,9 +132,13 @@ let not_found key = {name = key; arity = single_na; persistent_closed_lambda =  
 
 
 let get_result  midVal =   
-  if midVal.persistent_closed_lambda = None || 
-    Js_config.get_cross_module_inline () then midVal
-  else {midVal with persistent_closed_lambda = None}  
+  match midVal.persistent_closed_lambda with   
+  | Some (Lconst (Const_js_null | Const_js_undefined | Const_js_true | Const_js_false ))
+  | None  ->
+    midVal
+  | Some _ -> 
+    if Js_config.get_cross_module_inline () then midVal
+    else {midVal with persistent_closed_lambda = None}  
   
 let rec binarySearchAux arr lo hi (key : string) = 
   let mid = (lo + hi)/2 in 
