@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+"use strict";
+
+var child_process = require('child_process')
+var path = require('path')
+
+// the underlying binary is called refmt
+var exe = path.join(__dirname, process.platform,'refmt.exe')
+var delegate_args = process.argv.slice(2)
+
+try {
+    child_process.execFileSync(exe, delegate_args, { stdio: 'inherit' })
+} catch (e) {
+    console.error('Error happened when running command', exe, 'with args', delegate_args)
+    process.exit(2)
+}

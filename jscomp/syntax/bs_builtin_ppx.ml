@@ -53,16 +53,12 @@
 *)
 
 
-let record_as_js_object = ref false (* otherwise has an attribute *)
-let no_export = ref false
+
 
 let () =
   Ast_derive_projector.init ();
   Ast_derive_js_mapper.init ()
 
-let reset () =
-  record_as_js_object := false ;
-  no_export  :=  false
 
 
 
@@ -74,7 +70,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         match e.pexp_desc with
         (** Its output should not be rewritten anymore *)
         | Pexp_extension extension ->
-          Ast_exp_extension.handle_extension record_as_js_object e self extension
+          Ast_exp_extension.handle_extension Js_config.record_as_js_object e self extension
         | Pexp_constant (
             Pconst_string
             (s, (Some delim)))
@@ -140,7 +136,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                  constraint 'b :> 'a
                ]}
             *)
-          if !record_as_js_object then
+          if !Js_config.record_as_js_object then
             (match opt_exp with
              | None ->
                { e with
@@ -180,7 +176,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
 
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
-  Ast_core_type_class_type.typ_mapper record_as_js_object self typ
+  Ast_core_type_class_type.typ_mapper Js_config.record_as_js_object self typ
 
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
   match Ast_attributes.process_bs pcty_attributes with
@@ -283,6 +279,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     Ast_exp_handle_external.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
+    Location.prerr_warning loc (Preprocessor "this extension can be safely removed");
     Ast_structure.dummy_item loc
   | Pstr_type (
           _rf, 
@@ -356,73 +353,31 @@ let  unsafe_mapper : mapper =
   }
 
 
-type action_table = 
-  (Parsetree.expression option -> unit) Map_string.t
-(** global configurations below *)
-let common_actions_table :
-  (string *  (Parsetree.expression option -> unit)) list =
-  [
-  ]
 
 
-let structural_config_table : action_table =
-  Map_string.of_list
-    (( "no_export" ,
-       (fun x ->
-          no_export := (
-            match x with
-            |Some e -> Ast_payload.assert_bool_lit e
-            | None -> true)
-       ))
-     :: common_actions_table)
 
-let signature_config_table : action_table =
-  Map_string.of_list common_actions_table
 
 
 let rewrite_signature (x : Parsetree.signature) =  
   Bs_ast_invariant.iter_warnings_on_sigi x;  
-  let result = 
-    match x with
-    | {psig_desc = Psig_attribute ({txt = "ocaml.ppx.context"},_)}
-      :: {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-    | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-      ->          
-      Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload) 
-        (Ast_payload.table_dispatch signature_config_table) ;
-      unsafe_mapper.signature unsafe_mapper rest          
-    | _ ->
+  Ast_config.iter_on_bs_config_sigi x; 
+  let result =  
       unsafe_mapper.signature  unsafe_mapper x in
-  reset ();
   (* Keep this check, since the check is not inexpensive*)
   Bs_ast_invariant.emit_external_warnings_on_signature result;
   result
 
+
+
+  
+
+
 (* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
 let rewrite_implementation (x : Parsetree.structure) = 
   Bs_ast_invariant.iter_warnings_on_stru x ;   
+  Ast_config.iter_on_bs_config_stru x ; 
   let result =
-    match x with
-    | {pstr_desc = Pstr_attribute ({txt = "ocaml.ppx.context"},_)}
-      :: {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-    | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-      ->
-      begin
-        Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-          (Ast_payload.table_dispatch structural_config_table) ;
-        let rest = unsafe_mapper.structure unsafe_mapper rest in
-        if !no_export then
-          Ast_helper.[Str.include_ ~loc
-             (Incl.mk ~loc
-                (Mod.constraint_ ~loc
-                   (Mod.structure ~loc rest  )
-                   (Mty.signature ~loc [])
-                ))]
-        else rest
-      end
-    | _ ->
       unsafe_mapper.structure  unsafe_mapper x  in
-  reset ();
   (* Keep this check since it is not inexpensive*)
   Bs_ast_invariant.emit_external_warnings_on_structure result;
   result

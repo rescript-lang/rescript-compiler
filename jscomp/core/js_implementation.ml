@@ -50,6 +50,7 @@ let process_with_gentype filename =
       )
 
 let after_parsing_sig ppf  outputprefix ast  =
+  Ast_config.iter_on_bs_config_sigi ast;  
   if !Js_config.simple_binary_ast then begin
     let oc = open_out_bin (outputprefix ^ Literals.suffix_mliast_simple) in 
     Ml_binary.write_ast Mli !Location.input_name ast oc;
@@ -137,11 +138,26 @@ let all_module_alias (ast : Parsetree.structure)=
     | Pstr_extension _ -> false 
    )
 
-let after_parsing_impl ppf  outputprefix ast =
+let no_export (rest : Parsetree.structure) : Parsetree.structure = 
+  match rest with 
+  | head :: _ -> 
+    let loc = head.pstr_loc in     
+    Ast_helper.[Str.include_ ~loc
+                  (Incl.mk ~loc
+                     (Mod.constraint_ ~loc
+                        (Mod.structure ~loc rest  )
+                        (Mty.signature ~loc [])
+                     ))]  
+  | _ -> rest  
+
+let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
   Js_config.all_module_aliases := 
     !Clflags.assume_no_mli =  Mli_non_exists &&
-    all_module_alias ast 
-    ;
+    all_module_alias ast;
+  Ast_config.iter_on_bs_config_stru ast;  
+  let ast =
+    if !Js_config.no_export  then 
+      no_export ast else ast in     
   if !Js_config.simple_binary_ast then begin
     let oc = open_out_bin (outputprefix ^ Literals.suffix_mlast_simple) in 
     Ml_binary.write_ast Ml !Location.input_name  ast oc;

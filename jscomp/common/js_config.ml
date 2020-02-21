@@ -112,3 +112,7 @@ let js_stdout = ref true
 let all_module_aliases = ref false
 
 let no_stdlib = ref false
+
+let no_export = ref false
+
+let record_as_js_object = ref false (* otherwise has an attribute *)

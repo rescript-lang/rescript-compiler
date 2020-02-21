@@ -65,7 +65,7 @@ jscomp/bin/*.exe
 odoc_gen/*.cmxs
 
 # for npm publish
-./lib/*.exe
+*.exe
 !bin/bsppx
 !bin/bspack
 !/bin/bsb

@@ -125,9 +125,9 @@ let raw_as_string_exp_exn
     Some e 
   | _  -> None
 
-let as_core_type loc x =
+let as_core_type loc (x : t) =
   match  x with
-  | Parsetree.PTyp x -> x
+  | PTyp x -> x
   | _ -> Location.raise_errorf ~loc "except a core type"
 
 let as_ident (x : t ) =
@@ -143,10 +143,6 @@ let as_ident (x : t ) =
       }
     ] -> Some ident
   | _ -> None
-(* open Ast_helper *)
-
-(* let raw_string_payload loc (s : string) : t =
-  PStr [ Str.eval ~loc (Ast_compatible.const_exp_string ~loc s) ] *)
 
 
 type lid = string Asttypes.loc
@@ -164,7 +160,7 @@ type action =
 
 let ident_or_record_as_config     
     loc
-    (x : Parsetree.payload) 
+    (x : t) 
   : ( string Location.loc * Parsetree.expression option) list 
   = 
   match  x with 
@@ -211,7 +207,7 @@ let ident_or_record_as_config
 
 let assert_strings loc (x : t) : string list
   = 
-  let module M = struct exception Not_str end  in 
+  let exception Not_str   in 
   match x with 
   | PStr [ {pstr_desc =  
               Pstr_eval (
@@ -227,8 +223,8 @@ let assert_strings loc (x : t) : string list
               Pconst_string
                (name,_)); _} -> 
              name
-           | _ -> raise M.Not_str)
-     with M.Not_str ->
+           | _ -> raise Not_str)
+     with Not_str ->
        Location.raise_errorf ~loc "expect string tuple list"
     )
   | PStr [ {

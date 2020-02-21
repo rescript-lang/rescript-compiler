@@ -5,7 +5,7 @@
   "bin": {
     "bsb": "bsb",
     "bsc": "bsc",
-    "bsrefmt": "lib/bsrefmt",
+    "bsrefmt": "bsrefmt",
     "bstracing": "lib/bstracing"
   },
   "scripts": {

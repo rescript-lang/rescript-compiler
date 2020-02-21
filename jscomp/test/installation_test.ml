@@ -7,7 +7,7 @@ let eq loc x y =
 
 
 
-#if 1 then
+#if 0 then
 let () =
   match [%node __dirname] with | Some p ->
       let root = App_root_finder.find_package_json p in
