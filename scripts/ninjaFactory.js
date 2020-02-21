@@ -21,7 +21,6 @@ rule cc
       config.isWin ? "" : "&& strip $out"
     }
     description = Making $out
-build ../${process.platform}/bsppx$ext: cc $INCL/bsppx.mli $INCL/bsppx.ml
 # build bspp.exe:  cc bspp.mli bspp.ml
 build ../${process.platform}/bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
     flags = $flags -unboxed-types unix.cmxa str.cmxa

@@ -24,7 +24,6 @@
     "bsb_helper.exe",
     "bsb.exe",
     "bsc.exe",
-    "bsppx.exe",
     "ninja.exe",
     "refmt.exe"
   ],
@@ -56,12 +55,10 @@
   "lib/4.06.1": [
     "bsb_helper.ml",
     "bsb.ml",
-    "bsppx.ml",
     "refmt_main3.ml",
     "whole_compiler.ml",
     "bsb_helper.mli",
     "bsb.mli",
-    "bsppx.mli",
     "refmt_main3.mli",
     "whole_compiler.mli"
   ],
@@ -1090,7 +1087,6 @@
     "bsb_helper.exe",
     "bsb.exe",
     "bsc.exe",
-    "bsppx.exe",
     "ninja.exe",
     "refmt.exe"
   ],
@@ -1130,8 +1126,7 @@
     "ninja.COPYING",
     "bsb_helper.exe",
     "bsb.exe",
-    "bsc.exe",
-    "bsppx.exe",
+    "bsc.exe",    
     "ninja.exe",
     "refmt.exe"
   ]

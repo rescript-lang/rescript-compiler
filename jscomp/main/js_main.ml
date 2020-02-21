@@ -115,12 +115,16 @@ let process_file ppf sourcefile =
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
-
+let ppx_files = ref []
 (* Error messages to standard error formatter *)
+
 let anonymous filename =
   Compenv.readenv ppf 
-    (Before_compile filename)
-    ; process_file ppf filename;;
+    (Before_compile filename); 
+  if !Js_config.as_ppx then ppx_files := filename :: !ppx_files  
+  else process_file ppf filename
+
+(** used by -impl -intf *)
 let impl filename =
   Compenv.readenv ppf 
     (Before_compile filename)
@@ -262,6 +266,12 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     " Not using cached cmj, always generate cmj"
   )
   ::
+  (
+    "-as-ppx",
+    Arg.Set Js_config.as_ppx,
+    " As ppx for editor integration"
+  )
+  ::
   ("-bs-g",
     Arg.Unit 
     (fun _ -> Js_config.debug := true;
@@ -334,11 +344,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
   )
-  :: Ocaml_options.mk_impl 
+  :: Ocaml_options.mk_impl (* [-impl] *)
     (fun file  ->  Js_config.js_stdout := false;  impl file )  
-  :: Ocaml_options.mk_intf 
+  :: Ocaml_options.mk_intf (* [-intf] *)
     (fun file -> Js_config.js_stdout := false ; intf file)
-  :: Ocaml_options.mk__ anonymous
+  (* :: Ocaml_options.mk__ anonymous *)
   :: Ocaml_options.ocaml_options
 
 
@@ -356,7 +366,17 @@ let _ =
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
-    Arg.parse buckle_script_flags anonymous usage    
+    Arg.parse buckle_script_flags anonymous usage;
+    if !Js_config.as_ppx then 
+      begin match !ppx_files with 
+      | [output; input] ->
+          Ppx_apply.apply_lazy
+            ~source:input
+            ~target:output
+            Ppx_entry.rewrite_implementation
+            Ppx_entry.rewrite_signature
+      | _ -> raise_notrace (Arg.Bad "Wrong format when use -as-ppx") 
+      end  
   with x -> 
     begin
 #if undefined BS_RELEASE_BUILD then      

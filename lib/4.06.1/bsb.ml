@@ -10030,8 +10030,6 @@ val vendor_ninja : string
 
 val vendor_bsdep : string
 
-val vendor_bsppx : string
-
 val ocaml_dir : string
 
 val ocaml_lib_dir : string
@@ -10101,8 +10099,6 @@ let vendor_bsdep =
   Filename.concat bsc_dir "bsb_helper.exe"
 
 
-let vendor_bsppx = 
-  Filename.concat bsc_dir "bsppx.exe"
   
 ;; assert (Sys.file_exists bsc_dir)       
 
@@ -11810,7 +11806,9 @@ module Bsb_merlin_gen : sig
 
 
 val merlin_file_gen : 
-    per_proj_dir:string -> string  -> Bsb_config_types.t ->  unit 
+  per_proj_dir:string  -> 
+  Bsb_config_types.t ->  
+  unit 
 end = struct
 #1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11914,7 +11912,6 @@ let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=
 
 
 let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
-    built_in_ppx
     ({file_groups = res_files ; 
       generate_merlin;
       ppx_files;
@@ -11951,14 +11948,18 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
        (match reason_react_jsx with 
-        | None -> built_in_ppx
+        | None -> 
+          let fmt : _ format = 
+            if Ext_sys.is_windows_or_cygwin then
+              "\"%s -as-ppx \"" 
+            else  "'%s -as-ppx '"  in Printf.sprintf fmt Bsb_global_paths.vendor_bsc
         | Some opt ->
           let fmt : _ format = 
             if Ext_sys.is_windows_or_cygwin then
-              "\"%s -bs-jsx %d\"" 
-            else  "'%s -bs-jsx %d'" 
+              "\"%s -as-ppx -bs-jsx %d\"" 
+            else  "'%s -as-ppx -bs-jsx %d'" 
           in 
-          Printf.sprintf fmt  built_in_ppx        
+          Printf.sprintf fmt  Bsb_global_paths.vendor_bsc
             (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
        )
       );    
@@ -14147,7 +14148,7 @@ let regenerate_ninja
         config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-      (Bsb_global_paths.vendor_bsppx) config;       
+       config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~toplevel config ;             
     

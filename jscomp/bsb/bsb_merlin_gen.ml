@@ -99,7 +99,6 @@ let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=
 
 
 let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
-    built_in_ppx
     ({file_groups = res_files ; 
       generate_merlin;
       ppx_files;
@@ -136,14 +135,18 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
        (match reason_react_jsx with 
-        | None -> built_in_ppx
+        | None -> 
+          let fmt : _ format = 
+            if Ext_sys.is_windows_or_cygwin then
+              "\"%s -as-ppx \"" 
+            else  "'%s -as-ppx '"  in Printf.sprintf fmt Bsb_global_paths.vendor_bsc
         | Some opt ->
           let fmt : _ format = 
             if Ext_sys.is_windows_or_cygwin then
-              "\"%s -bs-jsx %d\"" 
-            else  "'%s -bs-jsx %d'" 
+              "\"%s -as-ppx -bs-jsx %d\"" 
+            else  "'%s -as-ppx -bs-jsx %d'" 
           in 
-          Printf.sprintf fmt  built_in_ppx        
+          Printf.sprintf fmt  Bsb_global_paths.vendor_bsc
             (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
        )
       );    

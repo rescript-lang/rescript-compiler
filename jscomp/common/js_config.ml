@@ -116,3 +116,5 @@ let no_stdlib = ref false
 let no_export = ref false
 
 let record_as_js_object = ref false (* otherwise has an attribute *)
+
+let as_ppx = ref false

@@ -60,7 +60,7 @@ function stat(files) {
  * @param {Map<string, Set<string> >} map
  */
 function check(map) {
-  var compilers = ["bsb", "bsb_helper", "bsc", "bsppx", "ninja", "refmt"];
+  var compilers = ["bsb", "bsb_helper", "bsc",  "ninja", "refmt"];
   for (let os of ["win32", "darwin", "linux"]) {
     for (let c of compilers) {
       assert(map.get(os).has(`${c}.exe`));
@@ -75,7 +75,7 @@ function check(map) {
 var map = stat(packedFiles);
 /**
  *
- * @param {Map<string,Set<string>} map
+ * @param {Map<string,Set<string> >} map
  */
 function toJSON(map) {
   var o = {};

@@ -1638,10 +1638,6 @@ build ../${
     libs = ocamlcommon.cmxa
 build ../${
     process.platform
-  }/bsppx.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa main/bsppx_main.cmx
-    libs = ocamlcommon.cmxa    
-build ../${
-    process.platform
   }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../${

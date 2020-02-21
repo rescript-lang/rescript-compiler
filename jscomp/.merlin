@@ -37,6 +37,6 @@ B +compiler-libs
 # S test
 # B test
 
-# FLG -ppx /Users/hongbozhang/git/ocamlscript/lib/bsppx.exe
+
 
 FLG -w -40-30+6-23
