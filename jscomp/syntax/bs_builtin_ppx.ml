@@ -283,6 +283,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     Ast_exp_handle_external.handle_raw_structure loc payload
   | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
     ->          
+    Location.prerr_warning loc (Preprocessor "this extension can be safely removed");
     Ast_structure.dummy_item loc
   | Pstr_type (
           _rf, 
