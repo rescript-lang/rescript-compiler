@@ -152,7 +152,7 @@ let eval (s : string) ~suffix =
 let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
-    if not @@ Lexer.define_key_value key v  then 
+    if not (Lexer.define_key_value key v)  then 
       raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
@@ -310,22 +310,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
-  ("-bs-no-warn-unimplemented-external",
-    Arg.Unit (fun _ -> ()),
-    " Deprecated: use warning 106"
-  )
-  ::
-  ("-bs-no-builtin-ppx-ml", 
-   Arg.Set Js_config.no_builtin_ppx_ml,
-   "disable built-in ppx for ml files (internal use)")
-  :: 
-  ("-bs-no-builtin-ppx-mli",
-   Arg.Set Js_config.no_builtin_ppx_mli,
-   "disable built-in ppx for mli files (internal use)")
+  ("-bs-no-builtin-ppx", 
+   Arg.Set Js_config.no_builtin_ppx,
+   "disable built-in ppx (internal use)")
   :: 
   ("-bs-cross-module-opt", 
    Arg.Set Js_config.cross_module_inline, 
    "enable cross module inlining(experimental), default(false)")
+   :: 
+   ("-bs-no-cross-module-opt", 
+    Arg.Clear Js_config.cross_module_inline, 
+    "enable cross module inlining(experimental), default(false)")  
   :: 
   ("-bs-diagnose",
    Arg.Set Js_config.diagnose, 
@@ -344,10 +339,15 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
   )
-  :: Ocaml_options.mk_impl (* [-impl] *)
-    (fun file  ->  Js_config.js_stdout := false;  impl file )  
-  :: Ocaml_options.mk_intf (* [-intf] *)
-    (fun file -> Js_config.js_stdout := false ; intf file)
+  :: 
+  ("-impl", Arg.String
+     (fun file  ->  Js_config.js_stdout := false;  impl file ),
+   "<file>  Compile <file> as a .ml file"
+  )  
+  ::
+  ("-intf", Arg.String 
+     (fun file -> Js_config.js_stdout := false ; intf file),
+   "<file>  Compile <file> as a .mli file")
   (* :: Ocaml_options.mk__ anonymous *)
   :: Ocaml_options.ocaml_options
 
