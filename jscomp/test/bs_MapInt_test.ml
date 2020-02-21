@@ -1,3 +1,4 @@
+[@@@bs.config{flags = [|"-bs-no-cross-module-opt"; |] }]
 let should b = 
   if not b then Js.Exn.raiseError "IMPOSSIBLE"
 

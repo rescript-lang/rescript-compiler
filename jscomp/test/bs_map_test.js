@@ -50,7 +50,7 @@ var mapOfArray = Belt_MapInt.fromArray;
 var setOfArray = Belt_SetInt.fromArray;
 
 function emptyMap(param) {
-  return Belt_MapInt.empty;
+  return null;
 }
 
 var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {

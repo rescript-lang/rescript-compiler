@@ -1,17 +1,18 @@
 'use strict';
 
+var Js_exn = require("../../lib/js/js_exn.js");
 var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 
 function should(b) {
   if (b) {
     return 0;
   } else {
-    throw new Error("IMPOSSIBLE");
+    return Js_exn.raiseError("IMPOSSIBLE");
   }
 }
 
 function test(param) {
-  var m = Belt_MapInt.empty;
+  var m = null;
   for(var i = 0; i <= 999999; ++i){
     m = Belt_MapInt.set(m, i, i);
   }

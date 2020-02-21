@@ -29,7 +29,7 @@
 
 type int64_call = J.expression list -> J.expression  
 
-val make_const : lo:Int32.t -> hi:Int32.t -> J.expression
+(* val make_const : lo:Int32.t -> hi:Int32.t -> J.expression *)
 
 val of_const : int64 -> J.expression
 
@@ -60,7 +60,7 @@ val equal_nullable : int64_call
 val to_float : int64_call
 val of_float : int64_call
 val compare : int64_call
-val of_string : int64_call
+(* val of_string : int64_call *)
 val float_of_bits : int64_call
 val bits_of_float : int64_call  
 val get64 : int64_call

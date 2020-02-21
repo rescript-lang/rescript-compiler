@@ -24,9 +24,9 @@
 
 
 
-val mk_impl : (string -> unit) -> string * Arg.spec * string
-val mk_intf : (string -> unit) -> string * Arg.spec * string
-val mk__ : (string -> unit) -> string * Arg.spec * string
+(* val mk_impl : (string -> unit) -> string * Arg.spec * string *)
+(* val mk_intf : (string -> unit) -> string * Arg.spec * string *)
+(* val mk__ : (string -> unit) -> string * Arg.spec * string *)
 (**
    [ocaml_options] are command options inherited from ocaml 
    bytecode compiler except three options 

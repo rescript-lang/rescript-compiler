@@ -44,13 +44,13 @@ let mk_I f =
   "-I", Arg.String f, "<dir>  Add <dir> to the list of include directories"
 ;;
 
-let mk_impl f =
+(* let mk_impl f =
   "-impl", Arg.String f, "<file>  Compile <file> as a .ml file"
-;;
+;; *)
 
-let mk_intf f =
+(* let mk_intf f =
   "-intf", Arg.String f, "<file>  Compile <file> as a .mli file"
-;;
+;; *)
 
 let mk_intf_suffix f =
   "-intf-suffix", Arg.String f,
@@ -244,10 +244,10 @@ let mk_strict_formats f =
   \      to detect and fix invalid formats.)"
 ;;
 
-let mk__ f =
+(* let mk__ f =
   "-", Arg.String f,
   "<file>  Treat <file> as a file name (even if it starts with `-')"
-;;
+;; *)
 
 let show_config () =
   Config.print_config stdout;

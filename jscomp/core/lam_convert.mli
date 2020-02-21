@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val happens_to_be_diff:  
-  (int * Lambda.lambda) list -> int option 
+(* val happens_to_be_diff:  
+  (int * Lambda.lambda) list -> int option  *)
 
 
 (** 

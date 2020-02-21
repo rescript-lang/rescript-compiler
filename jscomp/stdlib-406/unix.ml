@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@bs.config { flags = [|"-bs-no-cross-module-opt" |]}]
 type error =
     E2BIG
   | EACCES

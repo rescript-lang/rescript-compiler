@@ -23027,7 +23027,7 @@ val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
+(* val set_cross_module_inline : bool -> unit *)
 val get_cross_module_inline : unit -> bool
   
 (** diagnose option *)
@@ -23037,8 +23037,8 @@ val get_diagnose : unit -> bool
 
 
 (** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
+val no_builtin_ppx : bool ref 
+
 
 
 
@@ -23148,8 +23148,8 @@ let no_version_header = ref false
 let cross_module_inline = ref false
 
 let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
+(* let set_cross_module_inline b =
+  cross_module_inline := b *)
 
 
 let diagnose = ref false
@@ -23160,8 +23160,8 @@ let get_diagnose () = !diagnose
 
 (* let get_packages_info () = !packages_info *)
 
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
+let no_builtin_ppx = ref false
+
 
 
 let debug_file = ref ""

@@ -48,7 +48,7 @@ val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
+(* val set_cross_module_inline : bool -> unit *)
 val get_cross_module_inline : unit -> bool
   
 (** diagnose option *)
@@ -58,8 +58,8 @@ val get_diagnose : unit -> bool
 
 
 (** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
+val no_builtin_ppx : bool ref 
+
 
 
 

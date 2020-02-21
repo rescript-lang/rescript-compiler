@@ -152,7 +152,7 @@ let eval (s : string) ~suffix =
 let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
-    if not @@ Lexer.define_key_value key v  then 
+    if not (Lexer.define_key_value key v)  then 
       raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
@@ -310,22 +310,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
-  ("-bs-no-warn-unimplemented-external",
-    Arg.Unit (fun _ -> ()),
-    " Deprecated: use warning 106"
-  )
-  ::
-  ("-bs-no-builtin-ppx-ml", 
-   Arg.Set Js_config.no_builtin_ppx_ml,
-   "disable built-in ppx for ml files (internal use)")
-  :: 
-  ("-bs-no-builtin-ppx-mli",
-   Arg.Set Js_config.no_builtin_ppx_mli,
-   "disable built-in ppx for mli files (internal use)")
+  ("-bs-no-builtin-ppx", 
+   Arg.Set Js_config.no_builtin_ppx,
+   "disable built-in ppx (internal use)")
   :: 
   ("-bs-cross-module-opt", 
    Arg.Set Js_config.cross_module_inline, 
    "enable cross module inlining(experimental), default(false)")
+   :: 
+   ("-bs-no-cross-module-opt", 
+    Arg.Clear Js_config.cross_module_inline, 
+    "disable cross module inlining(experimental)")  
   :: 
   ("-bs-diagnose",
    Arg.Set Js_config.diagnose, 
@@ -344,26 +339,44 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
   )
-  :: Ocaml_options.mk_impl (* [-impl] *)
-    (fun file  ->  Js_config.js_stdout := false;  impl file )  
-  :: Ocaml_options.mk_intf (* [-intf] *)
-    (fun file -> Js_config.js_stdout := false ; intf file)
+  :: 
+  ("-impl", Arg.String
+     (fun file  ->  Js_config.js_stdout := false;  impl file ),
+   "<file>  Compile <file> as a .ml file"
+  )  
+  ::
+  ("-intf", Arg.String 
+     (fun file -> Js_config.js_stdout := false ; intf file),
+   "<file>  Compile <file> as a .mli file")
   (* :: Ocaml_options.mk__ anonymous *)
   :: Ocaml_options.ocaml_options
 
 
   
 
+let file_level_flags_handler (e : Parsetree.expression option) = 
+  match e with 
+  | None -> ()
+  | Some {pexp_desc = Pexp_array args } -> 
+    let args = Array.of_list 
+        (Sys.executable_name :: Ext_list.map  args (fun e -> 
+             match e.pexp_desc with 
+             | Pexp_constant (Pconst_string(name,_)) -> name 
+             | _ -> Location.raise_errorf ~loc:e.pexp_loc "string literal expected" )) in               
+    Arg.parse_argv ~current:(ref 0)
+      args buckle_script_flags ignore usage
+  (* ;Format.fprintf Format.err_formatter "%a %b@." 
+      Ext_obj.pp_any args !Js_config.cross_module_inline; *)
+  | Some e -> 
+    Location.raise_errorf ~loc:e.pexp_loc "string array expected"
 
-let _ = 
-  (* (
-    print_endline 
-      ("BSB_PROJECT_ROOT :" ^ 
-       match Sys.getenv_opt "BSB_PROJECT_ROOT" with 
-       | None ->  "None"
-       | Some s -> s 
-      )); *)
+let _ : unit =   
   Bs_conditional_initial.setup_env ();
+  let flags = "flags" in 
+  Ast_config.structural_config_table := Map_string.add !Ast_config.structural_config_table
+      flags file_level_flags_handler;    
+  Ast_config.signature_config_table := Map_string.add !Ast_config.signature_config_table
+      flags file_level_flags_handler;    
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;

@@ -32,7 +32,7 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
     (* react-jsx ppx relies on built-in ones like `##` *)
   in 
 
-  if !Js_config.no_builtin_ppx_mli then ast else 
+  if !Js_config.no_builtin_ppx then ast else 
     Bs_builtin_ppx.rewrite_signature ast 
 
 let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
@@ -42,7 +42,7 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
     | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast 
     | _ -> ast 
   in 
-  if !Js_config.no_builtin_ppx_ml then ast else
+  if !Js_config.no_builtin_ppx then ast else
   begin
     Bs_builtin_ppx.rewrite_implementation ast 
   end

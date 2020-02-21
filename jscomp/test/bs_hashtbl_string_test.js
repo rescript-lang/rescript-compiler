@@ -105,7 +105,7 @@ function bench2(m) {
 function bench3(m) {
   var empty = {
     cmp: m.cmp,
-    data: Belt_MapDict.empty
+    data: null
   };
   var cmp = m.cmp;
   var table = empty.data;
