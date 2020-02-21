@@ -7,7 +7,10 @@ var pairs = [
   ["Clflags.unsafe_string", "false"],
   ["Clflags.record_event_when_debug", "false"],
   ["Clflags.no_std_include", "true"],
-  ["no_std_include", "true"]
+  ["no_std_include", "true"],
+  ["Clflags.use_threads", "false"],
+  ["Clflags.use_vmthreads", "false"],
+  ["Clflags.no_implicit_current_dir","true"]
 ];
 
 var regexp = RegExp(`${pairs.map(x => "!" + x[0]).join("|")}`, "g");
