@@ -244,10 +244,10 @@ let mk_strict_formats f =
   \      to detect and fix invalid formats.)"
 ;;
 
-let mk__ f =
+(* let mk__ f =
   "-", Arg.String f,
   "<file>  Treat <file> as a file name (even if it starts with `-')"
-;;
+;; *)
 
 let show_config () =
   Config.print_config stdout;
