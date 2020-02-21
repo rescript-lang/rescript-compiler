@@ -25,26 +25,21 @@
 
 type action_table = 
   (Parsetree.expression option -> unit) Map_string.t
-(** global configurations below *)
-let common_actions_table :
-  (string *  (Parsetree.expression option -> unit)) list =
-  [
-  ]
 
 
-let structural_config_table : action_table =
-  Map_string.of_list
-    (( "no_export" ,
+let structural_config_table : action_table ref =
+  ref (Map_string.singleton
+     "no_export" 
        (fun x ->
           Js_config.no_export := (
             match x with
             |Some e -> Ast_payload.assert_bool_lit e
             | None -> true)
        ))
-     :: common_actions_table)
+     
 
-let signature_config_table : action_table =
-  Map_string.of_list common_actions_table
+let signature_config_table : action_table ref =
+  ref Map_string.empty
 
 
 let rec iter_on_bs_config_stru (x :Parsetree.structure) =   
@@ -53,7 +48,7 @@ let rec iter_on_bs_config_stru (x :Parsetree.structure) =
   | {pstr_desc = Pstr_attribute (({txt = "bs.config"; loc}, payload) as attr)}::_ -> 
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-      (Ast_payload.table_dispatch structural_config_table)
+      (Ast_payload.table_dispatch !structural_config_table)
   | {pstr_desc = Pstr_attribute _} :: rest -> 
     iter_on_bs_config_stru rest 
   | non_attr :: _ -> ()    
@@ -64,7 +59,7 @@ let rec iter_on_bs_config_sigi (x :Parsetree.signature) =
   | {psig_desc = Psig_attribute (({txt = "bs.config"; loc}, payload) as attr)}::_ -> 
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-      (Ast_payload.table_dispatch signature_config_table)
+      (Ast_payload.table_dispatch !signature_config_table)
   | {psig_desc = Psig_attribute _} :: rest -> 
     iter_on_bs_config_sigi rest 
   | non_attr :: _ -> ()      

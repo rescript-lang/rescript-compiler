@@ -320,7 +320,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    :: 
    ("-bs-no-cross-module-opt", 
     Arg.Clear Js_config.cross_module_inline, 
-    "enable cross module inlining(experimental), default(false)")  
+    "disable cross module inlining(experimental)")  
   :: 
   ("-bs-diagnose",
    Arg.Set Js_config.diagnose, 
@@ -354,16 +354,29 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 
   
 
+let file_level_flags_handler (e : Parsetree.expression option) = 
+  match e with 
+  | None -> ()
+  | Some {pexp_desc = Pexp_array args } -> 
+    let args = Array.of_list 
+        (Sys.executable_name :: Ext_list.map  args (fun e -> 
+             match e.pexp_desc with 
+             | Pexp_constant (Pconst_string(name,_)) -> name 
+             | _ -> Location.raise_errorf ~loc:e.pexp_loc "string literal expected" )) in               
+    Arg.parse_argv ~current:(ref 0)
+      args buckle_script_flags ignore usage
+  ;Format.fprintf Format.err_formatter "%a %b@." 
+      Ext_obj.pp_any args !Js_config.cross_module_inline;
+  | Some e -> 
+    Location.raise_errorf ~loc:e.pexp_loc "string array expected"
 
-let _ = 
-  (* (
-    print_endline 
-      ("BSB_PROJECT_ROOT :" ^ 
-       match Sys.getenv_opt "BSB_PROJECT_ROOT" with 
-       | None ->  "None"
-       | Some s -> s 
-      )); *)
+let _ : unit =   
   Bs_conditional_initial.setup_env ();
+  let flags = "flags" in 
+  Ast_config.structural_config_table := Map_string.add !Ast_config.structural_config_table
+      flags file_level_flags_handler;    
+  Ast_config.signature_config_table := Map_string.add !Ast_config.signature_config_table
+      flags file_level_flags_handler;    
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;

@@ -22,9 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type action_table = 
+  (Parsetree.expression option -> unit) Map_string.t
 
 
-
+val structural_config_table : action_table ref
+val signature_config_table : action_table ref
+ 
 val iter_on_bs_config_stru : 
   Parsetree.structure ->  
   unit  
