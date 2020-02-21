@@ -61,8 +61,6 @@ let vendor_bsdep =
   Filename.concat bsc_dir "bsb_helper.exe"
 
 
-let vendor_bsppx = 
-  Filename.concat bsc_dir "bsppx.exe"
   
 ;; assert (Sys.file_exists bsc_dir)       
 

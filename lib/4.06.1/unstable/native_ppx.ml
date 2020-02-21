@@ -23090,6 +23090,7 @@ val all_module_aliases : bool ref
 val no_stdlib: bool ref
 val no_export: bool ref
 val record_as_js_object : bool ref
+val as_ppx : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23211,6 +23212,63 @@ let no_export = ref false
 
 let record_as_js_object = ref false (* otherwise has an attribute *)
 
+let as_ppx = ref false
+end
+module Ppx_apply
+= struct
+#1 "ppx_apply.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let apply_lazy ~source ~target 
+    (impl : Parsetree.structure -> Parsetree.structure) 
+    (iface : Parsetree.signature -> Parsetree.signature) 
+  =
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+  if magic <> Config.ast_impl_magic_number
+  && magic <> Config.ast_intf_magic_number then
+    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
+  Location.set_input_name @@ input_value ic;
+  let ast = input_value ic in
+  close_in ic;
+
+  let ast =
+    if magic = Config.ast_impl_magic_number
+    then Obj.magic (impl (Obj.magic ast))
+    else Obj.magic (iface (Obj.magic ast))
+  in
+  let oc = open_out_bin target in
+  output_string oc magic;
+  output_value oc !Location.input_name;
+  output_value oc ast;
+  close_out oc
+
 end
 module Ppx_driver : sig 
 #1 "ppx_driver.mli"
@@ -23273,31 +23331,7 @@ end = struct
 
 
 
-let apply_lazy ~source ~target 
-  (impl : Parsetree.structure -> Parsetree.structure) 
-  (iface : Parsetree.signature -> Parsetree.signature) 
-  =
-  let ic = open_in_bin source in
-  let magic =
-    really_input_string ic (String.length Config.ast_impl_magic_number)
-  in
-  if magic <> Config.ast_impl_magic_number
-  && magic <> Config.ast_intf_magic_number then
-    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
-  Location.set_input_name @@ input_value ic;
-  let ast = input_value ic in
-  close_in ic;
 
-  let ast =
-    if magic = Config.ast_impl_magic_number
-    then Obj.magic (impl (Obj.magic ast))
-    else Obj.magic (iface (Obj.magic ast))
-  in
-  let oc = open_out_bin target in
-  output_string oc magic;
-  output_value oc !Location.input_name;
-  output_value oc ast;
-  close_out oc
   
 let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
 let main impl intf =
@@ -23312,7 +23346,7 @@ let main impl intf =
            " Set jsx version"
           )
         ] ignore usage;
-      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
+      Ppx_apply.apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
         impl
         intf
     end else

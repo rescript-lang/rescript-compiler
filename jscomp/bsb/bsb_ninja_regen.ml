@@ -73,7 +73,7 @@ let regenerate_ninja
         config.file_groups
     ;
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-      (Bsb_global_paths.vendor_bsppx) config;       
+       config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~toplevel config ;             
     

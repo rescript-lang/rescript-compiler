@@ -1,4 +1,4 @@
-(* Copyright (C) 2019 Authors of BuckleScript
+(* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,3 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+
+let apply_lazy ~source ~target 
+    (impl : Parsetree.structure -> Parsetree.structure) 
+    (iface : Parsetree.signature -> Parsetree.signature) 
+  =
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+  if magic <> Config.ast_impl_magic_number
+  && magic <> Config.ast_intf_magic_number then
+    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
+  Location.set_input_name @@ input_value ic;
+  let ast = input_value ic in
+  close_in ic;
+
+  let ast =
+    if magic = Config.ast_impl_magic_number
+    then Obj.magic (impl (Obj.magic ast))
+    else Obj.magic (iface (Obj.magic ast))
+  in
+  let oc = open_out_bin target in
+  output_string oc magic;
+  output_value oc !Location.input_name;
+  output_value oc ast;
+  close_out oc

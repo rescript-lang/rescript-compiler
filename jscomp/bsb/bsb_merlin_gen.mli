@@ -26,4 +26,6 @@
 
 
 val merlin_file_gen : 
-    per_proj_dir:string -> string  -> Bsb_config_types.t ->  unit 
+  per_proj_dir:string  -> 
+  Bsb_config_types.t ->  
+  unit 
