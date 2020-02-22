@@ -52,9 +52,6 @@ let no_version_header = ref false
 
 let cross_module_inline = ref false
 
-let get_cross_module_inline () = !cross_module_inline
-(* let set_cross_module_inline b =
-  cross_module_inline := b *)
 
 
 let diagnose = ref false

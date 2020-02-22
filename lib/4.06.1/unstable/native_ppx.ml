@@ -23027,8 +23027,6 @@ val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-(* val set_cross_module_inline : bool -> unit *)
-val get_cross_module_inline : unit -> bool
   
 (** diagnose option *)
 val diagnose : bool ref 
@@ -23147,9 +23145,6 @@ let no_version_header = ref false
 
 let cross_module_inline = ref false
 
-let get_cross_module_inline () = !cross_module_inline
-(* let set_cross_module_inline b =
-  cross_module_inline := b *)
 
 
 let diagnose = ref false

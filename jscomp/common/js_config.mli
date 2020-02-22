@@ -48,8 +48,6 @@ val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-(* val set_cross_module_inline : bool -> unit *)
-val get_cross_module_inline : unit -> bool
   
 (** diagnose option *)
 val diagnose : bool ref 
