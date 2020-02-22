@@ -53,26 +53,27 @@ let from_cmj (files : string list) (output_file : string) : unit =
   let files = List.sort (fun filea fileb  ->
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
   let buf = Ext_buffer.create 10000 in 
-  buf +> {|
-  let i s = lazy (Marshal.from_string s 0)     
-  |};
-  buf +>
-  (Printf.sprintf {|let module_sets : (string * Js_cmj_format.t Lazy.t) array = [|
-%s
-  |]|}
-     (String.concat ";\n" 
 
-        (Ext_list.map files (fun file -> 
-             let c = 
-               (let content = Ext_io.load_file file in 
-                String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
-               ) in 
-             Printf.sprintf {|%S, 
-(* %d *)i 
-%S|}
-               (cmp file)
-               (String.length c) c   
-           ))));
+  let abs = 
+    Ext_list.map files (fun file -> 
+        let module_name = (cmp file) in 
+        let c = 
+          (let content = Ext_io.load_file file in 
+           String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
+          ) in 
+        Printf.sprintf {|%S (* %d *)|} module_name           
+          (String.length c),
+        Printf.sprintf {|(* %s *)%S|} module_name c   
+      ) in 
+  buf +>
+  (Printf.sprintf {|let module_names : string array = [|
+%s
+|]
+let module_data : string array = [|
+%s
+|]
+|} (String.concat ";\n" (Ext_list.map abs fst)) (String.concat ";\n" (Ext_list.map abs snd))
+     );
   buf +> "\n" ;
   let digest  = Digest.to_hex (Ext_buffer.digest buf) in  
   let same = check_digest output_file digest in     
@@ -92,22 +93,30 @@ let from_cmi (files : string list) (output_file : string) =
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
   
   let buf = Ext_buffer.create 10000 in 
-  buf +> {|
-  let i s = lazy (Marshal.from_string s 0)     
-  |};
+  let abs =  Ext_list.map files (fun file -> 
+      let module_name = cmp file in 
+      let cmi = (Cmi_format.read_cmi file) in 
+      let content = 
+        Marshal.to_string 
+          cmi
+          (* (Array.of_list cmi.cmi_sign) *)
+          (* ({ with 
+             (* cmi_crcs = [] *)
+             cmi_flags = []
+             }) *)
+          [] in 
+      Printf.sprintf {|%S (* %d *)|} module_name (String.length content) ,                              
+      Printf.sprintf {|(* %s *) %S|} module_name content) in 
+
   buf +> 
-  (Printf.sprintf {|let module_sets_cmi : (string * Cmi_format.cmi_infos Lazy.t) array = [|
-  %s
-          |]|}
-     (String.concat ";\n" 
-        (Ext_list.map files (fun file -> 
-             let content = 
-               Marshal.to_string (Cmi_format.read_cmi file) [] in 
-             Printf.sprintf {|%S , 
-(* %d *)i
-%S|}
-               (cmp file) (String.length content)
-               content)))
+  (Printf.sprintf {|let module_names : string array = [|
+%s
+|]
+let module_data : string array = [|
+%s
+|]
+  |}
+     (String.concat ";\n" (Ext_list.map abs fst )) (String.concat ";\n" (Ext_list.map abs snd))
   ) ;
   buf +> "\n";
   let digest = Digest.to_hex (Ext_buffer.digest buf) in             

@@ -30,15 +30,19 @@
 
 
 let load_builin_unit unit_name : Js_cmj_format.cmj_load_info = 
-#if BS_RELEASE_BUILD then  
-  match Ext_string_array.find_sorted_assoc 
-          Builtin_cmj_datasets.module_sets
+#if 
+BS_RELEASE_BUILD 
+(* true *)
+then  
+  match Ext_string_array.find_sorted
+          Builtin_cmj_datasets.module_names
           unit_name with
-  | Some cmj_table
+  | Some i
     -> 
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
-    let lazy cmj_table = cmj_table in   
+    let cmj_table : Js_cmj_format.t = 
+        Marshal.from_string Builtin_cmj_datasets.module_data.(i) 0 in   
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
     {package_path =  

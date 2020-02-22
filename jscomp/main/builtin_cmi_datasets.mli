@@ -2,5 +2,9 @@
 
 
 
-val module_sets_cmi : 
-  (string * Cmi_format.cmi_infos Lazy.t) array
+val module_names : string array 
+
+val module_data : 
+  string 
+  (* Cmi_format.cmi_infos *)
+  array
