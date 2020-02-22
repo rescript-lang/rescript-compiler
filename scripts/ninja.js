@@ -407,7 +407,7 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides) {
   var fileOutputs = targetsToString(outputs, cwd);
   var fileInputs = targetsToString(inputs, cwd);
   var stmt = `build ${fileOutputs} : ${rule} ${fileInputs}`;
-  // deps.push(pseudoTarget('../lib/bsc.exe'))
+  // deps.push(pseudoTarget('../lib/bsc'))
   if (deps.length > 0) {
     var fileDeps = targetsToString(deps, cwd);
     stmt += ` | ${fileDeps}`;
@@ -861,7 +861,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
   return build_stmts;
 }
 
-var COMPILIER = `../${process.platform}/bsc.exe`;
+var COMPILIER = `../${process.platform}/bsc`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
 var compilerTarget = pseudoTarget(COMPILIER);
 
@@ -1634,7 +1634,7 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../${
     process.platform
-  }/bsc.exe: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+  }/bsc: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../${
     process.platform
