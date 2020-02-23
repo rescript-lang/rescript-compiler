@@ -33,7 +33,8 @@ type cst = private
 
 type label = private
   | Label of string * cst option 
-  | Empty of cst option
+  | Empty 
+  | EmptyCst of cst
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 

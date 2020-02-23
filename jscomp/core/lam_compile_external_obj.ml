@@ -49,8 +49,8 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
     | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
-    | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
-    | {arg_label = Empty None }::labels, arg::args 
+    | {arg_label = EmptyCst _ } :: rest  , args -> assert false 
+    | {arg_label = Empty  }::labels, arg::args 
       ->  (* unit type*)
       let (accs, eff, assign) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
@@ -80,7 +80,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
             (label, x) :: accs , Ext_list.append new_eff  eff , assign
           end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
-    | {arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
+    | {arg_label = Empty  | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff, assignment = aux labels args in 

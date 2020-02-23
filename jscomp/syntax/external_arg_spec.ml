@@ -34,7 +34,8 @@ type cst =
   | Arg_js_json of string
 type label = 
   | Label of string * cst option 
-  | Empty of cst option
+  | Empty 
+  | EmptyCst of cst 
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 
@@ -90,8 +91,8 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty None 
-let empty_lit s = Empty (Some s) 
+let empty_label = Empty 
+let empty_lit s = EmptyCst s
 let label s cst = Label(s,cst)
 let optional s = Optional s 
 
