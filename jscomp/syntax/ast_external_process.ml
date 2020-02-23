@@ -513,7 +513,7 @@ let external_desc_of_non_obj
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
-    (arg_type_specs : External_arg_spec.t list) : External_ffi_types.external_spec =
+    (arg_type_specs : External_arg_spec.params) : External_ffi_types.external_spec =
   match st with
   | {set_index = true;
      val_name = `Nm_na;
@@ -855,7 +855,7 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      let init : External_arg_spec.t list * Ast_compatible.param_type list * int  = 
+      let init : External_arg_spec.params * Ast_compatible.param_type list * int  = 
         match external_desc.val_send_pipe with
         | Some obj ->
           let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
@@ -864,7 +864,7 @@ let handle_attributes
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
             | _ ->
               (* more error checking *)
-              [External_arg_spec.empty_kind arg_type],
+              [{arg_label = Empty; arg_type}],
               [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
@@ -891,7 +891,7 @@ let handle_attributes
                   -> ()
                 | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
              end ; 
-           let arg_label, arg_type, new_arg_types =
+           let (arg_label : External_arg_spec.label_noname), arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
@@ -902,22 +902,22 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
-                   External_arg_spec.optional s, arg_type,
+                   Optional, arg_type,
                    param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst i as arg_type)  ->
-                   External_arg_spec.label s (Some i), arg_type, arg_types
+                   Label {cst = Some i}, arg_type, arg_types
                  | new_ty, arg_type ->
-                   External_arg_spec.label s None, arg_type, 
+                   Label {cst = None}, arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
                  | new_ty , (Arg_cst i as arg_type) ->
-                   External_arg_spec.empty_lit i , arg_type,  arg_types
+                   EmptyCst i , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
+                   Empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            ({ arg_label  ;

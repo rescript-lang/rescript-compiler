@@ -50,11 +50,24 @@ type attr =
   | Ignore
   | Unwrap
 
+
+type label_noname = 
+  | Label of { cst : cst option }
+  | Empty 
+  | EmptyCst of cst 
+  | Optional
+
 type t = 
   {
     arg_type : attr;
     arg_label :label
   }
+
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+} 
+type params = t_noname list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 

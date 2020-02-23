@@ -32,6 +32,13 @@ type cst =
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
+
+type label_noname = 
+  | Label of { cst : cst option }
+  | Empty 
+  | EmptyCst of cst 
+  | Optional
+  
 type label = 
   | Label of {name : string ; cst : cst option }
   | Empty 
@@ -51,12 +58,20 @@ type attr =
   | Ignore
   | Unwrap
 
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+}   
+
 type t = 
   {
     arg_type : attr;
     arg_label : label
   }
 
+
+
+type params = t_noname list 
 
 exception Error of Location.t * Ext_json_parse.error
 

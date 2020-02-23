@@ -31,14 +31,14 @@
 
 (** Compile ocaml external function call to JS IR. *) 
 val ocaml_to_js_eff : 
-  External_arg_spec.t -> 
+  External_arg_spec.t_noname -> 
   J.expression -> 
   Js_of_lam_variant.arg_expression * J.expression list  
 
 val translate_ffi :
   Location.t -> 
   Lam_compile_context.t -> 
-  External_arg_spec.t list -> 
+  External_arg_spec.params -> 
   External_ffi_types.external_spec -> 
   J.expression list -> 
   J.expression 

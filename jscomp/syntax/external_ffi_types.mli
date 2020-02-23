@@ -102,7 +102,7 @@ type return_wrapper =
 
 type t  =
   | Ffi_bs of
-      External_arg_spec.t list  *
+      External_arg_spec.params  *
       return_wrapper *
       external_spec
   | Ffi_obj_create of External_arg_spec.t list

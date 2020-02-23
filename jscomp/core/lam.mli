@@ -86,7 +86,7 @@ val inner_map :  t -> (t -> t) -> t
 
 
 val handle_bs_non_obj_ffi:
-  External_arg_spec.t list ->
+  External_arg_spec.params ->
   External_ffi_types.return_wrapper ->
   External_ffi_types.external_spec -> 
   t list -> 

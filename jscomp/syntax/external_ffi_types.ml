@@ -120,7 +120,7 @@ type return_wrapper =
   | Return_replaced_with_unit
 
 type t  =
-  | Ffi_bs of External_arg_spec.t list  *
+  | Ffi_bs of External_arg_spec.params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
