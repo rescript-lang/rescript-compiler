@@ -162,7 +162,7 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
 let init_sample_project ~cwd ~theme name =
   let env = Hash_string.create 0 in
   List.iter (fun (k,v) -> Hash_string.add env k v  ) [
-    "proj-version", "0.1.0";
+    "proj-version", "2.0.0";
     "bs-version", Bs_version.version;
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
   ];
