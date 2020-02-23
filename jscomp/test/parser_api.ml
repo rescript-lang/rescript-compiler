@@ -1,4 +1,4 @@
-[@@@warning "-a"]
+[@@@bs.config {flags = [|"-w";"a";"-bs-no-bin-annot"|]}]
 module Config : sig 
 #1 "config.mli"
 (***********************************************************************)

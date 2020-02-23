@@ -1,5 +1,4 @@
-[@@@bs.config{no_export}]
-[@@@warning "-a"]
+[@@@bs.config {flags = [|"-w";"a";"-bs-no-bin-annot"|];no_export}]
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = 
