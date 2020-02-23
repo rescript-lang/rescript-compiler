@@ -45,10 +45,6 @@ type arg_type = External_arg_spec.attr
 type arg_label = External_arg_spec.label
 
 
-type obj_create = External_arg_spec.t list
-
-
-
 
 
 
@@ -109,7 +105,7 @@ type t  =
       External_arg_spec.t list  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of obj_create
+  | Ffi_obj_create of External_arg_spec.t list
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)

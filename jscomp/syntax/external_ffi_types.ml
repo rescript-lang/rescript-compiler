@@ -44,8 +44,6 @@ type arg_type = External_arg_spec.attr
 type arg_label = External_arg_spec.label
 
 
-(**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = External_arg_spec.t list
 
 type external_spec =
   | Js_var of {
@@ -128,7 +126,7 @@ type t  =
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of obj_create
+  | Ffi_obj_create of  External_arg_spec.t list
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
