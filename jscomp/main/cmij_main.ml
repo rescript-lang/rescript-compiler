@@ -66,13 +66,13 @@ let from_cmj (files : string list) (output_file : string) : unit =
         Printf.sprintf {|(* %s *)%S|} module_name c   
       ) in 
   buf +>
-  (Printf.sprintf {|let module_names : string array = [|
+  (Printf.sprintf {|let module_names : string array = Obj.magic (
 %s
-|]
-let module_data : string array = [|
+)
+let module_data : string array = Obj.magic (
 %s
-|]
-|} (String.concat ";\n" (Ext_list.map abs fst)) (String.concat ";\n" (Ext_list.map abs snd))
+)
+|} (String.concat ",\n" (Ext_list.map abs fst)) (String.concat ",\n" (Ext_list.map abs snd))
      );
   buf +> "\n" ;
   let digest  = Digest.to_hex (Ext_buffer.digest buf) in  
@@ -95,10 +95,14 @@ let from_cmi (files : string list) (output_file : string) =
   let buf = Ext_buffer.create 10000 in 
   let abs =  Ext_list.map files (fun file -> 
       let module_name = cmp file in 
-      let cmi = (Cmi_format.read_cmi file) in 
+      let cmi = Cmi_format.read_cmi file in 
+      assert (cmi.cmi_flags = []);
+      assert (cmi.cmi_name = module_name);
       let content = 
         Marshal.to_string 
           cmi
+          (* cmi_name, crcs can be saved, but only a tiny bit *)
+          (* (cmi.cmi_sign) *)
           (* (Array.of_list cmi.cmi_sign) *)
           (* ({ with 
              (* cmi_crcs = [] *)
@@ -109,14 +113,14 @@ let from_cmi (files : string list) (output_file : string) =
       Printf.sprintf {|(* %s *) %S|} module_name content) in 
 
   buf +> 
-  (Printf.sprintf {|let module_names : string array = [|
+  (Printf.sprintf {|let module_names : string array = Obj.magic (
 %s
-|]
-let module_data : string array = [|
+)
+let module_data : string array = Obj.magic (
 %s
-|]
+)
   |}
-     (String.concat ";\n" (Ext_list.map abs fst )) (String.concat ";\n" (Ext_list.map abs snd))
+     (String.concat ",\n" (Ext_list.map abs fst )) (String.concat ",\n" (Ext_list.map abs snd))
   ) ;
   buf +> "\n";
   let digest = Digest.to_hex (Ext_buffer.digest buf) in             
