@@ -26,28 +26,17 @@
 [@@@ocaml.warning "+9"]
 (* record pattern match complete checker*)
 
-type field = 
-  | No_fields
-  | Valid_fields
-  | Invalid_field
 
-let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
-  let validity =
-    Ext_list.fold_left row_fields No_fields      
-      begin fun st row ->
-        match st, row with
-        | (* we've seen no fields or only valid fields so far *)
-          (No_fields | Valid_fields),
-          (* and this field has one constructor arg that we can unwrap to *)
-          Rtag (label, attrs, false, ([ _ ]))
-          ->
-          Valid_fields
-        | (* otherwise, this field or a previous field was invalid *)
-          _ ->
-          Invalid_field
-      end
-  in
-  validity = Valid_fields 
+let rec variant_can_unwrap_aux (row_fields : Parsetree.row_field list) : bool =   
+  match row_fields with 
+  | [] -> true 
+  | Rtag(_,_,false,[_]) :: rest  -> variant_can_unwrap_aux rest 
+  | _ :: rest -> false  
+
+let variant_unwrap (row_fields : Parsetree.row_field list) : bool =
+  match row_fields with 
+  | []  -> false (* impossible syntax *)
+  | xs -> variant_can_unwrap_aux xs 
 
 (*
   TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
@@ -77,7 +66,7 @@ let spec_of_ptyp
   | `Unwrap ->
     begin match ptyp_desc with
       | Ptyp_variant (row_fields, Closed, _)
-        when variant_can_bs_unwrap_fields row_fields ->
+        when variant_unwrap row_fields ->
         Unwrap
       | _ ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type

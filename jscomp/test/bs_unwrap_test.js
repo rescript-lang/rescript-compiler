@@ -93,6 +93,14 @@ function ff1(x, p) {
   return /* () */0;
 }
 
+function test00(param) {
+  return {
+          a: 1,
+          b: 2,
+          x: /* () */0
+        };
+}
+
 var none_arg = undefined;
 
 exports.arg_string = arg_string;
@@ -104,4 +112,5 @@ exports.dyn_log4 = dyn_log4;
 exports.f = f;
 exports.ff0 = ff0;
 exports.ff1 = ff1;
+exports.test00 = test00;
 /*  Not a pure module */
