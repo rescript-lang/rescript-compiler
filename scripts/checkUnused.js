@@ -24,29 +24,40 @@ var sourceDirs = [
   "main"
 ];
 var fileMap = new Map();
-for (let dir of sourceDirs){
-    let ydir = path.join('jscomp',dir)    
-    let xdir =   path.join(__dirname,'..',ydir)      
-    for(let file of fs.readdirSync(xdir,'utf8')){
-        let p = path.parse(file)
-        if(p.ext === ".ml" || p.ext === ".mli"){
-            fileMap[p.base] = ydir
-        }
+for (let dir of sourceDirs) {
+  let ydir = path.join("jscomp", dir);
+  let xdir = path.join(__dirname, "..", ydir);
+  for (let file of fs.readdirSync(xdir, "utf8")) {
+    let p = path.parse(file);
+    if (p.ext === ".ml" || p.ext === ".mli") {
+      fileMap.set(p.base, ydir);
     }
+  }
 }
-var output = cp.spawnSync(
-  `${opt} -c  -opaque -linscan -I 4.06.1 -w a+32 4.06.1/whole_compiler.mli 4.06.1/whole_compiler.ml`,
-  { cwd: path.join(__dirname, "..", "lib"), encoding: "utf8", shell: true }
-);
 
-// debugger
+/**
+ * 
+ * @param {string} file 
+ */
+function check(file) {
+  var output = cp.spawnSync(
+    `${opt} -c  -opaque -linscan -I 4.06.1 -w a+32 4.06.1/${file}.mli 4.06.1/${file}.ml`,
+    { cwd: path.join(__dirname, "..", "lib"), encoding: "utf8", shell: true }
+  );
 
-var result = output.stderr.replace(/File "(.*)"/g,(file,p1)=>{
-    let query = fileMap[p1]
-    if(!query){
-        return `Unkonwn file`
+  // debugger
+
+  var result = output.stderr.replace(/File "(.*)"/g, (file, p1) => {
+    let query = fileMap.get(p1);
+    if (!query) {
+      return `Unkonwn file`;
     }
-    return `File "${query}/${p1}"`
-})
+    return `File "${query}/${p1}"`;
+  });
 
-console.log(result)
+  console.log(result);
+}
+
+// 
+console.log(process.argv)
+check(process.argv[2])

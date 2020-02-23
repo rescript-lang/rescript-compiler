@@ -52,13 +52,31 @@
             }
     },
     {
-        "label": "check unused",
+        "label": "check unused bsc",
         "command" : "node",
         "options": {
             "cwd": "${workspaceRoot}/lib"
         },
         "args": [
-            "../scripts/checkUnused.js" 
+            "../scripts/checkUnused.js",
+            "whole_compiler" 
+        ],
+        "problemMatcher" :{
+            "base": "$ocamlc",
+            "fileLocation" :
+                "autoDetect",
+                "owner": "globalUnused"     
+        }                
+    },
+    {
+        "label": "check unused bsb_helper",
+        "command" : "node",
+        "options": {
+            "cwd": "${workspaceRoot}/lib"
+        },
+        "args": [
+            "../scripts/checkUnused.js" ,
+            "bsb_helper"
         ],
         "problemMatcher" :{
             "base": "$ocamlc",
