@@ -17237,7 +17237,8 @@ type attr =
 
 
 type label_noname = 
-  | Label of { cst : cst option }
+  | Label
+  | LabelCst of { cst : cst }
   | Empty 
   | EmptyCst of cst 
   | Optional
@@ -17302,7 +17303,8 @@ type cst =
   | Arg_js_json of string
 
 type label_noname = 
-  | Label of { cst : cst option }
+  | Label 
+  | LabelCst of { cst : cst  }
   | Empty 
   | EmptyCst of cst 
   | Optional
@@ -19933,9 +19935,9 @@ let handle_attributes
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst i as arg_type)  ->
-                   Label {cst = Some i}, arg_type, arg_types
+                   LabelCst {cst = i}, arg_type, arg_types
                  | new_ty, arg_type ->
-                   Label {cst = None}, arg_type, 
+                   Label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
