@@ -33,10 +33,10 @@ type cst =
   | Arg_js_false
   | Arg_js_json of string
 type label = 
-  | Label of string * cst option 
+  | Label of {name : string ; cst : cst option }
   | Empty 
   | EmptyCst of cst 
-  | Optional of string 
+  | Optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -93,7 +93,7 @@ let cst_int i = Arg_int_lit i
 let cst_string s = Arg_string_lit s 
 let empty_label = Empty 
 let empty_lit s = EmptyCst s
-let label s cst = Label(s,cst)
-let optional s = Optional s 
+let label name cst = Label {name ; cst}
+let optional name = Optional {name}
 
 let empty_kind arg_type = { arg_label = empty_label ; arg_type }
