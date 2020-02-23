@@ -33,36 +33,12 @@ type external_module_name =
   }
 
 type pipe = bool
-type js_call = {
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool ;
-  scopes : string list
-}
 
-type js_send = {
-  name : string ;
-  splice : bool ;
-  pipe : pipe  ;
-  js_send_scopes : string list;
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_var = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list
-}
 
-type js_new_val = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list;
-}
 
-type js_module_as_fn =
-  { external_module_name : external_module_name;
-    splice : bool
-  }
+
+
 
 type arg_type = External_arg_spec.attr
 
@@ -71,39 +47,54 @@ type arg_label = External_arg_spec.label
 
 type obj_create = External_arg_spec.t list
 
-type js_get =
-  { js_get_name : string   ;
-    js_get_scopes :  string list;
-  }
-
-type js_set =
-  { js_set_name : string  ;
-    js_set_scopes : string list
-  }
 
 
-type js_get_index =   {
-  js_get_index_scopes : string list
-}
-[@@unboxed]
-type js_set_index = {
-  js_set_index_scopes : string list
-}
-[@@unboxed]
+
+
+
 
 
 type external_spec  =
-  | Js_var of js_var
+  | Js_var of {
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list
+    }
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_fn of { external_module_name : external_module_name;
+                         splice : bool
+                       }
   | Js_module_as_class of external_module_name
-  | Js_call of js_call
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index of js_get_index
-  | Js_set_index of js_set_index
+  | Js_call of {
+      name : string;
+      external_module_name : external_module_name option;
+      splice : bool ;
+      scopes : string list
+    }
+  | Js_send of {
+      name : string ;
+      splice : bool ;
+      pipe : pipe  ;
+      js_send_scopes : string list;
+    } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+  | Js_new of {
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list;
+    }
+  | Js_set of   { js_set_name : string  ;
+                  js_set_scopes : string list
+                }
+  | Js_get of { js_get_name : string   ;
+                js_get_scopes :  string list;
+              }
+  | Js_get_index of {
+      js_get_index_scopes : string list
+    }
+  | Js_set_index of {
+      js_set_index_scopes : string list
+    }
 
 type return_wrapper =
   | Return_unset
