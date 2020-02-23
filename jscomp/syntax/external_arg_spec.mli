@@ -52,7 +52,8 @@ type attr =
 
 
 type label_noname = 
-  | Label of { cst : cst option }
+  | Label
+  | LabelCst of { cst : cst }
   | Empty 
   | EmptyCst of cst 
   | Optional

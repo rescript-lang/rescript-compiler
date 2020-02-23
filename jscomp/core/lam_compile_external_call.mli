@@ -31,7 +31,8 @@
 
 (** Compile ocaml external function call to JS IR. *) 
 val ocaml_to_js_eff : 
-  External_arg_spec.t_noname -> 
+  arg_label:External_arg_spec.label_noname ->
+  arg_type:External_arg_spec.attr ->
   J.expression -> 
   Js_of_lam_variant.arg_expression * J.expression list  
 

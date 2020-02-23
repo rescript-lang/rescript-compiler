@@ -34,7 +34,8 @@ type cst =
   | Arg_js_json of string
 
 type label_noname = 
-  | Label of { cst : cst option }
+  | Label 
+  | LabelCst of { cst : cst  }
   | Empty 
   | EmptyCst of cst 
   | Optional
