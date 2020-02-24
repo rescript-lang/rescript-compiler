@@ -907,7 +907,7 @@ let handle_attributes
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst _ as arg_type)  ->
-                   LabelCst , arg_type, arg_types
+                   Label , arg_type, arg_types
                  | new_ty, arg_type ->
                    Label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types

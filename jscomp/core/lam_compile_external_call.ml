@@ -100,7 +100,6 @@ let ocaml_to_js_eff
     | Optional  -> 
       Js_of_lam_option.get_default_undefined_from_optional raw_arg
     | Label  | Empty -> raw_arg
-    | LabelCst
     | EmptyCst 
       -> assert false in 
   match arg_type with
@@ -177,7 +176,7 @@ let assemble_args_no_splice call_loc ffi
     | [], _  
       -> assert (args = []) ; empty_pair
     | { arg_label =  EmptyCst  ; arg_type = Arg_cst cst } :: labels, args 
-    | { arg_label =  LabelCst ; arg_type = Arg_cst cst} :: labels, args -> 
+    | { arg_label =  Label ; arg_type = Arg_cst cst} :: labels, args -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | {arg_label = Empty  | Label | Optional  as arg_label ; arg_type } ::labels,
@@ -189,7 +188,7 @@ let assemble_args_no_splice call_loc ffi
         append_list acc  accs, Ext_list.append new_eff  eff
     | { arg_label = Empty  | Label | Optional   ; _ } :: _ , [] 
       -> assert false 
-    | {arg_label = EmptyCst | LabelCst ; _} :: _, _  -> assert false
+    | {arg_label = EmptyCst ; _} :: _, _  -> assert false
   in 
   let args, eff = aux arg_types args  in 
   args,
@@ -205,7 +204,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
     match labels, args with       
     | [] , _ -> assert (args = []); empty_pair
     | { arg_label =  EmptyCst ; arg_type = Arg_cst cst} :: labels  , args 
-    | { arg_label =  LabelCst ; arg_type = Arg_cst cst } :: labels  , args -> 
+    | { arg_label =  Label ; arg_type = Arg_cst cst } :: labels  , args -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | ({arg_label = Empty | Label | Optional  as arg_label; arg_type }) ::labels,
@@ -222,7 +221,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
       end
     | { arg_label = Empty | Label | Optional   ; _ } :: _ , [] 
       -> assert false 
-    | {arg_label = EmptyCst | LabelCst ;_ } :: _, _ -> assert false  
+    | {arg_label = EmptyCst ;_ } :: _, _ -> assert false  
   in 
   let args, eff = aux arg_types args  in 
   args,
