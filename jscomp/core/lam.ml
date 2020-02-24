@@ -783,7 +783,7 @@ let sequand l r = if_ l r false_
    if it does not we wrap it in a nomral way otherwise
 *)
 let rec no_auto_uncurried_arg_types
-    (xs : External_arg_spec.t list)  =
+    (xs : External_arg_spec.params)  =
   match xs with
   | [] -> true
   | {arg_type = Fn_uncurry_arity _ } :: _ ->
@@ -802,7 +802,7 @@ let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  =
   | Return_identity ->
     result
 
-let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list)
+let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.params)
     (args : t list ) =
   match arg_types,args with
   | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
@@ -826,7 +826,7 @@ let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list)
 
 
 let handle_bs_non_obj_ffi
-    (arg_types : External_arg_spec.t list)
+    (arg_types : External_arg_spec.params)
     (result_type : External_ffi_types.return_wrapper)
     ffi
     args

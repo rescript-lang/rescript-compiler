@@ -22,7 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if BS_RELEASE_BUILD then
+#if 
+  BS_RELEASE_BUILD 
+  (*true *)
+then
 
 let load_cmi ~unit_name : Env.Persistent_signature.t option =
   match Config_util.find_opt (unit_name ^".cmi") with 
@@ -30,18 +33,21 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
   | None ->
     if !Js_config.no_stdlib then None
     else 
-      match Ext_string_array.find_sorted_assoc Builtin_cmi_datasets.module_sets_cmi unit_name with
+      match Ext_string_array.find_sorted Builtin_cmi_datasets.module_names unit_name with
       | Some cmi ->
         if Js_config.get_diagnose () then
           Format.fprintf Format.err_formatter ">Cmi: %s@." unit_name;
-        let lazy cmi = cmi in   
+        let cmi : Cmi_format.cmi_infos = 
+            Marshal.from_string 
+            Builtin_cmi_datasets.module_data.(cmi) 0 in   
         if Js_config.get_diagnose () then
           Format.fprintf Format.err_formatter "<Cmi: %s@." unit_name;
         Some {filename = Sys.executable_name ; 
               cmi }
       | None -> None
 
-let check () = 
+ let check () = ()
+(*  
   Ext_array.iter 
     Builtin_cmi_datasets.module_sets_cmi
     (fun (name,l) ->
@@ -60,7 +66,7 @@ let check () =
        let cmj = Lazy.force l in 
        Format.fprintf Format.err_formatter "%b@." cmj.pure;
        prerr_endline ("<checking " ^ name);
-    ) 
+    )  *)
 #else
 
 let check () = ()

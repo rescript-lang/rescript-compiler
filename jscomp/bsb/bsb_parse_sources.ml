@@ -238,11 +238,11 @@ let prune_staled_bs_js_files
                  let lazy cmd =  bs_cmt_post_process_cmd in 
 
                  if cmd <> "" then
-                   Ext_pervasives.try_it (fun _ -> 
+                   (try ignore (
                        Sys.command (
                          cmd ^ 
                          " -cmt-rm " ^ filepath)                   
-                     )
+                     : int ) with _ -> ())
                 | Cmj _ ->        
                   (* remove .bs.js *)
                   if context.bs_suffix then
@@ -492,13 +492,13 @@ let clean_re_js root =
       | None -> Set_string.empty
     in  
     Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
-      Ext_pervasives.try_it (fun () -> 
+      try (
           walk_sources { root ;                           
                          traverse = true; 
                          cwd = Filename.current_dir_name;
                          ignored_dirs
                          } config
-        )      
+        ) with _ -> ()      
     end
   | _  -> () 
   | exception _ -> ()    

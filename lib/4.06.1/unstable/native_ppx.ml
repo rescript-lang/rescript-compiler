@@ -8622,182 +8622,6 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 
-  'a ->
-  clean:('a -> 'c) -> 
-  ('a -> 'b) -> 'b
-
-val try_it : (unit -> 'a) ->  unit 
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-
-
-
-
-
-
-
-
-
-
-
-
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-val todo : string -> 'a
-
-val nat_of_string_exn : string -> int
-
-val parse_nat_of_string:
-  string -> 
-  int ref -> 
-  int 
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v ~clean:action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let try_it f  =   
-  try ignore (f ()) with _ -> ()
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) ~clean:close_out f 
-
-
-
-
-
-
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-let todo loc = 
-  failwith (loc ^ " Not supported yet")
-
-
-
-
-let rec int_of_string_aux s acc off len =  
-  if off >= len then acc 
-  else 
-    let d = (Char.code (String.unsafe_get s off) - 48) in 
-    if d >=0 && d <= 9 then 
-      int_of_string_aux s (10*acc + d) (off + 1) len
-    else -1 (* error *)
-
-let nat_of_string_exn (s : string) = 
-  let acc = int_of_string_aux s 0 0 (String.length s) in 
-  if acc < 0 then invalid_arg s 
-  else acc 
-
-
-(** return index *)
-let parse_nat_of_string (s : string) (cursor : int ref) =  
-  let current = !cursor in 
-  assert (current >= 0);
-  let acc = ref 0 in 
-  let s_len = String.length s in 
-  let todo = ref true in 
-  let cur = ref current in 
-  while !todo && !cursor < s_len do 
-    let d = Char.code (String.unsafe_get s !cur) - 48 in 
-    if d >=0 && d <= 9 then begin 
-      acc := 10* !acc + d;
-      incr cur
-    end else todo := false
-  done ;
-  cursor := !cur;
-  !acc 
-end
 module Ast_compatible : sig 
 #1 "ast_compatible.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -9264,7 +9088,7 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
+let hash_label (x : poly_var_label) : int = Btype.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
@@ -17217,9 +17041,10 @@ type cst = private
 
 
 type label = private
-  | Label of string * cst option 
-  | Empty of cst option
-  | Optional of string 
+  | Label of {name : string ; cst : cst option }
+  | Empty 
+  | EmptyCst of cst
+  | Optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17234,11 +17059,23 @@ type attr =
   | Ignore
   | Unwrap
 
+
+type label_noname = 
+  | Label
+  | Empty 
+  | Optional
+
 type t = 
   {
     arg_type : attr;
     arg_label :label
   }
+
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+} 
+type params = t_noname list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 
@@ -17286,10 +17123,17 @@ type cst =
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
+
+type label_noname = 
+  | Label 
+  | Empty 
+  | Optional
+  
 type label = 
-  | Label of string * cst option 
-  | Empty of cst option
-  | Optional of string 
+  | Label of {name : string ; cst : cst option }
+  | Empty 
+  | EmptyCst of cst 
+  | Optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17304,12 +17148,20 @@ type attr =
   | Ignore
   | Unwrap
 
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+}   
+
 type t = 
   {
     arg_type : attr;
     arg_label : label
   }
 
+
+
+type params = t_noname list 
 
 exception Error of Location.t * Ext_json_parse.error
 
@@ -17344,10 +17196,10 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty None 
-let empty_lit s = Empty (Some s) 
-let label s cst = Label(s,cst)
-let optional s = Optional s 
+let empty_label = Empty 
+let empty_lit s = EmptyCst s
+let label name cst = Label {name ; cst}
+let optional name = Optional {name}
 
 let empty_kind arg_type = { arg_label = empty_label ; arg_type }
 
@@ -17815,29 +17667,6 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
-module Ext_fmt
-= struct
-#1 "ext_fmt.ml"
-
-
-let with_file_as_pp filename f = 
-  Ext_pervasives.finally (open_out_bin filename) ~clean:close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-
-end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -18217,77 +18046,64 @@ type external_module_name =
   }
 
 type pipe = bool
-type js_call = {
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool ;
-  scopes : string list
-}
 
-type js_send = {
-  name : string ;
-  splice : bool ;
-  pipe : pipe  ;
-  js_send_scopes : string list;
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_var = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list
-}
 
-type js_new_val = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list;
-}
 
-type js_module_as_fn =
-  { external_module_name : external_module_name;
-    splice : bool
-  }
+
+
 
 type arg_type = External_arg_spec.attr
 
 type arg_label = External_arg_spec.label
 
 
-type obj_create = External_arg_spec.t list
-
-type js_get =
-  { js_get_name : string   ;
-    js_get_scopes :  string list;
-  }
-
-type js_set =
-  { js_set_name : string  ;
-    js_set_scopes : string list
-  }
 
 
-type js_get_index =   {
-  js_get_index_scopes : string list
-}
-[@@unboxed]
-type js_set_index = {
-  js_set_index_scopes : string list
-}
-[@@unboxed]
+
 
 
 type external_spec  =
-  | Js_var of js_var
+  | Js_var of {
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list
+    }
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_fn of { external_module_name : external_module_name;
+                         splice : bool
+                       }
   | Js_module_as_class of external_module_name
-  | Js_call of js_call
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index of js_get_index
-  | Js_set_index of js_set_index
+  | Js_call of {
+      name : string;
+      external_module_name : external_module_name option;
+      splice : bool ;
+      scopes : string list
+    }
+  | Js_send of {
+      name : string ;
+      splice : bool ;
+      pipe : pipe  ;
+      js_send_scopes : string list;
+    } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+  | Js_new of {
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list;
+    }
+  | Js_set of   { js_set_name : string  ;
+                  js_set_scopes : string list
+                }
+  | Js_get of { js_get_name : string   ;
+                js_get_scopes :  string list;
+              }
+  | Js_get_index of {
+      js_get_index_scopes : string list
+    }
+  | Js_set_index of {
+      js_set_index_scopes : string list
+    }
 
 type return_wrapper =
   | Return_unset
@@ -18299,10 +18115,10 @@ type return_wrapper =
 
 type t  =
   | Ffi_bs of
-      External_arg_spec.t list  *
+      External_arg_spec.params  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of obj_create
+  | Ffi_obj_create of External_arg_spec.t list
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -18368,54 +18184,7 @@ type external_module_name =
   }
 
 type pipe = bool
-type js_call = {
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool ;
-  scopes : string list ;
-}
 
-type js_send = {
-  name : string ;
-  splice : bool ;
-  pipe : pipe   ;
-  js_send_scopes : string list;
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_var = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list ;
-}
-
-type js_new_val = {
-  name : string ;
-  external_module_name : external_module_name option;
-  scopes : string list;
-}
-
-type js_module_as_fn =
-  { external_module_name : external_module_name;
-    splice : bool ;
-  }
-type js_get =
-  { js_get_name : string   ;
-    js_get_scopes :  string list;
-  }
-
-type js_set =
-  { js_set_name : string  ;
-    js_set_scopes : string list
-  }
-
-type js_get_index =   {
-  js_get_index_scopes : string list
-}
-[@@unboxed]
-
-type js_set_index = {
-  js_set_index_scopes : string list
-} [@@unboxed]
 (** TODO: information between [arg_type] and [arg_label] are duplicated,
   design a more compact representation so that it is also easy to seralize by hand
 *)
@@ -18424,21 +18193,50 @@ type arg_type = External_arg_spec.attr
 type arg_label = External_arg_spec.label
 
 
-(**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = External_arg_spec.t list
 
 type external_spec =
-  | Js_var of js_var
+  | Js_var of {
+    name : string ;
+    external_module_name : external_module_name option;
+    scopes : string list
+  }
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_fn of   { external_module_name : external_module_name;
+                           splice : bool
+                         }
   | Js_module_as_class of external_module_name
-  | Js_call of js_call
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index of js_get_index
-  | Js_set_index of js_set_index
+  | Js_call of {
+    name : string;
+    external_module_name : external_module_name option;
+    splice : bool ;
+    scopes : string list
+  }
+  
+  | Js_send of {
+    name : string ;
+    splice : bool ;
+    pipe : pipe  ;
+    js_send_scopes : string list;
+  } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+  
+  | Js_new of {
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list;
+    }
+  | Js_set of 
+      { js_set_name : string  ;
+        js_set_scopes : string list
+      }
+  | Js_get of  { js_get_name : string   ;
+                 js_get_scopes :  string list;
+               }
+  | Js_get_index of  {
+    js_get_index_scopes : string list
+  }
+  | Js_set_index of {
+    js_set_index_scopes : string list
+  }
 
 (* let not_inlineable (x : external_spec) =     *)
 
@@ -18469,14 +18267,15 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
+
 type t  =
-  | Ffi_bs of External_arg_spec.t list  *
+  | Ffi_bs of External_arg_spec.params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of obj_create
+  | Ffi_obj_create of  External_arg_spec.t list
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -18596,7 +18395,7 @@ let bs_external = bs_prefix
 let bs_external_length = String.length bs_external
 
 
-let to_string  t =
+let to_string  (t : t) =
   bs_external ^ Marshal.to_string t []
 
 
@@ -18607,12 +18406,7 @@ let from_string s : t =
      String.unsafe_get s 0 = 'B' &&
      String.unsafe_get s 1 = 'S' &&
      String.unsafe_get s 2 = ':' then
-    if Ext_string.starts_with s bs_external then
-      Marshal.from_string s bs_external_length
-    else
-      Ext_fmt.failwithf
-        ~loc:__LOC__
-        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
+    Marshal.from_string s bs_external_length
   else Ffi_normal
 
 
@@ -19080,28 +18874,17 @@ end = struct
 [@@@ocaml.warning "+9"]
 (* record pattern match complete checker*)
 
-type field = 
-  | No_fields
-  | Valid_fields
-  | Invalid_field
 
-let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
-  let validity =
-    Ext_list.fold_left row_fields No_fields      
-      begin fun st row ->
-        match st, row with
-        | (* we've seen no fields or only valid fields so far *)
-          (No_fields | Valid_fields),
-          (* and this field has one constructor arg that we can unwrap to *)
-          Rtag (label, attrs, false, ([ _ ]))
-          ->
-          Valid_fields
-        | (* otherwise, this field or a previous field was invalid *)
-          _ ->
-          Invalid_field
-      end
-  in
-  validity = Valid_fields 
+let rec variant_can_unwrap_aux (row_fields : Parsetree.row_field list) : bool =   
+  match row_fields with 
+  | [] -> true 
+  | Rtag(_,_,false,[_]) :: rest  -> variant_can_unwrap_aux rest 
+  | _ :: rest -> false  
+
+let variant_unwrap (row_fields : Parsetree.row_field list) : bool =
+  match row_fields with 
+  | []  -> false (* impossible syntax *)
+  | xs -> variant_can_unwrap_aux xs 
 
 (*
   TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
@@ -19131,7 +18914,7 @@ let spec_of_ptyp
   | `Unwrap ->
     begin match ptyp_desc with
       | Ptyp_variant (row_fields, Closed, _)
-        when variant_can_bs_unwrap_fields row_fields ->
+        when variant_unwrap row_fields ->
         Unwrap
       | _ ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
@@ -19578,7 +19361,7 @@ let external_desc_of_non_obj
     (prim_name_or_pval_prim : bundle_source)
     (arg_type_specs_length : int) 
     arg_types_ty 
-    (arg_type_specs : External_arg_spec.t list) : External_ffi_types.external_spec =
+    (arg_type_specs : External_arg_spec.params) : External_ffi_types.external_spec =
   match st with
   | {set_index = true;
      val_name = `Nm_na;
@@ -19920,7 +19703,7 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      let init : External_arg_spec.t list * Ast_compatible.param_type list * int  = 
+      let init : External_arg_spec.params * Ast_compatible.param_type list * int  = 
         match external_desc.val_send_pipe with
         | Some obj ->
           let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
@@ -19929,7 +19712,7 @@ let handle_attributes
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
             | _ ->
               (* more error checking *)
-              [External_arg_spec.empty_kind arg_type],
+              [{arg_label = Empty; arg_type}],
               [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
@@ -19956,7 +19739,7 @@ let handle_attributes
                   -> ()
                 | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
              end ; 
-           let arg_label, arg_type, new_arg_types =
+           let (arg_label : External_arg_spec.label_noname), arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
@@ -19967,22 +19750,22 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
-                   External_arg_spec.optional s, arg_type,
+                   Optional, arg_type,
                    param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst i as arg_type)  ->
-                   External_arg_spec.label s (Some i), arg_type, arg_types
+                 | new_ty, (Arg_cst _ as arg_type)  ->
+                   Label , arg_type, arg_types
                  | new_ty, arg_type ->
-                   External_arg_spec.label s None, arg_type, 
+                   Label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst i as arg_type) ->
-                   External_arg_spec.empty_lit i , arg_type,  arg_types
+                 | new_ty , (Arg_cst _ as arg_type) ->
+                   Empty , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
+                   Empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            ({ arg_label  ;
@@ -22720,7 +22503,7 @@ let handleTdcl
                      ["" ; (* Not needed actually*)
                       External_ffi_types.to_string 
                         (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
+                            [{arg_type = Nothing; arg_label = Empty}],
                             Return_identity,
                             Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                           ))] )
@@ -23027,8 +22810,6 @@ val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-(* val set_cross_module_inline : bool -> unit *)
-val get_cross_module_inline : unit -> bool
   
 (** diagnose option *)
 val diagnose : bool ref 
@@ -23147,9 +22928,6 @@ let no_version_header = ref false
 
 let cross_module_inline = ref false
 
-let get_cross_module_inline () = !cross_module_inline
-(* let set_cross_module_inline b =
-  cross_module_inline := b *)
 
 
 let diagnose = ref false

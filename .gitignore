@@ -141,3 +141,4 @@ vendor/ocaml
 jscomp/.lsp
 .vscode/launch.json
 tracing*.json
+darwin/bsc

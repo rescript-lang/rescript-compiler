@@ -266,7 +266,7 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
+let hash_label (x : poly_var_label) : int = Btype.hash_variant x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 

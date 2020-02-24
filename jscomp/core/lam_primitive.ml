@@ -47,9 +47,9 @@ type t =
   | Pccall of  Primitive_compat.t
   | Pjs_call of
       { prim_name : string ;
-        arg_types : External_arg_spec.t list ;
+        arg_types : External_arg_spec.params ;
         ffi : External_ffi_types.external_spec }
-  | Pjs_object_create of External_ffi_types.obj_create
+  | Pjs_object_create of External_arg_spec.t list
   (* Exceptions *)
   | Praise
   (* Boolean operations *)

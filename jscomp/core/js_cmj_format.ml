@@ -137,7 +137,7 @@ let get_result  midVal =
   | None  ->
     midVal
   | Some _ -> 
-    if Js_config.get_cross_module_inline () then midVal
+    if !Js_config.cross_module_inline  then midVal
     else {midVal with persistent_closed_lambda = None}  
   
 let rec binarySearchAux arr lo hi (key : string) = 

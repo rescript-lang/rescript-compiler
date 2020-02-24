@@ -91,23 +91,22 @@ let append_list  x xs =
      This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
-    ({arg_label;  arg_type }:  External_arg_spec.t)
+    ~(arg_label : External_arg_spec.label_noname) 
+    ~(arg_type : External_arg_spec.attr)
     (raw_arg : E.t)
   : arg_expression * E.t list  =
   let arg =
     match arg_label with
-    | Optional label -> 
+    | Optional  -> 
       Js_of_lam_option.get_default_undefined_from_optional raw_arg
-    | Label (_, None) | Empty None -> raw_arg
-    | Label (_, Some _) 
-    | Empty ( Some _)
-      -> assert false in 
+    | Label  | Empty -> raw_arg
+  in 
   match arg_type with
   | Arg_cst _ -> assert false 
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = External_arg_spec.empty_label then 
+    (if arg_label = Empty then 
       Splice0 else Splice1 E.unit), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
@@ -133,7 +132,7 @@ let ocaml_to_js_eff
   | Unwrap ->
     let single_arg =
       match arg_label with
-      | Optional label ->
+      | Optional  ->
         (**
            If this is an optional arg (like `?arg`), we have to potentially do
            2 levels of unwrapping:
@@ -158,7 +157,7 @@ let add_eff eff e =
   | Some v -> E.seq v e 
 
 
-type specs = External_arg_spec.t list
+type specs = External_arg_spec.params
 
 type exprs = E.t list 
 (* TODO: fix splice, 
@@ -175,18 +174,19 @@ let assemble_args_no_splice call_loc ffi
     match labels, args with 
     | [], _  
       -> assert (args = []) ; empty_pair
-    | { arg_label =  Empty (Some cst) ; _} :: labels, args 
-    | { arg_label =  Label (_, Some cst); _} :: labels, args -> 
+    | { arg_label =  Empty | Label ; arg_type = Arg_cst cst } :: labels, args 
+      -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels,
+    | {arg_label  ; arg_type } ::labels,
        arg :: args
       ->  
         let accs, eff = aux labels args in 
-        let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+        let acc, new_eff = ocaml_to_js_eff  
+          ~arg_label ~arg_type arg in 
         append_list acc  accs, Ext_list.append new_eff  eff
-    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
-      -> assert false 
+    | _ :: _ , [] 
+      -> assert false     
   in 
   let args, eff = aux arg_types args  in 
   args,
@@ -201,11 +201,11 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
   let rec aux (labels : specs) (args : exprs) = 
     match labels, args with       
     | [] , _ -> assert (args = []); empty_pair
-    | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
-    | { arg_label =  Label (_, Some cst); _} :: labels  , args -> 
+    | { arg_label =  Empty | Label; arg_type = Arg_cst cst} :: labels  , args 
+      -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels,
+    | ({arg_label ; arg_type }) ::labels,
       arg :: args
       ->  
       let accs, eff = aux labels args in 
@@ -214,11 +214,11 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
           Ext_list.append ls accs, eff 
         | _ -> 
           if args = [] then dynamic := true ; 
-          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+          let acc, new_eff = ocaml_to_js_eff ~arg_type ~arg_label arg in 
           append_list acc  accs, Ext_list.append new_eff  eff 
       end
-    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
-      -> assert false 
+    | _ :: _ , [] 
+      -> assert false     
   in 
   let args, eff = aux arg_types args  in 
   args,

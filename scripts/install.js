@@ -203,6 +203,10 @@ function provideCompiler() {
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
+    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja","-t", "clean"], {
+      cwd: lib_dir,
+      stdio: [0, 1, 2]
+    });
     cp.execFileSync(ninja_bin_output, ["-f", "release.ninja"], {
       cwd: lib_dir,
       stdio: [0, 1, 2]

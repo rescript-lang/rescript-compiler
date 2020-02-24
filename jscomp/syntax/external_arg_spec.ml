@@ -32,10 +32,17 @@ type cst =
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
+
+type label_noname = 
+  | Label 
+  | Empty 
+  | Optional
+  
 type label = 
-  | Label of string * cst option 
-  | Empty of cst option
-  | Optional of string 
+  | Label of {name : string ; cst : cst option }
+  | Empty 
+  | EmptyCst of cst 
+  | Optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -50,12 +57,20 @@ type attr =
   | Ignore
   | Unwrap
 
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+}   
+
 type t = 
   {
     arg_type : attr;
     arg_label : label
   }
 
+
+
+type params = t_noname list 
 
 exception Error of Location.t * Ext_json_parse.error
 
@@ -90,9 +105,9 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty None 
-let empty_lit s = Empty (Some s) 
-let label s cst = Label(s,cst)
-let optional s = Optional s 
+let empty_label = Empty 
+let empty_lit s = EmptyCst s
+let label name cst = Label {name ; cst}
+let optional name = Optional {name}
 
 let empty_kind arg_type = { arg_label = empty_label ; arg_type }

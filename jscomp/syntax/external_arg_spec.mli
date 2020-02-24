@@ -32,9 +32,10 @@ type cst = private
 
 
 type label = private
-  | Label of string * cst option 
-  | Empty of cst option
-  | Optional of string 
+  | Label of {name : string ; cst : cst option }
+  | Empty 
+  | EmptyCst of cst
+  | Optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -49,11 +50,23 @@ type attr =
   | Ignore
   | Unwrap
 
+
+type label_noname = 
+  | Label
+  | Empty 
+  | Optional
+
 type t = 
   {
     arg_type : attr;
     arg_label :label
   }
+
+type t_noname = {
+  arg_type : attr;
+  arg_label : label_noname
+} 
+type params = t_noname list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 

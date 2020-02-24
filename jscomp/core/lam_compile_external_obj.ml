@@ -46,19 +46,19 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
-    | {arg_label = Label (label, Some cst )} :: labels  , args -> 
+    | {arg_label = Label {name = label; cst = Some cst }} :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
-    | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
-    | {arg_label = Empty None }::labels, arg::args 
+    | {arg_label = EmptyCst _ } :: rest  , args -> assert false 
+    | {arg_label = Empty  }::labels, arg::args 
       ->  (* unit type*)
       let (accs, eff, assign) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
       else (accs, arg::eff, assign)
-    | ({arg_label = Label (label,None)  } as arg_kind)::labels, arg::args 
+    | ({arg_label = Label {name = label; cst = None}  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff, assign = aux labels args in 
-      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
+      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Label ~arg_type:arg_kind.arg_type arg in 
       begin match acc with 
         | Splice2 _ 
         | Splice0 -> assert false
@@ -66,13 +66,13 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           (label, x) :: accs , Ext_list.append new_eff  eff , assign          
       end (* evaluation order is undefined *)
 
-    | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
+    | ({arg_label = Optional {name = label}; arg_type } as arg_kind)::labels, arg::args 
       -> 
       let (accs, eff, assign) as r = aux labels args  in 
       Js_of_lam_option.destruct_optional arg 
         ~for_sure_none:r 
         ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ({arg_label = External_arg_spec.label label None; arg_type}) x in 
+            ~arg_label:Label ~arg_type x in 
           begin match acc with 
           | Splice2 _
           | Splice0 -> assert false 
@@ -80,7 +80,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
             (label, x) :: accs , Ext_list.append new_eff  eff , assign
           end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
-    | {arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
+    | {arg_label = Empty  | Label {cst = None;_} | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff, assignment = aux labels args in 
@@ -103,7 +103,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
       (Ext_list.flat_map assignment (fun 
         ((xlabel : External_arg_spec.t), (arg  : J.expression )) -> 
       match xlabel with 
-      | {arg_label = Optional label } -> 
+      | {arg_label = Optional {name = label} } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
@@ -111,8 +111,8 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
         | None ->
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
-            {xlabel with arg_label =
-             External_arg_spec.empty_label}
+            ~arg_label:
+             Empty ~arg_type:xlabel.arg_type 
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
@@ -130,8 +130,9 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           let arg = E.var id in         
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
-            {xlabel with arg_label =
-             External_arg_spec.empty_label}
+            ~arg_label:
+             Empty
+             ~arg_type:xlabel.arg_type             
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->        

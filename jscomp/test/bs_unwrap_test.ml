@@ -27,8 +27,9 @@ external log2 :
 let _ = log2 (`Unit ())
 
 external log3 :
-  req:([ `String of string
-       | `Int of int
+  req:([ 
+    `String of string
+       | `Int of int 
        ] [@bs.unwrap])
   -> ?opt:([ `String of string
            | `Bool of bool
@@ -89,3 +90,9 @@ external log5: ?h:([`A of int | `B of string] [@bs.unwrap]) -> int -> unit = "co
 let ff0 x p = log5 ?h:x p 
 
 let ff1 x p = log5 ?h:(x ()) p 
+
+
+external ff : a:int -> b:int-> x: unit  -> _ = "" [@@bs.obj]
+
+
+let test00 () = ff  ~a:1 ~b:2 ~x:()
