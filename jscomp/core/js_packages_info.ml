@@ -76,6 +76,13 @@ type t =
     module_systems: package_info  list
   }
 
+let runtime_package_specs : t = {
+  name = Pkg_runtime;
+  module_systems =[
+    {module_system = Es6; path = "lib/es6"};
+    {module_system = NodeJS; path = "lib/js"};
+  ]
+}   
 let same_package_by_name (x : t) (y : t) = x.name = y.name 
 
 let is_runtime_package (x : t) = 

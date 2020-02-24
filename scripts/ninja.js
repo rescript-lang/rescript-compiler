@@ -1649,7 +1649,7 @@ build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa 
     flags = -I ./bin -w -40-30    
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa    
-build ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  main/cmij_main.cmx
+build ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
     libs = ocamlcommon.cmxa
 
 rule bspack

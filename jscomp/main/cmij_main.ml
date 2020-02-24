@@ -57,10 +57,13 @@ let from_cmj (files : string list) (output_file : string) : unit =
   let abs = 
     Ext_list.map files (fun file -> 
         let module_name = (cmp file) in 
+        let content : Js_cmj_format.t = Js_cmj_format.from_file file in 
+        assert (content.js_file_kind = Little_js);
+        assert (content.package_spec = Js_packages_info.runtime_package_specs);
+        (* prerr_endline (Ext_obj.dump content.package_spec); *)
         let c = 
-          (let content = Ext_io.load_file file in 
-           String.sub content Ext_cmj_magic.header_length (String.length content - Ext_cmj_magic.header_length)
-          ) in 
+          Marshal.to_string (content.values, content.pure) []
+           in 
         Printf.sprintf {|%S (* %d *)|} module_name           
           (String.length c),
         Printf.sprintf {|(* %s *)%S|} module_name c   

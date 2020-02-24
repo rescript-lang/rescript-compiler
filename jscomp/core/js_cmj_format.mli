@@ -70,7 +70,7 @@ type keyed_cmj_value = {
   persistent_closed_lambda : Lam.t option
 }
 
-type t = private {
+type t =  {
   values : keyed_cmj_value array ;
   pure : bool;
   package_spec : Js_packages_info.t ;
