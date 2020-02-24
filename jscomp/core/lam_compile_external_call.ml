@@ -174,8 +174,8 @@ let assemble_args_no_splice call_loc ffi
     match labels, args with 
     | [], _  
       -> assert (args = []) ; empty_pair
-    | { arg_label =  Empty  ; arg_type = Arg_cst cst } :: labels, args 
-    | { arg_label =  Label ; arg_type = Arg_cst cst} :: labels, args -> 
+    | { arg_label =  Empty | Label ; arg_type = Arg_cst cst } :: labels, args 
+      -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | {arg_label = Empty  | Label | Optional  as arg_label ; arg_type } ::labels,
@@ -201,8 +201,8 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
   let rec aux (labels : specs) (args : exprs) = 
     match labels, args with       
     | [] , _ -> assert (args = []); empty_pair
-    | { arg_label =  Empty ; arg_type = Arg_cst cst} :: labels  , args 
-    | { arg_label =  Label ; arg_type = Arg_cst cst } :: labels  , args -> 
+    | { arg_label =  Empty | Label; arg_type = Arg_cst cst} :: labels  , args 
+      -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | ({arg_label = Empty | Label | Optional  as arg_label; arg_type }) ::labels,
