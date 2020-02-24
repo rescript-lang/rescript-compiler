@@ -2,6 +2,11 @@
 
 var Curry = require("../../lib/js/curry.js");
 
+function test(g) {
+  g.xx(22, 3, "xxx", 1, 2, 3);
+  return /* () */0;
+}
+
 function test_hi(x) {
   var match = x.hi(1, 2, 3);
   if (match !== null) {
@@ -32,6 +37,7 @@ function f(x) {
   return /* () */0;
 }
 
+exports.test = test;
 exports.test_hi = test_hi;
 exports.test_hi__2 = test_hi__2;
 exports.test_cb = test_cb;

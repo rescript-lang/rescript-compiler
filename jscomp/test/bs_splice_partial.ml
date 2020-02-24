@@ -8,7 +8,7 @@
 type t 
 external on_exit_slice3 : 
     int 
-    -> (_ [@bs.as 3]) 
+    -> h:(_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) 
     -> int array
     -> unit 
@@ -18,10 +18,10 @@ external on_exit_slice3 :
 
 
 
-(* let test _g = 
-    on_exit_slice3 __LINE__ [|1;2;3|] 
+ let test g = 
+    on_exit_slice3 __LINE__ [|1;2;3|] g
 
-*)    
+
 
 
 external hi : int array -> int option = "hi"
