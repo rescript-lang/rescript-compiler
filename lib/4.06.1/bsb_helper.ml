@@ -1926,7 +1926,7 @@ val finally :
   clean:('a -> 'c) -> 
   ('a -> 'b) -> 'b
 
-val try_it : (unit -> 'a) ->  unit 
+(* val try_it : (unit -> 'a) ->  unit  *)
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -1942,14 +1942,14 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 
 
-external id : 'a -> 'a = "%identity"
+(* external id : 'a -> 'a = "%identity" *)
 
 (** Copied from {!Btype.hash_variant}:
     need sync up and add test case
  *)
-val hash_variant : string -> int
+(* val hash_variant : string -> int *)
 
-val todo : string -> 'a
+(* val todo : string -> 'a *)
 
 val nat_of_string_exn : string -> int
 
@@ -1997,8 +1997,8 @@ let finally v ~clean:action f   =
       reraise e 
   | e ->  action v ; e 
 
-let try_it f  =   
-  try ignore (f ()) with _ -> ()
+(* let try_it f  =   
+  try ignore (f ()) with _ -> () *)
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) ~clean:close_out f 
@@ -2008,9 +2008,9 @@ let with_file_as_chan filename f =
 
 
 
-external id : 'a -> 'a = "%identity"
+(* external id : 'a -> 'a = "%identity" *)
 
-
+(* 
 let hash_variant s =
   let accu = ref 0 in
   for i = 0 to String.length s - 1 do
@@ -2019,11 +2019,11 @@ let hash_variant s =
   (* reduce to 31 bits *)
   accu := !accu land (1 lsl 31 - 1);
   (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
-let todo loc = 
+(* let todo loc = 
   failwith (loc ^ " Not supported yet")
-
+ *)
 
 
 
