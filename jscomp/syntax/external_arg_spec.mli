@@ -54,7 +54,6 @@ type attr =
 type label_noname = 
   | Label
   | Empty 
-  | EmptyCst 
   | Optional
 
 type t = 

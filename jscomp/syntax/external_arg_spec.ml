@@ -36,7 +36,6 @@ type cst =
 type label_noname = 
   | Label 
   | Empty 
-  | EmptyCst
   | Optional
   
 type label = 
