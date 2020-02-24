@@ -914,8 +914,8 @@ let handle_attributes
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst i as arg_type) ->
-                   EmptyCst i , arg_type,  arg_types
+                 | new_ty , (Arg_cst _ as arg_type) ->
+                   EmptyCst , arg_type,  arg_types
                  | new_ty , arg_type ->
                    Empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end

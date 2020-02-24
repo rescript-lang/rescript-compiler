@@ -37,7 +37,7 @@ type label_noname =
   | Label 
   | LabelCst of { cst : cst  }
   | Empty 
-  | EmptyCst of cst 
+  | EmptyCst
   | Optional
   
 type label = 
