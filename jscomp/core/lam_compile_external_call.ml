@@ -178,14 +178,14 @@ let assemble_args_no_splice call_loc ffi
       -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | {arg_label = Empty  | Label | Optional  as arg_label ; arg_type } ::labels,
+    | {arg_label  ; arg_type } ::labels,
        arg :: args
       ->  
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff  
           ~arg_label ~arg_type arg in 
         append_list acc  accs, Ext_list.append new_eff  eff
-    | { arg_label = Empty  | Label | Optional   ; _ } :: _ , [] 
+    | _ :: _ , [] 
       -> assert false     
   in 
   let args, eff = aux arg_types args  in 
@@ -205,7 +205,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
       -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | ({arg_label = Empty | Label | Optional  as arg_label; arg_type }) ::labels,
+    | ({arg_label ; arg_type }) ::labels,
       arg :: args
       ->  
       let accs, eff = aux labels args in 
@@ -217,7 +217,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
           let acc, new_eff = ocaml_to_js_eff ~arg_type ~arg_label arg in 
           append_list acc  accs, Ext_list.append new_eff  eff 
       end
-    | { arg_label = Empty | Label | Optional   ; _ } :: _ , [] 
+    | _ :: _ , [] 
       -> assert false     
   in 
   let args, eff = aux arg_types args  in 
