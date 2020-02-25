@@ -207,7 +207,7 @@ function provideCompiler() {
       cwd: lib_dir,
       stdio: [0, 1, 2]
     });
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja"], {
+    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja","-v"], {
       cwd: lib_dir,
       stdio: [0, 1, 2]
     });
