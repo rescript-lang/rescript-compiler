@@ -46,16 +46,16 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
-    | {obj_arg_label = Label {name = label; cst = Some cst }} :: labels  , args -> 
+    | {obj_arg_label = Obj_label {name = label; cst = Some cst }} :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
     (* | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false  *)
-    | {obj_arg_label = Empty  }::labels, arg::args 
+    | {obj_arg_label = Obj_empty  }::labels, arg::args 
       ->  (* unit type*)
       let (accs, eff, assign) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
       else (accs, arg::eff, assign)
-    | ({obj_arg_label = Label {name = label; cst = None}  } as arg_kind)::labels, arg::args 
+    | ({obj_arg_label = Obj_label {name = label; cst = None}  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff, assign = aux labels args in 
       let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Arg_label ~arg_type:arg_kind.obj_arg_type arg in 
@@ -66,7 +66,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
           (label, x) :: accs , Ext_list.append new_eff  eff , assign          
       end (* evaluation order is undefined *)
 
-    | ({obj_arg_label = Optional {name = label}; obj_arg_type } as arg_kind)::labels, arg::args 
+    | ({obj_arg_label = Obj_optional {name = label}; obj_arg_type } as arg_kind)::labels, arg::args 
       -> 
       let (accs, eff, assign) as r = aux labels args  in 
       Js_of_lam_option.destruct_optional arg 
@@ -80,7 +80,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
             (label, x) :: accs , Ext_list.append new_eff  eff , assign
           end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
-    | {obj_arg_label = Empty  | Label {cst = None;_} | Optional _  } :: _ , [] -> assert false 
+    | {obj_arg_label = Obj_empty  | Obj_label {cst = None;_} | Obj_optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff, assignment = aux labels args in 
@@ -103,7 +103,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
       (Ext_list.flat_map assignment (fun 
         ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
       match xlabel with 
-      | {obj_arg_label = Optional {name = label} } -> 
+      | {obj_arg_label = Obj_optional {name = label} } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)

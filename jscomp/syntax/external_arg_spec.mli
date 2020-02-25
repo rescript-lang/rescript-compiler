@@ -32,10 +32,10 @@ type cst = private
 
 
 type label = private
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  (* | EmptyCst of cst *)
-  | Optional of {name : string}
+  | Obj_label of {name : string ; cst : cst option }
+  | Obj_empty 
+  
+  | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 

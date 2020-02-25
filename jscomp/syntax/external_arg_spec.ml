@@ -39,10 +39,9 @@ type label_noname =
   | Arg_optional
   
 type label = 
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  (* | EmptyCst of cst  *)
-  | Optional of {name : string }
+  | Obj_label of {name : string ; cst : cst option }
+  | Obj_empty 
+  | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -105,9 +104,9 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty 
-(* let empty_lit s = EmptyCst s *)
-let label name cst = Label {name ; cst}
-let optional name = Optional {name}
+let empty_label = Obj_empty 
+
+let label name cst = Obj_label {name ; cst}
+let optional name = Obj_optional {name}
 
 let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
