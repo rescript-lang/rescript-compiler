@@ -235,31 +235,32 @@ let check_ffi ?loc ffi : bool =
   end; 
   !xrelative
 
-let bs_prefix = "BS:"
+(* let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
-
+ *)
 
 (** TODO: Make sure each version is not prefix of each other
     Solution:
     1. fixed length
     2. non-prefix approach
 *)
-let bs_external = bs_prefix 
+(* let bs_external = bs_prefix  *)
 
 
-let bs_external_length = String.length bs_external
+(* let bs_external_length = String.length bs_external *)
 
 
 let to_string  (t : t) =
-  bs_external ^ Marshal.to_string t []
+  Marshal.to_string t []
 
-let is_bs_primitive s =
-  let s_len = String.length s in
-   s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' 
-     
+(* \132\149\166\190 
+   0x84 95 A6 BE Intext_magic_small intext.h
+   https://github.com/ocaml/merlin/commit/b094c937c3a360eb61054f7652081b88e4f3612f
+*)
+let is_bs_primitive s =  
+   String.length s >= 20 (* Marshal.header_size*) &&
+     String.unsafe_get s 0 = '\132' &&
+     String.unsafe_get s 1 = '\149' 
      
 let () = Oprint.map_primitive_name := 
 #if BS_RELEASE_BUILD then  
@@ -273,7 +274,7 @@ let () = Oprint.map_primitive_name :=
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
   if is_bs_primitive s  then   
-    Marshal.from_string s bs_external_length
+    Ext_marshal.from_string_uncheck s
   else Ffi_normal
 
 

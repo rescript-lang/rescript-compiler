@@ -38,8 +38,8 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
         if Js_config.get_diagnose () then
           Format.fprintf Format.err_formatter ">Cmi: %s@." unit_name;
         let cmi : Cmi_format.cmi_infos = 
-            Marshal.from_string 
-            Builtin_cmi_datasets.module_data.(cmi) 0 in   
+            Ext_marshal.from_string_uncheck
+            Builtin_cmi_datasets.module_data.(cmi)  in   
         if Js_config.get_diagnose () then
           Format.fprintf Format.err_formatter "<Cmi: %s@." unit_name;
         Some {filename = Sys.executable_name ; 

@@ -17683,6 +17683,98 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
+module Ext_marshal : sig 
+#1 "ext_marshal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [Marshall] module 
+ *)
+
+(* val to_file : string -> 'a -> unit *)
+
+(* val from_file : string -> 'a *)
+
+val from_string_uncheck : string -> 'a
+end = struct
+#1 "ext_marshal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(* 
+let to_file filename v = 
+  let chan = open_out_bin filename in
+  Marshal.to_channel chan v  [];
+  close_out chan
+    
+(** [bin] mode for WIN support *)
+let from_file filename = 
+  let chan = open_in_bin filename in 
+  let v = Marshal.from_channel chan in
+  close_in chan; 
+  v  *)
+
+external from_bytes_unsafe: string -> int -> 'a
+  = "caml_input_value_from_string"
+
+let from_string_uncheck (s:string) = 
+  from_bytes_unsafe s 0  
+end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -18424,31 +18516,32 @@ let check_ffi ?loc ffi : bool =
   end; 
   !xrelative
 
-let bs_prefix = "BS:"
+(* let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
-
+ *)
 
 (** TODO: Make sure each version is not prefix of each other
     Solution:
     1. fixed length
     2. non-prefix approach
 *)
-let bs_external = bs_prefix 
+(* let bs_external = bs_prefix  *)
 
 
-let bs_external_length = String.length bs_external
+(* let bs_external_length = String.length bs_external *)
 
 
 let to_string  (t : t) =
-  bs_external ^ Marshal.to_string t []
+  Marshal.to_string t []
 
-let is_bs_primitive s =
-  let s_len = String.length s in
-   s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' 
-     
+(* \132\149\166\190 
+   0x84 95 A6 BE Intext_magic_small intext.h
+   https://github.com/ocaml/merlin/commit/b094c937c3a360eb61054f7652081b88e4f3612f
+*)
+let is_bs_primitive s =  
+   String.length s >= 20 (* Marshal.header_size*) &&
+     String.unsafe_get s 0 = '\132' &&
+     String.unsafe_get s 1 = '\149' 
      
 let () = Oprint.map_primitive_name := 
   
@@ -18460,7 +18553,7 @@ let () = Oprint.map_primitive_name :=
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
   if is_bs_primitive s  then   
-    Marshal.from_string s bs_external_length
+    Ext_marshal.from_string_uncheck s
   else Ffi_normal
 
 
