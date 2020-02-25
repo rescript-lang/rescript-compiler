@@ -113,3 +113,5 @@ let obj_label name  =
 let optional name = Obj_optional {name}
 
 let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
+let dummy = 
+  {arg_type = Nothing; arg_label = Arg_empty}  

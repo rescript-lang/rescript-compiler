@@ -119,8 +119,12 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
 type t  =
-  | Ffi_bs of External_arg_spec.params  *
+  | Ffi_bs of params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
@@ -301,5 +305,29 @@ let inline_int_primitive i : string list =
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Lam_constant.Const_int32 (Int32.of_int i)))
+      (Const_int32 (Int32.of_int i)))
   ]
+
+
+let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
+  match params with 
+  | {arg_type = Nothing; arg_label = Arg_empty} 
+  (* same as External_arg_spec.dummy*)
+    :: rest -> 
+      ffi_bs_aux (acc + 1) rest 
+  | _ :: _ -> -1    
+  | [] -> acc         
+
+let ffi_bs (params : External_arg_spec.params) return attr =
+  let n = ffi_bs_aux 0 params in 
+  if n < 0 then  Ffi_bs (Params params,return,attr)  
+  else Ffi_bs (Param_number n, return, attr) 
+
+let ffi_bs_as_prims params return attr = 
+  [""; to_string (ffi_bs params return attr)]
+
+let ffi_obj_create obj_params =
+   Ffi_obj_create obj_params
+
+let ffi_obj_as_prims obj_params = 
+  ["";to_string (Ffi_obj_create obj_params)]

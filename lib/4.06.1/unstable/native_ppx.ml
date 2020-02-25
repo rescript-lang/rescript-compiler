@@ -17099,7 +17099,7 @@ val empty_label : label
 val obj_label :  string -> label
 val optional  : string -> label
 val empty_kind : attr -> obj_param
-
+val dummy : param
 end = struct
 #1 "external_arg_spec.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -17217,7 +17217,8 @@ let obj_label name  =
 let optional name = Obj_optional {name}
 
 let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
-
+let dummy = 
+  {arg_type = Nothing; arg_label = Arg_empty}  
 end
 module Ast_polyvar : sig 
 #1 "ast_polyvar.mli"
@@ -18128,9 +18129,13 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
-type t  =
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
+type t  = private
   | Ffi_bs of
-      External_arg_spec.params  *
+      params  *
       return_wrapper *
       external_spec
   | Ffi_obj_create of External_arg_spec.obj_params
@@ -18159,6 +18164,26 @@ val inline_bool_primitive :
 
 val inline_int_primitive :   
   int -> 
+  string list
+
+val ffi_bs:
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  t
+
+val ffi_bs_as_prims:  
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  string list 
+  
+val ffi_obj_create:
+  External_arg_spec.obj_params ->
+  t 
+
+val ffi_obj_as_prims:
+  External_arg_spec.obj_params ->
   string list
 end = struct
 #1 "external_ffi_types.ml"
@@ -18283,8 +18308,12 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
 type t  =
-  | Ffi_bs of External_arg_spec.params  *
+  | Ffi_bs of params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
@@ -18413,14 +18442,24 @@ let bs_external_length = String.length bs_external
 let to_string  (t : t) =
   bs_external ^ Marshal.to_string t []
 
+let is_bs_primitive s =
+  let s_len = String.length s in
+   s_len >= bs_prefix_length &&
+     String.unsafe_get s 0 = 'B' &&
+     String.unsafe_get s 1 = 'S' &&
+     String.unsafe_get s 2 = ':' 
+     
+     
+let () = Oprint.map_primitive_name := 
+  
+  (fun s ->    
+  if is_bs_primitive s then "BS:external"
+  else s )
+
 
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
-  let s_len = String.length s in
-  if s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' then
+  if is_bs_primitive s  then   
     Marshal.from_string s bs_external_length
   else Ffi_normal
 
@@ -18453,8 +18492,32 @@ let inline_int_primitive i : string list =
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Lam_constant.Const_int32 (Int32.of_int i)))
+      (Const_int32 (Int32.of_int i)))
   ]
+
+
+let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
+  match params with 
+  | {arg_type = Nothing; arg_label = Arg_empty} 
+  (* same as External_arg_spec.dummy*)
+    :: rest -> 
+      ffi_bs_aux (acc + 1) rest 
+  | _ :: _ -> -1    
+  | [] -> acc         
+
+let ffi_bs (params : External_arg_spec.params) return attr =
+  let n = ffi_bs_aux 0 params in 
+  if n < 0 then  Ffi_bs (Params params,return,attr)  
+  else Ffi_bs (Param_number n, return, attr) 
+
+let ffi_bs_as_prims params return attr = 
+  [""; to_string (ffi_bs params return attr)]
+
+let ffi_obj_create obj_params =
+   Ffi_obj_create obj_params
+
+let ffi_obj_as_prims obj_params = 
+  ["";to_string (Ffi_obj_create obj_params)]
 end
 module Bs_hash_stubs
 = struct
@@ -19366,7 +19429,7 @@ let process_obj
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
-    External_ffi_types.Ffi_obj_create arg_kinds
+    External_ffi_types.ffi_obj_create arg_kinds
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
 
 
@@ -19801,7 +19864,7 @@ let handle_attributes
        return type, in the future we may  *)
     let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
     Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
-    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    External_ffi_types.ffi_bs arg_type_specs return_wrapper ffi,
     unused_attrs,
     relative 
 
@@ -19835,9 +19898,8 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds
       ) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+
 
 let pval_prim_of_option_labels
     (labels : (bool * string Asttypes.loc) list)
@@ -19858,9 +19920,8 @@ let pval_prim_of_option_labels
           in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+  
 
 
 end
@@ -22515,13 +22576,12 @@ let handleTdcl
                       {pld_name with txt = pld_name.txt ^ "Get"}
                    ) ~attrs:get_attrs
                    ~prim:(
-                     ["" ; (* Not needed actually*)
-                      External_ffi_types.to_string 
-                        (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = Arg_empty}],
-                            Return_identity,
-                            Js_get {js_get_name = prim_as_name; js_get_scopes = []}
-                          ))] )
+                      (* Not needed actually*)
+                      External_ffi_types.ffi_bs_as_prims 
+                            [External_arg_spec.dummy]
+                            Return_identity
+                            (Js_get {js_get_name = prim_as_name; js_get_scopes = []})                      
+                           )
                    (Ast_compatible.arrow ~loc  core_type pld_type))
                 :: acc                
               )

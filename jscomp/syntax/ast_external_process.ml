@@ -503,7 +503,7 @@ let process_obj
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
-    External_ffi_types.Ffi_obj_create arg_kinds
+    External_ffi_types.ffi_obj_create arg_kinds
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
 
 
@@ -938,7 +938,7 @@ let handle_attributes
        return type, in the future we may  *)
     let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
     Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
-    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    External_ffi_types.ffi_bs arg_type_specs return_wrapper ffi,
     unused_attrs,
     relative 
 
@@ -972,9 +972,8 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds
       ) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+
 
 let pval_prim_of_option_labels
     (labels : (bool * string Asttypes.loc) list)
@@ -995,7 +994,6 @@ let pval_prim_of_option_labels
           in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+  
 

@@ -80,3 +80,4 @@ val empty_label : label
 val obj_label :  string -> label
 val optional  : string -> label
 val empty_kind : attr -> obj_param
+val dummy : param

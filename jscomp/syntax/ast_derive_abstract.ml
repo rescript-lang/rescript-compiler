@@ -145,13 +145,12 @@ let handleTdcl
                       {pld_name with txt = pld_name.txt ^ "Get"}
                    ) ~attrs:get_attrs
                    ~prim:(
-                     ["" ; (* Not needed actually*)
-                      External_ffi_types.to_string 
-                        (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = Arg_empty}],
-                            Return_identity,
-                            Js_get {js_get_name = prim_as_name; js_get_scopes = []}
-                          ))] )
+                      (* Not needed actually*)
+                      External_ffi_types.ffi_bs_as_prims 
+                            [External_arg_spec.dummy]
+                            Return_identity
+                            (Js_get {js_get_name = prim_as_name; js_get_scopes = []})                      
+                           )
                    (Ast_compatible.arrow ~loc  core_type pld_type))
                 :: acc                
               )
