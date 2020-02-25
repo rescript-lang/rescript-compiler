@@ -105,7 +105,7 @@ type t  =
       External_arg_spec.params  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of External_arg_spec.t list
+  | Ffi_obj_create of External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)

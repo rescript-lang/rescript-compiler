@@ -126,7 +126,7 @@ type t  =
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of  External_arg_spec.t list
+  | Ffi_obj_create of  External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)

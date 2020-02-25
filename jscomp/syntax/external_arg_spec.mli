@@ -56,17 +56,19 @@ type label_noname =
   | Arg_empty 
   | Arg_optional
 
-type t = 
+type obj_param = 
   {
     arg_type : attr;
     arg_label :label
   }
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 } 
-type params = t_noname list 
+
+type obj_params = obj_param list 
+type params = param list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 
@@ -76,4 +78,4 @@ val empty_label : label
 val empty_lit : cst -> label 
 val label :  string -> cst option -> label
 val optional  : string -> label
-val empty_kind : attr -> t
+val empty_kind : attr -> obj_param

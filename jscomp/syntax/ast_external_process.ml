@@ -963,7 +963,7 @@ let handle_attributes_as_string
 
 let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
+    Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
       (fun {loc ; txt } arg_kinds
         ->
           let arg_label =

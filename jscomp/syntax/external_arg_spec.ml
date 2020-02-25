@@ -57,20 +57,20 @@ type attr =
   | Ignore
   | Unwrap
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 }   
 
-type t = 
+type obj_param = 
   {
     arg_type : attr;
     arg_label : label
   }
 
 
-
-type params = t_noname list 
+type obj_params = obj_param list 
+type params = param list 
 
 exception Error of Location.t * Ext_json_parse.error
 
