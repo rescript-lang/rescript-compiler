@@ -32,7 +32,8 @@ type cst = private
 
 
 type label = private
-  | Obj_label of {name : string ; cst : cst option }
+  | Obj_label of {name : string}
+  | Obj_labelCst of {name : string ; cst : cst}
   | Obj_empty 
   
   | Obj_optional of {name : string}
