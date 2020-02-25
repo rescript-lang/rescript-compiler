@@ -4,6 +4,7 @@
     ".gitmodules",
     "bsb",
     "bsc",
+    "bsrefmt",
     "COPYING",
     "LICENSE",
     "4061.json",
@@ -45,7 +46,6 @@
   ],
   "lib": [
     "bscc",
-    "bsrefmt",
     "bstracing",
     "minisocket.js",
     "jsconfig.json",
@@ -1126,7 +1126,7 @@
     "ninja.COPYING",
     "bsb_helper.exe",
     "bsb.exe",
-    "bsc.exe",    
+    "bsc.exe",
     "ninja.exe",
     "refmt.exe"
   ]
