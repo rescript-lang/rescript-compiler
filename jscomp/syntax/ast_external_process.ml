@@ -864,7 +864,7 @@ let handle_attributes
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
             | _ ->
               (* more error checking *)
-              [{arg_label = Empty; arg_type}],
+              [{arg_label = Arg_empty; arg_type}],
               [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
@@ -902,22 +902,22 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
-                   Optional, arg_type,
+                   Arg_optional, arg_type,
                    param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst _ as arg_type)  ->
-                   Label , arg_type, arg_types
+                   Arg_label , arg_type, arg_types
                  | new_ty, arg_type ->
-                   Label , arg_type, 
+                   Arg_label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
                  | new_ty , (Arg_cst _ as arg_type) ->
-                   Empty , arg_type,  arg_types
+                   Arg_empty , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   Empty, arg_type, {param_type with ty = new_ty} :: arg_types
+                   Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            ({ arg_label  ;

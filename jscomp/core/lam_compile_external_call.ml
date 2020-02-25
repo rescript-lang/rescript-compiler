@@ -97,16 +97,16 @@ let ocaml_to_js_eff
   : arg_expression * E.t list  =
   let arg =
     match arg_label with
-    | Optional  -> 
+    | Arg_optional  -> 
       Js_of_lam_option.get_default_undefined_from_optional raw_arg
-    | Label  | Empty -> raw_arg
+    | Arg_label  | Arg_empty -> raw_arg
   in 
   match arg_type with
   | Arg_cst _ -> assert false 
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Empty then 
+    (if arg_label = Arg_empty then 
       Splice0 else Splice1 E.unit), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
@@ -132,7 +132,7 @@ let ocaml_to_js_eff
   | Unwrap ->
     let single_arg =
       match arg_label with
-      | Optional  ->
+      | Arg_optional  ->
         (**
            If this is an optional arg (like `?arg`), we have to potentially do
            2 levels of unwrapping:
@@ -174,8 +174,8 @@ let assemble_args_no_splice call_loc ffi
     match labels, args with 
     | [], _  
       -> assert (args = []) ; empty_pair
-    | { arg_label =  Empty | Label ; arg_type = Arg_cst cst } :: labels, args 
-      -> 
+    | { arg_type = Arg_cst cst ; _} :: labels, args 
+      -> (* can not be Optional *)
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | {arg_label  ; arg_type } ::labels,
@@ -201,7 +201,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
   let rec aux (labels : specs) (args : exprs) = 
     match labels, args with       
     | [] , _ -> assert (args = []); empty_pair
-    | { arg_label =  Empty | Label; arg_type = Arg_cst cst} :: labels  , args 
+    | { arg_type = Arg_cst cst; _} :: labels  , args 
       -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 

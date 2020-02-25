@@ -58,7 +58,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
     | ({arg_label = Label {name = label; cst = None}  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff, assign = aux labels args in 
-      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Label ~arg_type:arg_kind.arg_type arg in 
+      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Arg_label ~arg_type:arg_kind.arg_type arg in 
       begin match acc with 
         | Splice2 _ 
         | Splice0 -> assert false
@@ -72,7 +72,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
       Js_of_lam_option.destruct_optional arg 
         ~for_sure_none:r 
         ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:Label ~arg_type x in 
+            ~arg_label:Arg_label ~arg_type x in 
           begin match acc with 
           | Splice2 _
           | Splice0 -> assert false 
@@ -112,7 +112,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
-             Empty ~arg_type:xlabel.arg_type 
+             Arg_empty ~arg_type:xlabel.arg_type 
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
@@ -131,7 +131,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
-             Empty
+             Arg_empty
              ~arg_type:xlabel.arg_type             
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 

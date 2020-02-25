@@ -148,7 +148,7 @@ let handleTdcl
                      ["" ; (* Not needed actually*)
                       External_ffi_types.to_string 
                         (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = Empty}],
+                            [{arg_type = Nothing; arg_label = Arg_empty}],
                             Return_identity,
                             Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                           ))] )

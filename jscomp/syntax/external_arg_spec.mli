@@ -52,9 +52,9 @@ type attr =
 
 
 type label_noname = 
-  | Label
-  | Empty 
-  | Optional
+  | Arg_label
+  | Arg_empty 
+  | Arg_optional
 
 type t = 
   {
