@@ -46,7 +46,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
-    | {obj_arg_label = Obj_labelCst {name = label; cst }} :: labels  , args -> 
+    | {obj_arg_label = Obj_label {name = label;  }; obj_arg_type = Arg_cst cst } :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
     (* | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false  *)

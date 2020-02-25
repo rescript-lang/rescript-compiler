@@ -17051,10 +17051,11 @@ type cst = private
 
 
 type label = private
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  | EmptyCst of cst
-  | Optional of {name : string}
+  | Obj_label of {name : string}
+  (* | Obj_labelCst of {name : string ; cst : cst} *)
+  | Obj_empty 
+  
+  | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17071,31 +17072,33 @@ type attr =
 
 
 type label_noname = 
-  | Label
-  | Empty 
-  | Optional
+  | Arg_label
+  | Arg_empty 
+  | Arg_optional
 
-type t = 
+type obj_param = 
   {
-    arg_type : attr;
-    arg_label :label
+    obj_arg_type : attr;
+    obj_arg_label :label
   }
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 } 
-type params = t_noname list 
+
+type obj_params = obj_param list 
+type params = param list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 
 val empty_label : label
-val empty_lit : cst -> label 
-val label :  string -> cst option -> label
+(* val empty_lit : cst -> label  *)
+val obj_label :  string -> label
 val optional  : string -> label
-val empty_kind : attr -> t
+val empty_kind : attr -> obj_param
 
 end = struct
 #1 "external_arg_spec.ml"
@@ -17135,15 +17138,15 @@ type cst =
   | Arg_js_json of string
 
 type label_noname = 
-  | Label 
-  | Empty 
-  | Optional
+  | Arg_label 
+  | Arg_empty 
+  | Arg_optional
   
 type label = 
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  | EmptyCst of cst 
-  | Optional of {name : string }
+  | Obj_label of {name : string }
+  (* | Obj_labelCst of {name : string} *)
+  | Obj_empty 
+  | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17158,20 +17161,20 @@ type attr =
   | Ignore
   | Unwrap
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 }   
 
-type t = 
+type obj_param = 
   {
-    arg_type : attr;
-    arg_label : label
+    obj_arg_type : attr;
+    obj_arg_label : label
   }
 
 
-
-type params = t_noname list 
+type obj_params = obj_param list 
+type params = param list 
 
 exception Error of Location.t * Ext_json_parse.error
 
@@ -17206,12 +17209,14 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty 
-let empty_lit s = EmptyCst s
-let label name cst = Label {name ; cst}
-let optional name = Optional {name}
+let empty_label = Obj_empty 
 
-let empty_kind arg_type = { arg_label = empty_label ; arg_type }
+let obj_label name  = 
+    Obj_label {name }
+  
+let optional name = Obj_optional {name}
+
+let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
 
 end
 module Ast_polyvar : sig 
@@ -18128,7 +18133,7 @@ type t  =
       External_arg_spec.params  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of External_arg_spec.t list
+  | Ffi_obj_create of External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -18285,7 +18290,7 @@ type t  =
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of  External_arg_spec.t list
+  | Ffi_obj_create of  External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -19274,30 +19279,30 @@ let process_obj
                else
                  Location.raise_errorf ~loc "expect label, optional, or unit here"
              | Labelled name ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
-                 | Arg_cst  i  ->
+                 | Arg_cst  _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s (Some i);
-                    arg_type },
+                   {obj_arg_label = External_arg_spec.obj_label s;
+                    obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
@@ -19313,24 +19318,24 @@ let process_obj
                      "bs.obj label %s does not support [@bs.unwrap] arguments" name
                end
              | Optional name ->
-               let arg_type = get_opt_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    param_type::arg_types, result_types
                  | Nothing ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.optional s; arg_type},
+                   {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
                    ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
@@ -19722,7 +19727,7 @@ let handle_attributes
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
             | _ ->
               (* more error checking *)
-              [{arg_label = Empty; arg_type}],
+              [{arg_label = Arg_empty; arg_type}],
               [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
@@ -19760,22 +19765,22 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
-                   Optional, arg_type,
+                   Arg_optional, arg_type,
                    param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst _ as arg_type)  ->
-                   Label , arg_type, arg_types
+                   Arg_label , arg_type, arg_types
                  | new_ty, arg_type ->
-                   Label , arg_type, 
+                   Arg_label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
                  | new_ty , (Arg_cst _ as arg_type) ->
-                   Empty , arg_type,  arg_types
+                   Arg_empty , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   Empty, arg_type, {param_type with ty = new_ty} :: arg_types
+                   Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            ({ arg_label  ;
@@ -19821,14 +19826,14 @@ let handle_attributes_as_string
 
 let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
+    Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
       (fun {loc ; txt } arg_kinds
         ->
-          let arg_label =
-            External_arg_spec.label
-              (Lam_methname.translate txt) None in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds
+          let obj_arg_label =
+            External_arg_spec.obj_label
+              (Lam_methname.translate txt)  in
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds
       ) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
@@ -19846,13 +19851,13 @@ let pval_prim_of_option_labels
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = Lam_methname.translate  txt in
-          let arg_label =
+          let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name
-            else External_arg_spec.label label_name None
+            else External_arg_spec.obj_label label_name 
           in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds) in
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -22513,7 +22518,7 @@ let handleTdcl
                      ["" ; (* Not needed actually*)
                       External_ffi_types.to_string 
                         (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = Empty}],
+                            [{arg_type = Nothing; arg_label = Arg_empty}],
                             Return_identity,
                             Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                           ))] )
