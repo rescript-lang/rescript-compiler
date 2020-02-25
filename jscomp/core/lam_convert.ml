@@ -456,6 +456,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       let args = Ext_list.map args  convert_aux in
       prim ~primitive:(Pjs_object_create labels) ~args loc
     | Ffi_bs(arg_types, result_type, ffi) ->
+      let arg_types = 
+        match arg_types with 
+        | Params ls -> ls 
+        | Param_number i -> Ext_list.init i (fun _ -> External_arg_spec.dummy )   in 
       let args = Ext_list.map args convert_aux in
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
     | Ffi_inline_const i -> Lam.const i

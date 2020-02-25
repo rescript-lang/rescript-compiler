@@ -119,14 +119,18 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
 type t  =
-  | Ffi_bs of External_arg_spec.params  *
+  | Ffi_bs of params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of  External_arg_spec.t list
+  | Ffi_obj_create of  External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -231,33 +235,46 @@ let check_ffi ?loc ffi : bool =
   end; 
   !xrelative
 
-let bs_prefix = "BS:"
+(* let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
-
+ *)
 
 (** TODO: Make sure each version is not prefix of each other
     Solution:
     1. fixed length
     2. non-prefix approach
 *)
-let bs_external = bs_prefix 
+(* let bs_external = bs_prefix  *)
 
 
-let bs_external_length = String.length bs_external
+(* let bs_external_length = String.length bs_external *)
 
 
 let to_string  (t : t) =
-  bs_external ^ Marshal.to_string t []
+  Marshal.to_string t []
 
+(* \132\149\166\190 
+   0x84 95 A6 BE Intext_magic_small intext.h
+   https://github.com/ocaml/merlin/commit/b094c937c3a360eb61054f7652081b88e4f3612f
+*)
+let is_bs_primitive s =  
+   String.length s >= 20 (* Marshal.header_size*) &&
+     String.unsafe_get s 0 = '\132' &&
+     String.unsafe_get s 1 = '\149' 
+     
+let () = Oprint.map_primitive_name := 
+#if BS_RELEASE_BUILD then  
+  (fun s ->    
+  if is_bs_primitive s then "BS:external"
+  else s )
+#else  
+  (fun s -> String.escaped s)
+#end
 
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
-  let s_len = String.length s in
-  if s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' then
-    Marshal.from_string s bs_external_length
+  if is_bs_primitive s  then   
+    Ext_marshal.from_string_uncheck s
   else Ffi_normal
 
 
@@ -289,5 +306,29 @@ let inline_int_primitive i : string list =
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Lam_constant.Const_int32 (Int32.of_int i)))
+      (Const_int32 (Int32.of_int i)))
   ]
+
+
+let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
+  match params with 
+  | {arg_type = Nothing; arg_label = Arg_empty} 
+  (* same as External_arg_spec.dummy*)
+    :: rest -> 
+      ffi_bs_aux (acc + 1) rest 
+  | _ :: _ -> -1    
+  | [] -> acc         
+
+let ffi_bs (params : External_arg_spec.params) return attr =
+  let n = ffi_bs_aux 0 params in 
+  if n < 0 then  Ffi_bs (Params params,return,attr)  
+  else Ffi_bs (Param_number n, return, attr) 
+
+let ffi_bs_as_prims params return attr = 
+  [""; to_string (ffi_bs params return attr)]
+
+let ffi_obj_create obj_params =
+   Ffi_obj_create obj_params
+
+let ffi_obj_as_prims obj_params = 
+  ["";to_string (Ffi_obj_create obj_params)]

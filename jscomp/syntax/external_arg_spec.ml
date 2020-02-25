@@ -34,15 +34,15 @@ type cst =
   | Arg_js_json of string
 
 type label_noname = 
-  | Label 
-  | Empty 
-  | Optional
+  | Arg_label 
+  | Arg_empty 
+  | Arg_optional
   
 type label = 
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  | EmptyCst of cst 
-  | Optional of {name : string }
+  | Obj_label of {name : string }
+  (* | Obj_labelCst of {name : string} *)
+  | Obj_empty 
+  | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -57,20 +57,20 @@ type attr =
   | Ignore
   | Unwrap
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 }   
 
-type t = 
+type obj_param = 
   {
-    arg_type : attr;
-    arg_label : label
+    obj_arg_type : attr;
+    obj_arg_label : label
   }
 
 
-
-type params = t_noname list 
+type obj_params = obj_param list 
+type params = param list 
 
 exception Error of Location.t * Ext_json_parse.error
 
@@ -105,9 +105,13 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty 
-let empty_lit s = EmptyCst s
-let label name cst = Label {name ; cst}
-let optional name = Optional {name}
+let empty_label = Obj_empty 
 
-let empty_kind arg_type = { arg_label = empty_label ; arg_type }
+let obj_label name  = 
+    Obj_label {name }
+  
+let optional name = Obj_optional {name}
+
+let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
+let dummy = 
+  {arg_type = Nothing; arg_label = Arg_empty}  

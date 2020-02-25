@@ -40,25 +40,25 @@ module S = Js_stmt_make
 *)
 
 (* TODO: check stackoverflow *)
-let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression list) 
+let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.expression list) 
   : J.block * J.expression = 
-   let rec aux (labels : External_arg_spec.t list) args 
+   let rec aux (labels : External_arg_spec.obj_params) args 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
-    | {arg_label = Label {name = label; cst = Some cst }} :: labels  , args -> 
+    | {obj_arg_label = Obj_label {name = label;  }; obj_arg_type = Arg_cst cst } :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
-    | {arg_label = EmptyCst _ } :: rest  , args -> assert false 
-    | {arg_label = Empty  }::labels, arg::args 
+    (* | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false  *)
+    | {obj_arg_label = Obj_empty  }::labels, arg::args 
       ->  (* unit type*)
       let (accs, eff, assign) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
       else (accs, arg::eff, assign)
-    | ({arg_label = Label {name = label; cst = None}  } as arg_kind)::labels, arg::args 
+    | ({obj_arg_label = Obj_label {name = label;}  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff, assign = aux labels args in 
-      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Label ~arg_type:arg_kind.arg_type arg in 
+      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff ~arg_label:Arg_label ~arg_type:arg_kind.obj_arg_type arg in 
       begin match acc with 
         | Splice2 _ 
         | Splice0 -> assert false
@@ -66,13 +66,13 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           (label, x) :: accs , Ext_list.append new_eff  eff , assign          
       end (* evaluation order is undefined *)
 
-    | ({arg_label = Optional {name = label}; arg_type } as arg_kind)::labels, arg::args 
+    | ({obj_arg_label = Obj_optional {name = label}; obj_arg_type } as arg_kind)::labels, arg::args 
       -> 
       let (accs, eff, assign) as r = aux labels args  in 
       Js_of_lam_option.destruct_optional arg 
         ~for_sure_none:r 
         ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:Label ~arg_type x in 
+            ~arg_label:Arg_label ~arg_type:obj_arg_type x in 
           begin match acc with 
           | Splice2 _
           | Splice0 -> assert false 
@@ -80,7 +80,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
             (label, x) :: accs , Ext_list.append new_eff  eff , assign
           end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
-    | {arg_label = Empty  | Label {cst = None;_} | Optional _  } :: _ , [] -> assert false 
+    | {obj_arg_label = Obj_empty  | Obj_label _ | Obj_optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff, assignment = aux labels args in 
@@ -101,9 +101,9 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
       (Ext_list.flat_map assignment (fun 
-        ((xlabel : External_arg_spec.t), (arg  : J.expression )) -> 
+        ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
       match xlabel with 
-      | {arg_label = Optional {name = label} } -> 
+      | {obj_arg_label = Obj_optional {name = label} } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
@@ -112,7 +112,7 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
-             Empty ~arg_type:xlabel.arg_type 
+             Arg_empty ~arg_type:xlabel.obj_arg_type 
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
@@ -131,8 +131,8 @@ let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression 
           let acc,new_eff = 
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
-             Empty
-             ~arg_type:xlabel.arg_type             
+             Arg_empty
+             ~arg_type:xlabel.obj_arg_type             
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->        

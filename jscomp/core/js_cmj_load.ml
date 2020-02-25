@@ -42,7 +42,7 @@ then
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
     let cmj_table : Js_cmj_format.t = 
-       let values, pure =  Marshal.from_string Builtin_cmj_datasets.module_data.(i) 0 in   
+       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
        {values; pure; package_spec = Js_packages_info.runtime_package_specs;js_file_kind = Little_js} 
     in 
     if Js_config.get_diagnose () then

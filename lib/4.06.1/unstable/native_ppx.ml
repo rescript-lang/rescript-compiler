@@ -15146,6 +15146,9 @@ val gentype_import : string
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15283,6 +15286,13 @@ let gentype_import = "genType.import"
 let bsbuild_cache = ".bsbuild"    
 
 let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
@@ -17041,10 +17051,11 @@ type cst = private
 
 
 type label = private
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  | EmptyCst of cst
-  | Optional of {name : string}
+  | Obj_label of {name : string}
+  (* | Obj_labelCst of {name : string ; cst : cst} *)
+  | Obj_empty 
+  
+  | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17061,32 +17072,34 @@ type attr =
 
 
 type label_noname = 
-  | Label
-  | Empty 
-  | Optional
+  | Arg_label
+  | Arg_empty 
+  | Arg_optional
 
-type t = 
+type obj_param = 
   {
-    arg_type : attr;
-    arg_label :label
+    obj_arg_type : attr;
+    obj_arg_label :label
   }
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 } 
-type params = t_noname list 
+
+type obj_params = obj_param list 
+type params = param list 
 
 val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 
 val empty_label : label
-val empty_lit : cst -> label 
-val label :  string -> cst option -> label
+(* val empty_lit : cst -> label  *)
+val obj_label :  string -> label
 val optional  : string -> label
-val empty_kind : attr -> t
-
+val empty_kind : attr -> obj_param
+val dummy : param
 end = struct
 #1 "external_arg_spec.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -17125,15 +17138,15 @@ type cst =
   | Arg_js_json of string
 
 type label_noname = 
-  | Label 
-  | Empty 
-  | Optional
+  | Arg_label 
+  | Arg_empty 
+  | Arg_optional
   
 type label = 
-  | Label of {name : string ; cst : cst option }
-  | Empty 
-  | EmptyCst of cst 
-  | Optional of {name : string }
+  | Obj_label of {name : string }
+  (* | Obj_labelCst of {name : string} *)
+  | Obj_empty 
+  | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
@@ -17148,20 +17161,20 @@ type attr =
   | Ignore
   | Unwrap
 
-type t_noname = {
+type param = {
   arg_type : attr;
   arg_label : label_noname
 }   
 
-type t = 
+type obj_param = 
   {
-    arg_type : attr;
-    arg_label : label
+    obj_arg_type : attr;
+    obj_arg_label : label
   }
 
 
-
-type params = t_noname list 
+type obj_params = obj_param list 
+type params = param list 
 
 exception Error of Location.t * Ext_json_parse.error
 
@@ -17196,13 +17209,16 @@ let cst_json (loc : Location.t) s : cst  =
 
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
-let empty_label = Empty 
-let empty_lit s = EmptyCst s
-let label name cst = Label {name ; cst}
-let optional name = Optional {name}
+let empty_label = Obj_empty 
 
-let empty_kind arg_type = { arg_label = empty_label ; arg_type }
+let obj_label name  = 
+    Obj_label {name }
+  
+let optional name = Obj_optional {name}
 
+let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
+let dummy = 
+  {arg_type = Nothing; arg_label = Arg_empty}  
 end
 module Ast_polyvar : sig 
 #1 "ast_polyvar.mli"
@@ -17667,6 +17683,98 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
+module Ext_marshal : sig 
+#1 "ext_marshal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [Marshall] module 
+ *)
+
+(* val to_file : string -> 'a -> unit *)
+
+(* val from_file : string -> 'a *)
+
+val from_string_uncheck : string -> 'a
+end = struct
+#1 "ext_marshal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(* 
+let to_file filename v = 
+  let chan = open_out_bin filename in
+  Marshal.to_channel chan v  [];
+  close_out chan
+    
+(** [bin] mode for WIN support *)
+let from_file filename = 
+  let chan = open_in_bin filename in 
+  let v = Marshal.from_channel chan in
+  close_in chan; 
+  v  *)
+
+external from_bytes_unsafe: string -> int -> 'a
+  = "caml_input_value_from_string"
+
+let from_string_uncheck (s:string) = 
+  from_bytes_unsafe s 0  
+end
 module Ext_option : sig 
 #1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -18113,12 +18221,16 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
-type t  =
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
+type t  = private
   | Ffi_bs of
-      External_arg_spec.params  *
+      params  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of External_arg_spec.t list
+  | Ffi_obj_create of External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -18144,6 +18256,26 @@ val inline_bool_primitive :
 
 val inline_int_primitive :   
   int -> 
+  string list
+
+val ffi_bs:
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  t
+
+val ffi_bs_as_prims:  
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  string list 
+  
+val ffi_obj_create:
+  External_arg_spec.obj_params ->
+  t 
+
+val ffi_obj_as_prims:
+  External_arg_spec.obj_params ->
   string list
 end = struct
 #1 "external_ffi_types.ml"
@@ -18268,14 +18400,18 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
 type t  =
-  | Ffi_bs of External_arg_spec.params  *
+  | Ffi_bs of params  *
      return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
   *)
-  | Ffi_obj_create of  External_arg_spec.t list
+  | Ffi_obj_create of  External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -18380,33 +18516,44 @@ let check_ffi ?loc ffi : bool =
   end; 
   !xrelative
 
-let bs_prefix = "BS:"
+(* let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
-
+ *)
 
 (** TODO: Make sure each version is not prefix of each other
     Solution:
     1. fixed length
     2. non-prefix approach
 *)
-let bs_external = bs_prefix 
+(* let bs_external = bs_prefix  *)
 
 
-let bs_external_length = String.length bs_external
+(* let bs_external_length = String.length bs_external *)
 
 
 let to_string  (t : t) =
-  bs_external ^ Marshal.to_string t []
+  Marshal.to_string t []
+
+(* \132\149\166\190 
+   0x84 95 A6 BE Intext_magic_small intext.h
+   https://github.com/ocaml/merlin/commit/b094c937c3a360eb61054f7652081b88e4f3612f
+*)
+let is_bs_primitive s =  
+   String.length s >= 20 (* Marshal.header_size*) &&
+     String.unsafe_get s 0 = '\132' &&
+     String.unsafe_get s 1 = '\149' 
+     
+let () = Oprint.map_primitive_name := 
+  
+  (fun s ->    
+  if is_bs_primitive s then "BS:external"
+  else s )
 
 
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
-  let s_len = String.length s in
-  if s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' then
-    Marshal.from_string s bs_external_length
+  if is_bs_primitive s  then   
+    Ext_marshal.from_string_uncheck s
   else Ffi_normal
 
 
@@ -18438,8 +18585,32 @@ let inline_int_primitive i : string list =
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Lam_constant.Const_int32 (Int32.of_int i)))
+      (Const_int32 (Int32.of_int i)))
   ]
+
+
+let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
+  match params with 
+  | {arg_type = Nothing; arg_label = Arg_empty} 
+  (* same as External_arg_spec.dummy*)
+    :: rest -> 
+      ffi_bs_aux (acc + 1) rest 
+  | _ :: _ -> -1    
+  | [] -> acc         
+
+let ffi_bs (params : External_arg_spec.params) return attr =
+  let n = ffi_bs_aux 0 params in 
+  if n < 0 then  Ffi_bs (Params params,return,attr)  
+  else Ffi_bs (Param_number n, return, attr) 
+
+let ffi_bs_as_prims params return attr = 
+  [""; to_string (ffi_bs params return attr)]
+
+let ffi_obj_create obj_params =
+   Ffi_obj_create obj_params
+
+let ffi_obj_as_prims obj_params = 
+  ["";to_string (Ffi_obj_create obj_params)]
 end
 module Bs_hash_stubs
 = struct
@@ -19264,30 +19435,30 @@ let process_obj
                else
                  Location.raise_errorf ~loc "expect label, optional, or unit here"
              | Labelled name ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
-                 | Arg_cst  i  ->
+                 | Arg_cst  _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s (Some i);
-                    arg_type },
+                   {obj_arg_label = External_arg_spec.obj_label s;
+                    obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
@@ -19303,24 +19474,24 @@ let process_obj
                      "bs.obj label %s does not support [@bs.unwrap] arguments" name
                end
              | Optional name ->
-               let arg_type = get_opt_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    param_type::arg_types, result_types
                  | Nothing ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.optional s; arg_type},
+                   {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
                    ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
@@ -19351,7 +19522,7 @@ let process_obj
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
-    External_ffi_types.Ffi_obj_create arg_kinds
+    External_ffi_types.ffi_obj_create arg_kinds
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
 
 
@@ -19712,7 +19883,7 @@ let handle_attributes
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
             | _ ->
               (* more error checking *)
-              [{arg_label = Empty; arg_type}],
+              [{arg_label = Arg_empty; arg_type}],
               [{label = Nolabel;
                 ty = new_ty;
                 attr =  [];
@@ -19750,22 +19921,22 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
-                   Optional, arg_type,
+                   Arg_optional, arg_type,
                    param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst _ as arg_type)  ->
-                   Label , arg_type, arg_types
+                   Arg_label , arg_type, arg_types
                  | new_ty, arg_type ->
-                   Label , arg_type, 
+                   Arg_label , arg_type, 
                    {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
                  | new_ty , (Arg_cst _ as arg_type) ->
-                   Empty , arg_type,  arg_types
+                   Arg_empty , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   Empty, arg_type, {param_type with ty = new_ty} :: arg_types
+                   Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            ({ arg_label  ;
@@ -19786,7 +19957,7 @@ let handle_attributes
        return type, in the future we may  *)
     let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
     Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
-    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    External_ffi_types.ffi_bs arg_type_specs return_wrapper ffi,
     unused_attrs,
     relative 
 
@@ -19811,18 +19982,17 @@ let handle_attributes_as_string
 
 let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
+    Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
       (fun {loc ; txt } arg_kinds
         ->
-          let arg_label =
-            External_arg_spec.label
-              (Lam_methname.translate txt) None in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds
+          let obj_arg_label =
+            External_arg_spec.obj_label
+              (Lam_methname.translate txt)  in
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds
       ) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+
 
 let pval_prim_of_option_labels
     (labels : (bool * string Asttypes.loc) list)
@@ -19836,16 +20006,15 @@ let pval_prim_of_option_labels
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = Lam_methname.translate  txt in
-          let arg_label =
+          let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name
-            else External_arg_spec.label label_name None
+            else External_arg_spec.obj_label label_name 
           in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds) in
-  let encoding =
-    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
-  [""; encoding]
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds) in
+  External_ffi_types.ffi_obj_as_prims arg_kinds
+  
 
 
 end
@@ -22500,13 +22669,12 @@ let handleTdcl
                       {pld_name with txt = pld_name.txt ^ "Get"}
                    ) ~attrs:get_attrs
                    ~prim:(
-                     ["" ; (* Not needed actually*)
-                      External_ffi_types.to_string 
-                        (Ffi_bs (
-                            [{arg_type = Nothing; arg_label = Empty}],
-                            Return_identity,
-                            Js_get {js_get_name = prim_as_name; js_get_scopes = []}
-                          ))] )
+                      (* Not needed actually*)
+                      External_ffi_types.ffi_bs_as_prims 
+                            [External_arg_spec.dummy]
+                            Return_identity
+                            (Js_get {js_get_name = prim_as_name; js_get_scopes = []})                      
+                           )
                    (Ast_compatible.arrow ~loc  core_type pld_type))
                 :: acc                
               )

@@ -133,3 +133,6 @@ val gentype_import : string
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string

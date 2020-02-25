@@ -246,7 +246,7 @@ val length : t -> int
 
 val is_empty : t -> bool
 
-val clear : t -> unit
+(* val clear : t -> unit *)
 (** Empty the buffer. *)
 
 
@@ -256,24 +256,24 @@ val add_char : t -> char -> unit
 val add_string : t -> string -> unit
 (** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
 
-val add_bytes : t -> bytes -> unit
+(* val add_bytes : t -> bytes -> unit *)
 (** [add_string b s] appends the string [s] at the end of the buffer [b].
     @since 4.02 *)
 
-val add_substring : t -> string -> int -> int -> unit
+(* val add_substring : t -> string -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
    [ofs] in string [s] and appends them at the end of the buffer [b]. *)
 
-val add_subbytes : t -> bytes -> int -> int -> unit
+(* val add_subbytes : t -> bytes -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
     [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
     @since 4.02 *)
 
-val add_buffer : t -> t -> unit
+(* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
    at the end of buffer [b1].  [b2] is not modified. *)    
 
-val add_channel : t -> in_channel -> int -> unit
+(* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
    input channel [ic] and stores them at the end of buffer [b].
    Raise [End_of_file] if the channel contains fewer than [n]
@@ -364,7 +364,7 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
 
 let length b = b.position
 let is_empty b = b.position = 0
-let clear b = b.position <- 0
+(* let clear b = b.position <- 0 *)
 
 (* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
@@ -395,17 +395,17 @@ let add_char b c =
   Bytes.unsafe_set b.buffer pos c;
   b.position <- pos + 1  
 
-let add_substring b s offset len =
+(* let add_substring b s offset len =
   if offset < 0 || len < 0 || offset > String.length s - len
   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position  
+  b.position <- new_position   *)
 
 
-let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len
+(* let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len *)
 
 let add_string b s =
   let len = String.length s in
@@ -437,21 +437,19 @@ let add_char_string b c s  =
   b.position <- new_position
 
 
-let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position
+  add_subbytes b bs.buffer 0 bs.position *)
 
-let add_channel b ic len =
+(* let add_channel b ic len =
   if len < 0 
-
     || len > Sys.max_string_length 
-
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
   if b.position + len > b.length then resize b len;
   really_input ic b.buffer b.position len;
-  b.position <- b.position + len
+  b.position <- b.position + len *)
 
 let output_buffer oc b =
   output oc b.buffer 0 b.position  
@@ -3139,6 +3137,9 @@ val gentype_import : string
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3276,6 +3277,13 @@ let gentype_import = "genType.import"
 let bsbuild_cache = ".bsbuild"    
 
 let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -3740,44 +3748,9 @@ let as_module ~basename =
   search_dot (name_len - 1)  basename name_len
     
 end
-module Ext_js_file_kind
-= struct
-#1 "ext_js_file_kind.ml"
+module Ext_namespace_encode : sig 
+#1 "ext_namespace_encode.mli"
 (* Copyright (C) 2020- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
-
-
-end
-module Ext_namespace : sig 
-#1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -3807,49 +3780,10 @@ module Ext_namespace : sig
 *)
 val make : 
   ?ns:string -> string -> string 
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-
-
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
-
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val change_ext_ns_suffix :  
-  string -> 
-  string ->
-  string
-
-
-  
-(** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : 
-  string -> 
-  Ext_js_file_kind.t -> 
-  string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
-
-val namespace_of_package_name : string -> string
-
+ 
 end = struct
-#1 "ext_namespace.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+#1 "ext_namespace_encode.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -3873,195 +3807,10 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
-
-let make ?ns cunit  = 
+ let make ?ns cunit  = 
   match ns with 
   | None -> cunit
-  | Some ns -> cunit ^ ns_sep ^ ns
-
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
-    let char = String.unsafe_get s i in
-    if Ext_filename.is_dir_sep char  then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
-
-let change_ext_ns_suffix name ext =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name ^ ext
-  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-
-
-
-  
-(* let js_name_of_basename bs_suffix s =   
-  change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
-
-let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
-  match little with 
-  | Little_js -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
-  | Little_bs -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
-  | Upper_js ->
-    change_ext_ns_suffix s  Literals.suffix_js
-  | Upper_bs -> 
-    change_ext_ns_suffix s  Literals.suffix_bs_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Ext_buffer.create len in 
-  let add capital ch = 
-    Ext_buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
-    if off >= len then ()
-    else 
-      let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-      | '_'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Ext_buffer.contents buf 
-
-end
-module Ext_option : sig 
-#1 "ext_option.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for [option] type *)
-
-val map : 'a option -> ('a -> 'b) -> 'b option
-
-val iter : 'a option -> ('a -> unit) -> unit
-
-val exists : 'a option -> ('a -> bool) -> bool
-end = struct
-#1 "ext_option.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let map v f = 
-  match v with 
-  | None -> None
-  | Some x -> Some (f x )
-
-let iter v f =   
-  match v with 
-  | None -> ()
-  | Some x -> f x 
-
-let exists v f =    
-  match v with 
-  | None -> false
-  | Some x -> f x 
+  | Some ns -> cunit ^ Literals.ns_sep ^ ns 
 end
 module Bsb_helper_depfile_gen : sig 
 #1 "bsb_helper_depfile_gen.mli"
@@ -4200,7 +3949,7 @@ type kind = Js | Bytecode | Native
 
 let output_file (buf : Ext_buffer.t) source namespace = 
   Ext_buffer.add_string buf 
-    (Ext_namespace.make ?ns:namespace source)
+    (Ext_namespace_encode.make ?ns:namespace source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -4253,11 +4002,11 @@ let oc_impl
     output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
     Ext_buffer.add_string buf lhs_suffix; 
     Ext_buffer.add_string buf dep_lit ) in  
-  Ext_option.iter namespace (fun ns -> 
+  (match namespace with None -> () | Some ns -> 
       Lazy.force at_most_once;
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
-    ) ; (* TODO: moved into static files*)
+  ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   let s = extract_dep_raw_string mlast in 
   let offset = ref 1 in 
@@ -4315,11 +4064,11 @@ let oc_intf
     output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
     Ext_buffer.add_string buf Literals.suffix_cmi ; 
     Ext_buffer.add_string buf dep_lit) in 
-  Ext_option.iter namespace (fun ns -> 
+  (match namespace with None -> () | Some  ns -> 
       Lazy.force at_most_once;  
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
-    ) ; 
+  ) ; 
   let cur_module_name = Ext_filename.module_name mliast in
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 

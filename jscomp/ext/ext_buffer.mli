@@ -47,7 +47,7 @@ val length : t -> int
 
 val is_empty : t -> bool
 
-val clear : t -> unit
+(* val clear : t -> unit *)
 (** Empty the buffer. *)
 
 
@@ -57,24 +57,24 @@ val add_char : t -> char -> unit
 val add_string : t -> string -> unit
 (** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
 
-val add_bytes : t -> bytes -> unit
+(* val add_bytes : t -> bytes -> unit *)
 (** [add_string b s] appends the string [s] at the end of the buffer [b].
     @since 4.02 *)
 
-val add_substring : t -> string -> int -> int -> unit
+(* val add_substring : t -> string -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
    [ofs] in string [s] and appends them at the end of the buffer [b]. *)
 
-val add_subbytes : t -> bytes -> int -> int -> unit
+(* val add_subbytes : t -> bytes -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
     [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
     @since 4.02 *)
 
-val add_buffer : t -> t -> unit
+(* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
    at the end of buffer [b1].  [b2] is not modified. *)    
 
-val add_channel : t -> in_channel -> int -> unit
+(* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
    input channel [ic] and stores them at the end of buffer [b].
    Raise [End_of_file] if the channel contains fewer than [n]

@@ -96,7 +96,7 @@ let emit_module_build
     filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
-      Ext_namespace.make ?ns:namespace filename_sans_extension
+      Ext_namespace_encode.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in

@@ -56,7 +56,7 @@ let toString (x : t) =
 
 (* exception handling*)
 let fromString (x : string) : t =   
-    Marshal.from_string x 0
+    Ext_marshal.from_string_uncheck x 
   
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     (({txt ; loc} as lid , payload) : Parsetree.extension) = 

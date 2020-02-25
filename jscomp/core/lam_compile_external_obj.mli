@@ -38,7 +38,7 @@
  *)
 
 val assemble_obj_args :
-  External_arg_spec.t list -> 
+  External_arg_spec.obj_params -> 
   J.expression list -> 
   J.block * J.expression 
 (* It returns a block in cases we need set the property dynamically: we need

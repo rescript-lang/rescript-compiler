@@ -24,23 +24,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
 
-let make ?ns cunit  = 
-  match ns with 
-  | None -> cunit
-  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
     if Ext_filename.is_dir_sep char  then -1 
-    else if char = ns_sep_char then i 
+    else if char = Literals.ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
 

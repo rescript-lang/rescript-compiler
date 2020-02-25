@@ -32,6 +32,8 @@
 (** Extension to the standard library [Marshall] module 
  *)
 
-val to_file : string -> 'a -> unit
+(* val to_file : string -> 'a -> unit *)
 
-val from_file : string -> 'a
+(* val from_file : string -> 'a *)
+
+val from_string_uncheck : string -> 'a

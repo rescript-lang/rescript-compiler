@@ -100,12 +100,16 @@ type return_wrapper =
   | Return_null_undefined_to_opt
   | Return_replaced_with_unit
 
-type t  =
+type params = 
+  | Params of   External_arg_spec.params
+  | Param_number of int 
+
+type t  = private
   | Ffi_bs of
-      External_arg_spec.params  *
+      params  *
       return_wrapper *
       external_spec
-  | Ffi_obj_create of External_arg_spec.t list
+  | Ffi_obj_create of External_arg_spec.obj_params
   | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
@@ -131,4 +135,24 @@ val inline_bool_primitive :
 
 val inline_int_primitive :   
   int -> 
+  string list
+
+val ffi_bs:
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  t
+
+val ffi_bs_as_prims:  
+  External_arg_spec.params ->
+  return_wrapper -> 
+  external_spec -> 
+  string list 
+  
+val ffi_obj_create:
+  External_arg_spec.obj_params ->
+  t 
+
+val ffi_obj_as_prims:
+  External_arg_spec.obj_params ->
   string list
