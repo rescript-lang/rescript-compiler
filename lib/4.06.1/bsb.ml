@@ -4518,6 +4518,9 @@ val gentype_import : string
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4655,6 +4658,13 @@ let gentype_import = "genType.import"
 let bsbuild_cache = ".bsbuild"    
 
 let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
@@ -5918,7 +5928,7 @@ val length : t -> int
 
 val is_empty : t -> bool
 
-val clear : t -> unit
+(* val clear : t -> unit *)
 (** Empty the buffer. *)
 
 
@@ -5928,24 +5938,24 @@ val add_char : t -> char -> unit
 val add_string : t -> string -> unit
 (** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
 
-val add_bytes : t -> bytes -> unit
+(* val add_bytes : t -> bytes -> unit *)
 (** [add_string b s] appends the string [s] at the end of the buffer [b].
     @since 4.02 *)
 
-val add_substring : t -> string -> int -> int -> unit
+(* val add_substring : t -> string -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
    [ofs] in string [s] and appends them at the end of the buffer [b]. *)
 
-val add_subbytes : t -> bytes -> int -> int -> unit
+(* val add_subbytes : t -> bytes -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
     [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
     @since 4.02 *)
 
-val add_buffer : t -> t -> unit
+(* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
    at the end of buffer [b1].  [b2] is not modified. *)    
 
-val add_channel : t -> in_channel -> int -> unit
+(* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
    input channel [ic] and stores them at the end of buffer [b].
    Raise [End_of_file] if the channel contains fewer than [n]
@@ -6036,7 +6046,7 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
 
 let length b = b.position
 let is_empty b = b.position = 0
-let clear b = b.position <- 0
+(* let clear b = b.position <- 0 *)
 
 (* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
@@ -6067,17 +6077,17 @@ let add_char b c =
   Bytes.unsafe_set b.buffer pos c;
   b.position <- pos + 1  
 
-let add_substring b s offset len =
+(* let add_substring b s offset len =
   if offset < 0 || len < 0 || offset > String.length s - len
   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position  
+  b.position <- new_position   *)
 
 
-let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len
+(* let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len *)
 
 let add_string b s =
   let len = String.length s in
@@ -6109,21 +6119,19 @@ let add_char_string b c s  =
   b.position <- new_position
 
 
-let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position
+  add_subbytes b bs.buffer 0 bs.position *)
 
-let add_channel b ic len =
+(* let add_channel b ic len =
   if len < 0 
-
     || len > Sys.max_string_length 
-
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
   if b.position + len > b.length then resize b len;
   really_input ic b.buffer b.position len;
-  b.position <- b.position + len
+  b.position <- b.position + len *)
 
 let output_buffer oc b =
   output oc b.buffer 0 b.position  
@@ -6528,12 +6536,7 @@ module Ext_namespace : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [make ~ns:"Ns" "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : 
-  ?ns:string -> string -> string 
+
 
 val try_split_module_name :
   string -> (string * string ) option
@@ -6601,23 +6604,14 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
 
-let make ?ns cunit  = 
-  match ns with 
-  | None -> cunit
-  | Some ns -> cunit ^ ns_sep ^ ns
 
 
 let rec rindex_rec s i  =
   if i < 0 then i else
     let char = String.unsafe_get s i in
     if Ext_filename.is_dir_sep char  then -1 
-    else if char = ns_sep_char then i 
+    else if char = Literals.ns_sep_char then i 
     else
       rindex_rec s (i - 1) 
 
@@ -13151,6 +13145,70 @@ let output_kvs kvs oc =
 
 
 end
+module Ext_namespace_encode : sig 
+#1 "ext_namespace_encode.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [make ~ns:"Ns" "a" ]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
+*)
+val make : 
+  ?ns:string -> string -> string 
+ 
+end = struct
+#1 "ext_namespace_encode.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ let make ?ns cunit  = 
+  match ns with 
+  | None -> cunit
+  | Some ns -> cunit ^ Literals.ns_sep ^ ns 
+end
 module Bsb_ninja_file_groups : sig 
 #1 "bsb_ninja_file_groups.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -13290,7 +13348,7 @@ let emit_module_build
     filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
-      Ext_namespace.make ?ns:namespace filename_sans_extension
+      Ext_namespace_encode.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -16482,7 +16540,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
-      Ext_namespace.make ?ns:namespace x in 
+      Ext_namespace_encode.make ?ns:namespace x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;

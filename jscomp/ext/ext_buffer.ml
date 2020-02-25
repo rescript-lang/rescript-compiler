@@ -48,7 +48,7 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
 
 let length b = b.position
 let is_empty b = b.position = 0
-let clear b = b.position <- 0
+(* let clear b = b.position <- 0 *)
 
 (* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
@@ -80,17 +80,17 @@ let add_char b c =
   Bytes.unsafe_set b.buffer pos c;
   b.position <- pos + 1  
 
-let add_substring b s offset len =
+(* let add_substring b s offset len =
   if offset < 0 || len < 0 || offset > String.length s - len
   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position  
+  b.position <- new_position   *)
 
 
-let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len
+(* let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len *)
 
 let add_string b s =
   let len = String.length s in
@@ -122,22 +122,19 @@ let add_char_string b c s  =
   b.position <- new_position
 
 
-let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
 let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position
+  add_subbytes b bs.buffer 0 bs.position *)
 
-let add_channel b ic len =
+(* let add_channel b ic len =
   if len < 0 
-#if BS then   
-#else
     || len > Sys.max_string_length 
-#end
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
   if b.position + len > b.length then resize b len;
   really_input ic b.buffer b.position len;
-  b.position <- b.position + len
+  b.position <- b.position + len *)
 
 let output_buffer oc b =
   output oc b.buffer 0 b.position  

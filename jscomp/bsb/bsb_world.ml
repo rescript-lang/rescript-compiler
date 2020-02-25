@@ -35,7 +35,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
-      Ext_namespace.make ?ns:namespace x in 
+      Ext_namespace_encode.make ?ns:namespace x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;

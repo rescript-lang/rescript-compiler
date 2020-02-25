@@ -91,7 +91,7 @@ type kind = Js | Bytecode | Native
 
 let output_file (buf : Ext_buffer.t) source namespace = 
   Ext_buffer.add_string buf 
-    (Ext_namespace.make ?ns:namespace source)
+    (Ext_namespace_encode.make ?ns:namespace source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -144,11 +144,11 @@ let oc_impl
     output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
     Ext_buffer.add_string buf lhs_suffix; 
     Ext_buffer.add_string buf dep_lit ) in  
-  Ext_option.iter namespace (fun ns -> 
+  (match namespace with None -> () | Some ns -> 
       Lazy.force at_most_once;
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
-    ) ; (* TODO: moved into static files*)
+  ) ; (* TODO: moved into static files*)
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   let s = extract_dep_raw_string mlast in 
   let offset = ref 1 in 
@@ -206,11 +206,11 @@ let oc_intf
     output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
     Ext_buffer.add_string buf Literals.suffix_cmi ; 
     Ext_buffer.add_string buf dep_lit) in 
-  Ext_option.iter namespace (fun ns -> 
+  (match namespace with None -> () | Some  ns -> 
       Lazy.force at_most_once;  
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
-    ) ; 
+  ) ; 
   let cur_module_name = Ext_filename.module_name mliast in
   let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 

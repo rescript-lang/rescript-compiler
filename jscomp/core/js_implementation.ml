@@ -227,7 +227,7 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
     (Mb.mk {txt = cunit; loc  }
        (Mod.ident 
           {txt = Lident 
-               ( Ext_namespace.make ~ns cunit)
+               ( Ext_namespace_encode.make ~ns cunit)
           ; loc}))
 
 

@@ -133,3 +133,9 @@ let gentype_import = "genType.import"
 let bsbuild_cache = ".bsbuild"    
 
 let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"

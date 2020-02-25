@@ -15146,6 +15146,9 @@ val gentype_import : string
 val bsbuild_cache : string
 
 val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15283,6 +15286,13 @@ let gentype_import = "genType.import"
 let bsbuild_cache = ".bsbuild"    
 
 let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
