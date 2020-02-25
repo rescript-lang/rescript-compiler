@@ -64,8 +64,8 @@ type param = {
 
 type obj_param = 
   {
-    arg_type : attr;
-    arg_label : label
+    obj_arg_type : attr;
+    obj_arg_label : label
   }
 
 
@@ -110,4 +110,4 @@ let empty_lit s = EmptyCst s
 let label name cst = Label {name ; cst}
 let optional name = Optional {name}
 
-let empty_kind arg_type = { arg_label = empty_label ; arg_type }
+let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }

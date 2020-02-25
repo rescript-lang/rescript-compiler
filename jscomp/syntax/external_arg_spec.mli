@@ -58,8 +58,8 @@ type label_noname =
 
 type obj_param = 
   {
-    arg_type : attr;
-    arg_label :label
+    obj_arg_type : attr;
+    obj_arg_label :label
   }
 
 type param = {

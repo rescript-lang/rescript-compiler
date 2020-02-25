@@ -416,30 +416,30 @@ let process_obj
                else
                  Location.raise_errorf ~loc "expect label, optional, or unit here"
              | Labelled name ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
                  | Arg_cst  i  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s (Some i);
-                    arg_type },
+                   {obj_arg_label = External_arg_spec.label s (Some i);
+                    obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   {obj_arg_label = External_arg_spec.label s None ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.label s None; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {obj_arg_label = External_arg_spec.label s None; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
@@ -455,24 +455,24 @@ let process_obj
                      "bs.obj label %s does not support [@bs.unwrap] arguments" name
                end
              | Optional name ->
-               let arg_type = get_opt_arg_type ~nolabel:false  ty in
-               begin match arg_type with
+               let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match obj_arg_type with
                  | Ignore ->
-                   External_arg_spec.empty_kind arg_type,
+                   External_arg_spec.empty_kind obj_arg_type,
                    param_type::arg_types, result_types
                  | Nothing ->
                    let s = (Lam_methname.translate  name) in
-                   {arg_label = External_arg_spec.optional s; arg_type},
+                   {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
                    ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate  name in
-                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
@@ -966,11 +966,11 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
     Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
       (fun {loc ; txt } arg_kinds
         ->
-          let arg_label =
+          let obj_arg_label =
             External_arg_spec.label
               (Lam_methname.translate txt) None in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds
       ) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
@@ -988,13 +988,13 @@ let pval_prim_of_option_labels
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = Lam_methname.translate  txt in
-          let arg_label =
+          let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name
             else External_arg_spec.label label_name None
           in
-          {arg_type = Nothing ;
-           arg_label  } :: arg_kinds) in
+          {obj_arg_type = Nothing ;
+           obj_arg_label  } :: arg_kinds) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
