@@ -33,7 +33,7 @@ type cst = private
 
 type label = private
   | Obj_label of {name : string}
-  | Obj_labelCst of {name : string ; cst : cst}
+  (* | Obj_labelCst of {name : string ; cst : cst} *)
   | Obj_empty 
   
   | Obj_optional of {name : string}
@@ -77,6 +77,6 @@ val cst_string : string -> cst
 
 val empty_label : label
 (* val empty_lit : cst -> label  *)
-val label :  string -> cst option -> label
+val obj_label :  string -> label
 val optional  : string -> label
 val empty_kind : attr -> obj_param

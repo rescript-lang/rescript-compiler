@@ -421,25 +421,25 @@ let process_obj
                  | Ignore ->
                    External_arg_spec.empty_kind obj_arg_type,
                    {param_type with ty = new_ty}::arg_types, result_types
-                 | Arg_cst  i  ->
+                 | Arg_cst  _  ->
                    let s = Lam_methname.translate  name in
-                   {obj_arg_label = External_arg_spec.label s (Some i);
+                   {obj_arg_label = External_arg_spec.obj_label s;
                     obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
-                   {obj_arg_label = External_arg_spec.label s None ; obj_arg_type },
+                   {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
-                   {obj_arg_label = External_arg_spec.label s None; obj_arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate  name in
-                   {obj_arg_label = External_arg_spec.label s None; obj_arg_type},
+                   {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
@@ -967,8 +967,8 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
       (fun {loc ; txt } arg_kinds
         ->
           let obj_arg_label =
-            External_arg_spec.label
-              (Lam_methname.translate txt) None in
+            External_arg_spec.obj_label
+              (Lam_methname.translate txt)  in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds
       ) in
@@ -991,7 +991,7 @@ let pval_prim_of_option_labels
           let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name
-            else External_arg_spec.label label_name None
+            else External_arg_spec.obj_label label_name 
           in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds) in

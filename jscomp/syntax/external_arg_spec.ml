@@ -40,7 +40,7 @@ type label_noname =
   
 type label = 
   | Obj_label of {name : string }
-  | Obj_labelCst of {name : string ; cst : cst}
+  (* | Obj_labelCst of {name : string} *)
   | Obj_empty 
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
@@ -107,13 +107,9 @@ let cst_int i = Arg_int_lit i
 let cst_string s = Arg_string_lit s 
 let empty_label = Obj_empty 
 
-let label name cst = 
-  match cst with
-  | None ->  
+let obj_label name  = 
     Obj_label {name }
-  | Some cst ->
-    Obj_labelCst {name ; cst}   
-    
+  
 let optional name = Obj_optional {name}
 
 let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
