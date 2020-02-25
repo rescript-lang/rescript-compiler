@@ -14289,46 +14289,6 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    Dir  (".vscode", [
-      File  ("tasks.json",
-        "{\n\
-        \    \"version\": \"${bsb:proj-version}\",\n\
-        \    \"command\": \"npm\",\n\
-        \    \"options\": {\n\
-        \        \"cwd\": \"${workspaceRoot}\"\n\
-        \    },\n\
-        \    \"isShellCommand\": true,\n\
-        \    \"args\": [\n\
-        \        \"run\",\n\
-        \        \"watch\"\n\
-        \    ],\n\
-        \    \"showOutput\": \"always\",\n\
-        \    \"isBackground\": true,\n\
-        \    \"problemMatcher\": {\n\
-        \        \"fileLocation\": \"absolute\",\n\
-        \        \"owner\": \"ocaml\",\n\
-        \        \"watching\": {\n\
-        \            \"activeOnStart\": false,\n\
-        \            \"beginsPattern\": \">>>> Start compiling\",\n\
-        \            \"endsPattern\": \">>>> Finish compiling\"\n\
-        \        },\n\
-        \        \"pattern\": [\n\
-        \            {\n\
-        \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-        \                \"file\": 1,\n\
-        \                \"line\": 2,\n\
-        \                \"column\": 3,\n\
-        \                \"endColumn\": 4\n\
-        \            },\n\
-        \            {\n\
-        \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-        \                \"severity\": 1,\n\
-        \                \"message\": 2,\n\
-        \                \"loop\": true\n\
-        \            }\n\
-        \        ]\n\
-        \    }\n\
-         }")]) ;
     File  ("bsconfig.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -14409,61 +14369,11 @@ let root = OCamlRes.Res.([
        npm run watch\n\
        ```\n\
        \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically")]) ;
+       ")]) ;
   Dir  ("basic-reason", [
     Dir  ("src", [
       File  ("Demo.re",
         "Js.log(\"Hello, BuckleScript and Reason!\");\n\
-         ")]) ;
-    Dir  (".vscode", [
-      File  ("tasks.json",
-        "{\n\
-        \    \"version\": \"${bsb:proj-version}\",\n\
-        \    \"command\": \"npm\",\n\
-        \    \"options\": {\n\
-        \      \"cwd\": \"${workspaceRoot}\",\n\
-        \      \"env\": {\n\
-        \        \"BS_VSCODE\" : \"true\"\n\
-        \      }\n\
-        \    },\n\
-        \    \"type\": \"shell\",\n\
-        \    \"args\": [\"run\", \"start\"],\n\
-        \    \"presentation\": {\n\
-        \      \"echo\": true,\n\
-        \      \"reveal\": \"always\",\n\
-        \      \"focus\": false,\n\
-        \      \"panel\": \"shared\"\n\
-        \    },\n\
-        \    \"isBackground\": true,\n\
-        \    \"problemMatcher\": {\n\
-        \      \"fileLocation\": \"absolute\",\n\
-        \      \"owner\": \"ocaml\",\n\
-        \      \"background\": {\n\
-        \        \"activeOnStart\": false,\n\
-        \        \"beginsPattern\": \">>>> Start compiling\",\n\
-        \        \"endsPattern\": \">>>> Finish compiling\"\n\
-        \      },\n\
-        \      \"pattern\": [\n\
-        \        {\n\
-        \          \"regexp\":\n\
-        \            \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-        \          \"file\": 1,\n\
-        \          \"line\": 2,\n\
-        \          \"column\": 3,\n\
-        \          \"endColumn\": 4\n\
-        \        },\n\
-        \        {\n\
-        \          \"regexp\":\n\
-        \            \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-        \          \"severity\": 1,\n\
-        \          \"message\": 2,\n\
-        \          \"loop\": true\n\
-        \        }\n\
-        \      ]\n\
-        \    }\n\
-        \  }\n\
          ")]) ;
     File  ("bsconfig.json",
       "{\n\
@@ -14534,15 +14444,12 @@ let root = OCamlRes.Res.([
        \n\
        ```bash\n\
        # for yarn\n\
-       yarn\n\
+       yarn start\n\
        \n\
        # for npm\n\
        npm run start\n\
        ```\n\
        \n\
-       # Editor\n\
-       \n\
-       If you're using VS Code, press <kbd>cmd</kbd> + <kbd>shift</kbd> + <kbd>B</kbd> or <kbd>Windows</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build the project automatically.\n\
        ")]) ;
   Dir  ("generator", [
     Dir  ("src", [
@@ -15128,7 +15035,7 @@ let root = OCamlRes.Res.([
        function setUpWebSocket() {\n\
       \  if (websocketReloader == null || websocketReloader.readyState !== 1) {\n\
       \    try {\n\
-      \      websocketReloader = new WebSocket(`ws://localhost:${webSocketPort}`);\n\
+      \      websocketReloader = new WebSocket(`ws://${window.location.hostname}:${webSocketPort}`);\n\
       \      websocketReloader.onmessage = (message) => {\n\
       \        var newData = JSON.parse(message.data).LAST_SUCCESS_BUILD_STAMP;\n\
       \        if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
@@ -16096,7 +16003,7 @@ let root = OCamlRes.Res.([
        function setUpWebScoket() {\n\
       \    if (wsReloader == null || wsReloader.readyState !== 1) {\n\
       \        try {\n\
-      \            wsReloader = new WebSocket(`ws://localhost:${WS_PORT}`)\n\
+      \            wsReloader = new WebSocket(`ws://${window.location.hostname}:${WS_PORT}`)\n\
       \            wsReloader.onmessage = (msg) => {\n\
       \                var newData = JSON.parse(msg.data).LAST_SUCCESS_BUILD_STAMP\n\
       \                if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\

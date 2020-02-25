@@ -22,6 +22,3 @@ yarn start
 npm run start
 ```
 
-# Editor
-
-If you're using VS Code, press <kbd>cmd</kbd> + <kbd>shift</kbd> + <kbd>B</kbd> or <kbd>Windows</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build the project automatically.
