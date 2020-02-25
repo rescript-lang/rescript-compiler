@@ -249,14 +249,26 @@ let bs_external_length = String.length bs_external
 let to_string  (t : t) =
   bs_external ^ Marshal.to_string t []
 
+let is_bs_primitive s =
+  let s_len = String.length s in
+   s_len >= bs_prefix_length &&
+     String.unsafe_get s 0 = 'B' &&
+     String.unsafe_get s 1 = 'S' &&
+     String.unsafe_get s 2 = ':' 
+     
+     
+let () = Oprint.map_primitive_name := 
+#if BS_RELEASE_BUILD then  
+  (fun s ->    
+  if is_bs_primitive s then "BS:external"
+  else s )
+#else  
+  (fun s -> String.escaped s)
+#end
 
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
-  let s_len = String.length s in
-  if s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' then
+  if is_bs_primitive s  then   
     Marshal.from_string s bs_external_length
   else Ffi_normal
 
