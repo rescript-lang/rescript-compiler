@@ -49,7 +49,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
     | {obj_arg_label = Label {name = label; cst = Some cst }} :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
       (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
-    | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false 
+    (* | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false  *)
     | {obj_arg_label = Empty  }::labels, arg::args 
       ->  (* unit type*)
       let (accs, eff, assign) as r  = aux labels args in 

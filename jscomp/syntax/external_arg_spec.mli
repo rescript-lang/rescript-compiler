@@ -34,7 +34,7 @@ type cst = private
 type label = private
   | Label of {name : string ; cst : cst option }
   | Empty 
-  | EmptyCst of cst
+  (* | EmptyCst of cst *)
   | Optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
@@ -75,7 +75,7 @@ val cst_int : int -> cst
 val cst_string : string -> cst 
 
 val empty_label : label
-val empty_lit : cst -> label 
+(* val empty_lit : cst -> label  *)
 val label :  string -> cst option -> label
 val optional  : string -> label
 val empty_kind : attr -> obj_param

@@ -41,7 +41,7 @@ type label_noname =
 type label = 
   | Label of {name : string ; cst : cst option }
   | Empty 
-  | EmptyCst of cst 
+  (* | EmptyCst of cst  *)
   | Optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
@@ -106,7 +106,7 @@ let cst_json (loc : Location.t) s : cst  =
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
 let empty_label = Empty 
-let empty_lit s = EmptyCst s
+(* let empty_lit s = EmptyCst s *)
 let label name cst = Label {name ; cst}
 let optional name = Optional {name}
 
