@@ -134,8 +134,8 @@ let reason = "reason"
 let react_jsx = "react-jsx"
 
 let entries = "entries"
-let kind = "kind"
-let main = "main"
+let backend = "backend"
+let main_module = "main-module"
 let cut_generators = "cut-generators"
 let generators = "generators"
 let command = "command"
@@ -149,6 +149,7 @@ let suffix = "suffix"
 let gentypeconfig = "gentypeconfig"
 let path = "path"
 let ignored_dirs = "ignored-dirs"
+
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -9949,11 +9950,24 @@ module Bsb_global_backend : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val cmdline_backend : Bsb_config_types.compilation_kind_t option ref
+(* Flag to track whether backend has been set to a value. *)
+val backend_is_set : bool ref
 
-val backend : Bsb_config_types.compilation_kind_t Lazy.t
+(* Target backend *)
+val backend : Bsb_config_types.compilation_kind_t ref
 
-val lib_artifacts_dir : string Lazy.t
+(* path to all intermediate build artifacts, would be lib/bs when compiling to JS *)
+val lib_artifacts_dir : string ref
+
+(* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
+val lib_ocaml_dir : string ref
+
+(* string representation of the target backend, would be "js" when compiling to js *)
+val backend_string: string ref
+
+(* convenience setter to update all the refs according to the given target backend *)
+val set_backend : Bsb_config_types.compilation_kind_t -> unit
+
 
 end = struct
 #1 "bsb_global_backend.ml"
@@ -9981,21 +9995,35 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let backend_is_set = ref false
 
-let backend = lazy Bsb_config_types.Js
+let backend = ref Bsb_config_types.Js
 
-(* No cost of using this variable below when compiled in JS mode. *)
-let cmdline_backend = ref (Some Bsb_config_types.Js)
+let lib_artifacts_dir = ref Bsb_config.lib_bs
 
+let lib_ocaml_dir = ref Bsb_config.lib_ocaml
+
+let backend_string = ref Literals.js
 
 let (//) = Ext_path.combine
 
-let lib_artifacts_dir = lazy
-  begin match Lazy.force backend with
-  | Bsb_config_types.Js       -> Bsb_config.lib_bs
-  | Bsb_config_types.Native   -> Bsb_config.lib_lit // "native"
-  | Bsb_config_types.Bytecode -> Bsb_config.lib_lit // "bytecode"
-  end
+let set_backend b =
+  backend_is_set := true;
+  backend := b;
+  match b with
+  | Bsb_config_types.Js       -> 
+    lib_artifacts_dir := Bsb_config.lib_bs;
+    lib_ocaml_dir := Bsb_config.lib_ocaml;
+    backend_string := Literals.js;
+  | Bsb_config_types.Native   -> 
+    lib_artifacts_dir := Bsb_config.lib_lit // "bs-native";
+    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-native";
+    backend_string := Literals.native;
+  | Bsb_config_types.Bytecode -> 
+    lib_artifacts_dir := Bsb_config.lib_lit // "bs-bytecode";
+    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-bytecode";
+    backend_string := Literals.bytecode;
+
 
 end
 module Bsb_global_paths : sig 
@@ -11161,7 +11189,7 @@ let (//) = Ext_path.combine
 let ninja_clean  proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
-    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
@@ -11272,7 +11300,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // Bsb_config.lib_ocaml
+    package_install_path = x // !Bsb_global_backend.lib_ocaml_dir
   }
 
 type json_map = Ext_json_types.t Map_string.t
@@ -11379,7 +11407,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
         check_version_exit map stdlib_path;
         Some {
             Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
+            package_install_path = stdlib_path // !Bsb_global_backend.lib_ocaml_dir;
           }
 
       | _ -> assert false 
@@ -11609,6 +11637,9 @@ let interpret_json
     let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
     let bs_suffix = extract_bs_suffix_exn map in   
+    (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
+         array from the bsconfig and set the backend_ref to the first entry, if any. *)
+    let entries = extract_main_entries map in
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
@@ -11676,7 +11707,7 @@ let interpret_json
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
-          entries = extract_main_entries map;
+          entries;
           generators = extract_generators map ; 
           cut_generators ;
           number_of_dev_groups;   
@@ -11898,7 +11929,7 @@ let output_merlin_namespace buffer ns=
   match ns with 
   | None -> ()
   | Some x -> 
-    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
     Buffer.add_string buffer merlin_b ; 
     Buffer.add_string buffer lib_artifacts_dir ; 
     Buffer.add_string buffer merlin_flg ; 
@@ -12006,7 +12037,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
     Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
@@ -12198,7 +12229,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
            (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
-  write file
+  write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
     { st_mtimes ;
       dir_or_files;
       source_directory = per_proj_dir ;
@@ -12211,7 +12242,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
     bit in case we found a different version of compiler
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
-  read file  (fun  {
+  read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
@@ -13646,7 +13677,7 @@ let output_ninja_and_namespace_map
       number_of_dev_groups;
     } : Bsb_config_types.t) : unit 
   =
-  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
@@ -14188,7 +14219,7 @@ let regenerate_ninja
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -16557,7 +16588,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
-  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace_encode.make ?ns:namespace x in 
@@ -16592,7 +16623,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
-  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
@@ -16724,7 +16755,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
   we make it at this time to make `bsb -help` easier
 *)
     "-ws", Arg.Bool ignore, 
-    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." 
+    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." ;
+
   ]
 
 
@@ -16738,7 +16770,7 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
-  let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
