@@ -13,13 +13,13 @@ function postProcessErrorOutput (output) {
 }
 
 let links = [
-  {linkPath: 'node_modules/b', target: 'c'},
-  {linkPath: 'node_modules/a', target: 'c'},
-  {linkPath: 'b/node_modules/c', target: 'a'},
-  {linkPath: 'a/node_modules/c', target: 'b'}
+  {linkPath: 'a/node_modules/c', target: 'c'},
+  {linkPath: 'b/node_modules/c', target: 'c'},
+  {linkPath: 'node_modules/a', target: 'a'},
+  {linkPath: 'node_modules/b', target: 'b'},
 ];
 
-for (let { linkPath, target} of links) {
+for (let {linkPath, target} of links) {
   let fullPath = path.join(__dirname, linkPath);
   let fullTarget = path.join(__dirname, target);
   if (fs.existsSync(fullTarget)) {
@@ -28,7 +28,7 @@ for (let { linkPath, target} of links) {
 }
 
 function clean () {
-  for (let { linkPath} of links) {
+  for (let {linkPath} of links) {
     let fullPath = path.join(__dirname, linkPath);
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath)
