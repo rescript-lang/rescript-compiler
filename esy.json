@@ -2,13 +2,13 @@
   "name": "bs-platform",
   "version": "5.2.0-dev.2",
   "dependencies": {
-    "ocaml": "4.02.3000+BS"
+    "ocaml": "4.6.1000+BS"
   },
   "devDependencies": {
-    "ocaml": "4.02.3000+BS"
+    "ocaml": "4.6.1000+BS"
   },
   "resolutions": {
-    "ocaml": "bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb"
+    "ocaml": "bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400"
   },
   "scripts": {
     "clean": "node ./scripts/ninja.js clean"
