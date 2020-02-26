@@ -357,14 +357,15 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 let file_level_flags_handler (e : Parsetree.expression option) = 
   match e with 
   | None -> ()
-  | Some {pexp_desc = Pexp_array args } -> 
+  | Some {pexp_desc = Pexp_array args ; pexp_loc} -> 
     let args = Array.of_list 
         (Sys.executable_name :: Ext_list.map  args (fun e -> 
              match e.pexp_desc with 
              | Pexp_constant (Pconst_string(name,_)) -> name 
              | _ -> Location.raise_errorf ~loc:e.pexp_loc "string literal expected" )) in               
-    Arg.parse_argv ~current:(ref 0)
+    (try Arg.parse_argv ~current:(ref 0)
       args buckle_script_flags ignore usage
+    with _ -> Location.prerr_warning pexp_loc (Preprocessor "invalid flags for bsc"))  
   (* ;Format.fprintf Format.err_formatter "%a %b@." 
       Ext_obj.pp_any args !Js_config.cross_module_inline; *)
   | Some e -> 
