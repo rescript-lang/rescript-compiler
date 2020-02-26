@@ -1,8 +1,29 @@
 `*` means  potential break changes
 
 # current
-- #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
+- #4177 #4180 support `[@@@bs.config {flags = [| ".." |] }]` per file level to allow file level special flags
+- #4158 #4157 #4166 #4168 loading stdlib from memory, no postinstall needed
+- #4152 support copyright style comments preserved in JS 
+  ```
+  [%%raw "//copyright ]
+  ```
+  copyright will be preserved in output js 
+- #4191 add a flag -bs-unsafe-empty-array for easy transition (regain polymorphism for empty array), this is a temporary flag which will be removed eventually
 
+- #4190 (internal) remove bsdep which is not used
+- #4188 better encoding around internals for performance and size  
+- #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
+- #4185 remove staled tasks.json in bsb themes for vscode, leave it for users to keep it  up to date
+- #4159 #4161 #4182 improve the startup time, reducing both the size of cmi and cmj
+- #4179 (internal) remove bsppx, use "bsc.exe -as-ppx" for editor tooling
+- #4171 add a warning for using `fun%raw`, use `[%raw]` directly
+- #4169 An escape hatch for function level comments 
+- #4164 #4162 #4165 make code generation  platform agnostic (not depending on printf either)
+- #4164 add Node.Buffer.toStringWithEncoding
+- #4150 Grab the hostname from window.location when conntecting to websocket for react-hooks theme
+- #4143 better compilation of optional arguments
+- #4142 fix yarn start command
+- #4140 docs: update README in basic reason template 
 
 # 7.1.0
 (it was 7.0.2 but bumped into 7.1.0 due to a breaking  change introduced in 7.0.2)
