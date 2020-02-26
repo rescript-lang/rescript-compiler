@@ -22,7 +22,7 @@ let links = [
 for (let {linkPath, target} of links) {
   let fullPath = path.join(__dirname, linkPath);
   let fullTarget = path.join(__dirname, target);
-  if (fs.existsSync(fullTarget)) {
+  if (fs.existsSync(fullTarget) && !fs.existsSync(fullPath)) {
     fs.symlinkSync(fullTarget, fullPath)
   }
 }
