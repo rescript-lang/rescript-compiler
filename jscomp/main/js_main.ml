@@ -206,8 +206,8 @@ let buckle_script_flags : (string * Arg.spec * string) list =
      " Define conditional variable e.g, -D DEBUG=true"
   )
   ::
-  ("-bs-quiet", Arg.Unit (fun _ -> ()),
-    " (Deprecated using -w a) Quiet mode (no warnings printed)"
+  ("-bs-unsafe-empty-array", Arg.Clear Js_config.mono_empty_array,
+    " Allow [||] to be polymorphic"
   )
   ::
   ("-nostdlib", Arg.Set Js_config.no_stdlib,
