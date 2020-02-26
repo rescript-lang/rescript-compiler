@@ -12,6 +12,18 @@ function postProcessErrorOutput (output) {
   return output
 }
 
+fs.symlinkSync('./c', './a/node_modules/c')
+fs.symlinkSync('./c', './b/node_modules/c')
+fs.symlinkSync('./a', './node_modules/a')
+fs.symlinkSync('./b', './node_modules/b')
+
+function clean () {
+  fs.unlinkSync('./node_modules/b')
+  fs.unlinkSync('./node_modules/a')
+  fs.unlinkSync('./b/node_modules/c')
+  fs.unlinkSync('./a/node_modules/c')
+}
+
 child_process.exec('bsb -clean -make-world', {cwd: __dirname}, (err, stdout, stderr) => {
   const actualErrorOutput = postProcessErrorOutput(stderr.toString())
   if (updateTests) {
@@ -24,9 +36,12 @@ child_process.exec('bsb -clean -make-world', {cwd: __dirname}, (err, stdout, std
       console.error(expectedErrorOutput)
       console.error('\n=== New:')
       console.error(actualErrorOutput)
+      clean()
       process.exit(1)
     }
   }
 })
+
+clean()
 
 
