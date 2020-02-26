@@ -12,16 +12,28 @@ function postProcessErrorOutput (output) {
   return output
 }
 
-fs.symlinkSync('./c', './a/node_modules/c')
-fs.symlinkSync('./c', './b/node_modules/c')
-fs.symlinkSync('./a', './node_modules/a')
-fs.symlinkSync('./b', './node_modules/b')
+let links = [
+  {linkPath: 'node_modules/b', target: 'c'},
+  {linkPath: 'node_modules/a', target: 'c'},
+  {linkPath: 'b/node_modules/c', target: 'a'},
+  {linkPath: 'a/node_modules/c', target: 'b'}
+];
+
+for (let { linkPath, target} of links) {
+  let fullPath = path.join(__dirname, linkPath);
+  let fullTarget = path.join(__dirname, target);
+  if (fs.existsSync(fullTarget)) {
+    fs.symlinkSync(fullTarget, fullPath)
+  }
+}
 
 function clean () {
-  fs.unlinkSync('./node_modules/b')
-  fs.unlinkSync('./node_modules/a')
-  fs.unlinkSync('./b/node_modules/c')
-  fs.unlinkSync('./a/node_modules/c')
+  for (let { linkPath} of links) {
+    let fullPath = path.join(__dirname, linkPath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath)
+    }
+  }
 }
 
 child_process.exec('bsb -clean -make-world', {cwd: __dirname}, (err, stdout, stderr) => {
