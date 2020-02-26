@@ -465,6 +465,7 @@ build test/parser_api.cmi test/parser_api.cmj : cc test/parser_api.ml | $stdlib
 build test/parser_api_test.cmi test/parser_api_test.cmj : cc test/parser_api_test.ml | test/mt.cmj test/parser_api.cmj $stdlib
 build test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_readline.ml | $stdlib
 build test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $stdlib
+build test/poly_empty_array.cmi test/poly_empty_array.cmj : cc test/poly_empty_array.ml | $stdlib
 build test/poly_type.cmi test/poly_type.cmj : cc test/poly_type.ml | $stdlib
 build test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.ml | test/mt.cmj test/poly_variant_test.cmi $stdlib
 build test/poly_variant_test.cmi : cc test/poly_variant_test.mli | $stdlib

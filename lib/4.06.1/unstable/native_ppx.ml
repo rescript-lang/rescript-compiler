@@ -23040,6 +23040,8 @@ val no_stdlib: bool ref
 val no_export: bool ref
 val record_as_js_object : bool ref
 val as_ppx : bool ref 
+
+val mono_empty_array : bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23159,6 +23161,8 @@ let no_export = ref false
 let record_as_js_object = ref false (* otherwise has an attribute *)
 
 let as_ppx = ref false
+
+let mono_empty_array = ref true
 end
 module Ppx_apply
 = struct

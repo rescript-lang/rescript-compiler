@@ -76,7 +76,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
             (s, (Some delim)))
           ->
             Ast_utf8_string_interp.transform e s delim
-        | Pexp_array [] when 
+        | Pexp_array [] when !Js_config.mono_empty_array &&
           not (Ext_list.exists e.pexp_attributes (fun ({txt},_) -> txt = ""))->  
         (* `ocamlfind query ppx_tools`/dumpast -loc_underscore -e 'let emptyArray () = [||] in emptyArray ()'*)          
           let loc = e.pexp_loc in

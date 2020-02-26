@@ -110,3 +110,5 @@ val no_stdlib: bool ref
 val no_export: bool ref
 val record_as_js_object : bool ref
 val as_ppx : bool ref 
+
+val mono_empty_array : bool ref
