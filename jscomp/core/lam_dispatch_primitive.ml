@@ -552,7 +552,7 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.char
     | "caml_string_get"    
       -> 
-        call Js_runtime_modules.string
+        E.runtime_call Js_runtime_modules.string "get" args
     | "bytes_to_string"
     | "bytes_of_string"
     | "caml_blit_string" 

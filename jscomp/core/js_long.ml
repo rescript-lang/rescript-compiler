@@ -167,7 +167,7 @@ let compare (args : J.expression list) =
 
 (* let of_string (args : J.expression list) = 
   int64_call "of_string" args  *)
-let get64 = int64_call "get64"
+(* let get64 = int64_call "get64" *)
 let float_of_bits  =  int64_call "float_of_bits" 
 let bits_of_float = int64_call "bits_of_float"
 let min args = 

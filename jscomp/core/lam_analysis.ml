@@ -191,9 +191,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* size of the nth dimension of a big array *)
       | Pbigarraydim _
       (* load/set 16,32,64 bits from a string: (unsafe)*)
-      | Pstring_load_16 _
+      (* | Pstring_load_16 _
       | Pstring_load_32 _
-      | Pstring_load_64 _
+      | Pstring_load_64 _ *)
       (* | Pstring_set_16 _
       | Pstring_set_32 _
       | Pstring_set_64 _ *)
