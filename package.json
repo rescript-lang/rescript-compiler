@@ -41,5 +41,8 @@
   "bugs": {
     "url": "https://github.com/bucklescript/bucklescript/issues"
   },
-  "homepage": "https://github.com/bucklescript/bucklescript#readme"
+  "homepage": "https://github.com/bucklescript/bucklescript#readme",
+  "dependencies": {
+    "gentype": "^3.13.0"
+  }
 }
